@@ -182,12 +182,12 @@
     <string name="letgo_msg_joy_3">Today\'s joy settled\non the garden like sunlight.</string>
     <string name="letgo_msg_hope_1">A small wish flew off like a seed.\nSomewhere, it will sprout.</string>
     <string name="letgo_msg_hope_2">Hoping is already a step.\nSlowly, keep going.</string>
-    <string name="letgo_msg_hope_3">The hope you sent today\nwill light tomorrow\'s path.</string>
+    <string name="letgo_msg_hope_3">May the wish you sent today\nstay quietly beside tomorrow.</string>
     <string name="letgo_msg_calm_1">A quiet day drifted off.\nThis stillness is lovely.</string>
     <string name="letgo_msg_calm_2">An uneventful day is a gift.\nTake one deep breath.</string>
     <string name="letgo_msg_calm_3">On calm days,\nHaru rests beside you.</string>
     <string name="letgo_msg_thanks_1">Gratitude always arrives,\nhowever far it goes.</string>
-    <string name="letgo_msg_thanks_2">Knowing gratitude today\nmakes you a little warmer.</string>
+    <string name="letgo_msg_thanks_2">A grateful day\nis a little warmer.</string>
     <string name="letgo_msg_thanks_3">That thanks,\nthe wind will carry safely.</string>
     <string name="letgo_msg_disappoint_1">It hurt as much as you hoped.\nLet the wind take the weight.</string>
     <string name="letgo_msg_disappoint_2">Trying is never a fault.\nToday, this is enough.</string>
@@ -196,7 +196,7 @@
     <string name="letgo_msg_sad_2">You set a heavy heart down.\nRest a little lighter tonight.</string>
     <string name="letgo_msg_sad_3">After rain, the garden is greener.\nIt will be okay, slowly.</string>
     <string name="letgo_msg_worry_1">Leave the worry to the wind.\nStay with this breath.</string>
-    <string name="letgo_msg_worry_2">Most worries never come.\nIt\'s okay to put this one down.</string>
+    <string name="letgo_msg_worry_2">Worry belongs to days not yet here.\nIt\'s okay to set it down.</string>
     <string name="letgo_msg_worry_3">What you can do is enough.\nThe wind will take the rest.</string>
     <string name="letgo_msg_none_1">Today\'s line drifted away.\nYou did well today.</string>
     <string name="letgo_msg_none_2">Well sent.\nGo lightly through the rest of the day.</string>
@@ -209,7 +209,7 @@
     <string name="recall_addSample">Test: add a line from a year ago</string>
     <string name="lines">Today\'s line</string>
     <string name="lines_keep">Keep my lines</string>
-    <string name="lines_keepFooter">When off, only dates are kept.\nPast lines won\'t return, but streaks still count.</string>
+    <string name="lines_keepFooter">When off, only dates are kept.\nPast lines won\'t come back.</string>
     <string name="lines_export">Export my lines</string>
     <string name="lines_exportEmpty">No lines to export yet.</string>
     <string name="lines_exportTitle">Carpe Diem · Today\'s lines</string>
@@ -219,10 +219,10 @@
     <string name="lines_count">%1$s</string>
     <string name="obj_pinwheel">Pinwheel</string>
     <string name="obj_pinwheel_when">7 days of lines in a row</string>
-    <string name="obj_pinwheel_line">Seven days of wind, and the pinwheel spins.</string>
+    <string name="obj_pinwheel_line">Seven days of wind, and the pinwheel turns.</string>
     <string name="obj_paperboat">Paper boat</string>
     <string name="obj_paperboat_when">30 days of lines in a row</string>
-    <string name="obj_paperboat_line">A month of letting go became a little boat.</string>
+    <string name="obj_paperboat_line">A month of feelings became a little boat.</string>
     <string name="obj_kite">Kite</string>
     <string name="obj_kite_when">100 days of lines in a row</string>
     <string name="obj_kite_line">A hundred days of wind lifted a kite.</string>
@@ -311,7 +311,7 @@
     <string name="breath_stop">Stop</string>
     <string name="breath_startA11y">Starting %1$s for %2$s min.</string>
     <string name="breath_home">Back to the garden</string>
-    <string name="breath_done_calm_1">Six breaths. Well rested.</string>
+    <string name="breath_done_calm_1">Your breath has settled.</string>
     <string name="breath_done_calm_2">Has your mind settled a little?</string>
     <string name="breath_done_calm_3">You are right here, and that is enough.</string>
     <string name="breath_done_box_1">You walked the four corners slowly.</string>
@@ -320,15 +320,15 @@
     <string name="breath_done_sleep_1">You can close your eyes now.</string>
     <string name="breath_done_sleep_2">You did well today.\nSleep well.</string>
     <string name="breath_done_sleep_3">Haru will sleep beside you.</string>
-    <string name="breath_night">Three slow breaths before sleep?</string>
+    <string name="breath_night">A breath to close the day</string>
     <string name="gaze">Just the garden</string>
     <string name="gaze_soundOn">Sound on</string>
     <string name="gaze_soundOff">Sound off</string>
-    <string name="gaze_exit">Go back to leave</string>
+    <string name="gaze_exit">Go back to return to the garden</string>
     <string name="obj_windchime">Wind chime</string>
     <string name="obj_windchime_when">The first breath with Haru</string>
-    <string name="obj_windchime_line">Each time the wind passes, a breath rests.</string>
+    <string name="obj_windchime_line">Each time the wind passes, one breath.</string>
     <string name="add_together">First day together (optional)</string>
     <string name="add_togetherAuto">Automatic</string>
-    <string name="add_togetherHelp">If not set, it counts from the first day your lives overlapped.</string>
+    <string name="add_togetherHelp">Leave empty to count from the first day you shared.</string>
 </resources>

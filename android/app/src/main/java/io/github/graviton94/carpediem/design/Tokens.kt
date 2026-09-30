@@ -279,7 +279,7 @@ object Tokens {
             const val duskPeak = 18.5f
             const val nightFrom = 20.0f
             const val groundKeep = 0.35f
-            const val stars = 7.0f
+            const val stars = 4.0f
             const val starSize = 6.0f
             const val starAlpha = 0.75f
         }
@@ -357,7 +357,8 @@ object Tokens {
             const val rise = 6.0f
             const val eyesAfter = 3.0f
             const val cueSeconds = 60.0f
-            const val skyLift = 0.08f
+            const val haruWidth = 52.0f
+            const val ruleInset = 0.3f
             const val nightFrom = 22.0f
             const val line = 2.0f
         }
@@ -366,9 +367,7 @@ object Tokens {
             const val dimMs = 30000.0f
             const val dimAlpha = 0.72f
             const val releaseAfter = 600.0f
-            const val cloudSeconds = 180.0f
-            const val clouds = 3.0f
-            const val stars = 14.0f
+            const val groundRatio = 0.62f
         }
         object Sound {
             const val sampleRate = 22050.0f
@@ -402,16 +401,16 @@ object Tokens {
             }
             const val skyAlpha = 0.84f
             const val groundAlpha = 0.78f
-            const val stars = 24.0f
+            const val stars = 9.0f
             const val twinkleMs = 3400.0f
-            const val fireflies = 7.0f
+            const val fireflies = 2.0f
             const val fireflyMs = 5200.0f
             const val lampX = 376.0f
             const val lampHeight = 118.0f
-            const val lampGlow = 0.34f
-            const val lampPool = 0.2f
-            const val stoneGlow = 0.16f
-            const val moonGlow = 0.22f
+            const val lampGlow = 0.22f
+            const val lampPool = 0.12f
+            const val stoneGlow = 0.1f
+            const val moonGlow = 0.16f
         }
     }
 }

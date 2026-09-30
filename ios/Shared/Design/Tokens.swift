@@ -284,7 +284,7 @@ enum Tokens {
             static let duskPeak: CGFloat = 18.5
             static let nightFrom: CGFloat = 20.0
             static let groundKeep: CGFloat = 0.35
-            static let stars: CGFloat = 7.0
+            static let stars: CGFloat = 4.0
             static let starSize: CGFloat = 6.0
             static let starAlpha: CGFloat = 0.75
         }
@@ -362,7 +362,8 @@ enum Tokens {
             static let rise: CGFloat = 6.0
             static let eyesAfter: CGFloat = 3.0
             static let cueSeconds: CGFloat = 60.0
-            static let skyLift: CGFloat = 0.08
+            static let haruWidth: CGFloat = 52.0
+            static let ruleInset: CGFloat = 0.3
             static let nightFrom: CGFloat = 22.0
             static let line: CGFloat = 2.0
         }
@@ -371,9 +372,7 @@ enum Tokens {
             static let dimMs: CGFloat = 30000.0
             static let dimAlpha: CGFloat = 0.72
             static let releaseAfter: CGFloat = 600.0
-            static let cloudSeconds: CGFloat = 180.0
-            static let clouds: CGFloat = 3.0
-            static let stars: CGFloat = 14.0
+            static let groundRatio: CGFloat = 0.62
         }
         enum Sound {
             static let sampleRate: CGFloat = 22050.0
@@ -407,16 +406,16 @@ enum Tokens {
             }
             static let skyAlpha: CGFloat = 0.84
             static let groundAlpha: CGFloat = 0.78
-            static let stars: CGFloat = 24.0
+            static let stars: CGFloat = 9.0
             static let twinkleMs: CGFloat = 3400.0
-            static let fireflies: CGFloat = 7.0
+            static let fireflies: CGFloat = 2.0
             static let fireflyMs: CGFloat = 5200.0
             static let lampX: CGFloat = 376.0
             static let lampHeight: CGFloat = 118.0
-            static let lampGlow: CGFloat = 0.34
-            static let lampPool: CGFloat = 0.2
-            static let stoneGlow: CGFloat = 0.16
-            static let moonGlow: CGFloat = 0.22
+            static let lampGlow: CGFloat = 0.22
+            static let lampPool: CGFloat = 0.12
+            static let stoneGlow: CGFloat = 0.1
+            static let moonGlow: CGFloat = 0.16
         }
     }
 }

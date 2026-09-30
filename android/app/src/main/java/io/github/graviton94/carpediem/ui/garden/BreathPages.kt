@@ -131,7 +131,7 @@ private fun KeepScreenOn(on: Boolean) {
 }
 
 /**
- * 하루와 함께 숨 쉬기. 하루가 들이쉴 때 조금 부풀어 떠오르고 내쉴 때 가라앉는다. 3초 뒤 지긋이 눈을 감는다.
+ * 하루와 함께 숨 쉬기. 바탕 한 빛 · 작은 하루 · 선 하나 (비움). 하루가 들이쉴 때 조금 부풀어 떠오르고 내쉴 때 가라앉는다. 3초 뒤 지긋이 눈을 감는다.
  * 글자는 첫 1분만, 진동은 단계가 바뀔 때 아주 짧게, 소리는 고른 바탕 소리 + 시작 · 끝 종소리.
  * 누르거나 뒤로 가기 = ‘여기서 멈출까요?’. 끝까지 쉬면 날짜를 남긴다.
  */
@@ -180,16 +180,12 @@ fun BreathScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, kind
     BoxWithConstraints(Modifier.fillMaxSize().paperBackground().clickable(interactionSource = remember { MutableInteractionSource() }, indication = null) { if (!done) paused = true }) {
         val u = Theme.unit
         val screenW = maxWidth
-        val season = LifeSnapshot(profile.birthDate, profile.expectancy(state.store.table), now).season
-        Image(GardenArt.sky(ctx, season), null, Modifier.fillMaxSize(), contentScale = ContentScale.FillWidth, alignment = Alignment.TopCenter)
-        SkyTimeLayer(now, maxHeight * G.Layout.groundRatio, 0.dp, 0.dp, Modifier.fillMaxSize())
-        // 숨에 따라 하늘이 아주 조금 밝아졌다 짙어짐
-        Box(Modifier.fillMaxSize().graphicsLayer { alpha = b.skyLift * full }.background(Color.White))
+        // 비움: 하늘 그림 · 땅 그림 없이 바탕 한 빛 위에 작은 하루와 선 하나
         Column(Modifier.fillMaxSize().statusBarsPadding().navigationBarsPadding().padding(horizontal = Theme.deviceClass.pageMargin),
             horizontalAlignment = Alignment.CenterHorizontally) {
             Spacer(Modifier.weight(1f))
             val art = HaruArt.of(state.store.haruSeed, false)
-            val scale = u * (G.Layout.meetHaruWidth / G.Layout.haruArtWidth)
+            val scale = u * (b.haruWidth / G.Layout.haruArtWidth)
             val k = with(androidx.compose.ui.platform.LocalDensity.current) { scale.toPx() }
             Box(Modifier.graphicsLayer {
                 if (animate) {
@@ -198,7 +194,7 @@ fun BreathScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, kind
                     translationY = -b.rise * k * full
                 }
             }) { BigStoneOnly(art, scale, lid.value) }
-            CrayonRule(Modifier.padding(horizontal = screenW * 0.2f), seed = 1020)
+            CrayonRule(Modifier.padding(horizontal = screenW * b.ruleInset), seed = 1020)
             Spacer(Modifier.height(Tokens.Space.sp8))
             // 글자: 첫 1분만. 끝나면 한 줄 + 정원으로
             val cue = if (done) null else step?.takeIf { elapsed < b.cueSeconds * 1000 }
@@ -248,7 +244,7 @@ private fun PauseCard(onKeep: () -> Unit, onStop: () -> Unit) {
 // ───────────────────────── 멍하니 보는 정원 ─────────────────────────
 
 /**
- * 숫자도 글자도 없이 하늘과 땅, 나와 가족의 돌만. 구름이 아주 느리게 흐르고, 돌들은 가끔 깜빡인다 (누르면 쓰다듬기만).
+ * 숫자도 글자도 그림도 없이 땅선 하나와 나와 가족의 돌만. 돌들은 가끔 깜빡인다 (누르면 쓰다듬기만).
  * 5분 뒤 스르르 어두워지고, 10분 뒤 화면 켜둠을 푼다. 소리는 마지막에 고른 바탕 소리 (끄고 켤 수 있음).
  */
 @Composable
@@ -270,38 +266,19 @@ fun GazeScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, onBack
         delay(((z.releaseAfter - z.dimAfter) * 1000).toLong() - z.dimMs.toLong()); screenOn = false
     }
     BackHandler(onBack = onBack)
-    val drift by rememberInfiniteTransition(label = "clouds").animateFloat(0f, 1f, infiniteRepeatable(tween((z.cloudSeconds * 1000).toInt(), easing = LinearEasing), RepeatMode.Restart), label = "drift")
 
     BoxWithConstraints(Modifier.fillMaxSize().paperBackground()) {
         val u = Theme.unit
         val screenH = maxHeight
-        Image(GardenArt.sky(ctx, s.season), null, Modifier.fillMaxSize(), contentScale = ContentScale.FillWidth, alignment = Alignment.TopCenter)
-        val gy = screenH * G.Layout.groundRatio
-        // 땅 그림도 시간의 빛 아래에 (밤이면 땅까지 어두워짐)
-        Image(GardenArt.strip(ctx, s.season), null, Modifier.offset(y = gy - u * G.Layout.stripLineY).fillMaxWidth().height(u * G.Layout.stripHeight), contentScale = ContentScale.FillBounds)
-        SkyTimeLayer(now, gy, screenH * 0.08f, gy - u * 60, Modifier.fillMaxSize())
-        // 구름: 앱이 그리는 둥근 조각 몇 개가 아주 느리게
-        val night = Theme.gc.night
-        Canvas(Modifier.fillMaxSize()) {
-            val w = size.width; val uu = u.toPx()
-            val r = Crayon.Rng(7)
-            repeat(z.clouds.toInt()) { i ->
-                val y = size.height * (0.12f + 0.32f * r.next()); val sc = 0.7f + 0.6f * r.next(); val off = r.next()
-                val x = ((drift + off) % 1f) * (w + uu * 160) - uu * 80
-                val c = Color.White.copy(alpha = if (night) 0.14f else 0.55f)   // 밤 구름은 아주 옅게
-                listOf(Offset(0f, 0f) to 26f, Offset(22f, -8f) to 20f, Offset(-22f, -4f) to 18f, Offset(40f, 4f) to 14f).forEach { (o, rr) ->
-                    drawOval(c, Offset(x + (o.x - rr) * uu * sc, y + (o.y - rr * 0.6f) * uu * sc), Size(rr * 2 * uu * sc, rr * 1.2f * uu * sc))
-                }
-            }
-        }
+        // 비움: 하늘 그림 · 구름 · 들판 없이 바탕 한 빛과 땅선 하나, 그 위에 돌들
+        val gy = screenH * z.groundRatio
+        CrayonRule(Modifier.offset(y = gy - u * G.Stroke.box).fillMaxWidth().padding(horizontal = Theme.deviceClass.pageMargin), seed = 1030)
         // 돌들 (정원과 같은 자리 규칙, 이름표 없이)
         val haruScale = u * (G.Layout.haruWidth / G.Layout.haruArtWidth)
         val slots = gardenSlots(state, profile, s, now, haruScale)
         val targets = slots.map { sl -> sl.progress?.let { (G.Layout.pathStart + G.Layout.pathInset + (G.Layout.pathEnd - G.Layout.pathStart - 2 * G.Layout.pathInset) * it.toFloat().coerceIn(0f, 1f)).toDouble() * u.value } }
         val widths = slots.map { sl -> (sl.art.meta.bbox.width * sl.scale.value).toDouble() }
         val xs = Family.place(targets, widths, 0, (u * G.Layout.pathStart).value.toDouble(), (u * G.Layout.pathEnd).value.toDouble(), (G.Family.gap * u.value).toDouble(), (G.Family.minGap * u.value).toDouble()).map { it.toFloat().dp }
-        // 밤: 돌들 발치의 빛 · 가로등 · 반딧불
-        NightLights(now, gy, slots.indices.minOf { xs[it] - (widths[it].toFloat() / 2).dp }, slots.indices.maxOf { xs[it] + (widths[it].toFloat() / 2).dp }, null, Modifier.fillMaxSize())
         slots.forEachIndexed { i, sl ->
             val cx = xs[i] - sl.scale * (sl.art.meta.bbox.center.x - sl.art.meta.box / 2)
             HaruFigure(sl.art, sl.scale, Modifier.offset(cx - sl.scale * (sl.art.meta.box / 2), gy - sl.scale * G.Layout.haruGround), hat = sl.birthday)
