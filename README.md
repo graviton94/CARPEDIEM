@@ -18,6 +18,7 @@
 - `docs/quotes.md` — 명언을 고르고 보여주는 규칙
 - `docs/design.md` — 디자인 결정 사항
 - `docs/iphone-testing.md` — 내 아이폰에서 테스트하는 법 (TestFlight · Mac)
+- `docs/roadmap.md` — 장기 계획 (후원, 꾸미기 · 수집 · 업적)
 - `design/tokens.json` — 디자인 토큰 (크기·글자·색·모서리의 유일한 원본)
 - `design/strings.json` — 화면 문구 (한국어·영어)
 - `design/mockup.html` — 화면 시안 (브라우저로 열기)
