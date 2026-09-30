@@ -4,6 +4,20 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
+import kotlinx.coroutines.launch
+import androidx.compose.ui.focus.onFocusEvent
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.foundation.relocation.bringIntoViewRequester
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.animation.core.LinearEasing
+import androidx.activity.compose.BackHandler
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -110,7 +124,7 @@ private fun lineType(t: io.github.graviton94.carpediem.design.TypeToken, garden:
  * 오늘의 한 줄: 기쁨도 슬픔도 한 줄에 실어 떠나보낸다. 하루에 한 번.
  * 보내면 글이 깃털에 실려 하늘로 올라가며 옅어지고, 그 뒤로는 오늘 쓴 글을 다시 보여 주지 않는다 (기기 안에만 남음).
  */
-@OptIn(ExperimentalLayoutApi::class)
+@OptIn(ExperimentalLayoutApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifier) {
     val p = Theme.palette
@@ -128,6 +142,8 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
         fly.snapTo(0f); fly.animateTo(1f, tween(G.Motion.letGoMs.toInt(), easing = LinearOutSlowInEasing)); flying = null
     }
     val sent = state.sentOn == today
+    val formView = remember { BringIntoViewRequester() }
+    val scope = rememberCoroutineScope()
     fun send() {
         if (text.isBlank()) return
         flying = text.trim(); state.letGo(text, feeling); text = ""; feeling = null; focus.clearFocus()
@@ -138,7 +154,11 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
         TokenText(stringResource(R.string.letgo_sub), lineType(Tokens.TypeScale.callout, Theme.garden), color = p.secondary)
         // 몇 해 전 오늘 보낸 한 줄: 먼저 조용히 알리고, 누르면 펼친다
         val recalls = remember(state.lines, today) { Lines.yearsAgo(state.lines, today) }
-        recalls.forEach { (years, l) -> RecallCard(years, l) }
+        recalls.forEach { (years, l) -> RecallCard(stringResource(R.string.recall_title, "$years"), l, 990 + years) }
+        // 정한 주기 없이 문득 찾아온 지난 한 줄
+        state.randomLine?.takeIf { r -> recalls.none { it.second.date == r.date } }?.let { r ->
+            RecallCard(stringResource(R.string.recall_random, r.date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM))), r, 996)
+        }
         val line = flying
         when {
             // 떠나보내는 중: 깃털과 함께 위로, 옆으로 살짝 흔들리며 옅어진다
@@ -165,23 +185,26 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
                     TokenText(stringResource(R.string.letgo_done), Tokens.TypeScale.subhead, Modifier.weight(1f))
                 }
             }
-            else -> {
+            else -> Column(Modifier.fillMaxWidth().bringIntoViewRequester(formView), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
                 TokenText(stringResource(R.string.letgo_feeling), Tokens.TypeScale.caption1, color = p.secondary)
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
                     Feeling.entries.forEachIndexed { i, f ->
                         Chip(stringResource(feelingName(f)), feeling == f, seed = 970 + i) { feeling = if (feeling == f) null else f }
                     }
                 }
-                val style = lineType(Tokens.TypeScale.callout, Theme.garden).style(text.ifEmpty { stringResource(R.string.letgo_hint) }).copy(color = p.foreground)
+                // 쓰는 중에는 기본 글꼴 (글자를 칠 때마다 글꼴이 바뀌지 않게)
+                val style = Tokens.TypeScale.callout.style().copy(color = p.foreground)
                 BasicTextField(
                     value = text,
                     onValueChange = { v -> val one = v.replace('\n', ' '); if (one.codePointCount(0, one.length) <= max) text = one },
                     singleLine = true, textStyle = style, cursorBrush = SolidColor(p.foreground),
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send), keyboardActions = KeyboardActions(onSend = { send() }),
-                    modifier = Modifier.fillMaxWidth().lineBox(964).padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3),
+                    // 키보드가 올라온 뒤 입력칸 · 보내기 버튼이 보이게 끌어올린다
+                    modifier = Modifier.fillMaxWidth().onFocusEvent { f -> if (f.isFocused) scope.launch { delay(G.Motion.keyboardMs.toLong()); formView.bringIntoView() } }
+                        .lineBox(964).padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3),
                     decorationBox = { inner ->
                         Box(contentAlignment = Alignment.CenterStart) {
-                            if (text.isEmpty()) TokenText(stringResource(R.string.letgo_hint), lineType(Tokens.TypeScale.callout, Theme.garden), color = p.secondary)
+                            if (text.isEmpty()) TokenText(stringResource(R.string.letgo_hint), Tokens.TypeScale.callout, color = p.secondary)
                             inner()
                         }
                     },
@@ -194,9 +217,9 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
     }
 }
 
-/** 몇 해 전 오늘의 한 줄. 처음엔 접혀 있고, 펼쳐 읽은 뒤 ‘다시 보내기’로 오늘은 접어 둔다. */
+/** 돌아온 한 줄 (몇 해 전 오늘 · 문득). 처음엔 접혀 있고, 펼쳐 읽은 뒤 ‘다시 보내기’로 오늘은 접어 둔다. */
 @Composable
-private fun RecallCard(years: Int, line: DayLine) {
+private fun RecallCard(title: String, line: DayLine, seed: Int) {
     val p = Theme.palette
     val ctx = LocalContext.current
     val u = Theme.unit
@@ -204,13 +227,13 @@ private fun RecallCard(years: Int, line: DayLine) {
     var gone by rememberSaveable(line.date) { mutableStateOf(false) }
     if (gone) return
     Column(
-        Modifier.fillMaxWidth().lineBox(990 + years, strong = true).clickable { opened = true }
+        Modifier.fillMaxWidth().lineBox(seed, strong = true).clickable { opened = true }
             .padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3),
         verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp2),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
             Feather(u * G.LetGo.feather * 0.7f)
-            TokenText(stringResource(R.string.recall_title, "$years"), Tokens.TypeScale.subhead, Modifier.weight(1f), weight = FontWeight.SemiBold)
+            TokenText(title, Tokens.TypeScale.subhead, Modifier.weight(1f), weight = FontWeight.SemiBold)
         }
         if (!opened) TokenText(stringResource(R.string.recall_open), Tokens.TypeScale.footnote, color = p.secondary)
         else {
@@ -222,34 +245,69 @@ private fun RecallCard(years: Int, line: DayLine) {
     }
 }
 
+private class Flake(val x: Float, val delay: Float, val span: Float, val size: Float, val phase: Float, val spin: Float)
+
 /**
- * 보낸 뒤 화면 아래에 잠깐 떠오르는 한마디 (마음에 맞춘 말). 깃털이 조금 날아간 뒤 나타나 몇 초 뒤 스르르 사라진다. 누르면 바로 닫힘.
+ * 한 줄을 보낸 뒤: 깃털이 위에서 아래로 흩날리며 내려오고, 마음에 맞춘 한마디가 담긴 창이 뜬다. ‘확인’으로 닫는다.
+ * 창 밖을 눌러도 닫히지 않는다 (한마디를 읽을 틈). 뒤로 가기는 닫기.
  */
 @Composable
-fun GardenToast(state: AppState, modifier: Modifier = Modifier) {
+fun LetGoModal(state: AppState, modifier: Modifier = Modifier) {
+    val msg = state.toast ?: return
+    val p = Theme.palette
     val ctx = LocalContext.current
     val u = Theme.unit
     val px = with(LocalDensity.current) { u.toPx() }
-    val msg = state.toast
-    val a = remember { Animatable(0f) }
-    var shown by remember { mutableStateOf<String?>(null) }
     val m = G.Motion
+    val fall = remember(msg) { Animatable(0f) }
+    val card = remember(msg) { Animatable(0f) }
     LaunchedEffect(msg) {
-        if (msg == null) { a.animateTo(0f, tween(m.toastFadeMs.toInt())); shown = null; return@LaunchedEffect }
-        delay(m.toastDelayMs.toLong()); shown = msg
-        a.snapTo(0f); a.animateTo(1f, tween(m.toastFadeMs.toInt())); delay(m.toastMs.toLong()); a.animateTo(0f, tween(m.toastFadeMs.toInt()))
-        shown = null; if (state.toast == msg) state.toast = null
+        launch { fall.animateTo(1f, tween(m.fallMs.toInt(), easing = LinearEasing)) }
+        delay(m.cardDelayMs.toLong()); card.animateTo(1f, tween(m.modalFadeMs.toInt(), easing = LinearOutSlowInEasing))
     }
-    val text = shown ?: return
-    Row(
-        modifier.fillMaxWidth().graphicsLayer { alpha = a.value; translationY = (1f - a.value) * px * G.LetGo.drift * 0.5f }
-            .lineBox(998).clickable { state.toast = null }
-            .padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3)
-            .semantics { liveRegion = LiveRegionMode.Polite },
-        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp3),
+    BackHandler { state.toast = null }
+    val feather = GardenArt.obj(ctx, "feather")
+    val flakes = remember(msg) {
+        val r = Crayon.Rng(msg.hashCode())
+        List(G.LetGo.feathers.toInt()) { Flake(0.06f + 0.88f * r.next(), r.next() * 0.35f, 0.5f + 0.25f * r.next(), 0.7f + 0.6f * r.next(), r.next() * 6.28f, (r.next() - 0.5f) * 60f) }
+    }
+    BoxWithConstraints(
+        modifier.fillMaxSize()
+            .drawBehind { drawRect(G.Colors.scrim.copy(alpha = G.Colors.scrim.alpha * card.value)) }
+            .clickable(interactionSource = remember { MutableInteractionSource() }, indication = null) {},
     ) {
-        Feather(u * G.LetGo.feather * 0.8f)
-        TokenText(text, lineType(Tokens.TypeScale.callout, Theme.garden), Modifier.weight(1f))
+        val w = constraints.maxWidth.toFloat(); val h = constraints.maxHeight.toFloat()
+        flakes.forEach { f ->
+            val side = u * G.LetGo.feather * f.size
+            val sidePx = side.value * px / u.value
+            Image(feather, null, Modifier.size(side).graphicsLayer {
+                val t = ((fall.value - f.delay) / f.span).coerceIn(0f, 1f)
+                translationX = f.x * w - sidePx / 2 + sin(t * PI.toFloat() * 3f + f.phase) * G.LetGo.sway * px
+                translationY = -sidePx + (h + sidePx) * t
+                rotationZ = f.spin * sin(t * PI.toFloat() * 2f + f.phase)
+                alpha = if (t <= 0f || t >= 1f) 0f else minOf(1f, (1f - t) * 3f)
+            })
+        }
+        Column(
+            Modifier.align(Alignment.Center).padding(horizontal = Theme.deviceClass.pageMargin)
+                .graphicsLayer { alpha = card.value; val k = 0.94f + 0.06f * card.value; scaleX = k; scaleY = k }
+                .modalBox().padding(Tokens.Space.sp6).semantics { liveRegion = LiveRegionMode.Polite },
+            horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3),
+        ) {
+            Image(feather, null, Modifier.size(u * G.LetGo.feather * 1.3f))
+            TokenText(stringResource(R.string.letgo_modalTitle), lineType(Tokens.TypeScale.title3, Theme.garden), align = TextAlign.Center)
+            TokenText(msg, lineType(Tokens.TypeScale.callout, Theme.garden), color = p.secondary, align = TextAlign.Center)
+            Spacer(Modifier.height(Tokens.Space.sp2))
+            Action(stringResource(R.string.letgo_ok), filled = true, seed = 999) { state.toast = null }
+        }
     }
 }
 
+/** 창 바탕: 정원은 종이 위 크레용 선, 유리는 불투명한 판 (뒤가 비치면 글이 흐려서). */
+@Composable
+private fun Modifier.modalBox(): Modifier {
+    if (Theme.garden) return crayonBox(G.Colors.paper, G.Radius.box, G.Stroke.box, 997)
+    val p = Theme.palette
+    val shape = RoundedCornerShape(Tokens.Radius.lg)
+    return clip(shape).background(p.base).border(Tokens.Stroke.line, p.glassEdge, shape)
+}

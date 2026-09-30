@@ -1,6 +1,7 @@
 package io.github.graviton94.carpediem.ui.garden
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.layout.navigationBars
@@ -171,7 +172,8 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
         // 넘긴 정도 (0 = 정원, 1 = 둘째 장). 읽는 곳은 그리기 단계뿐이라 넘길 때 다시 구성하지 않는다.
         fun turned() = (scroll.value / pagePx).coerceIn(0f, 1f)
 
-        Column(Modifier.fillMaxSize().verticalScroll(scroll)) {
+        // 키보드가 올라오면 넘기는 창 자체를 줄여, 입력칸을 키보드 위로 끌어올릴 수 있게
+        Column(Modifier.fillMaxSize().imePadding().verticalScroll(scroll)) {
             Box(Modifier.fillMaxWidth().height(screenH).graphicsLayer {
                 val f = turned(); translationY = scroll.value * G.Layout.parallax; alpha = 1f - f * f
             }.clipToBounds()) {
@@ -190,8 +192,12 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp2),
                 ) {
-                    Row(Modifier.fillMaxWidth()) {
-                        Spacer(Modifier.weight(1f))
+                    // 늘 보이는 이름과 한 줄 소개 (첫 화면과 같은 말)
+                    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                        Column(Modifier.weight(1f)) {
+                            TokenText("Carpe Diem", Tokens.TypeScale.headline.serif())
+                            TokenText(stringResource(R.string.tagline), Tokens.TypeScale.caption1.serif(), color = p.secondary)
+                        }
                         IconButton(onClick = onSettings, modifier = Modifier.semantics { contentDescription = ctx.getString(R.string.settings) }) { Icon(Icons.Filled.Settings, null, tint = p.secondary) }
                     }
                     TokenText(stringResource(R.string.timeLeft), Tokens.TypeScale.subhead, color = p.secondary)
@@ -261,7 +267,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 Modifier.fillMaxWidth().heightIn(min = screenH).graphicsLayer {
                     val f = turned(); alpha = f; translationY = (1f - f) * pagePx * (1f - G.Layout.parallax) * G.Layout.pageSnap
                 }.statusBarsPadding().padding(horizontal = margin).padding(top = Tokens.Space.sp6)
-                    .windowInsetsPadding(WindowInsets.navigationBars.union(WindowInsets.ime)).padding(bottom = Tokens.Space.sp10),
+                    .navigationBarsPadding().padding(bottom = Tokens.Space.sp10),
                 verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3),
             ) {
                 TokenText(stringResource(R.string.flow), Tokens.TypeScale.title3)
@@ -304,9 +310,8 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 LetGoSection(state, now.toLocalDate())
             }
         }
-        // 한 줄을 보낸 뒤의 한마디 (화면 아래, 키보드 위)
-        GardenToast(state, Modifier.align(Alignment.BottomCenter).windowInsetsPadding(WindowInsets.navigationBars.union(WindowInsets.ime))
-            .padding(horizontal = margin).padding(bottom = Tokens.Space.sp6))
+        // 한 줄을 보낸 뒤: 깃털이 내려오며 한마디 창
+        LetGoModal(state, Modifier.fillMaxSize())
     }
 
     open?.let { m ->

@@ -151,15 +151,26 @@ object GardenWidgetArt {
         val lc = Canvas(layer)
         val p = Paint(Paint.ANTI_ALIAS_FLAG)
         val ox = (area.width() - cell * cols) / 2f
+        // 앱의 인생 달력처럼 칸마다 작은 조약돌
+        val r = io.github.graviton94.carpediem.ui.garden.Crayon.Rng(860)
         for (i in 0 until total) {
-            val x = ox + (i % cols) * cell + pad / 2; val y = (i / cols) * cell + pad / 2; val rect = RectF(x, y, x + cell - pad, y + cell - pad)
-            val rr = Tokens.Garden.Radius.cell * u
+            val cx = ox + (i % cols + 0.5f) * cell; val cy = (i / cols + 0.5f) * cell
+            val base = (cell - pad) / 2 * (1f - L.pebbleJitter + L.pebbleJitter * r.next())
+            val rx = base * (1f + (r.next() - 0.5f) * L.pebbleSquash); val ry = base * (1f - (r.next() - 0.5f) * L.pebbleSquash)
+            val rot = r.next() * 6.283f
+            val pts = List(7) { k -> val a = rot + k * 6.283f / 7; val w = 1f + (r.next() - 0.5f) * L.pebbleWobble; floatArrayOf(cx + kotlin.math.cos(a) * rx * w, cy + kotlin.math.sin(a) * ry * w) }
+            val path = android.graphics.Path().apply {
+                moveTo((pts[6][0] + pts[0][0]) / 2, (pts[6][1] + pts[0][1]) / 2)
+                for (k in 0 until 7) { val c = pts[k]; val n = pts[(k + 1) % 7]; quadTo(c[0], c[1], (c[0] + n[0]) / 2, (c[1] + n[1]) / 2) }
+                close()
+            }
             when {
                 i < lived -> { p.style = Paint.Style.FILL; p.color = Tokens.Garden.Colors.calendar[min(3, i * 4 / total)].toArgb() }
                 i == lived -> { p.style = Paint.Style.FILL; p.color = Tokens.Garden.Colors.now.toArgb() }
                 else -> { p.style = Paint.Style.STROKE; p.strokeWidth = u * 0.8f; p.color = Tokens.Garden.Colors.future.toArgb() }
             }
-            lc.drawRoundRect(rect, rr, rr, p)
+            lc.drawPath(path, p)
+            if (i <= lived) { val o = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE; strokeWidth = u * 0.6f; color = Tokens.Garden.Colors.ink.copy(alpha = if (i == lived) 1f else L.pebbleLine).toArgb() }; lc.drawPath(path, o) }
         }
         val tooth = asset(context, "tooth_fill.png")
         val mask = Paint().apply {

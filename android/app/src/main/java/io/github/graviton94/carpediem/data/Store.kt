@@ -153,6 +153,32 @@ class Store(context: Context) {
         }.toMap()
         set(v) = prefs.edit().putString("streaks", v.entries.joinToString(",") { "${it.key}:${it.value.toEpochDay()}" }).apply()
 
+    /**
+     * 문득 찾아오는 한 줄 (정한 주기 없이, 5 ~ 20일에 한 번쯤 아무 날). 도착한 날은 하루 종일 같은 줄.
+     * 앱을 열 때와 아침 알림 때 부른다. 없으면 null.
+     */
+    fun randomRecall(today: LocalDate = LocalDate.now()): DayLine? {
+        val t = io.github.graviton94.carpediem.design.Tokens.Garden.LetGo
+        val lines = this.lines
+        val seed = prefs.getString("quoteSeed", null)?.toULongOrNull()?.toLong() ?: 0x5EEDL
+        if (prefs.getLong("randomOn", -1) == today.toEpochDay()) {
+            val d = prefs.getLong("randomPick", -1); return lines.firstOrNull { it.date.toEpochDay() == d }
+        }
+        val next = if (prefs.contains("randomNext")) LocalDate.ofEpochDay(prefs.getLong("randomNext", 0)) else null
+        if (next == null) {
+            if (lines.any { it.text.isNotBlank() }) prefs.edit().putLong("randomNext", Lines.nextRandomDay(today, seed, t.randomMinDays.toInt(), t.randomMaxDays.toInt()).toEpochDay()).apply()
+            return null
+        }
+        if (today.isBefore(next)) return null
+        val pick = Lines.randomPick(lines, today, seed, t.randomMinAge.toInt()) ?: return null
+        prefs.edit().putLong("randomOn", today.toEpochDay()).putLong("randomPick", pick.date.toEpochDay())
+            .putLong("randomNext", Lines.nextRandomDay(today, seed, t.randomMinDays.toInt(), t.randomMaxDays.toInt()).toEpochDay()).apply()
+        return pick
+    }
+
+    /** 시험용: 다음 문득 찾아올 날을 오늘로. */
+    fun randomRecallNow(today: LocalDate = LocalDate.now()) = prefs.edit().putLong("randomNext", today.toEpochDay()).remove("randomOn").apply()
+
     fun eraseAll() = prefs.edit().clear().apply()
 
     companion object {

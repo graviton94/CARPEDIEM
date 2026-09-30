@@ -1,5 +1,6 @@
 package io.github.graviton94.carpediem.ui.garden
 
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -187,33 +188,49 @@ fun CrayonBar(value: Float, color: Color, modifier: Modifier = Modifier, seed: I
     })
 }
 
-/** 인생 달력: 손으로 칠한 칸. 지나온 칸은 계절 색, 지금은 호박색, 남은 칸은 테두리만. */
+/**
+ * 인생 달력: 칸마다 작은 조약돌 (손으로 그린 듯 조금씩 다른 모양 · 크기 · 기울기).
+ * 지나온 돌은 계절 색으로 칠하고 먹선을 살짝, 지금은 호박색, 남은 날은 옅은 테두리만.
+ * 칸이 수천 개라 모양은 크기가 정해질 때 한 번만 만들고 (색마다 경로 하나), 그리기는 그것을 칠하기만 한다.
+ */
 @Composable
 fun CrayonCalendar(total: Int, filled: Int, columns: Int, modifier: Modifier = Modifier) {
     val ctx = LocalContext.current
     val u = with(LocalDensity.current) { Theme.unit.toPx() }
     val mask = Crayon.tooth(GardenArt.toothFill(ctx), u)
     val rows = max(1, ceil(max(total, 1) / columns.toFloat()).toInt())
-    Canvas(modifier.fillMaxWidth().aspectRatio(columns / rows.toFloat())) {
-        if (total <= 0) return@Canvas
+    val L = Tokens.Garden.Layout
+    Spacer(modifier.fillMaxWidth().aspectRatio(columns / rows.toFloat()).drawWithCache {
         val cell = min(size.width / columns, size.height / rows)
-        val pad = cell * (1 - 1 / Tokens.Garden.Layout.calendarGap)
         val r = Crayon.Rng(860)
-        with(Crayon) {
-            textured(mask) {
-                for (i in 0 until total) {
-                    val x = (i % columns) * cell + (r.next() - 0.5f) * u * 0.5f; val y = (i / columns) * cell + (r.next() - 0.5f) * u * 0.5f
-                    val tl = Offset(x + pad / 2, y + pad / 2); val sz = Size(cell - pad, cell - pad); val cr = CornerRadius(Tokens.Garden.Radius.cell * u)
-                    val season = min(3, i * 4 / total)
-                    when {
-                        i < filled -> drawRoundRect(Tokens.Garden.Colors.calendar[season], tl, sz, cr)
-                        i == filled -> drawRoundRect(Tokens.Garden.Colors.now, tl, sz, cr)
-                        else -> drawRoundRect(Tokens.Garden.Colors.future, tl, sz, cr, style = Stroke(u * 0.8f))
-                    }
+        val season = List(4) { Path() }; val now = Path(); val ahead = Path()
+        for (i in 0 until max(total, 0)) {
+            val cx = (i % columns + 0.5f) * cell; val cy = (i / columns + 0.5f) * cell
+            val base = cell / 2 / L.calendarGap * (1f - L.pebbleJitter + L.pebbleJitter * r.next())
+            val rx = base * (1f + (r.next() - 0.5f) * L.pebbleSquash); val ry = base * (1f - (r.next() - 0.5f) * L.pebbleSquash)
+            val rot = r.next() * 6.283f
+            val pts = List(7) { k -> val a = rot + k * 6.283f / 7; val w = 1f + (r.next() - 0.5f) * L.pebbleWobble; Offset(cx + cos(a) * rx * w, cy + sin(a) * ry * w) }
+            val target = when { i < filled -> season[min(3, i * 4 / total)]; i == filled -> now; else -> ahead }
+            // 점 사이를 부드러운 곡선으로 (가운데점을 지나는 2차 곡선)
+            val m0 = (pts[6] + pts[0]) / 2f
+            target.moveTo(m0.x, m0.y)
+            for (k in 0 until 7) { val c = pts[k]; val n = pts[(k + 1) % 7]; val mid = (c + n) / 2f; target.quadraticTo(c.x, c.y, mid.x, mid.y) }
+            target.close()
+        }
+        val ink = Tokens.Garden.Colors.ink
+        onDrawBehind {
+            if (total <= 0) return@onDrawBehind
+            with(Crayon) {
+                textured(mask) {
+                    season.forEachIndexed { k, path -> drawPath(path, Tokens.Garden.Colors.calendar[k]) }
+                    drawPath(now, Tokens.Garden.Colors.now)
+                    season.forEach { drawPath(it, ink.copy(alpha = L.pebbleLine), style = Stroke(u * 0.7f)) }
+                    drawPath(now, ink, style = Stroke(u * 0.9f))
+                    drawPath(ahead, Tokens.Garden.Colors.future, style = Stroke(u * 0.8f))
                 }
             }
         }
-    }
+    })
 }
 
 /** 종이 바탕 (정원 디자인의 모든 화면 뒤). */

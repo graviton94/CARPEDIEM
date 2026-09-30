@@ -21,15 +21,27 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name=".widget.DaysLeftReceiver" android:exported="false" android:label="@string/widget_daysLeft">
+        <receiver android:name=".widget.DaysLeftReceiver" android:exported="false" android:label="@string/widget_daysLeft_glass">
             <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
             <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_days_left" />
         </receiver>
-        <receiver android:name=".widget.TodayReceiver" android:exported="false" android:label="@string/widget_today">
+        <receiver android:name=".widget.TodayReceiver" android:exported="false" android:label="@string/widget_today_glass">
             <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
             <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_today" />
         </receiver>
-        <receiver android:name=".widget.LifeCalendarReceiver" android:exported="false" android:label="@string/calendar">
+        <receiver android:name=".widget.LifeCalendarReceiver" android:exported="false" android:label="@string/widget_calendar_glass">
+            <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_calendar" />
+        </receiver>
+        <receiver android:name=".widget.DaysLeftGardenReceiver" android:exported="false" android:label="@string/widget_daysLeft_garden">
+            <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_days_left" />
+        </receiver>
+        <receiver android:name=".widget.TodayGardenReceiver" android:exported="false" android:label="@string/widget_today_garden">
+            <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_today" />
+        </receiver>
+        <receiver android:name=".widget.LifeCalendarGardenReceiver" android:exported="false" android:label="@string/widget_calendar_garden">
             <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
             <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_calendar" />
         </receiver>

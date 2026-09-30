@@ -78,9 +78,9 @@ object Widgets {
     }
 
     suspend fun updateAll(context: Context) {
-        DaysLeftWidget().updateAll(context)
-        TodayWidget().updateAll(context)
-        LifeCalendarWidget().updateAll(context)
+        DaysLeftWidget().updateAll(context); DaysLeftGardenWidget().updateAll(context)
+        TodayWidget().updateAll(context); TodayGardenWidget().updateAll(context)
+        LifeCalendarWidget().updateAll(context); LifeCalendarGardenWidget().updateAll(context)
     }
 
     /** ‘오늘’ 위젯이 한 시간마다, 문장이 자정 무렵 바뀌도록 한 시간마다 새로 그린다. */
@@ -107,7 +107,6 @@ private class WidgetData(context: Context) {
     val unit: LifeUnit = store.unit
     val dark = (context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
     val palette = Palette(dark)
-    val garden = store.design == io.github.graviton94.carpediem.data.Design.GARDEN
     val now: LocalDateTime = LocalDateTime.now()
 }
 
@@ -134,6 +133,7 @@ private val fg get() = color(Tokens.Palette.foreground.light, Tokens.Palette.for
 private val sub get() = color(Tokens.Palette.secondary.light, Tokens.Palette.secondary.dark)
 private val olive get() = color(Tokens.Palette.olive.light, Tokens.Palette.olive.dark)
 
+/** 위젯은 앱 글꼴을 못 쓴다. 한글은 기기 명조가 제각각이라 기본 글꼴로, 숫자만 명조. */
 private fun style(size: androidx.compose.ui.unit.TextUnit, c: androidx.glance.unit.ColorProvider, weight: FontWeight = FontWeight.Normal, serif: Boolean = false) =
     TextStyle(color = c, fontSize = size, fontWeight = weight, fontFamily = if (serif) FontFamily.Serif else null)
 
@@ -167,13 +167,14 @@ private fun px(context: Context, dp: Dp) = max(1, (dp.value * context.resources.
 
 // ───────────────────────── 남은 날 (2×2) ─────────────────────────
 
-class DaysLeftWidget : GlanceAppWidget() {
+/** 위젯 목록에 유리 · 정원 두 모양이 따로 있다 (앱 디자인 설정과 상관없이 고를 수 있게). */
+abstract class DaysLeftBase(private val garden: Boolean) : GlanceAppWidget() {
     override val sizeMode = SizeMode.Exact
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         val data = WidgetData(context)
         provideContent {
-            if (data.garden) GardenSurface(context, data, GardenWidgetArt.Kind.DAYS) {
+            if (garden) GardenSurface(context, data, GardenWidgetArt.Kind.DAYS) {
                 val s = data.snapshot
                 if (s == null) Text(context.getString(R.string.widget_empty), style = style(Tokens.TypeScale.caption1.size, gSub))
                 else Column {
@@ -202,18 +203,21 @@ class DaysLeftWidget : GlanceAppWidget() {
     }
 }
 
+class DaysLeftWidget : DaysLeftBase(garden = false)
+class DaysLeftGardenWidget : DaysLeftBase(garden = true)
 class DaysLeftReceiver : GlanceAppWidgetReceiver() { override val glanceAppWidget: GlanceAppWidget = DaysLeftWidget() }
+class DaysLeftGardenReceiver : GlanceAppWidgetReceiver() { override val glanceAppWidget: GlanceAppWidget = DaysLeftGardenWidget() }
 
 // ───────────────────────── 오늘 (2×2) ─────────────────────────
 
-class TodayWidget : GlanceAppWidget() {
+abstract class TodayBase(private val garden: Boolean) : GlanceAppWidget() {
     override val sizeMode = SizeMode.Exact
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         val data = WidgetData(context)
         val today = LifeSnapshot(java.time.LocalDate.now(), 1.0, LocalDateTime.now()).period(LifePeriod.DAY)
         provideContent {
-            if (data.garden) GardenSurface(context, data, GardenWidgetArt.Kind.TODAY) {
+            if (garden) GardenSurface(context, data, GardenWidgetArt.Kind.TODAY) {
                 Column {
                     Text(context.getString(R.string.widget_todayLeft, "${today.hoursLeft}"), style = style(Tokens.TypeScale.title2.size, gInk, FontWeight.Bold, serif = true))
                     Text(context.getString(R.string.widget_todaySub), style = style(Tokens.TypeScale.caption1.size, gSub))
@@ -235,18 +239,21 @@ class TodayWidget : GlanceAppWidget() {
     }
 }
 
+class TodayWidget : TodayBase(garden = false)
+class TodayGardenWidget : TodayBase(garden = true)
 class TodayReceiver : GlanceAppWidgetReceiver() { override val glanceAppWidget: GlanceAppWidget = TodayWidget() }
+class TodayGardenReceiver : GlanceAppWidgetReceiver() { override val glanceAppWidget: GlanceAppWidget = TodayGardenWidget() }
 
 // ───────────────────────── 인생 달력 (4×2 · 4×4) ─────────────────────────
 
-class LifeCalendarWidget : GlanceAppWidget() {
+abstract class LifeCalendarBase(private val garden: Boolean) : GlanceAppWidget() {
     override val sizeMode = SizeMode.Exact
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         val data = WidgetData(context)
         provideContent {
             val gs = LocalSize.current
-            if (data.garden) {
+            if (garden) {
                 val large = gs.height >= Tokens.Widget.largeFromHeight.dp
                 GardenSurface(context, data, if (large) GardenWidgetArt.Kind.LARGE else GardenWidgetArt.Kind.CALENDAR) {
                     val s = data.snapshot
@@ -256,10 +263,10 @@ class LifeCalendarWidget : GlanceAppWidget() {
                             Text(Labels.number(s.remaining(LifeUnit.DAYS)), style = style(Tokens.TypeScale.largeTitle.size, gInk, FontWeight.Bold, serif = true), maxLines = 1)
                             Text(context.getString(R.string.widget_daysLeft), style = style(Tokens.TypeScale.caption1.size, gSub))
                             Spacer(GlanceModifier.defaultWeight())
-                            data.quote?.let { q -> Text(if (data.language == QuoteLanguage.ENGLISH) q.english else q.korean, style = style(Tokens.TypeScale.footnote.size, gInk, serif = true), maxLines = 2) }
+                            data.quote?.let { q -> Text(if (data.language == QuoteLanguage.ENGLISH) q.english else q.korean, style = style(Tokens.TypeScale.footnote.size, gInk), maxLines = 2) }
                         }
                         else -> Column(GlanceModifier.fillMaxHeight().width((gs.width - Tokens.Layout.widgetPadding * 2) * Tokens.Garden.Widget.gridLeft)) {
-                            Text(context.getString(R.string.calendar), style = style(Tokens.TypeScale.footnote.size, gInk, FontWeight.Bold, serif = true))
+                            Text(context.getString(R.string.calendar), style = style(Tokens.TypeScale.footnote.size, gInk, FontWeight.Bold))
                             Spacer(GlanceModifier.defaultWeight())
                             Text("${s.remaining(LifeUnit.YEARS)}", style = style(Tokens.TypeScale.largeTitle.size, gInk, FontWeight.Bold, serif = true))
                             Text(context.getString(R.string.widget_yearsLeft), style = style(Tokens.TypeScale.caption1.size, gSub))
@@ -302,7 +309,7 @@ class LifeCalendarWidget : GlanceAppWidget() {
                             GlanceModifier.fillMaxWidth().height(gh))
                         data.quote?.let { q ->
                             Spacer(GlanceModifier.height(Tokens.Space.sp3))
-                            Text(if (data.language == QuoteLanguage.ENGLISH) q.english else q.korean, style = style(Tokens.TypeScale.footnote.size, fg, serif = true), maxLines = 3)
+                            Text(if (data.language == QuoteLanguage.ENGLISH) q.english else q.korean, style = style(Tokens.TypeScale.footnote.size, fg), maxLines = 3)
                         }
                     }
                 }
@@ -311,7 +318,10 @@ class LifeCalendarWidget : GlanceAppWidget() {
     }
 }
 
+class LifeCalendarWidget : LifeCalendarBase(garden = false)
+class LifeCalendarGardenWidget : LifeCalendarBase(garden = true)
 class LifeCalendarReceiver : GlanceAppWidgetReceiver() { override val glanceAppWidget: GlanceAppWidget = LifeCalendarWidget() }
+class LifeCalendarGardenReceiver : GlanceAppWidgetReceiver() { override val glanceAppWidget: GlanceAppWidget = LifeCalendarGardenWidget() }
 
 // ───────────────────────── 비트맵 그리기 ─────────────────────────
 

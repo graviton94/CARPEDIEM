@@ -189,12 +189,16 @@ object Tokens {
             const val calendarGap = 1.3f
             const val sparkle = 9.0f
             const val devTaps = 7.0f
-            const val pageSnap = 0.3f
+            const val pageSnap = 0.12f
             const val fadeTail = 0.18f
             const val parallax = 0.45f
             const val collectionCell = 104.0f
             const val supportGround = 0.825f
             const val supportHaru = 0.11f
+            const val pebbleJitter = 0.18f
+            const val pebbleSquash = 0.24f
+            const val pebbleWobble = 0.22f
+            const val pebbleLine = 0.45f
         }
         object Stroke {
             const val ground = 3.2f
@@ -217,9 +221,9 @@ object Tokens {
             const val blinkMs = 170.0f
             const val pageMs = 520.0f
             const val letGoMs = 2200.0f
-            const val toastDelayMs = 900.0f
-            const val toastMs = 4200.0f
-            const val toastFadeMs = 420.0f
+            const val modalFadeMs = 360.0f
+            const val fallMs = 3600.0f
+            const val cardDelayMs = 520.0f
             const val lookEase = 0.12f
             const val restEase = 0.02f
             const val tiltRange = 6.0f
@@ -229,6 +233,7 @@ object Tokens {
             const val sunset = 19.0f
             const val sleepyLid = 0.55f
             const val sleepyLook = 0.6f
+            const val keyboardMs = 320.0f
         }
         object Crayon {
             const val vary = 0.3f
@@ -285,6 +290,11 @@ object Tokens {
             const val rise = 150.0f
             const val drift = 36.0f
             const val feather = 44.0f
+            const val feathers = 9.0f
+            const val sway = 34.0f
+            const val randomMinDays = 5.0f
+            const val randomMaxDays = 20.0f
+            const val randomMinAge = 30.0f
         }
     }
 }

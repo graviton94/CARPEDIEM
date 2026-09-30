@@ -1,6 +1,6 @@
 package io.github.graviton94.carpediem.ui
 
-import io.github.graviton94.carpediem.ui.garden.GardenToast
+import io.github.graviton94.carpediem.ui.garden.LetGoModal
 import io.github.graviton94.carpediem.ui.garden.LetGoSection
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -203,8 +203,10 @@ fun HomeScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
     SkyBackground {
         Page {
             Row(Modifier.fillMaxWidth().padding(top = Tokens.Space.sp2), verticalAlignment = Alignment.CenterVertically) {
-                TokenText("Carpe Diem", Tokens.TypeScale.largeTitle, Modifier.padding(start = Tokens.Space.sp1))
-                Spacer(Modifier.weight(1f))
+                Column(Modifier.weight(1f).padding(start = Tokens.Space.sp1)) {
+                    TokenText("Carpe Diem", Tokens.TypeScale.largeTitle)
+                    TokenText(stringResource(R.string.tagline), Tokens.TypeScale.subhead, color = p.secondary)
+                }
                 IconButton(onClick = onSettings, modifier = Modifier.semantics { contentDescription = ctx.getString(R.string.settings) }) {
                     Icon(Icons.Filled.Settings, null, tint = p.foreground)
                 }
@@ -282,8 +284,8 @@ fun HomeScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 }
             }
         }
-        // 한 줄을 보낸 뒤의 한마디
-        GardenToast(state, Modifier.align(Alignment.BottomCenter).safeDrawingPadding().padding(horizontal = Theme.deviceClass.pageMargin).padding(bottom = Tokens.Space.sp6))
+        // 한 줄을 보낸 뒤: 깃털이 내려오며 한마디 창
+        LetGoModal(state, Modifier.fillMaxSize().safeDrawingPadding())
     }
 }
 
@@ -339,6 +341,17 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
                     }
                 }
             }
+            FormSection(header = stringResource(R.string.defaults), footer = stringResource(R.string.defaults_footer)) {
+                Column(Modifier.padding(vertical = Tokens.Space.sp2), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
+                    TokenText(stringResource(R.string.defaults_unit), Tokens.TypeScale.body)
+                    ChipPicker(LifeUnit.entries, state.defaultUnit, { Labels.unit(ctx, it) }) { state.changeDefaultUnit(it) }
+                }
+                RowDivider()
+                Column(Modifier.padding(vertical = Tokens.Space.sp2), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
+                    TokenText(stringResource(R.string.defaults_grid), Tokens.TypeScale.body)
+                    ChipPicker(GridScale.entries, state.defaultGrid, { Labels.gridShort(ctx, it) }) { state.changeDefaultGrid(it) }
+                }
+            }
             FormSection(header = stringResource(R.string.words)) {
                 FormRow(stringResource(R.string.words_language)) {
                     ChipPicker(QuoteLanguage.entries, state.quoteLanguage, { Labels.quoteLanguage(ctx, it) }) { state.changeQuoteLanguage(it) }
@@ -374,6 +387,8 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
                     if (state.devMode) {
                         RowDivider()
                         FormRow(stringResource(R.string.recall_addSample), onClick = { state.addSampleYearAgo() }) {}
+                        RowDivider()
+                        FormRow(stringResource(R.string.recall_addRandom), onClick = { state.addSampleRandom() }) {}
                     }
                 }
                 if (confirmClear) AlertDialog(

@@ -53,6 +53,21 @@ object Lines {
             if (md == java.time.MonthDay.from(today)) (today.year - l.date.year) to l else null
         }.sortedBy { it.first }
 
+    /**
+     * 문득 찾아오는 한 줄: minAge 일보다 오래된 줄 가운데 하나를 고른다 (글 없는 날, ‘몇 해 전 오늘’과 겹치는 날은 빼고).
+     * 같은 seed · 같은 날이면 같은 줄.
+     */
+    fun randomPick(list: List<DayLine>, today: LocalDate, seed: Long, minAge: Int): DayLine? {
+        val md = java.time.MonthDay.from(today)
+        val pool = list.filter { it.text.isNotBlank() && !it.date.isAfter(today.minusDays(minAge.toLong())) && java.time.MonthDay.from(it.date) != md }
+        if (pool.isEmpty()) return null
+        return pool[kotlin.random.Random(seed xor today.toEpochDay()).nextInt(pool.size)]
+    }
+
+    /** 다음에 문득 찾아올 날: 오늘부터 min ~ max 일 뒤 가운데 하나. */
+    fun nextRandomDay(today: LocalDate, seed: Long, min: Int, max: Int): LocalDate =
+        today.plusDays(kotlin.random.Random(seed * 31 + today.toEpochDay()).nextInt(min, max + 1).toLong())
+
     /** 내보내기용 글 (한 줄에 하나: 날짜 · 마음 · 글). 마음 이름은 부르는 쪽이 정한다. */
     fun export(list: List<DayLine>, feelingName: (Feeling) -> String): String =
         list.filter { it.text.isNotBlank() }.joinToString("\n") { l -> listOfNotNull(l.date.toString(), l.feeling?.let(feelingName), l.text).joinToString(" · ") }

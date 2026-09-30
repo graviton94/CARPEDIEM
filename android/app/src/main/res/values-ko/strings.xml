@@ -227,4 +227,20 @@
     <string name="obj_kite">하늘의 연</string>
     <string name="obj_kite_when">한 줄을 100일 이어 쓴 날</string>
     <string name="obj_kite_line">백 날의 바람이 연을 높이 띄웠어요.</string>
+    <string name="defaults">보기 기본값</string>
+    <string name="defaults_unit">남은 시간 단위</string>
+    <string name="defaults_grid">인생 달력 한 칸</string>
+    <string name="defaults_footer">홈에서 바꾸면 그때만 바뀌어요.\n다음에 열면 여기서 고른 단위로 보여요.</string>
+    <string name="widget_daysLeft_glass">남은 날 · 유리</string>
+    <string name="widget_daysLeft_garden">남은 날 · 정원</string>
+    <string name="widget_today_glass">오늘 · 유리</string>
+    <string name="widget_today_garden">오늘 · 정원</string>
+    <string name="widget_calendar_glass">인생 달력 · 유리</string>
+    <string name="widget_calendar_garden">인생 달력 · 정원</string>
+    <string name="letgo_modalTitle">잘 떠나보냈어요</string>
+    <string name="letgo_ok">확인</string>
+    <string name="recall_random">문득, %1$s에 보낸 한 줄이 다시 찾아왔어요</string>
+    <string name="recall_randomNotify">문득, 지난 한 줄이 다시 찾아왔어요</string>
+    <string name="recall_addRandom">시험: 지난 한 줄이 문득 찾아오게</string>
+    <string name="recall_sampleOld">오늘은 조금 지쳤지만, 그래도 잘 버텼다.</string>
 </resources>

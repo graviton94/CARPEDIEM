@@ -194,12 +194,16 @@ enum Tokens {
             static let calendarGap: CGFloat = 1.3
             static let sparkle: CGFloat = 9.0
             static let devTaps: CGFloat = 7.0
-            static let pageSnap: CGFloat = 0.3
+            static let pageSnap: CGFloat = 0.12
             static let fadeTail: CGFloat = 0.18
             static let parallax: CGFloat = 0.45
             static let collectionCell: CGFloat = 104.0
             static let supportGround: CGFloat = 0.825
             static let supportHaru: CGFloat = 0.11
+            static let pebbleJitter: CGFloat = 0.18
+            static let pebbleSquash: CGFloat = 0.24
+            static let pebbleWobble: CGFloat = 0.22
+            static let pebbleLine: CGFloat = 0.45
         }
         enum Stroke {
             static let ground: CGFloat = 3.2
@@ -222,9 +226,9 @@ enum Tokens {
             static let blinkMs: CGFloat = 170.0
             static let pageMs: CGFloat = 520.0
             static let letGoMs: CGFloat = 2200.0
-            static let toastDelayMs: CGFloat = 900.0
-            static let toastMs: CGFloat = 4200.0
-            static let toastFadeMs: CGFloat = 420.0
+            static let modalFadeMs: CGFloat = 360.0
+            static let fallMs: CGFloat = 3600.0
+            static let cardDelayMs: CGFloat = 520.0
             static let lookEase: CGFloat = 0.12
             static let restEase: CGFloat = 0.02
             static let tiltRange: CGFloat = 6.0
@@ -234,6 +238,7 @@ enum Tokens {
             static let sunset: CGFloat = 19.0
             static let sleepyLid: CGFloat = 0.55
             static let sleepyLook: CGFloat = 0.6
+            static let keyboardMs: CGFloat = 320.0
         }
         enum Crayon {
             static let vary: CGFloat = 0.3
@@ -290,6 +295,11 @@ enum Tokens {
             static let rise: CGFloat = 150.0
             static let drift: CGFloat = 36.0
             static let feather: CGFloat = 44.0
+            static let feathers: CGFloat = 9.0
+            static let sway: CGFloat = 34.0
+            static let randomMinDays: CGFloat = 5.0
+            static let randomMaxDays: CGFloat = 20.0
+            static let randomMinAge: CGFloat = 30.0
         }
     }
 }

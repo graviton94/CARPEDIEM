@@ -53,7 +53,12 @@ data class TypeToken(val size: TextUnit, val family: Family, val weight: FontWei
     fun style(text: String? = null, scale: Float = 1f): TextStyle {
         val family = when (this.family) {
             Family.Text -> FontFamily.Default
-            Family.Serif -> if (text != null && text.any { it in '가'..'힣' || it in 'ㄱ'..'ㆎ' }) Fonts.notoSerifKr else Fonts.lora
+            Family.Serif -> when {
+                text == null || text.none(::isHangul) -> Fonts.lora
+                // 앱에 넣은 명조에 없는 글자가 하나라도 있으면 문장 전체를 기본 글꼴로 (글자마다 글꼴이 섞이지 않게)
+                text.all { !isHangul(it) || it in Fonts.serifKrChars } -> Fonts.notoSerifKr
+                else -> FontFamily.Default
+            }
         }
         return TextStyle(fontFamily = family, fontWeight = weight, fontSize = size * scale, letterSpacing = tracking.em)
     }
@@ -61,7 +66,10 @@ data class TypeToken(val size: TextUnit, val family: Family, val weight: FontWei
     fun serif() = copy(family = Family.Serif, weight = FontWeight.Medium)
 }
 
+private fun isHangul(c: Char) = c in '가'..'힣' || c in 'ㄱ'..'ㆎ'
+
 object Fonts {
+    val serifKrChars: Set<Char> by lazy { SERIF_KR_CHARS.toHashSet() }
     val lora = FontFamily(Font(R.font.lora_medium, FontWeight.Medium), Font(R.font.lora_semibold, FontWeight.SemiBold), Font(R.font.lora_semibold, FontWeight.Bold))
     val notoSerifKr = FontFamily(Font(R.font.notoserifkr_medium, FontWeight.Medium), Font(R.font.notoserifkr_semibold, FontWeight.SemiBold), Font(R.font.notoserifkr_semibold, FontWeight.Bold))
 }

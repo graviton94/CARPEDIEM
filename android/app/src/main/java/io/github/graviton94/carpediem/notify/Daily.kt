@@ -68,9 +68,9 @@ object Daily {
         }
         // 몇 해 전 오늘 보낸 한 줄이 있으면 그것을 알린다 (잠금 화면에는 글을 보이지 않음)
         var body = text
-        Lines.yearsAgo(store.lines, LocalDate.now()).firstOrNull()?.let { (years, _) ->
-            title = context.getString(R.string.recall_notify, "$years"); body = context.getString(R.string.recall_notifyText)
-        }
+        val yearAgo = Lines.yearsAgo(store.lines, LocalDate.now()).firstOrNull()
+        if (yearAgo != null) { title = context.getString(R.string.recall_notify, "${yearAgo.first}"); body = context.getString(R.string.recall_notifyText) }
+        else if (store.keepLines && store.randomRecall() != null) { title = context.getString(R.string.recall_randomNotify); body = context.getString(R.string.recall_notifyText) }
         val open = PendingIntent.getActivity(context, 0, Intent(context, MainActivity::class.java), PendingIntent.FLAG_IMMUTABLE)
         val n = NotificationCompat.Builder(context, CHANNEL).setSmallIcon(R.mipmap.ic_launcher_monochrome).setContentTitle(title).setContentText(body)
             .setStyle(NotificationCompat.BigTextStyle().bigText(body)).setContentIntent(open).setAutoCancel(true).build()

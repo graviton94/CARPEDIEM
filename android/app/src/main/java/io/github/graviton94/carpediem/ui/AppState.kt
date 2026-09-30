@@ -65,14 +65,23 @@ class AppState(private val context: Context) {
     fun finishMeet() { store.meetPending = false; meetPending = false }
     fun changeDesign(v: Design) { store.design = v; design = v; Widgets.refresh(context) }
     fun changePreviewAll(v: Boolean) { store.previewAll = v; previewAll = v }
-    fun opened() = store.markOpened()
+    fun opened() { store.markOpened(); checkRandomRecall() }
     fun changeNotify(v: Boolean) { store.notify = v; notify = v; io.github.graviton94.carpediem.notify.Daily.schedule(context, v) }
     fun unlockDev() { store.devMode = true; devMode = true }
     fun nextQuote() { store.skipQuote(); quote = store.todaysQuote(); blinkKick++; Widgets.refresh(context) }
     fun refreshQuote() { quote = store.todaysQuote() }
     fun changeQuoteLanguage(v: QuoteLanguage) { store.quoteLanguage = v; quoteLanguage = v; Widgets.refresh(context) }
-    fun changeUnit(v: LifeUnit) { store.unit = v; unit = v }
-    fun changeGrid(v: GridScale) { store.grid = v; grid = v }
+    /** 홈에서 칩으로 바꾸면 이번에만 (다음에 열면 기본 단위로). 기본은 설정에서 고정한다. 위젯도 기본 단위를 쓴다. */
+    fun changeUnit(v: LifeUnit) { unit = v }
+    fun changeGrid(v: GridScale) { grid = v }
+    var defaultUnit by mutableStateOf(store.unit)
+        private set
+    var defaultGrid by mutableStateOf(store.grid)
+        private set
+    fun changeDefaultUnit(v: LifeUnit) { store.unit = v; defaultUnit = v; unit = v; Widgets.refresh(context) }
+    fun changeDefaultGrid(v: GridScale) { store.grid = v; defaultGrid = v; grid = v }
+    /** 앱을 다시 열면 기본 단위로 돌아간다. */
+    fun resetViewToDefaults() { unit = defaultUnit; grid = defaultGrid }
     // ───── 오늘의 한 줄 ─────
     /** 보낸 한 줄들 (기기 안에만). 화면에는 ‘몇 해 전 오늘’로만 드물게 돌아온다. */
     var lines by mutableStateOf(store.lines)
@@ -101,7 +110,16 @@ class AppState(private val context: Context) {
         // 끄는 순간 지금까지의 글도 지운다 (날짜는 남겨 흔적을 잇는다)
         if (!v) { val dates = lines.map { DayLine(it.date, "", null) }; store.lines = dates; lines = dates }
     }
-    fun clearLines() { store.clearLines(); lines = emptyList() }
+    fun clearLines() { store.clearLines(); lines = emptyList(); randomLine = null }
+    /** 문득 다시 찾아온 지난 한 줄 (있는 날만). */
+    var randomLine by mutableStateOf<DayLine?>(null)
+        private set
+    fun checkRandomRecall(today: LocalDate = (fixedNow ?: LocalDateTime.now()).toLocalDate()) { randomLine = if (keepLines) store.randomRecall(today) else null }
+    /** 시험용 (개발자 모드): 45일 전 한 줄을 넣고 오늘 문득 찾아오게. */
+    fun addSampleRandom(today: LocalDate = (fixedNow ?: LocalDateTime.now()).toLocalDate()) {
+        val next = Lines.add(lines, DayLine(today.minusDays(45), context.getString(R.string.recall_sampleOld), Feeling.CALM)); store.lines = next; lines = next
+        store.randomRecallNow(today); checkRandomRecall(today)
+    }
     fun exportLines(): String = Lines.export(lines) { Labels.feeling(context, it) }
     /** 시험용 (개발자 모드): 1년 전 오늘 보낸 한 줄을 하나 넣어 ‘1년 뒤 오늘’을 확인한다. */
     fun addSampleYearAgo(today: LocalDate = (fixedNow ?: LocalDateTime.now()).toLocalDate()) {
@@ -109,7 +127,7 @@ class AppState(private val context: Context) {
     }
 
     fun eraseAll() {
-        store.eraseAll(); store.ensureQuoteSeed(); lines = emptyList(); streaks = emptyMap(); keepLines = true; toast = null
+        store.eraseAll(); store.ensureQuoteSeed(); unit = store.unit; grid = store.grid; defaultUnit = unit; defaultGrid = grid; lines = emptyList(); streaks = emptyMap(); keepLines = true; toast = null; randomLine = null
         profile = null; quoteLanguage = store.quoteLanguage; quote = store.todaysQuote(); design = store.design; meetPending = false; previewAll = false; notify = false; devMode = false; io.github.graviton94.carpediem.notify.Daily.schedule(context, false); Widgets.refresh(context)
     }
 
@@ -134,6 +152,7 @@ object Labels {
     fun season(c: Context, s: Season) = c.getString(when (s) { Season.SPRING -> R.string.season_spring; Season.SUMMER -> R.string.season_summer; Season.AUTUMN -> R.string.season_autumn; Season.WINTER -> R.string.season_winter })
     fun sex(c: Context, s: Sex) = c.getString(when (s) { Sex.OTHER -> R.string.sex_other; Sex.MALE -> R.string.sex_male; Sex.FEMALE -> R.string.sex_female })
     fun period(c: Context, p: LifePeriod) = c.getString(when (p) { LifePeriod.DAY -> R.string.flow_today; LifePeriod.WEEK -> R.string.flow_week; LifePeriod.MONTH -> R.string.flow_month; LifePeriod.YEAR -> R.string.flow_year })
+    fun gridShort(c: Context, g: GridScale) = c.getString(when (g) { GridScale.WEEKS -> R.string.unit_weeks; GridScale.MONTHS -> R.string.unit_months; GridScale.YEARS -> R.string.unit_years })
     fun grid(c: Context, g: GridScale) = c.getString(when (g) { GridScale.WEEKS -> R.string.calendar_per_weeks; GridScale.MONTHS -> R.string.calendar_per_months; GridScale.YEARS -> R.string.calendar_per_years })
     fun quoteLanguage(c: Context, q: QuoteLanguage) = c.getString(when (q) { QuoteLanguage.KOREAN -> R.string.words_korean; QuoteLanguage.ENGLISH -> R.string.words_english; QuoteLanguage.BOTH -> R.string.words_both })
     fun remaining(c: Context, p: PeriodProgress) = when (p.period) {

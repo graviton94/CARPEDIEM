@@ -67,6 +67,8 @@ class MainActivity : ComponentActivity() {
                     var now by remember { mutableStateOf(clock()) }
                     LaunchedEffect(Unit) { while (true) { delay(60_000); now = clock() } }
                     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { now = clock(); state.refreshQuote(); state.opened() }
+                    // 앱을 다시 열 때(화면에 다시 나올 때) 남은 시간 · 인생 달력 단위를 기본값으로
+                    LifecycleEventEffect(Lifecycle.Event.ON_START) { state.resetViewToDefaults() }
                     // 정원은 늘 밝은 종이라 상태바 · 내비게이션 바 글자를 어둡게 둔다
                     val sysDark = isSystemInDarkTheme()
                     LaunchedEffect(state.design, sysDark) {
@@ -124,6 +126,6 @@ private fun MainActivity.debugSetup(state: AppState): Screen {
     if (x.hasExtra("cd.meet")) { if (x.getBooleanExtra("cd.meet", false)) state.begin(state.profile ?: state.defaultProfile()) else state.finishMeet() }
     if (x.hasExtra("cd.preview")) state.changePreviewAll(x.getBooleanExtra("cd.preview", false))
     x.getStringExtra("cd.now")?.let { state.fixedNow = LocalDateTime.parse(it) }
-    if (x.getBooleanExtra("cd.recall", false)) state.addSampleYearAgo()
+    if (x.getBooleanExtra("cd.recall", false)) { state.addSampleYearAgo(); state.addSampleRandom() }
     return when (x.getStringExtra("cd.screen")) { "settings" -> Screen.Settings; "widgets" -> Screen.WidgetPreview; "collection" -> Screen.Collection(Screen.Main); "support" -> Screen.Support(Screen.Main); else -> Screen.Main }
 }

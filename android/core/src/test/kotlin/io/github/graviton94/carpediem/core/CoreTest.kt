@@ -166,4 +166,14 @@ class DataTest {
         assertEquals("윤날", Lines.yearsAgo(past, d(2025, 2, 28)).single().second.text)
         assertEquals("2025-09-30 · 희망 · 작년", Lines.export(past.take(1)) { "희망" })
     }
+
+    @Test fun linesRandomPick() {
+        val today = d(2026, 9, 30)
+        val list = listOf(DayLine(today.minusDays(10), "최근", null), DayLine(today.minusDays(40), "한 달 전", Feeling.CALM), DayLine(today.minusYears(1), "작년 오늘", null), DayLine(today.minusDays(60), "", null))
+        assertEquals("한 달 전", Lines.randomPick(list, today, 7L, 30)?.text)
+        assertEquals(Lines.randomPick(list, today, 7L, 30), Lines.randomPick(list, today, 7L, 30))
+        assertEquals(null, Lines.randomPick(list.take(1), today, 7L, 30))
+        val next = Lines.nextRandomDay(today, 7L, 5, 20)
+        assertTrue(next in today.plusDays(5)..today.plusDays(20))
+    }
 }
