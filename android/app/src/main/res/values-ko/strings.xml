@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 자동 생성 파일 — 직접 고치지 말고 scripts/generate.py 를 실행하세요. -->
+<resources>
+    <string name="tagline">오늘을 소중히.</string>
+    <string name="you">나</string>
+    <string name="birthday">생년월일</string>
+    <string name="country">나라</string>
+    <string name="sex">성별</string>
+    <string name="sex_other">선택 안 함</string>
+    <string name="sex_male">남성</string>
+    <string name="sex_female">여성</string>
+    <string name="lifeExpectancy">기대수명</string>
+    <string name="auto">자동</string>
+    <string name="custom">직접</string>
+    <string name="lifeExpectancy_footer">나라와 성별의 평균입니다. 직접 바꿀 수 있습니다.</string>
+    <string name="begin">시작</string>
+    <string name="privacy">기록은 이 기기에만 머뭅니다.</string>
+    <string name="timeLeft">남은 시간</string>
+    <string name="unit_days">일</string>
+    <string name="unit_weeks">주</string>
+    <string name="unit_months">개월</string>
+    <string name="unit_years">년</string>
+    <string name="words">오늘의 문장</string>
+    <string name="words_next">눌러서 다음 문장</string>
+    <string name="path">지나온 길</string>
+    <string name="path_age">만 %1$s세 · 인생의 %2$s</string>
+    <string name="path_expected">기대수명 %1$s세</string>
+    <string name="flow">흐르는 시간</string>
+    <string name="flow_today">오늘</string>
+    <string name="flow_week">이번 주</string>
+    <string name="flow_month">이번 달</string>
+    <string name="flow_year">올해</string>
+    <string name="left_hours">%1$s시간 남음</string>
+    <string name="left_minutes">%1$s분 남음</string>
+    <string name="left_days">%1$s일 남음</string>
+    <string name="lastDay">마지막 날</string>
+    <string name="calendar">인생 달력</string>
+    <string name="calendar_per_weeks">1칸 = 1주</string>
+    <string name="calendar_per_months">1칸 = 1개월</string>
+    <string name="calendar_per_years">1칸 = 1년</string>
+    <string name="calendar_legend">지나온 날 · 지금 · 남은 날 — 지금은 인생의 %1$s</string>
+    <string name="season_spring">봄</string>
+    <string name="season_summer">여름</string>
+    <string name="season_autumn">가을</string>
+    <string name="season_winter">겨울</string>
+    <string name="settings">설정</string>
+    <string name="cancel">취소</string>
+    <string name="done">완료</string>
+    <string name="words_language">문장 언어</string>
+    <string name="words_korean">한글</string>
+    <string name="words_english">영문</string>
+    <string name="words_both">둘 다</string>
+    <string name="widgets">위젯</string>
+    <string name="widgets_help1">홈 화면을 길게 눌러 ‘편집’ → ‘위젯 추가’</string>
+    <string name="widgets_help2">‘Carpe Diem’을 찾아 크기를 고릅니다</string>
+    <string name="widgets_help3">‘남은 날’ 위젯을 길게 눌러 단위를 바꿉니다</string>
+    <string name="widgets_help4">잠금 화면에도 둘 수 있습니다</string>
+    <string name="erase">모든 기록 지우기</string>
+    <string name="country_search">나라 검색</string>
+    <string name="country_source">UN 세계인구전망 2024 기준.</string>
+    <string name="widget_daysLeft">남은 날</string>
+    <string name="widget_today">오늘</string>
+    <string name="widget_todayLeft">%1$s시간</string>
+    <string name="widget_todaySub">남은 오늘</string>
+    <string name="widget_yearsLeft">남은 해</string>
+    <string name="widget_monthsLeft">%1$s개월 남음</string>
+    <string name="lock_inline">%1$s일</string>
+    <string name="lock_rect_sub">%1$s주 남음</string>
+    <string name="android_notification">오늘의 문장을 하루 한 번 알림으로 받기</string>
+    <string name="widget_unit">단위</string>
+    <string name="widget_unit_desc">남은 날을 어떤 단위로 볼지 고릅니다.</string>
+    <string name="widget_daysLeft_desc">기대수명까지 남은 날.</string>
+    <string name="widget_today_desc">오늘이 얼마나 지났는지.</string>
+    <string name="widget_calendar_desc">인생 전체를 한눈에. 크게 두면 오늘의 문장도 함께.</string>
+    <string name="widget_empty">앱에서 생년월일을 넣어 주세요.</string>
+    <string name="erase_confirm">모든 기록을 지울까요?</string>
+    <string name="erase_action">지우기</string>
+    <string name="expectancy_value">%1$s세</string>
+    <string name="country_world">세계 평균</string>
+    <string name="widgets_android1">홈 화면 빈 곳을 길게 눌러 ‘위젯’을 고릅니다</string>
+    <string name="widgets_android2">‘Carpe Diem’에서 원하는 위젯을 끌어다 놓습니다</string>
+    <string name="widgets_android3">위젯을 길게 누르면 크기를 바꿀 수 있습니다</string>
+    <string name="back">뒤로</string>
+</resources>

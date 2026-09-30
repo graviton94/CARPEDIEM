@@ -75,3 +75,7 @@
 "erase.action" = "Erase";
 "expectancy.value" = "%1$@ yrs";
 "country.world" = "World average";
+"widgets.android1" = "Touch and hold an empty spot on the Home screen, then tap Widgets";
+"widgets.android2" = "Drag a Carpe Diem widget to your Home screen";
+"widgets.android3" = "Touch and hold a widget to resize it";
+"back" = "Back";

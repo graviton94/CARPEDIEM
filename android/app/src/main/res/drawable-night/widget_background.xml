@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 위젯 배경: 위젯 토큰 widgetTop → widgetBottom -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <gradient android:angle="315" android:startColor="#1E2117" android:endColor="#15170F" />
+    <corners android:radius="24dp" />
+</shape>

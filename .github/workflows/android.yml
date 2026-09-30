@@ -1,0 +1,51 @@
+name: Android
+
+on:
+  push:
+    branches: [main]
+    paths: ["android/**", "design/**", "data/**", "scripts/**", ".github/workflows/android.yml"]
+  pull_request:
+    paths: ["android/**", "design/**", "data/**", "scripts/**", ".github/workflows/android.yml"]
+  workflow_dispatch:
+
+concurrency:
+  group: android-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Generated files are up to date
+        run: python3 scripts/generate.py --check
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Test and build APK
+        working-directory: android
+        run: ./gradlew :core:test :app:assembleRelease --stacktrace
+      - name: Rename APK
+        run: |
+          mkdir -p out
+          cp android/app/build/outputs/apk/release/app-release.apk "out/CarpeDiem-${{ github.run_number }}.apk"
+          ls -la out
+      - uses: actions/upload-artifact@v4
+        with:
+          name: CarpeDiem-apk
+          path: out/*.apk
+      - name: Publish to GitHub release (android-latest)
+        if: github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete android-latest --yes --cleanup-tag || true
+          gh release create android-latest out/*.apk --prerelease --target "${GITHUB_SHA}" \
+            --title "Android 테스트 빌드 #${{ github.run_number }}" \
+            --notes "폰에서 아래 APK 파일을 눌러 받은 뒤 설치하세요. 설치 방법: docs/android-install.md (커밋 ${GITHUB_SHA::7})"

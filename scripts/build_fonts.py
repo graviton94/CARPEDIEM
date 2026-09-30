@@ -16,6 +16,7 @@ from fontTools.varLib import instancer
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 CACHE = ROOT / ".cache"
 OUT = ROOT / "ios" / "Shared" / "Resources" / "Fonts"
+ANDROID_OUT = ROOT / "android" / "app" / "src" / "main" / "res" / "font"  # 안드로이드는 소문자 · 밑줄 이름
 SOURCES = {
     "Lora": "https://raw.githubusercontent.com/google/fonts/main/ofl/lora/Lora%5Bwght%5D.ttf",
     "NotoSerifKR": "https://raw.githubusercontent.com/google/fonts/main/ofl/notoserifkr/NotoSerifKR%5Bwght%5D.ttf",
@@ -58,6 +59,8 @@ def main() -> None:
             path = OUT / f"{ps}.ttf"
             font.save(path)
             print(f"{path.relative_to(ROOT)}  {path.stat().st_size // 1024} KB")
+            ANDROID_OUT.mkdir(parents=True, exist_ok=True)
+            (ANDROID_OUT / f"{key.lower()}_{style.lower()}.ttf").write_bytes(path.read_bytes())
 
 
 if __name__ == "__main__":

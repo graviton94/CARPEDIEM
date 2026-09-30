@@ -23,4 +23,5 @@
 - `design/strings.json` — 화면 문구 (한국어·영어)
 - `design/mockup.html` — 화면 시안 (브라우저로 열기)
 - `ios/` — iOS 앱과 위젯 ([ios/README.md](ios/README.md))
+- `android/` — Android 앱과 위젯 ([android/README.md](android/README.md)), 설치: [docs/android-install.md](docs/android-install.md)
 - `scripts/` — 토큰·문구 코드 생성, 폰트, 아이콘

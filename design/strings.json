@@ -75,7 +75,11 @@
     "erase.confirm": "모든 기록을 지울까요?",
     "erase.action": "지우기",
     "expectancy.value": "{years}세",
-    "country.world": "세계 평균"
+    "country.world": "세계 평균",
+    "widgets.android1": "홈 화면 빈 곳을 길게 눌러 ‘위젯’을 고릅니다",
+    "widgets.android2": "‘Carpe Diem’에서 원하는 위젯을 끌어다 놓습니다",
+    "widgets.android3": "위젯을 길게 누르면 크기를 바꿀 수 있습니다",
+    "back": "뒤로"
   },
   "en": {
     "tagline": "Cherish today.",
@@ -153,6 +157,10 @@
     "erase.confirm": "Erase everything?",
     "erase.action": "Erase",
     "expectancy.value": "{years} yrs",
-    "country.world": "World average"
+    "country.world": "World average",
+    "widgets.android1": "Touch and hold an empty spot on the Home screen, then tap Widgets",
+    "widgets.android2": "Drag a Carpe Diem widget to your Home screen",
+    "widgets.android3": "Touch and hold a widget to resize it",
+    "back": "Back"
   }
 }

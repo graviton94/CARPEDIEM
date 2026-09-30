@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 자동 생성 파일 — 직접 고치지 말고 scripts/generate.py 를 실행하세요. -->
+<resources>
+    <string name="tagline">Cherish today.</string>
+    <string name="you">You</string>
+    <string name="birthday">Birthday</string>
+    <string name="country">Country</string>
+    <string name="sex">Sex</string>
+    <string name="sex_other">Not set</string>
+    <string name="sex_male">Male</string>
+    <string name="sex_female">Female</string>
+    <string name="lifeExpectancy">Life expectancy</string>
+    <string name="auto">Auto</string>
+    <string name="custom">Custom</string>
+    <string name="lifeExpectancy_footer">The average for your country and sex. You can change it.</string>
+    <string name="begin">Begin</string>
+    <string name="privacy">Everything stays on this device.</string>
+    <string name="timeLeft">Time left</string>
+    <string name="unit_days">days</string>
+    <string name="unit_weeks">weeks</string>
+    <string name="unit_months">months</string>
+    <string name="unit_years">years</string>
+    <string name="words">Today\'s words</string>
+    <string name="words_next">Tap for another</string>
+    <string name="path">The path so far</string>
+    <string name="path_age">Age %1$s · %2$s of life</string>
+    <string name="path_expected">Expected %1$s</string>
+    <string name="flow">Passing time</string>
+    <string name="flow_today">Today</string>
+    <string name="flow_week">This week</string>
+    <string name="flow_month">This month</string>
+    <string name="flow_year">This year</string>
+    <string name="left_hours">%1$sh left</string>
+    <string name="left_minutes">%1$sm left</string>
+    <string name="left_days">%1$s days left</string>
+    <string name="lastDay">Last day</string>
+    <string name="calendar">Life calendar</string>
+    <string name="calendar_per_weeks">1 dot = 1 week</string>
+    <string name="calendar_per_months">1 dot = 1 month</string>
+    <string name="calendar_per_years">1 dot = 1 year</string>
+    <string name="calendar_legend">Past · Now · Ahead — the %1$s of your life</string>
+    <string name="season_spring">Spring</string>
+    <string name="season_summer">Summer</string>
+    <string name="season_autumn">Autumn</string>
+    <string name="season_winter">Winter</string>
+    <string name="settings">Settings</string>
+    <string name="cancel">Cancel</string>
+    <string name="done">Done</string>
+    <string name="words_language">Words in</string>
+    <string name="words_korean">Korean</string>
+    <string name="words_english">English</string>
+    <string name="words_both">Both</string>
+    <string name="widgets">Widgets</string>
+    <string name="widgets_help1">Touch and hold the Home Screen, tap Edit → Add Widget</string>
+    <string name="widgets_help2">Find Carpe Diem and pick a size</string>
+    <string name="widgets_help3">Touch and hold Days Left to change the unit</string>
+    <string name="widgets_help4">It also fits on the Lock Screen</string>
+    <string name="erase">Erase everything</string>
+    <string name="country_search">Search countries</string>
+    <string name="country_source">UN World Population Prospects 2024.</string>
+    <string name="widget_daysLeft">Days left</string>
+    <string name="widget_today">Today</string>
+    <string name="widget_todayLeft">%1$sh</string>
+    <string name="widget_todaySub">left today</string>
+    <string name="widget_yearsLeft">years left</string>
+    <string name="widget_monthsLeft">%1$s months left</string>
+    <string name="lock_inline">%1$s days</string>
+    <string name="lock_rect_sub">%1$s weeks left</string>
+    <string name="android_notification">Get today\'s words once a day</string>
+    <string name="widget_unit">Unit</string>
+    <string name="widget_unit_desc">Choose how to count the days left.</string>
+    <string name="widget_daysLeft_desc">Days left until your life expectancy.</string>
+    <string name="widget_today_desc">How much of today has passed.</string>
+    <string name="widget_calendar_desc">Your whole life at a glance. The large size adds today\'s words.</string>
+    <string name="widget_empty">Add your birthday in the app.</string>
+    <string name="erase_confirm">Erase everything?</string>
+    <string name="erase_action">Erase</string>
+    <string name="expectancy_value">%1$s yrs</string>
+    <string name="country_world">World average</string>
+    <string name="widgets_android1">Touch and hold an empty spot on the Home screen, then tap Widgets</string>
+    <string name="widgets_android2">Drag a Carpe Diem widget to your Home screen</string>
+    <string name="widgets_android3">Touch and hold a widget to resize it</string>
+    <string name="back">Back</string>
+</resources>

@@ -21,7 +21,7 @@ PALETTES = {
 CX, CY, R = 512, 522, 300
 
 
-def draw(p: dict) -> Image.Image:
+def draw(p: dict, keep_alpha: bool = False) -> Image.Image:
     s = SS
     img = Image.new("RGBA", (1024 * s, 1024 * s), p["bg"])
     d = ImageDraw.Draw(img)
@@ -51,7 +51,20 @@ def draw(p: dict) -> Image.Image:
     a = -math.pi * 0.48
     x, y, r = CX + math.cos(a) * R, CY + math.sin(a) * R, 44
     d.ellipse([(x - r) * s, (y - r) * s, (x + r) * s, (y + r) * s], fill=p["dot"])
-    return img.resize((1024, 1024), Image.LANCZOS).convert("RGB")
+    out = img.resize((1024, 1024), Image.LANCZOS)
+    return out if keep_alpha else out.convert("RGB")
+
+
+ANDROID_RES = ROOT / "android" / "app" / "src" / "main" / "res"
+
+
+def android_layer(p: dict, transparent_bg: bool) -> Image.Image:
+    """적응형 아이콘 전경 (108dp, 가운데 72dp 안전 영역). 1024 그림을 66%로 줄여 가운데 둔다."""
+    art = draw({**p, "bg": (0, 0, 0, 0)} if transparent_bg else p, keep_alpha=True)
+    canvas = Image.new("RGBA", (432, 432), (0, 0, 0, 0))
+    inner = art.resize((int(432 * 0.66), int(432 * 0.66)), Image.LANCZOS)
+    canvas.paste(inner, ((432 - inner.width) // 2, (432 - inner.height) // 2), inner)
+    return canvas
 
 
 def main() -> None:
@@ -59,6 +72,12 @@ def main() -> None:
     for name, palette in PALETTES.items():
         draw(palette).save(OUT / f"{name}.png")
         print(f"{(OUT / name).relative_to(ROOT)}.png")
+    mip = ANDROID_RES / "mipmap-xxxhdpi"
+    mip.mkdir(parents=True, exist_ok=True)
+    android_layer(PALETTES["AppIcon"], True).save(mip / "ic_launcher_foreground.png")
+    mono = {"bg": (0, 0, 0, 0), "ink": (255, 255, 255, 255), "soft": (255, 255, 255, 110), "dot": (255, 255, 255, 255)}
+    android_layer(mono, True).save(mip / "ic_launcher_monochrome.png")
+    print("android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_{foreground,monochrome}.png")
 
 
 if __name__ == "__main__":
