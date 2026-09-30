@@ -1,0 +1,30 @@
+name: Life expectancy data
+
+# 나라별 기대수명 원자료를 받아 data/life-expectancy 브랜치에 올린다. 검토 후 main 에 합친다.
+on:
+  workflow_dispatch:
+    inputs:
+      year:
+        description: "기준 연도"
+        default: "2023"
+
+permissions:
+  contents: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch
+        run: python3 scripts/fetch_life_expectancy.py --year "${{ inputs.year }}"
+      - name: Regenerate app resources
+        run: python3 scripts/generate.py
+      - name: Push to data branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B data/life-expectancy
+          git add data/life-expectancy.csv ios/Shared/Resources/life-expectancy.csv
+          git commit -m "기대수명 원자료 갱신 (${{ inputs.year }})" || echo "변경 없음"
+          git push -f origin data/life-expectancy
