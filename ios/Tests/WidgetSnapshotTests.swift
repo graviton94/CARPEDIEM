@@ -10,6 +10,7 @@ final class WidgetSnapshotTests: XCTestCase {
     private struct Device { let name: String; let small: CGFloat; let medium: CGSize; let large: CGSize }
     private let devices = [
         Device(name: "SE", small: 148, medium: CGSize(width: 321, height: 148), large: CGSize(width: 321, height: 324)),
+        Device(name: "12mini", small: 155, medium: CGSize(width: 329, height: 155), large: CGSize(width: 329, height: 345)),
         Device(name: "16", small: 158, medium: CGSize(width: 338, height: 158), large: CGSize(width: 338, height: 354)),
         Device(name: "ProMax", small: 170, medium: CGSize(width: 364, height: 170), large: CGSize(width: 364, height: 382)),
     ]

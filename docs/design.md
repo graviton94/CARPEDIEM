@@ -25,7 +25,7 @@
 모든 크기·글자·색·모서리는 `design/tokens.json`에서만 가져옵니다. 화면 코드에 숫자나 색을 직접 쓰지 않습니다.
 
 - 글자는 iOS Dynamic Type 이름(`largeTitle`, `body` …)과 1:1이며 Android Material 이름도 함께 적어 둡니다.
-- 기기 크기 등급 `compact`(< 390pt) · `regular` · `large`(≥ 430pt)에 따라 큰 숫자 크기와 화면 여백만 바뀝니다.
+- 기기 크기 등급 `compact`(< 390pt, iPhone SE · 12 mini · 13 mini) · `regular` · `large`(≥ 430pt)에 따라 큰 숫자 크기와 화면 여백만 바뀝니다.
 - 위젯은 OS가 알려주는 실제 크기를 쓰고, 안쪽 여백은 `widgetPadding`(16)입니다.
 - 문구는 `design/strings.json`에 한국어·영어를 같은 키로 둡니다.
 

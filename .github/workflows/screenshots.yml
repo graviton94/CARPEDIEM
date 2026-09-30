@@ -36,6 +36,12 @@ jobs:
           }
           capture "iPhone 16" "iPhone16" 1 "-only-testing:CarpeDiemUITests -only-testing:CarpeDiemTests/WidgetSnapshotTests"
           capture "iPhone SE (3rd generation)" "iPhoneSE" 0 "-only-testing:CarpeDiemUITests"
+          # iPhone 12 mini 는 기본 시뮬레이터 목록에 없을 수 있어 최신 iOS 로 만든다
+          if ! xcrun simctl list devices available | grep -q "iPhone 12 mini"; then
+            RUNTIME=$(xcrun simctl list runtimes available | grep -oE "com.apple.CoreSimulator.SimRuntime.iOS-[0-9-]+" | tail -1)
+            xcrun simctl create "iPhone 12 mini" com.apple.CoreSimulator.SimDeviceType.iPhone-12-mini "$RUNTIME"
+          fi
+          capture "iPhone 12 mini" "iPhone12mini" 0 "-only-testing:CarpeDiemUITests"
           capture "iPhone 16 Pro Max" "iPhone16ProMax" 0 "-only-testing:CarpeDiemUITests"
           find "$GITHUB_WORKSPACE/shots" -name "*.png" | sort
       - name: Push to screenshots branch

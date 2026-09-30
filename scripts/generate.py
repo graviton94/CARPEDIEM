@@ -100,6 +100,7 @@ def tokens_swift(t: dict) -> str:
     out.append(f"        static let dotRatio: CGFloat = {g['dotRatio']}")
     out.append(f"        static let nowRatio: CGFloat = {g['nowRatio']}")
     out.append(f"        static let widgetMediumColumns = {g['widgetMediumColumns']}")
+    out.append(f"        static let widgetMediumTextRatio: CGFloat = {g['widgetMediumTextRatio']}")
     out.append(f"        static let widgetLargeColumns = {g['widgetLargeColumns']}")
     out.append("    }")
     out.append("}")

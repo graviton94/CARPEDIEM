@@ -170,6 +170,7 @@ struct LifeCalendarView: View {
     }
 
     private func medium(_ s: LifeSnapshot, _ k: CGFloat) -> some View {
+        GeometryReader { geo in
         HStack(spacing: Tokens.Space.sp4 * k) {
             VStack(alignment: .leading, spacing: 0) {
                 WidgetLabel(text: L10n.calendar, scale: k)
@@ -181,10 +182,11 @@ struct LifeCalendarView: View {
                 Text("\(s.season.label) · \(s.progress.formatted(.percent.precision(.fractionLength(0))))")
                     .textStyle(Tokens.TypeScale.caption2, scale: k).fontWeight(.regular).foregroundStyle(Color.cdSecondary)
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
+            // 왼쪽 글자 칸은 폭의 1/3로 고정, 나머지를 격자가 쓴다
+            .frame(width: geo.size.width * Tokens.Grid.widgetMediumTextRatio, alignment: .leading)
             LifeGrid(total: s.total(.years), filled: s.lived(.years), columns: Tokens.Grid.widgetMediumColumns)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .layoutPriority(1)
+        }
         }
     }
 

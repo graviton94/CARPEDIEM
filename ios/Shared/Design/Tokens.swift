@@ -92,6 +92,7 @@ enum Tokens {
         static let dotRatio: CGFloat = 0.68
         static let nowRatio: CGFloat = 1.0
         static let widgetMediumColumns = 14
+        static let widgetMediumTextRatio: CGFloat = 0.34
         static let widgetLargeColumns = 36
     }
 }

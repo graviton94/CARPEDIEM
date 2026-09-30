@@ -35,5 +35,6 @@ SwiftUI 앱 + WidgetKit 위젯. iOS 17 이상, 아이폰 세로.
 | 워크플로 | 하는 일 |
 |---|---|
 | `iOS` | push 할 때마다 생성 파일 확인 + 시뮬레이터 빌드·테스트 |
-| `Screenshots` | 수동 실행. SE · 16 · 16 Pro Max 에서 앱 화면, 기기별 위젯을 찍어 `screenshots` 브랜치에 올림 |
+| `Screenshots` | 수동 실행. SE · 12 mini · 16 · 16 Pro Max 에서 앱 화면, 기기별 위젯을 찍어 `screenshots` 브랜치에 올림 |
 | `Life expectancy data` | 수동 실행. UN 세계인구전망 원자료를 받아 `data/life-expectancy` 브랜치에 올림 |
+| `TestFlight` | 수동 실행. 빌드·서명 후 TestFlight 에 올림 — 준비는 [docs/iphone-testing.md](../docs/iphone-testing.md) |

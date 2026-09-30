@@ -12,6 +12,7 @@ struct FormRow<Trailing: View>: View {
             trailing
         }
         .frame(minHeight: Tokens.Layout.tapTarget)
+        .contentShape(Rectangle()) // 가운데 빈 곳을 눌러도 반응하도록
     }
 }
 
