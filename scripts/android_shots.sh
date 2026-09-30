@@ -24,7 +24,7 @@ open --ez cd.meet false --es cd.now $NOW;                                       
 open --ez cd.preview true --es cd.now $NOW;                                                            shot g04_home_all 5
 swipe_up; shot g05_below 3; swipe_up; shot g06_calendar 3
 open --ez cd.preview false --es cd.now 2026-09-30T07:10;                                               shot g07_morning 5
-open --es cd.now 2026-09-30T23:30;                                                                     shot g08_night 5
+open --es cd.now 2026-09-30T23:30;                                                                     shot g08_night 5; shot g08_night_late 8
 open --es cd.screen settings --es cd.now $NOW;                                                         shot g09_settings 4
 swipe_up; shot g10_settings_more 3
 open --es cd.screen widgets --es cd.now $NOW;                                                          shot g11_widgets 6
@@ -62,4 +62,7 @@ adb shell wm size 720x1280; adb shell wm density 320; open --es cd.now $NOW;    
 adb shell wm size reset; adb shell wm density reset
 # 오류 확인
 adb logcat -d -s AndroidRuntime:E chromium:E > "$OUT/logcat.txt" || true
+# 멈춤 · 느린 첫 화면 살피기: ANR · 앱 쪽 경고 이상
+adb logcat -d ActivityManager:W ActivityTaskManager:W Choreographer:I OpenGLRenderer:W "*:S" > "$OUT/logcat_app.txt" || true
+adb logcat -d | grep -iE "carpediem|ANR in" | tail -300 >> "$OUT/logcat_app.txt" || true
 ls -la "$OUT"
