@@ -9,8 +9,8 @@ struct CountryPickerView: View {
 
     private var results: [CountryLife] {
         let q = query.trimmingCharacters(in: .whitespaces)
-        guard !q.isEmpty else { return table.countries }
-        return table.countries.filter { $0.nameKo.localizedCaseInsensitiveContains(q) || $0.nameEn.localizedCaseInsensitiveContains(q) || $0.code.localizedCaseInsensitiveContains(q) }
+        let all = table.sortedForDisplay
+        return q.isEmpty ? all : all.filter { $0.matches(q) }
     }
 
     var body: some View {

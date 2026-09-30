@@ -51,8 +51,10 @@
 ## 기대수명 데이터
 
 - 기본값: 기기 지역 → 나라, 나라 × 성별 평균 기대수명. 사용자가 직접 입력할 수 있습니다.
-- 출처: UN 세계인구전망(World Population Prospects) 2024, 0세 기대수명, 약 230개 나라·지역.
-- 상태: **원자료 미수집.** 작업 환경에서 UN 서버 접속이 막혀 있어, 개발 단계에서 받아 `data/life-expectancy.csv`로 넣습니다. 시안의 수치는 예시입니다.
+- 출처: UN 세계인구전망(World Population Prospects) 2024, 2023년 0세 기대수명(Medium), 238개 나라·지역 + 세계 평균.
+- 나라 이름은 iOS·Android가 기기 언어로 제공하는 이름을 씁니다.
+- 갱신: GitHub Actions의 `Life expectancy data` 워크플로를 실행하면 `data/life-expectancy` 브랜치에 새 자료가 올라옵니다. 검토 후 main에 합칩니다.
+- 참고: UN 추정치는 나라 통계청 값과 조금 다를 수 있습니다. 예를 들어 한국은 UN 84.3세, 통계청 2023년 생명표 83.5세입니다.
 
 ## 플랫폼
 

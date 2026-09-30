@@ -34,6 +34,7 @@ struct HomeView: View {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button { showSettings = true } label: { Image(systemName: "gearshape") }
                         .accessibilityLabel(L10n.settings)
+                        .accessibilityIdentifier("settings")
                         .tint(.cdForeground)
                 }
             }

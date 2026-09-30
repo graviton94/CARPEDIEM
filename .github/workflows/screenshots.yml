@@ -1,0 +1,49 @@
+name: Screenshots
+
+# 시뮬레이터에서 실제 앱 화면과 위젯을 찍어 screenshots 브랜치에 올린다.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  capture:
+    runs-on: macos-15
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare project
+        run: |
+          brew install xcodegen
+          cd ios && xcodegen generate
+      - name: Build for testing
+        working-directory: ios
+        run: |
+          set -o pipefail
+          xcodebuild build-for-testing -project CarpeDiem.xcodeproj -scheme CarpeDiem \
+            -destination "generic/platform=iOS Simulator" -derivedDataPath build CODE_SIGNING_ALLOWED=NO | tail -n 5
+      - name: Capture
+        working-directory: ios
+        run: |
+          xcrun simctl list devices available | grep -E "iPhone" | head -40
+          capture () {
+            local device="$1" slug="$2" full="$3" only="$4"
+            echo "== $device"
+            TEST_RUNNER_SNAPSHOT_DIR="$GITHUB_WORKSPACE/shots/$slug" TEST_RUNNER_SNAPSHOT_FULL="$full" \
+            xcodebuild test-without-building -project CarpeDiem.xcodeproj -scheme CarpeDiem -derivedDataPath build \
+              -destination "platform=iOS Simulator,name=$device" $only 2>&1 | grep -E "error|failed|passed|TEST (SUCCEEDED|FAILED)" || true
+          }
+          capture "iPhone 16" "iPhone16" 1 "-only-testing:CarpeDiemUITests -only-testing:CarpeDiemTests/WidgetSnapshotTests"
+          capture "iPhone SE (3rd generation)" "iPhoneSE" 0 "-only-testing:CarpeDiemUITests"
+          capture "iPhone 16 Pro Max" "iPhone16ProMax" 0 "-only-testing:CarpeDiemUITests"
+          find "$GITHUB_WORKSPACE/shots" -name "*.png" | sort
+      - name: Push to screenshots branch
+        run: |
+          cd shots
+          git init -q -b screenshots
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          echo "source: ${GITHUB_SHA}" > SOURCE.txt
+          git add -A && git commit -qm "screenshots for ${GITHUB_SHA}"
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" screenshots

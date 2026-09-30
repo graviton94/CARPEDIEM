@@ -74,3 +74,4 @@
 "erase.confirm" = "모든 기록을 지울까요?";
 "erase.action" = "지우기";
 "expectancy.value" = "%1$@세";
+"country.world" = "세계 평균";

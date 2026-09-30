@@ -74,7 +74,8 @@
     "widget.empty": "앱에서 생년월일을 넣어 주세요.",
     "erase.confirm": "모든 기록을 지울까요?",
     "erase.action": "지우기",
-    "expectancy.value": "{years}세"
+    "expectancy.value": "{years}세",
+    "country.world": "세계 평균"
   },
   "en": {
     "tagline": "Cherish today.",
@@ -151,6 +152,7 @@
     "widget.empty": "Add your birthday in the app.",
     "erase.confirm": "Erase everything?",
     "erase.action": "Erase",
-    "expectancy.value": "{years} yrs"
+    "expectancy.value": "{years} yrs",
+    "country.world": "World average"
   }
 }

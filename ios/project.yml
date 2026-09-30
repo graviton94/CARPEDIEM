@@ -89,13 +89,26 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: $(APP_BUNDLE_ID).tests
         GENERATE_INFOPLIST_FILE: YES
 
+  CarpeDiemUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources: [UITests]
+    dependencies:
+      - target: CarpeDiem
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: $(APP_BUNDLE_ID).uitests
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_TARGET_NAME: CarpeDiem
+
 schemes:
   CarpeDiem:
     build:
       targets:
         CarpeDiem: all
         CarpeDiemTests: [test]
+        CarpeDiemUITests: [test]
     test:
-      targets: [CarpeDiemTests]
+      targets: [CarpeDiemTests, CarpeDiemUITests]
     archive:
       config: Release

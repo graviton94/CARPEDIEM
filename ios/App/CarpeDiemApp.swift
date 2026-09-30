@@ -30,6 +30,7 @@ final class AppModel: ObservableObject {
 
     init() {
         let store = LifeStore.shared
+        Self.applyTestArguments(store)
         store.ensureQuoteSeed()
         quoteLanguage = store.quoteLanguage
         profile = store.profile
@@ -60,6 +61,31 @@ final class AppModel: ObservableObject {
     }
 
     private func reloadWidgets() { WidgetCenter.shared.reloadAllTimelines() }
+
+    /// 화면 캡처용 실행 인자 (Debug 빌드만): -cd.reset YES, -cd.seed YES, -cd.style light|dark
+    private static func applyTestArguments(_ store: LifeStore) {
+        #if DEBUG
+        let args = UserDefaults.standard
+        if args.bool(forKey: "cd.reset") { store.eraseAll() }
+        if args.bool(forKey: "cd.seed"), store.profile == nil {
+            let birth = LifeCalendar.current.date(from: DateComponents(year: 1994, month: 6, day: 15)) ?? .now
+            store.profile = LifeProfile(birthDate: birth, countryCode: "KR", sex: .other, customExpectancy: nil)
+        }
+        #endif
+    }
+
+    /// 화면 캡처용 강제 모드. 평소에는 nil(기기 설정을 따름).
+    static var forcedColorScheme: ColorScheme? {
+        #if DEBUG
+        switch UserDefaults.standard.string(forKey: "cd.style") {
+        case "dark": return .dark
+        case "light": return .light
+        default: return nil
+        }
+        #else
+        return nil
+        #endif
+    }
 }
 
 struct RootView: View {
@@ -75,6 +101,7 @@ struct RootView: View {
                 }
             }
             .environment(\.deviceClass, DeviceClass(width: geo.size.width))
+            .preferredColorScheme(AppModel.forcedColorScheme)
         }
     }
 }

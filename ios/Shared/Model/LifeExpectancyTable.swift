@@ -2,16 +2,23 @@ import Foundation
 
 struct CountryLife: Identifiable, Equatable {
     let code: String
-    let nameKo: String
-    let nameEn: String
+    /// 원자료의 영문 이름. 화면에는 `name`을 쓴다.
+    let sourceName: String
     let total: Double
     let male: Double
     let female: Double
 
     var id: String { code }
 
-    /// 앱이 한국어로 실행 중이면 한글 이름.
-    var name: String { AppLanguage.isKorean ? nameKo : nameEn }
+    /// 앱 언어로 된 나라 이름 (iOS가 제공). 세계 평균은 앱 문구.
+    var name: String {
+        if code == LifeExpectancyTable.worldCode { return L10n.countryWorld }
+        return AppLanguage.locale.localizedString(forRegionCode: code) ?? sourceName
+    }
+
+    func matches(_ query: String) -> Bool {
+        [name, sourceName, code].contains { $0.localizedCaseInsensitiveContains(query) }
+    }
 
     func expectancy(for sex: Sex) -> Double {
         switch sex {
@@ -32,8 +39,15 @@ struct LifeExpectancyTable {
     init(csv: String) {
         countries = CSV.records(csv).compactMap { r in
             guard let code = r["code"], let t = Double(r["total"] ?? ""), let m = Double(r["male"] ?? ""), let f = Double(r["female"] ?? "") else { return nil }
-            return CountryLife(code: code, nameKo: r["ko"] ?? code, nameEn: r["en"] ?? code, total: t, male: m, female: f)
+            return CountryLife(code: code, sourceName: r["en"] ?? code, total: t, male: m, female: f)
         }
+    }
+
+    /// 세계 평균을 맨 위에, 나머지는 앱 언어의 이름순.
+    var sortedForDisplay: [CountryLife] {
+        let world = countries.filter { $0.code == Self.worldCode }
+        let rest = countries.filter { $0.code != Self.worldCode }.sorted { $0.name.localizedStandardCompare($1.name) == .orderedAscending }
+        return world + rest
     }
 
     func country(_ code: String) -> CountryLife? { countries.first { $0.code == code } }

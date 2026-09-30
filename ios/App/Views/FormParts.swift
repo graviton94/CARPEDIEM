@@ -90,6 +90,7 @@ struct ProfileFields: View {
                 }
             }
             .buttonStyle(.plain)
+            .accessibilityIdentifier("country")
             RowDivider()
             FormRow(title: L10n.sex) {
                 Picker(L10n.sex, selection: $draft.sex) {

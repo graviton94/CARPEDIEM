@@ -48,8 +48,11 @@ private func number(_ n: Int) -> String { n.formatted(.number) }
 // MARK: - 남은 날 (작게 + 잠금 화면)
 
 struct DaysLeftView: View {
-    @Environment(\.widgetFamily) private var family
+    @Environment(\.widgetFamily) private var systemFamily
     let entry: LifeEntry
+    /// 위젯 밖(스냅샷 테스트)에서 그릴 때 크기 종류를 직접 지정한다.
+    var familyOverride: WidgetFamily?
+    private var family: WidgetFamily { familyOverride ?? systemFamily }
 
     var body: some View {
         Group {
@@ -113,8 +116,11 @@ struct DaysLeftView: View {
 // MARK: - 오늘 (작게)
 
 struct TodayView: View {
-    @Environment(\.widgetFamily) private var family
+    @Environment(\.widgetFamily) private var systemFamily
     let entry: LifeEntry
+    /// 위젯 밖(스냅샷 테스트)에서 그릴 때 크기 종류를 직접 지정한다.
+    var familyOverride: WidgetFamily?
+    private var family: WidgetFamily { familyOverride ?? systemFamily }
 
     var body: some View {
         GeometryReader { geo in
@@ -143,8 +149,11 @@ struct TodayView: View {
 // MARK: - 인생 달력 (중간 · 크게)
 
 struct LifeCalendarView: View {
-    @Environment(\.widgetFamily) private var family
+    @Environment(\.widgetFamily) private var systemFamily
     let entry: LifeEntry
+    /// 위젯 밖(스냅샷 테스트)에서 그릴 때 크기 종류를 직접 지정한다.
+    var familyOverride: WidgetFamily?
+    private var family: WidgetFamily { familyOverride ?? systemFamily }
 
     var body: some View {
         Group {
@@ -200,6 +209,6 @@ struct LifeCalendarView: View {
     }
 }
 
-private extension WidgetFamily {
+extension WidgetFamily {
     var isAccessory: Bool { self == .accessoryCircular || self == .accessoryRectangular || self == .accessoryInline }
 }

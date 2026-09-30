@@ -24,6 +24,7 @@ enum QuoteLanguage: String, CaseIterable, Codable, Identifiable {
 
 enum AppLanguage {
     static var isKorean: Bool { Bundle.main.preferredLocalizations.first?.hasPrefix("ko") ?? false }
+    static var locale: Locale { Locale(identifier: Bundle.main.preferredLocalizations.first ?? "en") }
 }
 
 /// 오늘의 문장 고르기.

@@ -50,7 +50,10 @@ final class DataTests: XCTestCase {
         let table = LifeExpectancyTable.shared
         XCTAssertNotNil(table.country("KR"))
         XCTAssertNotNil(table.country(LifeExpectancyTable.worldCode))
-        XCTAssertEqual(table.expectancy(country: "KR", sex: .female), 86.4)
+        XCTAssertGreaterThan(table.countries.count, 10)
+        XCTAssertTrue(table.countries.allSatisfy { (40...100).contains($0.total) && $0.female >= $0.male - 5 })
+        XCTAssertEqual(table.sortedForDisplay.first?.code, LifeExpectancyTable.worldCode)
+        XCTAssertFalse(table.country("KR")!.name.isEmpty)
         XCTAssertEqual(table.expectancy(country: "ZZ", sex: .other), table.country("WLD")!.total)
         XCTAssertEqual(table.defaultCountry(for: Locale(identifier: "ko_KR")), "KR")
         XCTAssertEqual(table.defaultCountry(for: Locale(identifier: "xx_ZZ")), "WLD")
@@ -58,7 +61,7 @@ final class DataTests: XCTestCase {
 
     func testCustomExpectancyWins() {
         var p = LifeProfile(birthDate: .now, countryCode: "KR", sex: .male, customExpectancy: nil)
-        XCTAssertEqual(p.expectancy(), 80.6)
+        XCTAssertEqual(p.expectancy(), LifeExpectancyTable.shared.country("KR")!.male)
         p.customExpectancy = 95
         XCTAssertEqual(p.expectancy(), 95)
     }

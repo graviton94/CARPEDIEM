@@ -30,4 +30,10 @@ SwiftUI 앱 + WidgetKit 위젯. iOS 17 이상, 아이폰 세로.
 | 아이콘 | `python3 scripts/build_icon.py` |
 | `project.yml`, `Config.xcconfig` | `Xcode 프로젝트 열기.command` 다시 실행 |
 
-CI(`.github/workflows/ios.yml`)는 생성 파일이 최신인지 확인하고 시뮬레이터에서 빌드·테스트합니다.
+## 자동 작업 (GitHub Actions)
+
+| 워크플로 | 하는 일 |
+|---|---|
+| `iOS` | push 할 때마다 생성 파일 확인 + 시뮬레이터 빌드·테스트 |
+| `Screenshots` | 수동 실행. SE · 16 · 16 Pro Max 에서 앱 화면, 기기별 위젯을 찍어 `screenshots` 브랜치에 올림 |
+| `Life expectancy data` | 수동 실행. UN 세계인구전망 원자료를 받아 `data/life-expectancy` 브랜치에 올림 |
