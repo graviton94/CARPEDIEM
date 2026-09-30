@@ -204,6 +204,7 @@ fun CrayonCalendar(total: Int, filled: Int, columns: Int, modifier: Modifier = M
     val shown = if (showAhead) total else min(total, filled + 1)   // 남은 칸을 숨기면 그만큼 줄도 줄인다
     val rows = max(1, ceil(max(shown, 1) / columns.toFloat()).toInt())
     val L = Tokens.Garden.Layout
+    val inkC = Theme.gc.ink; val futureC = Theme.gc.future
     Spacer(modifier.fillMaxWidth().aspectRatio(columns / rows.toFloat()).drawWithCache {
         val cell = min(size.width / columns, size.height / rows)
         val r = Crayon.Rng(860)
@@ -227,7 +228,7 @@ fun CrayonCalendar(total: Int, filled: Int, columns: Int, modifier: Modifier = M
                 shared.close()
             }
         }
-        val ink = Theme.gc.ink; val futureC = Theme.gc.future
+        val ink = inkC
         onDrawBehind {
             if (total <= 0) return@onDrawBehind
             with(Crayon) {
