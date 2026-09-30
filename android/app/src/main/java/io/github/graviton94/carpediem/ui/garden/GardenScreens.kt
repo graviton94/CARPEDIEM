@@ -212,7 +212,8 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 Image(GardenArt.sky(ctx, season), null, Modifier.fillMaxSize(), contentScale = ContentScale.FillWidth, alignment = Alignment.TopCenter)
                 // 땅 그림도 시간의 빛 아래에 (밤이면 땅까지 어두워짐)
                 Image(GardenArt.strip(ctx, season), null, Modifier.offset(y = gy - u * G.Layout.stripLineY).fillMaxWidth().height(u * G.Layout.stripHeight), contentScale = ContentScale.FillBounds)
-                SkyTimeLayer(now, gy, topBottom, gy - haruAbove - u * G.Layout.minSkyGap, Modifier.fillMaxSize())
+                // 정원만 보기(bare)는 위 글자가 없어도 별이 상태바 · 소리 버튼에 닿지 않게
+                SkyTimeLayer(now, gy, if (bare) screenH * 0.14f else topBottom, gy - haruAbove - u * G.Layout.minSkyGap, Modifier.fillMaxSize())
 
                 // 위: 남은 시간 · 단위 · 오늘의 문장
                 if (!bare) Column(
