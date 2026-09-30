@@ -21,11 +21,8 @@
       return;
     }
     brush(ctx, curve([x, y, x - s * 0.02, y - s * 0.3, x + s * 0.02, y - s * 0.5, x, y - s * 0.7]), S.trunk, s * 0.07, { pencil: false });
-    paint(ctx, ell(x, y - s * 0.84, s * 0.36, s * 0.3), sh(S.tree[0], -0.18), { box: box(x - s * 0.36, y - s * 1.14, s * 0.72, s * 0.6), seed: seed * 3, dabs: 14, lw: 1.1 });
-    for (var i = 0; i < 9; i++) {
-      var bx = x + (r() - 0.5) * s * 0.5, by = y - s * lerp(0.7, 1.0, r()), br = s * lerp(0.14, 0.22, r()), col = S.tree[Math.floor(r() * S.tree.length)];
-      paint(ctx, ell(bx, by, br, br * 0.9), col, { box: box(bx - br, by - br, br * 2, br * 2), seed: seed * 7 + i, dabs: 12, lw: 1.1, pool: 0.08 });
-    }
+    var col = S.tree[seed % S.tree.length];
+    [[-0.14, 0.8, 0.26], [0.14, 0.78, 0.24], [0, 0.98, 0.3]].forEach(function (q, i) { var bx = x + q[0] * s, by = y - q[1] * s, br = q[2] * s; var p = ell(bx, by, br, br * 0.92); ctx.save(); ctx.clip(p); var g = ctx.createLinearGradient(bx - br, by - br, bx + br * 0.6, by + br); g.addColorStop(0, css(sh(col, 0.16))); g.addColorStop(0.55, css(col)); g.addColorStop(1, css(sh(col, -0.2))); ctx.fillStyle = g; ctx.fillRect(bx - br, by - br, br * 2, br * 2); ctx.restore(); });
   }
   function season(ctx, W, H, key, o) {
     o = o || {}; var S = SEASONS[key], u = W / 390, r = rng(900 + key.length);
@@ -69,8 +66,8 @@
     var bg = ctx.createLinearGradient(72, 0, 328, 0); bg.addColorStop(0, "rgba(255,255,255,.18)"); bg.addColorStop(1, "rgba(60,90,80,.14)"); ctx.fillStyle = bg; ctx.fillRect(72, 92, 256, 388);
     paint(ctx, svg("M60,420 C140,408 260,412 340,418 L340,490 L60,490 Z"), PAL.soil, { box: box(60, 408, 280, 82), seed: 301, dabs: 20, pencil: false, after: function (x, r) { for (var i = 0; i < 60; i++) { x.fillStyle = "rgba(200,170,130," + lerp(0.1, 0.3, r()) + ")"; x.beginPath(); x.arc(72 + r() * 256, 430 + r() * 50, lerp(0.8, 2.4, r()), 0, 7); x.fill(); } } });
     // 이끼
-    var mr = rng(302);
-    for (var i = 0; i < 22; i++) { var mx = 76 + i * 12 + (mr() - 0.5) * 8, my = 416 + (mr() - 0.5) * 8, mr0 = lerp(16, 26, mr()); paint(ctx, ell(mx, my, mr0, mr0 * 0.62), mr() < 0.5 ? (key === "winter" ? "#7E8F6A" : S.near) : PAL.moss, { box: box(mx - mr0, my - mr0, mr0 * 2, mr0 * 2), seed: 303 + i, dabs: 8, lw: 1, pool: 0.1 }); }
+    var mossP = svg("M60,424 C100,398 150,404 200,400 C250,396 300,402 340,410 L340,432 L60,432 Z"), mc = C(key === "winter" ? "#7E8F6A" : PAL.moss);
+    ctx.save(); ctx.clip(mossP); var mg = ctx.createLinearGradient(0, 396, 0, 432); mg.addColorStop(0, css(sh(mc, 0.18))); mg.addColorStop(1, css(sh(mc, -0.25))); ctx.fillStyle = mg; ctx.fillRect(60, 390, 280, 44); ctx.restore();
     // 작은 조약돌들
     [[112, 424, 14, "#8E8A82"], [292, 428, 11, "#C8B9A0"], [306, 418, 8, "#5C6670"]].forEach(function (p, k) { paint(ctx, ell(p[0], p[1], p[2], p[2] * 0.7), p[3], { box: box(p[0] - p[2], p[1] - p[2], p[2] * 2, p[2] * 2), seed: 340 + k, dabs: 4, lw: 1 }); });
     // 고사리 한 줄기

@@ -6,7 +6,7 @@ const fs = require("fs");
 const path = require("path");
 
 const root = path.join(__dirname, "..");
-const src = ["engine.js", "paint.js", "scenes.js", "detail.js"].map((f) => fs.readFileSync(path.join(root, "design/art/src", f), "utf8")).join("\n");
+const src = ["engine.js", "paint.js", "scenes.js", "simple.js"].map((f) => fs.readFileSync(path.join(root, "design/art/src", f), "utf8")).join("\n");
 const out = path.join(root, "design/art");
 
 (async () => {
