@@ -798,7 +798,7 @@ window.exportHaru = (function () {
     groundLine(ctx, 14, 376, gy + 2, 3.3, 507, [30, 128, 262, 364]);
     var items = o.items || S.items;
     items.forEach(function (it) { drawObj(ctx, it[0], it[1], it[2], it[3]); });
-    if (seed != null) drawHaruMix(ctx, traitsOf(seed), 195, gy, o.haruW || 96, { sprout: key === "spring", sparkle: true });
+    if (seed != null) drawHaruMix(ctx, traitsOf(seed), 195, gy, o.haruW || 96, { sprout: key === "spring" });
     var pr = rng(530), i;
     for (i = 0; i < 10; i++) {
       var px = pr() * 390, py = lerp(60, gy - 200, pr());
@@ -816,7 +816,7 @@ window.exportHaru = (function () {
     groundLine(ctx, 40, 560, gy + 2, 3.4, 706, [70, 250, 360, 530]);
     drawObj(ctx, "candle", 186, gy, 1.05);
     drawObj(ctx, "teacup", 420, gy, 0.9);
-    if (seed != null) drawHaruMix(ctx, traitsOf(seed), 300, gy, 84, { sparkle: true });
+    if (seed != null) drawHaruMix(ctx, traitsOf(seed), 300, gy, 84, {});
   }
   function storeMix(ctx, W, H) {
     setU(W / 390); var h = H / U, gy = h * 0.86;
