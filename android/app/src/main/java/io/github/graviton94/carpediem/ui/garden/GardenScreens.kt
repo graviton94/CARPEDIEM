@@ -50,6 +50,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
+import kotlinx.coroutines.launch
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -164,6 +166,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
     val moments = gardenMoments(state, profile, s, now)
     var open by remember { mutableStateOf<Moment?>(null) }
     var breathSheet by remember { mutableStateOf(false) }
+    var letterOpen by remember { mutableStateOf(if (state.debugOpenLetter) state.letterDue(now.toLocalDate())?.also { state.openLetter(it.id) } else null) }
 
     BoxWithConstraints(Modifier.fillMaxSize().paperBackground()) {
         val u = Theme.unit
@@ -173,6 +176,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
         val pagePx = with(density) { screenH.toPx() }
         var topBottom by remember { mutableStateOf(0.dp) }
         val scroll = rememberScrollState()
+        val scope = rememberCoroutineScope()
         // 첫 장(정원)과 둘째 장(시간 · 달력) 사이에서 손을 떼면 가까운 장으로 부드럽게 넘어간다.
         LaunchedEffect(pagePx) {
             var from = scroll.value
@@ -228,7 +232,11 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                     Row(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
                         LifeUnit.entries.forEachIndexed { i, unit -> GardenChip(Labels.unit(ctx, unit), unit == state.unit, seed = 800 + i) { state.changeUnit(unit) } }
                     }
-                    state.quote?.let { q ->
+                    val question = state.question
+                    if (question != null) QuestionBlock(state, question, sent = state.sentOn == now.toLocalDate()) {
+                        // 한 줄로 답하기: 둘째 장 맨 아래 오늘의 한 줄로 부드럽게
+                        state.answer(); scope.launch { scroll.animateScrollTo(scroll.maxValue, tween(G.Motion.pageMs.toInt() * 2, easing = FastOutSlowInEasing)) }
+                    } else state.quote?.let { q ->
                         Column(
                             Modifier.fillMaxWidth().padding(top = Tokens.Space.sp4).clickable { state.nextQuote() },
                             horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1),
@@ -318,6 +326,8 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                     .navigationBarsPadding().padding(bottom = Tokens.Space.sp10),
                 verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3),
             ) {
+                // 계절의 편지: 이번 달에 도착해 아직 펼치지 않았으면 맨 위에 봉투 한 장
+                state.letterDue(now.toLocalDate())?.let { l -> LetterEnvelope(l) { state.openLetter(l.id); letterOpen = l } }
                 TokenText(stringResource(R.string.flow), Tokens.TypeScale.title3)
                 LifePeriod.entries.forEachIndexed { i, period ->
                     val pp = s.period(period)
@@ -347,6 +357,9 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 // 칸이 수천 개라 한 번 그려 두고(레이어) 넘길 때는 옮기기만 한다
                 CrayonCalendar(s.total(state.grid.unit), s.lived(state.grid.unit), cols, Modifier.graphicsLayer())
                 TokenText(stringResource(R.string.calendar_legend, Labels.season(ctx, season)), Tokens.TypeScale.caption1, color = p.secondary)
+                // 마음의 하늘: 지난 30일을 손으로 그린 동그라미로
+                Spacer(Modifier.height(Tokens.Space.sp4))
+                MoodSky(state, now.toLocalDate())
                 Spacer(Modifier.height(Tokens.Space.sp4))
                 Row(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
                     GardenButton(stringResource(R.string.collection), onCollection, filled = false, seed = 880, modifier = Modifier.weight(1f))
@@ -375,6 +388,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
             ItemSheet(m) { open = null }
         }
     }
+    letterOpen?.let { LetterSheet(it) { letterOpen = null } }
     if (breathSheet) BreathSheet(state, now, { k, m, snd -> breathSheet = false; onBreath(k, m, snd) }) { breathSheet = false }
 }
 

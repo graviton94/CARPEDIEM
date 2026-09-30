@@ -60,6 +60,7 @@ class AppState(private val context: Context) {
     var draft by mutableStateOf<LifeProfile?>(null)
 
     init { store.ensureQuoteSeed(); quote = store.todaysQuote() }
+    // question 은 fixedNow 를 정한 뒤 (MainActivity) · 날이 바뀔 때 refreshQuestion 으로 채운다
 
     fun save(p: LifeProfile) { store.profile = p; profile = p; Widgets.refresh(context) }
     /** 온보딩을 마칠 때. 정원 디자인이면 하루를 만나는 화면을 먼저 보여 준다. */
@@ -103,8 +104,10 @@ class AppState(private val context: Context) {
 
     fun letGo(text: String, feeling: Feeling?, to: String? = null, today: LocalDate = (fixedNow ?: LocalDateTime.now()).toLocalDate()) {
         val t = Lines.clean(text, Tokens.Garden.LetGo.maxChars.toInt()); if (t.isEmpty()) return
+        // 질문에 답한 한 줄이면 질문 번호도 함께
+        val q = answering?.id; answering = null
         // 기록 남기지 않기: 날짜만 (이어 쓰기 흔적은 이어 간다)
-        val line = if (keepLines) DayLine(today, t, feeling, to) else DayLine(today, "", null, to)
+        val line = if (keepLines) DayLine(today, t, feeling, to, q) else DayLine(today, "", null, to)
         val person = people.firstOrNull { it.id == to }
         toastTitle = if (person != null && feeling in setOf(Feeling.JOY, Feeling.THANKS, Feeling.HOPE)) context.getString(R.string.letgo_modalTo, person.name) else null
         val next = Lines.add(lines, line)
@@ -127,6 +130,55 @@ class AppState(private val context: Context) {
         val next = Lines.add(lines, DayLine(today.minusDays(45), context.getString(R.string.recall_sampleOld), Feeling.CALM)); store.lines = next; lines = next
         store.randomRecallNow(today); checkRandomRecall(today)
     }
+    // ───── 오늘의 질문 ─────
+    private fun nowDate(): LocalDate = (fixedNow ?: LocalDateTime.now()).toLocalDate()
+    /** 오늘의 질문 (질문 날에만). 부를 때마다 폰 시각으로 다시 본다. */
+    var question by mutableStateOf<io.github.graviton94.carpediem.core.Question?>(null)
+        private set
+    fun refreshQuestion() { if (!previewQ) question = store.todaysQuestion(nowDate()) }
+    private var previewQ = false
+    /** ‘한 줄로 답하기’를 눌러 지금 답하는 질문 (보내면 null). */
+    var answering by mutableStateOf<io.github.graviton94.carpediem.core.Question?>(null)
+    fun answer() { answering = question }
+    /** 시험용 (캡처): 질문 날이 아니어도 오늘 질문 하나를 띄운다. */
+    fun previewQuestion() { previewQ = true; question = store.questions.order(store.haruSeed).first() }
+    fun skipQuestion() { store.skipQuestion(nowDate()); previewQ = false; question = null; answering = null }
+
+    // ───── 계절의 편지 ─────
+    var lettersOpened by mutableStateOf(store.lettersOpened)
+        private set
+    /** 이번 달에 도착해 아직 펼치지 않은 편지 (기록 남기기를 끄면 오지 않음). */
+    fun letterDue(today: LocalDate = nowDate()): io.github.graviton94.carpediem.core.Letter? {
+        if (!keepLines) return null
+        val day = io.github.graviton94.carpediem.core.Letters.due(today) ?: return null
+        return io.github.graviton94.carpediem.core.Letters.of(lines, day, Tokens.Garden.Letter.minLines.toInt())?.takeIf { it.id !in lettersOpened }
+    }
+    fun received(today: LocalDate = nowDate()): List<io.github.graviton94.carpediem.core.Letter> =
+        if (!keepLines) emptyList() else io.github.graviton94.carpediem.core.Letters.received(lines, today, Tokens.Garden.Letter.minLines.toInt())
+    fun openLetter(id: String) { val v = lettersOpened + id; store.lettersOpened = v; lettersOpened = v }
+    /** 시험용 (개발자 모드 · 캡처): 지난 석 달에 한 줄 몇 개를 넣어 이번 달 편지가 오게. 오늘이 편지 달이 아니면 다음 편지 달로 시각을 옮기지는 않는다. */
+    fun addSampleLetter(today: LocalDate = nowDate()) {
+        val day = io.github.graviton94.carpediem.core.Letters.due(today) ?: return
+        val samples = listOf(
+            Triple(85L, R.string.letter_sample1, Feeling.THANKS), Triple(60L, R.string.letter_sample2, Feeling.HOPE),
+            Triple(41L, R.string.letter_sample3, Feeling.WORRY), Triple(23L, R.string.letter_sample4, Feeling.JOY), Triple(9L, R.string.letter_sample5, Feeling.CALM),
+        )
+        var next = lines
+        samples.forEach { (ago, res, f) -> next = Lines.add(next, DayLine(day.minusDays(ago), context.getString(res), f)) }
+        store.lines = next; lines = next
+        val v = lettersOpened - io.github.graviton94.carpediem.core.Letters.of(next, day, 1)!!.id; store.lettersOpened = v; lettersOpened = v
+    }
+
+    /** 시험용 (캡처): 지난 30일에 여러 마음의 한 줄을 넣어 마음의 하늘을 채운다. */
+    fun addSampleMoods(today: LocalDate = nowDate()) {
+        val fs = listOf(Feeling.JOY, Feeling.CALM, null, Feeling.THANKS, Feeling.HOPE, Feeling.CALM, Feeling.WORRY, Feeling.JOY, Feeling.SAD, Feeling.CALM, Feeling.THANKS, Feeling.JOY, Feeling.DISAPPOINT, Feeling.HOPE, Feeling.CALM, Feeling.JOY)
+        var next = lines
+        fs.forEachIndexed { i, f -> next = Lines.add(next, DayLine(today.minusDays(1L + i * 29L / fs.size + (i % 3)), context.getString(R.string.recall_sample), f)) }
+        store.lines = next; lines = next
+    }
+    /** 캡처용: 홈을 열면 이번 달 편지를 바로 펼친다. */
+    var debugOpenLetter = false
+
     fun exportLines(): String = Lines.export(lines) { Labels.feeling(context, it) }
     /** 시험용 (개발자 모드): 1년 전 오늘 보낸 한 줄을 하나 넣어 ‘1년 뒤 오늘’을 확인한다. */
     fun addSampleYearAgo(today: LocalDate = (fixedNow ?: LocalDateTime.now()).toLocalDate()) {
@@ -165,7 +217,7 @@ class AppState(private val context: Context) {
     fun newPersonId(): String = (1..8).map { "abcdefghijkmnpqrstuvwxyz23456789".random() }.joinToString("")
 
     fun eraseAll() {
-        store.eraseAll(); store.ensureQuoteSeed(); unit = store.unit; grid = store.grid; defaultUnit = unit; defaultGrid = grid; lines = emptyList(); streaks = emptyMap(); keepLines = true; toast = null; randomLine = null; people = emptyList(); breaths = emptyList(); breathKind = store.breathKind; breathMinutes = store.breathMinutes; sound = store.sound
+        store.eraseAll(); store.ensureQuoteSeed(); unit = store.unit; grid = store.grid; defaultUnit = unit; defaultGrid = grid; lines = emptyList(); streaks = emptyMap(); keepLines = true; question = null; answering = null; lettersOpened = emptySet(); toast = null; randomLine = null; people = emptyList(); breaths = emptyList(); breathKind = store.breathKind; breathMinutes = store.breathMinutes; sound = store.sound
         profile = null; quoteLanguage = store.quoteLanguage; quote = store.todaysQuote(); design = store.design; meetPending = false; previewAll = false; notify = false; devMode = false; io.github.graviton94.carpediem.notify.Daily.schedule(context, false); Widgets.refresh(context)
     }
 

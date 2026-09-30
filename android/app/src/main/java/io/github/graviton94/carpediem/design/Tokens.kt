@@ -412,5 +412,30 @@ object Tokens {
             const val stoneGlow = 0.1f
             const val moonGlow = 0.16f
         }
+        object Question {
+            const val perWeek = 2.0f
+        }
+        object Mood {
+            const val days = 30.0f
+            const val columns = 15.0f
+            const val gap = 1.28f
+            const val wobble = 0.12f
+            const val line = 0.8f
+            const val nightDarken = 0.18f
+            object Colors {
+                val joy = Color(0xFFF2C04E)
+                val hope = Color(0xFFF1B089)
+                val calm = Color(0xFFA9C6D4)
+                val thanks = Color(0xFFB8C98E)
+                val disappoint = Color(0xFFB9B4A8)
+                val sad = Color(0xFF8C9AB0)
+                val worry = Color(0xFF9C8FA6)
+                val none = Color(0xFFE6DFCF)
+            }
+        }
+        object Letter {
+            const val minLines = 3.0f
+            const val envelope = 34.0f
+        }
     }
 }

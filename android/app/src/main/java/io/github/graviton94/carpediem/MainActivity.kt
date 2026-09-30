@@ -88,7 +88,7 @@ class MainActivity : ComponentActivity() {
                 val night = SkyTime.isDark(now)
                 CarpeDiemTheme(deviceClass = DeviceClass.of(screenW), design = state.design, screenWidth = screenW, night = night) {
                     var screen by remember { mutableStateOf(start) }
-                    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { now = clock(); state.refreshQuote(); state.opened() }
+                    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { now = clock(); state.refreshQuote(); state.opened(); state.refreshQuestion() }
                     // 앱을 다시 열 때(화면에 다시 나올 때) 남은 시간 · 인생 달력 단위를 기본값으로
                     LifecycleEventEffect(Lifecycle.Event.ON_START) { state.resetViewToDefaults() }
                     // 정원은 늘 밝은 종이라 상태바 · 내비게이션 바 글자를 어둡게 둔다
@@ -171,6 +171,11 @@ private fun MainActivity.debugSetup(state: AppState): Screen {
     if (x.hasExtra("cd.preview")) state.changePreviewAll(x.getBooleanExtra("cd.preview", false))
     x.getStringExtra("cd.now")?.let { state.fixedNow = LocalDateTime.parse(it) }
     if (x.getBooleanExtra("cd.recall", false)) { state.addSampleYearAgo(); state.addSampleRandom() }
+    if (x.getBooleanExtra("cd.letter", false)) state.addSampleLetter()
+    if (x.getBooleanExtra("cd.moods", false)) state.addSampleMoods()
+    state.debugOpenLetter = x.getBooleanExtra("cd.openLetter", false)
+    state.refreshQuestion()
+    if (x.getBooleanExtra("cd.question", false)) state.previewQuestion()
     // 가족의 정원 시험: 동생 · 콩이(강아지) · 엄마(오늘 생일) · 아빠
     if (x.getBooleanExtra("cd.family", false)) {
         val today = (state.fixedNow ?: LocalDateTime.now()).toLocalDate()

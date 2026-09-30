@@ -74,7 +74,7 @@ import java.time.LocalDate
 import kotlin.math.PI
 import kotlin.math.sin
 
-private fun feelingName(f: Feeling) = when (f) {
+internal fun feelingName(f: Feeling) = when (f) {
     Feeling.JOY -> R.string.feeling_joy; Feeling.HOPE -> R.string.feeling_hope; Feeling.CALM -> R.string.feeling_calm; Feeling.THANKS -> R.string.feeling_thanks
     Feeling.DISAPPOINT -> R.string.feeling_disappoint; Feeling.SAD -> R.string.feeling_sad; Feeling.WORRY -> R.string.feeling_worry
 }
@@ -189,6 +189,13 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
                 }
             }
             else -> Column(Modifier.fillMaxWidth().bringIntoViewRequester(formView), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
+                // 질문에 답하는 중이면 입력칸 위에 질문 한 줄
+                state.answering?.let { q ->
+                    Column(verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
+                        TokenText(stringResource(R.string.question_label), Tokens.TypeScale.caption1, color = p.secondary)
+                        TokenText(if (state.quoteLanguage == io.github.graviton94.carpediem.data.QuoteLanguage.ENGLISH) q.english else q.korean, lineType(Tokens.TypeScale.headline, Theme.garden))
+                    }
+                }
                 TokenText(stringResource(R.string.letgo_feeling), Tokens.TypeScale.caption1, color = p.secondary)
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
                     Feeling.entries.forEachIndexed { i, f ->

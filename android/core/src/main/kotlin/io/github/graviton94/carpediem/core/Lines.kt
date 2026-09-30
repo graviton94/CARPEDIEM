@@ -6,23 +6,26 @@ import java.time.LocalDate
 enum class Feeling { JOY, HOPE, CALM, THANKS, DISAPPOINT, SAD, WORRY }
 
 /** 하루에 한 줄. 떠나보낸 뒤에는 화면에 다시 보이지 않고, 기기 안에만 남는다. text 가 비었으면 ‘기록 남기지 않기’로 날짜만 남긴 것. */
-data class DayLine(val date: LocalDate, val text: String, val feeling: Feeling?, val to: String? = null)
+data class DayLine(val date: LocalDate, val text: String, val feeling: Feeling?, val to: String? = null, val question: Int? = null)
 
 object Lines {
     /** 한 줄로 다듬기: 줄바꿈 · 탭을 빈칸으로, 앞뒤 빈칸 없이, 최대 max 글자. */
     fun clean(text: String, max: Int): String =
         text.replace(Regex("[\\t\\r\\n]+"), " ").trim().let { if (it.codePointCount(0, it.length) <= max) it else it.substring(0, it.offsetByCodePoints(0, max)) }
 
-    /** 저장 형식: 한 줄에 하나, `epochDay<TAB>FEELING(없으면 -)<TAB>글[<TAB>받는 돌 id]`. 1.0 기록(칸 3개)도 그대로 읽힌다. */
+    /** 저장 형식: 한 줄에 하나, `epochDay<TAB>FEELING(없으면 -)<TAB>글[<TAB>받는 돌 id(없으면 빈칸)[<TAB>질문 번호]]`. 예전 기록(칸 3 · 4개)도 그대로 읽힌다. */
     fun encode(list: List<DayLine>): String =
-        list.joinToString("\n") { "${it.date.toEpochDay()}\t${it.feeling?.name ?: "-"}\t${clean(it.text, Int.MAX_VALUE)}" + (it.to?.let { t -> "\t$t" } ?: "") }
+        list.joinToString("\n") {
+            "${it.date.toEpochDay()}\t${it.feeling?.name ?: "-"}\t${clean(it.text, Int.MAX_VALUE)}" +
+                (if (it.to != null || it.question != null) "\t${it.to.orEmpty()}" else "") + (it.question?.let { q -> "\t$q" } ?: "")
+        }
 
     fun decode(s: String?): List<DayLine> =
         s.orEmpty().lineSequence().mapNotNull { row ->
-            val p = row.split('\t', limit = 4)
+            val p = row.split('\t', limit = 5)
             if (p.size < 3) return@mapNotNull null
             val day = p[0].toLongOrNull() ?: return@mapNotNull null
-            DayLine(LocalDate.ofEpochDay(day), p[2], Feeling.entries.firstOrNull { it.name == p[1] }, p.getOrNull(3)?.takeIf { it.isNotBlank() })
+            DayLine(LocalDate.ofEpochDay(day), p[2], Feeling.entries.firstOrNull { it.name == p[1] }, p.getOrNull(3)?.takeIf { it.isNotBlank() }, p.getOrNull(4)?.toIntOrNull())
         }.toList()
 
     /** 이어 쓰기 흔적: 7 · 30 · 100일 (정원에 바람개비 · 종이배 · 연). */
@@ -71,6 +74,12 @@ object Lines {
     /** 내보내기용 글 (한 줄에 하나: 날짜 · 마음 · 글). 마음 이름은 부르는 쪽이 정한다. */
     fun export(list: List<DayLine>, feelingName: (Feeling) -> String): String =
         list.filter { it.text.isNotBlank() }.joinToString("\n") { l -> listOfNotNull(l.date.toString(), l.feeling?.let(feelingName), l.text).joinToString(" · ") }
+
+    /** 마음의 하늘: 오늘까지 n일 (오래된 날부터), 날마다 보낸 한 줄 또는 null (쉰 날). */
+    fun lastDays(list: List<DayLine>, today: LocalDate, n: Int): List<Pair<LocalDate, DayLine?>> {
+        val byDay = list.associateBy { it.date }
+        return (n - 1 downTo 0).map { k -> today.minusDays(k.toLong()).let { d -> d to byDay[d] } }
+    }
 
     /** 같은 날에 이미 보냈으면 그대로 (하루에 한 줄). 날짜순. */
     fun add(list: List<DayLine>, line: DayLine): List<DayLine> =

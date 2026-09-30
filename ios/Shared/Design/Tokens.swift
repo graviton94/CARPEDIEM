@@ -417,5 +417,30 @@ enum Tokens {
             static let stoneGlow: CGFloat = 0.1
             static let moonGlow: CGFloat = 0.16
         }
+        enum Question {
+            static let perWeek: CGFloat = 2.0
+        }
+        enum Mood {
+            static let days: CGFloat = 30.0
+            static let columns: CGFloat = 15.0
+            static let gap: CGFloat = 1.28
+            static let wobble: CGFloat = 0.12
+            static let line: CGFloat = 0.8
+            static let nightDarken: CGFloat = 0.18
+            enum Colors {
+                static let joy: UInt32 = 0xF2C04EFF
+                static let hope: UInt32 = 0xF1B089FF
+                static let calm: UInt32 = 0xA9C6D4FF
+                static let thanks: UInt32 = 0xB8C98EFF
+                static let disappoint: UInt32 = 0xB9B4A8FF
+                static let sad: UInt32 = 0x8C9AB0FF
+                static let worry: UInt32 = 0x9C8FA6FF
+                static let none: UInt32 = 0xE6DFCFFF
+            }
+        }
+        enum Letter {
+            static let minLines: CGFloat = 3.0
+            static let envelope: CGFloat = 34.0
+        }
     }
 }

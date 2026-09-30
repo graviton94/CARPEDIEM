@@ -2,7 +2,7 @@
 """앱에 넣을 명조 폰트를 만든다 (Lora · Noto Serif KR, 둘 다 OFL).
 
 - 가변 폰트에서 필요한 굵기 두 가지(Medium 500, SemiBold 600)만 고정 폰트로 뽑는다.
-- Noto Serif KR은 23MB라, 자주 쓰는 한글 2,350자(KS X 1001)와 문구(design/strings.json) · 명언(data/quotes.csv)에 나오는 글자만 남긴다.
+- Noto Serif KR은 23MB라, 자주 쓰는 한글 2,350자(KS X 1001)와 문구(design/strings.json) · 명언(data/quotes.csv) · 질문(data/questions.csv)에 나오는 글자만 남긴다.
 - 앱은 담긴 글자 목록(SerifCoverage.kt)을 보고, 한 글자라도 없으면 그 문장 전체를 기본 글꼴로 쓴다 (글자마다 글꼴이 섞이지 않게).
   문구나 명언을 바꾸면 다시 실행한다.
 
@@ -27,7 +27,7 @@ WEIGHTS = {"Medium": 500, "SemiBold": 600}
 
 
 def used_text() -> str:
-    text = (ROOT / "data" / "quotes.csv").read_text(encoding="utf-8")
+    text = (ROOT / "data" / "quotes.csv").read_text(encoding="utf-8") + (ROOT / "data" / "questions.csv").read_text(encoding="utf-8")
     for lang in json.loads((ROOT / "design" / "strings.json").read_text(encoding="utf-8")).values():
         text += "".join(lang.values())
     ksx1001 = "".join(bytes([hi, lo]).decode("euc-kr") for hi in range(0xB0, 0xC9) for lo in range(0xA1, 0xFF))  # 한글 2,350자

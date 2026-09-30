@@ -251,3 +251,73 @@ class DataTest {
         assertTrue("windchime" in m)
     }
 }
+
+class ReflectTest {
+    private fun d(y: Int, m: Int, day: Int) = LocalDate.of(y, m, day)
+
+    @Test fun questionsTwiceAWeekNoRepeatFor30Weeks() {
+        val book = QuestionBook(data("questions.csv"))
+        assertEquals(60, book.all.size)
+        assertEquals(setOf("scene", "mood", "joy", "now"), book.all.map { it.group }.toSet())
+        for (seed in listOf(0L, 1L, 6L, 13L, 2718281L, -99L)) {
+            val (a, b) = Questions.days(seed)
+            assertTrue(a != b && (b.value - a.value) in 3..4)
+            // 3년치: 주마다 정확히 두 번, 연달아 60번 안에는 같은 질문 없음
+            var day = d(2026, 1, 5)
+            val asked = mutableListOf<Int>()
+            repeat(52 * 3) {
+                val week = (0 until 7).mapNotNull { book.of(seed, day.plusDays(it.toLong())) }
+                assertEquals(2, week.size)
+                asked += week.map { it.id }
+                day = day.plusWeeks(1)
+            }
+            asked.windowed(60, 1).forEach { assertEquals(60, it.toSet().size) }
+            // 갈래가 번갈아
+            assertNotEquals(book.byId(asked[0])!!.group, book.byId(asked[1])!!.group)
+        }
+        assertEquals(book.of(7, d(2026, 10, 1)), book.of(7, d(2026, 10, 1)))
+    }
+
+    @Test fun linesKeepQuestionAndReadOldRows() {
+        val list = listOf(
+            DayLine(d(2026, 1, 1), "a", Feeling.JOY),
+            DayLine(d(2026, 1, 2), "b", null, "p1"),
+            DayLine(d(2026, 1, 3), "c", Feeling.CALM, null, 12),
+            DayLine(d(2026, 1, 4), "d", null, "p2", 3),
+        )
+        assertEquals(list, Lines.decode(Lines.encode(list)))
+        assertEquals(listOf(DayLine(d(2026, 1, 1), "x", null)), Lines.decode("${d(2026, 1, 1).toEpochDay()}\t-\tx"))
+    }
+
+    @Test fun moodSkyLastDays() {
+        val list = listOf(DayLine(d(2026, 9, 30), "a", Feeling.JOY), DayLine(d(2026, 9, 1), "b", Feeling.SAD), DayLine(d(2026, 8, 31), "c", null))
+        val sky = Lines.lastDays(list, d(2026, 9, 30), 30)
+        assertEquals(30, sky.size)
+        assertEquals(d(2026, 9, 1), sky.first().first)
+        assertEquals(Feeling.SAD, sky.first().second?.feeling)
+        assertEquals(Feeling.JOY, sky.last().second?.feeling)
+        assertEquals(28, sky.count { it.second == null })
+    }
+
+    @Test fun seasonalLetters() {
+        val list = listOf(
+            DayLine(d(2023, 11, 30), "before", Feeling.JOY),
+            DayLine(d(2023, 12, 1), "first", Feeling.THANKS),
+            DayLine(d(2024, 1, 5), "", null),
+            DayLine(d(2024, 2, 29), "leap", Feeling.SAD),
+            DayLine(d(2024, 2, 10), "mid", Feeling.HOPE),
+            DayLine(d(2024, 3, 1), "after", Feeling.CALM),
+        )
+        val l = Letters.of(list, d(2024, 3, 1), 3)!!
+        assertEquals(Season.SPRING, l.season)
+        assertEquals(listOf("first", "mid"), l.lines.map { it.text })
+        assertEquals(listOf("leap"), l.heavy.map { it.text })
+        assertEquals(d(2024, 2, 29), l.until)
+        assertEquals("2024-03", l.id)
+        // 세 줄보다 적으면 오지 않음
+        assertEquals(null, Letters.of(list.take(3), d(2024, 3, 1), 3))
+        assertEquals(d(2024, 3, 1), Letters.due(d(2024, 3, 20)))
+        assertEquals(null, Letters.due(d(2024, 4, 1)))
+        assertEquals(listOf("2024-03"), Letters.received(list, d(2024, 9, 2), 3).map { it.id })
+    }
+}

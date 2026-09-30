@@ -41,6 +41,13 @@ open --es cd.screen breath --es cd.now $NOW;                                    
 open --es cd.screen gaze --es cd.now 2026-09-30T23:10;                                                 shot g28_gaze_night 5
 open --es cd.now 2026-09-30T18:20;                                                                     shot g19_dusk 5
 open --es cd.now 2026-09-30T05:20;                                                                     shot g20_dawn 5
+# 1.3 깨닫기: 오늘의 질문 · 마음의 하늘 · 계절의 편지 (12월 2일)
+open --ez cd.question true --es cd.now $NOW;                                                          shot g29_question 5
+open --ez cd.moods true --es cd.now $NOW; swipe_up; sleep 2; swipe_up;                                  shot g30_mood 3
+open --ez cd.letter true --es cd.now 2026-12-02T10:00; swipe_up;                                        shot g31_letter 3
+open --ez cd.openLetter true --es cd.now 2026-12-02T10:00;                                              shot g32_letter_open 4
+open --ez cd.letter true --ez cd.openLetter true --es cd.now 2026-12-02T21:30;                         shot g33_letter_night 4
+open --es cd.screen collection --es cd.now 2026-12-02T10:00; swipe_up; swipe_up;                       shot g34_letters 3
 # 인생의 계절 (다른 생년월일 · 다른 하루)
 open --el cd.seed 12345 --es cd.birth 2016-03-01 --es cd.now $NOW;                                     shot g12_spring 14
 open --el cd.seed 99 --es cd.birth 1968-08-20 --ez cd.preview true --es cd.now $NOW;                   shot g13_autumn 14

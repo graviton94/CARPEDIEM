@@ -107,6 +107,8 @@ fun CollectionScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, 
                     repeat(cols - list.size) { Spacer(Modifier.weight(1f)) }
                 }
             }
+            // 계절마다 한 통씩 쌓이는 편지
+            ReceivedLetters(state, now.toLocalDate())
         }
     }
     open?.let { m ->

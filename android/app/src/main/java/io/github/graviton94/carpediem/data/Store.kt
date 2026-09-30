@@ -15,6 +15,8 @@ import io.github.graviton94.carpediem.core.LifeProfile
 import io.github.graviton94.carpediem.core.LifeUnit
 import io.github.graviton94.carpediem.core.Quote
 import io.github.graviton94.carpediem.core.QuoteBook
+import io.github.graviton94.carpediem.core.Question
+import io.github.graviton94.carpediem.core.QuestionBook
 import io.github.graviton94.carpediem.core.Sex
 import java.time.LocalDate
 import kotlin.random.Random
@@ -31,6 +33,7 @@ class Store(context: Context) {
 
     val table: LifeExpectancyTable by lazy { LifeExpectancyTable(assets.open("life-expectancy.csv").bufferedReader().readText()) }
     val book: QuoteBook by lazy { QuoteBook(assets.open("quotes.csv").bufferedReader().readText()) }
+    val questions: QuestionBook by lazy { QuestionBook(assets.open("questions.csv").bufferedReader().readText()) }
 
     var profile: LifeProfile?
         get() {
@@ -137,6 +140,24 @@ class Store(context: Context) {
         if (!prefs.contains("firstSkip")) e.putLong("firstSkip", today)
         e.apply()
     }
+
+    // ───── 오늘의 질문 · 계절의 편지 ─────
+    /** 오늘의 질문 (질문 날이 아니거나 ‘오늘은 문장으로’를 고른 날은 null). 순서는 문장과 같은 seed 로. */
+    fun todaysQuestion(date: LocalDate = LocalDate.now()): Question? {
+        if (prefs.getLong("questionSkip", -1) == date.toEpochDay()) return null
+        val seed = prefs.getString("quoteSeed", null)?.toULongOrNull()?.toLong() ?: 0x5EEDL
+        return questions.of(seed, date)
+    }
+    fun skipQuestion(date: LocalDate = LocalDate.now()) = prefs.edit().putLong("questionSkip", date.toEpochDay()).apply()
+
+    /** 펼쳐 본 편지 ("2027-03"). 연 편지는 봉투가 다시 뜨지 않고 ‘받은 편지’에만. */
+    var lettersOpened: Set<String>
+        get() = prefs.getStringSet("lettersOpened", emptySet()) ?: emptySet()
+        set(v) = prefs.edit().putStringSet("lettersOpened", v).apply()
+    /** 알림으로 이미 알린 편지. */
+    var lettersNotified: Set<String>
+        get() = prefs.getStringSet("lettersNotified", emptySet()) ?: emptySet()
+        set(v) = prefs.edit().putStringSet("lettersNotified", v).apply()
 
     /** 오늘의 한 줄 (기기 안에만). 떠나보낸 글은 화면에 다시 보이지 않는다. */
     var lines: List<DayLine>

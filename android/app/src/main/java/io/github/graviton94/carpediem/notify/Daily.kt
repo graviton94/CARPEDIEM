@@ -71,6 +71,22 @@ object Daily {
         val yearAgo = Lines.yearsAgo(store.lines, LocalDate.now()).firstOrNull()
         if (yearAgo != null) { title = context.getString(R.string.recall_notify, "${yearAgo.first}"); body = context.getString(R.string.recall_notifyText) }
         else if (store.keepLines && store.randomRecall() != null) { title = context.getString(R.string.recall_randomNotify); body = context.getString(R.string.recall_notifyText) }
+        if (store.design == Design.GARDEN) {
+            val today = LocalDate.now()
+            // 질문 날: 문장 대신 오늘의 질문
+            store.todaysQuestion(today)?.takeIf { yearAgo == null }?.let { qq ->
+                title = context.getString(R.string.question_label); body = if (store.quoteLanguage == QuoteLanguage.ENGLISH) qq.english else qq.korean
+            }
+            // 계절의 편지가 도착한 날 (한 번만, 잠금 화면엔 글 없이)
+            io.github.graviton94.carpediem.core.Letters.due(today)?.takeIf { store.keepLines }?.let { day ->
+                io.github.graviton94.carpediem.core.Letters.of(store.lines, day, io.github.graviton94.carpediem.design.Tokens.Garden.Letter.minLines.toInt())
+                    ?.takeIf { it.id !in store.lettersNotified && it.id !in store.lettersOpened }?.let { l ->
+                        val season = context.getString(when (l.season) { io.github.graviton94.carpediem.core.Season.SPRING -> R.string.season_spring; io.github.graviton94.carpediem.core.Season.SUMMER -> R.string.season_summer; io.github.graviton94.carpediem.core.Season.AUTUMN -> R.string.season_autumn; io.github.graviton94.carpediem.core.Season.WINTER -> R.string.season_winter })
+                        title = context.getString(R.string.notify_letter, season); body = context.getString(R.string.notify_letterText)
+                        store.lettersNotified = store.lettersNotified + l.id
+                    }
+            }
+        }
         // 가족 생일이 가장 먼저 (정원 디자인일 때)
         if (store.design == Design.GARDEN) {
             val names = store.people.filter { io.github.graviton94.carpediem.core.Family.isBirthday(it.birth, LocalDate.now()) }.map { it.name }
