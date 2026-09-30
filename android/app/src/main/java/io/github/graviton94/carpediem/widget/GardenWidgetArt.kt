@@ -119,18 +119,21 @@ object GardenWidgetArt {
     }
 
     /** 가족의 정원: 나와 가족의 돌을 앱과 같은 규칙으로 (겹치지 않게, 생일이면 모자와 케이크). 글자 없음. */
-    private fun family(context: Context, c: Canvas, w: Int, gy: Float, u: Float, now: LocalDateTime) {
+    private fun family(context: Context, c: Canvas, w: Int, gy: Float, u: Float, now: LocalDateTime, shrink: Float = 1f) {
         val store = Store(context)
         val profile = store.profile ?: return
         val today = now.toLocalDate()
         val me = LifeSnapshot(profile.birthDate, profile.expectancy(store.table), now)
         val sprout = me.season == Season.SPRING
-        val base = W.familyHaru * u / L.haruArtWidth
+        val base = W.familyHaru * u / L.haruArtWidth * shrink
         data class S(val art: io.github.graviton94.carpediem.ui.garden.HaruArt, val k: Float, val prog: Double?, val bday: Boolean)
         val slots = listOf(S(io.github.graviton94.carpediem.ui.garden.HaruArt.of(store.haruSeed, sprout), base, me.progress, Family.isBirthday(profile.birthDate, today))) +
             store.people.map { p -> S(io.github.graviton94.carpediem.ui.garden.HaruArt.of(p.seed, sprout), if (p.kind == PersonKind.PET) base * Tokens.Garden.Family.petScale else base,
                 p.birth?.let { LifeSnapshot(it, store.expectancy(p), now).progress }, Family.isBirthday(p.birth, today)) }
         val lo = W.gridInset * u; val hi = w - W.gridInset * u
+        // 돌이 많으면 모두 같은 비율로 작게 (앱과 같은 규칙)
+        val fit = Family.fitScale(slots.map { (it.art.meta.bbox.width * it.k).toDouble() }, (hi - lo).toDouble(), (Tokens.Garden.Family.minGap * u).toDouble()).toFloat()
+        if (fit < 1f && shrink == 1f) return family(context, c, w, gy, u, now, fit)
         val xs = Family.place(slots.map { sl -> sl.prog?.let { (lo + (hi - lo) * (0.06 + 0.88 * it.coerceIn(0.0, 1.0))) } }, slots.map { (it.art.meta.bbox.width * it.k).toDouble() }, 0,
             lo.toDouble(), hi.toDouble(), (Tokens.Garden.Family.gap * u).toDouble(), (Tokens.Garden.Family.minGap * u).toDouble())
         slots.forEachIndexed { i, sl ->

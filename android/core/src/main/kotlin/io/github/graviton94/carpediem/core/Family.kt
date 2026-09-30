@@ -29,6 +29,12 @@ data class Person(
 
 object Family {
     /** 나를 포함해 한 정원에 앉는 돌 수. */
+    /** 돌이 많아 길(span)에 다 앉지 못하면 모두를 같은 비율로 줄인다 (1 = 그대로). gap = 돌 사이 최소 간격. */
+    fun fitScale(widths: List<Double>, span: Double, gap: Double): Double {
+        val need = widths.sum() + gap * (widths.size - 1).coerceAtLeast(0)
+        return if (need <= span || widths.isEmpty()) 1.0 else ((span - gap * (widths.size - 1)) / widths.sum()).coerceIn(0.3, 1.0)
+    }
+
     const val MAX = 9
     const val NAME_MAX = 8
     const val REROLLS = 3

@@ -201,8 +201,11 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 val f = turned(); translationY = scroll.value * G.Layout.parallax; alpha = 1f - f * f
             }.clipToBounds()) {
                 // 아래: 지나온 길 (땅 한 줄) 위에 나와 가족의 돌 · 놓인 것. 자리를 먼저 정해 하늘빛 · 별 · 해가 쓰게 한다.
-                val haruScale = u * (G.Layout.haruWidth / G.Layout.haruArtWidth)
-                val slots = gardenSlots(state, profile, s, now, haruScale)
+                // 돌이 많아 길에 다 앉지 못하면 모두 같은 비율로 조금씩 작게 (나 포함 9개까지)
+                val haruBase = u * (G.Layout.haruWidth / G.Layout.haruArtWidth)
+                val slots0 = gardenSlots(state, profile, s, now, haruBase)
+                val fit = Family.fitScale(slots0.map { (it.art.meta.bbox.width * it.scale.value).toDouble() }, ((G.Layout.pathEnd - G.Layout.pathStart) * u.value).toDouble(), (G.Family.minGap * u.value).toDouble()).toFloat()
+                val slots = if (fit < 1f) gardenSlots(state, profile, s, now, haruBase * fit) else slots0
                 val headroom = slots.maxOf { sl -> sl.scale * (sl.art.meta.ground - sl.art.meta.bbox.top + if (sl.birthday) Tokens.Garden.Party.hatHeight else if (sl.art.sprout) Tokens.Garden.HaruDraw.sproutHeight else 0f) }
                 val haruAbove = headroom
                 val family = slots.size > 1
@@ -290,7 +293,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 slots.forEachIndexed { i, sl ->
                     val cx = xs[i] - sl.scale * (sl.art.meta.bbox.center.x - sl.art.meta.box / 2)
                     val left = cx - sl.scale * (sl.art.meta.box / 2); val top = gy - sl.scale * G.Layout.haruGround
-                    HaruFigure(sl.art, sl.scale, Modifier.offset(left, top), blinkKick = if (sl.id == null) state.blinkKick else 0, hat = sl.birthday,
+                    HaruFigure(sl.art, sl.scale, Modifier.offset(left, top), blinkKick = if (sl.id == null) state.blinkKick else 0, hat = sl.birthday, tiltOn = sl.id == null,
                         a11y = stringResource(R.string.garden_stoneA11y, sl.name, Labels.stone(ctx, sl.art.meta.stone)), onOpen = { onStone(sl.id) },
                         onLongPress = if (sl.id == null) ({ breathSheet = true }) else null)
                     // 생일: 돌 앞에 작은 케이크

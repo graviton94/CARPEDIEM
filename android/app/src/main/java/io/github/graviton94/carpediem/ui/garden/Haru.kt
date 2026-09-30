@@ -260,7 +260,7 @@ fun rememberTilt(enabled: Boolean): Offset {
  */
 @Composable
 fun HaruFigure(art: HaruArt, scale: Dp, modifier: Modifier = Modifier, blinkKick: Int = 0, hat: Boolean = false, a11y: String? = null, onOpen: (() -> Unit)? = null,
-               onLongPress: (() -> Unit)? = null, lid: Float? = null) {
+               onLongPress: (() -> Unit)? = null, lid: Float? = null, tiltOn: Boolean = true) {
     val ctx = LocalContext.current
     val view = androidx.compose.ui.platform.LocalView.current
     val m = Tokens.Garden.Motion; val tc = Tokens.Garden.Touch
@@ -296,7 +296,8 @@ fun HaruFigure(art: HaruArt, scale: Dp, modifier: Modifier = Modifier, blinkKick
         if (recent == 2) scope.launch { blush.snapTo(1f); blush.animateTo(0f, tween(tc.blushMs.toInt())) }
         if (recent >= 3 && animate) scope.launch { hop.snapTo(0f); hop.animateTo(1f, tween(tc.hopMs.toInt())) }
     }
-    val tilt = rememberTilt(animate)
+    // 눈동자 굴림(기울기 센서)은 내 하루만: 돌마다 센서를 따로 들으면 돌이 많을 때 무거워진다
+    val tilt = rememberTilt(animate && tiltOn)
     val open by androidx.compose.runtime.rememberUpdatedState(onOpen)
     val hold by androidx.compose.runtime.rememberUpdatedState(onLongPress)
     Canvas(

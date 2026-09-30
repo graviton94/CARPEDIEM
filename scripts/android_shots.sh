@@ -73,4 +73,6 @@ adb logcat -d -s AndroidRuntime:E chromium:E > "$OUT/logcat.txt" || true
 # 멈춤 · 느린 첫 화면 살피기: ANR · 앱 쪽 경고 이상
 adb logcat -d ActivityManager:W ActivityTaskManager:W Choreographer:I OpenGLRenderer:W "*:S" > "$OUT/logcat_app.txt" || true
 adb logcat -d | grep -iE "carpediem|ANR in" | tail -300 >> "$OUT/logcat_app.txt" || true
+# 앱이 멈춘 횟수 (0 이어야 함): 느린 첫 화면 · 무거운 그리기를 잡는다
+echo "app ANR: $(grep -c "ANR in $P" "$OUT/logcat_app.txt")" > "$OUT/anr.txt"; cat "$OUT/anr.txt"
 ls -la "$OUT"

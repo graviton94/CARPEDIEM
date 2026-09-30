@@ -320,4 +320,11 @@ class ReflectTest {
         assertEquals(null, Letters.due(d(2024, 4, 1)))
         assertEquals(listOf("2024-03"), Letters.received(list, d(2024, 9, 2), 3).map { it.id })
     }
+
+    @Test fun nineStonesFit() {
+        assertEquals(1.0, Family.fitScale(listOf(30.0, 30.0), 300.0, 6.0))
+        val w = List(9) { 40.0 }
+        val k = Family.fitScale(w, 330.0, 6.0)
+        assertTrue(k < 1.0 && w.sum() * k + 6.0 * 8 <= 330.0 + 1e-6)
+    }
 }

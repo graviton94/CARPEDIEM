@@ -118,15 +118,19 @@ internal fun MoodSky(state: AppState, today: LocalDate) {
                 val c = Offset((i % cols + 0.5f) * cell, (i / cols + 0.5f) * cell)
                 Triple(handCircle(c, cell / 2 / G.Mood.gap, d.toEpochDay().toInt()), l, d.toEpochDay().toInt())
             }
+            val paths = shapes.map { (pts, l, _) -> Triple(Crayon.path(pts), l, pts) }
             onDrawBehind {
+                // 결 한 겹에 모두 칠하고, 선도 한 겹에 (동그라미마다 겹을 만들면 무거워짐)
                 with(Crayon) {
-                    shapes.forEach { (pts, l, seed) ->
-                        if (l != null) {
-                            val base = moodColor(l.feeling)
-                            val col = if (night) lerp(base, Color.Black, G.Mood.nightDarken) else base
-                            textured(fillMask) { fill(pts, col, u) }
-                            textured(lineMask) { stroke(pts, G.Mood.line * u, if (night) ink.copy(alpha = 0.5f) else ink.copy(alpha = 0.55f), seed, passes = 1) }
-                        } else textured(lineMask) { stroke(pts, G.Mood.line * u, future, seed, passes = 1) }
+                    textured(fillMask) {
+                        paths.forEach { (path, l, _) ->
+                            if (l != null) { val base = moodColor(l.feeling); drawPath(path, if (night) lerp(base, Color.Black, G.Mood.nightDarken) else base) }
+                        }
+                    }
+                    textured(lineMask) {
+                        paths.forEachIndexed { i, (_, l, pts) ->
+                            stroke(pts, G.Mood.line * u, if (l != null) ink.copy(alpha = if (night) 0.5f else 0.55f) else future, shapes[i].third, passes = 1)
+                        }
                     }
                 }
             }
