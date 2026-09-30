@@ -131,7 +131,7 @@ private fun Surface(content: @Composable () -> Unit) {
 private fun Label(context: Context, text: String, data: WidgetData, mark: Boolean = false) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         if (mark) {
-            Image(ImageProvider(ensoBitmap(context, data.palette, 12.dp)), null, GlanceModifier.size(12.dp))
+            Image(ImageProvider(ensoBitmap(context, data.palette, Tokens.Widget.markSize.dp)), null, GlanceModifier.size(Tokens.Widget.markSize.dp))
             Spacer(GlanceModifier.width(Tokens.Space.sp1))
         }
         Text(text.uppercase(), style = style(Tokens.TypeScale.caption2.size, olive, FontWeight.Bold))
@@ -161,7 +161,7 @@ class DaysLeftWidget : GlanceAppWidget() {
                     val label = if (data.unit == LifeUnit.DAYS) context.getString(R.string.widget_daysLeft) else Labels.unit(context, data.unit)
                     Label(context, label, data, mark = true)
                     Spacer(GlanceModifier.defaultWeight())
-                    Text(Labels.number(s.remaining(data.unit)), style = style((Tokens.TypeScale.largeTitle.size.value * 1.05f).sp, fg, FontWeight.Bold, serif = true), maxLines = 1)
+                    Text(Labels.number(s.remaining(data.unit)), style = style((Tokens.TypeScale.largeTitle.size.value * Tokens.Widget.numberScale).sp, fg, FontWeight.Bold, serif = true), maxLines = 1)
                     Spacer(GlanceModifier.defaultWeight())
                     LinearProgressIndicator(s.progress.toFloat(), GlanceModifier.fillMaxWidth().height(Tokens.Stroke.barThin), color = olive,
                         backgroundColor = color(Tokens.Palette.dim.light, Tokens.Palette.dim.dark))
@@ -221,7 +221,7 @@ class LifeCalendarWidget : GlanceAppWidget() {
                 val inner = androidx.compose.ui.unit.DpSize(size.width - Tokens.Layout.widgetPadding * 2, size.height - Tokens.Layout.widgetPadding * 2)
                 when {
                     s == null -> Empty(context)
-                    size.height < 220.dp -> Row(GlanceModifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically) {
+                    size.height < Tokens.Widget.largeFromHeight.dp -> Row(GlanceModifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically) {
                         val textW = inner.width * Tokens.Grid.widgetMediumTextRatio
                         Column(GlanceModifier.width(textW).fillMaxHeight()) {
                             Label(context, context.getString(R.string.calendar), data)
@@ -243,8 +243,8 @@ class LifeCalendarWidget : GlanceAppWidget() {
                             Text(context.getString(R.string.widget_monthsLeft, Labels.number(s.remaining(LifeUnit.MONTHS))), style = style(Tokens.TypeScale.caption1.size, sub))
                         }
                         Spacer(GlanceModifier.height(Tokens.Space.sp3))
-                        val quoteH = if (data.quote != null) 64.dp else 0.dp
-                        val gh = inner.height - Tokens.Space.sp3 * 2 - quoteH - 16.dp
+                        val quoteH = if (data.quote != null) Tokens.Widget.quoteHeight.dp else 0.dp
+                        val gh = inner.height - Tokens.Space.sp3 * 2 - quoteH - Tokens.Widget.gridBottom.dp
                         Image(ImageProvider(gridBitmap(context, data.palette, inner.width, gh, s.total(LifeUnit.MONTHS), s.lived(LifeUnit.MONTHS), Tokens.Grid.widgetLargeColumns)), null,
                             GlanceModifier.fillMaxWidth().height(gh))
                         data.quote?.let { q ->
@@ -278,8 +278,8 @@ private fun gridBitmap(context: Context, p: Palette, w: Dp, h: Dp, total: Int, f
         val cy = oy + (i / columns) * cell + cell / 2
         when {
             i == filled -> {
-                paint.color = p.now.copy(alpha = 0.5f).toArgb(); paint.maskFilter = BlurMaskFilter(cell * 0.6f, BlurMaskFilter.Blur.NORMAL)
-                c.drawCircle(cx, cy, cell * 0.8f, paint); paint.maskFilter = null
+                paint.color = p.now.copy(alpha = Tokens.Effect.NowHalo.widgetAlpha).toArgb(); paint.maskFilter = BlurMaskFilter(cell * Tokens.Effect.NowHalo.widgetBlur, BlurMaskFilter.Blur.NORMAL)
+                c.drawCircle(cx, cy, cell * Tokens.Effect.NowHalo.widgetRadius, paint); paint.maskFilter = null
                 paint.color = p.now.toArgb(); c.drawCircle(cx, cy, cell * Tokens.Grid.nowRatio / 2, paint)
             }
             i < filled -> { paint.color = p.seasons[min(3, i * 4 / total)].toArgb(); c.drawCircle(cx, cy, dot / 2, paint) }
@@ -302,16 +302,17 @@ private fun ringBitmap(context: Context, p: Palette, side: Dp, progress: Float):
 }
 
 private fun ensoBitmap(context: Context, p: Palette, side: Dp): Bitmap {
+    val e = Tokens.Enso
     val s = px(context, side)
     val bmp = Bitmap.createBitmap(s, s, Bitmap.Config.ARGB_8888)
     val c = Canvas(bmp)
-    val r = s * 0.38f; val cx = s / 2f
+    val r = s * e.radius; val cx = s / 2f
     val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE }
-    paint.color = p.olive.copy(alpha = 0.45f).toArgb(); paint.strokeWidth = s * 0.05f; c.drawCircle(cx, cx, r, paint)
-    paint.color = p.olive.toArgb(); paint.strokeWidth = s * 0.13f; paint.strokeCap = Paint.Cap.ROUND
-    c.drawArc(RectF(cx - r, cx - r, cx + r, cx + r), -50f, 288f, false, paint)
-    val a = Math.toRadians(-86.0)
+    paint.color = p.olive.copy(alpha = e.ringAlpha).toArgb(); paint.strokeWidth = s * e.ring; c.drawCircle(cx, cx, r, paint)
+    paint.color = p.olive.toArgb(); paint.strokeWidth = s * e.arc; paint.strokeCap = Paint.Cap.ROUND
+    c.drawArc(RectF(cx - r, cx - r, cx + r, cx + r), e.arcStart, e.arcSweep, false, paint)
+    val a = Math.toRadians(e.dotAngle.toDouble())
     paint.style = Paint.Style.FILL; paint.color = p.now.toArgb()
-    c.drawCircle(cx + (cos(a) * r).toFloat(), cx + (sin(a) * r).toFloat(), s * 0.07f, paint)
+    c.drawCircle(cx + (cos(a) * r).toFloat(), cx + (sin(a) * r).toFloat(), s * e.dot, paint)
     return bmp
 }

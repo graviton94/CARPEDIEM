@@ -20,6 +20,9 @@ import io.github.graviton94.carpediem.ui.CountryScreen
 import io.github.graviton94.carpediem.ui.HomeScreen
 import io.github.graviton94.carpediem.ui.OnboardingScreen
 import io.github.graviton94.carpediem.ui.SettingsScreen
+import io.github.graviton94.carpediem.data.Design
+import io.github.graviton94.carpediem.ui.garden.GardenHome
+import io.github.graviton94.carpediem.ui.garden.MeetScreen
 import io.github.graviton94.carpediem.widget.Widgets
 import kotlinx.coroutines.delay
 import java.time.LocalDateTime
@@ -44,11 +47,11 @@ class MainActivity : ComponentActivity() {
         val state = AppState(applicationContext)
         setContent {
             BoxWithConstraints {
-                CarpeDiemTheme(deviceClass = DeviceClass.of(maxWidth)) {
+                CarpeDiemTheme(deviceClass = DeviceClass.of(maxWidth), design = state.design, screenWidth = maxWidth) {
                     var screen by remember { mutableStateOf<Screen>(Screen.Main) }
                     var now by remember { mutableStateOf(LocalDateTime.now()) }
                     LaunchedEffect(Unit) { while (true) { delay(60_000); now = LocalDateTime.now() } }
-                    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { now = LocalDateTime.now(); state.refreshQuote() }
+                    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { now = LocalDateTime.now(); state.refreshQuote(); state.opened() }
 
                     when (val s = screen) {
                         is Screen.Country -> {
@@ -59,8 +62,13 @@ class MainActivity : ComponentActivity() {
                         Screen.Settings -> state.profile?.let { SettingsScreen(state, it, { screen = Screen.Main }) { screen = Screen.Country(Screen.Settings) } } ?: run { screen = Screen.Main }
                         Screen.Main -> {
                             val profile = state.profile
-                            if (profile == null) OnboardingScreen(state) { screen = Screen.Country(Screen.Main) }
-                            else HomeScreen(state, profile, now) { screen = Screen.Settings }
+                            val garden = state.design == Design.GARDEN
+                            when {
+                                profile == null -> OnboardingScreen(state) { screen = Screen.Country(Screen.Main) }
+                                garden && state.meetPending -> MeetScreen(state) { state.finishMeet() }
+                                garden -> GardenHome(state, profile, now) { screen = Screen.Settings }
+                                else -> HomeScreen(state, profile, now) { screen = Screen.Settings }
+                            }
                         }
                     }
                 }

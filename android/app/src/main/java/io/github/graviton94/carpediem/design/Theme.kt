@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import io.github.graviton94.carpediem.R
+import io.github.graviton94.carpediem.data.Design
 
 /** 화면 폭에 따른 크기 등급. 큰 숫자 크기와 화면 좌우 여백만 이 등급을 따른다 (iOS 와 같은 기준). */
 enum class DeviceClass {
@@ -32,8 +33,8 @@ enum class DeviceClass {
 
     companion object {
         fun of(widthDp: Dp): DeviceClass = when {
-            widthDp < 390.dp -> Compact
-            widthDp >= 430.dp -> Large
+            widthDp < Tokens.DeviceWidth.compactBelow.dp -> Compact
+            widthDp >= Tokens.DeviceWidth.largeFrom.dp -> Large
             else -> Regular
         }
     }
@@ -65,13 +66,14 @@ object Fonts {
     val notoSerifKr = FontFamily(Font(R.font.notoserifkr_medium, FontWeight.Medium), Font(R.font.notoserifkr_semibold, FontWeight.SemiBold), Font(R.font.notoserifkr_semibold, FontWeight.Bold))
 }
 
-/** 현재 모드로 풀어 둔 색. 화면 코드는 이 값만 쓴다. */
-data class Palette(val dark: Boolean) {
+/** 현재 모드로 풀어 둔 색. 화면 코드는 이 값만 쓴다. 정원 디자인은 종이 그림이라 늘 밝은 종이 · 잉크 색. */
+data class Palette(val dark: Boolean, val garden: Boolean = false) {
     private fun c(d: DynamicColor) = d.resolve(dark)
-    val base = c(Tokens.Palette.base)
-    val foreground = c(Tokens.Palette.foreground)
-    val secondary = c(Tokens.Palette.secondary)
-    val dim = c(Tokens.Palette.dim)
+    private val g = Tokens.Garden.Colors
+    val base = if (garden) g.paper else c(Tokens.Palette.base)
+    val foreground = if (garden) g.ink else c(Tokens.Palette.foreground)
+    val secondary = if (garden) g.inkSoft else c(Tokens.Palette.secondary)
+    val dim = if (garden) g.dim else c(Tokens.Palette.dim)
     val olive = c(Tokens.Palette.olive)
     val onOlive = c(Tokens.Palette.onOlive)
     val light = c(Tokens.Palette.light)
@@ -87,18 +89,26 @@ data class Palette(val dark: Boolean) {
 
 val LocalPalette = staticCompositionLocalOf { Palette(false) }
 val LocalDeviceClass = staticCompositionLocalOf { DeviceClass.Regular }
+val LocalDesign = staticCompositionLocalOf { Design.GLASS }
+/** 정원 단위 한 칸의 크기 (화면 폭 / Tokens.Garden.unitWidth). */
+val LocalGardenUnit = staticCompositionLocalOf { 1.dp }
 
 object Theme {
     val palette: Palette @Composable @ReadOnlyComposable get() = LocalPalette.current
     val deviceClass: DeviceClass @Composable @ReadOnlyComposable get() = LocalDeviceClass.current
+    val design: Design @Composable @ReadOnlyComposable get() = LocalDesign.current
+    val garden: Boolean @Composable @ReadOnlyComposable get() = LocalDesign.current == Design.GARDEN
+    val unit: Dp @Composable @ReadOnlyComposable get() = LocalGardenUnit.current
 }
 
 @Composable
-fun CarpeDiemTheme(dark: Boolean = isSystemInDarkTheme(), deviceClass: DeviceClass, content: @Composable () -> Unit) {
-    val p = Palette(dark)
-    val scheme = if (dark) darkColorScheme(primary = p.olive, onPrimary = p.onOlive, background = p.base, surface = p.base, onSurface = p.foreground, onBackground = p.foreground)
+fun CarpeDiemTheme(dark: Boolean = isSystemInDarkTheme(), deviceClass: DeviceClass, design: Design = Design.GLASS, screenWidth: Dp = Tokens.Garden.unitWidth.dp, content: @Composable () -> Unit) {
+    val garden = design == Design.GARDEN
+    val p = Palette(dark && !garden, garden)
+    val unit = screenWidth / Tokens.Garden.unitWidth
+    val scheme = if (dark && !garden) darkColorScheme(primary = p.olive, onPrimary = p.onOlive, background = p.base, surface = p.base, onSurface = p.foreground, onBackground = p.foreground)
     else lightColorScheme(primary = p.olive, onPrimary = p.onOlive, background = p.base, surface = p.base, onSurface = p.foreground, onBackground = p.foreground)
-    CompositionLocalProvider(LocalPalette provides p, LocalDeviceClass provides deviceClass) {
+    CompositionLocalProvider(LocalPalette provides p, LocalDeviceClass provides deviceClass, LocalDesign provides design, LocalGardenUnit provides unit) {
         MaterialTheme(colorScheme = scheme, content = content)
     }
 }

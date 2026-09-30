@@ -1,0 +1,340 @@
+package io.github.graviton94.carpediem.ui.garden
+
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.boundsInParent
+import androidx.compose.ui.layout.layout
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import io.github.graviton94.carpediem.R
+import io.github.graviton94.carpediem.core.GridScale
+import io.github.graviton94.carpediem.core.LifePeriod
+import io.github.graviton94.carpediem.core.LifeProfile
+import io.github.graviton94.carpediem.core.LifeSnapshot
+import io.github.graviton94.carpediem.core.LifeUnit
+import io.github.graviton94.carpediem.core.Moment
+import io.github.graviton94.carpediem.core.Moments
+import io.github.graviton94.carpediem.core.Season
+import io.github.graviton94.carpediem.data.QuoteLanguage
+import io.github.graviton94.carpediem.design.Theme
+import io.github.graviton94.carpediem.design.Tokens
+import io.github.graviton94.carpediem.design.Tokens.Garden as G
+import io.github.graviton94.carpediem.ui.AppState
+import io.github.graviton94.carpediem.ui.Labels
+import io.github.graviton94.carpediem.ui.TokenText
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
+import kotlin.math.max
+import kotlin.math.min
+import kotlin.math.sin
+
+private fun lerp(a: Float, b: Float, t: Float) = a + (b - a) * t
+
+/** 해(낮) · 달(밤)이 지금 하늘의 어디쯤인지 (0 = 왼쪽 끝, 1 = 오른쪽 끝). 폰 시스템 시각 기준. */
+private fun skyProgress(now: LocalDateTime): Pair<Boolean, Float> {
+    val h = now.hour + now.minute / 60f
+    val rise = G.Motion.sunrise; val set = G.Motion.sunset
+    return if (h in rise..set) true to ((h - rise) / (set - rise))
+    else false to (((h - set + 24f) % 24f) / (24f - (set - rise)))
+}
+
+private fun sleepy(now: LocalDateTime): Boolean { val h = now.hour; return h >= G.Motion.sleepFrom.toInt() || h < G.Motion.sleepTo.toInt() }
+
+/** 가운데를 x 에 두되 [min, max] 안에서 벗어나지 않게. */
+private fun Modifier.centerAt(xPx: Float, minPx: Float, maxPx: Float) = layout { measurable, constraints ->
+    val p = measurable.measure(constraints.copy(minWidth = 0))
+    layout(constraints.maxWidth, p.height) { p.place((xPx - p.width / 2f).coerceIn(minPx, max(minPx, maxPx - p.width)).toInt(), 0) }
+}
+
+@Composable
+private fun haruArt(state: AppState, sprout: Boolean): HaruArt? {
+    val ctx = LocalContext.current
+    val seed = state.store.haruSeed
+    val art by produceState<HaruArt?>(null, seed, sprout) { value = HaruArtStore.get(ctx, seed, sprout) }
+    return art
+}
+
+// ───────────────────────── 홈 = 정원 ─────────────────────────
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSettings: () -> Unit) {
+    val p = Theme.palette
+    val ctx = LocalContext.current
+    val density = LocalDensity.current
+    val s = LifeSnapshot(profile.birthDate, profile.expectancy(state.store.table), now)
+    val season = s.season
+    val art = haruArt(state, season == Season.SPRING)
+    val moments = if (state.previewAll) Moments.all(now.toLocalDate()) else Moments.earned(state.store.startDate, profile.birthDate, s.expectancy, now.toLocalDate(), state.store.firstSkip, state.store.returned)
+    var open by remember { mutableStateOf<Moment?>(null) }
+
+    BoxWithConstraints(Modifier.fillMaxSize().paperBackground()) {
+        val u = Theme.unit
+        val screenH = maxHeight
+        val margin = Theme.deviceClass.pageMargin
+        var topBottom by remember { mutableStateOf(0.dp) }
+        Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
+            Box(Modifier.fillMaxWidth().height(screenH).clipToBounds()) {
+                Image(GardenArt.sky(ctx, season), null, Modifier.fillMaxSize(), contentScale = ContentScale.FillWidth, alignment = Alignment.TopCenter)
+
+                // 위: 남은 시간 · 단위 · 오늘의 문장
+                Column(
+                    Modifier.fillMaxWidth().statusBarsPadding().padding(horizontal = margin).onGloballyPositioned { c -> topBottom = with(density) { (c.boundsInParent().bottom).toDp() } },
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp2),
+                ) {
+                    Row(Modifier.fillMaxWidth()) {
+                        Spacer(Modifier.weight(1f))
+                        IconButton(onClick = onSettings, modifier = Modifier.semantics { contentDescription = ctx.getString(R.string.settings) }) { Icon(Icons.Filled.Settings, null, tint = p.secondary) }
+                    }
+                    TokenText(stringResource(R.string.timeLeft), Tokens.TypeScale.subhead, color = p.secondary)
+                    TokenText(Labels.number(s.remaining(state.unit)), Tokens.TypeScale.display(Theme.deviceClass), maxLines = 1)
+                    Row(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
+                        LifeUnit.entries.forEachIndexed { i, unit -> GardenChip(Labels.unit(ctx, unit), unit == state.unit, seed = 800 + i) { state.changeUnit(unit) } }
+                    }
+                    state.quote?.let { q ->
+                        Column(
+                            Modifier.fillMaxWidth().padding(top = Tokens.Space.sp4).clickable { state.nextQuote() },
+                            horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1),
+                        ) {
+                            TokenText(if (state.quoteLanguage == QuoteLanguage.ENGLISH) q.english else q.korean, Tokens.TypeScale.headline.serif(), align = TextAlign.Center)
+                            if (state.quoteLanguage == QuoteLanguage.BOTH) TokenText(q.english, Tokens.TypeScale.footnote.serif(), color = p.secondary, align = TextAlign.Center)
+                            TokenText(stringResource(R.string.words_next), Tokens.TypeScale.caption2, color = p.secondary, weight = FontWeight.Normal)
+                        }
+                    }
+                }
+
+                // 아래: 지나온 길 (땅 한 줄) 위에 하루와 놓인 것
+                val haruScale = u * (G.Layout.haruWidth / G.Layout.haruArtWidth)
+                val haruAbove = art?.let { haruScale * (it.meta.ground - it.meta.bbox.top) } ?: (u * G.Layout.haruWidth)
+                val labels = u * (G.Layout.labelGap + G.Layout.labelRow * 3)
+                val gy = maxOf(screenH * G.Layout.groundRatio, topBottom + u * G.Layout.minSkyGap + haruAbove).coerceAtMost(screenH - labels)
+                val x0 = u * G.Layout.pathStart; val x1 = u * G.Layout.pathEnd
+                val hx = lerp((u * (G.Layout.pathStart + G.Layout.pathInset)).value, (u * (G.Layout.pathEnd - G.Layout.pathInset)).value, s.progress.toFloat()).dp
+
+                // 해 · 달: 폰 시각을 따라 하늘을 가로지름. 위쪽 글자에는 닿지 않음.
+                val (day, t) = skyProgress(now)
+                val r = u * G.Layout.sunRadius
+                val base = gy - u * G.Layout.sunBase
+                val arc = min((u * G.Layout.sunArc).value, (base - topBottom - u * G.Layout.minSkyGap - r).value.coerceAtLeast(0f)).dp
+                val sx = lerp((u * G.Layout.sunStart).value, (u * G.Layout.sunEnd).value, t).dp
+                val sy = base - arc * sin(t * Math.PI).toFloat()
+                Image(if (day) GardenArt.sun(ctx) else GardenArt.moon(ctx), null, Modifier.offset(sx - r, sy - r).size(r * 2))
+
+                Image(GardenArt.strip(ctx, season), null, Modifier.offset(y = gy - u * G.Layout.stripLineY).fillMaxWidth().height(u * G.Layout.stripHeight), contentScale = ContentScale.FillBounds)
+
+                // 놓인 것: 하루 왼쪽(지나온 쪽)에 최근 것부터. 자리가 없으면 거기까지만.
+                val box = u * (G.Layout.objBox * G.Layout.objScale)
+                val half = art?.let { haruScale * ((it.meta.bbox.width) / 2) } ?: (u * G.Layout.haruWidth / 2)
+                var cursor = hx - half - u * G.Layout.itemFromHaru
+                for (m in moments) {
+                    val cx = cursor - box * 0.3f
+                    if (cx - box * 0.3f < x0) break
+                    Image(GardenArt.obj(ctx, m.id), stringResource(objName(m.id)), Modifier.offset(cx - box / 2, gy - box * (G.Layout.objGround / G.Layout.objBox)).size(box).clickable { open = m })
+                    cursor = cx - box * 0.3f - u * G.Layout.itemGap
+                }
+
+                if (art != null) HaruFigure(art, haruScale, Modifier.offset(hx - haruScale * (art.meta.box / 2), gy - haruScale * art.meta.ground), sleepy = sleepy(now), blinkKick = state.blinkKick)
+
+                // 0세 · 기대수명 (한 줄) · 지금 나이와 계절 (다음 줄, 하루 아래)
+                val px = with(density) { Triple(x0.toPx(), x1.toPx(), hx.toPx()) }
+                Box(Modifier.offset(y = gy + u * G.Layout.labelGap).fillMaxWidth()) {
+                    TokenText(stringResource(R.string.garden_age0), Tokens.TypeScale.caption1, Modifier.centerAt(px.first, 0f, px.second), color = p.secondary)
+                    TokenText(stringResource(R.string.expectancy_value, Labels.years(s.expectancy)), Tokens.TypeScale.caption1, Modifier.centerAt(px.second, px.first, with(density) { maxWidth.toPx() }), color = p.secondary)
+                }
+                Box(Modifier.offset(y = gy + u * (G.Layout.labelGap + G.Layout.labelRow)).fillMaxWidth()) {
+                    TokenText(stringResource(R.string.path_age, "${s.age}", Labels.season(ctx, season)), Tokens.TypeScale.caption1, Modifier.centerAt(px.third, px.first, px.second))
+                }
+                TokenText(stringResource(R.string.garden_down), Tokens.TypeScale.caption2, Modifier.align(Alignment.BottomCenter).navigationBarsPadding().padding(bottom = Tokens.Space.sp3), color = p.secondary, weight = FontWeight.Normal)
+            }
+
+            // 아래로 넘기면: 흐르는 시간 · 인생 달력
+            Column(Modifier.fillMaxWidth().padding(horizontal = margin).navigationBarsPadding().padding(bottom = Tokens.Space.sp10), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
+                TokenText(stringResource(R.string.flow), Tokens.TypeScale.title3)
+                LifePeriod.entries.forEachIndexed { i, period ->
+                    val pp = s.period(period)
+                    Row {
+                        TokenText(Labels.period(ctx, period), Tokens.TypeScale.subhead)
+                        Spacer(Modifier.weight(1f))
+                        TokenText("${Labels.percent(pp.progress, 0)} · ${Labels.remaining(ctx, pp)}", Tokens.TypeScale.caption1, color = p.secondary)
+                    }
+                    CrayonBar(pp.progress.toFloat(), G.Colors.bars[i], seed = 830 + i * 3)
+                }
+                Spacer(Modifier.height(Tokens.Space.sp4))
+                var menu by remember { mutableStateOf(false) }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    TokenText(stringResource(R.string.calendar), Tokens.TypeScale.title3)
+                    Spacer(Modifier.weight(1f))
+                    Box {
+                        Row(Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { menu = true }, verticalAlignment = Alignment.CenterVertically) {
+                            TokenText(Labels.grid(ctx, state.grid), Tokens.TypeScale.subhead, color = p.secondary, weight = FontWeight.SemiBold)
+                            Icon(Icons.Filled.KeyboardArrowDown, null, tint = p.secondary)
+                        }
+                        DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
+                            GridScale.entries.forEach { g -> DropdownMenuItem(text = { Text(Labels.grid(ctx, g)) }, onClick = { state.changeGrid(g); menu = false }) }
+                        }
+                    }
+                }
+                val cols = when (state.grid) { GridScale.WEEKS -> Tokens.Grid.weeksColumns; GridScale.MONTHS -> Tokens.Grid.monthsColumns; GridScale.YEARS -> Tokens.Grid.yearsColumns }
+                CrayonCalendar(s.total(state.grid.unit), s.lived(state.grid.unit), cols)
+                TokenText(stringResource(R.string.calendar_legend, Labels.season(ctx, season)), Tokens.TypeScale.caption1, color = p.secondary)
+            }
+        }
+    }
+
+    open?.let { m ->
+        ModalBottomSheet(onDismissRequest = { open = null }, containerColor = G.Colors.paper) {
+            ItemSheet(m) { open = null }
+        }
+    }
+}
+
+private fun objName(id: String) = when (id) {
+    "moss" -> R.string.obj_moss; "teacup" -> R.string.obj_teacup; "cairn" -> R.string.obj_cairn; "pine" -> R.string.obj_pine
+    "flower" -> R.string.obj_flower; "pond" -> R.string.obj_pond; "leaf" -> R.string.obj_leaf; "candle" -> R.string.obj_candle
+    "dandelion" -> R.string.obj_dandelion; "feather" -> R.string.obj_feather; "snail" -> R.string.obj_snail; else -> R.string.obj_acorn
+}
+private fun objWhen(id: String) = when (id) {
+    "moss" -> R.string.obj_moss_when; "teacup" -> R.string.obj_teacup_when; "cairn" -> R.string.obj_cairn_when; "pine" -> R.string.obj_pine_when
+    "flower" -> R.string.obj_flower_when; "pond" -> R.string.obj_pond_when; "leaf" -> R.string.obj_leaf_when; "candle" -> R.string.obj_candle_when
+    "dandelion" -> R.string.obj_dandelion_when; "feather" -> R.string.obj_feather_when; "snail" -> R.string.obj_snail_when; else -> R.string.obj_acorn_when
+}
+private fun objLine(id: String) = when (id) {
+    "moss" -> R.string.obj_moss_line; "teacup" -> R.string.obj_teacup_line; "cairn" -> R.string.obj_cairn_line; "pine" -> R.string.obj_pine_line
+    "flower" -> R.string.obj_flower_line; "pond" -> R.string.obj_pond_line; "leaf" -> R.string.obj_leaf_line; "candle" -> R.string.obj_candle_line
+    "dandelion" -> R.string.obj_dandelion_line; "feather" -> R.string.obj_feather_line; "snail" -> R.string.obj_snail_line; else -> R.string.obj_acorn_line
+}
+
+/** 놓인 것을 누르면: 생긴 날과 한 줄. 개수나 빈칸은 보이지 않는다. */
+@Composable
+private fun ItemSheet(m: Moment, onClose: () -> Unit) {
+    val p = Theme.palette
+    val ctx = LocalContext.current
+    val u = Theme.unit
+    Column(Modifier.fillMaxWidth().padding(horizontal = Theme.deviceClass.pageMargin).navigationBarsPadding().padding(bottom = Tokens.Space.sp6),
+        horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
+        TokenText(stringResource(objName(m.id)), Tokens.TypeScale.title3)
+        Image(GardenArt.obj(ctx, m.id), null, Modifier.size(u * G.Layout.objBox * 0.8f))
+        TokenText(stringResource(R.string.garden_itemDate, m.date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)), stringResource(objWhen(m.id))), Tokens.TypeScale.footnote, color = p.secondary)
+        TokenText(stringResource(objLine(m.id)), Tokens.TypeScale.callout.serif(), align = TextAlign.Center)
+        GardenButton(stringResource(R.string.garden_close), onClose, filled = false, seed = 876)
+    }
+}
+
+// ───────────────────────── 하루를 만남 (온보딩 다음 한 장) ─────────────────────────
+
+/** 반짝이는 첫 만남에만. 평소 정원에는 반짝이가 없다. */
+@Composable
+fun MeetScreen(state: AppState, onDone: () -> Unit) {
+    val p = Theme.palette
+    val ctx = LocalContext.current
+    val art = haruArt(state, sprout = true)
+    BoxWithConstraints(Modifier.fillMaxSize().paperBackground()) {
+        val u = Theme.unit
+        Image(GardenArt.sky(ctx, Season.SPRING), null, Modifier.fillMaxSize(), contentScale = ContentScale.FillWidth, alignment = Alignment.TopCenter)
+        Column(Modifier.fillMaxSize().statusBarsPadding().navigationBarsPadding().padding(horizontal = Theme.deviceClass.pageMargin),
+            horizontalAlignment = Alignment.CenterHorizontally) {
+            Spacer(Modifier.height(Tokens.Space.sp10))
+            TokenText(stringResource(R.string.garden_meet_title), Tokens.TypeScale.title2.serif(), align = TextAlign.Center)
+            Spacer(Modifier.height(Tokens.Space.sp2))
+            TokenText(stringResource(R.string.garden_meet_sub), Tokens.TypeScale.subhead, color = p.secondary, align = TextAlign.Center)
+            Spacer(Modifier.weight(1f))
+            val scale = u * (G.Layout.meetHaruWidth / G.Layout.haruArtWidth)
+            Box(Modifier.fillMaxWidth().height(u * G.Layout.haruBox * (G.Layout.meetHaruWidth / G.Layout.haruArtWidth) * 0.8f), contentAlignment = Alignment.BottomCenter) {
+                Image(GardenArt.strip(ctx, Season.SPRING), null, Modifier.offset(y = u * (G.Layout.stripHeight - G.Layout.stripLineY)).width(maxWidth).height(u * G.Layout.stripHeight), contentScale = ContentScale.FillBounds)
+                if (art == null) TokenText(stringResource(R.string.garden_drawing), Tokens.TypeScale.footnote, color = p.secondary)
+                else Box(Modifier.offset(y = scale * (art.meta.box - art.meta.ground))) {
+                    HaruFigure(art, scale)
+                    Sparkles(art, scale)
+                }
+            }
+            Spacer(Modifier.height(Tokens.Space.sp6))
+            art?.let { TokenText("${Labels.stone(ctx, it.meta.stone)} · ${stringResource(R.string.garden_no, haruNo(state.store.haruSeed))}", Tokens.TypeScale.caption1, color = p.secondary) }
+            Spacer(Modifier.weight(1f))
+            GardenButton(stringResource(R.string.garden_meet_go), onDone, filled = true, seed = 750)
+            Spacer(Modifier.height(Tokens.Space.sp6))
+        }
+    }
+}
+
+@Composable
+private fun Sparkles(art: HaruArt, scale: Dp) {
+    val ctx = LocalContext.current
+    val img: ImageBitmap = GardenArt.sparkle(ctx)
+    val bb = art.meta.bbox; val s = G.Layout.sparkle
+    listOf(Triple(bb.left - s * 1.4f, bb.top + s, s), Triple(bb.right + s * 1.1f, bb.top - s * 0.2f, s * 0.8f)).forEach { (x, y, r) ->
+        Image(img, null, Modifier.offset(scale * (x - r), scale * (y - r)).size(scale * (r * 2)))
+    }
+}
+
+/** 하루 번호를 사람이 읽는 꼴로 (예: 2A61·F07C). */
+fun haruNo(seed: Long): String { val h = seed.toString(16).uppercase().padStart(8, '0').takeLast(8); return h.take(4) + "·" + h.drop(4) }
+
+// ───────────────────────── 작은 부품 ─────────────────────────
+
+@Composable
+fun GardenChip(text: String, selected: Boolean, seed: Int, onClick: () -> Unit) {
+    Box(
+        Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable(onClick = onClick), contentAlignment = Alignment.Center,
+    ) {
+        Box(Modifier.crayonBox(if (selected) G.Colors.chip else null, G.Radius.chip, G.Stroke.chip, seed).padding(horizontal = Tokens.Space.sp3, vertical = Tokens.Space.sp1)) {
+            TokenText(text, Tokens.TypeScale.subhead, weight = if (selected) FontWeight.Bold else FontWeight.Medium)
+        }
+    }
+}
+
+@Composable
+fun GardenButton(text: String, onClick: () -> Unit, filled: Boolean, seed: Int, modifier: Modifier = Modifier) {
+    Box(
+        modifier.fillMaxWidth().heightIn(min = Tokens.Layout.tapTarget + Tokens.Space.sp2).crayonBox(if (filled) G.Colors.button else null, G.Radius.button, G.Stroke.box, seed).clickable(onClick = onClick),
+        contentAlignment = Alignment.Center,
+    ) { TokenText(text, Tokens.TypeScale.headline) }
+}

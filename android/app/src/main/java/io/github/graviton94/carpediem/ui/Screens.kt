@@ -63,7 +63,12 @@ import io.github.graviton94.carpediem.core.LifeSnapshot
 import io.github.graviton94.carpediem.core.LifeUnit
 import io.github.graviton94.carpediem.core.Quote
 import io.github.graviton94.carpediem.core.Sex
+import io.github.graviton94.carpediem.data.Design
 import io.github.graviton94.carpediem.data.QuoteLanguage
+import io.github.graviton94.carpediem.ui.garden.GardenButton
+import io.github.graviton94.carpediem.ui.garden.haruNo
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import io.github.graviton94.carpediem.design.Theme
 import io.github.graviton94.carpediem.design.Tokens
 import java.time.Instant
@@ -95,9 +100,10 @@ fun OnboardingScreen(state: AppState, onCountry: () -> Unit) {
                 TokenText(stringResource(R.string.tagline), Tokens.TypeScale.title3, color = p.secondary)
             }
             ProfileFields(state, draft, { state.draft = it }, onCountry)
-            Box(
+            if (Theme.garden) GardenButton(stringResource(R.string.begin), { state.begin(draft); state.draft = null }, filled = true, seed = 740, modifier = Modifier.padding(top = Tokens.Space.sp3))
+            else Box(
                 Modifier.fillMaxWidth().padding(top = Tokens.Space.sp3).heightIn(min = Tokens.Layout.tapTarget + Tokens.Space.sp2)
-                    .clip(RoundedCornerShape(Tokens.Radius.pill)).background(p.olive).clickable { state.save(draft); state.draft = null },
+                    .clip(RoundedCornerShape(Tokens.Radius.pill)).background(p.olive).clickable { state.begin(draft); state.draft = null },
                 contentAlignment = Alignment.Center,
             ) { TokenText(stringResource(R.string.begin), Tokens.TypeScale.headline, color = p.onOlive) }
             TokenText(stringResource(R.string.privacy), Tokens.TypeScale.footnote, Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.Center)
@@ -148,8 +154,9 @@ fun ProfileFields(state: AppState, draft: LifeProfile, onChange: (LifeProfile) -
         val value = draft.expectancy(table)
         if (draft.customExpectancy != null) {
             FormRow(stringResource(R.string.expectancy_value, Labels.years(value))) {
-                listOf(-0.5, 0.5).forEach { step ->
-                    TextButton(onClick = { onChange(draft.copy(customExpectancy = (value + step).coerceIn(30.0, 120.0))) }) {
+                val step = Tokens.Expectancy.step.toDouble()
+                listOf(-step, step).forEach { step ->
+                    TextButton(onClick = { onChange(draft.copy(customExpectancy = (value + step).coerceIn(Tokens.Expectancy.min.toDouble(), Tokens.Expectancy.max.toDouble()))) }) {
                         TokenText(if (step < 0) "−" else "+", Tokens.TypeScale.title2, color = p.olive)
                     }
                 }
@@ -290,6 +297,21 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
                 TextButton(onClick = { state.save(draft); state.draft = null; onClose() }) { TokenText(stringResource(R.string.done), Tokens.TypeScale.headline, color = p.olive) }
             }
             ProfileFields(state, draft, { state.draft = it }, onCountry)
+            FormSection(header = stringResource(R.string.design)) {
+                FormRow(stringResource(R.string.design)) {
+                    ChipPicker(Design.entries, state.design, { Labels.design(ctx, it) }) { state.changeDesign(it) }
+                }
+                if (state.design == Design.GARDEN) {
+                    RowDivider()
+                    FormRow(stringResource(R.string.garden_haru)) {
+                        TokenText(stringResource(R.string.garden_no, haruNo(state.store.haruSeed)), Tokens.TypeScale.subhead, color = p.secondary)
+                    }
+                    RowDivider()
+                    FormRow(stringResource(R.string.garden_preview), onClick = { state.changePreviewAll(!state.previewAll) }) {
+                        Switch(state.previewAll, { state.changePreviewAll(it) }, colors = SwitchDefaults.colors(checkedTrackColor = p.olive))
+                    }
+                }
+            }
             FormSection(header = stringResource(R.string.words)) {
                 FormRow(stringResource(R.string.words_language)) {
                     ChipPicker(QuoteLanguage.entries, state.quoteLanguage, { Labels.quoteLanguage(ctx, it) }) { state.changeQuoteLanguage(it) }

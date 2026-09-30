@@ -14,6 +14,7 @@ import io.github.graviton94.carpediem.core.LifeUnit
 import io.github.graviton94.carpediem.core.PeriodProgress
 import io.github.graviton94.carpediem.core.Season
 import io.github.graviton94.carpediem.core.Sex
+import io.github.graviton94.carpediem.data.Design
 import io.github.graviton94.carpediem.data.QuoteLanguage
 import io.github.graviton94.carpediem.data.Store
 import io.github.graviton94.carpediem.widget.Widgets
@@ -33,20 +34,35 @@ class AppState(private val context: Context) {
         private set
     var grid by mutableStateOf(store.grid)
         private set
+    var design by mutableStateOf(store.design)
+        private set
+    var meetPending by mutableStateOf(store.meetPending)
+        private set
+    var previewAll by mutableStateOf(store.previewAll)
+        private set
+    /** 문장을 넘기면 하루가 한 번 깜빡인다. */
+    var blinkKick by mutableStateOf(0)
+        private set
     /** 온보딩 · 설정에서 고치는 중인 정보 (나라 선택 화면을 다녀와도 유지). */
     var draft by mutableStateOf<LifeProfile?>(null)
 
     init { store.ensureQuoteSeed(); quote = store.todaysQuote() }
 
     fun save(p: LifeProfile) { store.profile = p; profile = p; Widgets.refresh(context) }
-    fun nextQuote() { store.skipQuote(); quote = store.todaysQuote(); Widgets.refresh(context) }
+    /** 온보딩을 마칠 때. 정원 디자인이면 하루를 만나는 화면을 먼저 보여 준다. */
+    fun begin(p: LifeProfile) { save(p); if (design == Design.GARDEN) { store.meetPending = true; meetPending = true } }
+    fun finishMeet() { store.meetPending = false; meetPending = false }
+    fun changeDesign(v: Design) { store.design = v; design = v }
+    fun changePreviewAll(v: Boolean) { store.previewAll = v; previewAll = v }
+    fun opened() = store.markOpened()
+    fun nextQuote() { store.skipQuote(); quote = store.todaysQuote(); blinkKick++; Widgets.refresh(context) }
     fun refreshQuote() { quote = store.todaysQuote() }
     fun changeQuoteLanguage(v: QuoteLanguage) { store.quoteLanguage = v; quoteLanguage = v; Widgets.refresh(context) }
     fun changeUnit(v: LifeUnit) { store.unit = v; unit = v }
     fun changeGrid(v: GridScale) { store.grid = v; grid = v }
     fun eraseAll() {
         store.eraseAll(); store.ensureQuoteSeed()
-        profile = null; quoteLanguage = store.quoteLanguage; quote = store.todaysQuote(); Widgets.refresh(context)
+        profile = null; quoteLanguage = store.quoteLanguage; quote = store.todaysQuote(); design = store.design; meetPending = false; previewAll = false; Widgets.refresh(context)
     }
 
     fun defaultProfile(): LifeProfile {
@@ -58,6 +74,8 @@ class AppState(private val context: Context) {
 /** 화면 문구 (strings.xml). 위젯과 앱이 함께 쓴다. */
 object Labels {
     fun unit(c: Context, u: LifeUnit) = c.getString(when (u) { LifeUnit.DAYS -> R.string.unit_days; LifeUnit.WEEKS -> R.string.unit_weeks; LifeUnit.MONTHS -> R.string.unit_months; LifeUnit.YEARS -> R.string.unit_years })
+    fun stone(c: Context, id: String): String = c.resources.getIdentifier("stone_$id", "string", c.packageName).let { if (it == 0) id else c.getString(it) }
+    fun design(c: Context, d: Design) = c.getString(when (d) { Design.GLASS -> R.string.design_glass; Design.GARDEN -> R.string.design_garden })
     fun season(c: Context, s: Season) = c.getString(when (s) { Season.SPRING -> R.string.season_spring; Season.SUMMER -> R.string.season_summer; Season.AUTUMN -> R.string.season_autumn; Season.WINTER -> R.string.season_winter })
     fun sex(c: Context, s: Sex) = c.getString(when (s) { Sex.OTHER -> R.string.sex_other; Sex.MALE -> R.string.sex_male; Sex.FEMALE -> R.string.sex_female })
     fun period(c: Context, p: LifePeriod) = c.getString(when (p) { LifePeriod.DAY -> R.string.flow_today; LifePeriod.WEEK -> R.string.flow_week; LifePeriod.MONTH -> R.string.flow_month; LifePeriod.YEAR -> R.string.flow_year })

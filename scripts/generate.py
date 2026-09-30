@@ -92,6 +92,8 @@ def tokens_swift(t: dict) -> str:
     out.append(f"        static let glowStrength: Double = {e['glowStrength']}")
     out.append(f"        static let glassOpacity: Double = {e['glassOpacity']}")
     out.append(f"        static let glassBlur: CGFloat = {e['glassBlur']}")
+    out += _nested_swift("sky", e["sky"], "        ")
+    out += _nested_swift("nowHalo", e["nowHalo"], "        ")
     out.append("    }\n")
 
     g = t["grid"]
@@ -104,8 +106,54 @@ def tokens_swift(t: dict) -> str:
     out.append(f"        static let widgetMediumTextRatio: CGFloat = {g['widgetMediumTextRatio']}")
     out.append(f"        static let widgetLargeColumns = {g['widgetLargeColumns']}")
     out.append("    }")
+    for grp in EXTRA_GROUPS:
+        out.append("")
+        out += _nested_swift(GROUP_NAME.get(grp, grp), t[grp], "    ")
     out.append("}")
     return "\n".join(out) + "\n"
+
+
+def _is_color(v):
+    return isinstance(v, str) and v.startswith("#")
+
+
+def _nested_kotlin(name: str, d: dict, indent: str) -> list:
+    """숫자 → Float 상수, 색 → Color, 색 목록 → List<Color>. 하위 묶음은 object 로."""
+    o = [f"{indent}object {name[:1].upper() + name[1:]} {{"]
+    for k, v in d.items():
+        if k.startswith("_"):
+            continue
+        if isinstance(v, dict):
+            o += _nested_kotlin("Colors" if k == "color" else k, v, indent + "    ")
+        elif isinstance(v, list):
+            o.append(f"{indent}    val {k} = listOf(" + ", ".join(f"Color({argb(c)})" for c in v) + ")")
+        elif _is_color(v):
+            o.append(f"{indent}    val {k} = Color({argb(v)})")
+        else:
+            o.append(f"{indent}    const val {k} = {float(v)}f")
+    o.append(f"{indent}}}")
+    return o
+
+
+def _nested_swift(name: str, d: dict, indent: str) -> list:
+    o = [f"{indent}enum {name[:1].upper() + name[1:]} {{"]
+    for k, v in d.items():
+        if k.startswith("_"):
+            continue
+        if isinstance(v, dict):
+            o += _nested_swift("Colors" if k == "color" else k, v, indent + "    ")
+        elif isinstance(v, list):
+            o.append(f"{indent}    static let {k}: [UInt32] = [" + ", ".join(hexcolor(c) for c in v) + "]")
+        elif _is_color(v):
+            o.append(f"{indent}    static let {k}: UInt32 = {hexcolor(v)}")
+        else:
+            o.append(f"{indent}    static let {k}: CGFloat = {float(v)}")
+    o.append(f"{indent}}}")
+    return o
+
+
+EXTRA_GROUPS = ("enso", "expectancy", "widget", "deviceClass", "garden")
+GROUP_NAME = {"deviceClass": "deviceWidth"}  # DeviceClass 타입과 이름이 겹치지 않게
 
 
 PLACEHOLDER = re.compile(r"\{(\w+)\}")
@@ -212,6 +260,8 @@ def tokens_kotlin(t: dict) -> str:
     o.append("    object Effect {")
     o.append(f"        const val glowStrength = {e['glowStrength']}f")
     o.append(f"        const val glassOpacity = {e['glassOpacity']}f")
+    o += _nested_kotlin("sky", e["sky"], "        ")
+    o += _nested_kotlin("nowHalo", e["nowHalo"], "        ")
     o.append("    }\n")
     g = t["grid"]
     o.append("    object Grid {")
@@ -223,6 +273,9 @@ def tokens_kotlin(t: dict) -> str:
     o.append(f"        const val widgetMediumTextRatio = {g['widgetMediumTextRatio']}f")
     o.append(f"        const val widgetLargeColumns = {g['widgetLargeColumns']}")
     o.append("    }")
+    for grp in EXTRA_GROUPS:
+        o.append("")
+        o += _nested_kotlin(GROUP_NAME.get(grp, grp), t[grp], "    ")
     o.append("}")
     return "\n".join(o) + "\n"
 

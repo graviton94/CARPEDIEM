@@ -113,4 +113,27 @@ class DataTest {
         assertEquals(table.country("KR")!!.male, p.expectancy(table))
         assertEquals(95.0, p.copy(customExpectancy = 95.0).expectancy(table))
     }
+
+    @Test fun momentsComeWithTime() {
+        val start = d(2026, 9, 30)
+        assertEquals(listOf("moss"), Moments.earned(start, d(2000, 5, 12), 86.4, start).map { it.id })
+        val week = Moments.earned(start, d(2000, 5, 12), 86.4, start.plusDays(7)).map { it.id }
+        assertEquals(listOf("teacup", "moss"), week)
+        val later = Moments.earned(start, d(2000, 5, 12), 86.4, d(2027, 6, 1)).associate { it.id to it.date }
+        assertEquals(d(2027, 1, 1), later["dandelion"])
+        assertEquals(d(2027, 3, 1), later["flower"])
+        assertEquals(d(2027, 5, 12), later["candle"])
+        assertEquals(d(2027, 6, 1), later["pond"])
+        assertEquals(start.plusDays(100), later["cairn"])
+        assertTrue("pine" !in later && "leaf" !in later)
+    }
+
+    @Test fun momentsOrderAndOptional() {
+        val start = d(2026, 1, 10)
+        val m = Moments.earned(start, d(1992, 2, 29), 80.0, d(2026, 3, 5), firstSkip = d(2026, 1, 11), returned = d(2026, 3, 4))
+        assertEquals(m.map { it.date }, m.map { it.date }.sortedDescending())
+        assertEquals(d(2026, 3, 1), m.first { it.id == "candle" }.date)
+        assertTrue(m.any { it.id == "feather" } && m.any { it.id == "snail" })
+        assertEquals(12, Moments.all(start).size)
+    }
 }

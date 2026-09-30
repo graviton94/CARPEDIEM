@@ -1,0 +1,220 @@
+package io.github.graviton94.carpediem.ui.garden
+
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.ImageShader
+import androidx.compose.ui.graphics.Paint
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.Shader
+import androidx.compose.ui.graphics.ShaderBrush
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.TileMode
+import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.clipPath
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import io.github.graviton94.carpediem.design.Theme
+import io.github.graviton94.carpediem.design.Tokens
+import kotlin.math.PI
+import kotlin.math.ceil
+import kotlin.math.cos
+import kotlin.math.max
+import kotlin.math.min
+import kotlin.math.sin
+
+/**
+ * 크레용 파스텔 그리기 (design/art/src/concepts.js · mix.js 와 같은 방식을 앱에서 가볍게).
+ * 선: 굵기가 조금씩 변하는 두 번 그은 선을 종이 결(tooth_line.png)로 거른다.
+ * 채움: 선에서 살짝 어긋난 면 + 비스듬한 결을 종이 결(tooth_fill.png)로 거른다.
+ * 모든 길이는 정원 단위(u, 화면 폭 / 390)를 곱해 쓴다.
+ */
+object Crayon {
+    private val C = Tokens.Garden.Crayon
+
+    /** mulberry32: 같은 seed 면 같은 흔들림. */
+    class Rng(seed: Int) {
+        private var a = seed
+        fun next(): Float {
+            a += 0x6D2B79F5
+            var t = a
+            t = (t xor (t ushr 15)) * (t or 1)
+            t = t xor (t + (t xor (t ushr 7)) * (t or 61))
+            return ((t xor (t ushr 14)).toLong() and 0xFFFFFFFFL).toFloat() / 4294967296f
+        }
+    }
+
+    /** 손으로 그린 듯 흔들리는 둥근 사각형 윤곽. */
+    fun roundRect(x: Float, y: Float, w: Float, h: Float, r: Float, seed: Int, wobble: Float): List<Offset> {
+        val rr = min(r, min(w, h) / 2)
+        val pts = ArrayList<Offset>()
+        val n = 10
+        fun arc(cx: Float, cy: Float, a0: Double) { for (i in 0..n) { val a = a0 + i / n.toDouble() * PI / 2; pts.add(Offset(cx + (cos(a) * rr).toFloat(), cy + (sin(a) * rr).toFloat())) } }
+        fun edge(a: Offset, b: Offset) { val steps = max(1, ((b - a).getDistance() / max(1f, rr)).toInt()); for (i in 1 until steps) pts.add(a + (b - a) * (i / steps.toFloat())) }
+        arc(x + w - rr, y + rr, -PI / 2); edge(pts.last(), Offset(x + w, y + h - rr))
+        arc(x + w - rr, y + h - rr, 0.0); edge(pts.last(), Offset(x + rr, y + h))
+        arc(x + rr, y + h - rr, PI / 2); edge(pts.last(), Offset(x, y + rr))
+        arc(x + rr, y + rr, PI)
+        return wobble(pts, wobble, seed)
+    }
+
+    /** 가로로 흔들리며 이어지는 한 줄. */
+    fun line(x0: Float, x1: Float, y: Float, step: Float, seed: Int, amp: Float): List<Offset> {
+        val out = ArrayList<Offset>(); var x = x0; val ph = Rng(seed).next() * 6f
+        while (x <= x1) { out.add(Offset(x, y + sin(x / step * 0.3f + ph) * amp)); x += step }
+        return out
+    }
+
+    private fun wobble(pts: List<Offset>, amt: Float, seed: Int): List<Offset> {
+        val r = Rng(seed); val f = FloatArray(4) { r.next() * 6f }; val n = pts.size
+        return pts.mapIndexed { i, q -> val t = i / n.toFloat() * 2 * PI.toFloat(); Offset(q.x + amt * (sin(t * 3 + f[0]) * 0.5f + sin(t * 8 + f[1]) * 0.3f), q.y + amt * (sin(t * 4 + f[2]) * 0.5f + sin(t * 9 + f[3]) * 0.3f)) }
+    }
+
+    fun path(pts: List<Offset>, closed: Boolean = true) = Path().apply { pts.forEachIndexed { i, p -> if (i == 0) moveTo(p.x, p.y) else lineTo(p.x, p.y) }; if (closed) close() }
+
+    /** 종이 결 무늬 (반복). */
+    fun tooth(img: ImageBitmap, unitPx: Float): ShaderBrush = object : ShaderBrush() {
+        override fun createShader(size: Size): Shader = ImageShader(img, TileMode.Repeated, TileMode.Repeated).also { s ->
+            s.setLocalMatrix(android.graphics.Matrix().apply { val k = max(0.6f, unitPx * C.textureScale); setScale(k, k) })
+        }
+    }
+
+    /** block 으로 그린 것을 종이 결로 거른다. */
+    fun DrawScope.textured(mask: ShaderBrush, block: DrawScope.() -> Unit) {
+        drawIntoCanvas { c ->
+            c.saveLayer(Rect(Offset.Zero, size), Paint())
+            block()
+            drawRect(mask, blendMode = BlendMode.DstIn)
+            c.restore()
+        }
+    }
+
+    /** 굵기가 변하는 크레용 선 (두 번). */
+    fun DrawScope.stroke(pts: List<Offset>, width: Float, color: Color, seed: Int, closed: Boolean = true, passes: Int = 2) {
+        if (pts.size < 2) return
+        val r = Rng(seed); val ph = r.next() * 9f
+        val list = if (closed) pts + pts.first() else pts
+        repeat(passes) { pass ->
+            val o = if (pass == 0) Offset.Zero else Offset((r.next() - 0.5f) * width * C.passOffset, (r.next() - 0.5f) * width * C.passOffset)
+            for (i in 0 until list.size - 1) {
+                val t = i / list.size.toFloat()
+                val pr = 1f + C.vary * (sin(t * 17f + ph) * 0.6f + sin(t * 5.3f + ph * 2) * 0.4f)
+                drawLine(color, list[i] + o, list[i + 1] + o, width * pr, StrokeCap.Round)
+            }
+        }
+    }
+
+    /** 선에서 살짝 어긋난 면 + 비스듬한 결. */
+    fun DrawScope.fill(pts: List<Offset>, color: Color, unitPx: Float) {
+        val off = Offset(C.fillOffsetX * unitPx, C.fillOffsetY * unitPx)
+        val p = path(pts.map { it + off })
+        drawPath(p, color)
+        clipPath(p) {
+            val gap = C.hatchGap * unitPx; val a = C.hatchAngle
+            val dx = cos(a); val dy = sin(a); val diag = size.width + size.height
+            var k = -diag
+            val hatch = Color(red = color.red * 0.86f, green = color.green * 0.86f, blue = color.blue * 0.86f, alpha = C.hatchAlpha)
+            while (k < diag) {
+                val cx = size.width / 2 - dy * k; val cy = size.height / 2 + dx * k
+                drawLine(hatch, Offset(cx - dx * diag, cy - dy * diag), Offset(cx + dx * diag, cy + dy * diag), gap * 0.9f)
+                k += gap
+            }
+        }
+    }
+}
+
+/** 크레용 테두리 상자 (+ 채움). 정원 디자인의 카드 · 입력칸 · 버튼 바탕. */
+@Composable
+fun Modifier.crayonBox(fillColor: Color? = null, radius: Float = Tokens.Garden.Radius.box, strokeWidth: Float = Tokens.Garden.Stroke.box, seed: Int = 1): Modifier {
+    val ctx = LocalContext.current
+    val u = with(LocalDensity.current) { Theme.unit.toPx() }
+    val ink = Tokens.Garden.Colors.ink
+    val line = Crayon.tooth(GardenArt.toothLine(ctx), u)
+    val fillMask = Crayon.tooth(GardenArt.toothFill(ctx), u)
+    return this.drawWithCache {
+        val inset = strokeWidth * u
+        val pts = Crayon.roundRect(inset, inset, size.width - inset * 2, size.height - inset * 2, radius * u, seed, u * 0.9f)
+        onDrawBehind {
+            with(Crayon) {
+                if (fillColor != null) textured(fillMask) { fill(pts, fillColor, u) }
+                textured(line) { stroke(pts, strokeWidth * u, ink, seed + 5) }
+            }
+        }
+    }
+}
+
+/** 한 줄 구분선. */
+@Composable
+fun CrayonRule(modifier: Modifier = Modifier, seed: Int = 7) {
+    val ctx = LocalContext.current
+    val u = with(LocalDensity.current) { Theme.unit.toPx() }
+    val mask = Crayon.tooth(GardenArt.toothLine(ctx), u)
+    val w = Tokens.Garden.Stroke.rule
+    Box(modifier.fillMaxWidth().height(Theme.unit * (w * 3)).drawWithCache {
+        val pts = Crayon.line(0f, size.width, size.height / 2, u * 5, seed, u * 0.6f)
+        onDrawBehind { with(Crayon) { textured(mask) { stroke(pts, w * u, Tokens.Garden.Colors.ink.copy(alpha = 0.7f), seed, closed = false, passes = 1) } } }
+    })
+}
+
+/** 크레용 막대 (흐르는 시간 · 지나온 길). */
+@Composable
+fun CrayonBar(value: Float, color: Color, modifier: Modifier = Modifier, seed: Int = 11) {
+    val ctx = LocalContext.current
+    val u = with(LocalDensity.current) { Theme.unit.toPx() }
+    val line = Crayon.tooth(GardenArt.toothLine(ctx), u)
+    val fillMask = Crayon.tooth(GardenArt.toothFill(ctx), u)
+    val r = Tokens.Garden.Radius.bar; val sw = Tokens.Garden.Stroke.bar
+    Box(modifier.fillMaxWidth().height(Theme.unit * (r * 2 + sw * 2)).drawWithCache {
+        val inset = sw * u; val h = size.height - inset * 2; val w = size.width - inset * 2
+        val outline = Crayon.roundRect(inset, inset, w, h, h / 2, seed, u * 0.6f)
+        val filled = Crayon.roundRect(inset, inset, max(h, w * value.coerceIn(0f, 1f)), h, h / 2, seed + 1, u * 0.6f)
+        onDrawBehind { with(Crayon) { textured(fillMask) { fill(filled, color, u) }; textured(line) { stroke(outline, sw * u, Tokens.Garden.Colors.ink, seed + 2) } } }
+    })
+}
+
+/** 인생 달력: 손으로 칠한 칸. 지나온 칸은 계절 색, 지금은 호박색, 남은 칸은 테두리만. */
+@Composable
+fun CrayonCalendar(total: Int, filled: Int, columns: Int, modifier: Modifier = Modifier) {
+    val ctx = LocalContext.current
+    val u = with(LocalDensity.current) { Theme.unit.toPx() }
+    val mask = Crayon.tooth(GardenArt.toothFill(ctx), u)
+    val rows = max(1, ceil(max(total, 1) / columns.toFloat()).toInt())
+    Canvas(modifier.fillMaxWidth().aspectRatio(columns / rows.toFloat())) {
+        if (total <= 0) return@Canvas
+        val cell = min(size.width / columns, size.height / rows)
+        val pad = cell * (1 - 1 / Tokens.Garden.Layout.calendarGap)
+        val r = Crayon.Rng(860)
+        with(Crayon) {
+            textured(mask) {
+                for (i in 0 until total) {
+                    val x = (i % columns) * cell + (r.next() - 0.5f) * u * 0.5f; val y = (i / columns) * cell + (r.next() - 0.5f) * u * 0.5f
+                    val tl = Offset(x + pad / 2, y + pad / 2); val sz = Size(cell - pad, cell - pad); val cr = CornerRadius(Tokens.Garden.Radius.cell * u)
+                    val season = min(3, i * 4 / total)
+                    when {
+                        i < filled -> drawRoundRect(Tokens.Garden.Colors.calendar[season], tl, sz, cr)
+                        i == filled -> drawRoundRect(Tokens.Garden.Colors.now, tl, sz, cr)
+                        else -> drawRoundRect(Tokens.Garden.Colors.future, tl, sz, cr, style = Stroke(u * 0.8f))
+                    }
+                }
+            }
+        }
+    }
+}
+
+/** 종이 바탕 (정원 디자인의 모든 화면 뒤). */
+fun Modifier.paperBackground(): Modifier = this.background(Tokens.Garden.Colors.paper)

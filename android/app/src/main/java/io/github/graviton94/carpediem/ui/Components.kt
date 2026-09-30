@@ -30,8 +30,6 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -39,10 +37,19 @@ import androidx.compose.ui.unit.Dp
 import io.github.graviton94.carpediem.design.Theme
 import io.github.graviton94.carpediem.design.Tokens
 import io.github.graviton94.carpediem.design.TypeToken
-import kotlin.math.cos
+import io.github.graviton94.carpediem.core.Season
+import io.github.graviton94.carpediem.ui.garden.CrayonBar
+import io.github.graviton94.carpediem.ui.garden.CrayonCalendar
+import io.github.graviton94.carpediem.ui.garden.CrayonRule
+import io.github.graviton94.carpediem.ui.garden.GardenArt
+import io.github.graviton94.carpediem.ui.garden.GardenChip
+import io.github.graviton94.carpediem.ui.garden.crayonBox
+import io.github.graviton94.carpediem.ui.garden.paperBackground
+import androidx.compose.foundation.Image
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import kotlin.math.max
 import kotlin.math.min
-import kotlin.math.sin
 
 /** 글자 토큰을 적용한 텍스트. */
 @Composable
@@ -59,16 +66,24 @@ fun TokenText(
     Text(text, modifier, color = color, style = style, textAlign = align, maxLines = maxLines)
 }
 
-/** 화면 위쪽에서 햇빛처럼 번지는 배경. */
+/** 화면 위쪽에서 햇빛처럼 번지는 배경. 정원 디자인은 종이 위 하늘빛. */
 @Composable
 fun SkyBackground(content: @Composable BoxScope.() -> Unit) {
+    if (Theme.garden) {
+        Box(Modifier.fillMaxSize().paperBackground()) {
+            Image(GardenArt.sky(LocalContext.current, Season.SPRING), null, Modifier.fillMaxSize(), contentScale = ContentScale.FillWidth, alignment = Alignment.TopCenter)
+            content()
+        }
+        return
+    }
     val p = Theme.palette
-    val glow = Tokens.Effect.glowStrength * if (p.dark) 0.5f else 1.2f
+    val sky = Tokens.Effect.Sky
+    val glow = Tokens.Effect.glowStrength * if (p.dark) sky.glowDark else sky.glowLight
     Box(
         Modifier.fillMaxSize().background(p.base).drawBehind {
-            val r = max(size.width, size.height) * 0.6f
-            drawRect(Brush.radialGradient(listOf(p.light.copy(alpha = glow.coerceAtMost(1f)), Color.Transparent), Offset(size.width * 0.22f, -size.height * 0.05f), r))
-            drawRect(Brush.radialGradient(listOf(p.olive.copy(alpha = 0.18f), Color.Transparent), Offset(size.width * 0.3f, size.height * 1.05f), r))
+            val r = max(size.width, size.height) * sky.radius
+            drawRect(Brush.radialGradient(listOf(p.light.copy(alpha = glow.coerceAtMost(1f)), Color.Transparent), Offset(size.width * sky.glowX, size.height * sky.glowY), r))
+            drawRect(Brush.radialGradient(listOf(p.olive.copy(alpha = sky.oliveAlpha), Color.Transparent), Offset(size.width * sky.oliveX, size.height * sky.oliveY), r))
         },
         content = content,
     )
@@ -80,7 +95,7 @@ fun GlassCard(modifier: Modifier = Modifier, padding: Dp = Tokens.Layout.cardPad
     val p = Theme.palette
     val shape = RoundedCornerShape(Tokens.Radius.lg)
     Column(
-        modifier.fillMaxWidth().clip(shape).background(p.glass).border(Tokens.Stroke.line, p.glassEdge, shape)
+        modifier.fillMaxWidth().let { if (Theme.garden) it.crayonBox() else it.clip(shape).background(p.glass).border(Tokens.Stroke.line, p.glassEdge, shape) }
             .let { if (onClick != null) it.clickable(role = Role.Button, onClick = onClick) else it }
             .padding(padding),
         verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3),
@@ -92,6 +107,7 @@ fun GlassCard(modifier: Modifier = Modifier, padding: Dp = Tokens.Layout.cardPad
 fun ProgressBar(value: Float, height: Dp = Tokens.Stroke.bar, glowing: Boolean = false) {
     val p = Theme.palette
     val v = value.coerceIn(0f, 1f)
+    if (Theme.garden) { CrayonBar(v, Tokens.Garden.Colors.bars.last()); return }
     Box(Modifier.fillMaxWidth().height(height).clip(RoundedCornerShape(Tokens.Radius.pill)).background(p.dim)) {
         Box(
             Modifier.fillMaxHeight().fillMaxWidth(v).clip(RoundedCornerShape(Tokens.Radius.pill))
@@ -103,6 +119,7 @@ fun ProgressBar(value: Float, height: Dp = Tokens.Stroke.bar, glowing: Boolean =
 /** 인생 달력: 지나온 칸은 계절 색, 지금 칸은 빛, 남은 칸은 흐리게. */
 @Composable
 fun LifeGrid(total: Int, filled: Int, columns: Int, modifier: Modifier = Modifier) {
+    if (Theme.garden) { CrayonCalendar(total, filled, columns, modifier); return }
     val p = Theme.palette
     val rows = max(1, (max(total, 1) + columns - 1) / columns)
     Canvas(modifier.fillMaxWidth().aspectRatio(columns.toFloat() / rows)) {
@@ -114,7 +131,8 @@ fun LifeGrid(total: Int, filled: Int, columns: Int, modifier: Modifier = Modifie
             val c = Offset(originX + (i % columns) * cell + cell / 2, (i / columns) * cell + cell / 2)
             when {
                 i == filled -> {
-                    drawCircle(Brush.radialGradient(listOf(p.now.copy(alpha = 0.55f), Color.Transparent), c, cell * 1.6f), cell * 1.6f, c)
+                    val halo = cell * Tokens.Effect.NowHalo.radius
+                    drawCircle(Brush.radialGradient(listOf(p.now.copy(alpha = Tokens.Effect.NowHalo.alpha), Color.Transparent), c, halo), halo, c)
                     drawCircle(p.now, cell * Tokens.Grid.nowRatio / 2, c)
                 }
                 i < filled -> drawCircle(p.seasons[min(3, i * 4 / total)], dot / 2, c)
@@ -124,23 +142,14 @@ fun LifeGrid(total: Int, filled: Int, columns: Int, modifier: Modifier = Modifie
     }
 }
 
-/** 엔소 · 궤도: 가늘고 온전한 원(영원) 위에 굵고 열린 원(삶)과 한 점(오늘). */
-@Composable
-fun EnsoMark(size: Dp, modifier: Modifier = Modifier, color: Color = Theme.palette.olive, dot: Color = Theme.palette.now) {
-    Canvas(modifier.width(size).height(size)) {
-        val s = min(this.size.width, this.size.height)
-        val r = s * 0.38f
-        drawCircle(color.copy(alpha = 0.45f), r, style = Stroke(s * 0.035f))
-        drawArc(color, -50f, 288f, false, topLeft = Offset(center.x - r, center.y - r), size = androidx.compose.ui.geometry.Size(r * 2, r * 2), style = Stroke(s * 0.11f, cap = StrokeCap.Round))
-        val a = Math.toRadians(-86.0)
-        drawCircle(dot, s * 0.05f, Offset(center.x + (cos(a) * r).toFloat(), center.y + (sin(a) * r).toFloat()))
-    }
-}
-
 /** 알약 모양 선택지. */
 @Composable
 fun <T> ChipPicker(options: List<T>, selected: T, label: @Composable (T) -> String, onSelect: (T) -> Unit) {
     val p = Theme.palette
+    if (Theme.garden) {
+        Row(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) { options.forEachIndexed { i, o -> GardenChip(label(o), o == selected, seed = 720 + i) { onSelect(o) } } }
+        return
+    }
     Row(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
         options.forEach { o ->
             val on = o == selected
@@ -159,6 +168,10 @@ fun <T> ChipPicker(options: List<T>, selected: T, label: @Composable (T) -> Stri
 @Composable
 fun <T> Segments(options: List<T>, selected: T, label: @Composable (T) -> String, onSelect: (T) -> Unit) {
     val p = Theme.palette
+    if (Theme.garden) {
+        Row(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) { options.forEachIndexed { i, o -> GardenChip(label(o), o == selected, seed = 800 + i) { onSelect(o) } } }
+        return
+    }
     Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(Tokens.Radius.pill)).background(p.dim).padding(Tokens.Space.sp1 / 2)) {
         options.forEach { o ->
             val on = o == selected
@@ -187,7 +200,7 @@ fun FormRow(title: String, onClick: (() -> Unit)? = null, trailing: @Composable 
 }
 
 @Composable
-fun RowDivider() = Box(Modifier.fillMaxWidth().height(Tokens.Stroke.hair).background(Theme.palette.dim))
+fun RowDivider() { if (Theme.garden) CrayonRule() else Box(Modifier.fillMaxWidth().height(Tokens.Stroke.hair).background(Theme.palette.dim)) }
 
 @Composable
 fun FormSection(header: String? = null, footer: String? = null, content: @Composable ColumnScope.() -> Unit) {
@@ -195,8 +208,8 @@ fun FormSection(header: String? = null, footer: String? = null, content: @Compos
     Column(verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
         header?.let { TokenText(it, Tokens.TypeScale.footnote, Modifier.padding(horizontal = Tokens.Space.sp4), color = p.secondary) }
         Column(
-            Modifier.fillMaxWidth().clip(RoundedCornerShape(Tokens.Radius.md)).background(p.glass)
-                .border(Tokens.Stroke.line, p.glassEdge, RoundedCornerShape(Tokens.Radius.md)).padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp1),
+            Modifier.fillMaxWidth().let { if (Theme.garden) it.crayonBox(seed = (header ?: footer ?: "").length + 3) else it.clip(RoundedCornerShape(Tokens.Radius.md)).background(p.glass)
+                .border(Tokens.Stroke.line, p.glassEdge, RoundedCornerShape(Tokens.Radius.md)) }.padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp1),
             content = content,
         )
         footer?.let { TokenText(it, Tokens.TypeScale.footnote, Modifier.padding(horizontal = Tokens.Space.sp4), color = p.secondary) }

@@ -83,8 +83,72 @@ enum L10n {
     static var widgetsAndroid2: String { tr("widgets.android2") }
     static var widgetsAndroid3: String { tr("widgets.android3") }
     static var back: String { tr("back") }
+    static var design: String { tr("design") }
+    static var designGlass: String { tr("design.glass") }
+    static var designGarden: String { tr("design.garden") }
+    static var gardenMeetTitle: String { tr("garden.meet.title") }
+    static var gardenMeetSub: String { tr("garden.meet.sub") }
+    static var gardenMeetGo: String { tr("garden.meet.go") }
+    static var gardenDrawing: String { tr("garden.drawing") }
+    static var gardenHaru: String { tr("garden.haru") }
+    static func gardenNo(_ id: String) -> String { tr("garden.no", id) }
+    static var gardenAge0: String { tr("garden.age0") }
+    static var gardenDown: String { tr("garden.down") }
+    static var gardenClose: String { tr("garden.close") }
+    static var gardenPreview: String { tr("garden.preview") }
+    static func gardenItemDate(_ date: String, _ when: String) -> String { tr("garden.itemDate", date, when) }
+    static var stoneBasalt: String { tr("stone.basalt") }
+    static var stoneGranite: String { tr("stone.granite") }
+    static var stonePinkgranite: String { tr("stone.pinkgranite") }
+    static var stoneSand: String { tr("stone.sand") }
+    static var stoneOchre: String { tr("stone.ochre") }
+    static var stoneSpeckle: String { tr("stone.speckle") }
+    static var stoneSlate: String { tr("stone.slate") }
+    static var stoneGneiss: String { tr("stone.gneiss") }
+    static var stoneJasper: String { tr("stone.jasper") }
+    static var stoneSerpentine: String { tr("stone.serpentine") }
+    static var stoneJade: String { tr("stone.jade") }
+    static var stoneMarble: String { tr("stone.marble") }
+    static var stoneQuartz: String { tr("stone.quartz") }
+    static var stoneRing: String { tr("stone.ring") }
+    static var objMoss: String { tr("obj.moss") }
+    static var objMossWhen: String { tr("obj.moss.when") }
+    static var objMossLine: String { tr("obj.moss.line") }
+    static var objTeacup: String { tr("obj.teacup") }
+    static var objTeacupWhen: String { tr("obj.teacup.when") }
+    static var objTeacupLine: String { tr("obj.teacup.line") }
+    static var objCairn: String { tr("obj.cairn") }
+    static var objCairnWhen: String { tr("obj.cairn.when") }
+    static var objCairnLine: String { tr("obj.cairn.line") }
+    static var objPine: String { tr("obj.pine") }
+    static var objPineWhen: String { tr("obj.pine.when") }
+    static var objPineLine: String { tr("obj.pine.line") }
+    static var objFlower: String { tr("obj.flower") }
+    static var objFlowerWhen: String { tr("obj.flower.when") }
+    static var objFlowerLine: String { tr("obj.flower.line") }
+    static var objPond: String { tr("obj.pond") }
+    static var objPondWhen: String { tr("obj.pond.when") }
+    static var objPondLine: String { tr("obj.pond.line") }
+    static var objLeaf: String { tr("obj.leaf") }
+    static var objLeafWhen: String { tr("obj.leaf.when") }
+    static var objLeafLine: String { tr("obj.leaf.line") }
+    static var objCandle: String { tr("obj.candle") }
+    static var objCandleWhen: String { tr("obj.candle.when") }
+    static var objCandleLine: String { tr("obj.candle.line") }
+    static var objDandelion: String { tr("obj.dandelion") }
+    static var objDandelionWhen: String { tr("obj.dandelion.when") }
+    static var objDandelionLine: String { tr("obj.dandelion.line") }
+    static var objFeather: String { tr("obj.feather") }
+    static var objFeatherWhen: String { tr("obj.feather.when") }
+    static var objFeatherLine: String { tr("obj.feather.line") }
+    static var objSnail: String { tr("obj.snail") }
+    static var objSnailWhen: String { tr("obj.snail.when") }
+    static var objSnailLine: String { tr("obj.snail.line") }
+    static var objAcorn: String { tr("obj.acorn") }
+    static var objAcornWhen: String { tr("obj.acorn.when") }
+    static var objAcornLine: String { tr("obj.acorn.line") }
 
-    static let allKeys: [String] = ["tagline", "you", "birthday", "country", "sex", "sex.other", "sex.male", "sex.female", "lifeExpectancy", "auto", "custom", "lifeExpectancy.footer", "begin", "privacy", "timeLeft", "unit.days", "unit.weeks", "unit.months", "unit.years", "words", "words.next", "path", "path.age", "path.expected", "flow", "flow.today", "flow.week", "flow.month", "flow.year", "left.hours", "left.minutes", "left.days", "lastDay", "calendar", "calendar.per.weeks", "calendar.per.months", "calendar.per.years", "calendar.legend", "season.spring", "season.summer", "season.autumn", "season.winter", "settings", "cancel", "done", "words.language", "words.korean", "words.english", "words.both", "widgets", "widgets.help1", "widgets.help2", "widgets.help3", "widgets.help4", "erase", "country.search", "country.source", "widget.daysLeft", "widget.today", "widget.todayLeft", "widget.todaySub", "widget.yearsLeft", "widget.monthsLeft", "lock.inline", "lock.rect.sub", "android.notification", "widget.unit", "widget.unit.desc", "widget.daysLeft.desc", "widget.today.desc", "widget.calendar.desc", "widget.empty", "erase.confirm", "erase.action", "expectancy.value", "country.world", "widgets.android1", "widgets.android2", "widgets.android3", "back"]
+    static let allKeys: [String] = ["tagline", "you", "birthday", "country", "sex", "sex.other", "sex.male", "sex.female", "lifeExpectancy", "auto", "custom", "lifeExpectancy.footer", "begin", "privacy", "timeLeft", "unit.days", "unit.weeks", "unit.months", "unit.years", "words", "words.next", "path", "path.age", "path.expected", "flow", "flow.today", "flow.week", "flow.month", "flow.year", "left.hours", "left.minutes", "left.days", "lastDay", "calendar", "calendar.per.weeks", "calendar.per.months", "calendar.per.years", "calendar.legend", "season.spring", "season.summer", "season.autumn", "season.winter", "settings", "cancel", "done", "words.language", "words.korean", "words.english", "words.both", "widgets", "widgets.help1", "widgets.help2", "widgets.help3", "widgets.help4", "erase", "country.search", "country.source", "widget.daysLeft", "widget.today", "widget.todayLeft", "widget.todaySub", "widget.yearsLeft", "widget.monthsLeft", "lock.inline", "lock.rect.sub", "android.notification", "widget.unit", "widget.unit.desc", "widget.daysLeft.desc", "widget.today.desc", "widget.calendar.desc", "widget.empty", "erase.confirm", "erase.action", "expectancy.value", "country.world", "widgets.android1", "widgets.android2", "widgets.android3", "back", "design", "design.glass", "design.garden", "garden.meet.title", "garden.meet.sub", "garden.meet.go", "garden.drawing", "garden.haru", "garden.no", "garden.age0", "garden.down", "garden.close", "garden.preview", "garden.itemDate", "stone.basalt", "stone.granite", "stone.pinkgranite", "stone.sand", "stone.ochre", "stone.speckle", "stone.slate", "stone.gneiss", "stone.jasper", "stone.serpentine", "stone.jade", "stone.marble", "stone.quartz", "stone.ring", "obj.moss", "obj.moss.when", "obj.moss.line", "obj.teacup", "obj.teacup.when", "obj.teacup.line", "obj.cairn", "obj.cairn.when", "obj.cairn.line", "obj.pine", "obj.pine.when", "obj.pine.line", "obj.flower", "obj.flower.when", "obj.flower.line", "obj.pond", "obj.pond.when", "obj.pond.line", "obj.leaf", "obj.leaf.when", "obj.leaf.line", "obj.candle", "obj.candle.when", "obj.candle.line", "obj.dandelion", "obj.dandelion.when", "obj.dandelion.line", "obj.feather", "obj.feather.when", "obj.feather.line", "obj.snail", "obj.snail.when", "obj.snail.line", "obj.acorn", "obj.acorn.when", "obj.acorn.line"]
 
     private static func tr(_ key: String, _ args: String...) -> String {
         let format = Bundle.main.localizedString(forKey: key, value: nil, table: nil)

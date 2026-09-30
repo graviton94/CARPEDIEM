@@ -21,7 +21,8 @@
   // 하루 (크레용 파스텔)
   function drawHaruMix(ctx, t, cx, gy, width, opt) {
     opt = opt || {}; var k = width / 74, w = 3.7 * k * (opt.lw || 1), base = mix(t.base, "#FFFFFF", 0.24);
-    var hs = haruShape(t, cx, gy + 1, width / Math.pow(t.size, 0.85));
+    var hs = haruShape(t, cx, gy + 1, width / Math.pow(t.size, 0.85)), body = opt.parts !== "eyes", eyes = opt.parts !== "body";
+    if (body) {
     smudge(ctx, cx + 6 * k, gy + 2, hs.o.w * 1.05, 5 * k, "#3B3325", 0.22);
     FILL.mix(ctx, hs.pts, base, { seed: 930 });
     // 돌 무늬는 몇 번만 스치듯 (선 안쪽)
@@ -39,19 +40,21 @@
       ink(ctx, bez([tx, ty, tx + 1 * k, ty - 6 * k, tx - 1 * k, ty - 10 * k, tx + 1 * k, ty - 15 * k]), w * 0.6, CRAYON_LINE, { open: true, press: 0.76, passes: 2, seed: 932 });
       [[-1, -0.4], [1, 0.4]].forEach(function (d, i) { var lp = blob(tx + d[0] * 8 * k, ty - 17 * k, 8 * k, 4 * k, 933 + i, 0.08, d[1]); FILL.mix(ctx, lp, i ? "#A7BC6E" : "#8EA85A", { seed: 933 + i }); ink(ctx, lp, w * 0.55, CRAYON_LINE, { press: 0.76, passes: 2, seed: 935 + i }); });
     }
+    }
+    if (!eyes) return hs;
     var look = opt.look || t.eye.look;
     hs.eyes.forEach(function (ey) {
       var c = ey.c, rr = ey.r * (1 - (opt.blink || 0) * 0.85), pe = blob(c[0], c[1], ey.r, rr, 940 + ey.idx, 0.03);
       pastelBase(ctx, pe, "#FFFFFF", { clip: true, line: false, press: 0.9, shade: false, smudge: 0.95, seed: 946 + ey.idx });
       ink(ctx, pe, w * 0.6, CRAYON_LINE, { press: 0.8, passes: 2, seed: 948 + ey.idx });
-      if ((opt.blink || 0) < 0.6) {
+      if (!opt.parts && (opt.blink || 0) < 0.6) {
         var pr = ey.r * t.eye.pupil, lx = look.x + (opt.look ? 0 : (ey.idx ? t.eye.spread : -t.eye.spread)), ly = look.y, ll = Math.hypot(lx, ly); if (ll > 1) { lx /= ll; ly /= ll; }
         var lim = ey.r - pr - ey.r * 0.1, px = c[0] + lx * lim, py = c[1] + ly * lim + lim * 0.2;
         FILL.flat(ctx, blob(px, py, pr, pr, 950 + ey.idx, 0.04), "#1E1A17", { cel: false });
         FILL.flat(ctx, blob(px - pr * 0.35, py - pr * 0.38, pr * 0.24, pr * 0.24, 954 + ey.idx, 0.02), "#FFFFFF", { cel: false });
       }
     });
-    if (opt.sparkle) { var hb = bbox(hs.pts); [[hb[0] - 12 * k, hb[1] + 8 * k, 9 * k], [hb[0] + hb[2] + 10 * k, hb[1] - 2 * k, 7 * k]].forEach(function (s2, i) { FILL.mix(ctx, star4(s2[0], s2[1], s2[2]), "#F2C04E", { seed: 970 + i }); }); }
+    if (opt.sparkle && !opt.parts) { var hb = bbox(hs.pts); [[hb[0] - 12 * k, hb[1] + 8 * k, 9 * k], [hb[0] + hb[2] + 10 * k, hb[1] - 2 * k, 7 * k]].forEach(function (s2, i) { FILL.mix(ctx, star4(s2[0], s2[1], s2[2]), "#F2C04E", { seed: 970 + i }); }); }
     return hs;
   }
 

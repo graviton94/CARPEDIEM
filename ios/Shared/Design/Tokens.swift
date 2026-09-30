@@ -83,6 +83,23 @@ enum Tokens {
         static let glowStrength: Double = 0.45
         static let glassOpacity: Double = 0.5
         static let glassBlur: CGFloat = 26
+        enum Sky {
+            static let glowDark: CGFloat = 0.5
+            static let glowLight: CGFloat = 1.2
+            static let radius: CGFloat = 0.6
+            static let glowX: CGFloat = 0.22
+            static let glowY: CGFloat = -0.05
+            static let oliveAlpha: CGFloat = 0.18
+            static let oliveX: CGFloat = 0.3
+            static let oliveY: CGFloat = 1.05
+        }
+        enum NowHalo {
+            static let alpha: CGFloat = 0.55
+            static let radius: CGFloat = 1.6
+            static let widgetAlpha: CGFloat = 0.5
+            static let widgetBlur: CGFloat = 0.6
+            static let widgetRadius: CGFloat = 0.8
+        }
     }
 
     enum Grid {
@@ -94,5 +111,120 @@ enum Tokens {
         static let widgetMediumColumns = 14
         static let widgetMediumTextRatio: CGFloat = 0.34
         static let widgetLargeColumns = 36
+    }
+
+    enum Enso {
+        static let radius: CGFloat = 0.38
+        static let ringAlpha: CGFloat = 0.45
+        static let ring: CGFloat = 0.05
+        static let arc: CGFloat = 0.13
+        static let arcStart: CGFloat = -50.0
+        static let arcSweep: CGFloat = 288.0
+        static let dotAngle: CGFloat = -86.0
+        static let dot: CGFloat = 0.07
+    }
+
+    enum Expectancy {
+        static let min: CGFloat = 30.0
+        static let max: CGFloat = 120.0
+        static let step: CGFloat = 0.5
+    }
+
+    enum Widget {
+        static let numberScale: CGFloat = 1.05
+        static let quoteHeight: CGFloat = 64.0
+        static let gridBottom: CGFloat = 16.0
+        static let largeFromHeight: CGFloat = 220.0
+        static let markSize: CGFloat = 12.0
+    }
+
+    enum DeviceWidth {
+        static let compactBelow: CGFloat = 390.0
+        static let largeFrom: CGFloat = 430.0
+    }
+
+    enum Garden {
+        static let unitWidth: CGFloat = 390.0
+        enum Colors {
+            static let paper: UInt32 = 0xF6F1E6FF
+            static let ink: UInt32 = 0x33281FFF
+            static let inkSoft: UInt32 = 0x6B6456FF
+            static let dim: UInt32 = 0x33281F24
+            static let button: UInt32 = 0xB8C98EFF
+            static let chip: UInt32 = 0xDCE5C4FF
+            static let pupil: UInt32 = 0x1E1A17FF
+            static let shine: UInt32 = 0xFFFFFFFF
+            static let scrim: UInt32 = 0x28201447
+            static let now: UInt32 = 0xE9A43AFF
+            static let future: UInt32 = 0x8FAA6A8C
+            static let bars: [UInt32] = [0xF3C66AFF, 0xE9C98EFF, 0xC9B98EFF, 0xA9BC84FF]
+            static let calendar: [UInt32] = [0xA9BC84FF, 0x8FAA6AFF, 0xC9A46AFF, 0xA8B2B6FF]
+        }
+        enum Layout {
+            static let groundRatio: CGFloat = 0.76
+            static let pathStart: CGFloat = 26.0
+            static let pathEnd: CGFloat = 364.0
+            static let pathInset: CGFloat = 20.0
+            static let haruWidth: CGFloat = 84.0
+            static let meetHaruWidth: CGFloat = 150.0
+            static let haruBox: CGFloat = 200.0
+            static let haruGround: CGFloat = 170.0
+            static let haruArtWidth: CGFloat = 70.0
+            static let sunBase: CGFloat = 70.0
+            static let sunArc: CGFloat = 160.0
+            static let sunRadius: CGFloat = 19.0
+            static let sunStart: CGFloat = 40.0
+            static let sunEnd: CGFloat = 350.0
+            static let minSkyGap: CGFloat = 16.0
+            static let labelGap: CGFloat = 10.0
+            static let labelRow: CGFloat = 18.0
+            static let objBox: CGFloat = 200.0
+            static let objGround: CGFloat = 168.0
+            static let objScale: CGFloat = 0.5
+            static let itemFromHaru: CGFloat = 20.0
+            static let itemGap: CGFloat = 6.0
+            static let stripLineY: CGFloat = 40.0
+            static let stripHeight: CGFloat = 200.0
+            static let calendarGap: CGFloat = 1.3
+            static let sparkle: CGFloat = 9.0
+        }
+        enum Stroke {
+            static let ground: CGFloat = 3.2
+            static let box: CGFloat = 2.2
+            static let chip: CGFloat = 1.5
+            static let bar: CGFloat = 1.8
+            static let rule: CGFloat = 1.2
+            static let closedEye: CGFloat = 1.6
+        }
+        enum Radius {
+            static let box: CGFloat = 16.0
+            static let button: CGFloat = 28.0
+            static let chip: CGFloat = 13.0
+            static let bar: CGFloat = 8.0
+            static let cell: CGFloat = 1.6
+        }
+        enum Motion {
+            static let blinkMinMs: CGFloat = 2400.0
+            static let blinkMaxMs: CGFloat = 6200.0
+            static let blinkMs: CGFloat = 170.0
+            static let lookEase: CGFloat = 0.12
+            static let tiltRange: CGFloat = 6.0
+            static let sleepFrom: CGFloat = 22.0
+            static let sleepTo: CGFloat = 6.0
+            static let sunrise: CGFloat = 6.0
+            static let sunset: CGFloat = 19.0
+            static let sleepyLid: CGFloat = 0.55
+            static let sleepyLook: CGFloat = 0.6
+        }
+        enum Crayon {
+            static let vary: CGFloat = 0.3
+            static let fillOffsetX: CGFloat = 1.8
+            static let fillOffsetY: CGFloat = 1.3
+            static let hatchAlpha: CGFloat = 0.3
+            static let hatchGap: CGFloat = 3.2
+            static let hatchAngle: CGFloat = -0.75
+            static let textureScale: CGFloat = 0.55
+            static let passOffset: CGFloat = 0.5
+        }
     }
 }
