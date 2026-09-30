@@ -10,9 +10,15 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.ui.graphics.toArgb
 import io.github.graviton94.carpediem.core.LifeProfile
 import io.github.graviton94.carpediem.core.Sex
+import io.github.graviton94.carpediem.core.Species
+import io.github.graviton94.carpediem.core.Kind
+import io.github.graviton94.carpediem.core.Person
 import io.github.graviton94.carpediem.design.Tokens
 import io.github.graviton94.carpediem.ui.garden.WidgetPreviewScreen
 import io.github.graviton94.carpediem.ui.garden.CollectionScreen
+import androidx.compose.animation.togetherWith
+import io.github.graviton94.carpediem.ui.garden.AddPersonScreen
+import io.github.graviton94.carpediem.ui.garden.StoneScreen
 import io.github.graviton94.carpediem.ui.garden.SupportScreen
 import java.time.LocalDate
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -50,6 +56,10 @@ private sealed interface Screen {
     data object WidgetPreview : Screen
     data class Collection(val back: Screen) : Screen
     data class Support(val back: Screen) : Screen
+    /** 돌의 페이지 (id = null 이면 내 하루). */
+    data class Stone(val id: String?, val back: Screen) : Screen
+    /** 가족의 돌 더하기 (editId 가 있으면 고치기). */
+    data class AddPerson(val editId: String?, val back: Screen) : Screen
     data class Country(val back: Screen) : Screen
 }
 
@@ -61,7 +71,8 @@ class MainActivity : ComponentActivity() {
         val start = if (BuildConfig.DEBUG) debugSetup(state) else Screen.Main
         setContent {
             BoxWithConstraints {
-                CarpeDiemTheme(deviceClass = DeviceClass.of(maxWidth), design = state.design, screenWidth = maxWidth) {
+                val screenW = maxWidth
+                CarpeDiemTheme(deviceClass = DeviceClass.of(screenW), design = state.design, screenWidth = screenW) {
                     var screen by remember { mutableStateOf(start) }
                     fun clock() = state.fixedNow ?: LocalDateTime.now()
                     var now by remember { mutableStateOf(clock()) }
@@ -77,7 +88,18 @@ class MainActivity : ComponentActivity() {
                         else enableEdgeToEdge(SystemBarStyle.dark(android.graphics.Color.TRANSPARENT), SystemBarStyle.dark(android.graphics.Color.TRANSPARENT))
                     }
 
-                    when (val s = screen) {
+                    // 돌의 페이지로는 돌이 다가오듯 부드럽게 (옅어지며 조금 커짐)
+                    androidx.compose.animation.AnimatedContent(
+                        targetState = screen, label = "screen",
+                        transitionSpec = {
+                            val ms = Tokens.Garden.Touch.openMs.toInt()
+                            if (targetState is Screen.Stone || initialState is Screen.Stone)
+                                (androidx.compose.animation.fadeIn(androidx.compose.animation.core.tween(ms)) + androidx.compose.animation.scaleIn(androidx.compose.animation.core.tween(ms), initialScale = 0.94f)) togetherWith
+                                    androidx.compose.animation.fadeOut(androidx.compose.animation.core.tween(ms / 2))
+                            else androidx.compose.animation.EnterTransition.None togetherWith androidx.compose.animation.ExitTransition.None
+                        },
+                    ) { target ->
+                    when (val s = target) {
                         Screen.WidgetPreview -> WidgetPreviewScreen(state, now)
                         is Screen.Country -> {
                             val d = state.draft
@@ -86,11 +108,16 @@ class MainActivity : ComponentActivity() {
                         }
                         Screen.Settings -> state.profile?.let {
                             SettingsScreen(state, it, { screen = Screen.Main }, { screen = Screen.Country(Screen.Settings) },
-                                onCollection = { screen = Screen.Collection(Screen.Settings) }, onSupport = { screen = Screen.Support(Screen.Settings) })
+                                onCollection = { screen = Screen.Collection(Screen.Settings) }, onSupport = { screen = Screen.Support(Screen.Settings) },
+                                onStone = { id -> screen = Screen.Stone(id, Screen.Settings) }, onAddPerson = { screen = Screen.AddPerson(null, Screen.Settings) })
                         } ?: run { screen = Screen.Main }
                         is Screen.Collection -> state.profile?.let { CollectionScreen(state, it, now) { screen = s.back } } ?: run { screen = Screen.Main }
                         // 응원하기는 하루의 정원 그림이라 유리 버전에서도 정원 모습으로 연다
-                        is Screen.Support -> CarpeDiemTheme(deviceClass = DeviceClass.of(maxWidth), design = Design.GARDEN, screenWidth = maxWidth) { SupportScreen(state, now) { screen = s.back } }
+                        is Screen.Support -> CarpeDiemTheme(deviceClass = DeviceClass.of(screenW), design = Design.GARDEN, screenWidth = screenW) { SupportScreen(state, now) { screen = s.back } }
+                        is Screen.Stone -> state.profile?.let { StoneScreen(state, it, now, s.id, { screen = s.back }) { id -> screen = Screen.AddPerson(id, s) } } ?: run { screen = Screen.Main }
+                        is Screen.AddPerson -> state.profile?.let {
+                            AddPersonScreen(state, it, s.editId, onDone = { id -> screen = if (s.editId != null && id != null) (s.back as? Screen.Stone)?.copy() ?: Screen.Main else Screen.Main }, onBack = { screen = s.back })
+                        } ?: run { screen = Screen.Main }
                         Screen.Main -> {
                             val profile = state.profile
                             val garden = state.design == Design.GARDEN
@@ -98,10 +125,12 @@ class MainActivity : ComponentActivity() {
                                 profile == null -> OnboardingScreen(state) { screen = Screen.Country(Screen.Main) }
                                 garden && state.meetPending -> MeetScreen(state) { state.finishMeet() }
                                 garden -> GardenHome(state, profile, now, onSettings = { screen = Screen.Settings },
-                                    onCollection = { screen = Screen.Collection(Screen.Main) }, onSupport = { screen = Screen.Support(Screen.Main) })
+                                    onCollection = { screen = Screen.Collection(Screen.Main) }, onSupport = { screen = Screen.Support(Screen.Main) },
+                                    onStone = { id -> screen = Screen.Stone(id, Screen.Main) }, onAddPerson = { screen = Screen.AddPerson(null, Screen.Main) })
                                 else -> HomeScreen(state, profile, now, onSettings = { screen = Screen.Settings }, onSupport = { screen = Screen.Support(Screen.Main) })
                             }
                         }
+                    }
                     }
                 }
             }
@@ -127,5 +156,16 @@ private fun MainActivity.debugSetup(state: AppState): Screen {
     if (x.hasExtra("cd.preview")) state.changePreviewAll(x.getBooleanExtra("cd.preview", false))
     x.getStringExtra("cd.now")?.let { state.fixedNow = LocalDateTime.parse(it) }
     if (x.getBooleanExtra("cd.recall", false)) { state.addSampleYearAgo(); state.addSampleRandom() }
-    return when (x.getStringExtra("cd.screen")) { "settings" -> Screen.Settings; "widgets" -> Screen.WidgetPreview; "collection" -> Screen.Collection(Screen.Main); "support" -> Screen.Support(Screen.Main); else -> Screen.Main }
+    // 가족의 정원 시험: 동생 · 콩이(강아지) · 엄마(오늘 생일) · 아빠
+    if (x.getBooleanExtra("cd.family", false)) {
+        val today = (state.fixedNow ?: LocalDateTime.now()).toLocalDate()
+        state.people.forEach { state.removePerson(it.id) }
+        listOf(
+            Person("sib00001", "동생", Kind.PERSON, birth = LocalDate.of(1999, 4, 2), sex = Sex.FEMALE, country = "KR", seed = 12345, metOn = today),
+            Person("pet00001", "콩이", Kind.PET, Species.DOG, LocalDate.of(2018, 5, 5), seed = 99, metOn = today),
+            Person("mom00001", "엄마", Kind.PERSON, birth = today.withYear(1964), sex = Sex.FEMALE, country = "KR", seed = 4254103021, metOn = today),
+            Person("dad00001", "아빠", Kind.PERSON, birth = LocalDate.of(1961, 8, 20), sex = Sex.MALE, country = "KR", seed = 31337, metOn = today),
+        ).forEach { state.savePerson(it) }
+    }
+    return when (x.getStringExtra("cd.screen")) { "settings" -> Screen.Settings; "widgets" -> Screen.WidgetPreview; "collection" -> Screen.Collection(Screen.Main); "support" -> Screen.Support(Screen.Main); "stone" -> Screen.Stone(state.people.firstOrNull()?.id, Screen.Main); "add" -> Screen.AddPerson(null, Screen.Main); else -> Screen.Main }
 }

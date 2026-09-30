@@ -56,7 +56,7 @@ import java.time.format.FormatStyle
 
 /** 정원 쪽 화면의 위 줄: 돌아가기 + 제목 (가운데). */
 @Composable
-private fun PageBar(title: String, onBack: () -> Unit) {
+internal fun PageBar(title: String, onBack: () -> Unit) {
     val p = Theme.palette
     val ctx = LocalContext.current
     Box(Modifier.fillMaxWidth().heightIn(min = Tokens.Layout.tapTarget), contentAlignment = Alignment.Center) {
@@ -138,7 +138,7 @@ fun SupportScreen(state: AppState, now: LocalDateTime, onBack: () -> Unit) {
             BoxWithConstraints(Modifier.fillMaxWidth().aspectRatio(img.width / img.height.toFloat()).crayonBox(null, G.Radius.box, G.Stroke.box, seed = 910)) {
                 Image(img, null, Modifier.fillMaxSize().padding(G.Stroke.box.let { Theme.unit * it }), contentScale = ContentScale.Crop)
                 val scale = maxWidth * (G.Layout.supportHaru / G.Layout.haruArtWidth)
-                Haru(load, scale, Modifier.offset(maxWidth / 2 - scale * (G.Layout.haruBox / 2), maxHeight * G.Layout.supportGround - scale * G.Layout.haruGround), sleepy = sleepy(now))
+                Haru(load, scale, Modifier.offset(maxWidth / 2 - scale * (G.Layout.haruBox / 2), maxHeight * G.Layout.supportGround - scale * G.Layout.haruGround))
             }
             TokenText(stringResource(R.string.support_title), Tokens.TypeScale.title3.serif(), Modifier.fillMaxWidth(), align = TextAlign.Center)
             TokenText(stringResource(R.string.support_body), Tokens.TypeScale.callout, Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.Center)

@@ -186,7 +186,7 @@ enum Tokens {
             static let labelRow: CGFloat = 18.0
             static let objBox: CGFloat = 200.0
             static let objGround: CGFloat = 168.0
-            static let objScale: CGFloat = 0.5
+            static let objScale: CGFloat = 0.36
             static let itemFromHaru: CGFloat = 20.0
             static let itemGap: CGFloat = 6.0
             static let stripLineY: CGFloat = 40.0
@@ -232,12 +232,8 @@ enum Tokens {
             static let lookEase: CGFloat = 0.12
             static let restEase: CGFloat = 0.02
             static let tiltRange: CGFloat = 6.0
-            static let sleepFrom: CGFloat = 22.0
-            static let sleepTo: CGFloat = 6.0
             static let sunrise: CGFloat = 6.0
             static let sunset: CGFloat = 19.0
-            static let sleepyLid: CGFloat = 0.55
-            static let sleepyLook: CGFloat = 0.6
             static let keyboardMs: CGFloat = 320.0
         }
         enum Crayon {
@@ -265,6 +261,8 @@ enum Tokens {
             static let gridInset: CGFloat = 14.0
             static let cell: CGFloat = 1.3
             static let mossScale: CGFloat = 0.34
+            static let familyHaru: CGFloat = 24.0
+            static let familyGround: CGFloat = 0.74
         }
         enum SkyTime {
             enum Night {
@@ -309,6 +307,46 @@ enum Tokens {
             static let lidCurve: CGFloat = 0.22
             static let pattern: CGFloat = 0.1
             static let sproutHeight: CGFloat = 22.0
+        }
+        enum Family {
+            static let max: CGFloat = 5.0
+            static let gap: CGFloat = 10.0
+            static let minGap: CGFloat = 6.0
+            static let nameChars: CGFloat = 4.0
+            static let petScale: CGFloat = 0.72
+            static let dogYears: CGFloat = 13.0
+            static let catYears: CGFloat = 15.0
+            static let otherYears: CGFloat = 10.0
+            static let tickShift: CGFloat = 4.0
+            static let feather: CGFloat = 16.0
+        }
+        enum Touch {
+            static let petMs: CGFloat = 900.0
+            static let wiggleDeg: CGFloat = 3.0
+            static let squash: CGFloat = 0.03
+            static let blushMs: CGFloat = 1200.0
+            static let hop: CGFloat = 12.0
+            static let hopMs: CGFloat = 420.0
+            static let windowMs: CGFloat = 3000.0
+            static let restAfter: CGFloat = 5.0
+            static let restWindowMs: CGFloat = 10000.0
+            static let restMs: CGFloat = 2000.0
+            static let doubleMs: CGFloat = 280.0
+            static let openMs: CGFloat = 420.0
+            static let haptic: CGFloat = 1.0
+        }
+        enum Party {
+            static let hatWidth: CGFloat = 22.0
+            static let hatHeight: CGFloat = 26.0
+            static let cakeWidth: CGFloat = 11.0
+            enum Colors {
+                static let hat: UInt32 = 0xE9A43AFF
+                static let stripe: UInt32 = 0xD98C7AFF
+                static let pompom: UInt32 = 0xF6F1E6FF
+                static let cake: UInt32 = 0xF4EEDFFF
+                static let cream: UInt32 = 0xD98C7AFF
+                static let flame: UInt32 = 0xF0A84AFF
+            }
         }
     }
 }

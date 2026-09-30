@@ -81,6 +81,7 @@ object Widgets {
         DaysLeftWidget().updateAll(context); DaysLeftGardenWidget().updateAll(context)
         TodayWidget().updateAll(context); TodayGardenWidget().updateAll(context)
         LifeCalendarWidget().updateAll(context); LifeCalendarGardenWidget().updateAll(context)
+        FamilyGardenWidget().updateAll(context)
     }
 
     /** ‘오늘’ 위젯이 한 시간마다, 문장이 자정 무렵 바뀌도록 한 시간마다 새로 그린다. */
@@ -322,6 +323,23 @@ class LifeCalendarWidget : LifeCalendarBase(garden = false)
 class LifeCalendarGardenWidget : LifeCalendarBase(garden = true)
 class LifeCalendarReceiver : GlanceAppWidgetReceiver() { override val glanceAppWidget: GlanceAppWidget = LifeCalendarWidget() }
 class LifeCalendarGardenReceiver : GlanceAppWidgetReceiver() { override val glanceAppWidget: GlanceAppWidget = LifeCalendarGardenWidget() }
+
+// ───────────────────────── 가족의 정원 (4×2, 정원 모양만) ─────────────────────────
+
+class FamilyGardenWidget : GlanceAppWidget() {
+    override val sizeMode = SizeMode.Exact
+
+    override suspend fun provideGlance(context: Context, id: GlanceId) {
+        val data = WidgetData(context)
+        provideContent {
+            GardenSurface(context, data, GardenWidgetArt.Kind.FAMILY) {
+                if (data.snapshot == null) Text(context.getString(R.string.widget_empty), style = style(Tokens.TypeScale.caption1.size, gSub))
+            }
+        }
+    }
+}
+
+class FamilyGardenReceiver : GlanceAppWidgetReceiver() { override val glanceAppWidget: GlanceAppWidget = FamilyGardenWidget() }
 
 // ───────────────────────── 비트맵 그리기 ─────────────────────────
 

@@ -20,6 +20,9 @@ import io.github.graviton94.carpediem.core.Season
 import io.github.graviton94.carpediem.data.Store
 import io.github.graviton94.carpediem.design.Tokens
 import io.github.graviton94.carpediem.ui.garden.drawHaru
+import io.github.graviton94.carpediem.ui.garden.birthdayCake
+import io.github.graviton94.carpediem.core.Family
+import io.github.graviton94.carpediem.core.Kind
 import io.github.graviton94.carpediem.ui.garden.SkyTime
 import org.json.JSONObject
 import java.time.LocalDateTime
@@ -33,7 +36,7 @@ import kotlin.math.sin
  * 앱과 같은 그림 파일(assets/garden)과 앱과 같은 벡터 하루(drawHaru)로 그린다.
  */
 object GardenWidgetArt {
-    enum class Kind { DAYS, TODAY, CALENDAR, LARGE }
+    enum class Kind { DAYS, TODAY, CALENDAR, LARGE, FAMILY }
 
     private val L = Tokens.Garden.Layout
     private val W = Tokens.Garden.Widget
@@ -55,7 +58,7 @@ object GardenWidgetArt {
         val sky = asset(context, "sky_${key(season)}.jpg")
         c.drawBitmap(sky, null, RectF(0f, 0f, w.toFloat(), w * sky.height / sky.width.toFloat()), paint)
 
-        val gy = h * if (kind == Kind.LARGE) W.largeGroundRatio else W.groundRatio
+        val gy = h * when (kind) { Kind.LARGE -> W.largeGroundRatio; Kind.FAMILY -> W.familyGround; else -> W.groundRatio }
         // 하루의 시간에 따른 하늘빛 (앱 정원과 같은 규칙)
         SkyTime.at(now).takeIf { it.alpha > 0f }?.let { t ->
             val top = t.color.copy(alpha = t.alpha).toArgb(); val low = t.color.copy(alpha = t.alpha * Tokens.Garden.SkyTime.groundKeep).toArgb()
@@ -68,7 +71,7 @@ object GardenWidgetArt {
         }
 
         // 해 · 달: 폰 시각
-        if (kind == Kind.TODAY || kind == Kind.LARGE) {
+        if (kind == Kind.TODAY || kind == Kind.LARGE || kind == Kind.FAMILY) {
             val hour = now.hour + now.minute / 60f
             val day = hour in Tokens.Garden.Motion.sunrise..Tokens.Garden.Motion.sunset
             val t = if (day) (hour - Tokens.Garden.Motion.sunrise) / (Tokens.Garden.Motion.sunset - Tokens.Garden.Motion.sunrise)
@@ -93,6 +96,7 @@ object GardenWidgetArt {
             haru(context, c, hx, gy, W.haruLarge * u, u, now)
         }
         if (kind == Kind.DAYS) haru(context, c, w * W.haruX, gy, W.haruSmall * u, u, now)
+        if (kind == Kind.FAMILY) family(context, c, w, gy, u, now)
 
         // 위젯 모서리 둥글게
         val out = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
@@ -104,7 +108,44 @@ object GardenWidgetArt {
         return out
     }
 
-    /** 하루를 앱과 같은 벡터로 (Compose 그리기를 위젯 캔버스에). 밤에는 졸린 눈. */
+    /** 돌 하나: 몸 가운데를 bodyX 에, 땅 gy 에 (Compose 그리기를 위젯 캔버스에). */
+    private fun stone(c: Canvas, art: io.github.graviton94.carpediem.ui.garden.HaruArt, bodyX: Float, gy: Float, k: Float, hat: Boolean) {
+        val box = art.meta.box
+        c.save(); c.translate(bodyX - art.meta.bbox.center.x * k, gy - art.meta.ground * k)
+        androidx.compose.ui.graphics.drawscope.CanvasDrawScope().draw(
+            androidx.compose.ui.unit.Density(1f), androidx.compose.ui.unit.LayoutDirection.Ltr, androidx.compose.ui.graphics.Canvas(c), androidx.compose.ui.geometry.Size(box * k, box * k),
+        ) { drawHaru(art, k, hat = hat) }
+        c.restore()
+    }
+
+    /** 가족의 정원: 나와 가족의 돌을 앱과 같은 규칙으로 (겹치지 않게, 생일이면 모자와 케이크). 글자 없음. */
+    private fun family(context: Context, c: Canvas, w: Int, gy: Float, u: Float, now: LocalDateTime) {
+        val store = Store(context)
+        val profile = store.profile ?: return
+        val today = now.toLocalDate()
+        val me = LifeSnapshot(profile.birthDate, profile.expectancy(store.table), now)
+        val sprout = me.season == Season.SPRING
+        val base = W.familyHaru * u / L.haruArtWidth
+        data class S(val art: io.github.graviton94.carpediem.ui.garden.HaruArt, val k: Float, val prog: Double?, val bday: Boolean)
+        val slots = listOf(S(io.github.graviton94.carpediem.ui.garden.HaruArt.of(store.haruSeed, sprout), base, me.progress, Family.isBirthday(profile.birthDate, today))) +
+            store.people.map { p -> S(io.github.graviton94.carpediem.ui.garden.HaruArt.of(p.seed, sprout), if (p.kind == Kind.PET) base * Tokens.Garden.Family.petScale else base,
+                p.birth?.let { LifeSnapshot(it, store.expectancy(p), now).progress }, Family.isBirthday(p.birth, today)) }
+        val lo = W.gridInset * u; val hi = w - W.gridInset * u
+        val xs = Family.place(slots.map { sl -> sl.prog?.let { (lo + (hi - lo) * (0.06 + 0.88 * it.coerceIn(0.0, 1.0))) } }, slots.map { (it.art.meta.bbox.width * it.k).toDouble() }, 0,
+            lo.toDouble(), hi.toDouble(), (Tokens.Garden.Family.gap * u).toDouble(), (Tokens.Garden.Family.minGap * u).toDouble())
+        slots.forEachIndexed { i, sl ->
+            stone(c, sl.art, xs[i].toFloat(), gy, sl.k, sl.bday)
+            if (sl.bday) {
+                val cw = Tokens.Garden.Party.cakeWidth * u; val cx = xs[i].toFloat() + sl.art.meta.bbox.width * sl.k * 0.18f
+                c.save(); c.translate(cx - cw / 2, gy - cw + u * 1.5f)
+                androidx.compose.ui.graphics.drawscope.CanvasDrawScope().draw(androidx.compose.ui.unit.Density(1f), androidx.compose.ui.unit.LayoutDirection.Ltr,
+                    androidx.compose.ui.graphics.Canvas(c), androidx.compose.ui.geometry.Size(cw, cw)) { birthdayCake() }
+                c.restore()
+            }
+        }
+    }
+
+    /** 하루를 앱과 같은 벡터로 (Compose 그리기를 위젯 캔버스에). */
     private fun haru(context: Context, c: Canvas, cx: Float, gy: Float, widthUnits: Float, u: Float, now: LocalDateTime) {
         val store = Store(context)
         val season = store.profile?.let { LifeSnapshot(it.birthDate, it.expectancy(store.table), now).season } ?: Season.SPRING
@@ -116,13 +157,11 @@ object GardenWidgetArt {
         val lo = (box / 2 - bb.left) * k + edge; val hi = c.width - (bb.right - box / 2) * k - edge
         val x = if (lo <= hi) cx.coerceIn(lo, hi) else c.width / 2f
         val left = x - box / 2 * k; val top = gy - ground * k
-        val h = now.hour
-        val sleepy = h >= Tokens.Garden.Motion.sleepFrom.toInt() || h < Tokens.Garden.Motion.sleepTo.toInt()
         c.save(); c.translate(left, top)
         androidx.compose.ui.graphics.drawscope.CanvasDrawScope().draw(
             androidx.compose.ui.unit.Density(1f), androidx.compose.ui.unit.LayoutDirection.Ltr, androidx.compose.ui.graphics.Canvas(c),
             androidx.compose.ui.geometry.Size(box * k, box * k),
-        ) { drawHaru(art, k, if (sleepy) Tokens.Garden.Motion.sleepyLid else 0f, sleepy = sleepy) }
+        ) { drawHaru(art, k) }
         c.restore()
     }
 

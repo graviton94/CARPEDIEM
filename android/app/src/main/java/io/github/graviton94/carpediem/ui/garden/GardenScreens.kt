@@ -70,6 +70,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.github.graviton94.carpediem.R
 import io.github.graviton94.carpediem.core.GridScale
+import io.github.graviton94.carpediem.core.Kind
+import io.github.graviton94.carpediem.core.Family
 import io.github.graviton94.carpediem.core.LifePeriod
 import io.github.graviton94.carpediem.core.LifeProfile
 import io.github.graviton94.carpediem.core.LifeSnapshot
@@ -101,8 +103,6 @@ private fun skyProgress(now: LocalDateTime): Pair<Boolean, Float> {
     else false to (((h - set + 24f) % 24f) / (24f - (set - rise)))
 }
 
-internal fun sleepy(now: LocalDateTime): Boolean { val h = now.hour; return h >= G.Motion.sleepFrom.toInt() || h < G.Motion.sleepTo.toInt() }
-
 /** 가운데를 x 에 두되 [min, max] 안에서 벗어나지 않게. */
 private fun Modifier.centerAt(xPx: Float, minPx: Float, maxPx: Float) = layout { measurable, constraints ->
     val p = measurable.measure(constraints.copy(minWidth = 0))
@@ -120,22 +120,37 @@ internal fun haruArt(state: AppState, sprout: Boolean): HaruLoad {
     return remember(seed, sprout) { HaruLoad(HaruArt.of(seed, sprout), false) }
 }
 
-/** 하루 한 명 (그림이 있으면 그림, 못 그렸으면 대체 그림). */
+/** 하루 한 명 (쓰다듬기 · 두 번 누르기는 HaruFigure). */
 @Composable
-internal fun Haru(load: HaruLoad, scale: Dp, modifier: Modifier, sleepy: Boolean = false, blinkKick: Int = 0) {
+internal fun Haru(load: HaruLoad, scale: Dp, modifier: Modifier, blinkKick: Int = 0, hat: Boolean = false, onOpen: (() -> Unit)? = null) {
     val ctx = LocalContext.current
-    val desc = load.art?.let { stringResource(R.string.garden_haruA11y, Labels.stone(ctx, it.meta.stone)) } ?: stringResource(R.string.garden_haru)
-    val m = modifier.semantics { contentDescription = desc }
-    when {
-        load.art != null -> HaruFigure(load.art, scale, m, sleepy = sleepy, blinkKick = blinkKick)
+    val art = load.art ?: return
+    HaruFigure(art, scale, modifier, blinkKick = blinkKick, hat = hat, a11y = stringResource(R.string.garden_haruA11y, Labels.stone(ctx, art.meta.stone)), onOpen = onOpen)
+}
+
+/** 정원에 앉는 돌 하나 (내 돌 id = null). */
+internal class Slot(val id: String?, val name: String, val art: HaruArt, val scale: Dp, val progress: Double?, val birthday: Boolean)
+
+/** 나와 가족의 돌 (나부터). 반려동물은 petScale 만큼 작게. */
+@Composable
+internal fun gardenSlots(state: AppState, profile: LifeProfile, s: LifeSnapshot, now: LocalDateTime, base: Dp): List<Slot> {
+    val today = now.toLocalDate()
+    val sprout = s.season == Season.SPRING
+    val me = Slot(null, stringResource(R.string.family_me), HaruArt.of(state.store.haruSeed, sprout), base, s.progress, Family.isBirthday(profile.birthDate, today))
+    return listOf(me) + state.people.map { p ->
+        val prog = p.birth?.let { LifeSnapshot(it, state.store.expectancy(p), now).progress }
+        Slot(p.id, p.name, HaruArt.of(p.seed, sprout), if (p.kind == Kind.PET) base * G.Family.petScale else base, prog, Family.isBirthday(p.birth, today))
     }
 }
+
+/** 이름표: nameChars 글자까지, 넘으면 말줄임. */
+internal fun shortName(n: String): String { val max = G.Family.nameChars.toInt(); return if (n.codePointCount(0, n.length) <= max) n else n.substring(0, n.offsetByCodePoints(0, max)) + "…" }
 
 // ───────────────────────── 홈 = 정원 ─────────────────────────
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSettings: () -> Unit, onCollection: () -> Unit, onSupport: () -> Unit) {
+fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSettings: () -> Unit, onCollection: () -> Unit, onSupport: () -> Unit, onStone: (String?) -> Unit, onAddPerson: () -> Unit) {
     val p = Theme.palette
     val ctx = LocalContext.current
     val density = LocalDensity.current
@@ -176,9 +191,12 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
             Box(Modifier.fillMaxWidth().height(screenH).graphicsLayer {
                 val f = turned(); translationY = scroll.value * G.Layout.parallax; alpha = 1f - f * f
             }.clipToBounds()) {
-                // 아래: 지나온 길 (땅 한 줄) 위에 하루와 놓인 것. 자리를 먼저 정해 하늘빛 · 별이 쓰게 한다.
+                // 아래: 지나온 길 (땅 한 줄) 위에 나와 가족의 돌 · 놓인 것. 자리를 먼저 정해 하늘빛 · 별 · 해가 쓰게 한다.
                 val haruScale = u * (G.Layout.haruWidth / G.Layout.haruArtWidth)
-                val haruAbove = art?.let { haruScale * (it.meta.ground - it.meta.bbox.top) } ?: (u * G.Layout.haruWidth)
+                val slots = gardenSlots(state, profile, s, now, haruScale)
+                val headroom = slots.maxOf { sl -> sl.scale * (sl.art.meta.ground - sl.art.meta.bbox.top + if (sl.birthday) Tokens.Garden.Party.hatHeight else if (sl.art.sprout) Tokens.Garden.HaruDraw.sproutHeight else 0f) }
+                val haruAbove = headroom
+                val family = slots.size > 1
                 val labels = u * (G.Layout.labelGap + G.Layout.labelRow * 3)
                 val gy = maxOf(screenH * G.Layout.groundRatio, topBottom + u * G.Layout.minSkyGap + haruAbove).coerceAtMost(screenH - labels)
 
@@ -199,7 +217,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                         }
                         IconButton(onClick = onSettings, modifier = Modifier.semantics { contentDescription = ctx.getString(R.string.settings) }) { Icon(Icons.Filled.Settings, null, tint = p.secondary) }
                     }
-                    TokenText(stringResource(R.string.timeLeft), Tokens.TypeScale.subhead, color = p.secondary)
+                    TokenText(stringResource(R.string.timeLeft) + " · " + stringResource(R.string.path_age, "${s.age}", Labels.season(ctx, season)), Tokens.TypeScale.subhead, color = p.secondary)
                     TokenText(Labels.number(s.remaining(state.unit)), Tokens.TypeScale.display(Theme.deviceClass), maxLines = 1)
                     Row(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
                         LifeUnit.entries.forEachIndexed { i, unit -> GardenChip(Labels.unit(ctx, unit), unit == state.unit, seed = 800 + i) { state.changeUnit(unit) } }
@@ -217,11 +235,10 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 }
 
                 val x0 = u * G.Layout.pathStart; val x1 = u * G.Layout.pathEnd
-                val along = lerp((u * (G.Layout.pathStart + G.Layout.pathInset)).value, (u * (G.Layout.pathEnd - G.Layout.pathInset)).value, s.progress.toFloat().coerceIn(0f, 1f)).dp
-                // 하루 몸이 길 끝을 넘지 않게 (큰 돌도 화면 안에). 대체 그림은 반지름 = haruWidth.
-                val leftExt = art?.let { haruScale * (it.meta.box / 2 - it.meta.bbox.left) } ?: (u * G.Layout.haruWidth)
-                val rightExt = art?.let { haruScale * (it.meta.bbox.right - it.meta.box / 2) } ?: (u * G.Layout.haruWidth)
-                val hx = if (x0 + leftExt <= x1 - rightExt) along.coerceIn(x0 + leftExt, x1 - rightExt) else (x0 + x1) / 2
+                // 돌 자리: 각자 인생의 길 위 원래 자리, 겹치면 옆으로 비켜 앉음 (core Family.place)
+                val targets = slots.map { sl -> sl.progress?.let { lerp(G.Layout.pathStart + G.Layout.pathInset, G.Layout.pathEnd - G.Layout.pathInset, it.toFloat().coerceIn(0f, 1f)).toDouble() * u.value } }
+                val widths = slots.map { sl -> (sl.art.meta.bbox.width * sl.scale.value).toDouble() }
+                val xs = Family.place(targets, widths, 0, x0.value.toDouble(), x1.value.toDouble(), (G.Family.gap * u.value).toDouble(), (G.Family.minGap * u.value).toDouble()).map { it.toFloat().dp }
 
                 // 해 · 달: 폰 시각을 따라 하늘을 가로지름. 위쪽 글자에도, 하루 머리에도 닿지 않음.
                 val (day, t) = skyProgress(now)
@@ -234,26 +251,58 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
 
                 Image(GardenArt.strip(ctx, season), null, Modifier.offset(y = gy - u * G.Layout.stripLineY).fillMaxWidth().height(u * G.Layout.stripHeight), contentScale = ContentScale.FillBounds)
 
-                // 놓인 것: 하루 왼쪽(지나온 쪽)에 최근 것부터. 자리가 없으면 거기까지만.
+                // 놓인 것: 돌 사이 빈틈과 가장 왼쪽 돌의 왼편에, 최근 것부터. 자리가 없으면 거기까지만 (모은 것에는 모두).
                 val box = u * (G.Layout.objBox * G.Layout.objScale)
-                var cursor = hx - leftExt - u * G.Layout.itemFromHaru
-                for (m in moments) {
-                    val cx = cursor - box * 0.3f
-                    if (cx - box * 0.3f < x0) break
+                val step = box * 0.6f + u * G.Layout.itemGap
+                val spans = slots.indices.map { i -> (xs[i] - u * widths[i].toFloat() / u.value / 2) to (xs[i] + u * widths[i].toFloat() / u.value / 2) }.sortedBy { it.first }
+                val gaps = buildList {
+                    add(x0 to spans.first().first - u * G.Layout.itemFromHaru)
+                    for (k in 0 until spans.size - 1) add(spans[k].second + u * G.Layout.itemGap to spans[k + 1].first - u * G.Layout.itemGap)
+                }
+                val spots = gaps.flatMap { (a0, b0) -> buildList { var c = b0 - box * 0.3f; while (c - box * 0.3f >= a0) { add(c); c -= step } } }
+                moments.zip(spots).forEach { (m, cx) ->
                     Image(GardenArt.obj(ctx, m.id), stringResource(objName(m.id)), Modifier.offset(cx - box / 2, gy - box * (G.Layout.objGround / G.Layout.objBox)).size(box).clickable { open = m })
-                    cursor = cx - box * 0.3f - u * G.Layout.itemGap
                 }
 
-                Haru(load, haruScale, Modifier.offset(hx - haruScale * (G.Layout.haruBox / 2), gy - haruScale * G.Layout.haruGround), sleepy = sleepy(now), blinkKick = state.blinkKick)
+                // 원래 자리에서 비켜 앉은 돌: 땅 위 작은 눈금과 점선
+                val shifted = slots.indices.filter { i -> targets[i] != null && kotlin.math.abs(xs[i].value - targets[i]!!.toFloat()) > G.Family.tickShift * u.value }
+                if (shifted.isNotEmpty()) androidx.compose.foundation.Canvas(Modifier.fillMaxSize()) {
+                    val uu = u.toPx(); val y0 = gy.toPx()
+                    shifted.forEach { i ->
+                        val tx = targets[i]!!.toFloat().dp.toPx(); val sx0 = xs[i].toPx()
+                        drawLine(p.secondary, androidx.compose.ui.geometry.Offset(tx, y0 + uu * 1.5f), androidx.compose.ui.geometry.Offset(tx, y0 + uu * 6f), uu * 1.2f)
+                        drawLine(p.secondary.copy(alpha = 0.7f), androidx.compose.ui.geometry.Offset(tx, y0 + uu * 6f), androidx.compose.ui.geometry.Offset(sx0, y0 + uu * 6f), uu * 0.8f,
+                            pathEffect = androidx.compose.ui.graphics.PathEffect.dashPathEffect(floatArrayOf(uu * 2f, uu * 2.5f)))
+                    }
+                }
 
-                // 0세 · 기대수명 (한 줄) · 지금 나이와 계절 (다음 줄, 하루 아래)
-                val px = with(density) { Triple(x0.toPx(), x1.toPx(), hx.toPx()) }
-                Box(Modifier.offset(y = gy + u * G.Layout.labelGap).fillMaxWidth()) {
+                // 돌들: 한 번 누르면 쓰다듬기, 두 번 누르면 그 돌의 페이지
+                val sentTo = state.lines.lastOrNull()?.takeIf { it.date == now.toLocalDate() }?.to
+                slots.forEachIndexed { i, sl ->
+                    val cx = xs[i] - sl.scale * (sl.art.meta.bbox.center.x - sl.art.meta.box / 2)
+                    val left = cx - sl.scale * (sl.art.meta.box / 2); val top = gy - sl.scale * G.Layout.haruGround
+                    HaruFigure(sl.art, sl.scale, Modifier.offset(left, top), blinkKick = if (sl.id == null) state.blinkKick else 0, hat = sl.birthday,
+                        a11y = stringResource(R.string.garden_stoneA11y, sl.name, Labels.stone(ctx, sl.art.meta.stone)), onOpen = { onStone(sl.id) })
+                    // 생일: 돌 앞에 작은 케이크
+                    if (sl.birthday) {
+                        val cw = u * Tokens.Garden.Party.cakeWidth
+                        androidx.compose.foundation.Canvas(Modifier.offset(xs[i] + u * widths[i].toFloat() / u.value * 0.18f - cw / 2, gy - cw + u * 1.5f).size(cw)) { birthdayCake() }
+                    }
+                    // 오늘 이 돌에게 한 줄을 보냈으면 곁에 깃털이 하루 동안 머묾
+                    if (sentTo != null && sentTo == sl.id) {
+                        val fw = u * G.Family.feather
+                        Image(GardenArt.obj(ctx, "feather"), null, Modifier.offset(xs[i] + u * widths[i].toFloat() / u.value / 2 - fw * 0.3f, gy - sl.scale * (sl.art.meta.ground - sl.art.meta.bbox.top) - fw * 0.4f).size(fw))
+                    }
+                }
+
+                // 이름표 (가족이 있을 때) · 0세 · 기대수명
+                val px = with(density) { Pair(x0.toPx(), x1.toPx()) }
+                if (family) Box(Modifier.offset(y = gy + u * G.Layout.labelGap).fillMaxWidth()) {
+                    slots.forEachIndexed { i, sl -> TokenText(shortName(sl.name), Tokens.TypeScale.caption1, Modifier.centerAt(with(density) { xs[i].toPx() }, 0f, with(density) { screenW.toPx() }), weight = FontWeight.Medium, maxLines = 1) }
+                }
+                Box(Modifier.offset(y = gy + u * (G.Layout.labelGap + if (family) G.Layout.labelRow else 0f)).fillMaxWidth()) {
                     TokenText(stringResource(R.string.garden_age0), Tokens.TypeScale.caption1, Modifier.centerAt(px.first, 0f, px.second), color = p.secondary)
                     TokenText(stringResource(R.string.expectancy_value, Labels.years(s.expectancy)), Tokens.TypeScale.caption1, Modifier.centerAt(px.second, px.first, with(density) { screenW.toPx() }), color = p.secondary)
-                }
-                Box(Modifier.offset(y = gy + u * (G.Layout.labelGap + G.Layout.labelRow)).fillMaxWidth()) {
-                    TokenText(stringResource(R.string.path_age, "${s.age}", Labels.season(ctx, season)), Tokens.TypeScale.caption1, Modifier.centerAt(px.third, px.first, px.second))
                 }
                 // 정원 아래쪽은 종이로 번져 둘째 장과 이어진다
                 Box(Modifier.align(Alignment.BottomCenter).fillMaxWidth().height(screenH * G.Layout.fadeTail)
@@ -303,6 +352,9 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                     GardenButton(stringResource(R.string.collection), onCollection, filled = false, seed = 880, modifier = Modifier.weight(1f))
                     GardenButton(stringResource(R.string.support), onSupport, filled = false, seed = 884, modifier = Modifier.weight(1f))
                 }
+                // 가족의 돌 더하기 (정원이 가득 차면 안내만)
+                if (state.people.size < G.Family.max.toInt() - 1) GardenButton(stringResource(R.string.family_add), onAddPerson, filled = false, seed = 886)
+                else TokenText(stringResource(R.string.family_full), Tokens.TypeScale.footnote, Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.Center)
                 // 맨 아래: 오늘의 한 줄 (기쁨도 슬픔도 실어 떠나보내기)
                 Spacer(Modifier.height(Tokens.Space.sp6))
                 CrayonRule(seed = 958)
@@ -404,7 +456,7 @@ fun MeetScreen(state: AppState, onDone: () -> Unit) {
                 }
             }
             Spacer(Modifier.height(Tokens.Space.sp6))
-            art?.let { TokenText("${Labels.stone(ctx, it.meta.stone)} · ${stringResource(R.string.garden_no, haruNo(state.store.haruSeed))}", Tokens.TypeScale.caption1, color = p.secondary) }
+            art?.let { TokenText(Labels.stone(ctx, it.meta.stone), Tokens.TypeScale.caption1, color = p.secondary) }
             Spacer(Modifier.weight(1f))
             GardenButton(stringResource(R.string.garden_meet_go), onDone, filled = true, seed = 750)
             Spacer(Modifier.height(Tokens.Space.sp6))
@@ -422,8 +474,6 @@ private fun Sparkles(art: HaruArt, scale: Dp) {
     }
 }
 
-/** 하루 번호를 사람이 읽는 꼴로 (예: 2A61·F07C). */
-fun haruNo(seed: Long): String { val h = seed.toString(16).uppercase().padStart(8, '0').takeLast(8); return h.take(4) + "·" + h.drop(4) }
 
 // ───────────────────────── 작은 부품 ─────────────────────────
 

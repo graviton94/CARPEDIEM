@@ -181,7 +181,7 @@ object Tokens {
             const val labelRow = 18.0f
             const val objBox = 200.0f
             const val objGround = 168.0f
-            const val objScale = 0.5f
+            const val objScale = 0.36f
             const val itemFromHaru = 20.0f
             const val itemGap = 6.0f
             const val stripLineY = 40.0f
@@ -227,12 +227,8 @@ object Tokens {
             const val lookEase = 0.12f
             const val restEase = 0.02f
             const val tiltRange = 6.0f
-            const val sleepFrom = 22.0f
-            const val sleepTo = 6.0f
             const val sunrise = 6.0f
             const val sunset = 19.0f
-            const val sleepyLid = 0.55f
-            const val sleepyLook = 0.6f
             const val keyboardMs = 320.0f
         }
         object Crayon {
@@ -260,6 +256,8 @@ object Tokens {
             const val gridInset = 14.0f
             const val cell = 1.3f
             const val mossScale = 0.34f
+            const val familyHaru = 24.0f
+            const val familyGround = 0.74f
         }
         object SkyTime {
             object Night {
@@ -304,6 +302,46 @@ object Tokens {
             const val lidCurve = 0.22f
             const val pattern = 0.1f
             const val sproutHeight = 22.0f
+        }
+        object Family {
+            const val max = 5.0f
+            const val gap = 10.0f
+            const val minGap = 6.0f
+            const val nameChars = 4.0f
+            const val petScale = 0.72f
+            const val dogYears = 13.0f
+            const val catYears = 15.0f
+            const val otherYears = 10.0f
+            const val tickShift = 4.0f
+            const val feather = 16.0f
+        }
+        object Touch {
+            const val petMs = 900.0f
+            const val wiggleDeg = 3.0f
+            const val squash = 0.03f
+            const val blushMs = 1200.0f
+            const val hop = 12.0f
+            const val hopMs = 420.0f
+            const val windowMs = 3000.0f
+            const val restAfter = 5.0f
+            const val restWindowMs = 10000.0f
+            const val restMs = 2000.0f
+            const val doubleMs = 280.0f
+            const val openMs = 420.0f
+            const val haptic = 1.0f
+        }
+        object Party {
+            const val hatWidth = 22.0f
+            const val hatHeight = 26.0f
+            const val cakeWidth = 11.0f
+            object Colors {
+                val hat = Color(0xFFE9A43A)
+                val stripe = Color(0xFFD98C7A)
+                val pompom = Color(0xFFF6F1E6)
+                val cake = Color(0xFFF4EEDF)
+                val cream = Color(0xFFD98C7A)
+                val flame = Color(0xFFF0A84A)
+            }
         }
     }
 }

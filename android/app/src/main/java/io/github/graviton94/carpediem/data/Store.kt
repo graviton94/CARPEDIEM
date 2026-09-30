@@ -1,5 +1,8 @@
 package io.github.graviton94.carpediem.data
 
+import io.github.graviton94.carpediem.core.Family
+import io.github.graviton94.carpediem.core.Person
+import io.github.graviton94.carpediem.core.Species
 import io.github.graviton94.carpediem.core.DayLine
 import io.github.graviton94.carpediem.core.Lines
 import android.content.Context
@@ -178,6 +181,17 @@ class Store(context: Context) {
 
     /** 시험용: 다음 문득 찾아올 날을 오늘로. */
     fun randomRecallNow(today: LocalDate = LocalDate.now()) = prefs.edit().putLong("randomNext", today.toEpochDay()).remove("randomOn").apply()
+
+    /** 가족의 정원: 함께 앉은 가족 · 반려동물 (나는 빼고, 최대 4). */
+    var people: List<Person>
+        get() = Family.decode(prefs.getString("people", null))
+        set(v) = prefs.edit().putString("people", Family.encode(v)).apply()
+
+    /** 그 사람의 기대수명 (반려동물은 종의 기대수명). */
+    fun expectancy(p: Person): Double = Family.expectancy(p, table) {
+        val f = io.github.graviton94.carpediem.design.Tokens.Garden.Family
+        when (it) { Species.DOG -> f.dogYears; Species.CAT -> f.catYears; Species.OTHER -> f.otherYears }.toDouble()
+    }
 
     fun eraseAll() = prefs.edit().clear().apply()
 

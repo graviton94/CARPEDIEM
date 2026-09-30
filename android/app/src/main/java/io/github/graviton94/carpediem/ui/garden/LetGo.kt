@@ -135,6 +135,9 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
     val max = G.LetGo.maxChars.toInt()
     var text by rememberSaveable { mutableStateOf("") }
     var feeling by rememberSaveable { mutableStateOf<Feeling?>(null) }
+    // 누구에게 (선택): 생일인 사람이 있으면 먼저 골라 둠
+    val birthdayId = state.people.firstOrNull { io.github.graviton94.carpediem.core.Family.isBirthday(it.birth, today) }?.id
+    var to by rememberSaveable(birthdayId) { mutableStateOf(birthdayId) }
     var flying by remember { mutableStateOf<String?>(null) }
     val fly = remember { Animatable(0f) }
     LaunchedEffect(flying) {
@@ -146,7 +149,7 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
     val scope = rememberCoroutineScope()
     fun send() {
         if (text.isBlank()) return
-        flying = text.trim(); state.letGo(text, feeling); text = ""; feeling = null; focus.clearFocus()
+        flying = text.trim(); state.letGo(text, feeling, to?.takeIf { id -> state.people.any { it.id == id } }); text = ""; feeling = null; focus.clearFocus()
     }
 
     Column(modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
@@ -190,6 +193,12 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
                     Feeling.entries.forEachIndexed { i, f ->
                         Chip(stringResource(feelingName(f)), feeling == f, seed = 970 + i) { feeling = if (feeling == f) null else f }
+                    }
+                }
+                if (Theme.garden && state.people.isNotEmpty()) {
+                    TokenText(stringResource(R.string.letgo_to), Tokens.TypeScale.caption1, color = p.secondary)
+                    FlowRow(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
+                        state.people.forEachIndexed { i, person -> Chip(person.name, to == person.id, seed = 980 + i) { to = if (to == person.id) null else person.id } }
                     }
                 }
                 // 쓰는 중에는 기본 글꼴 (글자를 칠 때마다 글꼴이 바뀌지 않게)
@@ -295,7 +304,7 @@ fun LetGoModal(state: AppState, modifier: Modifier = Modifier) {
             horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3),
         ) {
             Image(feather, null, Modifier.size(u * G.LetGo.feather * 1.3f))
-            TokenText(stringResource(R.string.letgo_modalTitle), lineType(Tokens.TypeScale.title3, Theme.garden), align = TextAlign.Center)
+            TokenText(state.toastTitle ?: stringResource(R.string.letgo_modalTitle), lineType(Tokens.TypeScale.title3, Theme.garden), align = TextAlign.Center)
             TokenText(msg, lineType(Tokens.TypeScale.callout, Theme.garden), color = p.secondary, align = TextAlign.Center)
             Spacer(Modifier.height(Tokens.Space.sp2))
             Action(stringResource(R.string.letgo_ok), filled = true, seed = 999) { state.toast = null }

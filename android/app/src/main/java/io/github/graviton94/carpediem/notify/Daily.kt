@@ -71,6 +71,11 @@ object Daily {
         val yearAgo = Lines.yearsAgo(store.lines, LocalDate.now()).firstOrNull()
         if (yearAgo != null) { title = context.getString(R.string.recall_notify, "${yearAgo.first}"); body = context.getString(R.string.recall_notifyText) }
         else if (store.keepLines && store.randomRecall() != null) { title = context.getString(R.string.recall_randomNotify); body = context.getString(R.string.recall_notifyText) }
+        // 가족 생일이 가장 먼저 (정원 디자인일 때)
+        if (store.design == Design.GARDEN) {
+            val names = store.people.filter { io.github.graviton94.carpediem.core.Family.isBirthday(it.birth, LocalDate.now()) }.map { it.name }
+            if (names.isNotEmpty()) { title = context.getString(R.string.notify_birthday, names.joinToString(", ")); body = text }
+        }
         val open = PendingIntent.getActivity(context, 0, Intent(context, MainActivity::class.java), PendingIntent.FLAG_IMMUTABLE)
         val n = NotificationCompat.Builder(context, CHANNEL).setSmallIcon(R.mipmap.ic_launcher_monochrome).setContentTitle(title).setContentText(body)
             .setStyle(NotificationCompat.BigTextStyle().bigText(body)).setContentIntent(open).setAutoCancel(true).build()

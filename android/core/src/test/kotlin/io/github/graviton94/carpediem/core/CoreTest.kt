@@ -195,4 +195,33 @@ class DataTest {
             assertEquals(r.top.first, s.top.first, 0.05); assertEquals(r.top.second, s.top.second, 0.05)
         }
     }
+
+    @Test fun familyPlacementNeverOverlaps() {
+        val r = kotlin.random.Random(42)
+        repeat(200) {
+            val n = 1 + r.nextInt(5)
+            val widths = List(n) { 36.0 + r.nextDouble() * 22 }
+            val targets = List(n) { if (r.nextInt(8) == 0 && it != 0) null else 46.0 + r.nextDouble() * 298 }
+            val xs = Family.place(targets, widths, 0, 26.0, 364.0, 10.0, 6.0)
+            val sorted = xs.indices.sortedBy { xs[it] }
+            for (k in 0 until n - 1) { val a = sorted[k]; val b = sorted[k + 1]; assertTrue(xs[b] - xs[a] >= (widths[a] + widths[b]) / 2 + 6.0 - 1e-6, "겹침 $targets") }
+            xs.forEachIndexed { i, x -> assertTrue(x - widths[i] / 2 >= 26.0 - 1e-6 && x + widths[i] / 2 <= 364.0 + 1e-6, "길 밖 $targets") }
+        }
+        // 떨어져 있으면 제자리
+        assertEquals(listOf(100.0, 250.0), Family.place(listOf(100.0, 250.0), listOf(52.0, 52.0), 0, 26.0, 364.0, 10.0, 6.0))
+    }
+
+    @Test fun familyDatesAndStorage() {
+        assertEquals(d(2027, 2, 28), Family.nextBirthday(d(2000, 2, 29), d(2026, 3, 1)))
+        assertTrue(Family.isBirthday(d(1964, 3, 2), d(2026, 3, 2)))
+        val mom = Person("k3f9a2qz", "엄마\t", Kind.PERSON, birth = d(1964, 3, 2), sex = Sex.FEMALE, country = "KR", seed = 123L, metOn = d(2026, 10, 1))
+        val dog = Person("p0p0p0p0", "콩이", Kind.PET, Species.DOG, d(2018, 5, 5), seed = 4254103021L, metOn = d(2026, 10, 1))
+        val back = Family.decode(Family.encode(listOf(mom, dog)))
+        assertEquals("엄마", back[0].name); assertEquals(mom.copy(name = "엄마"), back[0]); assertEquals(dog, back[1])
+        assertEquals(d(1996, 5, 1), Family.togetherSince(d(1996, 5, 1), mom))
+        assertEquals(d(2018, 5, 5), Family.togetherSince(d(1996, 5, 1), dog))
+        // 한 줄의 받는 돌, 예전 기록(칸 3개)도 읽힘
+        val lines = Lines.decode(Lines.encode(listOf(DayLine(d(2026, 10, 1), "고마워요", Feeling.THANKS, "k3f9a2qz"))) + "\n20000\t-\t예전")
+        assertEquals("k3f9a2qz", lines[0].to); assertEquals(null, lines[1].to); assertEquals("예전", lines[1].text)
+    }
 }

@@ -68,7 +68,6 @@ import io.github.graviton94.carpediem.core.Sex
 import io.github.graviton94.carpediem.data.Design
 import io.github.graviton94.carpediem.data.QuoteLanguage
 import io.github.graviton94.carpediem.ui.garden.GardenButton
-import io.github.graviton94.carpediem.ui.garden.haruNo
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import io.github.graviton94.carpediem.design.Theme
@@ -304,7 +303,7 @@ private fun QuoteCard(q: Quote, language: QuoteLanguage, onNext: () -> Unit) {
 // ───────────────────────── 설정 ─────────────────────────
 
 @Composable
-fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, onCountry: () -> Unit, onCollection: () -> Unit, onSupport: () -> Unit) {
+fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, onCountry: () -> Unit, onCollection: () -> Unit, onSupport: () -> Unit, onStone: (String?) -> Unit = {}, onAddPerson: () -> Unit = {}) {
     val p = Theme.palette
     val ctx = LocalContext.current
     val draft = state.draft ?: profile.also { state.draft = it }
@@ -326,8 +325,10 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
                 }
                 if (state.design == Design.GARDEN) {
                     RowDivider()
-                    FormRow(stringResource(R.string.garden_haru)) {
-                        TokenText(stringResource(R.string.garden_no, haruNo(state.store.haruSeed)), Tokens.TypeScale.subhead, color = p.secondary)
+                    // 내 하루: ‘2026년 9월 30일에 만난 회색 화강암’ (누르면 돌의 페이지)
+                    FormRow(stringResource(R.string.garden_haru), onClick = { onStone(null) }) {
+                        TokenText(stringResource(R.string.garden_metOn, state.store.startDate.format(java.time.format.DateTimeFormatter.ofLocalizedDate(java.time.format.FormatStyle.MEDIUM)),
+                            Labels.stone(ctx, io.github.graviton94.carpediem.core.HaruShape.traits(state.store.haruSeed).stone.id)), Tokens.TypeScale.footnote, color = p.secondary, maxLines = 2)
                     }
                     RowDivider()
                     FormRow(stringResource(R.string.collection), onClick = onCollection) {
@@ -341,6 +342,17 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
                     }
                 }
             }
+            // 가족의 정원 (정원 디자인에서만. 유리 디자인은 안내 한 줄)
+            if (state.design == Design.GARDEN) FormSection(header = stringResource(R.string.family)) {
+                state.people.forEachIndexed { i, person ->
+                    if (i > 0) RowDivider()
+                    FormRow(person.name, onClick = { onStone(person.id) }) { Icon(Icons.Filled.KeyboardArrowRight, null, tint = p.secondary) }
+                }
+                if (state.people.size < Tokens.Garden.Family.max.toInt() - 1) {
+                    if (state.people.isNotEmpty()) RowDivider()
+                    FormRow(stringResource(R.string.family_add), onClick = onAddPerson) { Icon(Icons.Filled.KeyboardArrowRight, null, tint = p.secondary) }
+                }
+            } else TokenText(stringResource(R.string.family_glassNote), Tokens.TypeScale.footnote, Modifier.padding(horizontal = Tokens.Space.sp4), color = p.secondary)
             FormSection(header = stringResource(R.string.defaults), footer = stringResource(R.string.defaults_footer)) {
                 Column(Modifier.padding(vertical = Tokens.Space.sp2), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
                     TokenText(stringResource(R.string.defaults_unit), Tokens.TypeScale.body)

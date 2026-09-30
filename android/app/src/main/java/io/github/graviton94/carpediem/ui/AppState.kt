@@ -1,5 +1,6 @@
 package io.github.graviton94.carpediem.ui
 
+import io.github.graviton94.carpediem.core.Person
 import java.time.LocalDateTime
 import io.github.graviton94.carpediem.design.Tokens
 import io.github.graviton94.carpediem.core.Lines
@@ -96,10 +97,15 @@ class AppState(private val context: Context) {
     /** 보낸 뒤 잠깐 떠오르는 한마디 (마음에 맞춰). 보이고 나면 null. */
     var toast by mutableStateOf<String?>(null)
 
-    fun letGo(text: String, feeling: Feeling?, today: LocalDate = (fixedNow ?: LocalDateTime.now()).toLocalDate()) {
+    /** 보낸 뒤 창의 제목 (기쁨 · 고마움 · 희망을 누군가에게 보냈을 때만 “엄마에게 보냈어요”). */
+    var toastTitle by mutableStateOf<String?>(null)
+
+    fun letGo(text: String, feeling: Feeling?, to: String? = null, today: LocalDate = (fixedNow ?: LocalDateTime.now()).toLocalDate()) {
         val t = Lines.clean(text, Tokens.Garden.LetGo.maxChars.toInt()); if (t.isEmpty()) return
         // 기록 남기지 않기: 날짜만 (이어 쓰기 흔적은 이어 간다)
-        val line = if (keepLines) DayLine(today, t, feeling) else DayLine(today, "", null)
+        val line = if (keepLines) DayLine(today, t, feeling, to) else DayLine(today, "", null, to)
+        val person = people.firstOrNull { it.id == to }
+        toastTitle = if (person != null && feeling in setOf(Feeling.JOY, Feeling.THANKS, Feeling.HOPE)) context.getString(R.string.letgo_modalTo, person.name) else null
         val next = Lines.add(lines, line)
         store.lines = next; lines = next
         val s = Lines.streaks(next, streaks); if (s != streaks) { store.streaks = s; streaks = s }
@@ -126,8 +132,19 @@ class AppState(private val context: Context) {
         val next = Lines.add(lines, DayLine(today.minusYears(1), context.getString(R.string.recall_sample), Feeling.HOPE)); store.lines = next; lines = next
     }
 
+    // ───── 가족의 정원 ─────
+    var people by mutableStateOf(store.people)
+        private set
+    fun newSeed(): Long = kotlin.random.Random.nextLong(0, 1L shl 32)
+    fun savePerson(p: Person) {
+        val next = if (people.any { it.id == p.id }) people.map { if (it.id == p.id) p else it } else (people + p).take(Tokens.Garden.Family.max.toInt() - 1)
+        store.people = next; people = next; Widgets.refresh(context)
+    }
+    fun removePerson(id: String) { val next = people.filterNot { it.id == id }; store.people = next; people = next; Widgets.refresh(context) }
+    fun newPersonId(): String = (1..8).map { "abcdefghijkmnpqrstuvwxyz23456789".random() }.joinToString("")
+
     fun eraseAll() {
-        store.eraseAll(); store.ensureQuoteSeed(); unit = store.unit; grid = store.grid; defaultUnit = unit; defaultGrid = grid; lines = emptyList(); streaks = emptyMap(); keepLines = true; toast = null; randomLine = null
+        store.eraseAll(); store.ensureQuoteSeed(); unit = store.unit; grid = store.grid; defaultUnit = unit; defaultGrid = grid; lines = emptyList(); streaks = emptyMap(); keepLines = true; toast = null; randomLine = null; people = emptyList()
         profile = null; quoteLanguage = store.quoteLanguage; quote = store.todaysQuote(); design = store.design; meetPending = false; previewAll = false; notify = false; devMode = false; io.github.graviton94.carpediem.notify.Daily.schedule(context, false); Widgets.refresh(context)
     }
 
