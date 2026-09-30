@@ -277,27 +277,31 @@ fun GazeScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, onBack
         val screenH = maxHeight
         Image(GardenArt.sky(ctx, s.season), null, Modifier.fillMaxSize(), contentScale = ContentScale.FillWidth, alignment = Alignment.TopCenter)
         val gy = screenH * G.Layout.groundRatio
+        // 땅 그림도 시간의 빛 아래에 (밤이면 땅까지 어두워짐)
+        Image(GardenArt.strip(ctx, s.season), null, Modifier.offset(y = gy - u * G.Layout.stripLineY).fillMaxWidth().height(u * G.Layout.stripHeight), contentScale = ContentScale.FillBounds)
         SkyTimeLayer(now, gy, screenH * 0.08f, gy - u * 60, Modifier.fillMaxSize())
         // 구름: 앱이 그리는 둥근 조각 몇 개가 아주 느리게
+        val night = Theme.gc.night
         Canvas(Modifier.fillMaxSize()) {
             val w = size.width; val uu = u.toPx()
             val r = Crayon.Rng(7)
             repeat(z.clouds.toInt()) { i ->
                 val y = size.height * (0.12f + 0.32f * r.next()); val sc = 0.7f + 0.6f * r.next(); val off = r.next()
                 val x = ((drift + off) % 1f) * (w + uu * 160) - uu * 80
-                val c = Color.White.copy(alpha = 0.55f)
+                val c = Color.White.copy(alpha = if (night) 0.14f else 0.55f)   // 밤 구름은 아주 옅게
                 listOf(Offset(0f, 0f) to 26f, Offset(22f, -8f) to 20f, Offset(-22f, -4f) to 18f, Offset(40f, 4f) to 14f).forEach { (o, rr) ->
                     drawOval(c, Offset(x + (o.x - rr) * uu * sc, y + (o.y - rr * 0.6f) * uu * sc), Size(rr * 2 * uu * sc, rr * 1.2f * uu * sc))
                 }
             }
         }
-        Image(GardenArt.strip(ctx, s.season), null, Modifier.offset(y = gy - u * G.Layout.stripLineY).fillMaxWidth().height(u * G.Layout.stripHeight), contentScale = ContentScale.FillBounds)
         // 돌들 (정원과 같은 자리 규칙, 이름표 없이)
         val haruScale = u * (G.Layout.haruWidth / G.Layout.haruArtWidth)
         val slots = gardenSlots(state, profile, s, now, haruScale)
         val targets = slots.map { sl -> sl.progress?.let { (G.Layout.pathStart + G.Layout.pathInset + (G.Layout.pathEnd - G.Layout.pathStart - 2 * G.Layout.pathInset) * it.toFloat().coerceIn(0f, 1f)).toDouble() * u.value } }
         val widths = slots.map { sl -> (sl.art.meta.bbox.width * sl.scale.value).toDouble() }
         val xs = Family.place(targets, widths, 0, (u * G.Layout.pathStart).value.toDouble(), (u * G.Layout.pathEnd).value.toDouble(), (G.Family.gap * u.value).toDouble(), (G.Family.minGap * u.value).toDouble()).map { it.toFloat().dp }
+        // 밤: 돌들 발치의 빛 · 가로등 · 반딧불
+        NightLights(now, gy, slots.indices.minOf { xs[it] - (widths[it].toFloat() / 2).dp }, slots.indices.maxOf { xs[it] + (widths[it].toFloat() / 2).dp }, null, Modifier.fillMaxSize())
         slots.forEachIndexed { i, sl ->
             val cx = xs[i] - sl.scale * (sl.art.meta.bbox.center.x - sl.art.meta.box / 2)
             HaruFigure(sl.art, sl.scale, Modifier.offset(cx - sl.scale * (sl.art.meta.box / 2), gy - sl.scale * G.Layout.haruGround), hat = sl.birthday)
