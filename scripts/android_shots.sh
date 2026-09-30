@@ -52,7 +52,7 @@ open --ez cd.openLetter true --es cd.now 2026-12-02T10:00;                      
 open --ez cd.letter true --ez cd.openLetter true --es cd.now 2026-12-02T21:30;                         shot g33_letter_night 4
 open --es cd.screen collection --es cd.now 2026-12-02T10:00; swipe_up; swipe_up;                       shot g34_letters 3
 # 1.4 돌봄: 한마디 창 아래 권유 · 잠깐 바라보기 · 고마움 책
-open --es cd.care CALM_BREATH --es cd.now $NOW;                                                       shot g36_care 6
+open --es cd.care CALM_BREATH --es cd.now $NOW;                                                       shot g36_care 14
 open --es cd.screen look --es cd.now $NOW;                                                             shot g37_look 12
 # 인생의 계절 (다른 생년월일 · 다른 하루)
 open --el cd.seed 12345 --es cd.birth 2016-03-01 --es cd.now $NOW;                                     shot g12_spring 14
