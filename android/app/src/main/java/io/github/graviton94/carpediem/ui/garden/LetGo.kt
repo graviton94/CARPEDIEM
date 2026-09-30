@@ -4,6 +4,11 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.border
+import androidx.compose.foundation.background
 import kotlinx.coroutines.delay
 import java.time.format.FormatStyle
 import java.time.format.DateTimeFormatter
@@ -60,6 +65,47 @@ private fun feelingName(f: Feeling) = when (f) {
     Feeling.DISAPPOINT -> R.string.feeling_disappoint; Feeling.SAD -> R.string.feeling_sad; Feeling.WORRY -> R.string.feeling_worry
 }
 
+
+// ───── 정원(크레용) · 유리 두 디자인에서 함께 쓰는 작은 부품 ─────
+
+/** 상자: 정원은 크레용 선, 유리는 옅은 유리판. strong = 조금 더 눈에 띄게 (돌아온 한 줄). */
+@Composable
+private fun Modifier.lineBox(seed: Int, strong: Boolean = false, pill: Boolean = false): Modifier {
+    if (Theme.garden) return crayonBox(if (strong) G.Colors.chip else G.Colors.paper, if (pill) G.Radius.chip else G.Radius.box, G.Stroke.chip, seed)
+    val p = Theme.palette
+    val shape = RoundedCornerShape(if (pill) Tokens.Radius.pill else Tokens.Radius.md)
+    return clip(shape).background(if (strong) p.olive.copy(alpha = 0.14f) else p.glass).border(Tokens.Stroke.line, p.glassEdge, shape)
+}
+
+@Composable
+private fun Chip(text: String, selected: Boolean, seed: Int, onClick: () -> Unit) {
+    if (Theme.garden) { GardenChip(text, selected, seed, onClick); return }
+    val p = Theme.palette
+    Box(Modifier.heightIn(min = Tokens.Layout.tapTarget), contentAlignment = Alignment.Center) {
+        Box(Modifier.clip(RoundedCornerShape(Tokens.Radius.pill)).background(if (selected) p.olive else p.dim).clickable(onClick = onClick)
+            .padding(horizontal = Tokens.Space.sp3, vertical = Tokens.Space.sp1)) {
+            TokenText(text, Tokens.TypeScale.subhead, color = if (selected) p.onOlive else p.foreground, weight = if (selected) FontWeight.Bold else FontWeight.Medium)
+        }
+    }
+}
+
+@Composable
+private fun Action(text: String, filled: Boolean, seed: Int, onClick: () -> Unit) {
+    if (Theme.garden) { GardenButton(text, onClick, filled = filled, seed = seed); return }
+    val p = Theme.palette
+    Box(Modifier.fillMaxWidth().heightIn(min = Tokens.Layout.tapTarget + Tokens.Space.sp2).clip(RoundedCornerShape(Tokens.Radius.pill))
+        .background(if (filled) p.olive else p.dim).clickable(onClick = onClick), contentAlignment = Alignment.Center) {
+        TokenText(text, Tokens.TypeScale.headline, color = if (filled) p.onOlive else p.foreground)
+    }
+}
+
+/** 깃털 그림 (정원만). 유리 디자인은 그림 없이 글만. */
+@Composable
+private fun Feather(size: Dp) { if (Theme.garden) Image(GardenArt.obj(LocalContext.current, "feather"), null, Modifier.size(size)) }
+
+/** 오늘의 한 줄에서 글꼴: 정원은 명조(세리프), 유리는 기본 글꼴로 조금 더 모던하게. */
+private fun lineType(t: io.github.graviton94.carpediem.design.TypeToken, garden: Boolean) = if (garden) t.serif() else t
+
 /**
  * 오늘의 한 줄: 기쁨도 슬픔도 한 줄에 실어 떠나보낸다. 하루에 한 번.
  * 보내면 글이 깃털에 실려 하늘로 올라가며 옅어지고, 그 뒤로는 오늘 쓴 글을 다시 보여 주지 않는다 (기기 안에만 남음).
@@ -89,7 +135,7 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
 
     Column(modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
         TokenText(stringResource(R.string.letgo_title), Tokens.TypeScale.title3)
-        TokenText(stringResource(R.string.letgo_sub), Tokens.TypeScale.callout.serif(), color = p.secondary)
+        TokenText(stringResource(R.string.letgo_sub), lineType(Tokens.TypeScale.callout, Theme.garden), color = p.secondary)
         // 몇 해 전 오늘 보낸 한 줄: 먼저 조용히 알리고, 누르면 펼친다
         val recalls = remember(state.lines, today) { Lines.yearsAgo(state.lines, today) }
         recalls.forEach { (years, l) -> RecallCard(years, l) }
@@ -103,11 +149,11 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
                         translationY = -G.LetGo.rise * px * f
                         translationX = G.LetGo.drift * px * sin(f * PI * 1.5).toFloat()
                         rotationZ = -6f * f; alpha = (1f - f) * (1f - f)
-                    }.crayonBox(G.Colors.paper, G.Radius.chip, G.Stroke.chip, seed = 960).padding(horizontal = Tokens.Space.sp3, vertical = Tokens.Space.sp2),
+                    }.lineBox(960, pill = true).padding(horizontal = Tokens.Space.sp3, vertical = Tokens.Space.sp2),
                     verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2),
                 ) {
-                    Image(GardenArt.obj(ctx, "feather"), null, Modifier.size(u * G.LetGo.feather))
-                    TokenText(line, Tokens.TypeScale.callout.serif(), maxLines = 2)
+                    Feather(u * G.LetGo.feather)
+                    TokenText(line, lineType(Tokens.TypeScale.callout, Theme.garden), maxLines = 2)
                 }
             }
             // 오늘은 이미 보냄
@@ -115,7 +161,7 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
                 val shown = remember { Animatable(0f) }
                 LaunchedEffect(Unit) { shown.animateTo(1f, tween(G.Motion.pageMs.toInt())) }
                 Row(Modifier.fillMaxWidth().graphicsLayer { alpha = shown.value }, verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
-                    Image(GardenArt.obj(ctx, "feather"), null, Modifier.size(u * G.LetGo.feather))
+                    Feather(u * G.LetGo.feather)
                     TokenText(stringResource(R.string.letgo_done), Tokens.TypeScale.subhead, Modifier.weight(1f))
                 }
             }
@@ -123,25 +169,25 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
                 TokenText(stringResource(R.string.letgo_feeling), Tokens.TypeScale.caption1, color = p.secondary)
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
                     Feeling.entries.forEachIndexed { i, f ->
-                        GardenChip(stringResource(feelingName(f)), feeling == f, seed = 970 + i) { feeling = if (feeling == f) null else f }
+                        Chip(stringResource(feelingName(f)), feeling == f, seed = 970 + i) { feeling = if (feeling == f) null else f }
                     }
                 }
-                val style = Tokens.TypeScale.callout.serif().style(text.ifEmpty { stringResource(R.string.letgo_hint) }).copy(color = p.foreground)
+                val style = lineType(Tokens.TypeScale.callout, Theme.garden).style(text.ifEmpty { stringResource(R.string.letgo_hint) }).copy(color = p.foreground)
                 BasicTextField(
                     value = text,
                     onValueChange = { v -> val one = v.replace('\n', ' '); if (one.codePointCount(0, one.length) <= max) text = one },
-                    singleLine = true, textStyle = style, cursorBrush = SolidColor(G.Colors.ink),
+                    singleLine = true, textStyle = style, cursorBrush = SolidColor(p.foreground),
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send), keyboardActions = KeyboardActions(onSend = { send() }),
-                    modifier = Modifier.fillMaxWidth().crayonBox(G.Colors.paper, G.Radius.box, G.Stroke.chip, seed = 964).padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3),
+                    modifier = Modifier.fillMaxWidth().lineBox(964).padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3),
                     decorationBox = { inner ->
                         Box(contentAlignment = Alignment.CenterStart) {
-                            if (text.isEmpty()) TokenText(stringResource(R.string.letgo_hint), Tokens.TypeScale.callout.serif(), color = p.secondary)
+                            if (text.isEmpty()) TokenText(stringResource(R.string.letgo_hint), lineType(Tokens.TypeScale.callout, Theme.garden), color = p.secondary)
                             inner()
                         }
                     },
                 )
                 TokenText("${text.codePointCount(0, text.length)} / $max", Tokens.TypeScale.caption2, Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.End)
-                GardenButton(stringResource(R.string.letgo_send), { send() }, filled = text.isNotBlank(), seed = 968)
+                Action(stringResource(R.string.letgo_send), filled = text.isNotBlank(), seed = 968) { send() }
             }
         }
         TokenText(stringResource(R.string.letgo_privacy), Tokens.TypeScale.caption1, color = p.secondary)
@@ -158,19 +204,19 @@ private fun RecallCard(years: Int, line: DayLine) {
     var gone by rememberSaveable(line.date) { mutableStateOf(false) }
     if (gone) return
     Column(
-        Modifier.fillMaxWidth().crayonBox(G.Colors.chip, G.Radius.box, G.Stroke.chip, seed = 990 + years).clickable { opened = true }
+        Modifier.fillMaxWidth().lineBox(990 + years, strong = true).clickable { opened = true }
             .padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3),
         verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp2),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
-            Image(GardenArt.obj(ctx, "feather"), null, Modifier.size(u * G.LetGo.feather * 0.7f))
+            Feather(u * G.LetGo.feather * 0.7f)
             TokenText(stringResource(R.string.recall_title, "$years"), Tokens.TypeScale.subhead, Modifier.weight(1f), weight = FontWeight.SemiBold)
         }
         if (!opened) TokenText(stringResource(R.string.recall_open), Tokens.TypeScale.footnote, color = p.secondary)
         else {
             val meta = listOfNotNull(line.date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)), line.feeling?.let { stringResource(feelingName(it)) }).joinToString(" · ")
             TokenText(meta, Tokens.TypeScale.caption1, color = p.secondary)
-            TokenText(line.text, Tokens.TypeScale.headline.serif())
+            TokenText(line.text, lineType(Tokens.TypeScale.headline, Theme.garden))
             TokenText(stringResource(R.string.recall_close), Tokens.TypeScale.footnote, Modifier.clickable { gone = true }.padding(vertical = Tokens.Space.sp1), color = p.olive, weight = FontWeight.SemiBold)
         }
     }
@@ -197,13 +243,13 @@ fun GardenToast(state: AppState, modifier: Modifier = Modifier) {
     val text = shown ?: return
     Row(
         modifier.fillMaxWidth().graphicsLayer { alpha = a.value; translationY = (1f - a.value) * px * G.LetGo.drift * 0.5f }
-            .crayonBox(G.Colors.paper, G.Radius.box, G.Stroke.chip, seed = 998).clickable { state.toast = null }
+            .lineBox(998).clickable { state.toast = null }
             .padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3)
             .semantics { liveRegion = LiveRegionMode.Polite },
         verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp3),
     ) {
-        Image(GardenArt.obj(ctx, "feather"), null, Modifier.size(u * G.LetGo.feather * 0.8f))
-        TokenText(text, Tokens.TypeScale.callout.serif(), Modifier.weight(1f))
+        Feather(u * G.LetGo.feather * 0.8f)
+        TokenText(text, lineType(Tokens.TypeScale.callout, Theme.garden), Modifier.weight(1f))
     }
 }
 

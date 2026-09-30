@@ -166,8 +166,8 @@ object Tokens {
             const val pathStart = 26.0f
             const val pathEnd = 364.0f
             const val pathInset = 20.0f
-            const val haruWidth = 60.0f
-            const val meetHaruWidth = 120.0f
+            const val haruWidth = 46.0f
+            const val meetHaruWidth = 96.0f
             const val haruBox = 200.0f
             const val haruGround = 170.0f
             const val haruArtWidth = 70.0f
@@ -194,7 +194,7 @@ object Tokens {
             const val parallax = 0.45f
             const val collectionCell = 104.0f
             const val supportGround = 0.825f
-            const val supportHaru = 0.14f
+            const val supportHaru = 0.11f
         }
         object Stroke {
             const val ground = 3.2f
@@ -245,8 +245,8 @@ object Tokens {
             const val wide = 340.0f
             const val groundRatio = 0.84f
             const val largeGroundRatio = 0.8f
-            const val haruSmall = 40.0f
-            const val haruLarge = 64.0f
+            const val haruSmall = 32.0f
+            const val haruLarge = 51.0f
             const val haruX = 0.72f
             const val sunRadius = 11.0f
             const val sunArcTop = 0.3f

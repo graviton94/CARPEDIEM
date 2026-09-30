@@ -97,7 +97,7 @@ class MainActivity : ComponentActivity() {
                                 garden && state.meetPending -> MeetScreen(state) { state.finishMeet() }
                                 garden -> GardenHome(state, profile, now, onSettings = { screen = Screen.Settings },
                                     onCollection = { screen = Screen.Collection(Screen.Main) }, onSupport = { screen = Screen.Support(Screen.Main) })
-                                else -> HomeScreen(state, profile, now) { screen = Screen.Settings }
+                                else -> HomeScreen(state, profile, now, onSettings = { screen = Screen.Settings }, onSupport = { screen = Screen.Support(Screen.Main) })
                             }
                         }
                     }

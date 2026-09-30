@@ -1,5 +1,7 @@
 package io.github.graviton94.carpediem.ui
 
+import io.github.graviton94.carpediem.ui.garden.GardenToast
+import io.github.graviton94.carpediem.ui.garden.LetGoSection
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -194,7 +196,7 @@ fun ProfileFields(state: AppState, draft: LifeProfile, onChange: (LifeProfile) -
 // ───────────────────────── 홈 ─────────────────────────
 
 @Composable
-fun HomeScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, onSettings: () -> Unit) {
+fun HomeScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, onSettings: () -> Unit, onSupport: () -> Unit) {
     val p = Theme.palette
     val ctx = LocalContext.current
     val s = LifeSnapshot(profile.birthDate, profile.expectancy(state.store.table), now)
@@ -267,7 +269,21 @@ fun HomeScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 LifeGrid(s.total(state.grid.unit), s.lived(state.grid.unit), cols)
                 TokenText(stringResource(R.string.calendar_legend, Labels.season(ctx, s.season)), Tokens.TypeScale.caption1, color = p.secondary)
             }
+            // 오늘의 한 줄 (정원과 같은 기능, 유리 모양)
+            GlassCard { LetGoSection(state, now.toLocalDate()) }
+            // 응원하기
+            GlassCard(onClick = onSupport) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
+                        TokenText(stringResource(R.string.support), Tokens.TypeScale.title3)
+                        TokenText(stringResource(R.string.support_once), Tokens.TypeScale.caption1, color = p.secondary)
+                    }
+                    Icon(Icons.Filled.KeyboardArrowRight, null, tint = p.secondary)
+                }
+            }
         }
+        // 한 줄을 보낸 뒤의 한마디
+        GardenToast(state, Modifier.align(Alignment.BottomCenter).safeDrawingPadding().padding(horizontal = Theme.deviceClass.pageMargin).padding(bottom = Tokens.Space.sp6))
     }
 }
 
@@ -338,7 +354,7 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
                     Switch(state.notify, { toggleNotify(it) }, colors = SwitchDefaults.colors(checkedTrackColor = p.olive))
                 }
             }
-            if (state.design == Design.GARDEN) {
+            run {
                 var confirmClear by remember { mutableStateOf(false) }
                 FormSection(header = stringResource(R.string.lines), footer = stringResource(R.string.lines_keepFooter)) {
                     FormRow(stringResource(R.string.lines_keep), onClick = { state.changeKeepLines(!state.keepLines) }) {

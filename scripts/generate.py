@@ -174,7 +174,7 @@ def strings_outputs(s: dict) -> dict:
         lines = [f"/* {HEADER.strip()[3:]} */"]
         for key, value in table.items():
             names = params[key]
-            v = PLACEHOLDER.sub(lambda m: f"%{names.index(m.group(1)) + 1}$@", value).replace('"', '\\"')
+            v = PLACEHOLDER.sub(lambda m: f"%{names.index(m.group(1)) + 1}$@", value).replace('"', '\\"').replace("\n", "\\n")
             lines.append(f'"{key}" = "{v}";')
         files[f"ios/Shared/Resources/{lang}.lproj/Localizable.strings"] = "\n".join(lines) + "\n"
     sw = [HEADER, "import Foundation\n", "enum L10n {"]
@@ -282,7 +282,7 @@ def tokens_kotlin(t: dict) -> str:
 
 def xml_escape(v: str) -> str:
     v = v.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\\", "\\\\")
-    v = v.replace("'", "\\'").replace('"', '\\"')
+    v = v.replace("'", "\\'").replace('"', '\\"').replace("\n", "\\n")  # 문장 사이 줄바꿈
     if v[:1] in ("@", "?"):
         v = "\\" + v
     return v

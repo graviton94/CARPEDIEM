@@ -171,8 +171,8 @@ enum Tokens {
             static let pathStart: CGFloat = 26.0
             static let pathEnd: CGFloat = 364.0
             static let pathInset: CGFloat = 20.0
-            static let haruWidth: CGFloat = 60.0
-            static let meetHaruWidth: CGFloat = 120.0
+            static let haruWidth: CGFloat = 46.0
+            static let meetHaruWidth: CGFloat = 96.0
             static let haruBox: CGFloat = 200.0
             static let haruGround: CGFloat = 170.0
             static let haruArtWidth: CGFloat = 70.0
@@ -199,7 +199,7 @@ enum Tokens {
             static let parallax: CGFloat = 0.45
             static let collectionCell: CGFloat = 104.0
             static let supportGround: CGFloat = 0.825
-            static let supportHaru: CGFloat = 0.14
+            static let supportHaru: CGFloat = 0.11
         }
         enum Stroke {
             static let ground: CGFloat = 3.2
@@ -250,8 +250,8 @@ enum Tokens {
             static let wide: CGFloat = 340.0
             static let groundRatio: CGFloat = 0.84
             static let largeGroundRatio: CGFloat = 0.8
-            static let haruSmall: CGFloat = 40.0
-            static let haruLarge: CGFloat = 64.0
+            static let haruSmall: CGFloat = 32.0
+            static let haruLarge: CGFloat = 51.0
             static let haruX: CGFloat = 0.72
             static let sunRadius: CGFloat = 11.0
             static let sunArcTop: CGFloat = 0.3
