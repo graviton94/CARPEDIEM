@@ -1,0 +1,101 @@
+# XcodeGen 설정. `xcodegen generate` 또는 "Xcode 프로젝트 열기.command" 로 CarpeDiem.xcodeproj 를 만든다.
+name: CarpeDiem
+options:
+  deploymentTarget:
+    iOS: "17.0"
+  developmentLanguage: en
+  createIntermediateGroups: true
+configFiles:
+  Debug: Config.xcconfig
+  Release: Config.xcconfig
+settings:
+  base:
+    MARKETING_VERSION: "1.0.0"
+    CURRENT_PROJECT_VERSION: "1"
+    SWIFT_VERSION: "5.0"
+    CODE_SIGN_STYLE: Automatic
+    TARGETED_DEVICE_FAMILY: "1"
+    LOCALIZATION_PREFERS_STRING_CATALOGS: NO
+
+targets:
+  CarpeDiem:
+    type: application
+    platform: iOS
+    sources:
+      - App
+      - Shared
+    info:
+      path: App/Info.plist
+      properties:
+        CFBundleDisplayName: Carpe Diem
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        CFBundleLocalizations: [en, ko]
+        AppGroupID: $(APP_GROUP_ID)
+        ITSAppUsesNonExemptEncryption: false
+        LSApplicationCategoryType: public.app-category.lifestyle
+        UIAppFonts: [Lora-Medium.ttf, Lora-SemiBold.ttf, NotoSerifKR-Medium.ttf, NotoSerifKR-SemiBold.ttf]
+        UILaunchScreen:
+          UIColorName: LaunchBackground
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+    entitlements:
+      path: App/CarpeDiem.entitlements
+      properties:
+        com.apple.security.application-groups: [$(APP_GROUP_ID)]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: $(APP_BUNDLE_ID)
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+    dependencies:
+      - target: CarpeDiemWidget
+
+  CarpeDiemWidget:
+    type: app-extension
+    platform: iOS
+    sources:
+      - Widget
+      - Shared
+    info:
+      path: Widget/Info.plist
+      properties:
+        CFBundleDisplayName: Carpe Diem
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        CFBundleLocalizations: [en, ko]
+        AppGroupID: $(APP_GROUP_ID)
+        UIAppFonts: [Lora-Medium.ttf, Lora-SemiBold.ttf, NotoSerifKR-Medium.ttf, NotoSerifKR-SemiBold.ttf]
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+    entitlements:
+      path: Widget/CarpeDiemWidget.entitlements
+      properties:
+        com.apple.security.application-groups: [$(APP_GROUP_ID)]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: $(APP_BUNDLE_ID).widget
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME: WidgetBackground
+        SKIP_INSTALL: YES
+
+  CarpeDiemTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources: [Tests]
+    dependencies:
+      - target: CarpeDiem
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: $(APP_BUNDLE_ID).tests
+        GENERATE_INFOPLIST_FILE: YES
+
+schemes:
+  CarpeDiem:
+    build:
+      targets:
+        CarpeDiem: all
+        CarpeDiemTests: [test]
+    test:
+      targets: [CarpeDiemTests]
+    archive:
+      config: Release

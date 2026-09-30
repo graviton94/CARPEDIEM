@@ -1,0 +1,8 @@
+// 앱스토어에 올리기 전에 이 두 줄만 바꾸세요.
+// APP_BUNDLE_ID    : 전 세계에서 유일한 앱 ID (예: com.<영문이름>.carpediem)
+// DEVELOPMENT_TEAM : Apple Developer 팀 ID 10자리 (developer.apple.com → Membership)
+APP_BUNDLE_ID = com.yourname.carpediem
+DEVELOPMENT_TEAM =
+
+// 앱과 위젯이 데이터를 함께 쓰는 App Group
+APP_GROUP_ID = group.$(APP_BUNDLE_ID)

@@ -65,7 +65,16 @@
     "widget.monthsLeft": "{n}개월 남음",
     "lock.inline": "{n}일",
     "lock.rect.sub": "{n}주 남음",
-    "android.notification": "오늘의 문장을 하루 한 번 알림으로 받기"
+    "android.notification": "오늘의 문장을 하루 한 번 알림으로 받기",
+    "widget.unit": "단위",
+    "widget.unit.desc": "남은 날을 어떤 단위로 볼지 고릅니다.",
+    "widget.daysLeft.desc": "기대수명까지 남은 날.",
+    "widget.today.desc": "오늘이 얼마나 지났는지.",
+    "widget.calendar.desc": "인생 전체를 한눈에. 크게 두면 오늘의 문장도 함께.",
+    "widget.empty": "앱에서 생년월일을 넣어 주세요.",
+    "erase.confirm": "모든 기록을 지울까요?",
+    "erase.action": "지우기",
+    "expectancy.value": "{years}세"
   },
   "en": {
     "tagline": "Cherish today.",
@@ -133,6 +142,15 @@
     "widget.monthsLeft": "{n} months left",
     "lock.inline": "{n} days",
     "lock.rect.sub": "{n} weeks left",
-    "android.notification": "Get today's words once a day"
+    "android.notification": "Get today's words once a day",
+    "widget.unit": "Unit",
+    "widget.unit.desc": "Choose how to count the days left.",
+    "widget.daysLeft.desc": "Days left until your life expectancy.",
+    "widget.today.desc": "How much of today has passed.",
+    "widget.calendar.desc": "Your whole life at a glance. The large size adds today's words.",
+    "widget.empty": "Add your birthday in the app.",
+    "erase.confirm": "Erase everything?",
+    "erase.action": "Erase",
+    "expectancy.value": "{years} yrs"
   }
 }

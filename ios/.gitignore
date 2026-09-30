@@ -1,0 +1,9 @@
+*.xcodeproj/
+App/Info.plist
+Widget/Info.plist
+App/CarpeDiem.entitlements
+Widget/CarpeDiemWidget.entitlements
+.tools/
+build/
+DerivedData/
+xcuserdata/

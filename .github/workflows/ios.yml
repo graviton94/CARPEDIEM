@@ -1,0 +1,42 @@
+name: iOS
+
+on:
+  push:
+    branches: [main]
+    paths: ["ios/**", "design/**", "data/**", "scripts/**", ".github/workflows/ios.yml"]
+  pull_request:
+    paths: ["ios/**", "design/**", "data/**", "scripts/**", ".github/workflows/ios.yml"]
+  workflow_dispatch:
+
+concurrency:
+  group: ios-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Generated files are up to date
+        run: python3 scripts/generate.py --check
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Generate Xcode project
+        working-directory: ios
+        run: xcodegen generate
+      - name: Build and test on simulator
+        working-directory: ios
+        run: |
+          set -o pipefail
+          DEVICE=$(xcrun simctl list devices available | grep -m1 -oE 'iPhone 1[5-9]( Pro)?' || true)
+          echo "Simulator: $DEVICE"
+          xcodebuild test \
+            -project CarpeDiem.xcodeproj -scheme CarpeDiem \
+            -destination "platform=iOS Simulator,name=$DEVICE" \
+            CODE_SIGNING_ALLOWED=NO 2>&1 | tee build.log | grep -E "error:|warning: .*(deprecated|will be)|Test Case .* (passed|failed)|\*\* (BUILD|TEST) " || true
+          grep -q "\*\* TEST SUCCEEDED \*\*" build.log
+      - name: Show errors
+        if: failure()
+        working-directory: ios
+        run: grep -E "error:" -A3 build.log | head -150 || true
