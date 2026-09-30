@@ -155,7 +155,7 @@ internal fun shortName(n: String): String { val max = G.Family.nameChars.toInt()
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSettings: () -> Unit, onCollection: () -> Unit, onSupport: () -> Unit, onStone: (String?) -> Unit, onAddPerson: () -> Unit,
-               onBreath: (BreathKind, Int, Sound) -> Unit = { _, _, _ -> }, onGaze: () -> Unit = {}, bare: Boolean = false) {
+               onBreath: (BreathKind, Int, Sound) -> Unit = { _, _, _ -> }, onGaze: () -> Unit = {}, bare: Boolean = false, onLook: () -> Unit = {}) {
     val p = Theme.palette
     val ctx = LocalContext.current
     val density = LocalDensity.current
@@ -289,11 +289,14 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 }
 
                 // 돌들: 한 번 누르면 쓰다듬기, 두 번 누르면 그 돌의 페이지
-                val sentTo = state.lines.lastOrNull()?.takeIf { it.date == now.toLocalDate() }?.to
+                val todayLine = state.lines.lastOrNull()?.takeIf { it.date == now.toLocalDate() }
+                val sentTo = todayLine?.to
+                // 무거운 마음을 보낸 날, 내 하루는 살짝 아래를 본다 (다음 날 평소대로)
+                val heavyToday = todayLine?.feeling in io.github.graviton94.carpediem.core.Letters.HEAVY
                 slots.forEachIndexed { i, sl ->
                     val cx = xs[i] - sl.scale * (sl.art.meta.bbox.center.x - sl.art.meta.box / 2)
                     val left = cx - sl.scale * (sl.art.meta.box / 2); val top = gy - sl.scale * G.Layout.haruGround
-                    HaruFigure(sl.art, sl.scale, Modifier.offset(left, top), blinkKick = if (sl.id == null) state.blinkKick else 0, hat = sl.birthday, tiltOn = sl.id == null,
+                    HaruFigure(sl.art, sl.scale, Modifier.offset(left, top), blinkKick = if (sl.id == null) state.blinkKick else 0, hat = sl.birthday, tiltOn = sl.id == null, lookDown = if (sl.id == null && heavyToday) G.Care.lookDown else 0f,
                         a11y = stringResource(R.string.garden_stoneA11y, sl.name, Labels.stone(ctx, sl.art.meta.stone)), onOpen = { onStone(sl.id) },
                         onLongPress = if (sl.id == null) ({ breathSheet = true }) else null)
                     // 생일: 돌 앞에 작은 케이크
@@ -387,7 +390,14 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
             }
         }
         // 한 줄을 보낸 뒤: 깃털이 내려오며 한마디 창
-        if (!bare) LetGoModal(state, Modifier.fillMaxSize())
+        if (!bare) LetGoModal(state, Modifier.fillMaxSize()) { c ->
+            when (c) {
+                io.github.graviton94.carpediem.ui.Care.CALM_BREATH -> onBreath(BreathKind.CALM, 1, state.sound)
+                io.github.graviton94.carpediem.ui.Care.BOX_BREATH -> onBreath(BreathKind.BOX, 1, state.sound)
+                io.github.graviton94.carpediem.ui.Care.LOOK -> onLook()
+                io.github.graviton94.carpediem.ui.Care.SEND_TO -> {}
+            }
+        }
     }
 
     open?.let { m ->

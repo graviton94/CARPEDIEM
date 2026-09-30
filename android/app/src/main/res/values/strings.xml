@@ -370,4 +370,17 @@
     <string name="contact_send">Send an email</string>
     <string name="contact_email"></string>
     <string name="notices_privacy">Privacy: nothing is collected. Everything stays on this phone.</string>
+    <string name="care_calm">Breathe together for a minute?</string>
+    <string name="care_box">Rest a minute with box breathing?</string>
+    <string name="care_look">Look at something far away for 30 seconds?</string>
+    <string name="care_sendTo">Who should this feeling reach?</string>
+    <string name="care_setting">Gentle suggestions</string>
+    <string name="care_footer">After you send a feeling, one small thing you could do now.</string>
+    <string name="look_cue">Look at something far away</string>
+    <string name="look_done">Nicely rested.</string>
+    <string name="thanks_book">Book of thanks</string>
+    <string name="thanks_sub">Each line you sent with thanks, one page at a time.</string>
+    <string name="thanks_end">This many thankful days.</string>
+    <string name="thanks_page">%1$s / %2$s</string>
+    <string name="letgo_count">Let go %1$s times so far.</string>
 </resources>

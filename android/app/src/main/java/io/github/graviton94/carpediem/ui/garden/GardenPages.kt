@@ -109,6 +109,8 @@ fun CollectionScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, 
             }
             // 계절마다 한 통씩 쌓이는 편지
             ReceivedLetters(state, now.toLocalDate())
+            // 고마움 책 · 흘려보낸 마음
+            ThanksAndLetGo(state)
         }
     }
     open?.let { m ->

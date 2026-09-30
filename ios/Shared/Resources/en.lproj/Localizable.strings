@@ -368,3 +368,16 @@
 "contact.send" = "Send an email";
 "contact.email" = "";
 "notices.privacy" = "Privacy: nothing is collected. Everything stays on this phone.";
+"care.calm" = "Breathe together for a minute?";
+"care.box" = "Rest a minute with box breathing?";
+"care.look" = "Look at something far away for 30 seconds?";
+"care.sendTo" = "Who should this feeling reach?";
+"care.setting" = "Gentle suggestions";
+"care.footer" = "After you send a feeling, one small thing you could do now.";
+"look.cue" = "Look at something far away";
+"look.done" = "Nicely rested.";
+"thanks.book" = "Book of thanks";
+"thanks.sub" = "Each line you sent with thanks, one page at a time.";
+"thanks.end" = "This many thankful days.";
+"thanks.page" = "%1$@ / %2$@";
+"letgo.count" = "Let go %1$@ times so far.";

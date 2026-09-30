@@ -69,6 +69,7 @@ import io.github.graviton94.carpediem.design.Theme
 import io.github.graviton94.carpediem.design.Tokens
 import io.github.graviton94.carpediem.design.Tokens.Garden as G
 import io.github.graviton94.carpediem.ui.AppState
+import io.github.graviton94.carpediem.ui.Care
 import io.github.graviton94.carpediem.ui.TokenText
 import java.time.LocalDate
 import kotlin.math.PI
@@ -268,7 +269,7 @@ private class Flake(val x: Float, val delay: Float, val span: Float, val size: F
  * 창 밖을 눌러도 닫히지 않는다 (한마디를 읽을 틈). 뒤로 가기는 닫기.
  */
 @Composable
-fun LetGoModal(state: AppState, modifier: Modifier = Modifier) {
+fun LetGoModal(state: AppState, modifier: Modifier = Modifier, onCare: (Care) -> Unit = {}) {
     val msg = state.toast ?: return
     val p = Theme.palette
     val ctx = LocalContext.current
@@ -281,7 +282,7 @@ fun LetGoModal(state: AppState, modifier: Modifier = Modifier) {
         launch { fall.animateTo(1f, tween(m.fallMs.toInt(), easing = LinearEasing)) }
         delay(m.cardDelayMs.toLong()); card.animateTo(1f, tween(m.modalFadeMs.toInt(), easing = LinearOutSlowInEasing))
     }
-    BackHandler { state.toast = null }
+    BackHandler { state.toast = null; state.care = null }
     val feather = GardenArt.obj(ctx, "feather")
     val scrim = Theme.gc.scrim
     val flakes = remember(msg) {
@@ -315,7 +316,9 @@ fun LetGoModal(state: AppState, modifier: Modifier = Modifier) {
             TokenText(state.toastTitle ?: stringResource(R.string.letgo_modalTitle), lineType(Tokens.TypeScale.title3, Theme.garden), align = TextAlign.Center)
             TokenText(msg, lineType(Tokens.TypeScale.callout, Theme.garden), color = p.secondary, align = TextAlign.Center)
             Spacer(Modifier.height(Tokens.Space.sp2))
-            Action(stringResource(R.string.letgo_ok), filled = true, seed = 999) { state.toast = null }
+            Action(stringResource(R.string.letgo_ok), filled = true, seed = 999) { state.toast = null; state.care = null }
+            // 돌봄 권하기: 확인 아래 작은 한 줄 (지나쳐도 되는 곳에)
+            state.care?.let { c -> CareLine(state, c) { state.toast = null; state.care = null; onCare(c) } }
         }
     }
 }
@@ -327,4 +330,20 @@ private fun Modifier.modalBox(): Modifier {
     val p = Theme.palette
     val shape = RoundedCornerShape(Tokens.Radius.lg)
     return clip(shape).background(p.base).border(Tokens.Stroke.line, p.glassEdge, shape)
+}
+
+/** 한마디 창 맨 아래 권유 한 줄. 누구에게는 가족 이름 칩, 나머지는 누르면 바로 그 일로. */
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun CareLine(state: AppState, c: Care, onGo: () -> Unit) {
+    val p = Theme.palette
+    if (c == Care.SEND_TO) {
+        TokenText(stringResource(R.string.care_sendTo), Tokens.TypeScale.footnote, color = p.secondary, align = TextAlign.Center)
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
+            state.people.forEachIndexed { i, person -> Chip(person.name, false, seed = 1200 + i) { state.sendTodayTo(person.id); state.toast = null; state.care = null } }
+        }
+        return
+    }
+    val text = stringResource(when (c) { Care.CALM_BREATH -> R.string.care_calm; Care.BOX_BREATH -> R.string.care_box; else -> R.string.care_look })
+    TokenText(text, Tokens.TypeScale.footnote, Modifier.clickable(onClick = onGo).padding(vertical = Tokens.Space.sp2), color = p.olive, weight = FontWeight.SemiBold, align = TextAlign.Center)
 }

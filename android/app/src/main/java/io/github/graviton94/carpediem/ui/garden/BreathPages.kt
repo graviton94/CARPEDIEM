@@ -279,3 +279,41 @@ fun GazeScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, onBack
         if (hint) TokenText(stringResource(R.string.gaze_exit), Tokens.TypeScale.caption1, Modifier.align(Alignment.BottomCenter).navigationBarsPadding().padding(bottom = Tokens.Space.sp6), color = p.secondary)
     }
 }
+
+// ───────────────────────── 잠깐 바라보기 ─────────────────────────
+
+/**
+ * 실망을 보낸 뒤 권하는 30초: 바탕 한 빛 위 손그림 동그라미 하나가 천천히 차오른다. 글자는 한 줄뿐.
+ * 끝나면 “잘 쉬었어요.” 와 정원으로. 누르거나 뒤로 가면 바로 돌아간다.
+ */
+@Composable
+fun LookScreen(onDone: () -> Unit) {
+    val p = Theme.palette
+    val ctx = LocalContext.current
+    val c = G.Care
+    val fill = remember { Animatable(0f) }
+    var done by remember { mutableStateOf(false) }
+    KeepScreenOn(!done)
+    LaunchedEffect(Unit) { fill.animateTo(1f, tween((c.lookSeconds * 1000).toInt(), easing = LinearEasing)); done = true }
+    BackHandler(onBack = onDone)
+    val ink = Theme.gc.ink; val soft = G.Mood.Colors.calm
+    val u = with(androidx.compose.ui.platform.LocalDensity.current) { Theme.unit.toPx() }
+    val lineMask = Crayon.tooth(GardenArt.toothLine(ctx), u)
+    Column(Modifier.fillMaxSize().paperBackground().statusBarsPadding().navigationBarsPadding().padding(horizontal = Theme.deviceClass.pageMargin),
+        horizontalAlignment = Alignment.CenterHorizontally) {
+        Spacer(Modifier.weight(1f))
+        Canvas(Modifier.size(Theme.unit * c.lookSize)) {
+            val r = size.minDimension / 2 * 0.92f
+            val ctr = Offset(size.width / 2, size.height / 2)
+            // 안에서부터 조용히 차오르는 빛
+            drawCircle(soft.copy(alpha = 0.55f), r * fill.value, ctr)
+            with(Crayon) { textured(lineMask) { stroke(handCircle(ctr, r, 17), G.Mood.line * 2 * u, ink, 17, passes = 1) } }
+        }
+        Spacer(Modifier.height(Tokens.Space.sp8))
+        TokenText(stringResource(if (done) R.string.look_done else R.string.look_cue), Tokens.TypeScale.title3.serif(), color = p.secondary, align = TextAlign.Center,
+            modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
+        Spacer(Modifier.height(Tokens.Space.sp6))
+        Box(Modifier.height(Tokens.Layout.tapTarget + Tokens.Space.sp2)) { if (done) GardenButton(stringResource(R.string.breath_home), onDone, filled = true, seed = 1210) }
+        Spacer(Modifier.weight(1f))
+    }
+}

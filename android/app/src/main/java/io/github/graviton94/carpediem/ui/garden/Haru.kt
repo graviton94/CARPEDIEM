@@ -260,7 +260,7 @@ fun rememberTilt(enabled: Boolean): Offset {
  */
 @Composable
 fun HaruFigure(art: HaruArt, scale: Dp, modifier: Modifier = Modifier, blinkKick: Int = 0, hat: Boolean = false, a11y: String? = null, onOpen: (() -> Unit)? = null,
-               onLongPress: (() -> Unit)? = null, lid: Float? = null, tiltOn: Boolean = true) {
+               onLongPress: (() -> Unit)? = null, lid: Float? = null, tiltOn: Boolean = true, lookDown: Float = 0f) {
     val ctx = LocalContext.current
     val view = androidx.compose.ui.platform.LocalView.current
     val m = Tokens.Garden.Motion; val tc = Tokens.Garden.Touch
@@ -335,6 +335,6 @@ fun HaruFigure(art: HaruArt, scale: Dp, modifier: Modifier = Modifier, blinkKick
                 }
             },
     ) {
-        drawHaru(art, size.width / art.meta.box, lid ?: maxOf(blink.value, rest.value), tilt, smile = if (lid != null) 0f else smile.value, blush = blush.value, hat = hat)
+        drawHaru(art, size.width / art.meta.box, lid ?: maxOf(blink.value, rest.value), if (lookDown > 0f) Offset(tilt.x, (tilt.y + lookDown).coerceAtMost(1f)) else tilt, smile = if (lid != null) 0f else smile.value, blush = blush.value, hat = hat)
     }
 }

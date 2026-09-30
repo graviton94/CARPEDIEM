@@ -437,5 +437,10 @@ object Tokens {
             const val minLines = 3.0f
             const val envelope = 34.0f
         }
+        object Care {
+            const val lookSeconds = 30.0f
+            const val lookSize = 120.0f
+            const val lookDown = 0.6f
+        }
     }
 }

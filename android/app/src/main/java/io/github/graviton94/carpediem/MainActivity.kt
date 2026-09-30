@@ -20,6 +20,7 @@ import io.github.graviton94.carpediem.ui.garden.SkyTime
 import io.github.graviton94.carpediem.core.Sound
 import io.github.graviton94.carpediem.core.BreathKind
 import io.github.graviton94.carpediem.ui.garden.GazeScreen
+import io.github.graviton94.carpediem.ui.garden.LookScreen
 import io.github.graviton94.carpediem.ui.garden.BreathScreen
 import androidx.compose.animation.togetherWith
 import io.github.graviton94.carpediem.ui.garden.AddPersonScreen
@@ -69,6 +70,7 @@ private sealed interface Screen {
     data class Breathe(val kind: BreathKind, val minutes: Int, val sound: Sound, val back: Screen) : Screen
     /** 멍하니 보는 정원. */
     data class Gaze(val back: Screen) : Screen
+    data class Look(val back: Screen) : Screen
     data class Country(val back: Screen) : Screen
 }
 
@@ -129,6 +131,7 @@ class MainActivity : ComponentActivity() {
                         is Screen.Stone -> state.profile?.let { StoneScreen(state, it, now, s.id, { screen = s.back }, { id -> screen = Screen.AddPerson(id, s) }, onBreath = { k, m, snd -> screen = Screen.Breathe(k, m, snd, s) }) } ?: run { screen = Screen.Main }
                         is Screen.Breathe -> state.profile?.let { BreathScreen(state, it, now, s.kind, s.minutes, s.sound) { screen = s.back } } ?: run { screen = Screen.Main }
                         is Screen.Gaze -> state.profile?.let { GazeScreen(state, it, now) { screen = s.back } } ?: run { screen = Screen.Main }
+                        is Screen.Look -> LookScreen { screen = s.back }
                         is Screen.AddPerson -> state.profile?.let {
                             AddPersonScreen(state, it, s.editId, onDone = { id -> screen = if (s.editId != null && id != null) (s.back as? Screen.Stone)?.copy() ?: Screen.Main else Screen.Main }, onBack = { screen = s.back })
                         } ?: run { screen = Screen.Main }
@@ -141,7 +144,8 @@ class MainActivity : ComponentActivity() {
                                 garden -> GardenHome(state, profile, now, onSettings = { screen = Screen.Settings },
                                     onCollection = { screen = Screen.Collection(Screen.Main) }, onSupport = { screen = Screen.Support(Screen.Main) },
                                     onStone = { id -> screen = Screen.Stone(id, Screen.Main) }, onAddPerson = { screen = Screen.AddPerson(null, Screen.Main) },
-                                    onBreath = { k, m, snd -> screen = Screen.Breathe(k, m, snd, Screen.Main) }, onGaze = { screen = Screen.Gaze(Screen.Main) })
+                                    onBreath = { k, m, snd -> screen = Screen.Breathe(k, m, snd, Screen.Main) }, onGaze = { screen = Screen.Gaze(Screen.Main) },
+                                    onLook = { screen = Screen.Look(Screen.Main) })
                                 else -> HomeScreen(state, profile, now, onSettings = { screen = Screen.Settings }, onSupport = { screen = Screen.Support(Screen.Main) })
                             }
                         }
@@ -173,6 +177,8 @@ private fun MainActivity.debugSetup(state: AppState): Screen {
     if (x.getBooleanExtra("cd.recall", false)) { state.addSampleYearAgo(); state.addSampleRandom() }
     if (x.getBooleanExtra("cd.letter", false)) state.addSampleLetter()
     if (x.getBooleanExtra("cd.moods", false)) state.addSampleMoods()
+    // 캡처용: 한 줄을 보낸 뒤 한마디 창 + 돌봄 권하기 (예: cd.care CALM_BREATH)
+    x.getStringExtra("cd.care")?.let { c -> state.toast = io.github.graviton94.carpediem.ui.Labels.letGoMessage(this, io.github.graviton94.carpediem.core.Feeling.SAD); state.care = io.github.graviton94.carpediem.ui.Care.valueOf(c) }
     state.debugOpenLetter = x.getBooleanExtra("cd.openLetter", false)
     state.refreshQuestion()
     if (x.getBooleanExtra("cd.question", false)) state.previewQuestion()
@@ -194,5 +200,5 @@ private fun MainActivity.debugSetup(state: AppState): Screen {
             Person("frd00001", "지우", Kind.PERSON, birth = LocalDate.of(2001, 7, 9), sex = Sex.OTHER, country = "KR", seed = 8080, metOn = today),
         ).forEach { state.savePerson(it) }
     }
-    return when (x.getStringExtra("cd.screen")) { "settings" -> Screen.Settings; "widgets" -> Screen.WidgetPreview; "collection" -> Screen.Collection(Screen.Main); "support" -> Screen.Support(Screen.Main); "stone" -> Screen.Stone(state.people.firstOrNull()?.id, Screen.Main); "add" -> Screen.AddPerson(null, Screen.Main); "breath" -> Screen.Breathe(BreathKind.CALM, 1, Sound.WAVES, Screen.Main); "gaze" -> Screen.Gaze(Screen.Main); else -> Screen.Main }
+    return when (x.getStringExtra("cd.screen")) { "settings" -> Screen.Settings; "widgets" -> Screen.WidgetPreview; "collection" -> Screen.Collection(Screen.Main); "support" -> Screen.Support(Screen.Main); "stone" -> Screen.Stone(state.people.firstOrNull()?.id, Screen.Main); "add" -> Screen.AddPerson(null, Screen.Main); "breath" -> Screen.Breathe(BreathKind.CALM, 1, Sound.WAVES, Screen.Main); "gaze" -> Screen.Gaze(Screen.Main); "look" -> Screen.Look(Screen.Main); else -> Screen.Main }
 }

@@ -368,7 +368,20 @@
     "contact.soon": "문의 주소는 출시 때 열어요.",
     "contact.send": "메일 보내기",
     "contact.email": "",
-    "notices.privacy": "개인정보: 아무것도 모으지 않아요. 모든 기록은 이 폰에만 머물러요."
+    "notices.privacy": "개인정보: 아무것도 모으지 않아요. 모든 기록은 이 폰에만 머물러요.",
+    "care.calm": "숨, 쉼 1분 함께할까요?",
+    "care.box": "네모 숨으로 1분만 쉬어 갈까요?",
+    "care.look": "30초만 먼 곳을 바라볼까요?",
+    "care.sendTo": "이 마음, 누구에게 닿으면 좋을까요?",
+    "care.setting": "작은 권유",
+    "care.footer": "마음을 보낸 뒤, 지금 할 수 있는 작은 일 하나를 권해요.",
+    "look.cue": "먼 곳을 바라봐요",
+    "look.done": "잘 쉬었어요.",
+    "thanks.book": "고마움 책",
+    "thanks.sub": "고마움으로 보낸 한 줄이 한 장씩.",
+    "thanks.end": "고마운 날이 이만큼 쌓였어요.",
+    "thanks.page": "{n} / {total}",
+    "letgo.count": "지금까지 {n}번 흘려보냈어요."
   },
   "en": {
     "tagline": "Cherish today.",
@@ -739,6 +752,19 @@
     "contact.soon": "The contact address opens at launch.",
     "contact.send": "Send an email",
     "contact.email": "",
-    "notices.privacy": "Privacy: nothing is collected. Everything stays on this phone."
+    "notices.privacy": "Privacy: nothing is collected. Everything stays on this phone.",
+    "care.calm": "Breathe together for a minute?",
+    "care.box": "Rest a minute with box breathing?",
+    "care.look": "Look at something far away for 30 seconds?",
+    "care.sendTo": "Who should this feeling reach?",
+    "care.setting": "Gentle suggestions",
+    "care.footer": "After you send a feeling, one small thing you could do now.",
+    "look.cue": "Look at something far away",
+    "look.done": "Nicely rested.",
+    "thanks.book": "Book of thanks",
+    "thanks.sub": "Each line you sent with thanks, one page at a time.",
+    "thanks.end": "This many thankful days.",
+    "thanks.page": "{n} / {total}",
+    "letgo.count": "Let go {n} times so far."
   }
 }

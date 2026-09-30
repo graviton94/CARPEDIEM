@@ -28,6 +28,9 @@ import io.github.graviton94.carpediem.widget.Widgets
 import java.time.LocalDate
 import java.util.Locale
 
+/** 한 줄을 보낸 뒤 한마디 창 아래 권하는 작은 한 가지 (docs: 1.4 돌봄). */
+enum class Care { CALM_BREATH, BOX_BREATH, LOOK, SEND_TO }
+
 /** 화면이 보는 상태. 바뀌면 저장하고 위젯을 새로 그린다. */
 class AppState(private val context: Context) {
     val store = Store(context)
@@ -114,6 +117,27 @@ class AppState(private val context: Context) {
         store.lines = next; lines = next
         val s = Lines.streaks(next, streaks); if (s != streaks) { store.streaks = s; streaks = s }
         toast = Labels.letGoMessage(context, feeling)
+        care = careFor(feeling, line.to, today)
+    }
+    /** 돌봄 권하기 (켜 두었을 때). 하루 한 줄이라 하루 한 번까지. 오늘 이미 숨 쉬었으면 숨은 권하지 않음. */
+    var careOn by mutableStateOf(store.care)
+        private set
+    fun changeCare(v: Boolean) { store.care = v; careOn = v }
+    var care by mutableStateOf<Care?>(null)
+    private fun careFor(f: Feeling?, to: String?, today: LocalDate): Care? {
+        if (!careOn || design != Design.GARDEN) return null
+        val breathed = breaths.any { it.first == today }
+        return when (f) {
+            Feeling.SAD -> if (breathed) null else Care.CALM_BREATH
+            Feeling.WORRY -> if (breathed) null else Care.BOX_BREATH
+            Feeling.DISAPPOINT -> Care.LOOK
+            Feeling.JOY, Feeling.THANKS -> if (people.isNotEmpty() && to == null && keepLines) Care.SEND_TO else null
+            else -> null
+        }
+    }
+    /** ‘이 마음, 누구에게’: 오늘 보낸 한 줄을 그 돌에게 (곁에 깃털). */
+    fun sendTodayTo(id: String, today: LocalDate = (fixedNow ?: LocalDateTime.now()).toLocalDate()) {
+        val next = lines.map { if (it.date == today) it.copy(to = id) else it }; store.lines = next; lines = next
     }
     fun changeKeepLines(v: Boolean) {
         store.keepLines = v; keepLines = v
@@ -217,7 +241,7 @@ class AppState(private val context: Context) {
     fun newPersonId(): String = (1..8).map { "abcdefghijkmnpqrstuvwxyz23456789".random() }.joinToString("")
 
     fun eraseAll() {
-        store.eraseAll(); store.ensureQuoteSeed(); unit = store.unit; grid = store.grid; defaultUnit = unit; defaultGrid = grid; lines = emptyList(); streaks = emptyMap(); keepLines = true; question = null; answering = null; lettersOpened = emptySet(); toast = null; randomLine = null; people = emptyList(); breaths = emptyList(); breathKind = store.breathKind; breathMinutes = store.breathMinutes; sound = store.sound
+        store.eraseAll(); store.ensureQuoteSeed(); unit = store.unit; grid = store.grid; defaultUnit = unit; defaultGrid = grid; lines = emptyList(); streaks = emptyMap(); keepLines = true; care = null; careOn = true; question = null; answering = null; lettersOpened = emptySet(); toast = null; randomLine = null; people = emptyList(); breaths = emptyList(); breathKind = store.breathKind; breathMinutes = store.breathMinutes; sound = store.sound
         profile = null; quoteLanguage = store.quoteLanguage; quote = store.todaysQuote(); design = store.design; meetPending = false; previewAll = false; notify = false; devMode = false; io.github.graviton94.carpediem.notify.Daily.schedule(context, false); Widgets.refresh(context)
     }
 

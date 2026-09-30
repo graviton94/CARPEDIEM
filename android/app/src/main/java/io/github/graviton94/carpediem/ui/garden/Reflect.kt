@@ -3,6 +3,7 @@ package io.github.graviton94.carpediem.ui.garden
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -85,7 +86,7 @@ internal fun moodColor(f: Feeling?): Color = when (f) {
 }
 
 /** 손으로 그린 동그라미 하나의 점들: 날마다 조금씩 다른 울퉁불퉁함 (seed = 날짜). */
-private fun handCircle(c: Offset, r: Float, seed: Int): List<Offset> {
+internal fun handCircle(c: Offset, r: Float, seed: Int): List<Offset> {
     val rng = Crayon.Rng(seed); val ph = FloatArray(3) { rng.next() * 6.283f }; val w = G.Mood.wobble
     val squash = 1f + (rng.next() - 0.5f) * w
     return List(28) { k ->
@@ -250,4 +251,64 @@ internal fun ReceivedLetters(state: AppState, today: LocalDate) {
         }
     }
     open?.let { LetterSheet(it) { open = null } }
+}
+
+// ───────────────────────── 고마움 책 · 흘려보낸 마음 ─────────────────────────
+
+/**
+ * 모은 것 아래: 고마움으로 보낸 줄만 모은 작은 책 (옆으로 한 장씩), 그리고 무거운 마음은 글 없이 흘려보낸 횟수 한 줄만.
+ * 기록 남기기를 끄면 보이지 않는다.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+internal fun ThanksAndLetGo(state: AppState) {
+    if (!state.keepLines) return
+    val p = Theme.palette
+    val ctx = LocalContext.current
+    val u = Theme.unit
+    val thanks = remember(state.lines) { state.lines.filter { it.feeling == Feeling.THANKS && it.text.isNotBlank() }.sortedBy { it.date } }
+    val heavy = remember(state.lines) { state.lines.count { it.feeling in io.github.graviton94.carpediem.core.Letters.HEAVY } }
+    var open by remember { mutableStateOf(false) }
+    Column(Modifier.fillMaxWidth().padding(top = Tokens.Space.sp4), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
+        if (thanks.isNotEmpty()) {
+            TokenText(stringResource(R.string.thanks_book), Tokens.TypeScale.title3)
+            Row(
+                Modifier.fillMaxWidth().heightIn(min = Tokens.Layout.tapTarget).crayonBox(Theme.gc.paper, G.Radius.box, G.Stroke.chip, 1130).clickable { open = true }
+                    .padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3),
+                verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp3),
+            ) {
+                androidx.compose.foundation.Image(GardenArt.obj(ctx, "feather"), null, Modifier.size(u * G.LetGo.feather * 0.8f))
+                TokenText(stringResource(R.string.thanks_sub), Tokens.TypeScale.subhead, Modifier.weight(1f))
+            }
+        }
+        if (heavy > 0) TokenText(stringResource(R.string.letgo_count, "$heavy"), Tokens.TypeScale.footnote, Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.Center)
+    }
+    if (open) ModalBottomSheet(onDismissRequest = { open = false }, containerColor = Theme.gc.paper, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
+        ThanksPages(thanks) { open = false }
+    }
+}
+
+/** 고마움 책의 장들: 한 장에 한 줄, 마지막 장은 쌓인 날을 알려 주는 한 줄. */
+@Composable
+private fun ThanksPages(list: List<DayLine>, onClose: () -> Unit) {
+    val p = Theme.palette
+    val pages = list.size + 1
+    val pager = androidx.compose.foundation.pager.rememberPagerState(initialPage = 0) { pages }
+    val date = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
+    Column(Modifier.fillMaxWidth().navigationBarsPadding().padding(bottom = Tokens.Space.sp6), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp4)) {
+        TokenText(stringResource(R.string.thanks_book), Tokens.TypeScale.title3.serif(), Modifier.fillMaxWidth(), align = TextAlign.Center)
+        androidx.compose.foundation.pager.HorizontalPager(pager, Modifier.fillMaxWidth(), contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = Theme.deviceClass.pageMargin), pageSpacing = Tokens.Space.sp3) { i ->
+            Column(
+                Modifier.fillMaxWidth().heightIn(min = Theme.unit * 180).crayonBox(null, G.Radius.box, G.Stroke.box, 1140 + i % 7).padding(Tokens.Space.sp6),
+                verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3, Alignment.CenterVertically), horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                if (i < list.size) {
+                    TokenText(list[i].date.format(date), Tokens.TypeScale.caption1, color = p.secondary)
+                    TokenText(list[i].text, Tokens.TypeScale.headline.serif(), Modifier.fillMaxWidth(), align = TextAlign.Center)
+                } else TokenText(stringResource(R.string.thanks_end), Tokens.TypeScale.headline.serif(), Modifier.fillMaxWidth(), align = TextAlign.Center)
+            }
+        }
+        TokenText(stringResource(R.string.thanks_page, "${minOf(pager.currentPage + 1, list.size)}", "${list.size}"), Tokens.TypeScale.caption1, Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.Center)
+        Box(Modifier.padding(horizontal = Theme.deviceClass.pageMargin)) { GardenButton(stringResource(R.string.garden_close), onClose, filled = false, seed = 1150) }
+    }
 }

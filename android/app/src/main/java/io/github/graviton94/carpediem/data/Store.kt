@@ -159,6 +159,11 @@ class Store(context: Context) {
         get() = prefs.getStringSet("lettersNotified", emptySet()) ?: emptySet()
         set(v) = prefs.edit().putStringSet("lettersNotified", v).apply()
 
+    /** 돌봄 권하기 (마음을 보낸 뒤 작은 한 가지). 기본 켬. */
+    var care: Boolean
+        get() = prefs.getBoolean("care", true)
+        set(v) = prefs.edit().putBoolean("care", v).apply()
+
     /** 오늘의 한 줄 (기기 안에만). 떠나보낸 글은 화면에 다시 보이지 않는다. */
     var lines: List<DayLine>
         get() = Lines.decode(prefs.getString("lines", null))

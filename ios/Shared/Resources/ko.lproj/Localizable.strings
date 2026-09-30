@@ -368,3 +368,16 @@
 "contact.send" = "메일 보내기";
 "contact.email" = "";
 "notices.privacy" = "개인정보: 아무것도 모으지 않아요. 모든 기록은 이 폰에만 머물러요.";
+"care.calm" = "숨, 쉼 1분 함께할까요?";
+"care.box" = "네모 숨으로 1분만 쉬어 갈까요?";
+"care.look" = "30초만 먼 곳을 바라볼까요?";
+"care.sendTo" = "이 마음, 누구에게 닿으면 좋을까요?";
+"care.setting" = "작은 권유";
+"care.footer" = "마음을 보낸 뒤, 지금 할 수 있는 작은 일 하나를 권해요.";
+"look.cue" = "먼 곳을 바라봐요";
+"look.done" = "잘 쉬었어요.";
+"thanks.book" = "고마움 책";
+"thanks.sub" = "고마움으로 보낸 한 줄이 한 장씩.";
+"thanks.end" = "고마운 날이 이만큼 쌓였어요.";
+"thanks.page" = "%1$@ / %2$@";
+"letgo.count" = "지금까지 %1$@번 흘려보냈어요.";

@@ -36,7 +36,9 @@ open --es cd.now $NOW --ez cd.recall true; swipe_up; sleep 2; swipe_up; swipe_up
 open --ez cd.family true --es cd.now $NOW;                                                             shot g22_family 5
 open --es cd.screen stone --es cd.now $NOW;                                                            shot g23_stone 4
 open --es cd.screen add --es cd.now $NOW;                                                              shot g24_add 3
-open --ez cd.family true --ez cd.full true --es cd.now $NOW;                                         shot g35_family9 5
+open --ez cd.family true --ez cd.full true --es cd.now $NOW;                                         shot g35_family9 5; shot g35_family9_late 10
+# 그 순간 앱의 모든 스레드 스택 (멈춤 원인 찾기): kill -3 → /data/anr
+adb shell kill -3 "$(adb shell pidof $P | tr -d '\r')" 2>/dev/null; sleep 3
 open --es cd.now 2026-09-30T23:10;                                                                     shot g25_family_night 5
 open --es cd.screen breath --es cd.now $NOW;                                                           shot g26_breath_in 3; shot g27_breath_later 5
 open --es cd.screen gaze --es cd.now 2026-09-30T23:10;                                                 shot g28_gaze_night 5
@@ -49,6 +51,9 @@ open --ez cd.letter true --es cd.now 2026-12-02T10:00; sleep 5; swipe_up;       
 open --ez cd.openLetter true --es cd.now 2026-12-02T10:00;                                              shot g32_letter_open 4
 open --ez cd.letter true --ez cd.openLetter true --es cd.now 2026-12-02T21:30;                         shot g33_letter_night 4
 open --es cd.screen collection --es cd.now 2026-12-02T10:00; swipe_up; swipe_up;                       shot g34_letters 3
+# 1.4 돌봄: 한마디 창 아래 권유 · 잠깐 바라보기 · 고마움 책
+open --es cd.care CALM_BREATH --es cd.now $NOW;                                                       shot g36_care 6
+open --es cd.screen look --es cd.now $NOW;                                                             shot g37_look 12
 # 인생의 계절 (다른 생년월일 · 다른 하루)
 open --el cd.seed 12345 --es cd.birth 2016-03-01 --es cd.now $NOW;                                     shot g12_spring 14
 open --el cd.seed 99 --es cd.birth 1968-08-20 --ez cd.preview true --es cd.now $NOW;                   shot g13_autumn 14
@@ -77,6 +82,8 @@ adb logcat -d | grep -iE "carpediem|ANR in" | tail -300 >> "$OUT/logcat_app.txt"
 echo "app ANR: $(grep -c "ANR in $P" "$OUT/logcat_app.txt")" > "$OUT/anr.txt"; cat "$OUT/anr.txt"
 # 멈춘 순간 메인 스레드가 어디 있었는지 (ANR 기록). 루트가 되는 에뮬레이터 이미지에서만
 adb root >/dev/null 2>&1; sleep 3
-mkdir -p "$OUT/anr"; adb shell ls /data/anr 2>/dev/null | head -5 | while read -r f; do adb pull "/data/anr/$f" "$OUT/anr/" >/dev/null 2>&1; done
+mkdir -p "$OUT/anr"; adb shell ls /data/anr 2>/dev/null | tr -d '\r' | while read -r f; do adb pull "/data/anr/$f" "$OUT/anr/" >/dev/null 2>&1; done
+# 우리 앱 것만 남김
+for f in "$OUT"/anr/*; do grep -q "Cmd line: $P" "$f" 2>/dev/null || rm -f "$f"; done
 ls "$OUT/anr" 2>/dev/null | head
 ls -la "$OUT"

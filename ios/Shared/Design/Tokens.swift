@@ -442,5 +442,10 @@ enum Tokens {
             static let minLines: CGFloat = 3.0
             static let envelope: CGFloat = 34.0
         }
+        enum Care {
+            static let lookSeconds: CGFloat = 30.0
+            static let lookSize: CGFloat = 120.0
+            static let lookDown: CGFloat = 0.6
+        }
     }
 }

@@ -381,9 +381,15 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
             }
             run {
                 var confirmClear by remember { mutableStateOf(false) }
-                FormSection(header = stringResource(R.string.lines), footer = stringResource(R.string.lines_keepFooter)) {
+                FormSection(header = stringResource(R.string.lines), footer = stringResource(R.string.lines_keepFooter) + if (Theme.garden) "\n" + stringResource(R.string.care_footer) else "") {
                     FormRow(stringResource(R.string.lines_keep), onClick = { state.changeKeepLines(!state.keepLines) }) {
                         Switch(state.keepLines, { state.changeKeepLines(it) }, colors = SwitchDefaults.colors(checkedTrackColor = p.olive))
+                    }
+                    if (Theme.garden) {
+                        RowDivider()
+                        FormRow(stringResource(R.string.care_setting), onClick = { state.changeCare(!state.careOn) }) {
+                            Switch(state.careOn, { state.changeCare(it) }, colors = SwitchDefaults.colors(checkedTrackColor = p.olive))
+                        }
                     }
                     RowDivider()
                     FormRow(stringResource(R.string.lines_export), onClick = {

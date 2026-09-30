@@ -370,4 +370,17 @@
     <string name="contact_send">메일 보내기</string>
     <string name="contact_email"></string>
     <string name="notices_privacy">개인정보: 아무것도 모으지 않아요. 모든 기록은 이 폰에만 머물러요.</string>
+    <string name="care_calm">숨, 쉼 1분 함께할까요?</string>
+    <string name="care_box">네모 숨으로 1분만 쉬어 갈까요?</string>
+    <string name="care_look">30초만 먼 곳을 바라볼까요?</string>
+    <string name="care_sendTo">이 마음, 누구에게 닿으면 좋을까요?</string>
+    <string name="care_setting">작은 권유</string>
+    <string name="care_footer">마음을 보낸 뒤, 지금 할 수 있는 작은 일 하나를 권해요.</string>
+    <string name="look_cue">먼 곳을 바라봐요</string>
+    <string name="look_done">잘 쉬었어요.</string>
+    <string name="thanks_book">고마움 책</string>
+    <string name="thanks_sub">고마움으로 보낸 한 줄이 한 장씩.</string>
+    <string name="thanks_end">고마운 날이 이만큼 쌓였어요.</string>
+    <string name="thanks_page">%1$s / %2$s</string>
+    <string name="letgo_count">지금까지 %1$s번 흘려보냈어요.</string>
 </resources>
