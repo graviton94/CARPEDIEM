@@ -153,10 +153,10 @@ private fun DrawScope.partyHat(art: HaruArt, k: Float) {
     rotate(Math.toDegrees(art.shape.traits.rot).toFloat() * 0.5f, top) {
         val base = top.y + d.line * k * 0.6f
         val cone = Path().apply { moveTo(top.x - w / 2, base); lineTo(top.x, base - h); lineTo(top.x + w / 2, base); close() }
-        drawPath(cone, pt.Colors.hat)
-        clipPath(cone) { repeat(2) { n -> val y = base - h * (0.3f + 0.3f * n); drawLine(pt.Colors.stripe, Offset(top.x - w, y + w * 0.12f), Offset(top.x + w, y - w * 0.12f), h * 0.1f) } }
+        drawPath(cone, Tokens.Garden.Party.Colors.hat)
+        clipPath(cone) { repeat(2) { n -> val y = base - h * (0.3f + 0.3f * n); drawLine(Tokens.Garden.Party.Colors.stripe, Offset(top.x - w, y + w * 0.12f), Offset(top.x + w, y - w * 0.12f), h * 0.1f) } }
         drawPath(cone, ink, style = Stroke(d.line * k * 0.55f, join = StrokeJoin.Round))
-        drawCircle(pt.Colors.pompom, w * 0.16f, Offset(top.x, base - h))
+        drawCircle(Tokens.Garden.Party.Colors.pompom, w * 0.16f, Offset(top.x, base - h))
         drawCircle(ink, w * 0.16f, Offset(top.x, base - h), style = Stroke(d.line * k * 0.45f))
     }
 }
@@ -167,11 +167,11 @@ fun DrawScope.birthdayCake(flame: Float = 1f) {
     val w = size.width; val h = size.height
     val line = w * 0.07f
     val body = Rect(Offset(w * 0.08f, h * 0.45f), Size(w * 0.84f, h * 0.5f))
-    drawRoundRect(pt.Colors.cake, body.topLeft, body.size, androidx.compose.ui.geometry.CornerRadius(w * 0.08f))
-    drawRect(pt.Colors.cream, Offset(body.left, body.top + body.height * 0.38f), Size(body.width, body.height * 0.18f))
+    drawRoundRect(Tokens.Garden.Party.Colors.cake, body.topLeft, body.size, androidx.compose.ui.geometry.CornerRadius(w * 0.08f))
+    drawRect(Tokens.Garden.Party.Colors.cream, Offset(body.left, body.top + body.height * 0.38f), Size(body.width, body.height * 0.18f))
     drawRoundRect(ink, body.topLeft, body.size, androidx.compose.ui.geometry.CornerRadius(w * 0.08f), style = Stroke(line))
     drawLine(ink, Offset(w / 2, body.top), Offset(w / 2, h * 0.22f), line * 0.9f, StrokeCap.Round)
-    drawOval(pt.Colors.flame, Offset(w / 2 - w * 0.07f, h * 0.02f + (1f - flame) * h * 0.02f), Size(w * 0.14f, h * 0.2f * flame))
+    drawOval(Tokens.Garden.Party.Colors.flame, Offset(w / 2 - w * 0.07f, h * 0.02f + (1f - flame) * h * 0.02f), Size(w * 0.14f, h * 0.2f * flame))
 }
 
 /** 돌 종류마다 다른 옅은 무늬 (번호로 정해짐). */

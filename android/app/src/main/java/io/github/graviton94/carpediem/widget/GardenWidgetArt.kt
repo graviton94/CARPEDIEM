@@ -22,7 +22,7 @@ import io.github.graviton94.carpediem.design.Tokens
 import io.github.graviton94.carpediem.ui.garden.drawHaru
 import io.github.graviton94.carpediem.ui.garden.birthdayCake
 import io.github.graviton94.carpediem.core.Family
-import io.github.graviton94.carpediem.core.Kind
+import io.github.graviton94.carpediem.core.Kind as PersonKind
 import io.github.graviton94.carpediem.ui.garden.SkyTime
 import org.json.JSONObject
 import java.time.LocalDateTime
@@ -128,7 +128,7 @@ object GardenWidgetArt {
         val base = W.familyHaru * u / L.haruArtWidth
         data class S(val art: io.github.graviton94.carpediem.ui.garden.HaruArt, val k: Float, val prog: Double?, val bday: Boolean)
         val slots = listOf(S(io.github.graviton94.carpediem.ui.garden.HaruArt.of(store.haruSeed, sprout), base, me.progress, Family.isBirthday(profile.birthDate, today))) +
-            store.people.map { p -> S(io.github.graviton94.carpediem.ui.garden.HaruArt.of(p.seed, sprout), if (p.kind == Kind.PET) base * Tokens.Garden.Family.petScale else base,
+            store.people.map { p -> S(io.github.graviton94.carpediem.ui.garden.HaruArt.of(p.seed, sprout), if (p.kind == PersonKind.PET) base * Tokens.Garden.Family.petScale else base,
                 p.birth?.let { LifeSnapshot(it, store.expectancy(p), now).progress }, Family.isBirthday(p.birth, today)) }
         val lo = W.gridInset * u; val hi = w - W.gridInset * u
         val xs = Family.place(slots.map { sl -> sl.prog?.let { (lo + (hi - lo) * (0.06 + 0.88 * it.coerceIn(0.0, 1.0))) } }, slots.map { (it.art.meta.bbox.width * it.k).toDouble() }, 0,
