@@ -6,11 +6,16 @@ P=io.github.graviton94.carpediem
 OUT=${1:-shots}
 mkdir -p "$OUT"
 NOW=2026-09-30T15:00
-shot() { sleep "$2"; adb exec-out screencap -p > "$OUT/$1.png"; echo "shot $1"; }
+shot() { sleep "$2"; adb shell am broadcast -a android.intent.action.CLOSE_SYSTEM_DIALOGS >/dev/null; adb exec-out screencap -p > "$OUT/$1.png"; echo "shot $1"; }
 open() { adb shell am force-stop $P; adb shell am start -W -n $P/.MainActivity "$@" >/dev/null; }
 swipe_up() { adb shell input swipe 540 1900 540 500 500; }
 
 adb shell settings put global window_animation_scale 1; adb shell settings put global animator_duration_scale 1
+# 느린 에뮬레이터의 'System UI 응답 없음' 창이 화면을 가리지 않게. 부팅 직후 잠시 쉰다.
+adb shell settings put global hide_error_dialogs 1
+sleep 45; adb shell am broadcast -a android.intent.action.CLOSE_SYSTEM_DIALOGS >/dev/null
+# 기본 언어는 한국어 (영어는 아래에서 따로)
+adb shell cmd locale set-app-locales $P --locales ko-KR 2>/dev/null
 
 # 정원: 처음 켜기 → 하루를 만남 → 홈
 open --ez cd.reset true --es cd.design garden --es cd.now $NOW;                                       shot g01_onboarding 5

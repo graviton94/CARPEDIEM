@@ -48,8 +48,12 @@ import io.github.graviton94.carpediem.ui.garden.paperBackground
 import androidx.compose.foundation.Image
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.LineBreak
 import kotlin.math.max
 import kotlin.math.min
+
+/** 한국어가 낱말 중간에서 끊기지 않게 어절 단위로 줄을 바꾼다 (Android 13+, 그 아래는 기본 줄바꿈). */
+private val WordLineBreak = LineBreak(LineBreak.Strategy.Balanced, LineBreak.Strictness.Normal, LineBreak.WordBreak.Phrase)
 
 /** 글자 토큰을 적용한 텍스트. */
 @Composable
@@ -62,7 +66,7 @@ fun TokenText(
     align: TextAlign? = null,
     maxLines: Int = Int.MAX_VALUE,
 ) {
-    val style = token.style(text).let { if (weight != null) it.copy(fontWeight = weight) else it }
+    val style = token.style(text).let { if (weight != null) it.copy(fontWeight = weight) else it }.copy(lineBreak = WordLineBreak)
     Text(text, modifier, color = color, style = style, textAlign = align, maxLines = maxLines)
 }
 

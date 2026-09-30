@@ -80,12 +80,12 @@ object GardenWidgetArt {
 
         if (kind == Kind.LARGE && s != null) {
             val moss = asset(context, "obj_moss.png"); val box = L.objBox * W.mossScale * u
-            val hx = w * 0.1f + w * 0.8f * s.progress.toFloat()
+            val hx = w * 0.1f + w * 0.8f * s.progress.toFloat().coerceIn(0f, 1f)
             val mx = max(box * 0.3f, hx - W.haruLarge * u * 1.2f)
             c.drawBitmap(moss, null, RectF(mx - box / 2, gy - box * (L.objGround / L.objBox), mx + box / 2, gy - box * (L.objGround / L.objBox) + box), paint)
-            haru(context, c, hx, gy, W.haruLarge * u, now)
+            haru(context, c, hx, gy, W.haruLarge * u, u, now)
         }
-        if (kind == Kind.DAYS) haru(context, c, w * W.haruX, gy, W.haruSmall * u, now)
+        if (kind == Kind.DAYS) haru(context, c, w * W.haruX, gy, W.haruSmall * u, u, now)
 
         // 위젯 모서리 둥글게
         val out = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
@@ -98,7 +98,7 @@ object GardenWidgetArt {
     }
 
     /** 앱이 저장해 둔 하루 그림 + 기본 시선의 눈동자. 밤에는 졸린 눈. 그림이 없으면 그리지 않는다. */
-    private fun haru(context: Context, c: Canvas, cx: Float, gy: Float, widthUnits: Float, now: LocalDateTime) {
+    private fun haru(context: Context, c: Canvas, cx: Float, gy: Float, widthUnits: Float, u: Float, now: LocalDateTime) {
         val store = Store(context)
         val season = store.profile?.let { LifeSnapshot(it.birthDate, it.expectancy(store.table), now).season } ?: Season.SPRING
         val f = HaruArtStore.files(context, store.haruSeed, season == Season.SPRING) ?: return
@@ -107,7 +107,11 @@ object GardenWidgetArt {
         val eyes = BitmapFactory.decodeFile(f.second.path) ?: return
         val box = m.getDouble("box").toFloat(); val ground = m.getDouble("ground").toFloat()
         val k = widthUnits / L.haruArtWidth   // 하루 그림 한 칸 = k px
-        val left = cx - box / 2 * k; val top = gy - ground * k
+        // 큰 돌도 위젯 밖으로 나가지 않게
+        val bb = m.getJSONArray("bbox"); val edge = W.gridInset * u
+        val lo = (box / 2 - bb.getDouble(0).toFloat()) * k + edge; val hi = c.width - (bb.getDouble(0).toFloat() + bb.getDouble(2).toFloat() - box / 2) * k - edge
+        val x = if (lo <= hi) cx.coerceIn(lo, hi) else c.width / 2f
+        val left = x - box / 2 * k; val top = gy - ground * k
         val dst = RectF(left, top, left + box * k, top + box * k)
         val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
         c.drawBitmap(body, null, dst, paint)

@@ -175,12 +175,16 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 val labels = u * (G.Layout.labelGap + G.Layout.labelRow * 3)
                 val gy = maxOf(screenH * G.Layout.groundRatio, topBottom + u * G.Layout.minSkyGap + haruAbove).coerceAtMost(screenH - labels)
                 val x0 = u * G.Layout.pathStart; val x1 = u * G.Layout.pathEnd
-                val hx = lerp((u * (G.Layout.pathStart + G.Layout.pathInset)).value, (u * (G.Layout.pathEnd - G.Layout.pathInset)).value, s.progress.toFloat()).dp
+                val along = lerp((u * (G.Layout.pathStart + G.Layout.pathInset)).value, (u * (G.Layout.pathEnd - G.Layout.pathInset)).value, s.progress.toFloat().coerceIn(0f, 1f)).dp
+                // 하루 몸이 길 끝을 넘지 않게 (큰 돌도 화면 안에). 대체 그림은 반지름 = haruWidth.
+                val leftExt = art?.let { haruScale * (it.meta.box / 2 - it.meta.bbox.left) } ?: (u * G.Layout.haruWidth)
+                val rightExt = art?.let { haruScale * (it.meta.bbox.right - it.meta.box / 2) } ?: (u * G.Layout.haruWidth)
+                val hx = if (x0 + leftExt <= x1 - rightExt) along.coerceIn(x0 + leftExt, x1 - rightExt) else (x0 + x1) / 2
 
-                // 해 · 달: 폰 시각을 따라 하늘을 가로지름. 위쪽 글자에는 닿지 않음.
+                // 해 · 달: 폰 시각을 따라 하늘을 가로지름. 위쪽 글자에도, 하루 머리에도 닿지 않음.
                 val (day, t) = skyProgress(now)
                 val r = u * G.Layout.sunRadius
-                val base = gy - u * G.Layout.sunBase
+                val base = gy - maxOf(u * G.Layout.sunBase, haruAbove + u * G.Layout.minSkyGap + r)
                 val arc = min((u * G.Layout.sunArc).value, (base - topBottom - u * G.Layout.minSkyGap - r).value.coerceAtLeast(0f)).dp
                 val sx = lerp((u * G.Layout.sunStart).value, (u * G.Layout.sunEnd).value, t).dp
                 val sy = base - arc * sin(t * Math.PI).toFloat()
@@ -190,8 +194,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
 
                 // 놓인 것: 하루 왼쪽(지나온 쪽)에 최근 것부터. 자리가 없으면 거기까지만.
                 val box = u * (G.Layout.objBox * G.Layout.objScale)
-                val half = art?.let { haruScale * ((it.meta.bbox.width) / 2) } ?: (u * G.Layout.haruWidth / 2)
-                var cursor = hx - half - u * G.Layout.itemFromHaru
+                var cursor = hx - leftExt - u * G.Layout.itemFromHaru
                 for (m in moments) {
                     val cx = cursor - box * 0.3f
                     if (cx - box * 0.3f < x0) break
@@ -309,7 +312,7 @@ fun MeetScreen(state: AppState, onDone: () -> Unit) {
             val scale = u * (G.Layout.meetHaruWidth / G.Layout.haruArtWidth)
             Box(Modifier.fillMaxWidth().height(u * G.Layout.haruBox * (G.Layout.meetHaruWidth / G.Layout.haruArtWidth) * 0.8f), contentAlignment = Alignment.BottomCenter) {
                 Image(GardenArt.strip(ctx, Season.SPRING), null, Modifier.offset(y = u * (G.Layout.stripHeight - G.Layout.stripLineY)).width(screenW).height(u * G.Layout.stripHeight), contentScale = ContentScale.FillBounds)
-                if (load.loading) TokenText(stringResource(R.string.garden_drawing), Tokens.TypeScale.footnote, color = p.secondary)
+                if (load.loading) TokenText(stringResource(R.string.garden_drawing), Tokens.TypeScale.footnote, Modifier.padding(bottom = Tokens.Space.sp8), color = p.secondary)
                 else Box(Modifier.offset(y = scale * (G.Layout.haruBox - G.Layout.haruGround))) {
                     Haru(load, scale, Modifier)
                     art?.let { Sparkles(it, scale) }
