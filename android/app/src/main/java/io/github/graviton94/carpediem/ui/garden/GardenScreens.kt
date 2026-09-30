@@ -119,6 +119,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
     BoxWithConstraints(Modifier.fillMaxSize().paperBackground()) {
         val u = Theme.unit
         val screenH = maxHeight
+        val screenW = maxWidth
         val margin = Theme.deviceClass.pageMargin
         var topBottom by remember { mutableStateOf(0.dp) }
         Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
@@ -188,7 +189,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 val px = with(density) { Triple(x0.toPx(), x1.toPx(), hx.toPx()) }
                 Box(Modifier.offset(y = gy + u * G.Layout.labelGap).fillMaxWidth()) {
                     TokenText(stringResource(R.string.garden_age0), Tokens.TypeScale.caption1, Modifier.centerAt(px.first, 0f, px.second), color = p.secondary)
-                    TokenText(stringResource(R.string.expectancy_value, Labels.years(s.expectancy)), Tokens.TypeScale.caption1, Modifier.centerAt(px.second, px.first, with(density) { maxWidth.toPx() }), color = p.secondary)
+                    TokenText(stringResource(R.string.expectancy_value, Labels.years(s.expectancy)), Tokens.TypeScale.caption1, Modifier.centerAt(px.second, px.first, with(density) { screenW.toPx() }), color = p.secondary)
                 }
                 Box(Modifier.offset(y = gy + u * (G.Layout.labelGap + G.Layout.labelRow)).fillMaxWidth()) {
                     TokenText(stringResource(R.string.path_age, "${s.age}", Labels.season(ctx, season)), Tokens.TypeScale.caption1, Modifier.centerAt(px.third, px.first, px.second))
@@ -279,6 +280,7 @@ fun MeetScreen(state: AppState, onDone: () -> Unit) {
     val art = haruArt(state, sprout = true)
     BoxWithConstraints(Modifier.fillMaxSize().paperBackground()) {
         val u = Theme.unit
+        val screenW = maxWidth
         Image(GardenArt.sky(ctx, Season.SPRING), null, Modifier.fillMaxSize(), contentScale = ContentScale.FillWidth, alignment = Alignment.TopCenter)
         Column(Modifier.fillMaxSize().statusBarsPadding().navigationBarsPadding().padding(horizontal = Theme.deviceClass.pageMargin),
             horizontalAlignment = Alignment.CenterHorizontally) {
@@ -289,7 +291,7 @@ fun MeetScreen(state: AppState, onDone: () -> Unit) {
             Spacer(Modifier.weight(1f))
             val scale = u * (G.Layout.meetHaruWidth / G.Layout.haruArtWidth)
             Box(Modifier.fillMaxWidth().height(u * G.Layout.haruBox * (G.Layout.meetHaruWidth / G.Layout.haruArtWidth) * 0.8f), contentAlignment = Alignment.BottomCenter) {
-                Image(GardenArt.strip(ctx, Season.SPRING), null, Modifier.offset(y = u * (G.Layout.stripHeight - G.Layout.stripLineY)).width(maxWidth).height(u * G.Layout.stripHeight), contentScale = ContentScale.FillBounds)
+                Image(GardenArt.strip(ctx, Season.SPRING), null, Modifier.offset(y = u * (G.Layout.stripHeight - G.Layout.stripLineY)).width(screenW).height(u * G.Layout.stripHeight), contentScale = ContentScale.FillBounds)
                 if (art == null) TokenText(stringResource(R.string.garden_drawing), Tokens.TypeScale.footnote, color = p.secondary)
                 else Box(Modifier.offset(y = scale * (art.meta.box - art.meta.ground))) {
                     HaruFigure(art, scale)
