@@ -71,6 +71,24 @@ class Store(context: Context) {
         get() = prefs.getBoolean("meetPending", false)
         set(v) = prefs.edit().putBoolean("meetPending", v).apply()
 
+    /** 디버그 빌드 화면 확인용으로만 하루 번호를 정한다. */
+    fun overrideHaruSeed(v: Long) = prefs.edit().putLong("haruSeed", v and 0xFFFFFFFFL).apply()
+
+    /** 하루 한 번 알림 (오늘의 문장 · 새로 놓인 것). 기본은 끔. */
+    var notify: Boolean
+        get() = prefs.getBoolean("notify", false)
+        set(v) = prefs.edit().putBoolean("notify", v).apply()
+
+    /** 설정의 버전 글자를 여러 번 누르면 켜지는 개발자 모드. 시험용 항목만 보인다. */
+    var devMode: Boolean
+        get() = prefs.getBoolean("devMode", false)
+        set(v) = prefs.edit().putBoolean("devMode", v).apply()
+
+    /** 알림으로 이미 알린 놓인 것 (같은 것을 두 번 알리지 않음). */
+    var notifiedMoments: Set<String>
+        get() = prefs.getStringSet("notifiedMoments", emptySet()) ?: emptySet()
+        set(v) = prefs.edit().putStringSet("notifiedMoments", v).apply()
+
     /** 시험용: 놓이는 것을 날짜와 상관없이 모두 보여 준다. */
     var previewAll: Boolean
         get() = prefs.getBoolean("previewAll", false)

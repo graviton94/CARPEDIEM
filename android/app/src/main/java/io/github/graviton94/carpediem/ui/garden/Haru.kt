@@ -75,6 +75,7 @@ object HaruArtStore {
                 bodyFile.writeBytes(dataUrl(json.getString("body"))); eyesFile.writeBytes(dataUrl(json.getString("eyes")))
                 json.remove("body"); json.remove("eyes"); metaFile.writeText(json.toString())
             }
+            io.github.graviton94.carpediem.widget.Widgets.refresh(context)
         }
         val art = withContext(Dispatchers.IO) {
             runCatching {
@@ -91,6 +92,14 @@ object HaruArtStore {
         } ?: return null
         synchronized(memory) { memory[key] = art }
         return art
+    }
+
+    /** 위젯이 쓰는 저장된 그림 (없으면 null). 위젯은 WebView 를 띄우지 않는다. */
+    fun files(context: Context, seed: Long, sprout: Boolean): Triple<File, File, File>? {
+        val key = "v${VERSION}_${seed}_${if (sprout) 1 else 0}"
+        val dir = File(context.filesDir, "haru")
+        val t = Triple(File(dir, "$key.body.png"), File(dir, "$key.eyes.png"), File(dir, "$key.json"))
+        return t.takeIf { it.first.exists() && it.second.exists() && it.third.exists() }
     }
 
     private fun JSONObject.f(k: String) = getDouble(k).toFloat()
@@ -184,6 +193,28 @@ fun HaruFigure(art: HaruArt, scale: Dp, modifier: Modifier = Modifier, sleepy: B
                 val w = e.r * k
                 drawLine(Tokens.Garden.Colors.ink, Offset(c.x - w, c.y), Offset(c.x + w, c.y), Tokens.Garden.Stroke.closedEye * k, StrokeCap.Round)
             }
+        }
+    }
+}
+
+/**
+ * 하루를 그리지 못했을 때(아주 드묾: WebView 가 없거나 막힌 기기) 잠시 보여 주는 단순한 돌.
+ * 같은 box 좌표를 써서 자리가 어긋나지 않는다. 다음에 앱을 열면 다시 그려 본다.
+ */
+@Composable
+fun HaruFallback(scale: Dp, modifier: Modifier = Modifier) {
+    val box = Tokens.Garden.Layout.haruBox; val g = Tokens.Garden.Layout.haruGround
+    Canvas(modifier.size(scale * box)) {
+        val k = size.width / box
+        val w = Tokens.Garden.Layout.haruArtWidth * k; val h = w * 0.62f
+        val c = Offset(size.width / 2, g * k - h)
+        drawOval(Tokens.Garden.Colors.fallback, Offset(c.x - w, c.y - h), androidx.compose.ui.geometry.Size(w * 2, h * 2))
+        drawOval(Tokens.Garden.Colors.ink, Offset(c.x - w, c.y - h), androidx.compose.ui.geometry.Size(w * 2, h * 2), style = androidx.compose.ui.graphics.drawscope.Stroke(Tokens.Garden.Stroke.box * k))
+        listOf(-0.3f, 0.12f).forEach { dx ->
+            val e = Offset(c.x + dx * w, c.y - h * 0.15f); val r = w * 0.17f
+            drawCircle(Tokens.Garden.Colors.shine, r, e)
+            drawCircle(Tokens.Garden.Colors.ink, r, e, style = androidx.compose.ui.graphics.drawscope.Stroke(Tokens.Garden.Stroke.closedEye * k))
+            drawCircle(Tokens.Garden.Colors.pupil, r * 0.52f, e + Offset(0f, r * 0.15f))
         }
     }
 }

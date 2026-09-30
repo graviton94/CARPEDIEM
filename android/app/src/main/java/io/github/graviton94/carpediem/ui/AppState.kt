@@ -40,6 +40,12 @@ class AppState(private val context: Context) {
         private set
     var previewAll by mutableStateOf(store.previewAll)
         private set
+    var notify by mutableStateOf(store.notify)
+        private set
+    var devMode by mutableStateOf(store.devMode)
+        private set
+    /** 디버그 빌드에서 화면 확인용으로 시각을 고정할 때만 쓴다. 평소에는 null (폰 시각). */
+    var fixedNow by mutableStateOf<java.time.LocalDateTime?>(null)
     /** 문장을 넘기면 하루가 한 번 깜빡인다. */
     var blinkKick by mutableStateOf(0)
         private set
@@ -52,9 +58,11 @@ class AppState(private val context: Context) {
     /** 온보딩을 마칠 때. 정원 디자인이면 하루를 만나는 화면을 먼저 보여 준다. */
     fun begin(p: LifeProfile) { save(p); if (design == Design.GARDEN) { store.meetPending = true; meetPending = true } }
     fun finishMeet() { store.meetPending = false; meetPending = false }
-    fun changeDesign(v: Design) { store.design = v; design = v }
+    fun changeDesign(v: Design) { store.design = v; design = v; Widgets.refresh(context) }
     fun changePreviewAll(v: Boolean) { store.previewAll = v; previewAll = v }
     fun opened() = store.markOpened()
+    fun changeNotify(v: Boolean) { store.notify = v; notify = v; io.github.graviton94.carpediem.notify.Daily.schedule(context, v) }
+    fun unlockDev() { store.devMode = true; devMode = true }
     fun nextQuote() { store.skipQuote(); quote = store.todaysQuote(); blinkKick++; Widgets.refresh(context) }
     fun refreshQuote() { quote = store.todaysQuote() }
     fun changeQuoteLanguage(v: QuoteLanguage) { store.quoteLanguage = v; quoteLanguage = v; Widgets.refresh(context) }
@@ -62,7 +70,7 @@ class AppState(private val context: Context) {
     fun changeGrid(v: GridScale) { store.grid = v; grid = v }
     fun eraseAll() {
         store.eraseAll(); store.ensureQuoteSeed()
-        profile = null; quoteLanguage = store.quoteLanguage; quote = store.todaysQuote(); design = store.design; meetPending = false; previewAll = false; Widgets.refresh(context)
+        profile = null; quoteLanguage = store.quoteLanguage; quote = store.todaysQuote(); design = store.design; meetPending = false; previewAll = false; notify = false; devMode = false; io.github.graviton94.carpediem.notify.Daily.schedule(context, false); Widgets.refresh(context)
     }
 
     fun defaultProfile(): LifeProfile {

@@ -143,7 +143,13 @@
     "obj.snail.line": "느려도 괜찮습니다.",
     "obj.acorn": "도토리",
     "obj.acorn.when": "인생의 계절이 바뀐 날",
-    "obj.acorn.line": "계절이 한 칸 넘어갔습니다."
+    "obj.acorn.line": "계절이 한 칸 넘어갔습니다.",
+    "notify.channel": "오늘의 문장",
+    "notify.keepsake": "정원에 새로 놓인 것: {name}",
+    "notify.row": "하루 한 번 알림",
+    "notify.footer": "아침에 오늘의 문장을 조용히 한 번 보냅니다. 정원에 새로 놓인 것이 있으면 함께 알려요.",
+    "dev.unlocked": "개발자 모드를 켰습니다.",
+    "garden.haruA11y": "하루, {stone}"
   },
   "en": {
     "tagline": "Cherish today.",
@@ -289,6 +295,12 @@
     "obj.snail.line": "Slow is fine.",
     "obj.acorn": "Acorn",
     "obj.acorn.when": "Your season changed",
-    "obj.acorn.line": "A season has turned."
+    "obj.acorn.line": "A season has turned.",
+    "notify.channel": "Today's words",
+    "notify.keepsake": "New in your garden: {name}",
+    "notify.row": "Daily notification",
+    "notify.footer": "Sends today's words once, quietly, in the morning. Also tells you when something new is in the garden.",
+    "dev.unlocked": "Developer mode on.",
+    "garden.haruA11y": "Haru, {stone}"
   }
 }

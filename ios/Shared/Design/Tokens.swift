@@ -143,6 +143,11 @@ enum Tokens {
         static let largeFrom: CGFloat = 430.0
     }
 
+    enum Notify {
+        static let hour: CGFloat = 8.0
+        static let minute: CGFloat = 50.0
+    }
+
     enum Garden {
         static let unitWidth: CGFloat = 390.0
         enum Colors {
@@ -159,6 +164,7 @@ enum Tokens {
             static let future: UInt32 = 0x8FAA6A8C
             static let bars: [UInt32] = [0xF3C66AFF, 0xE9C98EFF, 0xC9B98EFF, 0xA9BC84FF]
             static let calendar: [UInt32] = [0xA9BC84FF, 0x8FAA6AFF, 0xC9A46AFF, 0xA8B2B6FF]
+            static let fallback: UInt32 = 0xA7A399FF
         }
         enum Layout {
             static let groundRatio: CGFloat = 0.76
@@ -187,6 +193,7 @@ enum Tokens {
             static let stripHeight: CGFloat = 200.0
             static let calendarGap: CGFloat = 1.3
             static let sparkle: CGFloat = 9.0
+            static let devTaps: CGFloat = 7.0
         }
         enum Stroke {
             static let ground: CGFloat = 3.2
@@ -225,6 +232,22 @@ enum Tokens {
             static let hatchAngle: CGFloat = -0.75
             static let textureScale: CGFloat = 0.55
             static let passOffset: CGFloat = 0.5
+        }
+        enum Widget {
+            static let small: CGFloat = 160.0
+            static let wide: CGFloat = 340.0
+            static let groundRatio: CGFloat = 0.84
+            static let largeGroundRatio: CGFloat = 0.8
+            static let haruSmall: CGFloat = 40.0
+            static let haruLarge: CGFloat = 64.0
+            static let haruX: CGFloat = 0.72
+            static let sunRadius: CGFloat = 11.0
+            static let sunArcTop: CGFloat = 0.3
+            static let sunArcBase: CGFloat = 0.84
+            static let gridLeft: CGFloat = 0.4
+            static let gridInset: CGFloat = 14.0
+            static let cell: CGFloat = 1.3
+            static let mossScale: CGFloat = 0.34
         }
     }
 }

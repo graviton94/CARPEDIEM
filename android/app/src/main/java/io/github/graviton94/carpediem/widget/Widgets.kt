@@ -107,6 +107,24 @@ private class WidgetData(context: Context) {
     val unit: LifeUnit = store.unit
     val dark = (context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
     val palette = Palette(dark)
+    val garden = store.design == io.github.graviton94.carpediem.data.Design.GARDEN
+    val now: LocalDateTime = LocalDateTime.now()
+}
+
+// ───────────────────────── 정원 디자인 ─────────────────────────
+
+private val gInk get() = color(Tokens.Garden.Colors.ink, Tokens.Garden.Colors.ink)
+private val gSub get() = color(Tokens.Garden.Colors.inkSoft, Tokens.Garden.Colors.inkSoft)
+
+/** 정원 그림 바탕 + 글자. 종이 그림이라 다크 모드에서도 밝게. */
+@Composable
+private fun GardenSurface(context: Context, data: WidgetData, kind: GardenWidgetArt.Kind, content: @Composable () -> Unit) {
+    val size = LocalSize.current
+    val bmp = GardenWidgetArt.render(context, kind, px(context, size.width), px(context, size.height), data.snapshot, data.now)
+    Box(GlanceModifier.fillMaxSize().clickable(actionStartActivity<MainActivity>())) {
+        Image(ImageProvider(bmp), null, GlanceModifier.fillMaxSize(), contentScale = androidx.glance.layout.ContentScale.FillBounds)
+        Box(GlanceModifier.fillMaxSize().padding(Tokens.Layout.widgetPadding)) { content() }
+    }
 }
 
 // ───────────────────────── 공통 ─────────────────────────
@@ -155,7 +173,14 @@ class DaysLeftWidget : GlanceAppWidget() {
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         val data = WidgetData(context)
         provideContent {
-            Surface {
+            if (data.garden) GardenSurface(context, data, GardenWidgetArt.Kind.DAYS) {
+                val s = data.snapshot
+                if (s == null) Text(context.getString(R.string.widget_empty), style = style(Tokens.TypeScale.caption1.size, gSub))
+                else Column {
+                    Text(Labels.number(s.remaining(data.unit)), style = style((Tokens.TypeScale.largeTitle.size.value * Tokens.Widget.numberScale).sp, gInk, FontWeight.Bold, serif = true), maxLines = 1)
+                    Text(if (data.unit == LifeUnit.DAYS) context.getString(R.string.widget_daysLeft) else Labels.unit(context, data.unit), style = style(Tokens.TypeScale.caption1.size, gSub))
+                }
+            } else Surface {
                 val s = data.snapshot
                 if (s == null) Empty(context) else Column(GlanceModifier.fillMaxSize()) {
                     val label = if (data.unit == LifeUnit.DAYS) context.getString(R.string.widget_daysLeft) else Labels.unit(context, data.unit)
@@ -188,7 +213,12 @@ class TodayWidget : GlanceAppWidget() {
         val data = WidgetData(context)
         val today = LifeSnapshot(java.time.LocalDate.now(), 1.0, LocalDateTime.now()).period(LifePeriod.DAY)
         provideContent {
-            Surface {
+            if (data.garden) GardenSurface(context, data, GardenWidgetArt.Kind.TODAY) {
+                Column {
+                    Text(context.getString(R.string.widget_todayLeft, "${today.hoursLeft}"), style = style(Tokens.TypeScale.title2.size, gInk, FontWeight.Bold, serif = true))
+                    Text(context.getString(R.string.widget_todaySub), style = style(Tokens.TypeScale.caption1.size, gSub))
+                }
+            } else Surface {
                 Column(GlanceModifier.fillMaxSize()) {
                     Label(context, context.getString(R.string.widget_today), data)
                     val side = min(LocalSize.current.width.value, LocalSize.current.height.value).dp - Tokens.Layout.widgetPadding * 2 - Tokens.Space.sp5
@@ -215,7 +245,30 @@ class LifeCalendarWidget : GlanceAppWidget() {
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         val data = WidgetData(context)
         provideContent {
-            Surface {
+            val gs = LocalSize.current
+            if (data.garden) {
+                val large = gs.height >= Tokens.Widget.largeFromHeight.dp
+                GardenSurface(context, data, if (large) GardenWidgetArt.Kind.LARGE else GardenWidgetArt.Kind.CALENDAR) {
+                    val s = data.snapshot
+                    when {
+                        s == null -> Text(context.getString(R.string.widget_empty), style = style(Tokens.TypeScale.caption1.size, gSub))
+                        large -> Column(GlanceModifier.fillMaxSize()) {
+                            Text(Labels.number(s.remaining(LifeUnit.DAYS)), style = style(Tokens.TypeScale.largeTitle.size, gInk, FontWeight.Bold, serif = true), maxLines = 1)
+                            Text(context.getString(R.string.widget_daysLeft), style = style(Tokens.TypeScale.caption1.size, gSub))
+                            Spacer(GlanceModifier.defaultWeight())
+                            data.quote?.let { q -> Text(if (data.language == QuoteLanguage.ENGLISH) q.english else q.korean, style = style(Tokens.TypeScale.footnote.size, gInk, serif = true), maxLines = 2) }
+                        }
+                        else -> Column(GlanceModifier.fillMaxHeight().width((gs.width - Tokens.Layout.widgetPadding * 2) * Tokens.Garden.Widget.gridLeft)) {
+                            Text(context.getString(R.string.calendar), style = style(Tokens.TypeScale.footnote.size, gInk, FontWeight.Bold, serif = true))
+                            Spacer(GlanceModifier.defaultWeight())
+                            Text("${s.remaining(LifeUnit.YEARS)}", style = style(Tokens.TypeScale.largeTitle.size, gInk, FontWeight.Bold, serif = true))
+                            Text(context.getString(R.string.widget_yearsLeft), style = style(Tokens.TypeScale.caption1.size, gSub))
+                            Spacer(GlanceModifier.defaultWeight())
+                            Text("${Labels.season(context, s.season)} · ${Labels.percent(s.progress, 0)}", style = style(Tokens.TypeScale.caption2.size, gSub))
+                        }
+                    }
+                }
+            } else Surface {
                 val s = data.snapshot
                 val size = LocalSize.current
                 val inner = androidx.compose.ui.unit.DpSize(size.width - Tokens.Layout.widgetPadding * 2, size.height - Tokens.Layout.widgetPadding * 2)

@@ -145,4 +145,10 @@
     <string name="obj_acorn">Acorn</string>
     <string name="obj_acorn_when">Your season changed</string>
     <string name="obj_acorn_line">A season has turned.</string>
+    <string name="notify_channel">Today\'s words</string>
+    <string name="notify_keepsake">New in your garden: %1$s</string>
+    <string name="notify_row">Daily notification</string>
+    <string name="notify_footer">Sends today\'s words once, quietly, in the morning. Also tells you when something new is in the garden.</string>
+    <string name="dev_unlocked">Developer mode on.</string>
+    <string name="garden_haruA11y">Haru, %1$s</string>
 </resources>

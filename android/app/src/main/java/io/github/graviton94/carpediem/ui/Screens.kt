@@ -306,15 +306,27 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
                     FormRow(stringResource(R.string.garden_haru)) {
                         TokenText(stringResource(R.string.garden_no, haruNo(state.store.haruSeed)), Tokens.TypeScale.subhead, color = p.secondary)
                     }
-                    RowDivider()
-                    FormRow(stringResource(R.string.garden_preview), onClick = { state.changePreviewAll(!state.previewAll) }) {
-                        Switch(state.previewAll, { state.changePreviewAll(it) }, colors = SwitchDefaults.colors(checkedTrackColor = p.olive))
+                    if (state.devMode) {
+                        RowDivider()
+                        FormRow(stringResource(R.string.garden_preview), onClick = { state.changePreviewAll(!state.previewAll) }) {
+                            Switch(state.previewAll, { state.changePreviewAll(it) }, colors = SwitchDefaults.colors(checkedTrackColor = p.olive))
+                        }
                     }
                 }
             }
             FormSection(header = stringResource(R.string.words)) {
                 FormRow(stringResource(R.string.words_language)) {
                     ChipPicker(QuoteLanguage.entries, state.quoteLanguage, { Labels.quoteLanguage(ctx, it) }) { state.changeQuoteLanguage(it) }
+                }
+            }
+            val permission = androidx.activity.compose.rememberLauncherForActivityResult(androidx.activity.result.contract.ActivityResultContracts.RequestPermission()) { ok -> state.changeNotify(ok) }
+            fun toggleNotify(on: Boolean) {
+                if (on && android.os.Build.VERSION.SDK_INT >= 33 && !io.github.graviton94.carpediem.notify.Daily.allowed(ctx)) permission.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+                else state.changeNotify(on)
+            }
+            FormSection(footer = stringResource(R.string.notify_footer)) {
+                FormRow(stringResource(R.string.notify_row), onClick = { toggleNotify(!state.notify) }) {
+                    Switch(state.notify, { toggleNotify(it) }, colors = SwitchDefaults.colors(checkedTrackColor = p.olive))
                 }
             }
             FormSection(header = stringResource(R.string.widgets)) {
@@ -326,9 +338,14 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
                     }
                 }
             }
-            FormSection(footer = stringResource(R.string.privacy) + "\nCarpe Diem " + ctx.packageManager.getPackageInfo(ctx.packageName, 0).versionName) {
+            FormSection {
                 FormRow(stringResource(R.string.erase), onClick = { confirmErase = true }) {}
             }
+            // 버전 글자를 여러 번 누르면 개발자 모드 (시험용 항목이 보임)
+            var taps by remember { mutableStateOf(0) }
+            TokenText(stringResource(R.string.privacy) + "\nCarpe Diem " + ctx.packageManager.getPackageInfo(ctx.packageName, 0).versionName, Tokens.TypeScale.footnote,
+                Modifier.fillMaxWidth().padding(horizontal = Tokens.Space.sp4).clickable { taps++; if (taps >= Tokens.Garden.Layout.devTaps.toInt() && !state.devMode) { state.unlockDev(); android.widget.Toast.makeText(ctx, ctx.getString(R.string.dev_unlocked), android.widget.Toast.LENGTH_SHORT).show() } },
+                color = p.secondary)
         }
     }
     if (confirmErase) {

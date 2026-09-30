@@ -152,7 +152,7 @@ def _nested_swift(name: str, d: dict, indent: str) -> list:
     return o
 
 
-EXTRA_GROUPS = ("enso", "expectancy", "widget", "deviceClass", "garden")
+EXTRA_GROUPS = ("enso", "expectancy", "widget", "deviceClass", "notify", "garden")
 GROUP_NAME = {"deviceClass": "deviceWidth"}  # DeviceClass 타입과 이름이 겹치지 않게
 
 

@@ -143,3 +143,9 @@
 "obj.acorn" = "Acorn";
 "obj.acorn.when" = "Your season changed";
 "obj.acorn.line" = "A season has turned.";
+"notify.channel" = "Today's words";
+"notify.keepsake" = "New in your garden: %1$@";
+"notify.row" = "Daily notification";
+"notify.footer" = "Sends today's words once, quietly, in the morning. Also tells you when something new is in the garden.";
+"dev.unlocked" = "Developer mode on.";
+"garden.haruA11y" = "Haru, %1$@";

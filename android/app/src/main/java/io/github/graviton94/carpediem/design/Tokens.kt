@@ -138,6 +138,11 @@ object Tokens {
         const val largeFrom = 430.0f
     }
 
+    object Notify {
+        const val hour = 8.0f
+        const val minute = 50.0f
+    }
+
     object Garden {
         const val unitWidth = 390.0f
         object Colors {
@@ -154,6 +159,7 @@ object Tokens {
             val future = Color(0x8C8FAA6A)
             val bars = listOf(Color(0xFFF3C66A), Color(0xFFE9C98E), Color(0xFFC9B98E), Color(0xFFA9BC84))
             val calendar = listOf(Color(0xFFA9BC84), Color(0xFF8FAA6A), Color(0xFFC9A46A), Color(0xFFA8B2B6))
+            val fallback = Color(0xFFA7A399)
         }
         object Layout {
             const val groundRatio = 0.76f
@@ -182,6 +188,7 @@ object Tokens {
             const val stripHeight = 200.0f
             const val calendarGap = 1.3f
             const val sparkle = 9.0f
+            const val devTaps = 7.0f
         }
         object Stroke {
             const val ground = 3.2f
@@ -220,6 +227,22 @@ object Tokens {
             const val hatchAngle = -0.75f
             const val textureScale = 0.55f
             const val passOffset = 0.5f
+        }
+        object Widget {
+            const val small = 160.0f
+            const val wide = 340.0f
+            const val groundRatio = 0.84f
+            const val largeGroundRatio = 0.8f
+            const val haruSmall = 40.0f
+            const val haruLarge = 64.0f
+            const val haruX = 0.72f
+            const val sunRadius = 11.0f
+            const val sunArcTop = 0.3f
+            const val sunArcBase = 0.84f
+            const val gridLeft = 0.4f
+            const val gridInset = 14.0f
+            const val cell = 1.3f
+            const val mossScale = 0.34f
         }
     }
 }

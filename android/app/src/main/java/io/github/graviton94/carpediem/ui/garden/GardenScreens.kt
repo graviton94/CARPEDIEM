@@ -94,12 +94,27 @@ private fun Modifier.centerAt(xPx: Float, minPx: Float, maxPx: Float) = layout {
     layout(constraints.maxWidth, p.height) { p.place((xPx - p.width / 2f).coerceIn(minPx, max(minPx, maxPx - p.width)).toInt(), 0) }
 }
 
+/** 하루 그림을 불러온다. loading = 아직 그리는 중, 끝났는데 art 가 없으면 대체 그림을 쓴다. */
+private class HaruLoad(val art: HaruArt?, val loading: Boolean)
+
 @Composable
-private fun haruArt(state: AppState, sprout: Boolean): HaruArt? {
+private fun haruArt(state: AppState, sprout: Boolean): HaruLoad {
     val ctx = LocalContext.current
     val seed = state.store.haruSeed
-    val art by produceState<HaruArt?>(null, seed, sprout) { value = HaruArtStore.get(ctx, seed, sprout) }
-    return art
+    val load by produceState(HaruLoad(null, true), seed, sprout) { value = HaruLoad(HaruArtStore.get(ctx, seed, sprout), false) }
+    return load
+}
+
+/** 하루 한 명 (그림이 있으면 그림, 못 그렸으면 대체 그림). */
+@Composable
+private fun Haru(load: HaruLoad, scale: Dp, modifier: Modifier, sleepy: Boolean = false, blinkKick: Int = 0) {
+    val ctx = LocalContext.current
+    val desc = load.art?.let { stringResource(R.string.garden_haruA11y, Labels.stone(ctx, it.meta.stone)) } ?: stringResource(R.string.garden_haru)
+    val m = modifier.semantics { contentDescription = desc }
+    when {
+        load.art != null -> HaruFigure(load.art, scale, m, sleepy = sleepy, blinkKick = blinkKick)
+        !load.loading -> HaruFallback(scale, m)
+    }
 }
 
 // ───────────────────────── 홈 = 정원 ─────────────────────────
@@ -112,7 +127,8 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
     val density = LocalDensity.current
     val s = LifeSnapshot(profile.birthDate, profile.expectancy(state.store.table), now)
     val season = s.season
-    val art = haruArt(state, season == Season.SPRING)
+    val load = haruArt(state, season == Season.SPRING)
+    val art = load.art
     val moments = if (state.previewAll) Moments.all(now.toLocalDate()) else Moments.earned(state.store.startDate, profile.birthDate, s.expectancy, now.toLocalDate(), state.store.firstSkip, state.store.returned)
     var open by remember { mutableStateOf<Moment?>(null) }
 
@@ -183,7 +199,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                     cursor = cx - box * 0.3f - u * G.Layout.itemGap
                 }
 
-                if (art != null) HaruFigure(art, haruScale, Modifier.offset(hx - haruScale * (art.meta.box / 2), gy - haruScale * art.meta.ground), sleepy = sleepy(now), blinkKick = state.blinkKick)
+                Haru(load, haruScale, Modifier.offset(hx - haruScale * (G.Layout.haruBox / 2), gy - haruScale * G.Layout.haruGround), sleepy = sleepy(now), blinkKick = state.blinkKick)
 
                 // 0세 · 기대수명 (한 줄) · 지금 나이와 계절 (다음 줄, 하루 아래)
                 val px = with(density) { Triple(x0.toPx(), x1.toPx(), hx.toPx()) }
@@ -277,7 +293,8 @@ private fun ItemSheet(m: Moment, onClose: () -> Unit) {
 fun MeetScreen(state: AppState, onDone: () -> Unit) {
     val p = Theme.palette
     val ctx = LocalContext.current
-    val art = haruArt(state, sprout = true)
+    val load = haruArt(state, sprout = true)
+    val art = load.art
     BoxWithConstraints(Modifier.fillMaxSize().paperBackground()) {
         val u = Theme.unit
         val screenW = maxWidth
@@ -292,10 +309,10 @@ fun MeetScreen(state: AppState, onDone: () -> Unit) {
             val scale = u * (G.Layout.meetHaruWidth / G.Layout.haruArtWidth)
             Box(Modifier.fillMaxWidth().height(u * G.Layout.haruBox * (G.Layout.meetHaruWidth / G.Layout.haruArtWidth) * 0.8f), contentAlignment = Alignment.BottomCenter) {
                 Image(GardenArt.strip(ctx, Season.SPRING), null, Modifier.offset(y = u * (G.Layout.stripHeight - G.Layout.stripLineY)).width(screenW).height(u * G.Layout.stripHeight), contentScale = ContentScale.FillBounds)
-                if (art == null) TokenText(stringResource(R.string.garden_drawing), Tokens.TypeScale.footnote, color = p.secondary)
-                else Box(Modifier.offset(y = scale * (art.meta.box - art.meta.ground))) {
-                    HaruFigure(art, scale)
-                    Sparkles(art, scale)
+                if (load.loading) TokenText(stringResource(R.string.garden_drawing), Tokens.TypeScale.footnote, color = p.secondary)
+                else Box(Modifier.offset(y = scale * (G.Layout.haruBox - G.Layout.haruGround))) {
+                    Haru(load, scale, Modifier)
+                    art?.let { Sparkles(it, scale) }
                 }
             }
             Spacer(Modifier.height(Tokens.Space.sp6))
