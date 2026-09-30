@@ -1,0 +1,667 @@
+<title>Carpe Diem 올리브 빛</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;0,700;1,500&family=Noto+Sans+KR:wght@400;500;700;900&family=Noto+Serif+KR:wght@500;600;700&family=Roboto:wght@400;500;700&display=swap">
+<style>
+/* Layout: 문서형 — 조작 막대(고정) → 1 아이콘 · 2 앱 화면 · 3 위젯 · 4 디자인 토큰 · 5 iOS·Android · 6 합의 */
+:root {
+  --bg: #F3F2EC; --fg: #1F2119; --sub: #5E604B; --line: #DCDBD0; --panel: #FFFFFF; --chip: #E8E7DD; --focus: #5F7236; --pick: #5F7236;
+  --f-text: "Noto Sans KR", -apple-system, "Apple SD Gothic Neo", sans-serif;
+  --f-serif: Lora, "Noto Serif KR", Georgia, serif;
+  --f-mono: ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#121410; --fg:#ECEADF; --sub:#A3A28E; --line:#2A2C24; --panel:#1A1C16; --chip:#24261F; --focus:#A4B86A; --pick:#A4B86A; color-scheme: dark; } }
+:root[data-theme="dark"] { --bg:#121410; --fg:#ECEADF; --sub:#A3A28E; --line:#2A2C24; --panel:#1A1C16; --chip:#24261F; --focus:#A4B86A; --pick:#A4B86A; color-scheme: dark; }
+*, *::before, *::after { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: var(--f-text); font-size: 15px; line-height: 1.6; }
+.wrap { max-width: 1340px; margin: 0 auto; padding: 28px 20px 80px; }
+h1 { font: 700 32px/1.2 var(--f-serif); margin: 0 0 8px; text-wrap: balance; }
+h2 { font: 700 22px/1.3 var(--f-serif); margin: 0; text-wrap: balance; }
+.lede { color: var(--sub); max-width: 70ch; margin: 0; }
+.lede b { color: var(--fg); }
+.bar-top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; margin: 22px 0 8px; padding: 12px 14px; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: end; box-shadow: 0 6px 20px -14px rgba(0,0,0,.35); }
+.ctl { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.ctl > span { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--sub); font-weight: 700; }
+.ctl > span output { color: var(--fg); font-family: var(--f-mono); letter-spacing: 0; margin-left: 4px; }
+.seg { display: flex; flex-wrap: wrap; background: var(--chip); border-radius: 10px; padding: 3px; gap: 2px; }
+.seg button { font: inherit; font-size: 13px; border: 0; background: transparent; color: var(--fg); padding: 5px 11px; border-radius: 8px; cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--panel); box-shadow: 0 1px 3px rgba(0,0,0,.16); font-weight: 700; }
+.ctl input[type=range] { width: 130px; accent-color: var(--focus); }
+button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+section.part { padding-top: 44px; scroll-margin-top: 110px; }
+section.part + section.part { border-top: 1px solid var(--line); margin-top: 44px; }
+.phead { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; margin-bottom: 20px; }
+.phead .no { font-family: var(--f-mono); color: var(--sub); font-size: 14px; }
+.phead p { flex-basis: 100%; margin: 0; color: var(--sub); max-width: 72ch; }
+.row { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 36px 22px; justify-items: center; align-items: start; }
+
+/* 아이콘 선택 카드 */
+.iconopt { width: 300px; display: flex; flex-direction: column; gap: 12px; padding: 18px; border-radius: 18px; border: 1.5px solid var(--line); background: var(--panel); cursor: pointer; text-align: left; font: inherit; color: var(--fg); }
+.iconopt[aria-pressed="true"] { border-color: var(--pick); box-shadow: 0 0 0 3px color-mix(in srgb, var(--pick) 25%, transparent); }
+.iconopt .ics { display: flex; gap: 12px; align-items: flex-end; }
+.iconopt figure { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 11.5px; color: var(--sub); }
+.iconopt canvas { display: block; border-radius: 22.4%; box-shadow: 0 0 0 .5px rgba(0,0,0,.2), 0 6px 14px -8px rgba(0,0,0,.4); }
+.iconopt b { font-size: 16px; }
+.iconopt p { margin: 0; font-size: 14px; color: var(--sub); }
+.iconopt .tag { font-size: 11px; font-weight: 700; color: var(--pick); letter-spacing: .06em; }
+
+figure.ph { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+figure.ph figcaption { font-size: 12.5px; color: var(--sub); text-align: center; max-width: 34ch; }
+figure.ph figcaption b { display: block; color: var(--fg); font-size: 13.5px; }
+
+/* 기기 프레임: 화면 폭을 275px에 맞춰 축소 (--sc = 275 / 기기 폭) */
+.phone { position: relative; flex: none; background: #0A0A0B; box-shadow: 0 0 0 1.5px #3B3B40, 0 20px 40px -20px rgba(0,0,0,.5); }
+.phone[data-k="island"] { padding: 9px; border-radius: 48px; }
+.phone[data-k="island"] .screen { border-radius: 40px; }
+.phone[data-k="se"] { padding: 58px 12px 70px; border-radius: 40px; background: #1A1A1C; }
+.phone[data-k="se"]::after { content: ""; position: absolute; bottom: 14px; left: 50%; width: 44px; height: 44px; margin-left: -22px; border-radius: 50%; box-shadow: inset 0 0 0 2px #3A3A3E; }
+.phone[data-k="se"]::before { content: ""; position: absolute; top: 27px; left: 50%; width: 46px; height: 5px; margin-left: -23px; border-radius: 3px; background: #333; }
+.phone[data-k="punch"] { padding: 8px; border-radius: 34px; background: #202124; }
+.phone[data-k="punch"] .screen { border-radius: 27px; }
+.screen { width: 275px; height: calc(var(--dh) * var(--sc) * 1px); overflow: hidden; position: relative; isolation: isolate; background: var(--c-base); }
+.inner { position: absolute; left: 0; top: 0; width: calc(var(--dw) * 1px); height: calc(var(--dh) * 1px); transform: scale(var(--sc)); transform-origin: 0 0; color: var(--c-fg); font-family: var(--f-body); font-size: var(--t-body); overflow: hidden; word-break: keep-all; }
+.cam { position: absolute; z-index: 9; background: #000; }
+.phone[data-k="island"] .cam { left: 50%; width: calc(126px * var(--sc)); height: calc(37px * var(--sc)); transform: translateX(-50%); border-radius: 99px; top: calc(9px + 11px * var(--sc)); }
+.phone[data-k="punch"] .cam { top: calc(8px + 12px * var(--sc)); left: 50%; width: calc(24px * var(--sc)); height: calc(24px * var(--sc)); transform: translateX(-50%); border-radius: 50%; }
+.phone[data-k="se"] .cam { display: none; }
+/* ═════════ 앱 디자인 토큰 — 컴포넌트는 아래 토큰만 사용 ═════════ */
+.phone {
+  /* 간격 (pt) */
+  --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px; --sp-5: 20px; --sp-6: 24px; --sp-8: 32px; --sp-10: 40px;
+  /* 글자 — iOS Dynamic Type 기본 크기와 1:1 (Android는 같은 이름의 sp 값) */
+  --t-largeTitle: 34px; --t-title1: 28px; --t-title2: 22px; --t-title3: 20px; --t-headline: 17px; --t-body: 17px;
+  --t-callout: 16px; --t-subhead: 15px; --t-footnote: 13px; --t-caption1: 12px; --t-caption2: 11px;
+  --t-display: 64px;              /* 기기 크기별로 아래에서 바뀜 */
+  --lh-tight: 1.1; --lh-text: 1.5;
+  --f-body: -apple-system, "SF Pro Text", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+  --f-serif: Lora, "Noto Serif KR", "AppleMyungjo", Georgia, serif;
+  /* 모서리 · 선 */
+  --r-sm: 10px; --r-md: 16px; --r-lg: 24px; --r-pill: 999px; --hair: .5px; --stroke: 1px;
+  --bar-thin: 4px; --bar: 6px; --bar-thick: 10px; --icon: 22px; --tap: 44px;
+  /* 효과 강도 (조절 막대) */
+  --glow-a: .45; --glass-a: .5;
+  /* 색 — 의미 이름 */
+  --c-base:#E7E6DB; --c-fg:#23251C; --c-sub:#5E604B; --c-dim:rgba(35,37,28,.12); --c-edge:rgba(255,255,255,.72);
+  --c-olive:#5F7236; --c-olive-soft:#A9B67A; --c-clay:#B5651D; --c-stone:#8C8A74; --c-light:#F2B35A; --c-light-rgb: 242,179,90; --c-on:#FFFFFF; --c-danger:#C9372A;
+  --c-glass: rgba(255,255,255, calc(.18 + var(--glass-a) * .5));
+  --c-widget-top: #F4F3EC; --c-widget-bottom: #E3E5D2;
+  --c-sky: radial-gradient(90% 55% at 22% -6%, rgba(247,214,150, calc(var(--glow-a) * 1.5)) 0%, transparent 62%),
+           radial-gradient(70% 45% at 100% 38%, rgba(222,232,190,.75) 0%, transparent 70%),
+           radial-gradient(100% 60% at 30% 108%, rgba(160,176,110,.55) 0%, transparent 70%), var(--c-base);
+  --c-wall: radial-gradient(80% 40% at 30% 12%, rgba(248,220,160,.9) 0%, transparent 70%), linear-gradient(180deg, #D9DCC4 0%, #B9C293 45%, #8E9A5E 46%, #7A8650 72%, #9C8A5A 73%, #7E6E44 100%);
+  --c-wallfg: #FFFFFF;
+  --e-card: 0 12px 30px -20px rgba(50,55,25,.55);
+  --e-widget: 0 8px 22px -10px rgba(40,45,20,.45);
+}
+.phone[data-m="dark"] {
+  --c-base:#11130D; --c-fg:#EEEBDD; --c-sub:#A8A690; --c-dim:rgba(238,235,221,.13); --c-edge:rgba(255,255,255,.14);
+  --c-olive:#A4B86A; --c-olive-soft:#6E7F43; --c-clay:#DB8B4E; --c-stone:#A8A690; --c-light:#F5B45C; --c-light-rgb: 245,180,92; --c-on:#11130D; --c-danger:#FF6B5E;
+  --c-glass: rgba(255,255,255, calc(.03 + var(--glass-a) * .1));
+  --c-widget-top: #1E2117; --c-widget-bottom: #15170F;
+  --c-sky: radial-gradient(90% 55% at 22% -6%, rgba(245,170,70, calc(var(--glow-a) * .55)) 0%, transparent 62%),
+           radial-gradient(70% 45% at 100% 40%, rgba(90,110,50,.35) 0%, transparent 70%),
+           radial-gradient(100% 60% at 30% 108%, rgba(80,100,40,.45) 0%, transparent 70%), var(--c-base);
+  --c-wall: radial-gradient(80% 40% at 30% 12%, rgba(245,170,70,.35) 0%, transparent 70%), linear-gradient(180deg, #23271B 0%, #2F3720 45%, #242B18 46%, #1C2213 72%, #3A3320 73%, #2A2416 100%);
+  --e-card: 0 12px 30px -18px rgba(0,0,0,.8);
+  --e-widget: 0 8px 22px -10px rgba(0,0,0,.7);
+}
+/* 기기 크기별 토큰 (compact · regular · large) */
+.phone[data-size="compact"] { --t-display: 54px; --sp-page: var(--sp-4); }
+.phone[data-size="regular"] { --t-display: 64px; --sp-page: var(--sp-4); }
+.phone[data-size="large"]   { --t-display: 70px; --sp-page: var(--sp-5); }
+/* 플랫폼별 토큰 */
+.phone[data-os="android"] { --f-body: Roboto, "Noto Sans KR", sans-serif; --r-lg: 28px; }
+
+/* ═════════ 컴포넌트 ═════════ */
+.sky { position: absolute; inset: 0; background: var(--c-sky); }
+.status { position: relative; z-index: 8; height: calc(var(--safe-top) * 1px); display: flex; justify-content: space-between; align-items: center; padding: 0 var(--sp-8) 0 var(--sp-10); font: 600 var(--t-headline) var(--f-body); color: var(--sbc, var(--c-fg)); }
+.phone[data-k="island"] .status { padding-top: var(--sp-2); }
+.phone[data-k="se"] .status { font-size: var(--t-caption1); padding: 0 var(--sp-2); }
+.phone[data-k="punch"] .status { font-size: var(--t-subhead); font-weight: 500; padding: 0 var(--sp-6); }
+.status .ic { display: flex; gap: var(--sp-1); align-items: center; }
+.status svg { display: block; }
+.scroll { position: absolute; top: calc(var(--safe-top) * 1px); bottom: 0; left: 0; right: 0; overflow-y: auto; scrollbar-width: none; z-index: 2; }
+.scroll::-webkit-scrollbar { display: none; }
+.homebar { position: absolute; bottom: var(--sp-2); left: 50%; width: 36%; transform: translateX(-50%); height: 5px; border-radius: var(--r-pill); background: var(--hbc, var(--c-fg)); opacity: .9; z-index: 9; }
+.phone[data-k="se"] .homebar { display: none; }
+.phone[data-k="punch"] .homebar { width: 28%; height: 4px; }
+.glass { background: var(--c-glass); border: var(--stroke) solid var(--c-edge); border-radius: var(--r-lg); backdrop-filter: blur(26px) saturate(1.5); -webkit-backdrop-filter: blur(26px) saturate(1.5); box-shadow: var(--e-card), inset 0 var(--stroke) 0 rgba(255,255,255,.45); }
+.phone[data-m="dark"] .glass { box-shadow: var(--e-card), inset 0 var(--stroke) 0 rgba(255,255,255,.08); }
+.nav { display: flex; justify-content: flex-end; padding: var(--sp-1) var(--sp-page) 0; height: calc(var(--tap) + var(--sp-1)); align-items: center; }
+.gear { width: var(--tap); height: var(--tap); display: grid; place-items: center; border-radius: var(--r-pill); color: var(--c-fg); }
+.gear svg { width: var(--icon); height: var(--icon); }
+.lt { font: 600 var(--t-largeTitle)/var(--lh-tight) var(--f-serif); padding: 0 calc(var(--sp-page) + var(--sp-1)) var(--sp-3); }
+.pad { padding: var(--sp-1) var(--sp-page) calc(var(--safe-bottom) * 1px + var(--sp-10)); display: flex; flex-direction: column; gap: var(--sp-3); }
+.card { padding: var(--sp-5); }
+.hero { position: relative; overflow: hidden; }
+.hero::before { content: ""; position: absolute; width: 70%; aspect-ratio: 1; left: -12%; top: -45%; border-radius: 50%; background: radial-gradient(circle, rgba(var(--c-light-rgb), calc(var(--glow-a) * .9)) 0%, rgba(var(--c-light-rgb), 0) 70%); pointer-events: none; }
+.hero > * { position: relative; }
+.eyebrow { font-size: var(--t-subhead); color: var(--c-sub); font-weight: 500; }
+.big { display: flex; align-items: baseline; gap: var(--sp-2); margin-top: var(--sp-1); }
+.big .n { font: 600 var(--t-display)/1 var(--f-serif); letter-spacing: -.02em; font-variant-numeric: lining-nums tabular-nums; text-shadow: 0 0 calc(var(--sp-6) * var(--glow-a)) rgba(var(--c-light-rgb), calc(var(--glow-a) * 1.1)); }
+.big .u { font-size: var(--t-title2); font-weight: 600; color: var(--c-sub); }
+.segs { display: flex; margin-top: var(--sp-4); background: var(--c-dim); border-radius: var(--r-pill); padding: 3px; }
+.segs button { flex: 1; font: 500 var(--t-subhead) var(--f-body); border: 0; background: transparent; color: var(--c-fg); min-height: 34px; border-radius: var(--r-pill); cursor: pointer; }
+.segs button[aria-pressed="true"] { background: var(--c-olive); color: var(--c-on); font-weight: 700; }
+.rw { display: flex; justify-content: space-between; align-items: baseline; gap: var(--sp-2); }
+.h { font: 600 var(--t-title3) var(--f-serif); }
+.pc { font: 600 var(--t-title3) var(--f-serif); color: var(--c-olive); font-variant-numeric: tabular-nums; }
+.pb { height: var(--h, var(--bar)); border-radius: var(--r-pill); background: var(--c-dim); position: relative; }
+.pb i { position: absolute; left: 0; top: 0; bottom: 0; width: var(--v); border-radius: inherit; background: linear-gradient(90deg, var(--c-olive) 0%, var(--c-olive) 55%, var(--c-light) 100%); box-shadow: 0 0 calc(var(--sp-3) * var(--glow-a)) rgba(var(--c-light-rgb), calc(var(--glow-a) * 1.2)); }
+.pb.q i { background: var(--c-olive); box-shadow: none; }
+.cap { font-size: var(--t-caption1); color: var(--c-sub); font-variant-numeric: tabular-nums; }
+.stk { display: flex; flex-direction: column; gap: var(--sp-3); }
+.per { display: flex; flex-direction: column; gap: var(--sp-2); }
+.per .lbl { font-size: var(--t-subhead); font-weight: 500; }
+.menu { font: 600 var(--t-subhead) var(--f-body); color: var(--c-olive); background: none; border: 0; cursor: pointer; min-height: var(--tap); padding: 0; }
+canvas.grid { display: block; width: 100%; }
+.quote { display: flex; flex-direction: column; gap: var(--sp-2); align-items: flex-start; text-align: left; font: inherit; color: var(--c-fg); background: none; border: 0; padding: 0; cursor: pointer; width: 100%; }
+.quote .qk { font: 500 var(--t-headline)/1.6 var(--f-serif); text-wrap: pretty; }
+.quote .qe { font: italic 500 var(--t-footnote)/var(--lh-text) var(--f-serif); color: var(--c-sub); text-wrap: pretty; }
+.quote .qh { font-size: var(--t-caption2); color: var(--c-sub); opacity: .8; }
+.qhead { font-size: var(--t-caption1); font-weight: 700; letter-spacing: .08em; color: var(--c-olive); text-transform: uppercase; }
+
+/* 폼 */
+.brand { padding: var(--sp-10) calc(var(--sp-page) + var(--sp-2)) var(--sp-8); }
+.brand .t { font: 600 calc(var(--t-largeTitle) * 1.35)/var(--lh-tight) var(--f-serif); }
+.brand p { margin: var(--sp-3) 0 0; font: 500 var(--t-title3) var(--f-serif); color: var(--c-sub); }
+.sect { margin: 0 var(--sp-page) var(--sp-5); }
+.sect .hd { font-size: var(--t-footnote); color: var(--c-sub); padding: 0 var(--sp-4) var(--sp-2); }
+.sect .ft { font-size: var(--t-footnote); color: var(--c-sub); padding: var(--sp-2) var(--sp-4) 0; line-height: var(--lh-text); }
+.cells { overflow: hidden; border-radius: var(--r-md); }
+.cell { display: flex; justify-content: space-between; align-items: center; min-height: calc(var(--tap) + var(--sp-1)); padding: 0 var(--sp-4); font-size: var(--t-body); gap: var(--sp-3); position: relative; }
+.cell + .cell::before { content: ""; position: absolute; top: 0; left: var(--sp-4); right: 0; border-top: var(--hair) solid var(--c-dim); }
+.cell .v { color: var(--c-sub); font-variant-numeric: tabular-nums; text-align: right; }
+.pill { background: var(--c-dim); padding: var(--sp-1) var(--sp-3); border-radius: var(--r-sm); font-size: var(--t-callout); }
+.chips { display: flex; gap: var(--sp-1); }
+.chips span { padding: var(--sp-1) var(--sp-3); border-radius: var(--r-pill); font-size: var(--t-subhead); background: var(--c-dim); }
+.chips span.on { background: var(--c-olive); color: var(--c-on); font-weight: 700; }
+.cta { margin: var(--sp-2) var(--sp-page) 0; min-height: calc(var(--tap) + var(--sp-3)); border-radius: var(--r-pill); background: var(--c-olive); color: var(--c-on); display: grid; place-items: center; font: 700 var(--t-headline) var(--f-body); box-shadow: 0 0 calc(var(--sp-6) * var(--glow-a)) rgba(var(--c-light-rgb), calc(var(--glow-a) * .8)); }
+.sheethd { display: flex; justify-content: space-between; align-items: center; padding: var(--sp-3) calc(var(--sp-page) + var(--sp-1)) var(--sp-4); font-size: var(--t-body); }
+.sheethd b { font-weight: 600; }
+.sheethd span { color: var(--c-olive); }
+.sheethd span:last-child { font-weight: 700; }
+.lic { display: flex; gap: var(--sp-3); align-items: flex-start; font-size: var(--t-subhead); line-height: 1.45; padding: var(--sp-3) var(--sp-4); position: relative; }
+.lic + .lic::before { content: ""; position: absolute; top: 0; left: calc(var(--sp-4) * 3); right: 0; border-top: var(--hair) solid var(--c-dim); }
+.lic svg { flex: none; width: var(--icon); height: var(--icon); color: var(--c-olive); }
+.danger { color: var(--c-danger); }
+
+/* 홈 화면 · 위젯 (iOS 위젯 배경은 불투명 — 유리 느낌은 빛 번짐과 윤곽으로) */
+.wall { position: absolute; inset: 0; background: var(--c-wall); }
+.onwall { --sbc: var(--c-wallfg); --hbc: var(--c-wallfg); }
+.hs { position: absolute; top: calc(var(--safe-top) * 1px); left: 0; right: 0; bottom: 0; padding: var(--sp-3) calc((var(--dw) * 1px - var(--wm)) / 2) 0; display: flex; flex-direction: column; gap: var(--wgap); z-index: 2; }
+.wrow { display: flex; gap: var(--wgap); }
+.w { --wp: calc(var(--sp-4) * var(--ws)); color: var(--c-fg); border-radius: var(--wr); padding: var(--wp); display: flex; flex-direction: column; overflow: hidden; position: relative; font-family: var(--f-body);
+  background: radial-gradient(120% 90% at 0% 0%, rgba(var(--c-light-rgb), calc(var(--glow-a) * .8)) 0%, transparent 55%), linear-gradient(160deg, var(--c-widget-top) 0%, var(--c-widget-bottom) 100%);
+  box-shadow: var(--e-widget), inset 0 var(--stroke) 0 rgba(255,255,255,.7), inset 0 0 0 var(--stroke) rgba(255,255,255,.35); }
+.phone[data-m="dark"] .w { box-shadow: var(--e-widget), inset 0 var(--stroke) 0 rgba(255,255,255,.1), inset 0 0 0 var(--stroke) rgba(255,255,255,.05); }
+.w.s { width: var(--wsm); height: var(--wsm); }
+.w.m { width: var(--wm); height: var(--wsm); flex-direction: row; gap: calc(var(--sp-4) * var(--ws)); }
+.w.l { width: var(--wm); height: var(--wl); gap: calc(var(--sp-3) * var(--ws)); }
+.wl { display: flex; align-items: center; gap: var(--sp-1); font-size: calc(var(--t-caption2) * var(--ws)); font-weight: 700; letter-spacing: .06em; color: var(--c-olive); text-transform: uppercase; }
+.wl svg { width: calc(var(--t-caption1) * var(--ws)); height: calc(var(--t-caption1) * var(--ws)); }
+.wn { font: 600 calc(var(--t-largeTitle) * 1.12 * var(--ws))/1 var(--f-serif); letter-spacing: -.02em; font-variant-numeric: lining-nums tabular-nums; white-space: nowrap; text-shadow: 0 0 calc(var(--sp-5) * var(--glow-a)) rgba(var(--c-light-rgb), calc(var(--glow-a) * 1.1)); }
+.wu { font-size: calc(var(--t-footnote) * var(--ws)); color: var(--c-sub); font-weight: 500; }
+.wc { display: flex; justify-content: space-between; font-size: calc(var(--t-caption2) * var(--ws)); color: var(--c-sub); font-variant-numeric: tabular-nums; margin-top: calc(var(--sp-1) * var(--ws)); }
+.grow { flex: 1; min-height: 0; }
+.w .pb { --h: calc(var(--bar-thin) * var(--ws)); }
+.wq { font: 500 calc(var(--t-footnote) * var(--ws))/1.5 var(--f-serif); color: var(--c-fg); border-top: var(--hair) solid var(--c-dim); padding-top: calc(var(--sp-3) * var(--ws)); }
+.ringbox { flex: 1; display: grid; place-items: center; position: relative; }
+.ringbox svg { width: 78%; height: auto; display: block; }
+.ringbox .rc { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.ringbox .rc b { font: 600 calc(var(--t-title2) * var(--ws)) var(--f-serif); font-variant-numeric: tabular-nums; }
+.ringbox .rc span { font-size: calc(var(--t-caption2) * var(--ws)); color: var(--c-sub); }
+.mcol { display: flex; flex-direction: column; width: 34%; flex: none; }
+.mcol .wn { font-size: calc(var(--t-largeTitle) * var(--ws)); }
+.mgrid { flex: 1; display: flex; align-items: center; min-width: 0; }
+.apps { display: grid; grid-template-columns: repeat(4, var(--appi)); justify-content: space-between; row-gap: var(--sp-5); margin-top: var(--sp-2); }
+.app { display: flex; flex-direction: column; align-items: center; gap: var(--sp-1); font: 500 var(--t-caption2) var(--f-body); color: #fff; text-shadow: 0 var(--stroke) 3px rgba(0,0,0,.5); white-space: nowrap; }
+.app i { width: var(--appi); height: var(--appi); border-radius: calc(var(--appi) * .2237); display: block; background: rgba(255,255,255,.38); }
+.phone[data-os="android"] .app i, .phone[data-os="android"] .app canvas { border-radius: 50%; }
+.app canvas { width: var(--appi); height: var(--appi); border-radius: calc(var(--appi) * .2237); display: block; }
+.dock { position: absolute; left: var(--sp-3); right: var(--sp-3); bottom: calc(var(--safe-bottom) * .35px + var(--sp-3)); height: calc(var(--appi) + var(--sp-8)); border-radius: calc(var(--r-lg) + var(--sp-2)); background: rgba(255,255,255,.26); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); display: flex; justify-content: space-around; align-items: center; z-index: 2; }
+.dock i { width: var(--appi); height: var(--appi); border-radius: calc(var(--appi) * .2237); display: block; background: rgba(255,255,255,.38); }
+.phone[data-os="android"] .dock { background: transparent; backdrop-filter: none; -webkit-backdrop-filter: none; }
+.phone[data-os="android"] .dock i { border-radius: 50%; }
+.gsearch { display: none; }
+.phone[data-os="android"] .gsearch { display: block; position: absolute; left: var(--sp-5); right: var(--sp-5); bottom: calc(var(--safe-bottom) * 1px + var(--appi) + var(--sp-8)); height: calc(var(--tap) + var(--sp-2)); border-radius: var(--r-pill); background: rgba(255,255,255,.5); z-index: 2; }
+
+/* 잠금 화면 */
+.lock { position: absolute; inset: 0; color: var(--c-wallfg); text-align: center; z-index: 2; padding-top: calc(var(--safe-top) * 1px); }
+.lock .date { margin-top: var(--sp-3); font: 600 var(--t-title3) var(--f-body); opacity: .92; display: flex; justify-content: center; gap: var(--sp-2); align-items: center; }
+.lock .date svg { width: var(--t-subhead); height: var(--t-subhead); }
+.lock .clock { font: 600 calc(var(--t-display) * 1.65)/1 var(--f-serif); letter-spacing: -.02em; font-variant-numeric: lining-nums tabular-nums; text-shadow: 0 0 calc(var(--sp-10) * var(--glow-a)) rgba(248,210,140, calc(var(--glow-a) * 1.2)); }
+.lock .acc { display: flex; justify-content: center; gap: var(--sp-3); margin-top: var(--sp-4); }
+.acc .circ { width: 72px; height: 72px; border-radius: 50%; background: rgba(255,255,255,.2); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); display: grid; place-items: center; position: relative; }
+.acc .circ svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.acc .circ .cc { display: flex; flex-direction: column; align-items: center; line-height: 1; gap: 2px; }
+.acc .circ .cc svg { position: static; width: var(--t-caption1); height: var(--t-caption1); }
+.acc .circ b { font: 700 var(--t-headline) var(--f-body); font-variant-numeric: tabular-nums; }
+.acc .rect { width: 160px; height: 72px; text-align: left; padding: var(--sp-1); display: flex; flex-direction: column; justify-content: center; gap: 3px; font-family: var(--f-body); }
+.acc .rect .t1 { font-size: var(--t-subhead); font-weight: 700; }
+.acc .rect .t2 { font-size: var(--t-footnote); font-variant-numeric: tabular-nums; }
+.acc .rect .lb { height: 5px; border-radius: var(--r-pill); background: rgba(255,255,255,.3); overflow: hidden; }
+.acc .rect .lb i { display: block; height: 100%; background: currentColor; }
+.lock .bot { position: absolute; left: 0; right: 0; bottom: calc(var(--safe-bottom) * 1px + var(--sp-4)); display: flex; justify-content: space-between; padding: 0 var(--sp-10); }
+.lock .bot span { width: 50px; height: 50px; border-radius: 50%; background: rgba(0,0,0,.22); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+.lock .note { position: absolute; left: var(--sp-6); right: var(--sp-6); top: 58%; font-size: var(--t-footnote); line-height: var(--lh-text); background: rgba(0,0,0,.25); border-radius: var(--r-md); padding: var(--sp-3) var(--sp-4); }
+/* 문서 부분 */
+.tbl { overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); }
+.tbl table { border-collapse: collapse; width: 100%; font-size: 13.5px; min-width: 560px; }
+.tbl th, .tbl td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.tbl th { font-size: 11.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--sub); font-weight: 700; background: var(--chip); }
+.tbl tr:last-child td { border-bottom: 0; }
+.tbl code { font-family: var(--f-mono); font-size: 12.5px; }
+.tbl td.num { font-variant-numeric: tabular-nums; font-family: var(--f-mono); font-size: 12.5px; }
+.tbl .sw { display: inline-block; width: 14px; height: 14px; border-radius: 4px; vertical-align: -2px; margin-right: 6px; box-shadow: inset 0 0 0 1px rgba(128,128,128,.4); }
+.tgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 20px; }
+.tgrid h3 { font-size: 15px; margin: 0 0 8px; }
+.tgrid > div { min-width: 0; }
+.plat { display: grid; gap: 14px; max-width: 900px; }
+.plat p { margin: 0; }
+.agree ol { margin: 0; padding: 0; list-style: none; counter-reset: q; border-top: 1px solid var(--line); max-width: 900px; }
+.agree li { counter-increment: q; display: grid; grid-template-columns: 30px 1fr; gap: 4px 12px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+.agree li::before { content: counter(q); font-family: var(--f-mono); color: var(--sub); font-size: 14px; }
+.agree li > div { min-width: 0; }
+.agree b { display: block; }
+.agree p { margin: 2px 0 0; color: var(--sub); font-size: 14px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap">
+  <h1>Carpe Diem · 올리브 빛 v2</h1>
+  <p class="lede">요청하신 9가지를 반영했습니다. 위쪽 막대에서 <b>언어</b>(한국어·English), <b>기기</b>(iPhone SE · iPhone 16 · iPhone 16 Pro Max · Android Pixel), <b>모드</b>를 바꿔 보세요. 모든 크기·글자·색은 아래 4번의 디자인 토큰에서만 가져오므로, 기기를 바꾸면 같은 규칙으로 다시 배치됩니다.</p>
+
+  <div class="bar-top" role="group" aria-label="시안 조작">
+    <div class="ctl"><span>언어</span><div class="seg" data-key="lang"><button type="button" data-v="ko">한국어</button><button type="button" data-v="en">English</button></div></div>
+    <div class="ctl"><span>기기</span><div class="seg" data-key="dev"><button type="button" data-v="se">SE</button><button type="button" data-v="i16">iPhone 16</button><button type="button" data-v="max">16 Pro Max</button><button type="button" data-v="pixel">Pixel</button></div></div>
+    <div class="ctl"><span>모드</span><div class="seg" data-key="mode"><button type="button" data-v="light">라이트</button><button type="button" data-v="dark">다크</button></div></div>
+    <label class="ctl"><span>빛 <output id="glowOut">45</output></span><input type="range" id="glow" min="0" max="100" value="45"></label>
+    <label class="ctl"><span>유리 <output id="glassOut">50</output></span><input type="range" id="glass" min="0" max="100" value="50"></label>
+  </div>
+
+  <section class="part" id="icon">
+    <div class="phead"><span class="no">1</span><h2>앱 아이콘</h2><p>엔소에 ‘영원’을 더한 세 가지입니다. 모두 단색 면으로만 그렸고, 붓길의 굵기가 줄어드는 모양으로 한 번의 붓질을 표현했습니다. 눌러서 고르면 아래 홈 화면에도 반영됩니다.</p></div>
+    <div class="row" id="iconRow"></div>
+  </section>
+
+  <section class="part" id="app">
+    <div class="phead"><span class="no">2</span><h2>앱 화면</h2><p>오늘의 문장을 남은 시간 바로 아래로 올렸고, 인생 달력의 기본 단위를 월로 바꿨습니다. 앱 홈은 폰 안에서 스크롤되고 단위·문장·‘1칸 =’을 누를 수 있습니다.</p></div>
+    <div class="row" id="appRow"></div>
+  </section>
+
+  <section class="part" id="widgets">
+    <div class="phead"><span class="no">3</span><h2>위젯</h2><p>위젯마다 한 가지만 말합니다. 모든 위젯은 같은 틀을 씁니다. 왼쪽 위에 이름, 가운데에 핵심 숫자나 그림, 아래에 보조 정보가 오고, 안쪽 여백은 16pt입니다. 크기는 기기마다 iOS·Android가 정한 위젯 크기를 그대로 씁니다.</p></div>
+    <div class="row" id="widgetRow"></div>
+  </section>
+
+  <section class="part" id="tokens">
+    <div class="phead"><span class="no">4</span><h2>디자인 토큰</h2><p>화면 코드에 숫자나 색을 직접 쓰지 않습니다. 아래 값은 저장소의 <code>design/tokens.json</code> 한 곳에 두고, iOS(Swift)와 Android(Kotlin) 코드로 자동 변환합니다. 글자는 iOS Dynamic Type 이름을 그대로 써서 사용자가 글자 크기를 키우면 함께 커집니다.</p></div>
+    <div class="tgrid" id="tokenTables"></div>
+  </section>
+
+  <section class="part" id="platform">
+    <div class="phead"><span class="no">5</span><h2>iOS와 Android를 함께 만들려면</h2></div>
+    <div class="plat">
+      <p><b>어렵지 않습니다. 다만 위젯 때문에 앱은 두 번 만들어야 합니다.</b> 위젯은 어느 방식을 쓰든 iOS는 Swift, Android는 Kotlin으로 따로 만들어야 합니다. Flutter나 React Native를 써도 마찬가지입니다. 이 앱은 위젯이 핵심이라, 두 플랫폼 모두 각자의 기본 방식으로 만드는 편이 결과가 좋고 오히려 단순합니다.</p>
+      <div class="tbl"><table>
+        <thead><tr><th>항목</th><th>iOS</th><th>Android</th></tr></thead>
+        <tbody>
+          <tr><td>앱 화면</td><td>SwiftUI</td><td>Jetpack Compose</td></tr>
+          <tr><td>홈 화면 위젯</td><td>WidgetKit (작게·중간·크게)</td><td>Glance (2×2 · 4×2 · 4×4, 크기 조절 가능)</td></tr>
+          <tr><td>잠금 화면 위젯</td><td>있음 (원형·직사각형·한 줄)</td><td>없음 — 대신 알림 한 줄(선택)</td></tr>
+          <tr><td>함께 쓰는 것</td><td colspan="2">디자인 토큰, 명언 100개, 나라별 기대수명 데이터, 계산 규칙과 테스트 예시 — 한 번 만들어 양쪽에서 씀</td></tr>
+          <tr><td>스토어 등록비</td><td>연 $99 (Apple Developer)</td><td>1회 $25 (Google Play)</td></tr>
+          <tr><td>테스트 기기</td><td>Mac + Xcode 필요</td><td>Windows·Mac 모두 가능 (Android Studio)</td></tr>
+        </tbody>
+      </table></div>
+      <p><b>제안하는 순서:</b> iOS를 먼저 완성해 출시하고, 같은 토큰과 데이터로 Android를 이어서 만듭니다. Android 작업량은 iOS의 60~70% 정도로 예상합니다.</p>
+    </div>
+  </section>
+
+  <section class="part agree" id="agree">
+    <div class="phead"><span class="no">6</span><h2>합의할 것</h2><p>이대로 괜찮으면 “확정”, 아니면 바꿀 부분만 말씀해 주세요. 확정되면 토큰·문구·디자인 문서를 저장소에 올리고 개발을 시작합니다.</p></div>
+    <ol>
+      <li><div><b>아이콘</b><p>엔소 · 궤도 / 나선 / 무한 중 하나. 제 추천은 궤도입니다. 작은 크기(설정 앱, 알림)에서도 형태가 가장 또렷합니다.</p></div></li>
+      <li><div><b>문구와 어투</b><p>담담하고 짧게 썼습니다. 남은 시간, 지나온 길, 흐르는 시간, 오늘의 문장처럼요. 언어를 English로 바꾸면 영문도 볼 수 있습니다.</p></div></li>
+      <li><div><b>나라별 기대수명</b><p>처음에는 기기의 지역 설정으로 나라를 고르고, 나라와 성별의 평균을 씁니다. 직접 입력도 됩니다. 시안의 수치는 예시이고, 개발할 때 UN 세계인구전망 2024 원자료(약 230개 나라·지역)로 바꿉니다.</p></div></li>
+      <li><div><b>위젯 구성</b><p>남은 날(작게), 오늘(작게), 인생 달력(중간·크게), 잠금 화면 3종입니다. Android는 잠금 화면 위젯이 없습니다.</p></div></li>
+      <li><div><b>개발 순서</b><p>iOS 먼저, 그다음 Android.</p></div></li>
+    </ol>
+  </section>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var S = { lang: "ko", dev: "i16", mode: "light", icon: "orbit", unit: "days", grid: "months", country: "KR", sex: "other" };
+  try { var saved = JSON.parse(localStorage.getItem("cd-v2") || "{}"); Object.keys(saved).forEach(function (k) { if (k in S && k !== "icon") S[k] = saved[k]; }); } catch (e) {}
+
+  /* ── 기기 (pt) — 위젯 크기는 Apple·Android 규격 ── */
+  var DEV = {
+    se:    { w: 375, h: 667, top: 20, bottom: 0,  k: "se",     size: "compact", os: "ios",     wsm: 148, wm: 321, wl: 324, gap: 16, appi: 60 },
+    i16:   { w: 393, h: 852, top: 54, bottom: 34, k: "island", size: "regular", os: "ios",     wsm: 158, wm: 338, wl: 354, gap: 22, appi: 64 },
+    max:   { w: 440, h: 956, top: 62, bottom: 34, k: "island", size: "large",   os: "ios",     wsm: 170, wm: 364, wl: 382, gap: 24, appi: 68 },
+    pixel: { w: 412, h: 915, top: 40, bottom: 24, k: "punch",  size: "regular", os: "android", wsm: 176, wm: 372, wl: 372, gap: 20, appi: 56 }
+  };
+
+  /* ── 나라별 기대수명 (예시값 · 개발 시 UN WPP 2024 원자료로 교체) ── [전체, 남, 여] ── */
+  var COUNTRIES = [
+    ["KR", "대한민국", "South Korea", 83.5, 80.6, 86.4], ["JP", "일본", "Japan", 84.7, 81.1, 87.1], ["US", "미국", "United States", 78.4, 75.8, 81.1],
+    ["CN", "중국", "China", 78.0, 75.3, 80.9], ["GB", "영국", "United Kingdom", 81.3, 79.3, 83.2], ["DE", "독일", "Germany", 81.2, 78.6, 83.5],
+    ["FR", "프랑스", "France", 83.1, 80.2, 85.9], ["CA", "캐나다", "Canada", 81.7, 79.5, 84.0], ["AU", "호주", "Australia", 83.1, 81.1, 85.1],
+    ["SG", "싱가포르", "Singapore", 83.7, 81.4, 86.0], ["ES", "스페인", "Spain", 83.8, 81.1, 86.4], ["VN", "베트남", "Vietnam", 74.6, 70.3, 79.3],
+    ["IN", "인도", "India", 72.0, 70.5, 73.6], ["BR", "브라질", "Brazil", 75.8, 72.7, 79.0], ["WLD", "세계 평균", "World", 73.2, 70.8, 75.8]
+  ];
+  function country() { return COUNTRIES.filter(function (c) { return c[0] === S.country; })[0] || COUNTRIES[0]; }
+  function expectancy() { var c = country(); return S.sex === "male" ? c[4] : S.sex === "female" ? c[5] : c[3]; }
+
+  /* ── 문구 (담담하고 짧게) ── */
+  var T = {
+    ko: { tagline: "오늘을 소중히.", you: "나", birth: "생년월일", countryL: "나라", sexL: "성별", sexes: { other: "선택 안 함", male: "남성", female: "여성" },
+      lifeL: "기대수명", auto: "자동", custom: "직접", yrs: function (v) { return v.toFixed(1) + "세"; }, lifeFt: "나라와 성별의 평균입니다. 직접 바꿀 수 있습니다.",
+      begin: "시작", privacy: "기록은 이 기기에만 머뭅니다.", left: "남은 시간", units: { days: "일", weeks: "주", months: "개월", years: "년" },
+      words: "오늘의 문장", next: "눌러서 다음 문장", path: "지나온 길", age: function (a, s) { return "만 " + a + "세 · 인생의 " + s; }, expShort: function (v) { return "기대수명 " + v.toFixed(1) + "세"; },
+      flow: "흐르는 시간", pers: ["오늘", "이번 주", "이번 달", "올해"], hLeft: function (h) { return h + "시간 남음"; }, mLeft: function (m) { return m + "분 남음"; }, dLeft: function (d) { return d + "일 남음"; }, lastDay: "마지막 날",
+      cal: "인생 달력", per1: function (u) { return "1칸 = 1" + { weeks: "주", months: "개월", years: "년" }[u]; }, legend: function (s) { return "지나온 날 · 지금 · 남은 날 — 지금은 인생의 " + s; },
+      seasons: ["봄", "여름", "가을", "겨울"], settings: "설정", cancel: "취소", done: "완료", wordsLang: "문장 언어", wl: ["한글", "영문", "둘 다"],
+      widgetsL: "위젯", wHelp: ["홈 화면을 길게 눌러 ‘편집’ → ‘위젯 추가’", "‘Carpe Diem’을 찾아 크기를 고릅니다", "‘남은 날’ 위젯을 길게 눌러 단위를 바꿉니다", "잠금 화면에도 둘 수 있습니다"],
+      erase: "모든 기록 지우기", search: "나라 검색", srcFt: "UN 세계인구전망 2024 기준. 시안의 수치는 예시입니다.", pickTitle: "나라",
+      wDays: "남은 날", wToday: "오늘", wTodayLeft: function (h) { return h + "시간"; }, wTodaySub: "남은 오늘", wYearsLeft: "남은 해", wMonthsLeft: function (n) { return n + "개월 남음"; },
+      inline: function (n) { return n + "일"; }, rectSub: function (n) { return n + "주 남음"; },
+      androidLock: "Android는 잠금 화면 위젯이 없습니다. 대신 원하면 ‘오늘의 문장’을 알림으로 하루 한 번 보냅니다." },
+    en: { tagline: "Cherish today.", you: "You", birth: "Birthday", countryL: "Country", sexL: "Sex", sexes: { other: "Not set", male: "Male", female: "Female" },
+      lifeL: "Life expectancy", auto: "Auto", custom: "Custom", yrs: function (v) { return v.toFixed(1) + " yrs"; }, lifeFt: "The average for your country and sex. You can change it.",
+      begin: "Begin", privacy: "Everything stays on this device.", left: "Time left", units: { days: "days", weeks: "weeks", months: "months", years: "years" },
+      words: "Today's words", next: "Tap for another", path: "The path so far", age: function (a, s) { return "Age " + a + " · " + s + " of life"; }, expShort: function (v) { return "Expected " + v.toFixed(1); },
+      flow: "Passing time", pers: ["Today", "This week", "This month", "This year"], hLeft: function (h) { return h + "h left"; }, mLeft: function (m) { return m + "m left"; }, dLeft: function (d) { return d + (d === 1 ? " day" : " days") + " left"; }, lastDay: "Last day",
+      cal: "Life calendar", per1: function (u) { return "1 dot = 1 " + { weeks: "week", months: "month", years: "year" }[u]; }, legend: function (s) { return "Past · Now · Ahead — the " + s.toLowerCase() + " of your life"; },
+      seasons: ["Spring", "Summer", "Autumn", "Winter"], settings: "Settings", cancel: "Cancel", done: "Done", wordsLang: "Words in", wl: ["Korean", "English", "Both"],
+      widgetsL: "Widgets", wHelp: ["Touch and hold the Home Screen, tap Edit → Add Widget", "Find Carpe Diem and pick a size", "Touch and hold Days Left to change the unit", "It also fits on the Lock Screen"],
+      erase: "Erase everything", search: "Search countries", srcFt: "UN World Population Prospects 2024. Figures in this draft are samples.", pickTitle: "Country",
+      wDays: "Days left", wToday: "Today", wTodayLeft: function (h) { return h + "h"; }, wTodaySub: "left today", wYearsLeft: "years left", wMonthsLeft: function (n) { return n + " months left"; },
+      inline: function (n) { return n + " days"; }, rectSub: function (n) { return n + " weeks left"; },
+      androidLock: "Android has no Lock Screen widgets. Instead, Today's words can arrive once a day as a notification, if you want." }
+  };
+  function t() { return T[S.lang]; }
+
+  var QUOTES = [["오늘을 붙잡아라. 내일은 최소한만 믿어라.", "Seize the day, trusting as little as possible in tomorrow."], ["우리에게 주어진 시간이 짧은 것이 아니라, 우리가 그 많은 시간을 낭비하는 것이다.", "It is not that we have a short time to live, but that we waste a lot of it."], ["인생을 사는 방법은 두 가지뿐이다. 하나는 기적이 없다고 믿으며 사는 것이고, 다른 하나는 모든 것이 기적이라고 믿으며 사는 것이다.", "There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle."], ["하루를 보내는 방식이 곧 인생을 보내는 방식이다.", "How we spend our days is, of course, how we spend our lives."], ["성공한 사람이 되려고 노력하기보다 가치 있는 사람이 되려고 노력하라.", "Try not to become a man of success. Rather become a man of value."], ["날짜를 세지 말고, 하루하루를 의미 있게 만들어라.", "Don't count the days, make the days count."], ["결국 중요한 것은 인생의 햇수가 아니라, 그 햇수 속의 삶이다.", "In the end, it's not the years in your life that count. It's the life in your years."], ["인생은 당신이 만드는 것이다. 어떤 일이 있든 때로는 망칠 수도 있다. 그것은 보편적인 진리다. 하지만 좋은 점은 당신이 어떻게 망칠지 결정할 수 있다는 것이다.", "This life is what you make it. No matter what, you're going to mess up sometimes, it's a universal truth. But the good part is you get to decide how you're going to mess it up."], ["인생은 짧고, 그것을 달콤하게 만드는 것은 당신의 몫이다.", "Life is short, and it is up to you to make it sweet."], ["어디로 가려고 했는지는 모르겠지만, 내가 있어야 할 곳에 도착한 것 같다.", "I may not have gone where I intended to go, but I think I have ended up where I needed to be."], ["우리가 다른 계획을 세우느라 바쁠 때 일어나는 일이 바로 인생이다.", "Life is what happens to us while we are making other plans."], ["매일이 일 년 중 가장 좋은 날이라고 마음에 새겨라.", "Write it on your heart that every day is the best day in the year."], ["화내는 1분마다 60초의 행복을 잃게 된다.", "For every minute you are angry you lose sixty seconds of happiness."], ["사람들을 판단한다면, 그들을 사랑할 시간이 없다.", "If you judge people, you have no time to love them."], ["오늘은 남은 인생의 첫날이다.", "Today is the first day of the rest of your life."], ["나무를 심기 가장 좋은 때는 20년 전이었다. 두 번째로 좋은 때는 지금이다.", "The best time to plant a tree was 20 years ago. The second best time is now."], ["인생을 사랑하는가? 그렇다면 시간을 낭비하지 마라. 인생은 시간으로 이루어져 있으니까.", "Dost thou love life? Then do not squander time, for that's the stuff life is made of."], ["잃어버린 시간은 다시 찾을 수 없다.", "Lost time is never found again."], ["우리 모두가 위대한 일을 할 수는 없다. 하지만 우리는 큰 사랑으로 작은 일을 할 수 있다.", "Not all of us can do great things. But we can do small things with great love."], ["잘 정돈된 마음에게 죽음은 단지 다음 번의 위대한 모험일 뿐이다.", "To the well-organized mind, death is but the next great adventure."], ["인생의 목적은 단순히 행복해지는 것이 아니다. 쓸모 있고, 존경받고, 동정심을 갖는 것이다. 그리고 당신이 살았고 잘 살았다는 차이를 만드는 것이다.", "The purpose of life is not to be happy. It is to be useful, to be honorable, to be compassionate, to have it make some difference that you have lived and lived well."], ["메멘토 모리. 언젠가 죽는다는 것을 기억하라.", "Memento mori. Remember that you will die."], ["당신은 지금 당장이라도 삶을 떠날 수 있다. 그 사실이 당신의 행동과 말과 생각을 정하게 하라.", "You could leave life right now. Let that determine what you do and say and think."], ["지금 당장 살기 시작하라. 하루하루를 각각 하나의 인생으로 여겨라.", "Begin at once to live, and count each separate day as a separate life."], ["당신이 될 뻔했던 사람이 되기에 너무 늦은 때는 없다.", "It is never too late to be what you might have been."], ["인생은 쓰는 법을 안다면 길다.", "Life is long if you know how to use it."], ["우리가 미루는 사이에 인생은 빠르게 지나간다.", "While we are postponing, life speeds by."], ["얼마나 오래 살았느냐가 아니라, 얼마나 잘 살았느냐가 중요하다.", "It is not how long, but how well we live."], ["인생은 자전거를 타는 것과 같다. 균형을 잡으려면 계속 움직여야 한다.", "Life is like riding a bicycle. To keep your balance, you must keep moving."], ["현명한 사람에게 매일은 새로운 인생이다.", "Every day is a new life to a wise man."], ["작은 것들을 즐겨라. 언젠가 돌아보면 그것들이 큰 것이었음을 깨닫게 될 것이다.", "Enjoy the little things, for one day you may look back and realize they were the big things."], ["인생은 폭풍이 지나가기를 기다리는 것이 아니라, 빗속에서 춤추는 법을 배우는 것이다.", "Life isn't about waiting for the storm to pass, it's about learning to dance in the rain."], ["인생은 숨 쉰 횟수가 아니라, 숨 막힐 만큼 벅찬 순간들로 측정된다.", "Life is not measured by the number of breaths we take, but by the moments that take our breath away."], ["우리는 우리가 반복적으로 하는 행동의 결과다. 그러므로 탁월함은 행동이 아니라 습관이다.", "We are what we repeatedly do. Excellence, then, is not an act, but a habit."], ["20년 후 당신은 한 일보다 하지 않은 일 때문에 더 실망할 것이다.", "Twenty years from now you will be more disappointed by the things that you didn't do than by the ones you did do."], ["인생은 과감한 모험이거나, 아무것도 아니거나 둘 중 하나다.", "Life is either a daring adventure or nothing at all."], ["지금 이 순간은 기쁨과 행복으로 가득하다. 주의를 기울이면 보일 것이다.", "The present moment is filled with joy and happiness. If you are attentive, you will see it."], ["삶은 오직 지금 이 순간에만 있다.", "Life is available only in the present moment."], ["지금 이 순간이 당신이 가진 전부라는 것을 깊이 깨달아라.", "Realize deeply that the present moment is all you have."], ["영원은 수많은 '지금'으로 이루어져 있다.", "Forever is composed of nows."], ["말해 보라, 단 한 번뿐인 거칠고도 소중한 인생으로 무엇을 할 계획인가?", "Tell me, what is it you plan to do with your one wild and precious life?"], ["미래는 오늘 무엇을 하느냐에 달려 있다.", "The future depends on what you do today."], ["즐겁게 낭비한 시간은 낭비된 시간이 아니다.", "Time you enjoy wasting is not wasted time."], ["나쁜 소식은 시간이 날아간다는 것이고, 좋은 소식은 당신이 그 조종사라는 것이다.", "The bad news is time flies. The good news is you're the pilot."], ["인생은 뒤돌아볼 때 이해되지만, 앞을 향해 살아야 한다.", "Life can only be understood backwards; but it must be lived forwards."], ["우리는 얻는 것으로 생계를 꾸리지만, 주는 것으로 인생을 만든다.", "We make a living by what we get, but we make a life by what we give."], ["남을 위해 사는 삶만이 가치 있는 삶이다.", "Only a life lived for others is a life worthwhile."], ["두 번째 인생을 사는 것처럼, 그리고 첫 번째 인생에서 잘못했던 것처럼 살아라.", "Live as if you were living already for the second time and as if you had acted the first time as wrongly as you are about to act now."], ["죽음은 인생의 가장 큰 상실이 아니다. 가장 큰 상실은 살아 있는 동안 우리 안에서 죽어 가는 것이다.", "Death is not the greatest loss in life. The greatest loss is what dies inside us while we live."], ["천 리 길도 한 걸음부터.", "The journey of a thousand miles begins with one step."], ["우리가 죽을 때 장의사마저 슬퍼할 만큼 잘 살자.", "Let us endeavor so to live that when we come to die even the undertaker will be sorry."], ["행복은 도착하는 역이 아니라, 여행하는 방식이다.", "Happiness is not a station you arrive at, but a manner of traveling."], ["어디에 있든 그곳에 온전히 있어라.", "Wherever you are, be all there."], ["오늘을 보라. 오늘이야말로 삶이며, 삶 중의 삶이다.", "Look to this day, for it is life, the very life of life."], ["오직 오늘뿐이다. 어제는 이미 지나갔다.", "Today is the only day. Yesterday is gone."], ["미래란 누구나 한 시간에 60분의 속도로 다가가는 곳이다.", "The future is something which everyone reaches at the rate of sixty minutes an hour."], ["모든 날이 좋을 수는 없지만, 모든 날에는 좋은 것이 있다.", "Every day may not be good, but there is something good in every day."], ["물건이 아닌 순간을 모아라.", "Collect moments, not things."], ["인생은 순간들의 연속이다. 그 하나하나를 살아내는 것이 성공이다.", "Life is a succession of moments. To live each one is to succeed."], ["인생에서 가장 중요한 두 날은 태어난 날과, 그 이유를 알게 된 날이다.", "The two most important days in your life are the day you are born and the day you find out why."], ["기다리지 마라. 완벽한 때는 결코 오지 않는다.", "Don't wait. The time will never be just right."], ["언젠가는 요일이 아니다.", "Someday is not a day of the week."], ["오늘 나무 그늘에서 쉴 수 있는 이유는 누군가가 오래 전에 나무를 심었기 때문이다.", "Someone is sitting in the shade today because someone planted a tree a long time ago."], ["꿈을 향해 당당히 나아가라. 상상해 온 삶을 살아라.", "Go confidently in the direction of your dreams. Live the life you have imagined."], ["인생은 자신을 찾는 것이 아니라 자신을 창조하는 것이다.", "Life isn't about finding yourself. Life is about creating yourself."], ["어제로부터 배우고, 오늘을 위해 살고, 내일을 희망하라.", "Learn from yesterday, live for today, hope for tomorrow."], ["행복한 삶을 위해 필요한 것은 아주 적다. 모두 당신 안에, 당신의 생각하는 방식 안에 있다.", "Very little is needed to make a happy life; it is all within yourself, in your way of thinking."], ["아침에 일어나면, 살아 있다는 것이 얼마나 소중한 특권인지 생각하라. 숨 쉬고, 생각하고, 즐기고, 사랑할 수 있다는 것을.", "When you arise in the morning, think of what a precious privilege it is to be alive — to breathe, to think, to enjoy, to love."], ["좋은 사람이 어떠해야 하는지 논쟁하며 더는 시간을 낭비하지 말고, 그런 사람이 되어라.", "Waste no more time arguing about what a good man should be. Be one."], ["할 수 있는 일을, 가지고 있는 것으로, 있는 곳에서 하라.", "Do what you can, with what you have, where you are."], ["사람이 두려워해야 할 것은 죽음이 아니라, 삶을 시작조차 하지 못하는 것이다.", "It is not death that a man should fear, but he should fear never beginning to live."], ["모든 순간은 새로운 시작이다.", "Every moment is a fresh beginning."], ["삶의 아름다움을 곰곰이 생각하라. 별을 바라보고, 그 별과 함께 달리는 자신을 보라.", "Dwell on the beauty of life. Watch the stars, and see yourself running with them."], ["하루는 길지만, 한 해는 짧다.", "The days are long, but the years are short."], ["인생은 용기에 비례해 줄어들기도, 넓어지기도 한다.", "Life shrinks or expands in proportion to one's courage."], ["매일을 마지막 날처럼 산다면, 언젠가는 분명히 그 말이 맞는 날이 올 것이다.", "If you live each day as if it was your last, someday you'll most certainly be right."], ["당신의 시간은 한정되어 있다. 그러니 다른 사람의 삶을 사느라 낭비하지 마라.", "Your time is limited, so don't waste it living someone else's life."], ["하루하루는 작은 인생이다. 아침에 깨어나는 것은 작은 탄생이고, 잠자리에 드는 것은 작은 죽음이다.", "Each day is a little life: every waking and rising a little birth, every going to rest and sleep a little death."], ["살아야 할 이유를 가진 사람은 거의 어떤 상황도 견딜 수 있다.", "He who has a why to live can bear almost any how."], ["산다는 것은 세상에서 가장 드문 일이다. 대부분의 사람은 그저 존재할 뿐이다.", "To live is the rarest thing in the world. Most people exist, that is all."], ["오늘 할 수 있는 일을 내일로 미루지 마라.", "Don't put off until tomorrow what you can do today."], ["인생은 한 번뿐이지만 제대로 산다면 한 번으로 족하다.", "You only live once, but if you do it right, once is enough."], ["성찰하지 않는 삶은 살 가치가 없다.", "The unexamined life is not worth living."], ["평범한 하루여, 네가 얼마나 보물 같은지 깨닫게 해다오.", "Normal day, let me be aware of the treasure you are."], ["어제가 오늘을 너무 많이 차지하게 두지 마라.", "Don't let yesterday take up too much of today."], ["인생은 사소하게 살기엔 너무 짧다.", "Life is too short to be little."], ["행복은 미래로 미루는 것이 아니라, 지금을 위해 설계하는 것이다.", "Happiness is not something you postpone for the future; it is something you design for the present."], ["오늘 하는 일이 당신의 모든 내일을 더 낫게 만들 수 있다.", "What you do today can improve all your tomorrows."], ["아름다움은 모든 곳에 있지만 모든 사람이 그것을 보는 것은 아니다.", "Everything has beauty, but not everyone sees it."], ["당신의 인생을 사랑하라, 그러면 인생도 당신을 사랑할 것이다.", "Love life and life will love you back."], ["시간을 원한다면, 스스로 만들어야 한다.", "You will never find time for anything. If you want time, you must make it."], ["나비는 달이 아니라 순간을 헤아리며, 그것으로 충분한 시간을 가진다.", "The butterfly counts not months but moments, and has time enough."], ["분노로 뒤를 돌아보지도, 두려움으로 앞을 내다보지도 말고, 깨어서 주위를 둘러보자.", "Let us not look back in anger, nor forward in fear, but around in awareness."], ["인생을 너무 심각하게 여기지 마라. 어차피 살아서 빠져나갈 수는 없으니까.", "Do not take life too seriously. You will never get out of it alive."], ["오늘 걷지 않으면 내일은 뛰어야 한다.", "If you don't walk today, you'll have to run tomorrow."], ["핵심은 시간을 쓰는 것이 아니라, 시간에 투자하는 것이다.", "The key is in not spending time, but in investing it."], ["인생은 짧다. 규칙을 깨고, 빨리 용서하고, 천천히 사랑하라.", "Life is short. Break the rules, forgive quickly, love truly."], ["당신이 가진 것에 감사하라, 그러면 더 많이 가지게 될 것이다.", "Be thankful for what you have; you'll end up having more."], ["성공의 비결은 평범한 일을 특별하게 잘하는 것이다.", "The secret of success is to do the common thing uncommonly well."], ["내일 죽을 것처럼 살고, 영원히 살 것처럼 배워라.", "Live as if you were to die tomorrow. Learn as if you were to live forever."]];
+  var BAG = [], QI = 0;
+  function shuffle() { var last = BAG[QI]; BAG = QUOTES.map(function (_, i) { return i; });
+    for (var i = BAG.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var x = BAG[i]; BAG[i] = BAG[j]; BAG[j] = x; }
+    if (BAG[0] === last) BAG.push(BAG.shift()); QI = 0; }
+  shuffle();
+  function quote() { return QUOTES[BAG[QI]]; }
+
+  /* ── 계산 ── */
+  var DAY = 864e5, GRIDCOLS = { weeks: 52, months: 36, years: 10 };
+  function sod(d) { var x = new Date(d); x.setHours(0, 0, 0, 0); return x; }
+  function days(a, b) { return Math.max(0, Math.round((sod(b) - sod(a)) / DAY)); }
+  function months(a, b) { if (b <= a) return 0; var m = (b.getFullYear() - a.getFullYear()) * 12 + b.getMonth() - a.getMonth(); if (b.getDate() < a.getDate()) m--; return Math.max(0, m); }
+  function count(u, a, b) { if (b <= a) return 0; if (u === "days") return days(a, b); if (u === "weeks") return Math.floor(days(a, b) / 7); if (u === "months") return months(a, b); return Math.floor(months(a, b) / 12); }
+  function fmt(n) { return n.toLocaleString(S.lang === "ko" ? "ko-KR" : "en-US"); }
+  function pct(v, d) { return (v * 100).toFixed(d === undefined ? 1 : d) + "%"; }
+  function calc() {
+    var birth = new Date(1994, 5, 15), exp = expectancy();
+    var whole = Math.floor(exp), end = new Date(birth);
+    end.setFullYear(birth.getFullYear() + whole); end.setDate(end.getDate() + Math.round((exp - whole) * 365.2425));
+    var now = new Date(), today = sod(now), L = t();
+    function per(s, e, isDay) {
+      var v = Math.min(Math.max((now - s) / (e - s), 0), 1), txt, h = Math.floor((e - now) / 36e5);
+      if (isDay) txt = h >= 1 ? L.hLeft(h) : L.mLeft(Math.floor((e - now) / 6e4));
+      else { var d = days(today, e) - 1; txt = d <= 0 ? L.lastDay : L.dLeft(d); }
+      return { v: v, t: txt, h: h };
+    }
+    var dow = (today.getDay() + 6) % 7, wk = new Date(today); wk.setDate(today.getDate() - dow);
+    var wkE = new Date(wk); wkE.setDate(wk.getDate() + 7);
+    var tom = new Date(today); tom.setDate(today.getDate() + 1);
+    var prog = Math.min(Math.max((now - birth) / (end - birth), 0), 1);
+    return { now: now, birth: birth, exp: exp, prog: prog, season: L.seasons[Math.min(3, Math.floor(prog * 4))],
+      lived: function (u) { return count(u, birth, now); }, left: function (u) { return count(u, now, end); }, total: function (u) { return count(u, birth, end); },
+      pers: [per(today, tom, true), per(wk, wkE), per(new Date(now.getFullYear(), now.getMonth(), 1), new Date(now.getFullYear(), now.getMonth() + 1, 1)), per(new Date(now.getFullYear(), 0, 1), new Date(now.getFullYear() + 1, 0, 1))] };
+  }
+
+  /* ── 아이콘 모양 ── */
+  var ICONS = {
+    orbit: { name: "엔소 · 궤도", en: "Ensō Orbit", pick: "추천", desc: "가늘고 온전한 원은 끝없이 흐르는 시간, 굵고 열린 원은 한 번뿐인 삶입니다. 삶의 원이 열린 자리, 영원의 원 위에 놓인 한 점이 오늘입니다." },
+    spiral: { name: "엔소 · 나선", en: "Ensō Spiral", desc: "한 바퀴를 넘어 안쪽으로 이어지는 붓길입니다. 끝이 보이지 않는 원은 멈추지 않는 시간이고, 붓이 머문 끝의 점은 오늘입니다." },
+    infinity: { name: "엔소 · 무한", en: "Ensō Infinity", desc: "무한(∞)을 한 번의 붓질로 그리다 멈춘 모양입니다. 영원 속에서 우리가 붙잡을 수 있는 것은 지금 찍힌 한 점뿐입니다." }
+  };
+  /* 붓길: 곡선 위 점들을 따라 굵기가 줄어드는 단색 면 */
+  function brush(x, pts, w0, w1, color) {
+    var L = [], R = [];
+    for (var i = 0; i < pts.length; i++) {
+      var p = pts[i], q = pts[Math.min(i + 1, pts.length - 1)], o = pts[Math.max(i - 1, 0)];
+      var dx = q[0] - o[0], dy = q[1] - o[1], len = Math.hypot(dx, dy) || 1, tt = i / (pts.length - 1);
+      var w = (w0 + (w1 - w0) * Math.pow(tt, 1.4)) / 2, nx = -dy / len * w, ny = dx / len * w;
+      L.push([p[0] + nx, p[1] + ny]); R.push([p[0] - nx, p[1] - ny]);
+    }
+    x.fillStyle = color; x.beginPath(); x.moveTo(L[0][0], L[0][1]);
+    L.forEach(function (p) { x.lineTo(p[0], p[1]); }); R.reverse().forEach(function (p) { x.lineTo(p[0], p[1]); }); x.closePath(); x.fill();
+    x.beginPath(); x.arc(pts[0][0], pts[0][1], w0 / 2, 0, 7); x.fill();
+    x.beginPath(); x.arc(pts[pts.length - 1][0], pts[pts.length - 1][1], w1 / 2, 0, 7); x.fill();
+  }
+  function drawIcon(cv, shape, v) {
+    var x = cv.getContext("2d"), k = cv.width / 1024; x.setTransform(k, 0, 0, k, 0, 0);
+    var P = v === "tint" ? { bg: "#000000", ink: "rgba(233,225,200,1)", dot: "rgba(233,225,200,1)", soft: "rgba(233,225,200,.45)" }
+      : v === "dark" ? { bg: "#11130D", ink: "#A4B86A", dot: "#F5B45C", soft: "#56613A" }
+      : { bg: "#E7E6DB", ink: "#5F7236", dot: "#D98A2B", soft: "#A9B083" };
+    x.fillStyle = P.bg; x.fillRect(0, 0, 1024, 1024);
+    var cx = 512, cy = 522, pts = [], i, a;
+    if (shape === "orbit") {
+      x.strokeStyle = P.soft; x.lineWidth = 22; x.beginPath(); x.arc(cx, cy, 300, 0, 7); x.stroke();
+      for (i = 0; i <= 160; i++) { a = -Math.PI * 0.28 + (Math.PI * 1.6) * (i / 160); pts.push([cx + Math.cos(a) * 300, cy + Math.sin(a) * 300]); }
+      brush(x, pts, 112, 30, P.ink);
+      a = -Math.PI * 0.48; x.fillStyle = P.dot; x.beginPath(); x.arc(cx + Math.cos(a) * 300, cy + Math.sin(a) * 300, 44, 0, 7); x.fill();
+    } else if (shape === "spiral") {
+      for (i = 0; i <= 220; i++) { var tt = i / 220; a = -Math.PI * 0.25 + Math.PI * 2.35 * tt; var r = 318 - 118 * Math.pow(tt, 1.6); pts.push([cx + Math.cos(a) * r, cy + Math.sin(a) * r]); }
+      brush(x, pts, 104, 26, P.ink);
+      var e = pts[pts.length - 1], e2 = pts[pts.length - 6], ang = Math.atan2(e[1] - e2[1], e[0] - e2[0]);
+      x.fillStyle = P.dot; x.beginPath(); x.arc(e[0] + Math.cos(ang) * 78, e[1] + Math.sin(ang) * 78, 40, 0, 7); x.fill();
+    } else {
+      for (i = 0; i <= 240; i++) { var u = -Math.PI * 0.5 + Math.PI * 1.86 * (i / 240), den = 1 + Math.pow(Math.sin(u), 2);
+        pts.push([cx + 390 * Math.cos(u) / den, cy + 390 * Math.sin(u) * Math.cos(u) / den]); }
+      brush(x, pts, 104, 28, P.ink);
+      var uu = -Math.PI * 0.5 - Math.PI * 0.09, dd = 1 + Math.pow(Math.sin(uu), 2);
+      x.fillStyle = P.dot; x.beginPath(); x.arc(cx + 390 * Math.cos(uu) / dd, cy + 390 * Math.sin(uu) * Math.cos(uu) / dd, 44, 0, 7); x.fill();
+    }
+    x.setTransform(1, 0, 0, 1, 0, 0);
+  }
+
+  /* ── 조각 ── */
+  var SVG = {
+    gear: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>',
+    enso: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><circle cx="12" cy="12.4" r="8" stroke-width="0.9" opacity=".45"/><path d="M16.6 5.9A8 8 0 1 1 9.6 4.8" stroke-width="2.6"/><circle cx="13.3" cy="4.5" r="1.5" fill="currentColor" stroke="none"/></svg>',
+    grid: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg>',
+    search: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>',
+    slider: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg>',
+    lock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>',
+    check: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg>',
+    back: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m15 5-7 7 7 7"/></svg>'
+  };
+  function status(d, now) {
+    var tm = now.getHours() + ":" + String(now.getMinutes()).padStart(2, "0");
+    var bars = '<svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" width="3" height="12" rx="1"/></svg>';
+    var wifi = '<svg width="17" height="12" viewBox="0 0 17 12" fill="currentColor"><path d="M8.5 2.3c2.3 0 4.4.9 6 2.4l1.2-1.2A10.2 10.2 0 0 0 8.5.6C5.7.6 3.2 1.7 1.3 3.5l1.2 1.2a8.5 8.5 0 0 1 6-2.4Zm0 3.4c1.4 0 2.7.5 3.6 1.4l1.2-1.2a6.8 6.8 0 0 0-9.6 0l1.2 1.2c1-.9 2.2-1.4 3.6-1.4Zm0 3.4c.5 0 1 .2 1.3.5L8.5 11 7.2 9.6c.3-.3.8-.5 1.3-.5Z"/></svg>';
+    var batt = '<svg width="27" height="13" viewBox="0 0 27 13" fill="none"><rect x=".5" y=".5" width="23" height="12" rx="3.8" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="16" height="9" rx="2.2" fill="currentColor"/><path d="M25 4.5v4c.8-.3 1.3-1.1 1.3-2s-.5-1.7-1.3-2Z" fill="currentColor" opacity=".4"/></svg>';
+    if (d.k === "se") return '<div class="status"><span class="ic">' + bars + wifi + '</span><span>' + tm + '</span><span class="ic">' + batt + "</span></div>";
+    if (d.k === "punch") return '<div class="status"><span>' + tm + '</span><span class="ic">' + wifi + bars + '<svg width="10" height="15" viewBox="0 0 10 15" fill="currentColor"><rect x="2.5" y="0" width="5" height="2" rx=".5"/><rect x="0" y="2" width="10" height="13" rx="1.5"/></svg></span></div>';
+    return '<div class="status"><span>' + tm + '</span><span class="ic">' + bars + wifi + batt + "</span></div>";
+  }
+  function pb(v, cls, h) { return '<div class="pb ' + (cls || "") + '" style="--v:' + (v * 100).toFixed(2) + "%" + (h ? ";--h:var(" + h + ")" : "") + '"><i></i></div>'; }
+  function grid(total, filled, cols, maxH) { return '<canvas class="grid" data-total="' + total + '" data-filled="' + filled + '" data-cols="' + cols + '"' + (maxH ? ' data-maxh="' + maxH + '"' : "") + "></canvas>"; }
+  function bdate() { return S.lang === "ko" ? "1994. 6. 15." : "Jun 15, 1994"; }
+  function cname(c) { return S.lang === "ko" ? c[1] : c[2]; }
+  function quoteCard() {
+    var q = quote(), L = t(), main = S.lang === "ko" ? q[0] : q[1];
+    return '<div class="glass card stk"><span class="qhead">' + L.words + '</span><button type="button" class="quote" data-next="1"><span class="qk">' + main + "</span>" +
+      (S.lang === "ko" ? '<span class="qe">' + q[1] + "</span>" : "") + '<span class="qh">' + L.next + " · " + (BAG[QI] + 1) + "/100</span></button></div>";
+  }
+  function profileCells() {
+    var L = t();
+    return '<div class="cell">' + L.birth + '<span class="pill">' + bdate() + '</span></div><div class="cell">' + L.countryL + '<span class="v">' + cname(country()) + ' ›</span></div><div class="cell">' + L.sexL + '<span class="v">' + L.sexes[S.sex] + " ›</span></div>";
+  }
+  function lifeCells() {
+    var L = t();
+    return '<div class="cell">' + L.lifeL + '<span class="chips"><span class="on">' + L.auto + "</span><span>" + L.custom + '</span></span></div><div class="cell"><span class="v" style="text-align:left">' + cname(country()) + " · " + L.sexes[S.sex] + "</span><b>" + L.yrs(expectancy()) + "</b></div>";
+  }
+
+  /* ── 앱 화면 ── */
+  function scrOnboard(d, c) {
+    var L = t();
+    return '<div class="inner"><div class="sky"></div>' + status(d, c.now) + '<div class="scroll"><div class="brand"><div class="t">Carpe Diem</div><p>' + L.tagline + "</p></div>" +
+      '<div class="sect"><div class="hd">' + L.you + '</div><div class="cells glass">' + profileCells() + "</div></div>" +
+      '<div class="sect"><div class="cells glass">' + lifeCells() + '</div><div class="ft">' + L.lifeFt + "</div></div>" +
+      '<div class="cta">' + L.begin + '</div><div class="sect"><div class="ft" style="text-align:center;padding-top:var(--sp-4)">' + L.privacy + "</div></div></div><div class=\"homebar\"></div></div>";
+  }
+  function scrHome(d, c) {
+    var L = t(), gc = GRIDCOLS[S.grid];
+    var seg = Object.keys(L.units).map(function (k) { return '<button type="button" data-unit="' + k + '" aria-pressed="' + (k === S.unit) + '">' + (S.lang === "ko" ? L.units[k] : L.units[k][0].toUpperCase() + L.units[k].slice(1)) + "</button>"; }).join("");
+    var pers = c.pers.map(function (p, i) { return '<div class="per"><div class="rw"><span class="lbl">' + L.pers[i] + '</span><span class="cap">' + pct(p.v, 0) + " · " + p.t + "</span></div>" + pb(p.v, "q") + "</div>"; }).join("");
+    return '<div class="inner"><div class="sky"></div>' + status(d, c.now) + '<div class="scroll"><div class="nav"><span class="gear glass">' + SVG.gear + '</span></div><div class="lt">Carpe Diem</div><div class="pad">' +
+      '<div class="glass card hero"><div class="eyebrow">' + L.left + '</div><div class="big"><span class="n">' + fmt(c.left(S.unit)) + '</span><span class="u">' + L.units[S.unit] + '</span></div><div class="segs">' + seg + "</div></div>" +
+      quoteCard() +
+      '<div class="glass card stk"><div class="rw"><span class="h">' + L.path + '</span><span class="pc">' + pct(c.prog) + "</span></div>" + pb(c.prog, "", "--bar-thick") + '<div class="rw cap"><span>' + L.age(c.lived("years"), c.season) + "</span><span>" + L.expShort(c.exp) + "</span></div></div>" +
+      '<div class="glass card stk" style="gap:var(--sp-4)"><span class="h">' + L.flow + "</span>" + pers + "</div>" +
+      '<div class="glass card stk"><div class="rw"><span class="h">' + L.cal + '</span><button type="button" class="menu" data-cycle="1">' + L.per1(S.grid) + " ⌄</button></div>" + grid(c.total(S.grid), c.lived(S.grid), gc) + '<span class="cap">' + L.legend(c.season) + "</span></div>" +
+      "</div></div><div class=\"homebar\"></div></div>";
+  }
+  function scrSettings(d, c) {
+    var L = t();
+    return '<div class="inner"><div class="sky"></div>' + status(d, c.now) + '<div class="scroll"><div class="sheethd"><span>' + L.cancel + "</span><b>" + L.settings + "</b><span>" + L.done + "</span></div>" +
+      '<div class="sect"><div class="hd">' + L.you + '</div><div class="cells glass">' + profileCells() + "</div></div>" +
+      '<div class="sect"><div class="cells glass">' + lifeCells() + '</div><div class="ft">' + L.lifeFt + "</div></div>" +
+      '<div class="sect"><div class="hd">' + L.words + '</div><div class="cells glass"><div class="cell">' + L.wordsLang + '<span class="chips"><span' + (S.lang === "ko" ? "" : ' class="on"') + ">" + (S.lang === "ko" ? L.wl[0] : L.wl[1]) + '</span><span' + (S.lang === "ko" ? ' class="on"' : "") + ">" + L.wl[2] + "</span></span></div></div></div>" +
+      '<div class="sect"><div class="hd">' + L.widgetsL + '</div><div class="cells glass">' + [SVG.grid, SVG.search, SVG.slider, SVG.lock].map(function (ic, i) { return i === 3 && d.os === "android" ? "" : '<div class="lic">' + ic + "<span>" + L.wHelp[i] + "</span></div>"; }).join("") + "</div></div>" +
+      '<div class="sect"><div class="cells glass"><div class="cell danger">' + L.erase + '</div></div><div class="ft">' + L.privacy + "<br>Carpe Diem 1.0</div></div></div><div class=\"homebar\"></div></div>";
+  }
+  function scrCountry(d, c) {
+    var L = t();
+    var rows = COUNTRIES.map(function (k) { var v = S.sex === "male" ? k[4] : S.sex === "female" ? k[5] : k[3];
+      return '<div class="cell" data-country="' + k[0] + '" style="cursor:pointer"><span>' + cname(k) + '</span><span class="v" style="display:flex;gap:var(--sp-2);align-items:center">' + L.yrs(v) + (k[0] === S.country ? '<span style="color:var(--c-olive)">' + SVG.check + "</span>" : '<span style="width:20px"></span>') + "</span></div>"; }).join("");
+    return '<div class="inner"><div class="sky"></div>' + status(d, c.now) + '<div class="scroll"><div class="sheethd"><span>' + SVG.back + "</span><b>" + L.pickTitle + "</b><span></span></div>" +
+      '<div class="sect"><div class="cells glass"><div class="cell" style="color:var(--c-sub);gap:var(--sp-2);justify-content:flex-start"><span style="width:var(--icon);height:var(--icon);display:inline-flex">' + SVG.search + "</span>" + L.search + "</div></div></div>" +
+      '<div class="sect"><div class="cells glass">' + rows + '</div><div class="ft">' + L.srcFt + "</div></div></div><div class=\"homebar\"></div></div>";
+  }
+
+  /* ── 위젯 ── */
+  function wDays(c) {
+    var L = t();
+    return '<div class="w s"><span class="wl">' + SVG.enso + L.wDays + '</span><span class="grow"></span><span class="wn">' + fmt(c.left("days")) + '</span><span class="grow"></span>' + pb(c.prog) + '<div class="wc"><span>' + pct(c.prog) + "</span><span>" + c.season + "</span></div></div>";
+  }
+  function wToday(c) {
+    var L = t(), p = c.pers[0], r = 42, C = 2 * Math.PI * r;
+    return '<div class="w s"><span class="wl">' + L.wToday + '</span><div class="ringbox"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="' + r + '" fill="none" stroke="var(--c-dim)" stroke-width="8"/>' +
+      '<circle cx="50" cy="50" r="' + r + '" fill="none" stroke="var(--c-olive)" stroke-width="8" stroke-linecap="round" stroke-dasharray="' + (C * p.v).toFixed(1) + " " + C.toFixed(1) + '" transform="rotate(-90 50 50)"/>' +
+      '<circle cx="' + (50 + r * Math.cos(p.v * 2 * Math.PI - Math.PI / 2)).toFixed(2) + '" cy="' + (50 + r * Math.sin(p.v * 2 * Math.PI - Math.PI / 2)).toFixed(2) + '" r="6" fill="var(--c-light)"/></svg>' +
+      '<div class="rc"><b>' + L.wTodayLeft(Math.max(0, p.h)) + "</b><span>" + L.wTodaySub + "</span></div></div></div>";
+  }
+  function wMedium(c) {
+    var L = t();
+    return '<div class="w m"><div class="mcol"><span class="wl">' + L.cal + '</span><span class="grow"></span><span class="wn">' + c.left("years") + '</span><span class="wu">' + L.wYearsLeft + '</span><span class="grow"></span><span class="wu">' + c.season + " · " + pct(c.prog, 0) + '</span></div><div class="mgrid">' + grid(c.total("years"), c.lived("years"), 14, "w") + "</div></div>";
+  }
+  function wLarge(c) {
+    var L = t(), q = quote();
+    return '<div class="w l"><div class="rw"><span class="wl">' + L.cal + '</span><span class="wu">' + L.wMonthsLeft(fmt(c.left("months"))) + '</span></div><span class="grow"></span>' + grid(c.total("months"), c.lived("months"), 36, "fill") + '<span class="grow"></span><div class="wq">' + (S.lang === "ko" ? q[0] : q[1]) + "</div></div>";
+  }
+  function appsHTML(n, withMe) { var a = []; for (var i = 0; i < n; i++) a.push(withMe && i === 1 ? '<div class="app"><canvas class="ic" data-shape="current" width="136" height="136"></canvas>Carpe Diem</div>' : '<div class="app"><i></i>&nbsp;</div>'); return '<div class="apps">' + a.join("") + "</div>"; }
+  var DOCK = '<div class="gsearch"></div><div class="dock"><i></i><i></i><i></i><i></i></div>';
+  function scrHome1(d, c) {
+    return '<div class="inner onwall"><div class="wall"></div>' + status(d, c.now) + '<div class="hs"><div class="wrow">' + wDays(c) + wToday(c) + "</div>" + wMedium(c) + appsHTML(4, true) + "</div>" + DOCK + '<div class="homebar"></div></div>';
+  }
+  function scrHome2(d, c) {
+    return '<div class="inner onwall"><div class="wall"></div>' + status(d, c.now) + '<div class="hs">' + wLarge(c) + appsHTML(4, false) + "</div>" + DOCK + '<div class="homebar"></div></div>';
+  }
+  function scrLock(d, c) {
+    var L = t(), n = c.now, tm = n.getHours() + ":" + String(n.getMinutes()).padStart(2, "0"), r = 32, C = 2 * Math.PI * r;
+    var date = S.lang === "ko" ? (n.getMonth() + 1) + "월 " + n.getDate() + "일 " + "일월화수목금토"[n.getDay()] + "요일" : n.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
+    if (d.os === "android") return '<div class="inner onwall"><div class="wall"></div>' + status(d, n) + '<div class="lock"><div class="clock" style="margin-top:var(--sp-10)">' + tm + '</div><div class="date">' + date + '</div><div class="note">' + L.androidLock + '</div></div><div class="homebar"></div></div>';
+    return '<div class="inner onwall"><div class="wall"></div>' + status(d, n) + '<div class="lock"><div class="date">' + date + " · " + SVG.enso + " " + L.inline(fmt(c.left("days"))) + '</div><div class="clock">' + tm + "</div>" +
+      '<div class="acc"><div class="circ"><svg viewBox="0 0 72 72"><circle cx="36" cy="36" r="' + r + '" fill="none" stroke="currentColor" stroke-opacity=".3" stroke-width="5"/><circle cx="36" cy="36" r="' + r + '" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-dasharray="' + (C * c.prog).toFixed(1) + " " + C.toFixed(1) + '" transform="rotate(-90 36 36)"/></svg><span class="cc">' + SVG.enso + "<b>" + Math.round(c.prog * 100) + "</b></span></div>" +
+      '<div class="rect"><span class="t1">' + fmt(c.left("days")) + (S.lang === "ko" ? "일" : " days") + '</span><span class="t2">' + L.rectSub(fmt(c.left("weeks"))) + '</span><div class="lb"><i style="width:' + (c.prog * 100).toFixed(1) + '%"></i></div></div></div>' +
+      '<div class="bot"><span></span><span></span></div></div><div class="homebar"></div></div>';
+  }
+
+  var APP = [["온보딩", "첫 화면은 ‘오늘을 소중히.’ 한 줄. 나라는 기기 지역으로 자동 선택됩니다.", scrOnboard], ["앱 홈", "남은 시간 → 오늘의 문장 → 지나온 길 → 흐르는 시간 → 인생 달력(월).", scrHome], ["설정", "나라·성별이 바뀌면 기대수명이 자동으로 따라갑니다. ‘직접’을 고르면 숫자를 고칠 수 있습니다.", scrSettings], ["나라 선택", "목록을 눌러 보세요. 기대수명과 다른 화면 숫자가 함께 바뀝니다.", scrCountry]];
+  var WID = [["홈 화면 ①", "남은 날 · 오늘(작게), 인생 달력(중간, 1칸 = 1년).", scrHome1], ["홈 화면 ②", "인생 달력(크게, 1칸 = 1개월)과 오늘의 문장.", scrHome2], ["잠금 화면", "한 줄 · 원형 · 직사각형. iOS가 단색으로 그립니다.", scrLock]];
+  function frames(list, id) {
+    document.getElementById(id).innerHTML = list.map(function (s, i) { return '<figure class="ph"><div class="phone" data-set="' + id + '" data-i="' + i + '"><div class="screen"></div><div class="cam"></div></div><figcaption><b>' + s[0] + "</b>" + s[1] + "</figcaption></figure>"; }).join("");
+  }
+  frames(APP, "appRow"); frames(WID, "widgetRow");
+  document.getElementById("iconRow").innerHTML = Object.keys(ICONS).map(function (k) { var o = ICONS[k];
+    return '<button type="button" class="iconopt" data-icon="' + k + '"><span class="tag">' + (o.pick || "&nbsp;") + '</span><div class="ics">' + ["base", "dark", "tint"].map(function (v, i) { var sz = i ? 72 : 112;
+      return '<figure><canvas class="ic" data-shape="' + k + '" data-v="' + v + '" width="' + sz * 2 + '" height="' + sz * 2 + '" style="width:' + sz + "px;height:" + sz + 'px"></canvas>' + ["기본", "다크", "틴트"][i] + "</figure>"; }).join("") + "</div><b>" + o.name + " · " + o.en + "</b><p>" + o.desc + "</p></button>"; }).join("");
+
+  /* ── 인생 달력 캔버스 ── */
+  function drawGrid(cv, dark, glow) {
+    var total = +cv.dataset.total, filled = +cv.dataset.filled, cols = +cv.dataset.cols, rows = Math.max(1, Math.ceil(total / cols));
+    var w = cv.clientWidth || 300, cell = w / cols;
+    if (cv.dataset.maxh === "fill") { var box = cv.parentElement, used = 0; Array.prototype.forEach.call(box.children, function (ch) { if (ch !== cv && !ch.classList.contains("grow")) used += ch.offsetHeight; });
+      var gap = parseFloat(getComputedStyle(box).rowGap) || 0, pad = parseFloat(getComputedStyle(box).paddingTop) * 2; cell = Math.min(cell, (box.clientHeight - pad - used - gap * 4) / rows); }
+    if (cv.dataset.maxh === "w") { var wb = cv.closest(".w"), wcs = getComputedStyle(wb); cell = Math.min(cell, (wb.clientHeight - parseFloat(wcs.paddingTop) - parseFloat(wcs.paddingBottom)) / rows); }
+    var h = Math.ceil(cell * rows), dpr = 2;
+    cv.width = w * dpr; cv.height = h * dpr; cv.style.height = h + "px";
+    var x = cv.getContext("2d"); x.scale(dpr, dpr);
+    var SE = dark ? ["#C3D18E", "#9DB060", "#DB8B4E", "#A8A690"] : ["#A9B67A", "#5F7236", "#B5651D", "#8C8A74"];
+    var fut = dark ? "rgba(238,235,221,.12)" : "rgba(35,37,28,.12)", ox = (w - cell * cols) / 2;
+    for (var i = 0; i < total; i++) {
+      var px = ox + (i % cols) * cell + cell / 2, py = Math.floor(i / cols) * cell + cell / 2;
+      x.beginPath();
+      if (i === filled) { x.shadowColor = "rgba(242,179,90,.95)"; x.shadowBlur = 3 + 12 * glow; x.fillStyle = dark ? "#F5B45C" : "#E89A32"; x.arc(px, py, cell * .5, 0, 7); x.fill(); x.shadowBlur = 0; }
+      else { x.fillStyle = i < filled ? SE[Math.min(3, Math.floor(i / total * 4))] : fut; x.arc(px, py, cell * .34, 0, 7); x.fill(); }
+    }
+  }
+
+  /* ── 토큰 표 ── */
+  function tokenTables() {
+    var type = [["largeTitle", 34, "앱 제목", "displaySmall"], ["title2", 22, "단위 글자", "headlineSmall"], ["title3", 20, "카드 제목 · 퍼센트", "titleLarge"], ["headline", 17, "문장 · 버튼", "titleMedium"], ["body", 17, "본문", "bodyLarge"], ["subhead", 15, "보조 제목 · 목록", "bodyMedium"], ["footnote", 13, "설명 · 영문 문장", "bodySmall"], ["caption1", 12, "숫자 설명", "labelMedium"], ["caption2", 11, "위젯 라벨", "labelSmall"], ["display", "54 · 64 · 70", "남은 시간 숫자 (compact · regular · large)", "displayLarge"]];
+    var space = [["sp-1", 4], ["sp-2", 8], ["sp-3", 12], ["sp-4", 16], ["sp-5", 20], ["sp-6", 24], ["sp-8", 32], ["sp-10", 40]];
+    var color = [["c-base", "#E7E6DB", "#11130D", "바탕"], ["c-fg", "#23251C", "#EEEBDD", "글자"], ["c-sub", "#5E604B", "#A8A690", "보조 글자"], ["c-olive", "#5F7236", "#A4B86A", "강조 · 버튼"], ["c-light", "#F2B35A", "#F5B45C", "빛 · 지금 칸"], ["c-clay", "#B5651D", "#DB8B4E", "가을 칸"], ["c-olive-soft", "#A9B67A", "#6E7F43", "봄 칸"], ["c-stone", "#8C8A74", "#A8A690", "겨울 칸"], ["c-danger", "#C9372A", "#FF6B5E", "지우기"]];
+    var radius = [["r-sm", "10", "작은 칩"], ["r-md", "16", "목록 묶음"], ["r-lg", "24 (Android 28)", "카드"], ["r-pill", "999", "버튼 · 막대"], ["widget", "시스템 값", "위젯 모서리는 OS가 정함"]];
+    var wsz = Object.keys(DEV).map(function (k) { var d = DEV[k]; return [{ se: "iPhone SE", i16: "iPhone 16", max: "iPhone 16 Pro Max", pixel: "Pixel 9" }[k], d.w + "×" + d.h, d.wsm + "×" + d.wsm, d.wm + "×" + d.wsm, d.wm + "×" + d.wl, d.size]; });
+    function table(head, rows) { return '<div class="tbl"><table><thead><tr>' + head.map(function (h) { return "<th>" + h + "</th>"; }).join("") + "</tr></thead><tbody>" + rows.join("") + "</tbody></table></div>"; }
+    document.getElementById("tokenTables").innerHTML =
+      "<div><h3>글자</h3>" + table(["토큰", "크기(pt)", "쓰임", "Android"], type.map(function (r) { return "<tr><td><code>t-" + r[0] + '</code></td><td class="num">' + r[1] + "</td><td>" + r[2] + "</td><td><code>" + r[3] + "</code></td></tr>"; })) + "</div>" +
+      "<div><h3>색</h3>" + table(["토큰", "라이트", "다크", "쓰임"], color.map(function (r) { return "<tr><td><code>" + r[0] + '</code></td><td class="num"><span class="sw" style="background:' + r[1] + '"></span>' + r[1] + '</td><td class="num"><span class="sw" style="background:' + r[2] + '"></span>' + r[2] + "</td><td>" + r[3] + "</td></tr>"; })) + "</div>" +
+      "<div><h3>간격 · 모서리</h3>" + table(["토큰", "값(pt)", "쓰임"], space.map(function (r) { return "<tr><td><code>" + r[0] + '</code></td><td class="num">' + r[1] + "</td><td>" + (r[0] === "sp-4" ? "화면 좌우 여백 · 위젯 안쪽 여백" : r[0] === "sp-5" ? "카드 안쪽 여백 · 큰 화면 좌우 여백" : "") + "</td></tr>"; }).concat(radius.map(function (r) { return "<tr><td><code>" + r[0] + '</code></td><td class="num">' + r[1] + "</td><td>" + r[2] + "</td></tr>"; }))) + "</div>" +
+      "<div><h3>기기별 위젯 크기 (pt)</h3>" + table(["기기", "화면", "작게", "중간", "크게", "크기 등급"], wsz.map(function (r) { return "<tr><td>" + r[0] + '</td><td class="num">' + r[1] + '</td><td class="num">' + r[2] + '</td><td class="num">' + r[3] + '</td><td class="num">' + r[4] + "</td><td><code>" + r[5] + "</code></td></tr>"; })) + "</div>";
+  }
+  tokenTables();
+
+  function render() {
+    var c = calc(), d = DEV[S.dev], sc = 275 / d.w, dark = S.mode === "dark";
+    var glow = +document.getElementById("glow").value / 100, glass = +document.getElementById("glass").value / 100;
+    document.getElementById("glowOut").textContent = Math.round(glow * 100); document.getElementById("glassOut").textContent = Math.round(glass * 100);
+    document.querySelectorAll(".phone").forEach(function (ph) {
+      var list = ph.dataset.set === "appRow" ? APP : WID, scr = ph.querySelector(".screen"), prev = scr.querySelector(".scroll"), top = prev ? prev.scrollTop : 0;
+      ph.dataset.m = S.mode; ph.dataset.k = d.k; ph.dataset.size = d.size; ph.dataset.os = d.os;
+      var st = ph.style; st.setProperty("--dw", d.w); st.setProperty("--dh", d.h); st.setProperty("--sc", sc.toFixed(4));
+      st.setProperty("--safe-top", d.top); st.setProperty("--safe-bottom", d.bottom);
+      st.setProperty("--wsm", d.wsm + "px"); st.setProperty("--wm", d.wm + "px"); st.setProperty("--wl", d.wl + "px"); st.setProperty("--wgap", d.gap + "px");
+      st.setProperty("--ws", (d.wsm / 158).toFixed(3)); st.setProperty("--wr", (d.os === "android" ? 24 : 22) * d.wsm / 158 + "px"); st.setProperty("--appi", d.appi + "px");
+      st.setProperty("--glow-a", glow.toFixed(2)); st.setProperty("--glass-a", glass.toFixed(2));
+      scr.innerHTML = list[+ph.dataset.i][2](d, c);
+      var nx = scr.querySelector(".scroll"); if (nx) nx.scrollTop = top;
+    });
+    document.querySelectorAll("canvas.grid").forEach(function (cv) { drawGrid(cv, dark, glow); });
+    document.querySelectorAll("canvas.ic").forEach(function (cv) { var shape = cv.dataset.shape === "current" ? S.icon : cv.dataset.shape; drawIcon(cv, shape, cv.dataset.v || (dark ? "dark" : "base")); });
+    document.querySelectorAll(".iconopt").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.icon === S.icon)); });
+    document.querySelectorAll(".seg[data-key] button").forEach(function (b) { b.setAttribute("aria-pressed", String(S[b.parentElement.dataset.key] === b.dataset.v)); });
+    try { localStorage.setItem("cd-v2", JSON.stringify({ lang: S.lang, dev: S.dev, mode: S.mode, icon: S.icon })); } catch (e) {}
+  }
+  document.querySelectorAll(".seg[data-key]").forEach(function (g) { g.addEventListener("click", function (e) { var b = e.target.closest("button"); if (b) { S[g.dataset.key] = b.dataset.v; render(); } }); });
+  ["glow", "glass"].forEach(function (id) { document.getElementById(id).addEventListener("input", render); });
+  document.getElementById("iconRow").addEventListener("click", function (e) { var b = e.target.closest(".iconopt"); if (b) { S.icon = b.dataset.icon; render(); } });
+  document.addEventListener("click", function (e) {
+    if (!e.target.closest(".phone")) return;
+    var u = e.target.closest("[data-unit]"); if (u) { S.unit = u.dataset.unit; render(); return; }
+    if (e.target.closest("[data-next]")) { QI++; if (QI >= BAG.length) shuffle(); render(); return; }
+    if (e.target.closest("[data-cycle]")) { var ks = ["months", "years", "weeks"]; S.grid = ks[(ks.indexOf(S.grid) + 1) % ks.length]; render(); return; }
+    var cn = e.target.closest("[data-country]"); if (cn) { S.country = cn.dataset.country; render(); }
+  });
+  render();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(render);
+  setInterval(render, 60000);
+})();
+</script>
