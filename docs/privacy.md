@@ -1,0 +1,29 @@
+# 개인정보처리방침 · Privacy Policy
+
+**Carpe Diem · 하루의 정원** — 시행일: 출시일 (초안)
+
+## 한국어
+
+하루의 정원은 개인정보를 모으지 않습니다.
+
+- **기기 안에만:** 생년월일 · 나라 · 성별, 오늘의 한 줄과 마음, 가족의 돌(이름 · 생일), 숨 쉰 날은 이 폰 안에만 저장됩니다. 개발자나 다른 곳으로 보내지 않습니다.
+- **없는 것:** 계정, 광고, 분석 · 추적 도구, 서버가 없습니다.
+- **결제:** 응원하기 결제는 Google Play(또는 App Store)가 처리하며, 개발자는 결제 정보를 받지 않습니다.
+- **백업:** 폰의 백업을 켜 두었다면 설정과 기록이 Google 계정(또는 iCloud)의 암호화된 백업에 포함될 수 있습니다. 새 폰으로 옮길 때만 쓰입니다.
+- **알림:** 켜 둔 경우에만 하루 한 번, 폰 안에서 만들어집니다. 잠금 화면에는 지난 한 줄의 글을 보이지 않습니다.
+- **지우기:** 설정의 ‘모든 기록 지우기’ 또는 앱 삭제로 기기에서 지워집니다. 한 줄 기록만 지우거나 내보낼 수도 있습니다.
+- **어린이:** 13세 미만을 대상으로 하지 않습니다.
+- **문의:** (공개용 이메일 주소)
+
+## English
+
+Haru's Garden does not collect personal data.
+
+- **On your device only:** your birth date, country and sex, the lines and feelings you send, your family's stones (names, birthdays) and breathing days stay on this phone. Nothing is sent to the developer or anyone else.
+- **What isn't there:** no account, no ads, no analytics or tracking, no server.
+- **Payments:** support payments are handled by Google Play (or the App Store). The developer never receives payment details.
+- **Backup:** if device backup is on, settings and records may be included in your encrypted Google (or iCloud) backup, used only when moving to a new phone.
+- **Notifications:** only if you turn them on, once a day, created on the device. Past lines are never shown on the lock screen.
+- **Deleting:** "Erase all records" in Settings, or uninstalling the app, removes everything from the device. You can also clear or export just your lines.
+- **Children:** not directed at children under 13.
+- **Contact:** (public email address)

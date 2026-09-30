@@ -353,3 +353,10 @@
 "letter.sample4" = "Kong gave me a paw for the first time.";
 "letter.sample5" = "Snow fell quietly outside the window.";
 "dev.letter" = "Test: bring a seasonal letter";
+"help" = "When you need help";
+"help.body" = "When it feels too heavy, you don't have to carry it alone.\nTap to open the phone app.";
+"help.suicide" = "Suicide prevention line (Korea) 109";
+"help.crisis" = "Mental health crisis line (Korea) 1577-0199 · 24h";
+"help.global" = "In other countries: findahelpline.com";
+"licenses" = "Open source & data";
+"licenses.body" = "Noto Serif KR · Lora — SIL Open Font License 1.1\nUN World Population Prospects 2024 — CC BY 3.0 IGO\nAndroidX · Jetpack Compose — Apache License 2.0";

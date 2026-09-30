@@ -401,6 +401,8 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
                         FormRow(stringResource(R.string.recall_addSample), onClick = { state.addSampleYearAgo() }) {}
                         RowDivider()
                         FormRow(stringResource(R.string.recall_addRandom), onClick = { state.addSampleRandom() }) {}
+                        RowDivider()
+                        FormRow(stringResource(R.string.dev_letter), onClick = { state.addSampleLetter() }) {}
                     }
                 }
                 if (confirmClear) AlertDialog(
@@ -423,6 +425,22 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
                 FormRow(stringResource(R.string.support), onClick = onSupport) {
                     Icon(Icons.Filled.KeyboardArrowRight, null, tint = p.secondary)
                 }
+            }
+            // 도움이 필요할 때: 앱이 먼저 판단해 띄우지 않고, 늘 여기 조용히
+            FormSection(header = stringResource(R.string.help), footer = stringResource(R.string.help_body)) {
+                fun dial(n: String) = runCatching { ctx.startActivity(android.content.Intent(android.content.Intent.ACTION_DIAL, android.net.Uri.parse("tel:$n"))) }
+                FormRow(stringResource(R.string.help_suicide), onClick = { dial("109") }) {}
+                RowDivider()
+                FormRow(stringResource(R.string.help_crisis), onClick = { dial("15770199") }) {}
+                RowDivider()
+                FormRow(stringResource(R.string.help_global), onClick = { runCatching { ctx.startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse("https://findahelpline.com"))) } }) {}
+            }
+            FormSection {
+                var licenses by remember { mutableStateOf(false) }
+                FormRow(stringResource(R.string.licenses), onClick = { licenses = !licenses }) {
+                    Icon(if (licenses) Icons.Filled.KeyboardArrowDown else Icons.Filled.KeyboardArrowRight, null, tint = p.secondary)
+                }
+                if (licenses) TokenText(stringResource(R.string.licenses_body), Tokens.TypeScale.footnote, Modifier.padding(vertical = Tokens.Space.sp2), color = p.secondary)
             }
             FormSection {
                 FormRow(stringResource(R.string.erase), onClick = { confirmErase = true }) {}

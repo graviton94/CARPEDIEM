@@ -355,4 +355,11 @@
     <string name="letter_sample4">콩이가 처음으로 손을 줬다.</string>
     <string name="letter_sample5">창밖에 눈이 조용히 내렸다.</string>
     <string name="dev_letter">시험: 계절의 편지 오게</string>
+    <string name="help">도움이 필요할 때</string>
+    <string name="help_body">마음이 많이 무거울 땐, 혼자 견디지 않아도 돼요.\n누르면 전화 앱이 열려요.</string>
+    <string name="help_suicide">자살예방 상담전화 109</string>
+    <string name="help_crisis">정신건강 위기상담 1577-0199 · 24시간</string>
+    <string name="help_global">다른 나라에서는 findahelpline.com</string>
+    <string name="licenses">오픈소스 · 데이터 고지</string>
+    <string name="licenses_body">Noto Serif KR · Lora — SIL Open Font License 1.1\nUN 세계인구전망 2024 — CC BY 3.0 IGO\nAndroidX · Jetpack Compose — Apache License 2.0</string>
 </resources>

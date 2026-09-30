@@ -353,7 +353,14 @@
     "letter.sample3": "발표가 걱정된다.",
     "letter.sample4": "콩이가 처음으로 손을 줬다.",
     "letter.sample5": "창밖에 눈이 조용히 내렸다.",
-    "dev.letter": "시험: 계절의 편지 오게"
+    "dev.letter": "시험: 계절의 편지 오게",
+    "help": "도움이 필요할 때",
+    "help.body": "마음이 많이 무거울 땐, 혼자 견디지 않아도 돼요.\n누르면 전화 앱이 열려요.",
+    "help.suicide": "자살예방 상담전화 109",
+    "help.crisis": "정신건강 위기상담 1577-0199 · 24시간",
+    "help.global": "다른 나라에서는 findahelpline.com",
+    "licenses": "오픈소스 · 데이터 고지",
+    "licenses.body": "Noto Serif KR · Lora — SIL Open Font License 1.1\nUN 세계인구전망 2024 — CC BY 3.0 IGO\nAndroidX · Jetpack Compose — Apache License 2.0"
   },
   "en": {
     "tagline": "Cherish today.",
@@ -709,6 +716,13 @@
     "letter.sample3": "Worried about the presentation.",
     "letter.sample4": "Kong gave me a paw for the first time.",
     "letter.sample5": "Snow fell quietly outside the window.",
-    "dev.letter": "Test: bring a seasonal letter"
+    "dev.letter": "Test: bring a seasonal letter",
+    "help": "When you need help",
+    "help.body": "When it feels too heavy, you don't have to carry it alone.\nTap to open the phone app.",
+    "help.suicide": "Suicide prevention line (Korea) 109",
+    "help.crisis": "Mental health crisis line (Korea) 1577-0199 · 24h",
+    "help.global": "In other countries: findahelpline.com",
+    "licenses": "Open source & data",
+    "licenses.body": "Noto Serif KR · Lora — SIL Open Font License 1.1\nUN World Population Prospects 2024 — CC BY 3.0 IGO\nAndroidX · Jetpack Compose — Apache License 2.0"
   }
 }
