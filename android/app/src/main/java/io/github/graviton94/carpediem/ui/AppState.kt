@@ -169,11 +169,11 @@ class AppState(private val context: Context) {
         val v = lettersOpened - io.github.graviton94.carpediem.core.Letters.of(next, day, 1)!!.id; store.lettersOpened = v; lettersOpened = v
     }
 
-    /** 시험용 (캡처): 지난 30일에 여러 마음의 한 줄을 넣어 마음의 하늘을 채운다. */
+    /** 시험용 (캡처): 지난 30일에 여러 마음을 넣어 마음의 하늘을 채운다 (글 없이 마음만이라 편지에는 들어가지 않음). */
     fun addSampleMoods(today: LocalDate = nowDate()) {
         val fs = listOf(Feeling.JOY, Feeling.CALM, null, Feeling.THANKS, Feeling.HOPE, Feeling.CALM, Feeling.WORRY, Feeling.JOY, Feeling.SAD, Feeling.CALM, Feeling.THANKS, Feeling.JOY, Feeling.DISAPPOINT, Feeling.HOPE, Feeling.CALM, Feeling.JOY)
         var next = lines
-        fs.forEachIndexed { i, f -> next = Lines.add(next, DayLine(today.minusDays(1L + i * 29L / fs.size + (i % 3)), context.getString(R.string.recall_sample), f)) }
+        fs.forEachIndexed { i, f -> next = Lines.add(next, DayLine(today.minusDays(1L + i * 29L / fs.size + (i % 3)), "", f)) }
         store.lines = next; lines = next
     }
     /** 캡처용: 홈을 열면 이번 달 편지를 바로 펼친다. */

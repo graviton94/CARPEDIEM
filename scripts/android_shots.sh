@@ -43,8 +43,8 @@ open --es cd.now 2026-09-30T18:20;                                              
 open --es cd.now 2026-09-30T05:20;                                                                     shot g20_dawn 5
 # 1.3 깨닫기: 오늘의 질문 · 마음의 하늘 · 계절의 편지 (12월 2일)
 open --ez cd.question true --es cd.now $NOW;                                                          shot g29_question 5
-open --ez cd.moods true --es cd.now $NOW; swipe_up; sleep 2; swipe_up;                                  shot g30_mood 3
-open --ez cd.letter true --es cd.now 2026-12-02T10:00; swipe_up;                                        shot g31_letter 3
+open --ez cd.moods true --es cd.now $NOW; sleep 5; swipe_up; sleep 3; swipe_up;                        shot g30_mood 3
+open --ez cd.letter true --es cd.now 2026-12-02T10:00; sleep 5; swipe_up;                              shot g31_letter 3
 open --ez cd.openLetter true --es cd.now 2026-12-02T10:00;                                              shot g32_letter_open 4
 open --ez cd.letter true --ez cd.openLetter true --es cd.now 2026-12-02T21:30;                         shot g33_letter_night 4
 open --es cd.screen collection --es cd.now 2026-12-02T10:00; swipe_up; swipe_up;                       shot g34_letters 3
