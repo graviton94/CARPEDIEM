@@ -75,4 +75,8 @@ adb logcat -d ActivityManager:W ActivityTaskManager:W Choreographer:I OpenGLRend
 adb logcat -d | grep -iE "carpediem|ANR in" | tail -300 >> "$OUT/logcat_app.txt" || true
 # 앱이 멈춘 횟수 (0 이어야 함): 느린 첫 화면 · 무거운 그리기를 잡는다
 echo "app ANR: $(grep -c "ANR in $P" "$OUT/logcat_app.txt")" > "$OUT/anr.txt"; cat "$OUT/anr.txt"
+# 멈춘 순간 메인 스레드가 어디 있었는지 (ANR 기록). 루트가 되는 에뮬레이터 이미지에서만
+adb root >/dev/null 2>&1; sleep 3
+mkdir -p "$OUT/anr"; adb shell ls /data/anr 2>/dev/null | head -5 | while read -r f; do adb pull "/data/anr/$f" "$OUT/anr/" >/dev/null 2>&1; done
+ls "$OUT/anr" 2>/dev/null | head
 ls -la "$OUT"
