@@ -124,5 +124,6 @@ private fun MainActivity.debugSetup(state: AppState): Screen {
     if (x.hasExtra("cd.meet")) { if (x.getBooleanExtra("cd.meet", false)) state.begin(state.profile ?: state.defaultProfile()) else state.finishMeet() }
     if (x.hasExtra("cd.preview")) state.changePreviewAll(x.getBooleanExtra("cd.preview", false))
     x.getStringExtra("cd.now")?.let { state.fixedNow = LocalDateTime.parse(it) }
+    if (x.getBooleanExtra("cd.recall", false)) state.addSampleYearAgo()
     return when (x.getStringExtra("cd.screen")) { "settings" -> Screen.Settings; "widgets" -> Screen.WidgetPreview; "collection" -> Screen.Collection(Screen.Main); "support" -> Screen.Support(Screen.Main); else -> Screen.Main }
 }

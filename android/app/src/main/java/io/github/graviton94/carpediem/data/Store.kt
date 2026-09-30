@@ -137,6 +137,22 @@ class Store(context: Context) {
         get() = Lines.decode(prefs.getString("lines", null))
         set(v) = prefs.edit().putString("lines", Lines.encode(v)).apply()
 
+    /** 한 줄 기록만 지우기 (이미 정원에 놓인 이어 쓰기 흔적은 남음). */
+    fun clearLines() = prefs.edit().remove("lines").apply()
+
+    /** 기록 남기지 않기를 켜면 보낸 날짜만 남기고 글 · 마음은 저장하지 않는다. */
+    var keepLines: Boolean
+        get() = prefs.getBoolean("keepLines", true)
+        set(v) = prefs.edit().putBoolean("keepLines", v).apply()
+
+    /** 이어 쓰기 흔적을 얻은 날 (7 · 30 · 100 → 날짜). 기록을 지워도 남는다. 저장 형식 `7:epochDay,30:epochDay`. */
+    var streaks: Map<Int, LocalDate>
+        get() = prefs.getString("streaks", null).orEmpty().split(',').mapNotNull { e ->
+            val p = e.split(':'); val n = p.getOrNull(0)?.toIntOrNull(); val d = p.getOrNull(1)?.toLongOrNull()
+            if (n != null && d != null) n to LocalDate.ofEpochDay(d) else null
+        }.toMap()
+        set(v) = prefs.edit().putString("streaks", v.entries.joinToString(",") { "${it.key}:${it.value.toEpochDay()}" }).apply()
+
     fun eraseAll() = prefs.edit().clear().apply()
 
     companion object {

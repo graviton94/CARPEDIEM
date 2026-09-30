@@ -217,6 +217,9 @@ object Tokens {
             const val blinkMs = 170.0f
             const val pageMs = 520.0f
             const val letGoMs = 2200.0f
+            const val toastDelayMs = 900.0f
+            const val toastMs = 4200.0f
+            const val toastFadeMs = 420.0f
             const val lookEase = 0.12f
             const val restEase = 0.02f
             const val tiltRange = 6.0f

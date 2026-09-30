@@ -134,7 +134,7 @@ class DataTest {
         assertEquals(m.map { it.date }, m.map { it.date }.sortedDescending())
         assertEquals(d(2026, 3, 1), m.first { it.id == "candle" }.date)
         assertTrue(m.any { it.id == "feather" } && m.any { it.id == "snail" })
-        assertEquals(12, Moments.all(start).size)
+        assertEquals(15, Moments.all(start).size)
     }
 
     @Test fun linesOnePerDayAndRoundTrip() {
@@ -147,5 +147,23 @@ class DataTest {
         assertEquals(null, back[1].feeling)
         assertEquals("가나다", Lines.clean("  가나다라마  ", 3))
         assertEquals(emptyList(), Lines.decode(null))
+    }
+
+    @Test fun linesStreaksAndYearsAgo() {
+        val days = (0L until 8L).map { d(2026, 1, 1).plusDays(it) } + (0L until 30L).map { d(2026, 3, 1).plusDays(it) }
+        val list = days.map { DayLine(it, "줄", null) }
+        assertEquals(d(2026, 1, 7), Lines.streakReached(days, 7))
+        assertEquals(d(2026, 3, 30), Lines.streakReached(days, 30))
+        assertEquals(null, Lines.streakReached(days, 100))
+        // 기록을 지워도 이미 얻은 흔적은 남는다
+        val kept = Lines.streaks(list, emptyMap())
+        assertEquals(kept, Lines.streaks(emptyList(), kept))
+        val m = Moments.earned(d(2025, 12, 1), d(1990, 5, 1), 80.0, d(2026, 4, 1), streaks = kept).map { it.id }
+        assertTrue("pinwheel" in m && "paperboat" in m && "kite" !in m)
+        // 1년 뒤 오늘 (날짜만 남긴 줄은 빼고), 2월 29일은 평년에 2월 28일
+        val past = listOf(DayLine(d(2025, 9, 30), "작년", Feeling.HOPE), DayLine(d(2024, 9, 30), "재작년", null), DayLine(d(2025, 9, 30).minusYears(3), "", null), DayLine(d(2024, 2, 29), "윤날", null))
+        assertEquals(listOf(1 to "작년", 2 to "재작년"), Lines.yearsAgo(past, d(2026, 9, 30)).map { it.first to it.second.text })
+        assertEquals("윤날", Lines.yearsAgo(past, d(2025, 2, 28)).single().second.text)
+        assertEquals("2025-09-30 · 희망 · 작년", Lines.export(past.take(1)) { "희망" })
     }
 }

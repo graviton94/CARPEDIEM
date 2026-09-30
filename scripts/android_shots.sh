@@ -31,6 +31,7 @@ open --es cd.screen widgets --es cd.now $NOW;                                   
 open --ez cd.preview true --es cd.screen collection --es cd.now $NOW;                                  shot g16_collection 5
 open --ez cd.preview false --es cd.screen support --es cd.now $NOW;                                    shot g17_support 6
 adb shell input tap 540 1700; shot g18_support_tap 2
+open --es cd.now $NOW --ez cd.recall true; swipe_up; sleep 2; swipe_up; swipe_up; shot g21_letgo_recall 3
 open --es cd.now 2026-09-30T18:20;                                                                     shot g19_dusk 5
 open --es cd.now 2026-09-30T05:20;                                                                     shot g20_dawn 5
 # 인생의 계절 (다른 생년월일 · 다른 하루)

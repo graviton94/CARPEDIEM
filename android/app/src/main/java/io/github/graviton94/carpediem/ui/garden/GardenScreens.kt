@@ -304,6 +304,9 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 LetGoSection(state, now.toLocalDate())
             }
         }
+        // 한 줄을 보낸 뒤의 한마디 (화면 아래, 키보드 위)
+        GardenToast(state, Modifier.align(Alignment.BottomCenter).windowInsetsPadding(WindowInsets.navigationBars.union(WindowInsets.ime))
+            .padding(horizontal = margin).padding(bottom = Tokens.Space.sp6))
     }
 
     open?.let { m ->
@@ -316,7 +319,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
 /** 정원에 놓인 것 (최근 것부터). 개발자 모드의 ‘모두 미리 보기’면 전부. */
 internal fun gardenMoments(state: AppState, profile: LifeProfile, s: LifeSnapshot, now: LocalDateTime): List<Moment> =
     if (state.previewAll) Moments.all(now.toLocalDate())
-    else Moments.earned(state.store.startDate, profile.birthDate, s.expectancy, now.toLocalDate(), state.store.firstSkip, state.store.returned)
+    else Moments.earned(state.store.startDate, profile.birthDate, s.expectancy, now.toLocalDate(), state.store.firstSkip, state.store.returned, state.streaks)
 
 /** 오늘의 문장: 두 줄에 안 들어가면 글자를 한 단계씩 줄인다. 어절 단위로 줄을 바꾼다 (TokenText). */
 @Composable
@@ -335,17 +338,20 @@ private fun QuoteText(text: String) {
 internal fun objName(id: String) = when (id) {
     "moss" -> R.string.obj_moss; "teacup" -> R.string.obj_teacup; "cairn" -> R.string.obj_cairn; "pine" -> R.string.obj_pine
     "flower" -> R.string.obj_flower; "pond" -> R.string.obj_pond; "leaf" -> R.string.obj_leaf; "candle" -> R.string.obj_candle
-    "dandelion" -> R.string.obj_dandelion; "feather" -> R.string.obj_feather; "snail" -> R.string.obj_snail; else -> R.string.obj_acorn
+    "dandelion" -> R.string.obj_dandelion; "feather" -> R.string.obj_feather; "snail" -> R.string.obj_snail
+    "pinwheel" -> R.string.obj_pinwheel; "paperboat" -> R.string.obj_paperboat; "kite" -> R.string.obj_kite; else -> R.string.obj_acorn
 }
 internal fun objWhen(id: String) = when (id) {
     "moss" -> R.string.obj_moss_when; "teacup" -> R.string.obj_teacup_when; "cairn" -> R.string.obj_cairn_when; "pine" -> R.string.obj_pine_when
     "flower" -> R.string.obj_flower_when; "pond" -> R.string.obj_pond_when; "leaf" -> R.string.obj_leaf_when; "candle" -> R.string.obj_candle_when
-    "dandelion" -> R.string.obj_dandelion_when; "feather" -> R.string.obj_feather_when; "snail" -> R.string.obj_snail_when; else -> R.string.obj_acorn_when
+    "dandelion" -> R.string.obj_dandelion_when; "feather" -> R.string.obj_feather_when; "snail" -> R.string.obj_snail_when
+    "pinwheel" -> R.string.obj_pinwheel_when; "paperboat" -> R.string.obj_paperboat_when; "kite" -> R.string.obj_kite_when; else -> R.string.obj_acorn_when
 }
 internal fun objLine(id: String) = when (id) {
     "moss" -> R.string.obj_moss_line; "teacup" -> R.string.obj_teacup_line; "cairn" -> R.string.obj_cairn_line; "pine" -> R.string.obj_pine_line
     "flower" -> R.string.obj_flower_line; "pond" -> R.string.obj_pond_line; "leaf" -> R.string.obj_leaf_line; "candle" -> R.string.obj_candle_line
-    "dandelion" -> R.string.obj_dandelion_line; "feather" -> R.string.obj_feather_line; "snail" -> R.string.obj_snail_line; else -> R.string.obj_acorn_line
+    "dandelion" -> R.string.obj_dandelion_line; "feather" -> R.string.obj_feather_line; "snail" -> R.string.obj_snail_line
+    "pinwheel" -> R.string.obj_pinwheel_line; "paperboat" -> R.string.obj_paperboat_line; "kite" -> R.string.obj_kite_line; else -> R.string.obj_acorn_line
 }
 
 /** 놓인 것을 누르면: 생긴 날과 한 줄. 개수나 빈칸은 보이지 않는다. */

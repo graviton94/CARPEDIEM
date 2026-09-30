@@ -222,6 +222,9 @@ enum Tokens {
             static let blinkMs: CGFloat = 170.0
             static let pageMs: CGFloat = 520.0
             static let letGoMs: CGFloat = 2200.0
+            static let toastDelayMs: CGFloat = 900.0
+            static let toastMs: CGFloat = 4200.0
+            static let toastFadeMs: CGFloat = 420.0
             static let lookEase: CGFloat = 0.12
             static let restEase: CGFloat = 0.02
             static let tiltRange: CGFloat = 6.0

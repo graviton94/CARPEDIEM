@@ -95,6 +95,36 @@
       pastel(c, L.b(0, -21, 15, 20, 131, 0.06), "#B07A45", { seed: 131, lw: L.n(0.9) });
       pastel(c, L.b(0, -39, 18, 8, 132, 0.08), "#7A5B3A", { seed: 132, lw: L.n(0.9) });
       scribble(c, L.c([0, -46, 1, -50, 3, -53, 6, -55]), "#4A3524", 133, L.n(1.8));
+    } },
+    // 오늘의 한 줄을 이어 쓴 날 (7 · 30 · 100일). 바람에 실어 보내는 것들
+    { id: "pinwheel", ko: "바람개비", when: "한 줄을 7일 이어 쓴 날", draw: function (c, x, y, s) { var L = loc(x, y, s);
+      function A(q) { return q.map(function (v) { return [x + v[0] * s, y + v[1] * s]; }); }
+      smudge(c, x, y + L.n(1), L.n(18), L.n(4), "#3B3325", 0.22);
+      scribble(c, L.c([0, 0, 1, -20, -1, -42, 0, -64]), "#8A6A48", 161, L.n(2.2), { press: 0.8 });
+      var cx = 0, cy = -66, R = 24, cols = ["#E9A43A", "#9DB4B5", "#D98C7A", "#B8C98E"];
+      for (var i = 0; i < 4; i++) { var a = i * Math.PI / 2 + 0.35;
+        var tri = [[cx, cy], [cx + Math.cos(a) * R, cy + Math.sin(a) * R], [cx + Math.cos(a + 1.05) * R * 0.72, cy + Math.sin(a + 1.05) * R * 0.72]];
+        pastel(c, organic(A(tri), L.n(0.5), 162 + i, L.n(2.5)), cols[i], { seed: 162 + i, lw: L.n(0.8) }); }
+      pastel(c, L.b(cx, cy, 3.2, 3.2, 167, 0.05), "#6E5238", { seed: 167, lw: L.n(0.6) });
+    } },
+    { id: "paperboat", ko: "종이배", when: "한 줄을 30일 이어 쓴 날", draw: function (c, x, y, s) { var L = loc(x, y, s);
+      function A(q) { return q.map(function (v) { return [x + v[0] * s, y + v[1] * s]; }); }
+      pastel(c, L.b(0, -4, 50, 9, 171, 0.1), "#9DB4B5", { seed: 171, ang: -0.04, spread: 0.2, light: 0.28, lw: L.n(0.8) });
+      pastel(c, organic(A([[-30, -16], [30, -16], [20, -5], [-20, -5]]), L.n(0.6), 172, L.n(3)), "#F4EEDF", { seed: 172, lw: L.n(1) });
+      pastel(c, organic(A([[-15, -16], [15, -16], [1, -42]]), L.n(0.6), 173, L.n(3)), "#EAE2CF", { seed: 173, lw: L.n(1) });
+      scribble(c, L.c([1, -42, 1, -32, 0, -24, 0, -16]), "#B9B1A2", 174, L.n(0.8), { alpha: 0.8 });
+      scribble(c, L.c([-40, -2, -30, -4, -20, -1, -10, -3]), "#F6F4EC", 175, L.n(1), { alpha: 0.9 });
+    } },
+    { id: "kite", ko: "하늘의 연", when: "한 줄을 100일 이어 쓴 날", draw: function (c, x, y, s) { var L = loc(x, y, s);
+      function A(q) { return q.map(function (v) { return [x + v[0] * s, y + v[1] * s]; }); }
+      smudge(c, x - L.n(22), y + L.n(1), L.n(12), L.n(3), "#3B3325", 0.22);
+      scribble(c, L.c([-22, 0, -21, -4, -22, -8, -21, -12]), "#6E5238", 181, L.n(2.2));
+      scribble(c, L.c([-21, -12, -10, -40, 4, -58, 16, -70]), "#8A8174", 182, L.n(0.7), { alpha: 0.85, passes: 1 });
+      pastel(c, organic(A([[20, -122], [38, -96], [16, -70], [0, -98]]), L.n(0.6), 183, L.n(3)), "#D98C7A", { seed: 183, lw: L.n(1) });
+      scribble(c, [[x + L.n(20), y - L.n(122)], [x + L.n(16), y - L.n(70)]], INK, 184, L.n(0.7), { alpha: 0.7 });
+      scribble(c, [[x + L.n(0), y - L.n(98)], [x + L.n(38), y - L.n(96)]], INK, 185, L.n(0.7), { alpha: 0.7 });
+      scribble(c, L.c([16, -70, 24, -60, 12, -52, 22, -40]), "#8A8174", 186, L.n(0.7), { alpha: 0.85, passes: 1 });
+      [[21, -60, "#E9A43A"], [15, -50, "#B8C98E"]].forEach(function (b, i) { pastel(c, L.b(b[0], b[1], 3.6, 2.2, 187 + i, 0.1, 0.4), b[2], { seed: 187 + i, lw: L.n(0.5) }); });
     } }
   ];
   function drawObj(c, id, x, y, s) { OBJ.filter(function (o) { return o.id === id; })[0].draw(c, x, y, s); }

@@ -178,9 +178,59 @@ enum L10n {
     static var feelingCalm: String { tr("feeling.calm") }
     static var feelingSad: String { tr("feeling.sad") }
     static var feelingWorry: String { tr("feeling.worry") }
-    static var feelingAngry: String { tr("feeling.angry") }
+    static var feelingHope: String { tr("feeling.hope") }
+    static var feelingDisappoint: String { tr("feeling.disappoint") }
+    static var letgoMsgJoy1: String { tr("letgo.msg.joy.1") }
+    static var letgoMsgJoy2: String { tr("letgo.msg.joy.2") }
+    static var letgoMsgJoy3: String { tr("letgo.msg.joy.3") }
+    static var letgoMsgHope1: String { tr("letgo.msg.hope.1") }
+    static var letgoMsgHope2: String { tr("letgo.msg.hope.2") }
+    static var letgoMsgHope3: String { tr("letgo.msg.hope.3") }
+    static var letgoMsgCalm1: String { tr("letgo.msg.calm.1") }
+    static var letgoMsgCalm2: String { tr("letgo.msg.calm.2") }
+    static var letgoMsgCalm3: String { tr("letgo.msg.calm.3") }
+    static var letgoMsgThanks1: String { tr("letgo.msg.thanks.1") }
+    static var letgoMsgThanks2: String { tr("letgo.msg.thanks.2") }
+    static var letgoMsgThanks3: String { tr("letgo.msg.thanks.3") }
+    static var letgoMsgDisappoint1: String { tr("letgo.msg.disappoint.1") }
+    static var letgoMsgDisappoint2: String { tr("letgo.msg.disappoint.2") }
+    static var letgoMsgDisappoint3: String { tr("letgo.msg.disappoint.3") }
+    static var letgoMsgSad1: String { tr("letgo.msg.sad.1") }
+    static var letgoMsgSad2: String { tr("letgo.msg.sad.2") }
+    static var letgoMsgSad3: String { tr("letgo.msg.sad.3") }
+    static var letgoMsgWorry1: String { tr("letgo.msg.worry.1") }
+    static var letgoMsgWorry2: String { tr("letgo.msg.worry.2") }
+    static var letgoMsgWorry3: String { tr("letgo.msg.worry.3") }
+    static var letgoMsgNone1: String { tr("letgo.msg.none.1") }
+    static var letgoMsgNone2: String { tr("letgo.msg.none.2") }
+    static func recallTitle(_ years: String) -> String { tr("recall.title", years) }
+    static var recallOpen: String { tr("recall.open") }
+    static var recallClose: String { tr("recall.close") }
+    static func recallNotify(_ years: String) -> String { tr("recall.notify", years) }
+    static var recallNotifyText: String { tr("recall.notifyText") }
+    static var recallSample: String { tr("recall.sample") }
+    static var recallAddSample: String { tr("recall.addSample") }
+    static var lines: String { tr("lines") }
+    static var linesKeep: String { tr("lines.keep") }
+    static var linesKeepFooter: String { tr("lines.keepFooter") }
+    static var linesExport: String { tr("lines.export") }
+    static var linesExportEmpty: String { tr("lines.exportEmpty") }
+    static var linesExportTitle: String { tr("lines.exportTitle") }
+    static var linesClear: String { tr("lines.clear") }
+    static var linesClearConfirm: String { tr("lines.clearConfirm") }
+    static var linesClearAction: String { tr("lines.clearAction") }
+    static func linesCount(_ count: String) -> String { tr("lines.count", count) }
+    static var objPinwheel: String { tr("obj.pinwheel") }
+    static var objPinwheelWhen: String { tr("obj.pinwheel.when") }
+    static var objPinwheelLine: String { tr("obj.pinwheel.line") }
+    static var objPaperboat: String { tr("obj.paperboat") }
+    static var objPaperboatWhen: String { tr("obj.paperboat.when") }
+    static var objPaperboatLine: String { tr("obj.paperboat.line") }
+    static var objKite: String { tr("obj.kite") }
+    static var objKiteWhen: String { tr("obj.kite.when") }
+    static var objKiteLine: String { tr("obj.kite.line") }
 
-    static let allKeys: [String] = ["tagline", "you", "birthday", "country", "sex", "sex.other", "sex.male", "sex.female", "lifeExpectancy", "auto", "custom", "lifeExpectancy.footer", "begin", "privacy", "timeLeft", "unit.days", "unit.weeks", "unit.months", "unit.years", "words", "words.next", "path", "path.age", "path.expected", "flow", "flow.today", "flow.week", "flow.month", "flow.year", "left.hours", "left.minutes", "left.days", "lastDay", "calendar", "calendar.per.weeks", "calendar.per.months", "calendar.per.years", "calendar.legend", "season.spring", "season.summer", "season.autumn", "season.winter", "settings", "cancel", "done", "words.language", "words.korean", "words.english", "words.both", "widgets", "widgets.help1", "widgets.help2", "widgets.help3", "widgets.help4", "erase", "country.search", "country.source", "widget.daysLeft", "widget.today", "widget.todayLeft", "widget.todaySub", "widget.yearsLeft", "widget.monthsLeft", "lock.inline", "lock.rect.sub", "android.notification", "widget.unit", "widget.unit.desc", "widget.daysLeft.desc", "widget.today.desc", "widget.calendar.desc", "widget.empty", "erase.confirm", "erase.action", "expectancy.value", "country.world", "widgets.android1", "widgets.android2", "widgets.android3", "back", "design", "design.glass", "design.garden", "garden.meet.title", "garden.meet.sub", "garden.meet.go", "garden.drawing", "garden.haru", "garden.no", "garden.age0", "garden.down", "garden.close", "garden.preview", "garden.itemDate", "stone.basalt", "stone.granite", "stone.pinkgranite", "stone.sand", "stone.ochre", "stone.speckle", "stone.slate", "stone.gneiss", "stone.jasper", "stone.serpentine", "stone.jade", "stone.marble", "stone.quartz", "stone.ring", "obj.moss", "obj.moss.when", "obj.moss.line", "obj.teacup", "obj.teacup.when", "obj.teacup.line", "obj.cairn", "obj.cairn.when", "obj.cairn.line", "obj.pine", "obj.pine.when", "obj.pine.line", "obj.flower", "obj.flower.when", "obj.flower.line", "obj.pond", "obj.pond.when", "obj.pond.line", "obj.leaf", "obj.leaf.when", "obj.leaf.line", "obj.candle", "obj.candle.when", "obj.candle.line", "obj.dandelion", "obj.dandelion.when", "obj.dandelion.line", "obj.feather", "obj.feather.when", "obj.feather.line", "obj.snail", "obj.snail.when", "obj.snail.line", "obj.acorn", "obj.acorn.when", "obj.acorn.line", "notify.channel", "notify.keepsake", "notify.row", "notify.footer", "dev.unlocked", "garden.haruA11y", "collection", "collection.sub", "support", "support.title", "support.body", "support.tier1", "support.tier1.price", "support.tier2", "support.tier2.price", "support.tier3", "support.tier3.price", "support.once", "support.soon", "letgo.title", "letgo.sub", "letgo.feeling", "letgo.hint", "letgo.send", "letgo.done", "letgo.privacy", "feeling.joy", "feeling.thanks", "feeling.calm", "feeling.sad", "feeling.worry", "feeling.angry"]
+    static let allKeys: [String] = ["tagline", "you", "birthday", "country", "sex", "sex.other", "sex.male", "sex.female", "lifeExpectancy", "auto", "custom", "lifeExpectancy.footer", "begin", "privacy", "timeLeft", "unit.days", "unit.weeks", "unit.months", "unit.years", "words", "words.next", "path", "path.age", "path.expected", "flow", "flow.today", "flow.week", "flow.month", "flow.year", "left.hours", "left.minutes", "left.days", "lastDay", "calendar", "calendar.per.weeks", "calendar.per.months", "calendar.per.years", "calendar.legend", "season.spring", "season.summer", "season.autumn", "season.winter", "settings", "cancel", "done", "words.language", "words.korean", "words.english", "words.both", "widgets", "widgets.help1", "widgets.help2", "widgets.help3", "widgets.help4", "erase", "country.search", "country.source", "widget.daysLeft", "widget.today", "widget.todayLeft", "widget.todaySub", "widget.yearsLeft", "widget.monthsLeft", "lock.inline", "lock.rect.sub", "android.notification", "widget.unit", "widget.unit.desc", "widget.daysLeft.desc", "widget.today.desc", "widget.calendar.desc", "widget.empty", "erase.confirm", "erase.action", "expectancy.value", "country.world", "widgets.android1", "widgets.android2", "widgets.android3", "back", "design", "design.glass", "design.garden", "garden.meet.title", "garden.meet.sub", "garden.meet.go", "garden.drawing", "garden.haru", "garden.no", "garden.age0", "garden.down", "garden.close", "garden.preview", "garden.itemDate", "stone.basalt", "stone.granite", "stone.pinkgranite", "stone.sand", "stone.ochre", "stone.speckle", "stone.slate", "stone.gneiss", "stone.jasper", "stone.serpentine", "stone.jade", "stone.marble", "stone.quartz", "stone.ring", "obj.moss", "obj.moss.when", "obj.moss.line", "obj.teacup", "obj.teacup.when", "obj.teacup.line", "obj.cairn", "obj.cairn.when", "obj.cairn.line", "obj.pine", "obj.pine.when", "obj.pine.line", "obj.flower", "obj.flower.when", "obj.flower.line", "obj.pond", "obj.pond.when", "obj.pond.line", "obj.leaf", "obj.leaf.when", "obj.leaf.line", "obj.candle", "obj.candle.when", "obj.candle.line", "obj.dandelion", "obj.dandelion.when", "obj.dandelion.line", "obj.feather", "obj.feather.when", "obj.feather.line", "obj.snail", "obj.snail.when", "obj.snail.line", "obj.acorn", "obj.acorn.when", "obj.acorn.line", "notify.channel", "notify.keepsake", "notify.row", "notify.footer", "dev.unlocked", "garden.haruA11y", "collection", "collection.sub", "support", "support.title", "support.body", "support.tier1", "support.tier1.price", "support.tier2", "support.tier2.price", "support.tier3", "support.tier3.price", "support.once", "support.soon", "letgo.title", "letgo.sub", "letgo.feeling", "letgo.hint", "letgo.send", "letgo.done", "letgo.privacy", "feeling.joy", "feeling.thanks", "feeling.calm", "feeling.sad", "feeling.worry", "feeling.hope", "feeling.disappoint", "letgo.msg.joy.1", "letgo.msg.joy.2", "letgo.msg.joy.3", "letgo.msg.hope.1", "letgo.msg.hope.2", "letgo.msg.hope.3", "letgo.msg.calm.1", "letgo.msg.calm.2", "letgo.msg.calm.3", "letgo.msg.thanks.1", "letgo.msg.thanks.2", "letgo.msg.thanks.3", "letgo.msg.disappoint.1", "letgo.msg.disappoint.2", "letgo.msg.disappoint.3", "letgo.msg.sad.1", "letgo.msg.sad.2", "letgo.msg.sad.3", "letgo.msg.worry.1", "letgo.msg.worry.2", "letgo.msg.worry.3", "letgo.msg.none.1", "letgo.msg.none.2", "recall.title", "recall.open", "recall.close", "recall.notify", "recall.notifyText", "recall.sample", "recall.addSample", "lines", "lines.keep", "lines.keepFooter", "lines.export", "lines.exportEmpty", "lines.exportTitle", "lines.clear", "lines.clearConfirm", "lines.clearAction", "lines.count", "obj.pinwheel", "obj.pinwheel.when", "obj.pinwheel.line", "obj.paperboat", "obj.paperboat.when", "obj.paperboat.line", "obj.kite", "obj.kite.when", "obj.kite.line"]
 
     private static func tr(_ key: String, _ args: String...) -> String {
         let format = Bundle.main.localizedString(forKey: key, value: nil, table: nil)

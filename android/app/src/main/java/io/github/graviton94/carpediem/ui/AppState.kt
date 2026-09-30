@@ -73,17 +73,43 @@ class AppState(private val context: Context) {
     fun changeQuoteLanguage(v: QuoteLanguage) { store.quoteLanguage = v; quoteLanguage = v; Widgets.refresh(context) }
     fun changeUnit(v: LifeUnit) { store.unit = v; unit = v }
     fun changeGrid(v: GridScale) { store.grid = v; grid = v }
-    /** 오늘 이미 한 줄을 떠나보냈는지 (날이 바뀌면 다시 쓸 수 있다). */
-    var sentOn by mutableStateOf(store.lines.lastOrNull()?.date)
+    // ───── 오늘의 한 줄 ─────
+    /** 보낸 한 줄들 (기기 안에만). 화면에는 ‘몇 해 전 오늘’로만 드물게 돌아온다. */
+    var lines by mutableStateOf(store.lines)
         private set
+    /** 오늘 이미 한 줄을 떠나보냈는지 (날이 바뀌면 다시 쓸 수 있다). */
+    val sentOn: LocalDate? get() = lines.lastOrNull()?.date
+    var keepLines by mutableStateOf(store.keepLines)
+        private set
+    /** 이어 쓰기 흔적 (7 · 30 · 100일 → 얻은 날). */
+    var streaks by mutableStateOf(store.streaks)
+        private set
+    /** 보낸 뒤 잠깐 떠오르는 한마디 (마음에 맞춰). 보이고 나면 null. */
+    var toast by mutableStateOf<String?>(null)
 
     fun letGo(text: String, feeling: Feeling?, today: LocalDate = (fixedNow ?: LocalDateTime.now()).toLocalDate()) {
         val t = Lines.clean(text, Tokens.Garden.LetGo.maxChars.toInt()); if (t.isEmpty()) return
-        store.lines = Lines.add(store.lines, DayLine(today, t, feeling)); sentOn = today
+        // 기록 남기지 않기: 날짜만 (이어 쓰기 흔적은 이어 간다)
+        val line = if (keepLines) DayLine(today, t, feeling) else DayLine(today, "", null)
+        val next = Lines.add(lines, line)
+        store.lines = next; lines = next
+        val s = Lines.streaks(next, streaks); if (s != streaks) { store.streaks = s; streaks = s }
+        toast = Labels.letGoMessage(context, feeling)
+    }
+    fun changeKeepLines(v: Boolean) {
+        store.keepLines = v; keepLines = v
+        // 끄는 순간 지금까지의 글도 지운다 (날짜는 남겨 흔적을 잇는다)
+        if (!v) { val dates = lines.map { DayLine(it.date, "", null) }; store.lines = dates; lines = dates }
+    }
+    fun clearLines() { store.clearLines(); lines = emptyList() }
+    fun exportLines(): String = Lines.export(lines) { Labels.feeling(context, it) }
+    /** 시험용 (개발자 모드): 1년 전 오늘 보낸 한 줄을 하나 넣어 ‘1년 뒤 오늘’을 확인한다. */
+    fun addSampleYearAgo(today: LocalDate = (fixedNow ?: LocalDateTime.now()).toLocalDate()) {
+        val next = Lines.add(lines, DayLine(today.minusYears(1), context.getString(R.string.recall_sample), Feeling.HOPE)); store.lines = next; lines = next
     }
 
     fun eraseAll() {
-        store.eraseAll(); store.ensureQuoteSeed(); sentOn = null
+        store.eraseAll(); store.ensureQuoteSeed(); lines = emptyList(); streaks = emptyMap(); keepLines = true; toast = null
         profile = null; quoteLanguage = store.quoteLanguage; quote = store.todaysQuote(); design = store.design; meetPending = false; previewAll = false; notify = false; devMode = false; io.github.graviton94.carpediem.notify.Daily.schedule(context, false); Widgets.refresh(context)
     }
 
@@ -97,6 +123,13 @@ class AppState(private val context: Context) {
 object Labels {
     fun unit(c: Context, u: LifeUnit) = c.getString(when (u) { LifeUnit.DAYS -> R.string.unit_days; LifeUnit.WEEKS -> R.string.unit_weeks; LifeUnit.MONTHS -> R.string.unit_months; LifeUnit.YEARS -> R.string.unit_years })
     fun stone(c: Context, id: String): String = c.resources.getIdentifier("stone_$id", "string", c.packageName).let { if (it == 0) id else c.getString(it) }
+    fun feeling(c: Context, f: Feeling): String = c.getString(c.resources.getIdentifier("feeling_${f.name.lowercase()}", "string", c.packageName))
+    /** 보낸 뒤의 한마디: 마음마다 몇 가지 가운데 하나 (strings.json letgo.msg.<마음>.<번호>). 마음을 안 골랐으면 none. */
+    fun letGoMessage(c: Context, f: Feeling?): String {
+        val key = f?.name?.lowercase() ?: "none"
+        val ids = generateSequence(1) { it + 1 }.map { c.resources.getIdentifier("letgo_msg_${key}_$it", "string", c.packageName) }.takeWhile { it != 0 }.toList()
+        return if (ids.isEmpty()) c.getString(R.string.letgo_done) else c.getString(ids.random())
+    }
     fun design(c: Context, d: Design) = c.getString(when (d) { Design.GLASS -> R.string.design_glass; Design.GARDEN -> R.string.design_garden })
     fun season(c: Context, s: Season) = c.getString(when (s) { Season.SPRING -> R.string.season_spring; Season.SUMMER -> R.string.season_summer; Season.AUTUMN -> R.string.season_autumn; Season.WINTER -> R.string.season_winter })
     fun sex(c: Context, s: Sex) = c.getString(when (s) { Sex.OTHER -> R.string.sex_other; Sex.MALE -> R.string.sex_male; Sex.FEMALE -> R.string.sex_female })

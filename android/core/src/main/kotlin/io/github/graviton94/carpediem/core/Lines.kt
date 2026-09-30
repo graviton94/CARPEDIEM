@@ -3,9 +3,9 @@ package io.github.graviton94.carpediem.core
 import java.time.LocalDate
 
 /** 오늘의 한 줄에 실어 보내는 마음 (고르지 않아도 된다). */
-enum class Feeling { JOY, THANKS, CALM, SAD, WORRY, ANGRY }
+enum class Feeling { JOY, HOPE, CALM, THANKS, DISAPPOINT, SAD, WORRY }
 
-/** 하루에 한 줄. 떠나보낸 뒤에는 화면에 다시 보이지 않고, 기기 안에만 남는다. */
+/** 하루에 한 줄. 떠나보낸 뒤에는 화면에 다시 보이지 않고, 기기 안에만 남는다. text 가 비었으면 ‘기록 남기지 않기’로 날짜만 남긴 것. */
 data class DayLine(val date: LocalDate, val text: String, val feeling: Feeling?)
 
 object Lines {
@@ -24,6 +24,38 @@ object Lines {
             val day = p[0].toLongOrNull() ?: return@mapNotNull null
             DayLine(LocalDate.ofEpochDay(day), p[2], Feeling.entries.firstOrNull { it.name == p[1] })
         }.toList()
+
+    /** 이어 쓰기 흔적: 7 · 30 · 100일 (정원에 바람개비 · 종이배 · 연). */
+    val STREAKS = listOf(7, 30, 100)
+
+    /** 보낸 날들에서 n일을 처음으로 이어 쓴 날 (없으면 null). 빠진 날이 있어도 벌은 없고 다시 세기 시작할 뿐. */
+    fun streakReached(dates: List<LocalDate>, n: Int): LocalDate? {
+        var run = 0; var prev: LocalDate? = null
+        for (d in dates.distinct().sorted()) {
+            run = if (prev != null && d == prev.plusDays(1)) run + 1 else 1
+            if (run >= n) return d
+            prev = d
+        }
+        return null
+    }
+
+    /** 이미 얻은 흔적은 기록을 지워도 남는다: 예전 것과 새로 센 것 가운데 이른 날. */
+    fun streaks(list: List<DayLine>, kept: Map<Int, LocalDate>): Map<Int, LocalDate> =
+        STREAKS.mapNotNull { n -> listOfNotNull(kept[n], streakReached(list.map { it.date }, n)).minOrNull()?.let { n to it } }.toMap()
+
+    /**
+     * 몇 해 전 오늘 보낸 한 줄 (가까운 해부터). 글 없이 날짜만 남긴 날은 빼고,
+     * 2월 29일에 보낸 줄은 평년엔 2월 28일에 돌아온다.
+     */
+    fun yearsAgo(list: List<DayLine>, today: LocalDate): List<Pair<Int, DayLine>> =
+        list.filter { it.text.isNotBlank() && it.date.year < today.year }.mapNotNull { l ->
+            val md = if (l.date.monthValue == 2 && l.date.dayOfMonth == 29 && !today.isLeapYear) java.time.MonthDay.of(2, 28) else java.time.MonthDay.from(l.date)
+            if (md == java.time.MonthDay.from(today)) (today.year - l.date.year) to l else null
+        }.sortedBy { it.first }
+
+    /** 내보내기용 글 (한 줄에 하나: 날짜 · 마음 · 글). 마음 이름은 부르는 쪽이 정한다. */
+    fun export(list: List<DayLine>, feelingName: (Feeling) -> String): String =
+        list.filter { it.text.isNotBlank() }.joinToString("\n") { l -> listOfNotNull(l.date.toString(), l.feeling?.let(feelingName), l.text).joinToString(" · ") }
 
     /** 같은 날에 이미 보냈으면 그대로 (하루에 한 줄). 날짜순. */
     fun add(list: List<DayLine>, line: DayLine): List<DayLine> =

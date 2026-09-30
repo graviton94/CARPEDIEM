@@ -338,6 +338,35 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
                     Switch(state.notify, { toggleNotify(it) }, colors = SwitchDefaults.colors(checkedTrackColor = p.olive))
                 }
             }
+            if (state.design == Design.GARDEN) {
+                var confirmClear by remember { mutableStateOf(false) }
+                FormSection(header = stringResource(R.string.lines), footer = stringResource(R.string.lines_keepFooter)) {
+                    FormRow(stringResource(R.string.lines_keep), onClick = { state.changeKeepLines(!state.keepLines) }) {
+                        Switch(state.keepLines, { state.changeKeepLines(it) }, colors = SwitchDefaults.colors(checkedTrackColor = p.olive))
+                    }
+                    RowDivider()
+                    FormRow(stringResource(R.string.lines_export), onClick = {
+                        val text = state.exportLines()
+                        if (text.isBlank()) android.widget.Toast.makeText(ctx, ctx.getString(R.string.lines_exportEmpty), android.widget.Toast.LENGTH_SHORT).show()
+                        else ctx.startActivity(android.content.Intent.createChooser(android.content.Intent(android.content.Intent.ACTION_SEND).setType("text/plain")
+                            .putExtra(android.content.Intent.EXTRA_SUBJECT, ctx.getString(R.string.lines_exportTitle)).putExtra(android.content.Intent.EXTRA_TEXT, text), null))
+                    }) {
+                        TokenText(stringResource(R.string.lines_count, "${state.lines.count { it.text.isNotBlank() }}"), Tokens.TypeScale.subhead, color = p.secondary)
+                    }
+                    RowDivider()
+                    FormRow(stringResource(R.string.lines_clear), onClick = { confirmClear = true }) {}
+                    if (state.devMode) {
+                        RowDivider()
+                        FormRow(stringResource(R.string.recall_addSample), onClick = { state.addSampleYearAgo() }) {}
+                    }
+                }
+                if (confirmClear) AlertDialog(
+                    onDismissRequest = { confirmClear = false },
+                    title = { Text(stringResource(R.string.lines_clearConfirm)) },
+                    confirmButton = { TextButton(onClick = { confirmClear = false; state.clearLines() }) { Text(stringResource(R.string.lines_clearAction), color = p.danger) } },
+                    dismissButton = { TextButton(onClick = { confirmClear = false }) { Text(stringResource(R.string.cancel)) } },
+                )
+            }
             FormSection(header = stringResource(R.string.widgets)) {
                 listOf(Icons.Filled.Home to R.string.widgets_android1, Icons.Filled.Search to R.string.widgets_android2, Icons.Filled.Edit to R.string.widgets_android3).forEachIndexed { i, (icon, text) ->
                     if (i > 0) RowDivider()

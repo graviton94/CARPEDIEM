@@ -7,12 +7,12 @@ import java.time.MonthDay
 data class Moment(val id: String, val date: LocalDate)
 
 /**
- * 정원에 놓이는 것 12가지가 생기는 순간 (design/art/README.md).
- * 모두 시간이 흐르면 저절로 온다. 할 일이나 연속 기록은 없다.
+ * 정원에 놓이는 것 15가지가 생기는 순간 (design/art/README.md).
+ * 12가지는 시간이 흐르면 저절로 온다. 3가지(바람개비 · 종이배 · 연)는 오늘의 한 줄을 7 · 30 · 100일 이어 쓴 날에 온다 (빠져도 벌은 없음).
  * 날짜로만 정하므로 앱을 다시 설치해도 생년월일 · 시작일만 있으면 같은 것이 돌아온다 (문장 넘김 · 돌아옴 제외).
  */
 object Moments {
-    val ids = listOf("moss", "teacup", "cairn", "pine", "flower", "pond", "leaf", "candle", "dandelion", "feather", "snail", "acorn")
+    val ids = listOf("moss", "teacup", "cairn", "pine", "flower", "pond", "leaf", "candle", "dandelion", "feather", "snail", "acorn", "pinwheel", "paperboat", "kite")
 
     /** 북반구 기준 계절이 시작하는 날. */
     private val spring = MonthDay.of(3, 1)
@@ -21,7 +21,7 @@ object Moments {
     private val newYear = MonthDay.of(1, 1)
 
     /** 최근에 생긴 것부터. */
-    fun earned(start: LocalDate, birth: LocalDate, expectancy: Double, today: LocalDate, firstSkip: LocalDate? = null, returned: LocalDate? = null): List<Moment> {
+    fun earned(start: LocalDate, birth: LocalDate, expectancy: Double, today: LocalDate, firstSkip: LocalDate? = null, returned: LocalDate? = null, streaks: Map<Int, LocalDate> = emptyMap()): List<Moment> {
         val out = ArrayList<Moment>()
         fun add(id: String, d: LocalDate?) { if (d != null && !d.isBefore(start) && !d.isAfter(today)) out.add(Moment(id, d)) }
         add("moss", start)
@@ -36,6 +36,7 @@ object Moments {
         add("feather", firstSkip)
         add("snail", returned)
         add("acorn", nextSeasonChange(birth, expectancy, start))
+        add("pinwheel", streaks[7]); add("paperboat", streaks[30]); add("kite", streaks[100])
         return out.sortedByDescending { it.date }
     }
 

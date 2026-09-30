@@ -4,6 +4,16 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
+import kotlinx.coroutines.delay
+import java.time.format.FormatStyle
+import java.time.format.DateTimeFormatter
+import io.github.graviton94.carpediem.core.Lines
+import io.github.graviton94.carpediem.core.DayLine
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -46,8 +56,8 @@ import kotlin.math.PI
 import kotlin.math.sin
 
 private fun feelingName(f: Feeling) = when (f) {
-    Feeling.JOY -> R.string.feeling_joy; Feeling.THANKS -> R.string.feeling_thanks; Feeling.CALM -> R.string.feeling_calm
-    Feeling.SAD -> R.string.feeling_sad; Feeling.WORRY -> R.string.feeling_worry; Feeling.ANGRY -> R.string.feeling_angry
+    Feeling.JOY -> R.string.feeling_joy; Feeling.HOPE -> R.string.feeling_hope; Feeling.CALM -> R.string.feeling_calm; Feeling.THANKS -> R.string.feeling_thanks
+    Feeling.DISAPPOINT -> R.string.feeling_disappoint; Feeling.SAD -> R.string.feeling_sad; Feeling.WORRY -> R.string.feeling_worry
 }
 
 /**
@@ -80,6 +90,9 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
     Column(modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
         TokenText(stringResource(R.string.letgo_title), Tokens.TypeScale.title3)
         TokenText(stringResource(R.string.letgo_sub), Tokens.TypeScale.callout.serif(), color = p.secondary)
+        // 몇 해 전 오늘 보낸 한 줄: 먼저 조용히 알리고, 누르면 펼친다
+        val recalls = remember(state.lines, today) { Lines.yearsAgo(state.lines, today) }
+        recalls.forEach { (years, l) -> RecallCard(years, l) }
         val line = flying
         when {
             // 떠나보내는 중: 깃털과 함께 위로, 옆으로 살짝 흔들리며 옅어진다
@@ -134,3 +147,63 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
         TokenText(stringResource(R.string.letgo_privacy), Tokens.TypeScale.caption1, color = p.secondary)
     }
 }
+
+/** 몇 해 전 오늘의 한 줄. 처음엔 접혀 있고, 펼쳐 읽은 뒤 ‘다시 보내기’로 오늘은 접어 둔다. */
+@Composable
+private fun RecallCard(years: Int, line: DayLine) {
+    val p = Theme.palette
+    val ctx = LocalContext.current
+    val u = Theme.unit
+    var opened by rememberSaveable(line.date) { mutableStateOf(false) }
+    var gone by rememberSaveable(line.date) { mutableStateOf(false) }
+    if (gone) return
+    Column(
+        Modifier.fillMaxWidth().crayonBox(G.Colors.chip, G.Radius.box, G.Stroke.chip, seed = 990 + years).clickable { opened = true }
+            .padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3),
+        verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp2),
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
+            Image(GardenArt.obj(ctx, "feather"), null, Modifier.size(u * G.LetGo.feather * 0.7f))
+            TokenText(stringResource(R.string.recall_title, "$years"), Tokens.TypeScale.subhead, Modifier.weight(1f), weight = FontWeight.SemiBold)
+        }
+        if (!opened) TokenText(stringResource(R.string.recall_open), Tokens.TypeScale.footnote, color = p.secondary)
+        else {
+            val meta = listOfNotNull(line.date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)), line.feeling?.let { stringResource(feelingName(it)) }).joinToString(" · ")
+            TokenText(meta, Tokens.TypeScale.caption1, color = p.secondary)
+            TokenText(line.text, Tokens.TypeScale.headline.serif())
+            TokenText(stringResource(R.string.recall_close), Tokens.TypeScale.footnote, Modifier.clickable { gone = true }.padding(vertical = Tokens.Space.sp1), color = p.olive, weight = FontWeight.SemiBold)
+        }
+    }
+}
+
+/**
+ * 보낸 뒤 화면 아래에 잠깐 떠오르는 한마디 (마음에 맞춘 말). 깃털이 조금 날아간 뒤 나타나 몇 초 뒤 스르르 사라진다. 누르면 바로 닫힘.
+ */
+@Composable
+fun GardenToast(state: AppState, modifier: Modifier = Modifier) {
+    val ctx = LocalContext.current
+    val u = Theme.unit
+    val px = with(LocalDensity.current) { u.toPx() }
+    val msg = state.toast
+    val a = remember { Animatable(0f) }
+    var shown by remember { mutableStateOf<String?>(null) }
+    val m = G.Motion
+    LaunchedEffect(msg) {
+        if (msg == null) { a.animateTo(0f, tween(m.toastFadeMs.toInt())); shown = null; return@LaunchedEffect }
+        delay(m.toastDelayMs.toLong()); shown = msg
+        a.snapTo(0f); a.animateTo(1f, tween(m.toastFadeMs.toInt())); delay(m.toastMs.toLong()); a.animateTo(0f, tween(m.toastFadeMs.toInt()))
+        shown = null; if (state.toast == msg) state.toast = null
+    }
+    val text = shown ?: return
+    Row(
+        modifier.fillMaxWidth().graphicsLayer { alpha = a.value; translationY = (1f - a.value) * px * G.LetGo.drift * 0.5f }
+            .crayonBox(G.Colors.paper, G.Radius.box, G.Stroke.chip, seed = 998).clickable { state.toast = null }
+            .padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3)
+            .semantics { liveRegion = LiveRegionMode.Polite },
+        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp3),
+    ) {
+        Image(GardenArt.obj(ctx, "feather"), null, Modifier.size(u * G.LetGo.feather * 0.8f))
+        TokenText(text, Tokens.TypeScale.callout.serif(), Modifier.weight(1f))
+    }
+}
+

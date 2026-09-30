@@ -1,5 +1,6 @@
 package io.github.graviton94.carpediem.notify
 
+import io.github.graviton94.carpediem.core.Lines
 import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -58,16 +59,21 @@ object Daily {
         var title = context.getString(R.string.words)
         store.profile?.takeIf { store.design == Design.GARDEN }?.let { p ->
             val today = LocalDate.now()
-            val fresh = Moments.earned(store.startDate, p.birthDate, p.expectancy(store.table), today, store.firstSkip, store.returned).filter { it.date == today && it.id !in store.notifiedMoments }
+            val fresh = Moments.earned(store.startDate, p.birthDate, p.expectancy(store.table), today, store.firstSkip, store.returned, store.streaks).filter { it.date == today && it.id !in store.notifiedMoments }
             fresh.firstOrNull()?.let { m ->
                 val id = context.resources.getIdentifier("obj_${m.id}", "string", context.packageName)
                 if (id != 0) title = context.getString(R.string.notify_keepsake, context.getString(id))
                 store.notifiedMoments = store.notifiedMoments + fresh.map { it.id }
             }
         }
+        // 몇 해 전 오늘 보낸 한 줄이 있으면 그것을 알린다 (잠금 화면에는 글을 보이지 않음)
+        var body = text
+        Lines.yearsAgo(store.lines, LocalDate.now()).firstOrNull()?.let { (years, _) ->
+            title = context.getString(R.string.recall_notify, "$years"); body = context.getString(R.string.recall_notifyText)
+        }
         val open = PendingIntent.getActivity(context, 0, Intent(context, MainActivity::class.java), PendingIntent.FLAG_IMMUTABLE)
-        val n = NotificationCompat.Builder(context, CHANNEL).setSmallIcon(R.mipmap.ic_launcher_monochrome).setContentTitle(title).setContentText(text)
-            .setStyle(NotificationCompat.BigTextStyle().bigText(text)).setContentIntent(open).setAutoCancel(true).build()
+        val n = NotificationCompat.Builder(context, CHANNEL).setSmallIcon(R.mipmap.ic_launcher_monochrome).setContentTitle(title).setContentText(body)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(body)).setContentIntent(open).setAutoCancel(true).build()
         if (allowed(context)) NotificationManagerCompat.from(context).notify(ID, n)
     }
 }
