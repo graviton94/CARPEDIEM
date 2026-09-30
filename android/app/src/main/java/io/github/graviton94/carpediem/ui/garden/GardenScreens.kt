@@ -446,15 +446,8 @@ fun MeetScreen(state: AppState, onDone: () -> Unit) {
             Spacer(Modifier.height(Tokens.Space.sp2))
             TokenText(stringResource(R.string.garden_meet_sub), Tokens.TypeScale.subhead, color = p.secondary, align = TextAlign.Center)
             Spacer(Modifier.weight(1f))
-            val scale = u * (G.Layout.meetHaruWidth / G.Layout.haruArtWidth)
-            Box(Modifier.fillMaxWidth().height(u * G.Layout.haruBox * (G.Layout.meetHaruWidth / G.Layout.haruArtWidth) * 0.8f), contentAlignment = Alignment.BottomCenter) {
-                Image(GardenArt.strip(ctx, Season.SPRING), null, Modifier.offset(y = u * (G.Layout.stripHeight - G.Layout.stripLineY)).width(screenW).height(u * G.Layout.stripHeight), contentScale = ContentScale.FillBounds)
-                if (load.loading) TokenText(stringResource(R.string.garden_drawing), Tokens.TypeScale.footnote, Modifier.padding(bottom = Tokens.Space.sp8), color = p.secondary)
-                else Box(Modifier.offset(y = scale * (G.Layout.haruBox - G.Layout.haruGround))) {
-                    Haru(load, scale, Modifier)
-                    art?.let { Sparkles(it, scale) }
-                }
-            }
+            // 땅 한 줄 위에 하루 (돌의 페이지와 같은 배치), 첫 만남에만 반짝이
+            art?.let { BigStone(it, pet = false, hat = false, sparkle = true) }
             Spacer(Modifier.height(Tokens.Space.sp6))
             art?.let { TokenText(Labels.stone(ctx, it.meta.stone), Tokens.TypeScale.caption1, color = p.secondary) }
             Spacer(Modifier.weight(1f))
@@ -465,7 +458,7 @@ fun MeetScreen(state: AppState, onDone: () -> Unit) {
 }
 
 @Composable
-private fun Sparkles(art: HaruArt, scale: Dp) {
+internal fun Sparkles(art: HaruArt, scale: Dp) {
     val ctx = LocalContext.current
     val img: ImageBitmap = GardenArt.sparkle(ctx)
     val bb = art.meta.bbox; val s = G.Layout.sparkle

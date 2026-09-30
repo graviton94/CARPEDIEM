@@ -74,14 +74,16 @@ private fun speciesName(s: Species) = when (s) { Species.DOG -> R.string.species
 
 /** 돌 하나를 크게 (만남 · 돌의 페이지): 땅 한 줄 위에. */
 @Composable
-private fun BigStone(art: HaruArt, pet: Boolean, hat: Boolean, onOpen: (() -> Unit)? = null) {
+internal fun BigStone(art: HaruArt, pet: Boolean, hat: Boolean, onOpen: (() -> Unit)? = null, sparkle: Boolean = false) {
     val u = Theme.unit
     val scale = u * (G.Layout.meetHaruWidth / G.Layout.haruArtWidth) * (if (pet) G.Family.petScale else 1f)
     val boxH = scale * (G.Layout.haruGround - art.meta.bbox.top + if (hat) Tokens.Garden.Party.hatHeight else G.Layout.sparkle * 2)
     BoxWithConstraints(Modifier.fillMaxWidth().height(boxH + u * G.Layout.labelGap)) {
         val w = maxWidth
         val cx = w / 2 - scale * (art.meta.bbox.center.x - art.meta.box / 2)
-        HaruFigure(art, scale, Modifier.offset(cx - scale * (art.meta.box / 2), boxH - scale * G.Layout.haruGround), hat = hat, onOpen = onOpen)
+        val at = Modifier.offset(cx - scale * (art.meta.box / 2), boxH - scale * G.Layout.haruGround)
+        HaruFigure(art, scale, at, hat = hat, onOpen = onOpen)
+        if (sparkle) Box(at) { Sparkles(art, scale) }
         CrayonRule(Modifier.offset(y = boxH - u * 2).padding(horizontal = w * 0.2f), seed = 861)
     }
 }
@@ -139,7 +141,7 @@ fun StoneScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, id: S
                 val snap = LifeSnapshot(birth, exp, now)
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     TokenText(stringResource(R.string.stone_calendar, name), Tokens.TypeScale.headline, Modifier.weight(1f))
-                    GridScale.entries.sortedBy { it.ordinal }.forEachIndexed { i, g -> GardenChip(Labels.gridShort(ctx, g), g == grid, seed = 874 + i) { grid = g } }
+                    listOf(GridScale.WEEKS, GridScale.MONTHS, GridScale.YEARS).forEachIndexed { i, g -> GardenChip(Labels.gridShort(ctx, g), g == grid, seed = 874 + i) { grid = g } }
                 }
                 val cols = when (grid) { GridScale.WEEKS -> Tokens.Grid.weeksColumns; GridScale.MONTHS -> Tokens.Grid.monthsColumns; GridScale.YEARS -> Tokens.Grid.yearsColumns }
                 val shared = if (me) Int.MAX_VALUE else LifeSnapshot(birth, exp, Family.togetherSince(profile.birthDate, person!!).atStartOfDay()).lived(grid.unit)
@@ -263,7 +265,7 @@ fun AddPersonScreen(state: AppState, profile: LifeProfile, editId: String?, onDo
                     val art = HaruArt.of(seed, false)
                     TokenText(stringResource(R.string.add_meet, Family.cleanName(name)), Tokens.TypeScale.title2.serif(), Modifier.fillMaxWidth(), align = TextAlign.Center)
                     TokenText(Labels.stone(ctx, art.meta.stone), Tokens.TypeScale.subhead, Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.Center)
-                    BigStone(art, kind == Kind.PET, false)
+                    BigStone(art, kind == Kind.PET, false, sparkle = true)
                     if (rerolls < Family.REROLLS) TokenText(stringResource(R.string.add_reroll, "${Family.REROLLS - rerolls}"), Tokens.TypeScale.footnote,
                         Modifier.fillMaxWidth().clickable { seed = state.newSeed(); rerolls++ }.padding(vertical = Tokens.Space.sp2), color = p.olive, align = TextAlign.Center, weight = FontWeight.SemiBold)
                     GardenButton(stringResource(R.string.garden_meet_go), { val np = person(); state.savePerson(np); onDone(np.id) }, filled = true, seed = 910)
