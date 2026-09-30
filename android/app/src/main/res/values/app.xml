@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name" translatable="false">Carpe Diem</string>
+    <string name="app_name">Carpe Diem</string>
     <color name="ic_launcher_background">#E7E6DB</color>
     <color name="window_background">#E7E6DB</color>
     <style name="Theme.CarpeDiem" parent="android:Theme.Material.Light.NoActionBar">

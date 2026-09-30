@@ -155,7 +155,7 @@ internal fun shortName(n: String): String { val max = G.Family.nameChars.toInt()
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSettings: () -> Unit, onCollection: () -> Unit, onSupport: () -> Unit, onStone: (String?) -> Unit, onAddPerson: () -> Unit,
-               onBreath: (BreathKind, Int, Sound) -> Unit = { _, _, _ -> }, onGaze: () -> Unit = {}) {
+               onBreath: (BreathKind, Int, Sound) -> Unit = { _, _, _ -> }, onGaze: () -> Unit = {}, bare: Boolean = false) {
     val p = Theme.palette
     val ctx = LocalContext.current
     val density = LocalDensity.current
@@ -195,7 +195,8 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
         fun turned() = (scroll.value / pagePx).coerceIn(0f, 1f)
 
         // 키보드가 올라오면 넘기는 창 자체를 줄여, 입력칸을 키보드 위로 끌어올릴 수 있게
-        Column(Modifier.fillMaxSize().imePadding().verticalScroll(scroll)) {
+        // bare = 정원만 보기: 같은 정원에서 글자 · 이름표 · 둘째 장만 뺀다
+        Column(Modifier.fillMaxSize().imePadding().verticalScroll(scroll, enabled = !bare)) {
             Box(Modifier.fillMaxWidth().height(screenH).graphicsLayer {
                 val f = turned(); translationY = scroll.value * G.Layout.parallax; alpha = 1f - f * f
             }.clipToBounds()) {
@@ -214,7 +215,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 SkyTimeLayer(now, gy, topBottom, gy - haruAbove - u * G.Layout.minSkyGap, Modifier.fillMaxSize())
 
                 // 위: 남은 시간 · 단위 · 오늘의 문장
-                Column(
+                if (!bare) Column(
                     Modifier.fillMaxWidth().statusBarsPadding().padding(horizontal = margin).onGloballyPositioned { c -> topBottom = with(density) { (c.boundsInParent().bottom).toDp() } },
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp2),
@@ -305,21 +306,21 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
 
                 // 이름표 (가족이 있을 때) · 0세 · 기대수명
                 val px = with(density) { Pair(x0.toPx(), x1.toPx()) }
-                if (family) Box(Modifier.offset(y = gy + u * G.Layout.labelGap).fillMaxWidth()) {
+                if (family && !bare) Box(Modifier.offset(y = gy + u * G.Layout.labelGap).fillMaxWidth()) {
                     slots.forEachIndexed { i, sl -> TokenText(shortName(sl.name), Tokens.TypeScale.caption1, Modifier.centerAt(with(density) { xs[i].toPx() }, 0f, with(density) { screenW.toPx() }), weight = FontWeight.Medium, maxLines = 1) }
                 }
-                Box(Modifier.offset(y = gy + u * (G.Layout.labelGap + if (family) G.Layout.labelRow else 0f)).fillMaxWidth()) {
+                if (!bare) Box(Modifier.offset(y = gy + u * (G.Layout.labelGap + if (family) G.Layout.labelRow else 0f)).fillMaxWidth()) {
                     TokenText(stringResource(R.string.garden_age0), Tokens.TypeScale.caption1, Modifier.centerAt(px.first, 0f, px.second), color = p.secondary)
                     TokenText(stringResource(R.string.expectancy_value, Labels.years(s.expectancy)), Tokens.TypeScale.caption1, Modifier.centerAt(px.second, px.first, with(density) { screenW.toPx() }), color = p.secondary)
                 }
                 // 정원 아래쪽은 종이로 번져 둘째 장과 이어진다
                 Box(Modifier.align(Alignment.BottomCenter).fillMaxWidth().height(screenH * G.Layout.fadeTail)
                     .background(Brush.verticalGradient(listOf(Theme.gc.base.copy(alpha = 0f), Theme.gc.base))))
-                TokenText(stringResource(R.string.garden_down), Tokens.TypeScale.caption2, Modifier.align(Alignment.BottomCenter).navigationBarsPadding().padding(bottom = Tokens.Space.sp3), color = p.secondary, weight = FontWeight.Normal)
+                if (!bare) TokenText(stringResource(R.string.garden_down), Tokens.TypeScale.caption2, Modifier.align(Alignment.BottomCenter).navigationBarsPadding().padding(bottom = Tokens.Space.sp3), color = p.secondary, weight = FontWeight.Normal)
             }
 
             // 둘째 장: 흐르는 시간 · 인생 달력 · 모은 것 · 응원하기. 넘길수록 떠오른다.
-            Column(
+            if (!bare) Column(
                 Modifier.fillMaxWidth().heightIn(min = screenH).graphicsLayer {
                     val f = turned(); alpha = f; translationY = (1f - f) * pagePx * (1f - G.Layout.parallax) * G.Layout.pageSnap
                 }.statusBarsPadding().padding(horizontal = margin).padding(top = Tokens.Space.sp6)
@@ -380,7 +381,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
             }
         }
         // 한 줄을 보낸 뒤: 깃털이 내려오며 한마디 창
-        LetGoModal(state, Modifier.fillMaxSize())
+        if (!bare) LetGoModal(state, Modifier.fillMaxSize())
     }
 
     open?.let { m ->

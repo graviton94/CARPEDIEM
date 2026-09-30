@@ -244,7 +244,7 @@ private fun PauseCard(onKeep: () -> Unit, onStop: () -> Unit) {
 // ───────────────────────── 멍하니 보는 정원 ─────────────────────────
 
 /**
- * 숫자도 글자도 그림도 없이 땅선 하나와 나와 가족의 돌만. 돌들은 가끔 깜빡인다 (누르면 쓰다듬기만).
+ * 홈의 정원에서 글자만 뺀 화면: 하늘 · 해와 달 · 땅 · 나와 가족의 돌 · 놓인 것. 돌들은 가끔 깜빡인다 (누르면 쓰다듬기만).
  * 5분 뒤 스르르 어두워지고, 10분 뒤 화면 켜둠을 푼다. 소리는 마지막에 고른 바탕 소리 (끄고 켤 수 있음).
  */
 @Composable
@@ -267,22 +267,9 @@ fun GazeScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, onBack
     }
     BackHandler(onBack = onBack)
 
-    BoxWithConstraints(Modifier.fillMaxSize().paperBackground()) {
-        val u = Theme.unit
-        val screenH = maxHeight
-        // 비움: 하늘 그림 · 구름 · 들판 없이 바탕 한 빛과 땅선 하나, 그 위에 돌들
-        val gy = screenH * z.groundRatio
-        CrayonRule(Modifier.offset(y = gy - u * G.Stroke.box).fillMaxWidth().padding(horizontal = Theme.deviceClass.pageMargin), seed = 1030)
-        // 돌들 (정원과 같은 자리 규칙, 이름표 없이)
-        val haruScale = u * (G.Layout.haruWidth / G.Layout.haruArtWidth)
-        val slots = gardenSlots(state, profile, s, now, haruScale)
-        val targets = slots.map { sl -> sl.progress?.let { (G.Layout.pathStart + G.Layout.pathInset + (G.Layout.pathEnd - G.Layout.pathStart - 2 * G.Layout.pathInset) * it.toFloat().coerceIn(0f, 1f)).toDouble() * u.value } }
-        val widths = slots.map { sl -> (sl.art.meta.bbox.width * sl.scale.value).toDouble() }
-        val xs = Family.place(targets, widths, 0, (u * G.Layout.pathStart).value.toDouble(), (u * G.Layout.pathEnd).value.toDouble(), (G.Family.gap * u.value).toDouble(), (G.Family.minGap * u.value).toDouble()).map { it.toFloat().dp }
-        slots.forEachIndexed { i, sl ->
-            val cx = xs[i] - sl.scale * (sl.art.meta.bbox.center.x - sl.art.meta.box / 2)
-            HaruFigure(sl.art, sl.scale, Modifier.offset(cx - sl.scale * (sl.art.meta.box / 2), gy - sl.scale * G.Layout.haruGround), hat = sl.birthday)
-        }
+    Box(Modifier.fillMaxSize()) {
+        // 홈의 정원 그대로 (하늘 · 해와 달 · 땅 · 돌 · 놓인 것 · 밤빛), 글자만 없이
+        GardenHome(state, profile, now, onSettings = {}, onCollection = {}, onSupport = {}, onStone = {}, onAddPerson = {}, bare = true)
         // 스르르 어두워짐
         Box(Modifier.fillMaxSize().graphicsLayer { alpha = dim.value }.background(Color.Black))
         // 소리 끄고 켜기 (아주 작게), 나가는 법은 처음 3초만

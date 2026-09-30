@@ -367,7 +367,6 @@ object Tokens {
             const val dimMs = 30000.0f
             const val dimAlpha = 0.72f
             const val releaseAfter = 600.0f
-            const val groundRatio = 0.62f
         }
         object Sound {
             const val sampleRate = 22050.0f

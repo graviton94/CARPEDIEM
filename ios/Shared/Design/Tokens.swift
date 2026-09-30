@@ -372,7 +372,6 @@ enum Tokens {
             static let dimMs: CGFloat = 30000.0
             static let dimAlpha: CGFloat = 0.72
             static let releaseAfter: CGFloat = 600.0
-            static let groundRatio: CGFloat = 0.62
         }
         enum Sound {
             static let sampleRate: CGFloat = 22050.0

@@ -190,7 +190,7 @@ design/tokens.json, design/strings.json, data/*.csv   ← 유일한 원본
 | 항목 | 상태 | 어디 |
 |---|---|---|
 | 밤 장식 줄이기: 별 24→9, 반딧불 7→2, 가로등 · 돌 발치 · 달빛 번짐 옅게 | 완료 | 토큰 `garden.night` |
-| 숨 쉬기 · 정원만 보기: 하늘 그림 · 구름 · 들판 없이 바탕 한 빛과 땅선 하나, 숨 쉬는 하루 96→52 | 완료 | `BreathPages.kt`, 토큰 `garden.breath` · `garden.gaze` |
+| 숨 쉬기: 하늘 그림 · 구름 없이 바탕 한 빛과 선 하나, 숨 쉬는 하루 96→52. 정원만 보기: 홈의 정원에서 글자만 뺀 화면 (bare) | 완료 | `BreathPages.kt`, 토큰 `garden.breath` · `garden.gaze` |
 | ‘하루를 마무리하는 호흡’ (밤 홈의 한 줄) | 완료 | `breath.night` |
 | 앱 어투 하나로: 짧고 담담하게, 위로하듯 (‘당신’ · 높임 · 설교조 뺌) | 완료 | `design/strings.json` |
 
