@@ -134,7 +134,7 @@ class DataTest {
         assertEquals(m.map { it.date }, m.map { it.date }.sortedDescending())
         assertEquals(d(2026, 3, 1), m.first { it.id == "candle" }.date)
         assertTrue(m.any { it.id == "feather" } && m.any { it.id == "snail" })
-        assertEquals(15, Moments.all(start).size)
+        assertEquals(16, Moments.all(start).size)
     }
 
     @Test fun linesOnePerDayAndRoundTrip() {
@@ -220,8 +220,34 @@ class DataTest {
         assertEquals("엄마", back[0].name); assertEquals(mom.copy(name = "엄마"), back[0]); assertEquals(dog, back[1])
         assertEquals(d(1996, 5, 1), Family.togetherSince(d(1996, 5, 1), mom))
         assertEquals(d(2018, 5, 5), Family.togetherSince(d(1996, 5, 1), dog))
+        val friend = mom.copy(together = d(2015, 3, 1))
+        assertEquals(d(2015, 3, 1), Family.togetherSince(d(1996, 5, 1), friend))
+        assertEquals(friend.copy(name = "엄마"), Family.decode(Family.encode(listOf(friend)))[0])
+        // 1.1 기록(칸 11개)도 읽힘
+        assertEquals(null, Family.decode(Family.encode(listOf(mom)).substringBeforeLast("\t"))[0].together)
         // 한 줄의 받는 돌, 예전 기록(칸 3개)도 읽힘
         val lines = Lines.decode(Lines.encode(listOf(DayLine(d(2026, 10, 1), "고마워요", Feeling.THANKS, "k3f9a2qz"))) + "\n20000\t-\t예전")
         assertEquals("k3f9a2qz", lines[0].to); assertEquals(null, lines[1].to); assertEquals("예전", lines[1].text)
+    }
+
+    @Test fun breathPlan() {
+        val calm = Breath.Rhythm(4.0, 0.0, 6.0, 0.0)
+        val one = Breath.plan(calm, 1)
+        assertEquals(12, one.size)                     // 6번 × (들이쉼 · 내쉼)
+        assertEquals(60_000L, one.last().startMs + one.last().lengthMs)
+        assertTrue(one.none { it.step == BreathStep.HOLD })
+        val sleep = Breath.plan(Breath.Rhythm(4.0, 7.0, 8.0, 0.0), 1)
+        val end = sleep.last().startMs + sleep.last().lengthMs
+        assertTrue(end in 57_000L..76_000L, "마지막 숨은 끝까지: $end")
+        assertEquals(BreathStep.OUT, sleep.last().step)
+        assertEquals(BreathStep.IN, Breath.at(one, 1_000)!!.first.step)
+        assertEquals(BreathStep.OUT, Breath.at(one, 5_000)!!.first.step)
+        assertEquals(null, Breath.at(one, 60_000))
+        assertEquals(0f, Breath.fullness(BreathStep.IN, 0f), 1e-4f); assertEquals(1f, Breath.fullness(BreathStep.IN, 1f), 1e-4f)
+        val days = listOf(d(2026, 10, 1) to BreathKind.BOX)
+        assertEquals(days, Breath.decode(Breath.encode(days)))
+        // 숨의 흔적: 처음 숨 쉰 날 풍경
+        val m = Moments.earned(d(2026, 9, 1), d(1990, 1, 1), 80.0, d(2026, 10, 2), firstBreath = d(2026, 10, 1)).map { it.id }
+        assertTrue("windchime" in m)
     }
 }

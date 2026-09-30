@@ -317,7 +317,6 @@ enum Tokens {
             static let dogYears: CGFloat = 13.0
             static let catYears: CGFloat = 15.0
             static let otherYears: CGFloat = 10.0
-            static let tickShift: CGFloat = 4.0
             static let feather: CGFloat = 16.0
         }
         enum Touch {
@@ -334,6 +333,7 @@ enum Tokens {
             static let doubleMs: CGFloat = 280.0
             static let openMs: CGFloat = 420.0
             static let haptic: CGFloat = 1.0
+            static let holdMs: CGFloat = 600.0
         }
         enum Party {
             static let hatWidth: CGFloat = 22.0
@@ -347,6 +347,76 @@ enum Tokens {
                 static let cream: UInt32 = 0xD98C7AFF
                 static let flame: UInt32 = 0xF0A84AFF
             }
+        }
+        enum Breath {
+            static let calmIn: CGFloat = 4.0
+            static let calmOut: CGFloat = 6.0
+            static let boxIn: CGFloat = 4.0
+            static let boxHold: CGFloat = 4.0
+            static let boxOut: CGFloat = 4.0
+            static let boxRest: CGFloat = 4.0
+            static let sleepIn: CGFloat = 4.0
+            static let sleepHold: CGFloat = 7.0
+            static let sleepOut: CGFloat = 8.0
+            static let swell: CGFloat = 0.03
+            static let rise: CGFloat = 6.0
+            static let eyesAfter: CGFloat = 3.0
+            static let cueSeconds: CGFloat = 60.0
+            static let skyLift: CGFloat = 0.08
+            static let nightFrom: CGFloat = 22.0
+            static let line: CGFloat = 2.0
+        }
+        enum Gaze {
+            static let dimAfter: CGFloat = 300.0
+            static let dimMs: CGFloat = 30000.0
+            static let dimAlpha: CGFloat = 0.72
+            static let releaseAfter: CGFloat = 600.0
+            static let cloudSeconds: CGFloat = 180.0
+            static let clouds: CGFloat = 3.0
+            static let stars: CGFloat = 14.0
+        }
+        enum Sound {
+            static let sampleRate: CGFloat = 22050.0
+            static let volume: CGFloat = 0.35
+            static let chime: CGFloat = 0.5
+            static let chimeHz: CGFloat = 528.0
+            static let toneLow: CGFloat = 174.0
+            static let toneHigh: CGFloat = 177.0
+            static let fadeInMs: CGFloat = 2500.0
+            static let fadeOutMs: CGFloat = 1800.0
+            static let waveSeconds: CGFloat = 9.0
+        }
+        enum Night {
+            static let darkFrom: CGFloat = 20.0
+            static let darkUntil: CGFloat = 6.5
+            enum Colors {
+                static let base: UInt32 = 0x151A28FF
+                static let paper: UInt32 = 0x212838FF
+                static let ink: UInt32 = 0xECE4CFFF
+                static let inkSoft: UInt32 = 0xB3AC9CFF
+                static let dim: UInt32 = 0x394157FF
+                static let chip: UInt32 = 0x3E4B38FF
+                static let button: UInt32 = 0x57683FFF
+                static let future: UInt32 = 0x4E5873FF
+                static let scrim: UInt32 = 0x000000A6
+                static let sky: UInt32 = 0x10162AFF
+                static let lamp: UInt32 = 0xF4C37AFF
+                static let firefly: UInt32 = 0xF3E38EFF
+                static let moonGlow: UInt32 = 0xF1E9CFFF
+                static let post: UInt32 = 0x0C101BFF
+            }
+            static let skyAlpha: CGFloat = 0.84
+            static let groundAlpha: CGFloat = 0.78
+            static let stars: CGFloat = 24.0
+            static let twinkleMs: CGFloat = 3400.0
+            static let fireflies: CGFloat = 7.0
+            static let fireflyMs: CGFloat = 5200.0
+            static let lampX: CGFloat = 376.0
+            static let lampHeight: CGFloat = 118.0
+            static let lampGlow: CGFloat = 0.34
+            static let lampPool: CGFloat = 0.2
+            static let stoneGlow: CGFloat = 0.16
+            static let moonGlow: CGFloat = 0.22
         }
     }
 }

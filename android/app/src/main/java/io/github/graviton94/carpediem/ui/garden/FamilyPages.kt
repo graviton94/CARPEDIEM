@@ -95,7 +95,8 @@ internal fun BigStone(art: HaruArt, pet: Boolean, hat: Boolean, onOpen: (() -> U
  * id = null 이면 내 하루. 그 사람의 인생 달력은 남은 칸을 기본으로 숨긴다.
  */
 @Composable
-fun StoneScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, id: String?, onBack: () -> Unit, onEdit: (String) -> Unit) {
+fun StoneScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, id: String?, onBack: () -> Unit, onEdit: (String) -> Unit,
+                onBreath: (io.github.graviton94.carpediem.core.BreathKind, Int, io.github.graviton94.carpediem.core.Sound) -> Unit = { _, _, _ -> }) {
     val p = Theme.palette
     val ctx = LocalContext.current
     val today = now.toLocalDate()
@@ -108,6 +109,7 @@ fun StoneScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, id: S
     val birth = if (me) profile.birthDate else person!!.birth
     val metOn = person?.metOn ?: state.store.startDate
     val birthday = Family.isBirthday(birth, today)
+    var breathSheet by remember { mutableStateOf(false) }
     BackHandler(onBack = onBack)
     SkyBackground {
         Column(
@@ -154,12 +156,14 @@ fun StoneScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, id: S
                     }
                 }
             }
+            // 내 돌: 하루와 숨 쉬기
+            if (me) GardenButton(stringResource(R.string.breath), { breathSheet = true }, filled = false, seed = 879)
             // 이 돌에게 보낸 마음
             if (!me) {
                 val sent = state.lines.filter { it.to == id && it.text.isNotBlank() }
                 if (sent.isNotEmpty()) {
                     var openLines by rememberSaveable { mutableStateOf(false) }
-                    Column(Modifier.fillMaxWidth().crayonBox(G.Colors.paper, G.Radius.box, G.Stroke.chip, 878).clickable { openLines = !openLines }.padding(Tokens.Space.sp4),
+                    Column(Modifier.fillMaxWidth().crayonBox(Theme.gc.paper, G.Radius.box, G.Stroke.chip, 878).clickable { openLines = !openLines }.padding(Tokens.Space.sp4),
                         verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
                         Row { TokenText(stringResource(R.string.stone_lines), Tokens.TypeScale.subhead, Modifier.weight(1f), weight = FontWeight.SemiBold); TokenText(stringResource(R.string.stone_linesCount, "${sent.size}"), Tokens.TypeScale.subhead, color = p.secondary) }
                         if (!openLines) TokenText(stringResource(R.string.recall_open), Tokens.TypeScale.footnote, color = p.secondary)
@@ -173,12 +177,13 @@ fun StoneScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, id: S
             }
         }
     }
+    if (breathSheet) BreathSheet(state, now, { k, m, snd -> breathSheet = false; onBreath(k, m, snd) }) { breathSheet = false }
 }
 
 @Composable
 private fun Info(label: String, value: String, seed: Int, modifier: Modifier) {
     val p = Theme.palette
-    Column(modifier.crayonBox(G.Colors.paper, G.Radius.box, G.Stroke.chip, seed).padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
+    Column(modifier.crayonBox(Theme.gc.paper, G.Radius.box, G.Stroke.chip, seed).padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
         TokenText(label, Tokens.TypeScale.caption1, color = p.secondary)
         TokenText(value, Tokens.TypeScale.headline, maxLines = 1)
     }
@@ -202,6 +207,8 @@ fun AddPersonScreen(state: AppState, profile: LifeProfile, editId: String?, onDo
     var name by rememberSaveable { mutableStateOf(editing?.name ?: "") }
     var birth by rememberSaveable { mutableStateOf(editing?.birth?.toEpochDay()) }
     var sex by rememberSaveable { mutableStateOf(editing?.sex ?: Sex.OTHER) }
+    var together by rememberSaveable { mutableStateOf(editing?.together?.toEpochDay()) }
+    var pickingTogether by remember { mutableStateOf(false) }
     var seed by rememberSaveable { mutableStateOf(editing?.seed ?: state.newSeed()) }
     var rerolls by rememberSaveable { mutableStateOf(editing?.rerolls ?: 0) }
     var picking by remember { mutableStateOf(false) }
@@ -209,7 +216,8 @@ fun AddPersonScreen(state: AppState, profile: LifeProfile, editId: String?, onDo
     val back = { if (editing == null && step > 0) step-- else onBack() }
     BackHandler { back() }
     fun person() = Person(editing?.id ?: state.newPersonId(), Family.cleanName(name), kind, if (kind == Kind.PET) species else null, birth?.let { LocalDate.ofEpochDay(it) },
-        sex, editing?.country ?: profile.countryCode, seed, rerolls, editing?.metOn ?: (state.fixedNow ?: LocalDateTime.now()).toLocalDate(), editing?.showAhead ?: false)
+        sex, editing?.country ?: profile.countryCode, seed, rerolls, editing?.metOn ?: (state.fixedNow ?: LocalDateTime.now()).toLocalDate(), editing?.showAhead ?: false,
+        together?.let { LocalDate.ofEpochDay(it) })
 
     @Composable fun KindPicker() {
         TokenText(stringResource(R.string.add_kind), Tokens.TypeScale.title3.serif())
@@ -226,7 +234,7 @@ fun AddPersonScreen(state: AppState, profile: LifeProfile, editId: String?, onDo
         BasicTextField(
             value = name, onValueChange = { v -> name = v.replace('\n', ' ').take(Family.NAME_MAX * 2).let { if (it.codePointCount(0, it.length) <= Family.NAME_MAX) it else name } },
             singleLine = true, textStyle = Tokens.TypeScale.headline.style().copy(color = p.foreground), cursorBrush = SolidColor(p.foreground),
-            modifier = Modifier.fillMaxWidth().crayonBox(G.Colors.paper, G.Radius.box, G.Stroke.chip, 896).padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3),
+            modifier = Modifier.fillMaxWidth().crayonBox(Theme.gc.paper, G.Radius.box, G.Stroke.chip, 896).padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3),
             decorationBox = { inner -> Box { if (name.isEmpty()) TokenText(stringResource(R.string.add_nameHint), Tokens.TypeScale.headline, color = p.secondary); inner() } },
         )
     }
@@ -236,6 +244,13 @@ fun AddPersonScreen(state: AppState, profile: LifeProfile, editId: String?, onDo
             GardenChip(birth?.let { dateText(LocalDate.ofEpochDay(it)) } ?: stringResource(R.string.add_birthPick), birth != null, 897) { picking = true }
             GardenChip(stringResource(R.string.add_birthUnknown), birth == null, 898) { birth = null }
         }
+        // 함께한 첫날 (선택): 정하지 않으면 저절로
+        TokenText(stringResource(R.string.add_together), Tokens.TypeScale.subhead, color = p.secondary)
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
+            GardenChip(together?.let { dateText(LocalDate.ofEpochDay(it)) } ?: stringResource(R.string.add_birthPick), together != null, 902) { pickingTogether = true }
+            GardenChip(stringResource(R.string.add_togetherAuto), together == null, 903) { together = null }
+        }
+        TokenText(stringResource(R.string.add_togetherHelp), Tokens.TypeScale.caption1, color = p.secondary)
         if (kind == Kind.PERSON) {
             TokenText(stringResource(R.string.sex), Tokens.TypeScale.subhead, color = p.secondary)
             FlowRow(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
@@ -274,6 +289,19 @@ fun AddPersonScreen(state: AppState, profile: LifeProfile, editId: String?, onDo
         }
     }
 
+    if (pickingTogether) {
+        val dp = rememberDatePickerState(initialSelectedDateMillis = (together?.let { LocalDate.ofEpochDay(it) } ?: LocalDate.now()).atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli())
+        DatePickerDialog(
+            onDismissRequest = { pickingTogether = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    dp.selectedDateMillis?.let { ms -> val d = Instant.ofEpochMilli(ms).atZone(ZoneOffset.UTC).toLocalDate(); if (!d.isAfter(LocalDate.now())) together = d.toEpochDay() }
+                    pickingTogether = false
+                }) { Text(stringResource(R.string.done)) }
+            },
+            dismissButton = { TextButton(onClick = { pickingTogether = false }) { Text(stringResource(R.string.cancel)) } },
+        ) { DatePicker(state = dp) }
+    }
     if (picking) {
         val init = (birth?.let { LocalDate.ofEpochDay(it) } ?: LocalDate.now().minusYears(if (kind == Kind.PET) 3 else 30)).atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli()
         val dp = rememberDatePickerState(initialSelectedDateMillis = init)

@@ -110,7 +110,7 @@ fun CollectionScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, 
         }
     }
     open?.let { m ->
-        ModalBottomSheet(onDismissRequest = { open = null }, containerColor = G.Colors.paper) { ItemSheet(m) { open = null } }
+        ModalBottomSheet(onDismissRequest = { open = null }, containerColor = Theme.gc.paper) { ItemSheet(m) { open = null } }
     }
 }
 
@@ -149,7 +149,7 @@ fun SupportScreen(state: AppState, now: LocalDateTime, onBack: () -> Unit) {
             ).forEachIndexed { i, (name, price, obj) ->
                 Row(
                     Modifier.fillMaxWidth().heightIn(min = Tokens.Layout.tapTarget + Tokens.Space.sp4)
-                        .crayonBox(if (i == 1) G.Colors.chip else null, G.Radius.button, G.Stroke.box, seed = 920 + i * 3).clickable { soon = true }
+                        .crayonBox(if (i == 1) Theme.gc.chip else null, G.Radius.button, G.Stroke.box, seed = 920 + i * 3).clickable { soon = true }
                         .padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp2),
                     verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp3),
                 ) {
@@ -158,7 +158,7 @@ fun SupportScreen(state: AppState, now: LocalDateTime, onBack: () -> Unit) {
                     TokenText(stringResource(price), Tokens.TypeScale.headline, color = p.secondary)
                 }
             }
-            if (soon) Box(Modifier.fillMaxWidth().crayonBox(G.Colors.paper, G.Radius.box, G.Stroke.chip, seed = 940).padding(Tokens.Space.sp4)) {
+            if (soon) Box(Modifier.fillMaxWidth().crayonBox(Theme.gc.paper, G.Radius.box, G.Stroke.chip, seed = 940).padding(Tokens.Space.sp4)) {
                 TokenText(stringResource(R.string.support_soon), Tokens.TypeScale.subhead, Modifier.fillMaxWidth(), align = TextAlign.Center)
             }
             TokenText(stringResource(R.string.support_once), Tokens.TypeScale.footnote, Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.Center)

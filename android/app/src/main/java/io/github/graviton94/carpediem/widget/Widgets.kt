@@ -109,12 +109,16 @@ private class WidgetData(context: Context) {
     val dark = (context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
     val palette = Palette(dark)
     val now: LocalDateTime = LocalDateTime.now()
+    init { gardenNight = io.github.graviton94.carpediem.ui.garden.SkyTime.isDark(now) }
 }
+
+/** 정원 위젯 글자색: 밤 · 새벽이면 그림도 어두워지므로 밝은 글자 (앱과 같은 규칙). */
+@Volatile private var gardenNight = false
 
 // ───────────────────────── 정원 디자인 ─────────────────────────
 
-private val gInk get() = color(Tokens.Garden.Colors.ink, Tokens.Garden.Colors.ink)
-private val gSub get() = color(Tokens.Garden.Colors.inkSoft, Tokens.Garden.Colors.inkSoft)
+private val gInk get() = (if (gardenNight) Tokens.Garden.Night.Colors.ink else Tokens.Garden.Colors.ink).let { color(it, it) }
+private val gSub get() = (if (gardenNight) Tokens.Garden.Night.Colors.inkSoft else Tokens.Garden.Colors.inkSoft).let { color(it, it) }
 
 /** 정원 그림 바탕 + 글자. 종이 그림이라 다크 모드에서도 밝게. */
 @Composable

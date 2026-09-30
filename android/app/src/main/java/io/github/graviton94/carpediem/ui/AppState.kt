@@ -1,5 +1,6 @@
 package io.github.graviton94.carpediem.ui
 
+import io.github.graviton94.carpediem.core.BreathKind
 import io.github.graviton94.carpediem.core.Person
 import java.time.LocalDateTime
 import io.github.graviton94.carpediem.design.Tokens
@@ -132,6 +133,26 @@ class AppState(private val context: Context) {
         val next = Lines.add(lines, DayLine(today.minusYears(1), context.getString(R.string.recall_sample), Feeling.HOPE)); store.lines = next; lines = next
     }
 
+    // ───── 숨 ─────
+    var breaths by mutableStateOf(store.breaths)
+        private set
+    var breathKind by mutableStateOf(store.breathKind)
+        private set
+    var breathMinutes by mutableStateOf(store.breathMinutes)
+        private set
+    var sound by mutableStateOf(store.sound)
+        private set
+    fun chooseBreath(kind: BreathKind, minutes: Int, s: io.github.graviton94.carpediem.core.Sound) {
+        store.breathKind = kind; store.breathMinutes = minutes; store.sound = s; breathKind = kind; breathMinutes = minutes; sound = s
+    }
+    fun changeSound(s: io.github.graviton94.carpediem.core.Sound) { store.sound = s; sound = s }
+    /** 숨을 끝까지 쉰 날 (하루에 여러 번이어도 한 줄). */
+    fun recordBreath(kind: BreathKind, today: LocalDate = (fixedNow ?: LocalDateTime.now()).toLocalDate()) {
+        if (breaths.any { it.first == today && it.second == kind }) return
+        val next = breaths + (today to kind); store.breaths = next; breaths = next
+    }
+    val firstBreath: LocalDate? get() = breaths.minOfOrNull { it.first }
+
     // ───── 가족의 정원 ─────
     var people by mutableStateOf(store.people)
         private set
@@ -144,7 +165,7 @@ class AppState(private val context: Context) {
     fun newPersonId(): String = (1..8).map { "abcdefghijkmnpqrstuvwxyz23456789".random() }.joinToString("")
 
     fun eraseAll() {
-        store.eraseAll(); store.ensureQuoteSeed(); unit = store.unit; grid = store.grid; defaultUnit = unit; defaultGrid = grid; lines = emptyList(); streaks = emptyMap(); keepLines = true; toast = null; randomLine = null; people = emptyList()
+        store.eraseAll(); store.ensureQuoteSeed(); unit = store.unit; grid = store.grid; defaultUnit = unit; defaultGrid = grid; lines = emptyList(); streaks = emptyMap(); keepLines = true; toast = null; randomLine = null; people = emptyList(); breaths = emptyList(); breathKind = store.breathKind; breathMinutes = store.breathMinutes; sound = store.sound
         profile = null; quoteLanguage = store.quoteLanguage; quote = store.todaysQuote(); design = store.design; meetPending = false; previewAll = false; notify = false; devMode = false; io.github.graviton94.carpediem.notify.Daily.schedule(context, false); Widgets.refresh(context)
     }
 

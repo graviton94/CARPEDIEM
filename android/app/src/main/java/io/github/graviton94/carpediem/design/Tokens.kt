@@ -312,7 +312,6 @@ object Tokens {
             const val dogYears = 13.0f
             const val catYears = 15.0f
             const val otherYears = 10.0f
-            const val tickShift = 4.0f
             const val feather = 16.0f
         }
         object Touch {
@@ -329,6 +328,7 @@ object Tokens {
             const val doubleMs = 280.0f
             const val openMs = 420.0f
             const val haptic = 1.0f
+            const val holdMs = 600.0f
         }
         object Party {
             const val hatWidth = 22.0f
@@ -342,6 +342,76 @@ object Tokens {
                 val cream = Color(0xFFD98C7A)
                 val flame = Color(0xFFF0A84A)
             }
+        }
+        object Breath {
+            const val calmIn = 4.0f
+            const val calmOut = 6.0f
+            const val boxIn = 4.0f
+            const val boxHold = 4.0f
+            const val boxOut = 4.0f
+            const val boxRest = 4.0f
+            const val sleepIn = 4.0f
+            const val sleepHold = 7.0f
+            const val sleepOut = 8.0f
+            const val swell = 0.03f
+            const val rise = 6.0f
+            const val eyesAfter = 3.0f
+            const val cueSeconds = 60.0f
+            const val skyLift = 0.08f
+            const val nightFrom = 22.0f
+            const val line = 2.0f
+        }
+        object Gaze {
+            const val dimAfter = 300.0f
+            const val dimMs = 30000.0f
+            const val dimAlpha = 0.72f
+            const val releaseAfter = 600.0f
+            const val cloudSeconds = 180.0f
+            const val clouds = 3.0f
+            const val stars = 14.0f
+        }
+        object Sound {
+            const val sampleRate = 22050.0f
+            const val volume = 0.35f
+            const val chime = 0.5f
+            const val chimeHz = 528.0f
+            const val toneLow = 174.0f
+            const val toneHigh = 177.0f
+            const val fadeInMs = 2500.0f
+            const val fadeOutMs = 1800.0f
+            const val waveSeconds = 9.0f
+        }
+        object Night {
+            const val darkFrom = 20.0f
+            const val darkUntil = 6.5f
+            object Colors {
+                val base = Color(0xFF151A28)
+                val paper = Color(0xFF212838)
+                val ink = Color(0xFFECE4CF)
+                val inkSoft = Color(0xFFB3AC9C)
+                val dim = Color(0xFF394157)
+                val chip = Color(0xFF3E4B38)
+                val button = Color(0xFF57683F)
+                val future = Color(0xFF4E5873)
+                val scrim = Color(0xA6000000)
+                val sky = Color(0xFF10162A)
+                val lamp = Color(0xFFF4C37A)
+                val firefly = Color(0xFFF3E38E)
+                val moonGlow = Color(0xFFF1E9CF)
+                val post = Color(0xFF0C101B)
+            }
+            const val skyAlpha = 0.84f
+            const val groundAlpha = 0.78f
+            const val stars = 24.0f
+            const val twinkleMs = 3400.0f
+            const val fireflies = 7.0f
+            const val fireflyMs = 5200.0f
+            const val lampX = 376.0f
+            const val lampHeight = 118.0f
+            const val lampGlow = 0.34f
+            const val lampPool = 0.2f
+            const val stoneGlow = 0.16f
+            const val moonGlow = 0.22f
         }
     }
 }

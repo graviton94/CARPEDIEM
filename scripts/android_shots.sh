@@ -36,6 +36,9 @@ open --es cd.now $NOW --ez cd.recall true; swipe_up; sleep 2; swipe_up; swipe_up
 open --ez cd.family true --es cd.now $NOW;                                                             shot g22_family 5
 open --es cd.screen stone --es cd.now $NOW;                                                            shot g23_stone 4
 open --es cd.screen add --es cd.now $NOW;                                                              shot g24_add 3
+open --es cd.now 2026-09-30T23:10;                                                                     shot g25_family_night 5
+open --es cd.screen breath --es cd.now $NOW;                                                           shot g26_breath_in 3; shot g27_breath_later 5
+open --es cd.screen gaze --es cd.now 2026-09-30T23:10;                                                 shot g28_gaze_night 5
 open --es cd.now 2026-09-30T18:20;                                                                     shot g19_dusk 5
 open --es cd.now 2026-09-30T05:20;                                                                     shot g20_dawn 5
 # 인생의 계절 (다른 생년월일 · 다른 하루)

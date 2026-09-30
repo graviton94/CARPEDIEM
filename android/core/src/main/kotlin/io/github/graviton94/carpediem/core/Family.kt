@@ -23,6 +23,8 @@ data class Person(
     val rerolls: Int = 0,
     val metOn: LocalDate,
     val showAhead: Boolean = false,
+    /** 함께한 첫날을 직접 정했으면 그날 (null = 저절로: 두 삶이 겹친 첫날). */
+    val together: LocalDate? = null,
 )
 
 object Family {
@@ -36,14 +38,15 @@ object Family {
     // ───── 저장: 한 줄에 한 명, 칸은 탭 ─────
     fun encode(list: List<Person>): String = list.joinToString("\n") { p ->
         listOf(p.id, cleanName(p.name), p.kind.name, p.species?.name ?: "-", p.birth?.toEpochDay()?.toString() ?: "-", p.sex.name, p.country,
-            p.seed.toString(), p.rerolls.toString(), p.metOn.toEpochDay().toString(), if (p.showAhead) "1" else "0").joinToString("\t")
+            p.seed.toString(), p.rerolls.toString(), p.metOn.toEpochDay().toString(), if (p.showAhead) "1" else "0", p.together?.toEpochDay()?.toString() ?: "-").joinToString("\t")
     }
 
     fun decode(s: String?): List<Person> = s.orEmpty().lineSequence().mapNotNull { row ->
         val f = row.split('\t'); if (f.size < 11) return@mapNotNull null
         runCatching {
             Person(f[0], f[1], Kind.valueOf(f[2]), f[3].takeIf { it != "-" }?.let { Species.valueOf(it) }, f[4].toLongOrNull()?.let { LocalDate.ofEpochDay(it) },
-                Sex.valueOf(f[5]), f[6], f[7].toLong(), f[8].toInt(), LocalDate.ofEpochDay(f[9].toLong()), f[10] == "1")
+                Sex.valueOf(f[5]), f[6], f[7].toLong(), f[8].toInt(), LocalDate.ofEpochDay(f[9].toLong()), f[10] == "1",
+                f.getOrNull(11)?.toLongOrNull()?.let { LocalDate.ofEpochDay(it) })
         }.getOrNull()
     }.toList()
 
@@ -66,8 +69,9 @@ object Family {
 
     fun daysUntil(to: LocalDate, today: LocalDate) = ChronoUnit.DAYS.between(today, to)
 
-    /** 함께한 첫날: 두 삶이 겹친 첫날 (반려동물은 생일 · 온 날). 생일을 모르면 정원에 부른 날. */
+    /** 함께한 첫날: 직접 정한 날, 없으면 두 삶이 겹친 첫날 (반려동물은 생일 · 온 날), 생일도 모르면 정원에 부른 날. */
     fun togetherSince(myBirth: LocalDate, p: Person): LocalDate {
+        p.together?.let { return it }
         val b = p.birth ?: return p.metOn
         return if (p.kind == Kind.PET) b else maxOf(myBirth, b)
     }

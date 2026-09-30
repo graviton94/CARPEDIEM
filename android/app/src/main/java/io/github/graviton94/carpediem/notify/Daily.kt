@@ -59,7 +59,7 @@ object Daily {
         var title = context.getString(R.string.words)
         store.profile?.takeIf { store.design == Design.GARDEN }?.let { p ->
             val today = LocalDate.now()
-            val fresh = Moments.earned(store.startDate, p.birthDate, p.expectancy(store.table), today, store.firstSkip, store.returned, store.streaks).filter { it.date == today && it.id !in store.notifiedMoments }
+            val fresh = Moments.earned(store.startDate, p.birthDate, p.expectancy(store.table), today, store.firstSkip, store.returned, store.streaks, store.breaths.minOfOrNull { it.first }).filter { it.date == today && it.id !in store.notifiedMoments }
             fresh.firstOrNull()?.let { m ->
                 val id = context.resources.getIdentifier("obj_${m.id}", "string", context.packageName)
                 if (id != 0) title = context.getString(R.string.notify_keepsake, context.getString(id))

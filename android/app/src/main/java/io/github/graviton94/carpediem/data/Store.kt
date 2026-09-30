@@ -1,5 +1,8 @@
 package io.github.graviton94.carpediem.data
 
+import io.github.graviton94.carpediem.core.Breath
+import io.github.graviton94.carpediem.core.BreathKind
+import io.github.graviton94.carpediem.core.Sound
 import io.github.graviton94.carpediem.core.Family
 import io.github.graviton94.carpediem.core.Person
 import io.github.graviton94.carpediem.core.Species
@@ -192,6 +195,22 @@ class Store(context: Context) {
         val f = io.github.graviton94.carpediem.design.Tokens.Garden.Family
         when (it) { Species.DOG -> f.dogYears; Species.CAT -> f.catYears; Species.OTHER -> f.otherYears }.toDouble()
     }
+
+    // ───── 숨 ─────
+    /** 숨 쉰 날과 종류 (시간 · 횟수는 세지 않음). */
+    var breaths: List<Pair<LocalDate, BreathKind>>
+        get() = Breath.decode(prefs.getString("breaths", null))
+        set(v) = prefs.edit().putString("breaths", Breath.encode(v)).apply()
+    /** 마지막에 고른 숨 · 분 · 소리 (다음에 그대로). */
+    var breathKind: BreathKind
+        get() = runCatching { BreathKind.valueOf(prefs.getString("breathKind", null)!!) }.getOrDefault(BreathKind.CALM)
+        set(v) = prefs.edit().putString("breathKind", v.name).apply()
+    var breathMinutes: Int
+        get() = prefs.getInt("breathMinutes", 1)
+        set(v) = prefs.edit().putInt("breathMinutes", v).apply()
+    var sound: Sound
+        get() = runCatching { Sound.valueOf(prefs.getString("sound", null)!!) }.getOrDefault(Sound.WAVES)
+        set(v) = prefs.edit().putString("sound", v.name).apply()
 
     fun eraseAll() = prefs.edit().clear().apply()
 

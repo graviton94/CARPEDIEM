@@ -144,7 +144,7 @@ object Crayon {
 fun Modifier.crayonBox(fillColor: Color? = null, radius: Float = Tokens.Garden.Radius.box, strokeWidth: Float = Tokens.Garden.Stroke.box, seed: Int = 1): Modifier {
     val ctx = LocalContext.current
     val u = with(LocalDensity.current) { Theme.unit.toPx() }
-    val ink = Tokens.Garden.Colors.ink
+    val ink = Theme.gc.ink
     val line = Crayon.tooth(GardenArt.toothLine(ctx), u)
     val fillMask = Crayon.tooth(GardenArt.toothFill(ctx), u)
     return this.drawWithCache {
@@ -166,9 +166,10 @@ fun CrayonRule(modifier: Modifier = Modifier, seed: Int = 7) {
     val u = with(LocalDensity.current) { Theme.unit.toPx() }
     val mask = Crayon.tooth(GardenArt.toothLine(ctx), u)
     val w = Tokens.Garden.Stroke.rule
+    val ink = Theme.gc.ink
     Box(modifier.fillMaxWidth().height(Theme.unit * (w * 3)).drawWithCache {
         val pts = Crayon.line(0f, size.width, size.height / 2, u * 5, seed, u * 0.6f)
-        onDrawBehind { with(Crayon) { textured(mask) { stroke(pts, w * u, Tokens.Garden.Colors.ink.copy(alpha = 0.7f), seed, closed = false, passes = 1) } } }
+        onDrawBehind { with(Crayon) { textured(mask) { stroke(pts, w * u, ink.copy(alpha = 0.7f), seed, closed = false, passes = 1) } } }
     })
 }
 
@@ -180,11 +181,12 @@ fun CrayonBar(value: Float, color: Color, modifier: Modifier = Modifier, seed: I
     val line = Crayon.tooth(GardenArt.toothLine(ctx), u)
     val fillMask = Crayon.tooth(GardenArt.toothFill(ctx), u)
     val r = Tokens.Garden.Radius.bar; val sw = Tokens.Garden.Stroke.bar
+    val ink = Theme.gc.ink
     Box(modifier.fillMaxWidth().height(Theme.unit * (r * 2 + sw * 2)).drawWithCache {
         val inset = sw * u; val h = size.height - inset * 2; val w = size.width - inset * 2
         val outline = Crayon.roundRect(inset, inset, w, h, h / 2, seed, u * 0.6f)
         val filled = Crayon.roundRect(inset, inset, max(h, w * value.coerceIn(0f, 1f)), h, h / 2, seed + 1, u * 0.6f)
-        onDrawBehind { with(Crayon) { textured(fillMask) { fill(filled, color, u) }; textured(line) { stroke(outline, sw * u, Tokens.Garden.Colors.ink, seed + 2) } } }
+        onDrawBehind { with(Crayon) { textured(fillMask) { fill(filled, color, u) }; textured(line) { stroke(outline, sw * u, ink, seed + 2) } } }
     })
 }
 
@@ -225,7 +227,7 @@ fun CrayonCalendar(total: Int, filled: Int, columns: Int, modifier: Modifier = M
                 shared.close()
             }
         }
-        val ink = Tokens.Garden.Colors.ink
+        val ink = Theme.gc.ink; val futureC = Theme.gc.future
         onDrawBehind {
             if (total <= 0) return@onDrawBehind
             with(Crayon) {
@@ -235,7 +237,7 @@ fun CrayonCalendar(total: Int, filled: Int, columns: Int, modifier: Modifier = M
                     season.forEach { drawPath(it, ink.copy(alpha = L.pebbleLine), style = Stroke(u * 0.7f)) }
                     drawPath(shared, Tokens.Garden.Colors.now, style = Stroke(u * 1.1f))
                     drawPath(now, ink, style = Stroke(u * 0.9f))
-                    drawPath(ahead, Tokens.Garden.Colors.future, style = Stroke(u * 0.8f))
+                    drawPath(ahead, futureC, style = Stroke(u * 0.8f))
                 }
             }
         }
@@ -243,4 +245,5 @@ fun CrayonCalendar(total: Int, filled: Int, columns: Int, modifier: Modifier = M
 }
 
 /** 종이 바탕 (정원 디자인의 모든 화면 뒤). */
-fun Modifier.paperBackground(): Modifier = this.background(Tokens.Garden.Colors.paper)
+@androidx.compose.runtime.Composable
+fun Modifier.paperBackground(): Modifier = this.background(Theme.gc.base)

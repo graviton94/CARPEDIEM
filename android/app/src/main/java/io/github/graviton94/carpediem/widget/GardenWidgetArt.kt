@@ -48,7 +48,7 @@ object GardenWidgetArt {
         val w = max(1, wPx); val h = max(1, hPx)
         val bmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
         val c = Canvas(bmp)
-        c.drawColor(Tokens.Garden.Colors.paper.toArgb())
+        c.drawColor((if (SkyTime.isDark(now)) Tokens.Garden.Night.Colors.base else Tokens.Garden.Colors.paper).toArgb())
         val season = s?.season ?: Season.SPRING
         val units = if (kind == Kind.DAYS || kind == Kind.TODAY) W.small else W.wide
         val u = w / units
@@ -59,17 +59,17 @@ object GardenWidgetArt {
         c.drawBitmap(sky, null, RectF(0f, 0f, w.toFloat(), w * sky.height / sky.width.toFloat()), paint)
 
         val gy = h * when (kind) { Kind.LARGE -> W.largeGroundRatio; Kind.FAMILY -> W.familyGround; else -> W.groundRatio }
-        // 하루의 시간에 따른 하늘빛 (앱 정원과 같은 규칙)
-        SkyTime.at(now).takeIf { it.alpha > 0f }?.let { t ->
-            val top = t.color.copy(alpha = t.alpha).toArgb(); val low = t.color.copy(alpha = t.alpha * Tokens.Garden.SkyTime.groundKeep).toArgb()
-            c.drawRect(0f, 0f, w.toFloat(), h.toFloat(), Paint().apply { shader = LinearGradient(0f, 0f, 0f, max(1f, gy), top, low, Shader.TileMode.CLAMP) })
-        }
         if (kind != Kind.CALENDAR) {
             val strip = asset(context, "strip_${key(season)}.png")
             val sh = w * strip.height / strip.width.toFloat(); val lineY = sh * (L.stripLineY / L.stripHeight)
             c.drawBitmap(strip, null, RectF(0f, gy - lineY, w.toFloat(), gy - lineY + sh), paint)
         }
 
+        // 하루의 시간에 따른 하늘빛 (앱 정원과 같은 규칙, 땅 그림까지 덮음)
+        SkyTime.at(now).takeIf { it.alpha > 0f }?.let { t ->
+            val top = t.color.copy(alpha = t.alpha).toArgb(); val low = t.color.copy(alpha = t.alpha * t.groundKeep).toArgb()
+            c.drawRect(0f, 0f, w.toFloat(), h.toFloat(), Paint().apply { shader = LinearGradient(0f, 0f, 0f, max(1f, gy), top, low, Shader.TileMode.CLAMP) })
+        }
         // 해 · 달: 폰 시각
         if (kind == Kind.TODAY || kind == Kind.LARGE || kind == Kind.FAMILY) {
             val hour = now.hour + now.minute / 60f

@@ -74,11 +74,25 @@ object Fonts {
     val notoSerifKr = FontFamily(Font(R.font.notoserifkr_medium, FontWeight.Medium), Font(R.font.notoserifkr_semibold, FontWeight.SemiBold), Font(R.font.notoserifkr_semibold, FontWeight.Bold))
 }
 
-/** 현재 모드로 풀어 둔 색. 화면 코드는 이 값만 쓴다. 정원 디자인은 종이 그림이라 늘 밝은 종이 · 잉크 색. */
-data class Palette(val dark: Boolean, val garden: Boolean = false) {
+/**
+ * 정원 디자인의 색 한 벌: 낮 · 해 질 녘은 밝은 종이, 밤 · 새벽은 폰 테마와 상관없이 어두운 남색 (Tokens.Garden.Night).
+ * 정원 화면의 바탕 · 상자 · 선 · 칩은 이 값만 쓴다. 하루(돌) 그림의 먹선은 늘 같은 먹색.
+ */
+class GardenColors(val night: Boolean, val base: Color, val paper: Color, val ink: Color, val inkSoft: Color, val dim: Color,
+                   val chip: Color, val button: Color, val future: Color, val scrim: Color) {
+    companion object {
+        private val d = Tokens.Garden.Colors
+        val Day = GardenColors(false, d.paper, d.paper, d.ink, d.inkSoft, d.dim, d.chip, d.button, d.future, d.scrim)
+        val Night = Tokens.Garden.Night.Colors.let { n -> GardenColors(true, n.base, n.paper, n.ink, n.inkSoft, n.dim, n.chip, n.button, n.future, n.scrim) }
+        fun of(night: Boolean) = if (night) Night else Day
+    }
+}
+
+/** 현재 모드로 풀어 둔 색. 화면 코드는 이 값만 쓴다. 정원 디자인은 시각에 따라 밝은 종이 · 어두운 남색. */
+data class Palette(val dark: Boolean, val garden: Boolean = false, val night: Boolean = false) {
     private fun c(d: DynamicColor) = d.resolve(dark)
-    private val g = Tokens.Garden.Colors
-    val base = if (garden) g.paper else c(Tokens.Palette.base)
+    private val g = GardenColors.of(night)
+    val base = if (garden) g.base else c(Tokens.Palette.base)
     val foreground = if (garden) g.ink else c(Tokens.Palette.foreground)
     val secondary = if (garden) g.inkSoft else c(Tokens.Palette.secondary)
     val dim = if (garden) g.dim else c(Tokens.Palette.dim)
@@ -100,6 +114,7 @@ val LocalDeviceClass = staticCompositionLocalOf { DeviceClass.Regular }
 val LocalDesign = staticCompositionLocalOf { Design.GLASS }
 /** 정원 단위 한 칸의 크기 (화면 폭 / Tokens.Garden.unitWidth). */
 val LocalGardenUnit = staticCompositionLocalOf { 1.dp }
+val LocalGardenColors = staticCompositionLocalOf { GardenColors.Day }
 
 object Theme {
     val palette: Palette @Composable @ReadOnlyComposable get() = LocalPalette.current
@@ -107,16 +122,22 @@ object Theme {
     val design: Design @Composable @ReadOnlyComposable get() = LocalDesign.current
     val garden: Boolean @Composable @ReadOnlyComposable get() = LocalDesign.current == Design.GARDEN
     val unit: Dp @Composable @ReadOnlyComposable get() = LocalGardenUnit.current
+    /** 정원의 색 (밤이면 어두운 한 벌). */
+    val gc: GardenColors @Composable @ReadOnlyComposable get() = LocalGardenColors.current
 }
 
 @Composable
-fun CarpeDiemTheme(dark: Boolean = isSystemInDarkTheme(), deviceClass: DeviceClass, design: Design = Design.GLASS, screenWidth: Dp = Tokens.Garden.unitWidth.dp, content: @Composable () -> Unit) {
+fun CarpeDiemTheme(dark: Boolean = isSystemInDarkTheme(), deviceClass: DeviceClass, design: Design = Design.GLASS, screenWidth: Dp = Tokens.Garden.unitWidth.dp,
+                   night: Boolean = false, content: @Composable () -> Unit) {
     val garden = design == Design.GARDEN
-    val p = Palette(dark && !garden, garden)
+    val gardenNight = garden && night
+    val p = Palette(dark && !garden, garden, gardenNight)
+    val gc = GardenColors.of(gardenNight)
     val unit = screenWidth / Tokens.Garden.unitWidth
-    val scheme = if (dark && !garden) darkColorScheme(primary = p.olive, onPrimary = p.onOlive, background = p.base, surface = p.base, onSurface = p.foreground, onBackground = p.foreground)
+    val scheme = if ((dark && !garden) || gardenNight) darkColorScheme(primary = p.olive, onPrimary = p.onOlive, background = p.base, surface = if (garden) gc.paper else p.base,
+        surfaceContainerHigh = if (garden) gc.paper else p.base, onSurface = p.foreground, onBackground = p.foreground)
     else lightColorScheme(primary = p.olive, onPrimary = p.onOlive, background = p.base, surface = p.base, onSurface = p.foreground, onBackground = p.foreground)
-    CompositionLocalProvider(LocalPalette provides p, LocalDeviceClass provides deviceClass, LocalDesign provides design, LocalGardenUnit provides unit) {
+    CompositionLocalProvider(LocalPalette provides p, LocalDeviceClass provides deviceClass, LocalDesign provides design, LocalGardenUnit provides unit, LocalGardenColors provides gc) {
         MaterialTheme(colorScheme = scheme, content = content)
     }
 }

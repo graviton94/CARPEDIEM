@@ -125,6 +125,16 @@
       scribble(c, [[x + L.n(0), y - L.n(98)], [x + L.n(38), y - L.n(96)]], INK, 185, L.n(0.7), { alpha: 0.7 });
       scribble(c, L.c([16, -70, 24, -60, 12, -52, 22, -40]), "#8A8174", 186, L.n(0.7), { alpha: 0.85, passes: 1 });
       [[21, -60, "#E9A43A"], [15, -50, "#B8C98E"]].forEach(function (b, i) { pastel(c, L.b(b[0], b[1], 3.6, 2.2, 187 + i, 0.1, 0.4), b[2], { seed: 187 + i, lw: L.n(0.5) }); });
+    } },
+    // 처음 하루와 숨 쉰 날: 작은 풍경 (나무 막대에 매단 종 하나와 바람 종이)
+    { id: "windchime", ko: "작은 풍경", when: "처음 하루와 숨 쉰 날", draw: function (c, x, y, s) { var L = loc(x, y, s);
+      smudge(c, x, y + L.n(1), L.n(16), L.n(4), "#3B3325", 0.22);
+      scribble(c, L.c([0, 0, 1, -30, -1, -62, 0, -92]), "#8A6A48", 191, L.n(2.2), { press: 0.8 });
+      scribble(c, L.c([0, -90, 8, -92, 16, -91, 24, -89]), "#8A6A48", 192, L.n(2), { press: 0.8 });
+      scribble(c, L.c([22, -89, 22, -84, 22, -80, 22, -76]), "#8A8174", 193, L.n(0.8), { alpha: 0.9, passes: 1 });
+      pastel(c, organic([[14, -64], [30, -64], [28, -76], [22, -79], [16, -76]].map(function (q) { return [x + q[0] * s, y + q[1] * s]; }), L.n(0.5), 194, L.n(2.5)), "#9DB4B5", { seed: 194, lw: L.n(0.8) });
+      scribble(c, L.c([22, -64, 22, -58, 22, -54, 22, -50]), "#8A8174", 195, L.n(0.7), { alpha: 0.9, passes: 1 });
+      pastel(c, organic([[18, -50], [26, -50], [27, -34], [17, -34]].map(function (q) { return [x + q[0] * s, y + q[1] * s]; }), L.n(0.5), 196, L.n(2.5)), "#F4EEDF", { seed: 196, lw: L.n(0.7) });
     } }
   ];
   function drawObj(c, id, x, y, s) { OBJ.filter(function (o) { return o.id === id; })[0].draw(c, x, y, s); }

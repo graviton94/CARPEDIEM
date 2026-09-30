@@ -78,6 +78,8 @@ fun SkyBackground(content: @Composable BoxScope.() -> Unit) {
     if (Theme.garden) {
         Box(Modifier.fillMaxSize().paperBackground()) {
             Image(GardenArt.sky(LocalContext.current, Season.SPRING), null, Modifier.fillMaxSize(), contentScale = ContentScale.FillWidth, alignment = Alignment.TopCenter)
+            // 밤 · 새벽: 하늘 그림 위에 짙은 남색 (정원 홈과 같은 빛)
+            if (Theme.gc.night) Box(Modifier.fillMaxSize().background(Tokens.Garden.Night.Colors.sky.copy(alpha = Tokens.Garden.Night.skyAlpha)))
             content()
         }
         return

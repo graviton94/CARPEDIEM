@@ -70,6 +70,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.github.graviton94.carpediem.R
 import io.github.graviton94.carpediem.core.GridScale
+import io.github.graviton94.carpediem.core.Sound
+import io.github.graviton94.carpediem.core.BreathKind
 import io.github.graviton94.carpediem.core.Kind
 import io.github.graviton94.carpediem.core.Family
 import io.github.graviton94.carpediem.core.LifePeriod
@@ -150,7 +152,8 @@ internal fun shortName(n: String): String { val max = G.Family.nameChars.toInt()
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSettings: () -> Unit, onCollection: () -> Unit, onSupport: () -> Unit, onStone: (String?) -> Unit, onAddPerson: () -> Unit) {
+fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSettings: () -> Unit, onCollection: () -> Unit, onSupport: () -> Unit, onStone: (String?) -> Unit, onAddPerson: () -> Unit,
+               onBreath: (BreathKind, Int, Sound) -> Unit = { _, _, _ -> }, onGaze: () -> Unit = {}) {
     val p = Theme.palette
     val ctx = LocalContext.current
     val density = LocalDensity.current
@@ -160,6 +163,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
     val art = load.art
     val moments = gardenMoments(state, profile, s, now)
     var open by remember { mutableStateOf<Moment?>(null) }
+    var breathSheet by remember { mutableStateOf(false) }
 
     BoxWithConstraints(Modifier.fillMaxSize().paperBackground()) {
         val u = Theme.unit
@@ -201,6 +205,8 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 val gy = maxOf(screenH * G.Layout.groundRatio, topBottom + u * G.Layout.minSkyGap + haruAbove).coerceAtMost(screenH - labels)
 
                 Image(GardenArt.sky(ctx, season), null, Modifier.fillMaxSize(), contentScale = ContentScale.FillWidth, alignment = Alignment.TopCenter)
+                // 땅 그림도 시간의 빛 아래에 (밤이면 땅까지 어두워짐)
+                Image(GardenArt.strip(ctx, season), null, Modifier.offset(y = gy - u * G.Layout.stripLineY).fillMaxWidth().height(u * G.Layout.stripHeight), contentScale = ContentScale.FillBounds)
                 SkyTimeLayer(now, gy, topBottom, gy - haruAbove - u * G.Layout.minSkyGap, Modifier.fillMaxSize())
 
                 // 위: 남은 시간 · 단위 · 오늘의 문장
@@ -232,6 +238,9 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                             TokenText(stringResource(R.string.words_next), Tokens.TypeScale.caption2, color = p.secondary, weight = FontWeight.Normal)
                         }
                     }
+                    // 밤: 잠드는 숨 1분으로 가는 옅은 한 줄
+                    if (isNight(now)) TokenText(stringResource(R.string.breath_night), Tokens.TypeScale.footnote.serif(),
+                        Modifier.clickable { onBreath(BreathKind.SLEEP, 1, state.sound) }.padding(Tokens.Space.sp2), color = p.secondary)
                 }
 
                 val x0 = u * G.Layout.pathStart; val x1 = u * G.Layout.pathEnd
@@ -248,8 +257,10 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 val sx = lerp((u * G.Layout.sunStart).value, (u * G.Layout.sunEnd).value, t).dp
                 val sy = base - arc * sin(t * Math.PI).toFloat()
                 Image(if (day) GardenArt.sun(ctx) else GardenArt.moon(ctx), null, Modifier.offset(sx - r, sy - r).size(r * 2))
+                // 밤 · 새벽: 달빛 · 돌들 발치의 빛 · 가로등 · 반딧불
+                val spanL = slots.indices.minOf { xs[it] - (widths[it].toFloat() / 2).dp }; val spanR = slots.indices.maxOf { xs[it] + (widths[it].toFloat() / 2).dp }
+                NightLights(now, gy, spanL, spanR, if (day) null else androidx.compose.ui.unit.DpOffset(sx, sy), Modifier.fillMaxSize())
 
-                Image(GardenArt.strip(ctx, season), null, Modifier.offset(y = gy - u * G.Layout.stripLineY).fillMaxWidth().height(u * G.Layout.stripHeight), contentScale = ContentScale.FillBounds)
 
                 // 놓인 것: 돌 사이 빈틈과 가장 왼쪽 돌의 왼편에, 최근 것부터. 자리가 없으면 거기까지만 (모은 것에는 모두).
                 val box = u * (G.Layout.objBox * G.Layout.objScale)
@@ -264,25 +275,14 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                     Image(GardenArt.obj(ctx, m.id), stringResource(objName(m.id)), Modifier.offset(cx - box / 2, gy - box * (G.Layout.objGround / G.Layout.objBox)).size(box).clickable { open = m })
                 }
 
-                // 원래 자리에서 비켜 앉은 돌: 땅 위 작은 눈금과 점선
-                val shifted = slots.indices.filter { i -> targets[i] != null && kotlin.math.abs(xs[i].value - targets[i]!!.toFloat()) > G.Family.tickShift * u.value }
-                if (shifted.isNotEmpty()) androidx.compose.foundation.Canvas(Modifier.fillMaxSize()) {
-                    val uu = u.toPx(); val y0 = gy.toPx()
-                    shifted.forEach { i ->
-                        val tx = targets[i]!!.toFloat().dp.toPx(); val sx0 = xs[i].toPx()
-                        drawLine(p.secondary, androidx.compose.ui.geometry.Offset(tx, y0 + uu * 1.5f), androidx.compose.ui.geometry.Offset(tx, y0 + uu * 6f), uu * 1.2f)
-                        drawLine(p.secondary.copy(alpha = 0.7f), androidx.compose.ui.geometry.Offset(tx, y0 + uu * 6f), androidx.compose.ui.geometry.Offset(sx0, y0 + uu * 6f), uu * 0.8f,
-                            pathEffect = androidx.compose.ui.graphics.PathEffect.dashPathEffect(floatArrayOf(uu * 2f, uu * 2.5f)))
-                    }
-                }
-
                 // 돌들: 한 번 누르면 쓰다듬기, 두 번 누르면 그 돌의 페이지
                 val sentTo = state.lines.lastOrNull()?.takeIf { it.date == now.toLocalDate() }?.to
                 slots.forEachIndexed { i, sl ->
                     val cx = xs[i] - sl.scale * (sl.art.meta.bbox.center.x - sl.art.meta.box / 2)
                     val left = cx - sl.scale * (sl.art.meta.box / 2); val top = gy - sl.scale * G.Layout.haruGround
                     HaruFigure(sl.art, sl.scale, Modifier.offset(left, top), blinkKick = if (sl.id == null) state.blinkKick else 0, hat = sl.birthday,
-                        a11y = stringResource(R.string.garden_stoneA11y, sl.name, Labels.stone(ctx, sl.art.meta.stone)), onOpen = { onStone(sl.id) })
+                        a11y = stringResource(R.string.garden_stoneA11y, sl.name, Labels.stone(ctx, sl.art.meta.stone)), onOpen = { onStone(sl.id) },
+                        onLongPress = if (sl.id == null) ({ breathSheet = true }) else null)
                     // 생일: 돌 앞에 작은 케이크
                     if (sl.birthday) {
                         val cw = u * Tokens.Garden.Party.cakeWidth
@@ -306,7 +306,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 }
                 // 정원 아래쪽은 종이로 번져 둘째 장과 이어진다
                 Box(Modifier.align(Alignment.BottomCenter).fillMaxWidth().height(screenH * G.Layout.fadeTail)
-                    .background(Brush.verticalGradient(listOf(G.Colors.paper.copy(alpha = 0f), G.Colors.paper))))
+                    .background(Brush.verticalGradient(listOf(Theme.gc.base.copy(alpha = 0f), Theme.gc.base))))
                 TokenText(stringResource(R.string.garden_down), Tokens.TypeScale.caption2, Modifier.align(Alignment.BottomCenter).navigationBarsPadding().padding(bottom = Tokens.Space.sp3), color = p.secondary, weight = FontWeight.Normal)
             }
 
@@ -355,6 +355,11 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 // 가족의 돌 더하기 (정원이 가득 차면 안내만)
                 if (state.people.size < G.Family.max.toInt() - 1) GardenButton(stringResource(R.string.family_add), onAddPerson, filled = false, seed = 886)
                 else TokenText(stringResource(R.string.family_full), Tokens.TypeScale.footnote, Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.Center)
+                // 숨 · 정원만 보기
+                Row(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
+                    GardenButton(stringResource(R.string.breath), { breathSheet = true }, filled = false, seed = 888, modifier = Modifier.weight(1f))
+                    GardenButton(stringResource(R.string.gaze), onGaze, filled = false, seed = 889, modifier = Modifier.weight(1f))
+                }
                 // 맨 아래: 오늘의 한 줄 (기쁨도 슬픔도 실어 떠나보내기)
                 Spacer(Modifier.height(Tokens.Space.sp6))
                 CrayonRule(seed = 958)
@@ -366,16 +371,17 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
     }
 
     open?.let { m ->
-        ModalBottomSheet(onDismissRequest = { open = null }, containerColor = G.Colors.paper) {
+        ModalBottomSheet(onDismissRequest = { open = null }, containerColor = Theme.gc.paper) {
             ItemSheet(m) { open = null }
         }
     }
+    if (breathSheet) BreathSheet(state, now, { k, m, snd -> breathSheet = false; onBreath(k, m, snd) }) { breathSheet = false }
 }
 
 /** 정원에 놓인 것 (최근 것부터). 개발자 모드의 ‘모두 미리 보기’면 전부. */
 internal fun gardenMoments(state: AppState, profile: LifeProfile, s: LifeSnapshot, now: LocalDateTime): List<Moment> =
     if (state.previewAll) Moments.all(now.toLocalDate())
-    else Moments.earned(state.store.startDate, profile.birthDate, s.expectancy, now.toLocalDate(), state.store.firstSkip, state.store.returned, state.streaks)
+    else Moments.earned(state.store.startDate, profile.birthDate, s.expectancy, now.toLocalDate(), state.store.firstSkip, state.store.returned, state.streaks, state.firstBreath)
 
 /** 오늘의 문장: 두 줄에 안 들어가면 글자를 한 단계씩 줄인다. 어절 단위로 줄을 바꾼다 (TokenText). */
 @Composable
@@ -395,19 +401,19 @@ internal fun objName(id: String) = when (id) {
     "moss" -> R.string.obj_moss; "teacup" -> R.string.obj_teacup; "cairn" -> R.string.obj_cairn; "pine" -> R.string.obj_pine
     "flower" -> R.string.obj_flower; "pond" -> R.string.obj_pond; "leaf" -> R.string.obj_leaf; "candle" -> R.string.obj_candle
     "dandelion" -> R.string.obj_dandelion; "feather" -> R.string.obj_feather; "snail" -> R.string.obj_snail
-    "pinwheel" -> R.string.obj_pinwheel; "paperboat" -> R.string.obj_paperboat; "kite" -> R.string.obj_kite; else -> R.string.obj_acorn
+    "pinwheel" -> R.string.obj_pinwheel; "paperboat" -> R.string.obj_paperboat; "kite" -> R.string.obj_kite; "windchime" -> R.string.obj_windchime; else -> R.string.obj_acorn
 }
 internal fun objWhen(id: String) = when (id) {
     "moss" -> R.string.obj_moss_when; "teacup" -> R.string.obj_teacup_when; "cairn" -> R.string.obj_cairn_when; "pine" -> R.string.obj_pine_when
     "flower" -> R.string.obj_flower_when; "pond" -> R.string.obj_pond_when; "leaf" -> R.string.obj_leaf_when; "candle" -> R.string.obj_candle_when
     "dandelion" -> R.string.obj_dandelion_when; "feather" -> R.string.obj_feather_when; "snail" -> R.string.obj_snail_when
-    "pinwheel" -> R.string.obj_pinwheel_when; "paperboat" -> R.string.obj_paperboat_when; "kite" -> R.string.obj_kite_when; else -> R.string.obj_acorn_when
+    "pinwheel" -> R.string.obj_pinwheel_when; "paperboat" -> R.string.obj_paperboat_when; "kite" -> R.string.obj_kite_when; "windchime" -> R.string.obj_windchime_when; else -> R.string.obj_acorn_when
 }
 internal fun objLine(id: String) = when (id) {
     "moss" -> R.string.obj_moss_line; "teacup" -> R.string.obj_teacup_line; "cairn" -> R.string.obj_cairn_line; "pine" -> R.string.obj_pine_line
     "flower" -> R.string.obj_flower_line; "pond" -> R.string.obj_pond_line; "leaf" -> R.string.obj_leaf_line; "candle" -> R.string.obj_candle_line
     "dandelion" -> R.string.obj_dandelion_line; "feather" -> R.string.obj_feather_line; "snail" -> R.string.obj_snail_line
-    "pinwheel" -> R.string.obj_pinwheel_line; "paperboat" -> R.string.obj_paperboat_line; "kite" -> R.string.obj_kite_line; else -> R.string.obj_acorn_line
+    "pinwheel" -> R.string.obj_pinwheel_line; "paperboat" -> R.string.obj_paperboat_line; "kite" -> R.string.obj_kite_line; "windchime" -> R.string.obj_windchime_line; else -> R.string.obj_acorn_line
 }
 
 /** 놓인 것을 누르면: 생긴 날과 한 줄. 개수나 빈칸은 보이지 않는다. */
@@ -439,6 +445,7 @@ fun MeetScreen(state: AppState, onDone: () -> Unit) {
         val u = Theme.unit
         val screenW = maxWidth
         Image(GardenArt.sky(ctx, Season.SPRING), null, Modifier.fillMaxSize(), contentScale = ContentScale.FillWidth, alignment = Alignment.TopCenter)
+        SkyTimeLayer(state.fixedNow ?: java.time.LocalDateTime.now(), maxHeight * G.Layout.groundRatio, 0.dp, 0.dp, Modifier.fillMaxSize())
         Column(Modifier.fillMaxSize().statusBarsPadding().navigationBarsPadding().padding(horizontal = Theme.deviceClass.pageMargin),
             horizontalAlignment = Alignment.CenterHorizontally) {
             Spacer(Modifier.height(Tokens.Space.sp10))
@@ -475,7 +482,7 @@ fun GardenChip(text: String, selected: Boolean, seed: Int, onClick: () -> Unit) 
     Box(
         Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable(onClick = onClick), contentAlignment = Alignment.Center,
     ) {
-        Box(Modifier.crayonBox(if (selected) G.Colors.chip else null, G.Radius.chip, G.Stroke.chip, seed).padding(horizontal = Tokens.Space.sp3, vertical = Tokens.Space.sp1)) {
+        Box(Modifier.crayonBox(if (selected) Theme.gc.chip else null, G.Radius.chip, G.Stroke.chip, seed).padding(horizontal = Tokens.Space.sp3, vertical = Tokens.Space.sp1)) {
             TokenText(text, Tokens.TypeScale.subhead, weight = if (selected) FontWeight.Bold else FontWeight.Medium)
         }
     }
@@ -484,7 +491,7 @@ fun GardenChip(text: String, selected: Boolean, seed: Int, onClick: () -> Unit) 
 @Composable
 fun GardenButton(text: String, onClick: () -> Unit, filled: Boolean, seed: Int, modifier: Modifier = Modifier) {
     Box(
-        modifier.fillMaxWidth().heightIn(min = Tokens.Layout.tapTarget + Tokens.Space.sp2).crayonBox(if (filled) G.Colors.button else null, G.Radius.button, G.Stroke.box, seed).clickable(onClick = onClick),
+        modifier.fillMaxWidth().heightIn(min = Tokens.Layout.tapTarget + Tokens.Space.sp2).crayonBox(if (filled) Theme.gc.button else null, G.Radius.button, G.Stroke.box, seed).clickable(onClick = onClick),
         contentAlignment = Alignment.Center,
     ) { TokenText(text, Tokens.TypeScale.headline) }
 }

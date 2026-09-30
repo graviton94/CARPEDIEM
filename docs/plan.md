@@ -173,3 +173,16 @@ design/tokens.json, design/strings.json, data/*.csv   ← 유일한 원본
 | 화면 캡처 장면 (가족 · 돌의 페이지 · 돌 더하기) | 완료 | `scripts/android_shots.sh` |
 | 비공개 테스터 확인 | 남음 | |
 
+### 1.2 숨 + 1.1.2 밤의 정원 — 개발 완료, 폰 확인 전
+| 항목 | 상태 | 어디 |
+|---|---|---|
+| 숨 세 가지 (4-6 · 4-4-4-4 · 4-7-8) × 1 · 3 · 5분, 마지막 숨은 끝까지 | 완료 | `core/Breath.kt` (테스트) |
+| 숨 화면: 하루가 부풀고 떠오름 · 지긋이 감은 눈 · 하늘빛 · 첫 1분 글자 · 진동 · 가는 선 · 멈추기 창 | 완료 | `ui/garden/BreathPages.kt` |
+| 소리 (파일 없이 앱이 만듦): 시작 · 끝 종소리, 파도 · 바람 · 빗소리 · 잔잔한 파장, 숨을 따라 | 완료 | `sound/Soundscape.kt` |
+| 숨 고르기 창 · 들어가는 곳 (길게 누르기 · 둘째 장 · 내 돌의 페이지 · 밤 10시 이후 한 줄) | 완료 | `BreathSheet` |
+| 멍하니 보는 정원 (구름 · 어두워짐 · 화면 켜둠 풀기 · 소리) | 완료 | `GazeScreen` |
+| 작은 풍경 (처음 숨 쉰 날) | 완료 | `objects.js` windchime, `Moments` |
+| 1.1.2 밤의 정원: 시각에 따른 테마 (밤 · 새벽 어두움, 낮 · 해 질 녘 밝음), 가로등 · 반딧불 · 별빛 · 달빛 | 완료 | `design/Theme.kt` GardenColors, `SkyTime.kt` NightLights, 토큰 `garden.night` |
+| 1.1.2 돌 아래 점선 없앰, 함께한 첫날 직접 정하기 | 완료 | `GardenHome`, `Person.together` |
+| 비공개 테스터 확인 | 남음 | |
+

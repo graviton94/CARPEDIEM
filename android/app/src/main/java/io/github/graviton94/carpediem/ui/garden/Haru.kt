@@ -259,7 +259,8 @@ fun rememberTilt(enabled: Boolean): Offset {
  * 280ms 안에 두 번 누르면 onOpen (돌의 페이지). onOpen 이 없으면 쓰다듬기만.
  */
 @Composable
-fun HaruFigure(art: HaruArt, scale: Dp, modifier: Modifier = Modifier, blinkKick: Int = 0, hat: Boolean = false, a11y: String? = null, onOpen: (() -> Unit)? = null) {
+fun HaruFigure(art: HaruArt, scale: Dp, modifier: Modifier = Modifier, blinkKick: Int = 0, hat: Boolean = false, a11y: String? = null, onOpen: (() -> Unit)? = null,
+               onLongPress: (() -> Unit)? = null, lid: Float? = null) {
     val ctx = LocalContext.current
     val view = androidx.compose.ui.platform.LocalView.current
     val m = Tokens.Garden.Motion; val tc = Tokens.Garden.Touch
@@ -297,6 +298,7 @@ fun HaruFigure(art: HaruArt, scale: Dp, modifier: Modifier = Modifier, blinkKick
     }
     val tilt = rememberTilt(animate)
     val open by androidx.compose.runtime.rememberUpdatedState(onOpen)
+    val hold by androidx.compose.runtime.rememberUpdatedState(onLongPress)
     Canvas(
         modifier.size(scale * art.meta.box)
             .graphicsLayer {
@@ -317,7 +319,14 @@ fun HaruFigure(art: HaruArt, scale: Dp, modifier: Modifier = Modifier, blinkKick
             .pointerInput(Unit) {
                 awaitEachGesture {
                     awaitFirstDown()
-                    waitForUpOrCancellation() ?: return@awaitEachGesture
+                    val h = hold
+                    if (h != null) {
+                        // 길게 누르기 (숨 쉬기): 정해진 시간 안에 손을 떼지 않으면
+                        var released = false
+                        val up = withTimeoutOrNull(tc.holdMs.toLong()) { val u = waitForUpOrCancellation(); released = true; u }
+                        if (!released) { tick(); h(); waitForUpOrCancellation(); return@awaitEachGesture }
+                        up ?: return@awaitEachGesture
+                    } else waitForUpOrCancellation() ?: return@awaitEachGesture
                     pet()   // 첫 누름에 바로 반응
                     val o = open ?: return@awaitEachGesture
                     val second = withTimeoutOrNull(tc.doubleMs.toLong()) { awaitFirstDown(requireUnconsumed = false) }
@@ -325,6 +334,6 @@ fun HaruFigure(art: HaruArt, scale: Dp, modifier: Modifier = Modifier, blinkKick
                 }
             },
     ) {
-        drawHaru(art, size.width / art.meta.box, maxOf(blink.value, rest.value), tilt, smile = smile.value, blush = blush.value, hat = hat)
+        drawHaru(art, size.width / art.meta.box, lid ?: maxOf(blink.value, rest.value), tilt, smile = if (lid != null) 0f else smile.value, blush = blush.value, hat = hat)
     }
 }

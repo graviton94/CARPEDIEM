@@ -16,6 +16,11 @@ import io.github.graviton94.carpediem.core.Person
 import io.github.graviton94.carpediem.design.Tokens
 import io.github.graviton94.carpediem.ui.garden.WidgetPreviewScreen
 import io.github.graviton94.carpediem.ui.garden.CollectionScreen
+import io.github.graviton94.carpediem.ui.garden.SkyTime
+import io.github.graviton94.carpediem.core.Sound
+import io.github.graviton94.carpediem.core.BreathKind
+import io.github.graviton94.carpediem.ui.garden.GazeScreen
+import io.github.graviton94.carpediem.ui.garden.BreathScreen
 import androidx.compose.animation.togetherWith
 import io.github.graviton94.carpediem.ui.garden.AddPersonScreen
 import io.github.graviton94.carpediem.ui.garden.StoneScreen
@@ -60,6 +65,10 @@ private sealed interface Screen {
     data class Stone(val id: String?, val back: Screen) : Screen
     /** 가족의 돌 더하기 (editId 가 있으면 고치기). */
     data class AddPerson(val editId: String?, val back: Screen) : Screen
+    /** 하루와 숨 쉬기. */
+    data class Breathe(val kind: BreathKind, val minutes: Int, val sound: Sound, val back: Screen) : Screen
+    /** 멍하니 보는 정원. */
+    data class Gaze(val back: Screen) : Screen
     data class Country(val back: Screen) : Screen
 }
 
@@ -72,19 +81,22 @@ class MainActivity : ComponentActivity() {
         setContent {
             BoxWithConstraints {
                 val screenW = maxWidth
-                CarpeDiemTheme(deviceClass = DeviceClass.of(screenW), design = state.design, screenWidth = screenW) {
+                fun clock() = state.fixedNow ?: LocalDateTime.now()
+                var now by remember { mutableStateOf(clock()) }
+                LaunchedEffect(Unit) { while (true) { delay(60_000); now = clock() } }
+                // 정원은 시각을 따라: 밤 · 새벽은 어두운 한 벌, 낮 · 해 질 녘은 밝은 종이 (폰 테마와 상관없이)
+                val night = SkyTime.isDark(now)
+                CarpeDiemTheme(deviceClass = DeviceClass.of(screenW), design = state.design, screenWidth = screenW, night = night) {
                     var screen by remember { mutableStateOf(start) }
-                    fun clock() = state.fixedNow ?: LocalDateTime.now()
-                    var now by remember { mutableStateOf(clock()) }
-                    LaunchedEffect(Unit) { while (true) { delay(60_000); now = clock() } }
                     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { now = clock(); state.refreshQuote(); state.opened() }
                     // 앱을 다시 열 때(화면에 다시 나올 때) 남은 시간 · 인생 달력 단위를 기본값으로
                     LifecycleEventEffect(Lifecycle.Event.ON_START) { state.resetViewToDefaults() }
                     // 정원은 늘 밝은 종이라 상태바 · 내비게이션 바 글자를 어둡게 둔다
                     val sysDark = isSystemInDarkTheme()
-                    LaunchedEffect(state.design, sysDark) {
+                    LaunchedEffect(state.design, sysDark, night) {
                         val paper = Tokens.Garden.Colors.paper.toArgb()
-                        if (state.design == Design.GARDEN || !sysDark) enableEdgeToEdge(SystemBarStyle.light(android.graphics.Color.TRANSPARENT, paper), SystemBarStyle.light(android.graphics.Color.TRANSPARENT, paper))
+                        if (state.design == Design.GARDEN && night) enableEdgeToEdge(SystemBarStyle.dark(android.graphics.Color.TRANSPARENT), SystemBarStyle.dark(android.graphics.Color.TRANSPARENT))
+                        else if (state.design == Design.GARDEN || !sysDark) enableEdgeToEdge(SystemBarStyle.light(android.graphics.Color.TRANSPARENT, paper), SystemBarStyle.light(android.graphics.Color.TRANSPARENT, paper))
                         else enableEdgeToEdge(SystemBarStyle.dark(android.graphics.Color.TRANSPARENT), SystemBarStyle.dark(android.graphics.Color.TRANSPARENT))
                     }
 
@@ -113,8 +125,10 @@ class MainActivity : ComponentActivity() {
                         } ?: run { screen = Screen.Main }
                         is Screen.Collection -> state.profile?.let { CollectionScreen(state, it, now) { screen = s.back } } ?: run { screen = Screen.Main }
                         // 응원하기는 하루의 정원 그림이라 유리 버전에서도 정원 모습으로 연다
-                        is Screen.Support -> CarpeDiemTheme(deviceClass = DeviceClass.of(screenW), design = Design.GARDEN, screenWidth = screenW) { SupportScreen(state, now) { screen = s.back } }
-                        is Screen.Stone -> state.profile?.let { StoneScreen(state, it, now, s.id, { screen = s.back }) { id -> screen = Screen.AddPerson(id, s) } } ?: run { screen = Screen.Main }
+                        is Screen.Support -> CarpeDiemTheme(deviceClass = DeviceClass.of(screenW), design = Design.GARDEN, screenWidth = screenW, night = night) { SupportScreen(state, now) { screen = s.back } }
+                        is Screen.Stone -> state.profile?.let { StoneScreen(state, it, now, s.id, { screen = s.back }, { id -> screen = Screen.AddPerson(id, s) }, onBreath = { k, m, snd -> screen = Screen.Breathe(k, m, snd, s) }) } ?: run { screen = Screen.Main }
+                        is Screen.Breathe -> state.profile?.let { BreathScreen(state, it, now, s.kind, s.minutes, s.sound) { screen = s.back } } ?: run { screen = Screen.Main }
+                        is Screen.Gaze -> state.profile?.let { GazeScreen(state, it, now) { screen = s.back } } ?: run { screen = Screen.Main }
                         is Screen.AddPerson -> state.profile?.let {
                             AddPersonScreen(state, it, s.editId, onDone = { id -> screen = if (s.editId != null && id != null) (s.back as? Screen.Stone)?.copy() ?: Screen.Main else Screen.Main }, onBack = { screen = s.back })
                         } ?: run { screen = Screen.Main }
@@ -126,7 +140,8 @@ class MainActivity : ComponentActivity() {
                                 garden && state.meetPending -> MeetScreen(state) { state.finishMeet() }
                                 garden -> GardenHome(state, profile, now, onSettings = { screen = Screen.Settings },
                                     onCollection = { screen = Screen.Collection(Screen.Main) }, onSupport = { screen = Screen.Support(Screen.Main) },
-                                    onStone = { id -> screen = Screen.Stone(id, Screen.Main) }, onAddPerson = { screen = Screen.AddPerson(null, Screen.Main) })
+                                    onStone = { id -> screen = Screen.Stone(id, Screen.Main) }, onAddPerson = { screen = Screen.AddPerson(null, Screen.Main) },
+                                    onBreath = { k, m, snd -> screen = Screen.Breathe(k, m, snd, Screen.Main) }, onGaze = { screen = Screen.Gaze(Screen.Main) })
                                 else -> HomeScreen(state, profile, now, onSettings = { screen = Screen.Settings }, onSupport = { screen = Screen.Support(Screen.Main) })
                             }
                         }
@@ -167,5 +182,5 @@ private fun MainActivity.debugSetup(state: AppState): Screen {
             Person("dad00001", "아빠", Kind.PERSON, birth = LocalDate.of(1961, 8, 20), sex = Sex.MALE, country = "KR", seed = 31337, metOn = today),
         ).forEach { state.savePerson(it) }
     }
-    return when (x.getStringExtra("cd.screen")) { "settings" -> Screen.Settings; "widgets" -> Screen.WidgetPreview; "collection" -> Screen.Collection(Screen.Main); "support" -> Screen.Support(Screen.Main); "stone" -> Screen.Stone(state.people.firstOrNull()?.id, Screen.Main); "add" -> Screen.AddPerson(null, Screen.Main); else -> Screen.Main }
+    return when (x.getStringExtra("cd.screen")) { "settings" -> Screen.Settings; "widgets" -> Screen.WidgetPreview; "collection" -> Screen.Collection(Screen.Main); "support" -> Screen.Support(Screen.Main); "stone" -> Screen.Stone(state.people.firstOrNull()?.id, Screen.Main); "add" -> Screen.AddPerson(null, Screen.Main); "breath" -> Screen.Breathe(BreathKind.CALM, 1, Sound.WAVES, Screen.Main); "gaze" -> Screen.Gaze(Screen.Main); else -> Screen.Main }
 }

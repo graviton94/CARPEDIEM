@@ -85,7 +85,7 @@ private fun feelingName(f: Feeling) = when (f) {
 /** 상자: 정원은 크레용 선, 유리는 옅은 유리판. strong = 조금 더 눈에 띄게 (돌아온 한 줄). */
 @Composable
 private fun Modifier.lineBox(seed: Int, strong: Boolean = false, pill: Boolean = false): Modifier {
-    if (Theme.garden) return crayonBox(if (strong) G.Colors.chip else G.Colors.paper, if (pill) G.Radius.chip else G.Radius.box, G.Stroke.chip, seed)
+    if (Theme.garden) return crayonBox(if (strong) Theme.gc.chip else Theme.gc.paper, if (pill) G.Radius.chip else G.Radius.box, G.Stroke.chip, seed)
     val p = Theme.palette
     val shape = RoundedCornerShape(if (pill) Tokens.Radius.pill else Tokens.Radius.md)
     return clip(shape).background(if (strong) p.olive.copy(alpha = 0.14f) else p.glass).border(Tokens.Stroke.line, p.glassEdge, shape)
@@ -276,13 +276,14 @@ fun LetGoModal(state: AppState, modifier: Modifier = Modifier) {
     }
     BackHandler { state.toast = null }
     val feather = GardenArt.obj(ctx, "feather")
+    val scrim = Theme.gc.scrim
     val flakes = remember(msg) {
         val r = Crayon.Rng(msg.hashCode())
         List(G.LetGo.feathers.toInt()) { Flake(0.06f + 0.88f * r.next(), r.next() * 0.35f, 0.5f + 0.25f * r.next(), 0.7f + 0.6f * r.next(), r.next() * 6.28f, (r.next() - 0.5f) * 60f) }
     }
     BoxWithConstraints(
         modifier.fillMaxSize()
-            .drawBehind { drawRect(G.Colors.scrim.copy(alpha = G.Colors.scrim.alpha * card.value)) }
+            .drawBehind { drawRect(scrim.copy(alpha = scrim.alpha * card.value)) }
             .clickable(interactionSource = remember { MutableInteractionSource() }, indication = null) {},
     ) {
         val w = constraints.maxWidth.toFloat(); val h = constraints.maxHeight.toFloat()
@@ -315,7 +316,7 @@ fun LetGoModal(state: AppState, modifier: Modifier = Modifier) {
 /** 창 바탕: 정원은 종이 위 크레용 선, 유리는 불투명한 판 (뒤가 비치면 글이 흐려서). */
 @Composable
 private fun Modifier.modalBox(): Modifier {
-    if (Theme.garden) return crayonBox(G.Colors.paper, G.Radius.box, G.Stroke.box, 997)
+    if (Theme.garden) return crayonBox(Theme.gc.paper, G.Radius.box, G.Stroke.box, 997)
     val p = Theme.palette
     val shape = RoundedCornerShape(Tokens.Radius.lg)
     return clip(shape).background(p.base).border(Tokens.Stroke.line, p.glassEdge, shape)
