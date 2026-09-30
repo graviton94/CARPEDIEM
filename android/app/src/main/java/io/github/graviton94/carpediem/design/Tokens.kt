@@ -216,6 +216,7 @@ object Tokens {
             const val blinkMaxMs = 6200.0f
             const val blinkMs = 170.0f
             const val pageMs = 520.0f
+            const val letGoMs = 2200.0f
             const val lookEase = 0.12f
             const val restEase = 0.02f
             const val tiltRange = 6.0f
@@ -275,6 +276,12 @@ object Tokens {
             const val stars = 7.0f
             const val starSize = 6.0f
             const val starAlpha = 0.75f
+        }
+        object LetGo {
+            const val maxChars = 60.0f
+            const val rise = 150.0f
+            const val drift = 36.0f
+            const val feather = 44.0f
         }
     }
 }

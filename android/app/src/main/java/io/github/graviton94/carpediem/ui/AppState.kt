@@ -1,5 +1,10 @@
 package io.github.graviton94.carpediem.ui
 
+import java.time.LocalDateTime
+import io.github.graviton94.carpediem.design.Tokens
+import io.github.graviton94.carpediem.core.Lines
+import io.github.graviton94.carpediem.core.Feeling
+import io.github.graviton94.carpediem.core.DayLine
 import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -68,8 +73,17 @@ class AppState(private val context: Context) {
     fun changeQuoteLanguage(v: QuoteLanguage) { store.quoteLanguage = v; quoteLanguage = v; Widgets.refresh(context) }
     fun changeUnit(v: LifeUnit) { store.unit = v; unit = v }
     fun changeGrid(v: GridScale) { store.grid = v; grid = v }
+    /** 오늘 이미 한 줄을 떠나보냈는지 (날이 바뀌면 다시 쓸 수 있다). */
+    var sentOn by mutableStateOf(store.lines.lastOrNull()?.date)
+        private set
+
+    fun letGo(text: String, feeling: Feeling?, today: LocalDate = (fixedNow ?: LocalDateTime.now()).toLocalDate()) {
+        val t = Lines.clean(text, Tokens.Garden.LetGo.maxChars.toInt()); if (t.isEmpty()) return
+        store.lines = Lines.add(store.lines, DayLine(today, t, feeling)); sentOn = today
+    }
+
     fun eraseAll() {
-        store.eraseAll(); store.ensureQuoteSeed()
+        store.eraseAll(); store.ensureQuoteSeed(); sentOn = null
         profile = null; quoteLanguage = store.quoteLanguage; quote = store.todaysQuote(); design = store.design; meetPending = false; previewAll = false; notify = false; devMode = false; io.github.graviton94.carpediem.notify.Daily.schedule(context, false); Widgets.refresh(context)
     }
 

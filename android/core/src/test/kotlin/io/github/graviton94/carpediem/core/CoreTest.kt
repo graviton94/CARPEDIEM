@@ -136,4 +136,16 @@ class DataTest {
         assertTrue(m.any { it.id == "feather" } && m.any { it.id == "snail" })
         assertEquals(12, Moments.all(start).size)
     }
+
+    @Test fun linesOnePerDayAndRoundTrip() {
+        val a = DayLine(d(2026, 9, 30), "오늘은\t좋았다\n정말", Feeling.JOY)
+        val list = Lines.add(Lines.add(emptyList(), a), a.copy(text = "두 번째"))
+        assertEquals(1, list.size)
+        val back = Lines.decode(Lines.encode(list + DayLine(d(2026, 10, 1), "그냥", null)))
+        assertEquals("오늘은 좋았다 정말", back[0].text)
+        assertEquals(Feeling.JOY, back[0].feeling)
+        assertEquals(null, back[1].feeling)
+        assertEquals("가나다", Lines.clean("  가나다라마  ", 3))
+        assertEquals(emptyList(), Lines.decode(null))
+    }
 }

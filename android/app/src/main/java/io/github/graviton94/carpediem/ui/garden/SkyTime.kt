@@ -25,9 +25,9 @@ object SkyTime {
     fun at(now: LocalDateTime): Tint {
         val k = G.SkyTime
         val h = now.hour + now.minute / 60f
-        val night = Tint(k.Night.color, k.Night.alpha, 1f)
-        val dawn = Tint(k.Dawn.color, k.Dawn.alpha, 0f)
-        val dusk = Tint(k.Dusk.color, k.Dusk.alpha, 0f)
+        val night = Tint(G.SkyTime.Night.color, G.SkyTime.Night.alpha, 1f)
+        val dawn = Tint(G.SkyTime.Dawn.color, G.SkyTime.Dawn.alpha, 0f)
+        val dusk = Tint(G.SkyTime.Dusk.color, G.SkyTime.Dusk.alpha, 0f)
         fun clear(c: Tint) = Tint(c.color, 0f, 0f)
         fun mix(a: Tint, b: Tint, t: Float) = Tint(lerp(a.color, b.color, t), a.alpha + (b.alpha - a.alpha) * t, a.night + (b.night - a.night) * t)
         fun span(from: Float, to: Float) = ((h - from) / (to - from)).coerceIn(0f, 1f)

@@ -1,0 +1,136 @@
+package io.github.graviton94.carpediem.ui.garden
+
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
+import io.github.graviton94.carpediem.R
+import io.github.graviton94.carpediem.core.Feeling
+import io.github.graviton94.carpediem.design.Theme
+import io.github.graviton94.carpediem.design.Tokens
+import io.github.graviton94.carpediem.design.Tokens.Garden as G
+import io.github.graviton94.carpediem.ui.AppState
+import io.github.graviton94.carpediem.ui.TokenText
+import java.time.LocalDate
+import kotlin.math.PI
+import kotlin.math.sin
+
+private fun feelingName(f: Feeling) = when (f) {
+    Feeling.JOY -> R.string.feeling_joy; Feeling.THANKS -> R.string.feeling_thanks; Feeling.CALM -> R.string.feeling_calm
+    Feeling.SAD -> R.string.feeling_sad; Feeling.WORRY -> R.string.feeling_worry; Feeling.ANGRY -> R.string.feeling_angry
+}
+
+/**
+ * 오늘의 한 줄: 기쁨도 슬픔도 한 줄에 실어 떠나보낸다. 하루에 한 번.
+ * 보내면 글이 깃털에 실려 하늘로 올라가며 옅어지고, 그 뒤로는 오늘 쓴 글을 다시 보여 주지 않는다 (기기 안에만 남음).
+ */
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifier) {
+    val p = Theme.palette
+    val ctx = LocalContext.current
+    val u = Theme.unit
+    val px = with(LocalDensity.current) { u.toPx() }
+    val focus = LocalFocusManager.current
+    val max = G.LetGo.maxChars.toInt()
+    var text by rememberSaveable { mutableStateOf("") }
+    var feeling by rememberSaveable { mutableStateOf<Feeling?>(null) }
+    var flying by remember { mutableStateOf<String?>(null) }
+    val fly = remember { Animatable(0f) }
+    LaunchedEffect(flying) {
+        if (flying == null) return@LaunchedEffect
+        fly.snapTo(0f); fly.animateTo(1f, tween(G.Motion.letGoMs.toInt(), easing = LinearOutSlowInEasing)); flying = null
+    }
+    val sent = state.sentOn == today
+    fun send() {
+        if (text.isBlank()) return
+        flying = text.trim(); state.letGo(text, feeling); text = ""; feeling = null; focus.clearFocus()
+    }
+
+    Column(modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
+        TokenText(stringResource(R.string.letgo_title), Tokens.TypeScale.title3)
+        TokenText(stringResource(R.string.letgo_sub), Tokens.TypeScale.callout.serif(), color = p.secondary)
+        val line = flying
+        when {
+            // 떠나보내는 중: 깃털과 함께 위로, 옆으로 살짝 흔들리며 옅어진다
+            line != null -> Box(Modifier.fillMaxWidth().heightIn(min = u * G.LetGo.rise * 0.6f), contentAlignment = Alignment.BottomCenter) {
+                Row(
+                    Modifier.graphicsLayer {
+                        val f = fly.value
+                        translationY = -G.LetGo.rise * px * f
+                        translationX = G.LetGo.drift * px * sin(f * PI * 1.5).toFloat()
+                        rotationZ = -6f * f; alpha = (1f - f) * (1f - f)
+                    }.crayonBox(G.Colors.paper, G.Radius.chip, G.Stroke.chip, seed = 960).padding(horizontal = Tokens.Space.sp3, vertical = Tokens.Space.sp2),
+                    verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2),
+                ) {
+                    Image(GardenArt.obj(ctx, "feather"), null, Modifier.size(u * G.LetGo.feather))
+                    TokenText(line, Tokens.TypeScale.callout.serif(), maxLines = 2)
+                }
+            }
+            // 오늘은 이미 보냄
+            sent -> {
+                val shown = remember { Animatable(0f) }
+                LaunchedEffect(Unit) { shown.animateTo(1f, tween(G.Motion.pageMs.toInt())) }
+                Row(Modifier.fillMaxWidth().graphicsLayer { alpha = shown.value }, verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
+                    Image(GardenArt.obj(ctx, "feather"), null, Modifier.size(u * G.LetGo.feather))
+                    TokenText(stringResource(R.string.letgo_done), Tokens.TypeScale.subhead, Modifier.weight(1f))
+                }
+            }
+            else -> {
+                TokenText(stringResource(R.string.letgo_feeling), Tokens.TypeScale.caption1, color = p.secondary)
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
+                    Feeling.entries.forEachIndexed { i, f ->
+                        GardenChip(stringResource(feelingName(f)), feeling == f, seed = 970 + i) { feeling = if (feeling == f) null else f }
+                    }
+                }
+                val style = Tokens.TypeScale.callout.serif().style(text.ifEmpty { stringResource(R.string.letgo_hint) }).copy(color = p.foreground)
+                BasicTextField(
+                    value = text,
+                    onValueChange = { v -> val one = v.replace('\n', ' '); if (one.codePointCount(0, one.length) <= max) text = one },
+                    singleLine = true, textStyle = style, cursorBrush = SolidColor(G.Colors.ink),
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send), keyboardActions = KeyboardActions(onSend = { send() }),
+                    modifier = Modifier.fillMaxWidth().crayonBox(G.Colors.paper, G.Radius.box, G.Stroke.chip, seed = 964).padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3),
+                    decorationBox = { inner ->
+                        Box(contentAlignment = Alignment.CenterStart) {
+                            if (text.isEmpty()) TokenText(stringResource(R.string.letgo_hint), Tokens.TypeScale.callout.serif(), color = p.secondary)
+                            inner()
+                        }
+                    },
+                )
+                TokenText("${text.codePointCount(0, text.length)} / $max", Tokens.TypeScale.caption2, Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.End)
+                GardenButton(stringResource(R.string.letgo_send), { send() }, filled = text.isNotBlank(), seed = 968)
+            }
+        }
+        TokenText(stringResource(R.string.letgo_privacy), Tokens.TypeScale.caption1, color = p.secondary)
+    }
+}

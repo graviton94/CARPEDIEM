@@ -164,4 +164,17 @@
     <string name="support_tier3_price">$7.99</string>
     <string name="support_once">One-time only. Never a subscription.</string>
     <string name="support_soon">This is a test version, so payments aren\'t open yet. They open once the app is on Google Play. Thank you for the thought.</string>
+    <string name="letgo_title">Today\'s line</string>
+    <string name="letgo_sub">Joy or sorrow, put it in one line and let it go.</string>
+    <string name="letgo_feeling">How it feels (optional)</string>
+    <string name="letgo_hint">Today, in one line</string>
+    <string name="letgo_send">Let it go</string>
+    <string name="letgo_done">Today\'s line has drifted away. See you tomorrow.</string>
+    <string name="letgo_privacy">What you write stays on this phone and is never sent anywhere.</string>
+    <string name="feeling_joy">Joy</string>
+    <string name="feeling_thanks">Thanks</string>
+    <string name="feeling_calm">Calm</string>
+    <string name="feeling_sad">Sadness</string>
+    <string name="feeling_worry">Worry</string>
+    <string name="feeling_angry">Anger</string>
 </resources>

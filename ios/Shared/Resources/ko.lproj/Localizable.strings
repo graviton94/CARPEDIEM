@@ -162,3 +162,16 @@
 "support.tier3.price" = "11,000원";
 "support.once" = "한 번만 결제되고, 반복 결제는 없습니다.";
 "support.soon" = "지금은 시험판이라 결제가 열리지 않았어요. Play 스토어에 올린 뒤에 열립니다. 마음만으로도 고마워요.";
+"letgo.title" = "오늘의 한 줄";
+"letgo.sub" = "기쁨도, 슬픔도 한 줄에 실어 떠나보내세요.";
+"letgo.feeling" = "지금 마음 (고르지 않아도 돼요)";
+"letgo.hint" = "오늘 하루를 한 줄로";
+"letgo.send" = "떠나보내기";
+"letgo.done" = "오늘의 한 줄은 바람에 실려 갔어요. 내일 또 만나요.";
+"letgo.privacy" = "쓴 글은 이 폰 안에만 남고, 어디로도 보내지 않아요.";
+"feeling.joy" = "기쁨";
+"feeling.thanks" = "고마움";
+"feeling.calm" = "평온";
+"feeling.sad" = "슬픔";
+"feeling.worry" = "걱정";
+"feeling.angry" = "화남";

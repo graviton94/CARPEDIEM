@@ -1,6 +1,11 @@
 package io.github.graviton94.carpediem.ui.garden
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.union
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.WindowInsets
 import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.isActive
 import androidx.compose.runtime.snapshotFlow
@@ -255,7 +260,8 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
             Column(
                 Modifier.fillMaxWidth().heightIn(min = screenH).graphicsLayer {
                     val f = turned(); alpha = f; translationY = (1f - f) * pagePx * (1f - G.Layout.parallax) * G.Layout.pageSnap
-                }.statusBarsPadding().padding(horizontal = margin).padding(top = Tokens.Space.sp6).navigationBarsPadding().padding(bottom = Tokens.Space.sp10),
+                }.statusBarsPadding().padding(horizontal = margin).padding(top = Tokens.Space.sp6)
+                    .windowInsetsPadding(WindowInsets.navigationBars.union(WindowInsets.ime)).padding(bottom = Tokens.Space.sp10),
                 verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3),
             ) {
                 TokenText(stringResource(R.string.flow), Tokens.TypeScale.title3)
@@ -292,6 +298,10 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                     GardenButton(stringResource(R.string.collection), onCollection, filled = false, seed = 880, modifier = Modifier.weight(1f))
                     GardenButton(stringResource(R.string.support), onSupport, filled = false, seed = 884, modifier = Modifier.weight(1f))
                 }
+                // 맨 아래: 오늘의 한 줄 (기쁨도 슬픔도 실어 떠나보내기)
+                Spacer(Modifier.height(Tokens.Space.sp6))
+                CrayonRule(seed = 958)
+                LetGoSection(state, now.toLocalDate())
             }
         }
     }

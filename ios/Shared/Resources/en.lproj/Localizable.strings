@@ -162,3 +162,16 @@
 "support.tier3.price" = "$7.99";
 "support.once" = "One-time only. Never a subscription.";
 "support.soon" = "This is a test version, so payments aren't open yet. They open once the app is on Google Play. Thank you for the thought.";
+"letgo.title" = "Today's line";
+"letgo.sub" = "Joy or sorrow, put it in one line and let it go.";
+"letgo.feeling" = "How it feels (optional)";
+"letgo.hint" = "Today, in one line";
+"letgo.send" = "Let it go";
+"letgo.done" = "Today's line has drifted away. See you tomorrow.";
+"letgo.privacy" = "What you write stays on this phone and is never sent anywhere.";
+"feeling.joy" = "Joy";
+"feeling.thanks" = "Thanks";
+"feeling.calm" = "Calm";
+"feeling.sad" = "Sadness";
+"feeling.worry" = "Worry";
+"feeling.angry" = "Anger";

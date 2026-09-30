@@ -221,6 +221,7 @@ enum Tokens {
             static let blinkMaxMs: CGFloat = 6200.0
             static let blinkMs: CGFloat = 170.0
             static let pageMs: CGFloat = 520.0
+            static let letGoMs: CGFloat = 2200.0
             static let lookEase: CGFloat = 0.12
             static let restEase: CGFloat = 0.02
             static let tiltRange: CGFloat = 6.0
@@ -280,6 +281,12 @@ enum Tokens {
             static let stars: CGFloat = 7.0
             static let starSize: CGFloat = 6.0
             static let starAlpha: CGFloat = 0.75
+        }
+        enum LetGo {
+            static let maxChars: CGFloat = 60.0
+            static let rise: CGFloat = 150.0
+            static let drift: CGFloat = 36.0
+            static let feather: CGFloat = 44.0
         }
     }
 }

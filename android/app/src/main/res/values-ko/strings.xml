@@ -164,4 +164,17 @@
     <string name="support_tier3_price">11,000원</string>
     <string name="support_once">한 번만 결제되고, 반복 결제는 없습니다.</string>
     <string name="support_soon">지금은 시험판이라 결제가 열리지 않았어요. Play 스토어에 올린 뒤에 열립니다. 마음만으로도 고마워요.</string>
+    <string name="letgo_title">오늘의 한 줄</string>
+    <string name="letgo_sub">기쁨도, 슬픔도 한 줄에 실어 떠나보내세요.</string>
+    <string name="letgo_feeling">지금 마음 (고르지 않아도 돼요)</string>
+    <string name="letgo_hint">오늘 하루를 한 줄로</string>
+    <string name="letgo_send">떠나보내기</string>
+    <string name="letgo_done">오늘의 한 줄은 바람에 실려 갔어요. 내일 또 만나요.</string>
+    <string name="letgo_privacy">쓴 글은 이 폰 안에만 남고, 어디로도 보내지 않아요.</string>
+    <string name="feeling_joy">기쁨</string>
+    <string name="feeling_thanks">고마움</string>
+    <string name="feeling_calm">평온</string>
+    <string name="feeling_sad">슬픔</string>
+    <string name="feeling_worry">걱정</string>
+    <string name="feeling_angry">화남</string>
 </resources>

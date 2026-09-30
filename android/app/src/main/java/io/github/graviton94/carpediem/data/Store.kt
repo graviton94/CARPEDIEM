@@ -1,5 +1,7 @@
 package io.github.graviton94.carpediem.data
 
+import io.github.graviton94.carpediem.core.DayLine
+import io.github.graviton94.carpediem.core.Lines
 import android.content.Context
 import io.github.graviton94.carpediem.core.GridScale
 import io.github.graviton94.carpediem.core.LifeExpectancyTable
@@ -129,6 +131,11 @@ class Store(context: Context) {
         if (!prefs.contains("firstSkip")) e.putLong("firstSkip", today)
         e.apply()
     }
+
+    /** 오늘의 한 줄 (기기 안에만). 떠나보낸 글은 화면에 다시 보이지 않는다. */
+    var lines: List<DayLine>
+        get() = Lines.decode(prefs.getString("lines", null))
+        set(v) = prefs.edit().putString("lines", Lines.encode(v)).apply()
 
     fun eraseAll() = prefs.edit().clear().apply()
 

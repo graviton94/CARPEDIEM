@@ -162,7 +162,20 @@
     "support.tier3": "케이크 한 조각",
     "support.tier3.price": "11,000원",
     "support.once": "한 번만 결제되고, 반복 결제는 없습니다.",
-    "support.soon": "지금은 시험판이라 결제가 열리지 않았어요. Play 스토어에 올린 뒤에 열립니다. 마음만으로도 고마워요."
+    "support.soon": "지금은 시험판이라 결제가 열리지 않았어요. Play 스토어에 올린 뒤에 열립니다. 마음만으로도 고마워요.",
+    "letgo.title": "오늘의 한 줄",
+    "letgo.sub": "기쁨도, 슬픔도 한 줄에 실어 떠나보내세요.",
+    "letgo.feeling": "지금 마음 (고르지 않아도 돼요)",
+    "letgo.hint": "오늘 하루를 한 줄로",
+    "letgo.send": "떠나보내기",
+    "letgo.done": "오늘의 한 줄은 바람에 실려 갔어요. 내일 또 만나요.",
+    "letgo.privacy": "쓴 글은 이 폰 안에만 남고, 어디로도 보내지 않아요.",
+    "feeling.joy": "기쁨",
+    "feeling.thanks": "고마움",
+    "feeling.calm": "평온",
+    "feeling.sad": "슬픔",
+    "feeling.worry": "걱정",
+    "feeling.angry": "화남"
   },
   "en": {
     "tagline": "Cherish today.",
@@ -327,6 +340,19 @@
     "support.tier3": "A slice of cake",
     "support.tier3.price": "$7.99",
     "support.once": "One-time only. Never a subscription.",
-    "support.soon": "This is a test version, so payments aren't open yet. They open once the app is on Google Play. Thank you for the thought."
+    "support.soon": "This is a test version, so payments aren't open yet. They open once the app is on Google Play. Thank you for the thought.",
+    "letgo.title": "Today's line",
+    "letgo.sub": "Joy or sorrow, put it in one line and let it go.",
+    "letgo.feeling": "How it feels (optional)",
+    "letgo.hint": "Today, in one line",
+    "letgo.send": "Let it go",
+    "letgo.done": "Today's line has drifted away. See you tomorrow.",
+    "letgo.privacy": "What you write stays on this phone and is never sent anywhere.",
+    "feeling.joy": "Joy",
+    "feeling.thanks": "Thanks",
+    "feeling.calm": "Calm",
+    "feeling.sad": "Sadness",
+    "feeling.worry": "Worry",
+    "feeling.angry": "Anger"
   }
 }
