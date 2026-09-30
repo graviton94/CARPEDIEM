@@ -12,6 +12,8 @@ import io.github.graviton94.carpediem.core.LifeProfile
 import io.github.graviton94.carpediem.core.Sex
 import io.github.graviton94.carpediem.design.Tokens
 import io.github.graviton94.carpediem.ui.garden.WidgetPreviewScreen
+import io.github.graviton94.carpediem.ui.garden.CollectionScreen
+import io.github.graviton94.carpediem.ui.garden.SupportScreen
 import java.time.LocalDate
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.runtime.LaunchedEffect
@@ -46,6 +48,8 @@ private sealed interface Screen {
     data object Main : Screen
     data object Settings : Screen
     data object WidgetPreview : Screen
+    data class Collection(val back: Screen) : Screen
+    data class Support(val back: Screen) : Screen
     data class Country(val back: Screen) : Screen
 }
 
@@ -78,14 +82,21 @@ class MainActivity : ComponentActivity() {
                             if (d == null) screen = s.back
                             else CountryScreen(state, d.countryCode, d.sex, { code -> state.draft = d.copy(countryCode = code) }) { screen = s.back }
                         }
-                        Screen.Settings -> state.profile?.let { SettingsScreen(state, it, { screen = Screen.Main }) { screen = Screen.Country(Screen.Settings) } } ?: run { screen = Screen.Main }
+                        Screen.Settings -> state.profile?.let {
+                            SettingsScreen(state, it, { screen = Screen.Main }, { screen = Screen.Country(Screen.Settings) },
+                                onCollection = { screen = Screen.Collection(Screen.Settings) }, onSupport = { screen = Screen.Support(Screen.Settings) })
+                        } ?: run { screen = Screen.Main }
+                        is Screen.Collection -> state.profile?.let { CollectionScreen(state, it, now) { screen = s.back } } ?: run { screen = Screen.Main }
+                        // 응원하기는 하루의 정원 그림이라 유리 버전에서도 정원 모습으로 연다
+                        is Screen.Support -> CarpeDiemTheme(deviceClass = DeviceClass.of(maxWidth), design = Design.GARDEN, screenWidth = maxWidth) { SupportScreen(state, now) { screen = s.back } }
                         Screen.Main -> {
                             val profile = state.profile
                             val garden = state.design == Design.GARDEN
                             when {
                                 profile == null -> OnboardingScreen(state) { screen = Screen.Country(Screen.Main) }
                                 garden && state.meetPending -> MeetScreen(state) { state.finishMeet() }
-                                garden -> GardenHome(state, profile, now) { screen = Screen.Settings }
+                                garden -> GardenHome(state, profile, now, onSettings = { screen = Screen.Settings },
+                                    onCollection = { screen = Screen.Collection(Screen.Main) }, onSupport = { screen = Screen.Support(Screen.Main) })
                                 else -> HomeScreen(state, profile, now) { screen = Screen.Settings }
                             }
                         }
@@ -113,5 +124,5 @@ private fun MainActivity.debugSetup(state: AppState): Screen {
     if (x.hasExtra("cd.meet")) { if (x.getBooleanExtra("cd.meet", false)) state.begin(state.profile ?: state.defaultProfile()) else state.finishMeet() }
     if (x.hasExtra("cd.preview")) state.changePreviewAll(x.getBooleanExtra("cd.preview", false))
     x.getStringExtra("cd.now")?.let { state.fixedNow = LocalDateTime.parse(it) }
-    return when (x.getStringExtra("cd.screen")) { "settings" -> Screen.Settings; "widgets" -> Screen.WidgetPreview; else -> Screen.Main }
+    return when (x.getStringExtra("cd.screen")) { "settings" -> Screen.Settings; "widgets" -> Screen.WidgetPreview; "collection" -> Screen.Collection(Screen.Main); "support" -> Screen.Support(Screen.Main); else -> Screen.Main }
 }

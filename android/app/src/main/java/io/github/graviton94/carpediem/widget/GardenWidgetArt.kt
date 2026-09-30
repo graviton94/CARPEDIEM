@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.BitmapShader
 import android.graphics.Canvas
+import android.graphics.LinearGradient
 import android.graphics.Matrix
 import android.graphics.Paint
 import android.graphics.PorterDuff
@@ -19,6 +20,7 @@ import io.github.graviton94.carpediem.core.Season
 import io.github.graviton94.carpediem.data.Store
 import io.github.graviton94.carpediem.design.Tokens
 import io.github.graviton94.carpediem.ui.garden.HaruArtStore
+import io.github.graviton94.carpediem.ui.garden.SkyTime
 import org.json.JSONObject
 import java.time.LocalDateTime
 import kotlin.math.hypot
@@ -54,6 +56,11 @@ object GardenWidgetArt {
         c.drawBitmap(sky, null, RectF(0f, 0f, w.toFloat(), w * sky.height / sky.width.toFloat()), paint)
 
         val gy = h * if (kind == Kind.LARGE) W.largeGroundRatio else W.groundRatio
+        // 하루의 시간에 따른 하늘빛 (앱 정원과 같은 규칙)
+        SkyTime.at(now).takeIf { it.alpha > 0f }?.let { t ->
+            val top = t.color.copy(alpha = t.alpha).toArgb(); val low = t.color.copy(alpha = t.alpha * Tokens.Garden.SkyTime.groundKeep).toArgb()
+            c.drawRect(0f, 0f, w.toFloat(), h.toFloat(), Paint().apply { shader = LinearGradient(0f, 0f, 0f, max(1f, gy), top, low, Shader.TileMode.CLAMP) })
+        }
         if (kind != Kind.CALENDAR) {
             val strip = asset(context, "strip_${key(season)}.png")
             val sh = w * strip.height / strip.width.toFloat(); val lineY = sh * (L.stripLineY / L.stripHeight)

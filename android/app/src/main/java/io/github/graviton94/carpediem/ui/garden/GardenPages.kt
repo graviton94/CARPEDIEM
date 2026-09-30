@@ -1,0 +1,167 @@
+package io.github.graviton94.carpediem.ui.garden
+
+import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import io.github.graviton94.carpediem.R
+import io.github.graviton94.carpediem.core.LifeProfile
+import io.github.graviton94.carpediem.core.LifeSnapshot
+import io.github.graviton94.carpediem.core.Moment
+import io.github.graviton94.carpediem.design.Theme
+import io.github.graviton94.carpediem.design.Tokens
+import io.github.graviton94.carpediem.design.Tokens.Garden as G
+import io.github.graviton94.carpediem.ui.AppState
+import io.github.graviton94.carpediem.ui.SkyBackground
+import io.github.graviton94.carpediem.ui.TokenText
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
+
+/** 정원 쪽 화면의 위 줄: 돌아가기 + 제목 (가운데). */
+@Composable
+private fun PageBar(title: String, onBack: () -> Unit) {
+    val p = Theme.palette
+    val ctx = LocalContext.current
+    Box(Modifier.fillMaxWidth().heightIn(min = Tokens.Layout.tapTarget), contentAlignment = Alignment.Center) {
+        IconButton(onClick = onBack, modifier = Modifier.align(Alignment.CenterStart).semantics { contentDescription = ctx.getString(R.string.back) }) {
+            Icon(Icons.AutoMirrored.Filled.ArrowBack, null, tint = p.secondary)
+        }
+        TokenText(title, Tokens.TypeScale.headline)
+    }
+}
+
+// ───────────────────────── 모은 것 ─────────────────────────
+
+/**
+ * 정원에 놓인 것을 한곳에서. 받은 것만 보인다 (빈칸 · 개수 · 남은 것 목록은 없다 — 모으는 놀이가 아니라 지나온 날의 흔적).
+ * 누르면 정원에서와 같은 한 장 (생긴 날과 한 줄).
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CollectionScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, onBack: () -> Unit) {
+    val p = Theme.palette
+    val ctx = LocalContext.current
+    val u = Theme.unit
+    val s = LifeSnapshot(profile.birthDate, profile.expectancy(state.store.table), now)
+    val moments = gardenMoments(state, profile, s, now)
+    var open by remember { mutableStateOf<Moment?>(null) }
+    BackHandler(onBack = onBack)
+    SkyBackground {
+        Column(
+            Modifier.fillMaxSize().verticalScroll(rememberScrollState()).statusBarsPadding().navigationBarsPadding()
+                .padding(horizontal = Theme.deviceClass.pageMargin).padding(bottom = Tokens.Space.sp10),
+            verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp4),
+        ) {
+            PageBar(stringResource(R.string.collection), onBack)
+            TokenText(stringResource(R.string.collection_sub), Tokens.TypeScale.callout.serif(), Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.Center)
+            val cols = 3
+            moments.chunked(cols).forEachIndexed { row, list ->
+                Row(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
+                    list.forEachIndexed { i, m ->
+                        Column(
+                            Modifier.weight(1f).crayonBox(null, G.Radius.box, G.Stroke.chip, seed = 900 + row * cols + i).clickable { open = m }.padding(Tokens.Space.sp2),
+                            horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1),
+                        ) {
+                            Image(GardenArt.obj(ctx, m.id), null, Modifier.size(u * G.Layout.collectionCell))
+                            TokenText(stringResource(objName(m.id)), Tokens.TypeScale.subhead, weight = FontWeight.SemiBold, align = TextAlign.Center)
+                            TokenText(m.date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)), Tokens.TypeScale.caption2, color = p.secondary, align = TextAlign.Center)
+                        }
+                    }
+                    repeat(cols - list.size) { Spacer(Modifier.weight(1f)) }
+                }
+            }
+        }
+    }
+    open?.let { m ->
+        ModalBottomSheet(onDismissRequest = { open = null }, containerColor = G.Colors.paper) { ItemSheet(m) { open = null } }
+    }
+}
+
+// ───────────────────────── 응원하기 ─────────────────────────
+
+/**
+ * 응원하기: 보상 없이, 한 번 결제 3단계 (docs/plan.md M3). 그림 가운데에 내 하루가 앉아 있다.
+ * 결제(Play Billing)는 스토어 등록 뒤에 붙인다. 지금은 누르면 시험판 안내가 나온다.
+ */
+@Composable
+fun SupportScreen(state: AppState, now: LocalDateTime, onBack: () -> Unit) {
+    val p = Theme.palette
+    val ctx = LocalContext.current
+    val load = haruArt(state, sprout = false)
+    var soon by remember { mutableStateOf(false) }
+    BackHandler(onBack = onBack)
+    SkyBackground {
+        Column(
+            Modifier.fillMaxSize().verticalScroll(rememberScrollState()).statusBarsPadding().navigationBarsPadding()
+                .padding(horizontal = Theme.deviceClass.pageMargin).padding(bottom = Tokens.Space.sp10),
+            verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp4),
+        ) {
+            PageBar(stringResource(R.string.support), onBack)
+            val img = GardenArt.support(ctx)
+            BoxWithConstraints(Modifier.fillMaxWidth().aspectRatio(img.width / img.height.toFloat()).crayonBox(null, G.Radius.box, G.Stroke.box, seed = 910)) {
+                Image(img, null, Modifier.fillMaxSize().padding(G.Stroke.box.let { Theme.unit * it }), contentScale = ContentScale.Crop)
+                val scale = maxWidth * (G.Layout.supportHaru / G.Layout.haruArtWidth)
+                Haru(load, scale, Modifier.offset(maxWidth / 2 - scale * (G.Layout.haruBox / 2), maxHeight * G.Layout.supportGround - scale * G.Layout.haruGround), sleepy = sleepy(now))
+            }
+            TokenText(stringResource(R.string.support_title), Tokens.TypeScale.title3.serif(), Modifier.fillMaxWidth(), align = TextAlign.Center)
+            TokenText(stringResource(R.string.support_body), Tokens.TypeScale.callout, Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.Center)
+            listOf(
+                Triple(R.string.support_tier1, R.string.support_tier1_price, "teacup"),
+                Triple(R.string.support_tier2, R.string.support_tier2_price, "teacup"),
+                Triple(R.string.support_tier3, R.string.support_tier3_price, "candle"),
+            ).forEachIndexed { i, (name, price, obj) ->
+                Row(
+                    Modifier.fillMaxWidth().heightIn(min = Tokens.Layout.tapTarget + Tokens.Space.sp4)
+                        .crayonBox(if (i == 1) G.Colors.chip else null, G.Radius.button, G.Stroke.box, seed = 920 + i * 3).clickable { soon = true }
+                        .padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp2),
+                    verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp3),
+                ) {
+                    Image(GardenArt.obj(ctx, obj), null, Modifier.size(Theme.unit * G.Layout.collectionCell * 0.42f))
+                    TokenText(stringResource(name), Tokens.TypeScale.headline, Modifier.weight(1f))
+                    TokenText(stringResource(price), Tokens.TypeScale.headline, color = p.secondary)
+                }
+            }
+            if (soon) Box(Modifier.fillMaxWidth().crayonBox(G.Colors.paper, G.Radius.box, G.Stroke.chip, seed = 940).padding(Tokens.Space.sp4)) {
+                TokenText(stringResource(R.string.support_soon), Tokens.TypeScale.subhead, Modifier.fillMaxWidth(), align = TextAlign.Center)
+            }
+            TokenText(stringResource(R.string.support_once), Tokens.TypeScale.footnote, Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.Center)
+        }
+    }
+}

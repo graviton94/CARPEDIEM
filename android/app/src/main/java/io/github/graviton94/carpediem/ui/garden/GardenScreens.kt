@@ -1,6 +1,15 @@
 package io.github.graviton94.carpediem.ui.garden
 
 import androidx.compose.foundation.Image
+import kotlin.coroutines.cancellation.CancellationException
+import kotlinx.coroutines.isActive
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.foundation.background
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -86,7 +95,7 @@ private fun skyProgress(now: LocalDateTime): Pair<Boolean, Float> {
     else false to (((h - set + 24f) % 24f) / (24f - (set - rise)))
 }
 
-private fun sleepy(now: LocalDateTime): Boolean { val h = now.hour; return h >= G.Motion.sleepFrom.toInt() || h < G.Motion.sleepTo.toInt() }
+internal fun sleepy(now: LocalDateTime): Boolean { val h = now.hour; return h >= G.Motion.sleepFrom.toInt() || h < G.Motion.sleepTo.toInt() }
 
 /** 가운데를 x 에 두되 [min, max] 안에서 벗어나지 않게. */
 private fun Modifier.centerAt(xPx: Float, minPx: Float, maxPx: Float) = layout { measurable, constraints ->
@@ -95,10 +104,10 @@ private fun Modifier.centerAt(xPx: Float, minPx: Float, maxPx: Float) = layout {
 }
 
 /** 하루 그림을 불러온다. loading = 아직 그리는 중, 끝났는데 art 가 없으면 대체 그림을 쓴다. */
-private class HaruLoad(val art: HaruArt?, val loading: Boolean)
+internal class HaruLoad(val art: HaruArt?, val loading: Boolean)
 
 @Composable
-private fun haruArt(state: AppState, sprout: Boolean): HaruLoad {
+internal fun haruArt(state: AppState, sprout: Boolean): HaruLoad {
     val ctx = LocalContext.current
     val seed = state.store.haruSeed
     val load by produceState(HaruLoad(null, true), seed, sprout) { value = HaruLoad(HaruArtStore.get(ctx, seed, sprout), false) }
@@ -107,7 +116,7 @@ private fun haruArt(state: AppState, sprout: Boolean): HaruLoad {
 
 /** 하루 한 명 (그림이 있으면 그림, 못 그렸으면 대체 그림). */
 @Composable
-private fun Haru(load: HaruLoad, scale: Dp, modifier: Modifier, sleepy: Boolean = false, blinkKick: Int = 0) {
+internal fun Haru(load: HaruLoad, scale: Dp, modifier: Modifier, sleepy: Boolean = false, blinkKick: Int = 0) {
     val ctx = LocalContext.current
     val desc = load.art?.let { stringResource(R.string.garden_haruA11y, Labels.stone(ctx, it.meta.stone)) } ?: stringResource(R.string.garden_haru)
     val m = modifier.semantics { contentDescription = desc }
@@ -121,7 +130,7 @@ private fun Haru(load: HaruLoad, scale: Dp, modifier: Modifier, sleepy: Boolean 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSettings: () -> Unit) {
+fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSettings: () -> Unit, onCollection: () -> Unit, onSupport: () -> Unit) {
     val p = Theme.palette
     val ctx = LocalContext.current
     val density = LocalDensity.current
@@ -129,7 +138,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
     val season = s.season
     val load = haruArt(state, season == Season.SPRING)
     val art = load.art
-    val moments = if (state.previewAll) Moments.all(now.toLocalDate()) else Moments.earned(state.store.startDate, profile.birthDate, s.expectancy, now.toLocalDate(), state.store.firstSkip, state.store.returned)
+    val moments = gardenMoments(state, profile, s, now)
     var open by remember { mutableStateOf<Moment?>(null) }
 
     BoxWithConstraints(Modifier.fillMaxSize().paperBackground()) {
@@ -137,10 +146,38 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
         val screenH = maxHeight
         val screenW = maxWidth
         val margin = Theme.deviceClass.pageMargin
+        val pagePx = with(density) { screenH.toPx() }
         var topBottom by remember { mutableStateOf(0.dp) }
-        Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
-            Box(Modifier.fillMaxWidth().height(screenH).clipToBounds()) {
+        val scroll = rememberScrollState()
+        // 첫 장(정원)과 둘째 장(시간 · 달력) 사이에서 손을 떼면 가까운 장으로 부드럽게 넘어간다.
+        LaunchedEffect(pagePx) {
+            var from = scroll.value
+            snapshotFlow { scroll.isScrollInProgress }.collect { moving ->
+                val v = scroll.value
+                if (moving) from = v
+                else if (v in 1 until pagePx.toInt()) {
+                    val goDown = if (from < pagePx) v > pagePx * G.Layout.pageSnap else v > pagePx * (1 - G.Layout.pageSnap)
+                    // 넘어가는 중에 손가락이 닿으면 멈추고 손을 따른다
+                    try { scroll.animateScrollTo(if (goDown) pagePx.toInt() else 0, tween(G.Motion.pageMs.toInt(), easing = FastOutSlowInEasing)) }
+                    catch (e: CancellationException) { if (!isActive) throw e }
+                }
+            }
+        }
+        // 넘긴 정도 (0 = 정원, 1 = 둘째 장). 읽는 곳은 그리기 단계뿐이라 넘길 때 다시 구성하지 않는다.
+        fun turned() = (scroll.value / pagePx).coerceIn(0f, 1f)
+
+        Column(Modifier.fillMaxSize().verticalScroll(scroll)) {
+            Box(Modifier.fillMaxWidth().height(screenH).graphicsLayer {
+                val f = turned(); translationY = scroll.value * G.Layout.parallax; alpha = 1f - f * f
+            }.clipToBounds()) {
+                // 아래: 지나온 길 (땅 한 줄) 위에 하루와 놓인 것. 자리를 먼저 정해 하늘빛 · 별이 쓰게 한다.
+                val haruScale = u * (G.Layout.haruWidth / G.Layout.haruArtWidth)
+                val haruAbove = art?.let { haruScale * (it.meta.ground - it.meta.bbox.top) } ?: (u * G.Layout.haruWidth)
+                val labels = u * (G.Layout.labelGap + G.Layout.labelRow * 3)
+                val gy = maxOf(screenH * G.Layout.groundRatio, topBottom + u * G.Layout.minSkyGap + haruAbove).coerceAtMost(screenH - labels)
+
                 Image(GardenArt.sky(ctx, season), null, Modifier.fillMaxSize(), contentScale = ContentScale.FillWidth, alignment = Alignment.TopCenter)
+                SkyTimeLayer(now, gy, topBottom, gy - haruAbove - u * G.Layout.minSkyGap, Modifier.fillMaxSize())
 
                 // 위: 남은 시간 · 단위 · 오늘의 문장
                 Column(
@@ -162,18 +199,13 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                             Modifier.fillMaxWidth().padding(top = Tokens.Space.sp4).clickable { state.nextQuote() },
                             horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1),
                         ) {
-                            TokenText(if (state.quoteLanguage == QuoteLanguage.ENGLISH) q.english else q.korean, Tokens.TypeScale.headline.serif(), align = TextAlign.Center)
+                            QuoteText(if (state.quoteLanguage == QuoteLanguage.ENGLISH) q.english else q.korean)
                             if (state.quoteLanguage == QuoteLanguage.BOTH) TokenText(q.english, Tokens.TypeScale.footnote.serif(), color = p.secondary, align = TextAlign.Center)
                             TokenText(stringResource(R.string.words_next), Tokens.TypeScale.caption2, color = p.secondary, weight = FontWeight.Normal)
                         }
                     }
                 }
 
-                // 아래: 지나온 길 (땅 한 줄) 위에 하루와 놓인 것
-                val haruScale = u * (G.Layout.haruWidth / G.Layout.haruArtWidth)
-                val haruAbove = art?.let { haruScale * (it.meta.ground - it.meta.bbox.top) } ?: (u * G.Layout.haruWidth)
-                val labels = u * (G.Layout.labelGap + G.Layout.labelRow * 3)
-                val gy = maxOf(screenH * G.Layout.groundRatio, topBottom + u * G.Layout.minSkyGap + haruAbove).coerceAtMost(screenH - labels)
                 val x0 = u * G.Layout.pathStart; val x1 = u * G.Layout.pathEnd
                 val along = lerp((u * (G.Layout.pathStart + G.Layout.pathInset)).value, (u * (G.Layout.pathEnd - G.Layout.pathInset)).value, s.progress.toFloat().coerceIn(0f, 1f)).dp
                 // 하루 몸이 길 끝을 넘지 않게 (큰 돌도 화면 안에). 대체 그림은 반지름 = haruWidth.
@@ -213,11 +245,19 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 Box(Modifier.offset(y = gy + u * (G.Layout.labelGap + G.Layout.labelRow)).fillMaxWidth()) {
                     TokenText(stringResource(R.string.path_age, "${s.age}", Labels.season(ctx, season)), Tokens.TypeScale.caption1, Modifier.centerAt(px.third, px.first, px.second))
                 }
+                // 정원 아래쪽은 종이로 번져 둘째 장과 이어진다
+                Box(Modifier.align(Alignment.BottomCenter).fillMaxWidth().height(screenH * G.Layout.fadeTail)
+                    .background(Brush.verticalGradient(listOf(G.Colors.paper.copy(alpha = 0f), G.Colors.paper))))
                 TokenText(stringResource(R.string.garden_down), Tokens.TypeScale.caption2, Modifier.align(Alignment.BottomCenter).navigationBarsPadding().padding(bottom = Tokens.Space.sp3), color = p.secondary, weight = FontWeight.Normal)
             }
 
-            // 아래로 넘기면: 흐르는 시간 · 인생 달력
-            Column(Modifier.fillMaxWidth().padding(horizontal = margin).navigationBarsPadding().padding(bottom = Tokens.Space.sp10), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
+            // 둘째 장: 흐르는 시간 · 인생 달력 · 모은 것 · 응원하기. 넘길수록 떠오른다.
+            Column(
+                Modifier.fillMaxWidth().heightIn(min = screenH).graphicsLayer {
+                    val f = turned(); alpha = f; translationY = (1f - f) * pagePx * (1f - G.Layout.parallax) * G.Layout.pageSnap
+                }.statusBarsPadding().padding(horizontal = margin).padding(top = Tokens.Space.sp6).navigationBarsPadding().padding(bottom = Tokens.Space.sp10),
+                verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3),
+            ) {
                 TokenText(stringResource(R.string.flow), Tokens.TypeScale.title3)
                 LifePeriod.entries.forEachIndexed { i, period ->
                     val pp = s.period(period)
@@ -244,8 +284,14 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                     }
                 }
                 val cols = when (state.grid) { GridScale.WEEKS -> Tokens.Grid.weeksColumns; GridScale.MONTHS -> Tokens.Grid.monthsColumns; GridScale.YEARS -> Tokens.Grid.yearsColumns }
-                CrayonCalendar(s.total(state.grid.unit), s.lived(state.grid.unit), cols)
+                // 칸이 수천 개라 한 번 그려 두고(레이어) 넘길 때는 옮기기만 한다
+                CrayonCalendar(s.total(state.grid.unit), s.lived(state.grid.unit), cols, Modifier.graphicsLayer())
                 TokenText(stringResource(R.string.calendar_legend, Labels.season(ctx, season)), Tokens.TypeScale.caption1, color = p.secondary)
+                Spacer(Modifier.height(Tokens.Space.sp4))
+                Row(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
+                    GardenButton(stringResource(R.string.collection), onCollection, filled = false, seed = 880, modifier = Modifier.weight(1f))
+                    GardenButton(stringResource(R.string.support), onSupport, filled = false, seed = 884, modifier = Modifier.weight(1f))
+                }
             }
         }
     }
@@ -257,17 +303,36 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
     }
 }
 
-private fun objName(id: String) = when (id) {
+/** 정원에 놓인 것 (최근 것부터). 개발자 모드의 ‘모두 미리 보기’면 전부. */
+internal fun gardenMoments(state: AppState, profile: LifeProfile, s: LifeSnapshot, now: LocalDateTime): List<Moment> =
+    if (state.previewAll) Moments.all(now.toLocalDate())
+    else Moments.earned(state.store.startDate, profile.birthDate, s.expectancy, now.toLocalDate(), state.store.firstSkip, state.store.returned)
+
+/** 오늘의 문장: 두 줄에 안 들어가면 글자를 한 단계씩 줄인다. 어절 단위로 줄을 바꾼다 (TokenText). */
+@Composable
+private fun QuoteText(text: String) {
+    val steps = listOf(Tokens.TypeScale.headline, Tokens.TypeScale.callout, Tokens.TypeScale.subhead)
+    var step by remember(text) { mutableStateOf(0) }
+    var ready by remember(text) { mutableStateOf(false) }
+    val last = step == steps.lastIndex
+    TokenText(
+        text, steps[step].serif(), Modifier.fillMaxWidth().graphicsLayer { alpha = if (ready) 1f else 0f }, align = TextAlign.Center,
+        maxLines = if (last) Int.MAX_VALUE else 2,
+        onTextLayout = { r -> if (r.hasVisualOverflow && !last) step++ else ready = true },
+    )
+}
+
+internal fun objName(id: String) = when (id) {
     "moss" -> R.string.obj_moss; "teacup" -> R.string.obj_teacup; "cairn" -> R.string.obj_cairn; "pine" -> R.string.obj_pine
     "flower" -> R.string.obj_flower; "pond" -> R.string.obj_pond; "leaf" -> R.string.obj_leaf; "candle" -> R.string.obj_candle
     "dandelion" -> R.string.obj_dandelion; "feather" -> R.string.obj_feather; "snail" -> R.string.obj_snail; else -> R.string.obj_acorn
 }
-private fun objWhen(id: String) = when (id) {
+internal fun objWhen(id: String) = when (id) {
     "moss" -> R.string.obj_moss_when; "teacup" -> R.string.obj_teacup_when; "cairn" -> R.string.obj_cairn_when; "pine" -> R.string.obj_pine_when
     "flower" -> R.string.obj_flower_when; "pond" -> R.string.obj_pond_when; "leaf" -> R.string.obj_leaf_when; "candle" -> R.string.obj_candle_when
     "dandelion" -> R.string.obj_dandelion_when; "feather" -> R.string.obj_feather_when; "snail" -> R.string.obj_snail_when; else -> R.string.obj_acorn_when
 }
-private fun objLine(id: String) = when (id) {
+internal fun objLine(id: String) = when (id) {
     "moss" -> R.string.obj_moss_line; "teacup" -> R.string.obj_teacup_line; "cairn" -> R.string.obj_cairn_line; "pine" -> R.string.obj_pine_line
     "flower" -> R.string.obj_flower_line; "pond" -> R.string.obj_pond_line; "leaf" -> R.string.obj_leaf_line; "candle" -> R.string.obj_candle_line
     "dandelion" -> R.string.obj_dandelion_line; "feather" -> R.string.obj_feather_line; "snail" -> R.string.obj_snail_line; else -> R.string.obj_acorn_line
@@ -275,7 +340,7 @@ private fun objLine(id: String) = when (id) {
 
 /** 놓인 것을 누르면: 생긴 날과 한 줄. 개수나 빈칸은 보이지 않는다. */
 @Composable
-private fun ItemSheet(m: Moment, onClose: () -> Unit) {
+internal fun ItemSheet(m: Moment, onClose: () -> Unit) {
     val p = Theme.palette
     val ctx = LocalContext.current
     val u = Theme.unit

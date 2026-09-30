@@ -149,3 +149,16 @@
 "notify.footer" = "Sends today's words once, quietly, in the morning. Also tells you when something new is in the garden.";
 "dev.unlocked" = "Developer mode on.";
 "garden.haruA11y" = "Haru, %1$@";
+"collection" = "Keepsakes";
+"collection.sub" = "With time, one more thing finds its way into the garden.";
+"support" = "Support";
+"support.title" = "Support Haru's garden";
+"support.body" = "No ads, nothing locked. If you like it, you can support it with the price of a warm cup. Everything works the same either way.";
+"support.tier1" = "A cup of tea";
+"support.tier1.price" = "$0.99";
+"support.tier2" = "A cup of coffee";
+"support.tier2.price" = "$2.99";
+"support.tier3" = "A slice of cake";
+"support.tier3.price" = "$7.99";
+"support.once" = "One-time only. Never a subscription.";
+"support.soon" = "This is a test version, so payments aren't open yet. They open once the app is on Google Play. Thank you for the thought.";

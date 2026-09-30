@@ -28,6 +28,11 @@ open --es cd.now 2026-09-30T23:30;                                              
 open --es cd.screen settings --es cd.now $NOW;                                                         shot g09_settings 4
 swipe_up; shot g10_settings_more 3
 open --es cd.screen widgets --es cd.now $NOW;                                                          shot g11_widgets 6
+open --ez cd.preview true --es cd.screen collection --es cd.now $NOW;                                  shot g16_collection 5
+open --ez cd.preview false --es cd.screen support --es cd.now $NOW;                                    shot g17_support 6
+adb shell input tap 540 1700; shot g18_support_tap 2
+open --es cd.now 2026-09-30T18:20;                                                                     shot g19_dusk 5
+open --es cd.now 2026-09-30T05:20;                                                                     shot g20_dawn 5
 # 인생의 계절 (다른 생년월일 · 다른 하루)
 open --el cd.seed 12345 --es cd.birth 2016-03-01 --es cd.now $NOW;                                     shot g12_spring 14
 open --el cd.seed 99 --es cd.birth 1968-08-20 --ez cd.preview true --es cd.now $NOW;                   shot g13_autumn 14

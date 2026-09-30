@@ -2,6 +2,7 @@ package io.github.graviton94.carpediem.ui.garden
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.hardware.Sensor
 import android.hardware.SensorEvent
@@ -59,7 +60,7 @@ class HaruArt(val body: ImageBitmap, val eyes: ImageBitmap, val meta: Meta) {
  * 처음 한 번 그려 files/haru 에 저장하고, 다음부터는 저장한 것을 쓴다.
  */
 object HaruArtStore {
-    private const val VERSION = 1
+    private const val VERSION = 2
     private const val PX = 1024
     private const val TIMEOUT_MS = 15_000L
     private val memory = HashMap<String, HaruArt>()
@@ -80,10 +81,16 @@ object HaruArtStore {
         val art = withContext(Dispatchers.IO) {
             runCatching {
                 val m = JSONObject(metaFile.readText())
-                val eyes = m.getJSONArray("eye").let { a -> (0 until a.length()).map { i -> a.getJSONObject(i).let { HaruArt.Eye(it.f("x"), it.f("y"), it.f("r")) } } }
+                val given = m.getJSONArray("eye").let { a -> (0 until a.length()).map { i -> a.getJSONObject(i).let { HaruArt.Eye(it.f("x"), it.f("y"), it.f("r")) } } }
                 val top = m.getJSONArray("top"); val bb = m.getJSONArray("bbox")
+                val eyesBmp = BitmapFactory.decodeFile(eyesFile.path)
+                val eyes = if (m.optBoolean("fitted")) given else fitEyes(eyesBmp, given, m.f("box")).also { fit ->
+                    // 위젯도 같은 자리를 쓰도록 저장해 둔다
+                    m.put("eye", org.json.JSONArray(fit.map { JSONObject().put("x", it.x.toDouble()).put("y", it.y.toDouble()).put("r", it.r.toDouble()) }))
+                    m.put("fitted", true); metaFile.writeText(m.toString())
+                }
                 HaruArt(
-                    BitmapFactory.decodeFile(bodyFile.path).asImageBitmap(), BitmapFactory.decodeFile(eyesFile.path).asImageBitmap(),
+                    BitmapFactory.decodeFile(bodyFile.path).asImageBitmap(), eyesBmp.asImageBitmap(),
                     HaruArt.Meta(m.f("box"), m.f("ground"), m.getString("stone"), eyes, m.f("pupil"), m.f("spread"), m.f("lookX"), m.f("lookY"),
                         Offset(top.getDouble(0).toFloat(), top.getDouble(1).toFloat()),
                         Rect(bb.getDouble(0).toFloat(), bb.getDouble(1).toFloat(), (bb.getDouble(0) + bb.getDouble(2)).toFloat(), (bb.getDouble(1) + bb.getDouble(3)).toFloat())),
@@ -103,6 +110,26 @@ object HaruArtStore {
     }
 
     private fun JSONObject.f(k: String) = getDouble(k).toFloat()
+
+    /**
+     * 눈 흰자 그림에서 실제 눈의 가운데를 다시 잰다. 기기 WebView 마다 그림이 조금 어긋날 수 있어서,
+     * 눈동자 · 깜빡임 자리를 적어 둔 좌표가 아니라 그려진 흰자에 맞춘다 (크기는 적어 둔 값).
+     */
+    private fun fitEyes(bmp: Bitmap, given: List<HaruArt.Eye>, box: Float): List<HaruArt.Eye> {
+        val w = bmp.width; val h = bmp.height; val k = w / box
+        val px = IntArray(w * h).also { bmp.getPixels(it, 0, w, 0, 0, w, h) }
+        return given.mapIndexed { i, e ->
+            val cx = e.x * k; val cy = e.y * k; val reach = e.r * k * 2.2f
+            var x0 = Int.MAX_VALUE; var y0 = Int.MAX_VALUE; var x1 = -1; var y1 = -1
+            for (y in (cy - reach).toInt().coerceAtLeast(0) until (cy + reach).toInt().coerceAtMost(h)) for (x in (cx - reach).toInt().coerceAtLeast(0) until (cx + reach).toInt().coerceAtMost(w)) {
+                if ((px[y * w + x] ushr 24) < 128) continue
+                // 두 눈이 붙어 있어도 가까운 쪽 눈에만 센다
+                val mine = hypot(x - cx, y - cy); if (given.withIndex().any { (j, o) -> j != i && hypot(x - o.x * k, y - o.y * k) < mine }) continue
+                if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y
+            }
+            if (x1 < 0) e else HaruArt.Eye((x0 + x1) / 2f / k, (y0 + y1) / 2f / k, e.r)
+        }
+    }
     private fun dataUrl(s: String): ByteArray = Base64.decode(s.substringAfter(","), Base64.DEFAULT)
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -140,9 +167,15 @@ fun rememberTilt(enabled: Boolean): Offset {
         val sensor = sm?.getDefaultSensor(Sensor.TYPE_GRAVITY) ?: sm?.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
         val range = Tokens.Garden.Motion.tiltRange
         val ease = Tokens.Garden.Motion.lookEase
+        // 평소에 쥐는 각도를 '정면'으로: 기울기의 느린 평균을 빼서, 폰을 움직일 때만 눈이 굴러가고 곧 제자리로 온다.
+        var rest: Offset? = null
         val listener = object : SensorEventListener {
             override fun onSensorChanged(e: SensorEvent) {
-                val target = Offset((-e.values[0] / range).coerceIn(-1f, 1f), ((SensorManager.GRAVITY_EARTH - e.values[1]) / range).coerceIn(-1f, 1f))
+                val raw = Offset(-e.values[0], -e.values[1])
+                val base = rest?.let { it + (raw - it) * Tokens.Garden.Motion.restEase } ?: raw
+                rest = base
+                val d = raw - base
+                val target = Offset((d.x / range).coerceIn(-1f, 1f), (d.y / range).coerceIn(-1f, 1f))
                 tilt += (target - tilt) * ease
             }
             override fun onAccuracyChanged(s: Sensor?, a: Int) {}

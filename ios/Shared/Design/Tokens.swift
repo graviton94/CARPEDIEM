@@ -171,8 +171,8 @@ enum Tokens {
             static let pathStart: CGFloat = 26.0
             static let pathEnd: CGFloat = 364.0
             static let pathInset: CGFloat = 20.0
-            static let haruWidth: CGFloat = 84.0
-            static let meetHaruWidth: CGFloat = 150.0
+            static let haruWidth: CGFloat = 60.0
+            static let meetHaruWidth: CGFloat = 120.0
             static let haruBox: CGFloat = 200.0
             static let haruGround: CGFloat = 170.0
             static let haruArtWidth: CGFloat = 70.0
@@ -194,6 +194,12 @@ enum Tokens {
             static let calendarGap: CGFloat = 1.3
             static let sparkle: CGFloat = 9.0
             static let devTaps: CGFloat = 7.0
+            static let pageSnap: CGFloat = 0.3
+            static let fadeTail: CGFloat = 0.18
+            static let parallax: CGFloat = 0.45
+            static let collectionCell: CGFloat = 104.0
+            static let supportGround: CGFloat = 0.825
+            static let supportHaru: CGFloat = 0.14
         }
         enum Stroke {
             static let ground: CGFloat = 3.2
@@ -214,7 +220,9 @@ enum Tokens {
             static let blinkMinMs: CGFloat = 2400.0
             static let blinkMaxMs: CGFloat = 6200.0
             static let blinkMs: CGFloat = 170.0
+            static let pageMs: CGFloat = 520.0
             static let lookEase: CGFloat = 0.12
+            static let restEase: CGFloat = 0.02
             static let tiltRange: CGFloat = 6.0
             static let sleepFrom: CGFloat = 22.0
             static let sleepTo: CGFloat = 6.0
@@ -248,6 +256,30 @@ enum Tokens {
             static let gridInset: CGFloat = 14.0
             static let cell: CGFloat = 1.3
             static let mossScale: CGFloat = 0.34
+        }
+        enum SkyTime {
+            enum Night {
+                static let color: UInt32 = 0x2F3B5EFF
+                static let alpha: CGFloat = 0.3
+            }
+            enum Dawn {
+                static let color: UInt32 = 0xF1B089FF
+                static let alpha: CGFloat = 0.26
+            }
+            enum Dusk {
+                static let color: UInt32 = 0xE48B6AFF
+                static let alpha: CGFloat = 0.3
+            }
+            static let dawnFrom: CGFloat = 4.5
+            static let dawnPeak: CGFloat = 6.0
+            static let dayFrom: CGFloat = 8.0
+            static let duskFrom: CGFloat = 16.5
+            static let duskPeak: CGFloat = 18.5
+            static let nightFrom: CGFloat = 20.0
+            static let groundKeep: CGFloat = 0.35
+            static let stars: CGFloat = 7.0
+            static let starSize: CGFloat = 6.0
+            static let starAlpha: CGFloat = 0.75
         }
     }
 }

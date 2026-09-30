@@ -49,6 +49,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.LineBreak
+import androidx.compose.ui.text.TextLayoutResult
 import kotlin.math.max
 import kotlin.math.min
 
@@ -65,9 +66,10 @@ fun TokenText(
     weight: FontWeight? = null,
     align: TextAlign? = null,
     maxLines: Int = Int.MAX_VALUE,
+    onTextLayout: ((TextLayoutResult) -> Unit)? = null,
 ) {
     val style = token.style(text).let { if (weight != null) it.copy(fontWeight = weight) else it }.copy(lineBreak = WordLineBreak)
-    Text(text, modifier, color = color, style = style, textAlign = align, maxLines = maxLines)
+    Text(text, modifier, color = color, style = style, textAlign = align, maxLines = maxLines, onTextLayout = onTextLayout ?: {})
 }
 
 /** 화면 위쪽에서 햇빛처럼 번지는 배경. 정원 디자인은 종이 위 하늘빛. */

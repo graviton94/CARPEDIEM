@@ -151,4 +151,17 @@
     <string name="notify_footer">아침에 오늘의 문장을 조용히 한 번 보냅니다. 정원에 새로 놓인 것이 있으면 함께 알려요.</string>
     <string name="dev_unlocked">개발자 모드를 켰습니다.</string>
     <string name="garden_haruA11y">하루, %1$s</string>
+    <string name="collection">모은 것</string>
+    <string name="collection_sub">시간이 흐르면 정원에 하나씩 놓입니다.</string>
+    <string name="support">응원하기</string>
+    <string name="support_title">하루의 정원을 응원해 주세요</string>
+    <string name="support_body">광고도, 잠긴 기능도 없습니다. 마음에 드셨다면 따뜻한 한 잔 값으로 응원해 주세요. 응원하지 않아도 모든 것을 똑같이 쓸 수 있어요.</string>
+    <string name="support_tier1">차 한 잔</string>
+    <string name="support_tier1_price">1,500원</string>
+    <string name="support_tier2">커피 한 잔</string>
+    <string name="support_tier2_price">4,400원</string>
+    <string name="support_tier3">케이크 한 조각</string>
+    <string name="support_tier3_price">11,000원</string>
+    <string name="support_once">한 번만 결제되고, 반복 결제는 없습니다.</string>
+    <string name="support_soon">지금은 시험판이라 결제가 열리지 않았어요. Play 스토어에 올린 뒤에 열립니다. 마음만으로도 고마워요.</string>
 </resources>

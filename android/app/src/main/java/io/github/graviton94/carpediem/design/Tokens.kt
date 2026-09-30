@@ -166,8 +166,8 @@ object Tokens {
             const val pathStart = 26.0f
             const val pathEnd = 364.0f
             const val pathInset = 20.0f
-            const val haruWidth = 84.0f
-            const val meetHaruWidth = 150.0f
+            const val haruWidth = 60.0f
+            const val meetHaruWidth = 120.0f
             const val haruBox = 200.0f
             const val haruGround = 170.0f
             const val haruArtWidth = 70.0f
@@ -189,6 +189,12 @@ object Tokens {
             const val calendarGap = 1.3f
             const val sparkle = 9.0f
             const val devTaps = 7.0f
+            const val pageSnap = 0.3f
+            const val fadeTail = 0.18f
+            const val parallax = 0.45f
+            const val collectionCell = 104.0f
+            const val supportGround = 0.825f
+            const val supportHaru = 0.14f
         }
         object Stroke {
             const val ground = 3.2f
@@ -209,7 +215,9 @@ object Tokens {
             const val blinkMinMs = 2400.0f
             const val blinkMaxMs = 6200.0f
             const val blinkMs = 170.0f
+            const val pageMs = 520.0f
             const val lookEase = 0.12f
+            const val restEase = 0.02f
             const val tiltRange = 6.0f
             const val sleepFrom = 22.0f
             const val sleepTo = 6.0f
@@ -243,6 +251,30 @@ object Tokens {
             const val gridInset = 14.0f
             const val cell = 1.3f
             const val mossScale = 0.34f
+        }
+        object SkyTime {
+            object Night {
+                val color = Color(0xFF2F3B5E)
+                const val alpha = 0.3f
+            }
+            object Dawn {
+                val color = Color(0xFFF1B089)
+                const val alpha = 0.26f
+            }
+            object Dusk {
+                val color = Color(0xFFE48B6A)
+                const val alpha = 0.3f
+            }
+            const val dawnFrom = 4.5f
+            const val dawnPeak = 6.0f
+            const val dayFrom = 8.0f
+            const val duskFrom = 16.5f
+            const val duskPeak = 18.5f
+            const val nightFrom = 20.0f
+            const val groundKeep = 0.35f
+            const val stars = 7.0f
+            const val starSize = 6.0f
+            const val starAlpha = 0.75f
         }
     }
 }

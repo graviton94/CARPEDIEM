@@ -151,4 +151,17 @@
     <string name="notify_footer">Sends today\'s words once, quietly, in the morning. Also tells you when something new is in the garden.</string>
     <string name="dev_unlocked">Developer mode on.</string>
     <string name="garden_haruA11y">Haru, %1$s</string>
+    <string name="collection">Keepsakes</string>
+    <string name="collection_sub">With time, one more thing finds its way into the garden.</string>
+    <string name="support">Support</string>
+    <string name="support_title">Support Haru\'s garden</string>
+    <string name="support_body">No ads, nothing locked. If you like it, you can support it with the price of a warm cup. Everything works the same either way.</string>
+    <string name="support_tier1">A cup of tea</string>
+    <string name="support_tier1_price">$0.99</string>
+    <string name="support_tier2">A cup of coffee</string>
+    <string name="support_tier2_price">$2.99</string>
+    <string name="support_tier3">A slice of cake</string>
+    <string name="support_tier3_price">$7.99</string>
+    <string name="support_once">One-time only. Never a subscription.</string>
+    <string name="support_soon">This is a test version, so payments aren\'t open yet. They open once the app is on Google Play. Thank you for the thought.</string>
 </resources>

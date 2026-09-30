@@ -24,4 +24,5 @@ object GardenArt {
     fun toothLine(context: Context) = image(context, "tooth_line.png")
     fun toothFill(context: Context) = image(context, "tooth_fill.png")
     fun paper(context: Context) = image(context, "paper.png")
+    fun support(context: Context) = image(context, "support.jpg")
 }

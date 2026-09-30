@@ -95,7 +95,12 @@ fun OnboardingScreen(state: AppState, onCountry: () -> Unit) {
     val draft = state.draft ?: state.defaultProfile().also { state.draft = it }
     SkyBackground {
         Page {
-            Column(Modifier.padding(top = Tokens.Space.sp10, start = Tokens.Space.sp2, bottom = Tokens.Space.sp5), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
+            // 정원: 가운데 정렬, 한 줄 소개는 작게. 유리 버전은 그대로.
+            if (Theme.garden) Column(Modifier.fillMaxWidth().padding(top = Tokens.Space.sp10, bottom = Tokens.Space.sp5), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
+                TokenText("Carpe Diem", Tokens.TypeScale.display(Theme.deviceClass), align = TextAlign.Center)
+                TokenText(stringResource(R.string.tagline), Tokens.TypeScale.callout.serif(), color = p.secondary, align = TextAlign.Center)
+            }
+            else Column(Modifier.padding(top = Tokens.Space.sp10, start = Tokens.Space.sp2, bottom = Tokens.Space.sp5), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
                 TokenText("Carpe Diem", Tokens.TypeScale.display(Theme.deviceClass))
                 TokenText(stringResource(R.string.tagline), Tokens.TypeScale.title3, color = p.secondary)
             }
@@ -281,7 +286,7 @@ private fun QuoteCard(q: Quote, language: QuoteLanguage, onNext: () -> Unit) {
 // ───────────────────────── 설정 ─────────────────────────
 
 @Composable
-fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, onCountry: () -> Unit) {
+fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, onCountry: () -> Unit, onCollection: () -> Unit, onSupport: () -> Unit) {
     val p = Theme.palette
     val ctx = LocalContext.current
     val draft = state.draft ?: profile.also { state.draft = it }
@@ -305,6 +310,10 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
                     RowDivider()
                     FormRow(stringResource(R.string.garden_haru)) {
                         TokenText(stringResource(R.string.garden_no, haruNo(state.store.haruSeed)), Tokens.TypeScale.subhead, color = p.secondary)
+                    }
+                    RowDivider()
+                    FormRow(stringResource(R.string.collection), onClick = onCollection) {
+                        Icon(Icons.Filled.KeyboardArrowRight, null, tint = p.secondary)
                     }
                     if (state.devMode) {
                         RowDivider()
@@ -336,6 +345,11 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
                         Icon(icon, null, tint = p.olive, modifier = Modifier.size(Tokens.Stroke.icon))
                         TokenText(stringResource(text), Tokens.TypeScale.subhead)
                     }
+                }
+            }
+            FormSection {
+                FormRow(stringResource(R.string.support), onClick = onSupport) {
+                    Icon(Icons.Filled.KeyboardArrowRight, null, tint = p.secondary)
                 }
             }
             FormSection {

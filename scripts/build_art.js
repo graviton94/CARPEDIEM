@@ -32,6 +32,8 @@ const app = path.join(root, "android/app/src/main/assets/garden");
     A.THEMES.forEach((t) => make("art", "theme_" + t.id + ".jpg", 1170, 2532, "image/jpeg", (cv) => A.theme(cv.getContext("2d"), 1170, 2532, t)));
     make("art", "donation.jpg", 1800, 1200, "image/jpeg", (cv) => A.donation(cv.getContext("2d"), 1800, 1200, null));
     make("art", "store_bg.jpg", 1290, 2796, "image/jpeg", (cv) => A.store(cv.getContext("2d"), 1290, 2796));
+    // 응원하기 그림 (하루는 앱이 가운데에 얹는다: 땅 = 높이 × layout.supportGround, 폭 = 너비 × layout.supportHaru)
+    make("app", "support.jpg", 1170, 780, "image/jpeg", (cv) => A.donation(cv.getContext("2d"), 1170, 780, null));
     make("app", "sun.png", 180, 180, "image/png", (cv) => A.discArt(cv.getContext("2d"), 180, "#F3C66A", 902));
     make("app", "moon.png", 180, 180, "image/png", (cv) => A.discArt(cv.getContext("2d"), 180, "#EFE8D2", 904));
     make("app", "sparkle.png", 120, 120, "image/png", (cv) => A.sparkleArt(cv.getContext("2d"), 120));
