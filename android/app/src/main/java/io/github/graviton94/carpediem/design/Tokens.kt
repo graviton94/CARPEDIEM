@@ -166,7 +166,7 @@ object Tokens {
             const val pathStart = 26.0f
             const val pathEnd = 364.0f
             const val pathInset = 20.0f
-            const val haruWidth = 46.0f
+            const val haruWidth = 26.0f
             const val meetHaruWidth = 96.0f
             const val haruBox = 200.0f
             const val haruGround = 170.0f
@@ -295,6 +295,15 @@ object Tokens {
             const val randomMinDays = 5.0f
             const val randomMaxDays = 20.0f
             const val randomMinAge = 30.0f
+        }
+        object HaruDraw {
+            const val line = 5.0f
+            const val eyeLine = 2.8f
+            const val shadow = 0.12f
+            const val closedAt = 0.97f
+            const val lidCurve = 0.22f
+            const val pattern = 0.1f
+            const val sproutHeight = 22.0f
         }
     }
 }

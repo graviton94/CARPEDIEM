@@ -116,8 +116,8 @@ internal class HaruLoad(val art: HaruArt?, val loading: Boolean)
 internal fun haruArt(state: AppState, sprout: Boolean): HaruLoad {
     val ctx = LocalContext.current
     val seed = state.store.haruSeed
-    val load by produceState(HaruLoad(null, true), seed, sprout) { value = HaruLoad(HaruArtStore.get(ctx, seed, sprout), false) }
-    return load
+    // 번호로 바로 그리는 벡터 하루라 기다림이 없다
+    return remember(seed, sprout) { HaruLoad(HaruArt.of(seed, sprout), false) }
 }
 
 /** 하루 한 명 (그림이 있으면 그림, 못 그렸으면 대체 그림). */
@@ -128,7 +128,6 @@ internal fun Haru(load: HaruLoad, scale: Dp, modifier: Modifier, sleepy: Boolean
     val m = modifier.semantics { contentDescription = desc }
     when {
         load.art != null -> HaruFigure(load.art, scale, m, sleepy = sleepy, blinkKick = blinkKick)
-        !load.loading -> HaruFallback(scale, m)
     }
 }
 

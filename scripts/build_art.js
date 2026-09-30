@@ -2,8 +2,8 @@
 // 사용법: npm i playwright (또는 전역 설치) 후  node scripts/build_art.js
 // 결과
 //   design/art/                       : 보기용 (obj_*.png · season_*.jpg · theme_*.jpg · donation.jpg · store_bg.jpg)
-//   android/app/src/main/assets/garden: 앱용 (sky_* · strip_* · obj_* · sun · moon · sparkle · tooth_* · haru.html/haru.js)
-// 하루(조약돌)는 번호마다 달라서 굽지 않습니다. 앱이 haru.html 로 처음 한 번 그려 저장합니다.
+//   android/app/src/main/assets/garden: 앱용 (sky_* · strip_* · obj_* · sun · moon · sparkle · tooth_*)
+// 하루(조약돌)는 번호마다 달라서 굽지 않습니다. 앱이 벡터로 직접 그립니다 (android/core HaruShape · ui/garden/Haru.kt).
 const { chromium } = require("playwright");
 const fs = require("fs");
 const path = require("path");
@@ -48,8 +48,6 @@ const app = path.join(root, "android/app/src/main/assets/garden");
     if (j.dir !== "art") fs.writeFileSync(path.join(app, j.name), buf);
   }
   // 앱이 WebView 로 하루를 그릴 때 쓰는 페이지
-  fs.writeFileSync(path.join(app, "haru.js"), "// 자동 생성 파일 — scripts/build_art.js\nwindow.exportHaru = (function () {\n" + src + "\nreturn exportHaru;\n})();\n");
-  fs.writeFileSync(path.join(app, "haru.html"), '<!doctype html><meta charset="utf-8"><body></body><script src="haru.js"></script>\n');
   console.log(jobs.length + " files → design/art/ · android assets/garden/");
   await browser.close();
 })();

@@ -176,4 +176,23 @@ class DataTest {
         val next = Lines.nextRandomDay(today, 7L, 5, 20)
         assertTrue(next in today.plusDays(5)..today.plusDays(20))
     }
+
+    /** 앱의 벡터 하루가 예전 그림(JS)과 같은 돌 · 같은 눈 자리인지. 값은 design/art/src 로 뽑은 것. */
+    @Test fun haruShapeMatchesArtEngine() {
+        data class Ref(val seed: Long, val stone: String, val eyes: List<Triple<Double, Double, Double>>, val top: Pair<Double, Double>)
+        val refs = listOf(
+            Ref(2718281, "gneiss", listOf(Triple(66.767, 124.584, 12.319), Triple(98.058, 128.612, 9.211)), 69.85 to 91.68),
+            Ref(12345, "ring", listOf(Triple(99.255, 118.776, 12.178), Triple(130.110, 119.459, 11.291)), 105.17 to 67.21),
+            Ref(99, "sand", listOf(Triple(74.173, 120.511, 14.629), Triple(109.754, 128.423, 12.250)), 83.63 to 86.05),
+            Ref(4254103021, "basalt", listOf(Triple(92.363, 133.511, 15.185), Triple(130.663, 130.171, 14.803)), 108.14 to 90.48),
+        )
+        for (r in refs) {
+            val s = HaruShape.of(r.seed, points = 180)
+            assertEquals(r.stone, s.traits.stone.id)
+            s.eyes.zip(r.eyes).forEach { (e, x) ->
+                assertEquals(x.first, e.x, 0.01); assertEquals(x.second, e.y, 0.01); assertEquals(x.third, e.r, 0.01)
+            }
+            assertEquals(r.top.first, s.top.first, 0.05); assertEquals(r.top.second, s.top.second, 0.05)
+        }
+    }
 }

@@ -19,7 +19,7 @@ import io.github.graviton94.carpediem.core.LifeUnit
 import io.github.graviton94.carpediem.core.Season
 import io.github.graviton94.carpediem.data.Store
 import io.github.graviton94.carpediem.design.Tokens
-import io.github.graviton94.carpediem.ui.garden.HaruArtStore
+import io.github.graviton94.carpediem.ui.garden.drawHaru
 import io.github.graviton94.carpediem.ui.garden.SkyTime
 import org.json.JSONObject
 import java.time.LocalDateTime
@@ -30,7 +30,7 @@ import kotlin.math.sin
 
 /**
  * 정원 디자인 위젯의 바탕 그림 (글자는 Glance 가 얹는다).
- * 앱과 같은 그림 파일(assets/garden)과, 앱이 저장해 둔 하루 그림(files/haru)을 쓴다. 위젯은 WebView 를 띄우지 않는다.
+ * 앱과 같은 그림 파일(assets/garden)과 앱과 같은 벡터 하루(drawHaru)로 그린다.
  */
 object GardenWidgetArt {
     enum class Kind { DAYS, TODAY, CALENDAR, LARGE }
@@ -104,42 +104,26 @@ object GardenWidgetArt {
         return out
     }
 
-    /** 앱이 저장해 둔 하루 그림 + 기본 시선의 눈동자. 밤에는 졸린 눈. 그림이 없으면 그리지 않는다. */
+    /** 하루를 앱과 같은 벡터로 (Compose 그리기를 위젯 캔버스에). 밤에는 졸린 눈. */
     private fun haru(context: Context, c: Canvas, cx: Float, gy: Float, widthUnits: Float, u: Float, now: LocalDateTime) {
         val store = Store(context)
         val season = store.profile?.let { LifeSnapshot(it.birthDate, it.expectancy(store.table), now).season } ?: Season.SPRING
-        val f = HaruArtStore.files(context, store.haruSeed, season == Season.SPRING) ?: return
-        val m = runCatching { JSONObject(f.third.readText()) }.getOrNull() ?: return
-        val body = BitmapFactory.decodeFile(f.first.path) ?: return
-        val eyes = BitmapFactory.decodeFile(f.second.path) ?: return
-        val box = m.getDouble("box").toFloat(); val ground = m.getDouble("ground").toFloat()
+        val art = io.github.graviton94.carpediem.ui.garden.HaruArt.of(store.haruSeed, season == Season.SPRING)
+        val box = art.meta.box; val ground = art.meta.ground; val bb = art.meta.bbox
         val k = widthUnits / L.haruArtWidth   // 하루 그림 한 칸 = k px
         // 큰 돌도 위젯 밖으로 나가지 않게
-        val bb = m.getJSONArray("bbox"); val edge = W.gridInset * u
-        val lo = (box / 2 - bb.getDouble(0).toFloat()) * k + edge; val hi = c.width - (bb.getDouble(0).toFloat() + bb.getDouble(2).toFloat() - box / 2) * k - edge
+        val edge = W.gridInset * u
+        val lo = (box / 2 - bb.left) * k + edge; val hi = c.width - (bb.right - box / 2) * k - edge
         val x = if (lo <= hi) cx.coerceIn(lo, hi) else c.width / 2f
         val left = x - box / 2 * k; val top = gy - ground * k
-        val dst = RectF(left, top, left + box * k, top + box * k)
-        val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
-        c.drawBitmap(body, null, dst, paint)
         val h = now.hour
         val sleepy = h >= Tokens.Garden.Motion.sleepFrom.toInt() || h < Tokens.Garden.Motion.sleepTo.toInt()
-        val lid = if (sleepy) Tokens.Garden.Motion.sleepyLid else 0f
-        val list = m.getJSONArray("eye")
-        for (i in 0 until list.length()) {
-            val e = list.getJSONObject(i); val ex = e.getDouble("x").toFloat(); val ey = e.getDouble("y").toFloat(); val er = e.getDouble("r").toFloat()
-            val px = left + ex * k; val py = top + ey * k; val r = er * k * 1.35f
-            c.save(); c.clipRect(px - r, py - r, px + r, py + r); c.scale(1f, 1f - lid * 0.9f, px, py); c.drawBitmap(eyes, null, dst, paint); c.restore()
-            val pr = er * m.getDouble("pupil").toFloat() * k
-            var lx = m.getDouble("lookX").toFloat() + (if (i == 0) -1 else 1) * m.getDouble("spread").toFloat()
-            var ly = if (sleepy) Tokens.Garden.Motion.sleepyLook else m.getDouble("lookY").toFloat()
-            val len = hypot(lx, ly); if (len > 1f) { lx /= len; ly /= len }
-            val lim = er * k - pr - er * k * 0.1f
-            val qx = px + lx * lim; val qy = py + ly * lim * (1f - lid) + lim * 0.2f
-            paint.color = Tokens.Garden.Colors.pupil.toArgb(); c.drawCircle(qx, qy, pr, paint)
-            paint.color = Tokens.Garden.Colors.shine.toArgb(); c.drawCircle(qx - pr * 0.35f, qy - pr * 0.38f, pr * 0.24f, paint)
-        }
-        body.recycle(); eyes.recycle()
+        c.save(); c.translate(left, top)
+        androidx.compose.ui.graphics.drawscope.CanvasDrawScope().draw(
+            androidx.compose.ui.unit.Density(1f), androidx.compose.ui.unit.LayoutDirection.Ltr, androidx.compose.ui.graphics.Canvas(c),
+            androidx.compose.ui.geometry.Size(box * k, box * k),
+        ) { drawHaru(art, k, if (sleepy) Tokens.Garden.Motion.sleepyLid else 0f, sleepy = sleepy) }
+        c.restore()
     }
 
     /** 인생 달력 (1칸 = 1년): 손으로 칠한 칸을 종이 결로 거른다. */

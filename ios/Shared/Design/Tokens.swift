@@ -171,7 +171,7 @@ enum Tokens {
             static let pathStart: CGFloat = 26.0
             static let pathEnd: CGFloat = 364.0
             static let pathInset: CGFloat = 20.0
-            static let haruWidth: CGFloat = 46.0
+            static let haruWidth: CGFloat = 26.0
             static let meetHaruWidth: CGFloat = 96.0
             static let haruBox: CGFloat = 200.0
             static let haruGround: CGFloat = 170.0
@@ -300,6 +300,15 @@ enum Tokens {
             static let randomMinDays: CGFloat = 5.0
             static let randomMaxDays: CGFloat = 20.0
             static let randomMinAge: CGFloat = 30.0
+        }
+        enum HaruDraw {
+            static let line: CGFloat = 5.0
+            static let eyeLine: CGFloat = 2.8
+            static let shadow: CGFloat = 0.12
+            static let closedAt: CGFloat = 0.97
+            static let lidCurve: CGFloat = 0.22
+            static let pattern: CGFloat = 0.1
+            static let sproutHeight: CGFloat = 22.0
         }
     }
 }
