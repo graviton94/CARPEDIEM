@@ -202,7 +202,7 @@ fun HomeScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                     TokenText(Labels.number(s.remaining(state.unit)), Tokens.TypeScale.display(Theme.deviceClass), maxLines = 1)
                     TokenText(Labels.unit(ctx, state.unit), Tokens.TypeScale.title2, Modifier.padding(bottom = Tokens.Space.sp2), color = p.secondary)
                 }
-                Segments(LifeUnit.entries, state.unit, { Labels.unit(ctx, it) }) { state.setUnit(it) }
+                Segments(LifeUnit.entries, state.unit, { Labels.unit(ctx, it) }) { state.changeUnit(it) }
             }
             // 오늘의 문장
             state.quote?.let { QuoteCard(it, state.quoteLanguage) { state.nextQuote() } }
@@ -247,7 +247,7 @@ fun HomeScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                             Icon(Icons.Filled.KeyboardArrowDown, null, tint = p.olive)
                         }
                         DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
-                            GridScale.entries.forEach { g -> DropdownMenuItem(text = { Text(Labels.grid(ctx, g)) }, onClick = { state.setGrid(g); menu = false }) }
+                            GridScale.entries.forEach { g -> DropdownMenuItem(text = { Text(Labels.grid(ctx, g)) }, onClick = { state.changeGrid(g); menu = false }) }
                         }
                     }
                 }
@@ -292,7 +292,7 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
             ProfileFields(state, draft, { state.draft = it }, onCountry)
             FormSection(header = stringResource(R.string.words)) {
                 FormRow(stringResource(R.string.words_language)) {
-                    ChipPicker(QuoteLanguage.entries, state.quoteLanguage, { Labels.quoteLanguage(ctx, it) }) { state.setQuoteLanguage(it) }
+                    ChipPicker(QuoteLanguage.entries, state.quoteLanguage, { Labels.quoteLanguage(ctx, it) }) { state.changeQuoteLanguage(it) }
                 }
             }
             FormSection(header = stringResource(R.string.widgets)) {

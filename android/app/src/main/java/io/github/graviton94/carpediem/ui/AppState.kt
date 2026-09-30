@@ -41,9 +41,9 @@ class AppState(private val context: Context) {
     fun save(p: LifeProfile) { store.profile = p; profile = p; Widgets.refresh(context) }
     fun nextQuote() { store.skipQuote(); quote = store.todaysQuote(); Widgets.refresh(context) }
     fun refreshQuote() { quote = store.todaysQuote() }
-    fun setQuoteLanguage(v: QuoteLanguage) { store.quoteLanguage = v; quoteLanguage = v; Widgets.refresh(context) }
-    fun setUnit(v: LifeUnit) { store.unit = v; unit = v }
-    fun setGrid(v: GridScale) { store.grid = v; grid = v }
+    fun changeQuoteLanguage(v: QuoteLanguage) { store.quoteLanguage = v; quoteLanguage = v; Widgets.refresh(context) }
+    fun changeUnit(v: LifeUnit) { store.unit = v; unit = v }
+    fun changeGrid(v: GridScale) { store.grid = v; grid = v }
     fun eraseAll() {
         store.eraseAll(); store.ensureQuoteSeed()
         profile = null; quoteLanguage = store.quoteLanguage; quote = store.todaysQuote(); Widgets.refresh(context)
