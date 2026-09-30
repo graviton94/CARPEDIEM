@@ -436,20 +436,10 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
                 FormRow(stringResource(R.string.help_global), onClick = { runCatching { ctx.startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse("https://findahelpline.com"))) } }) {}
             }
             FormSection {
-                var licenses by remember { mutableStateOf(false) }
-                FormRow(stringResource(R.string.licenses), onClick = { licenses = !licenses }) {
-                    Icon(if (licenses) Icons.Filled.KeyboardArrowDown else Icons.Filled.KeyboardArrowRight, null, tint = p.secondary)
-                }
-                if (licenses) TokenText(stringResource(R.string.licenses_body), Tokens.TypeScale.footnote, Modifier.padding(vertical = Tokens.Space.sp2), color = p.secondary)
-            }
-            FormSection {
                 FormRow(stringResource(R.string.erase), onClick = { confirmErase = true }) {}
             }
-            // 버전 글자를 여러 번 누르면 개발자 모드 (시험용 항목이 보임)
-            var taps by remember { mutableStateOf(0) }
-            TokenText(stringResource(R.string.privacy) + "\nCarpe Diem " + ctx.packageManager.getPackageInfo(ctx.packageName, 0).versionName, Tokens.TypeScale.footnote,
-                Modifier.fillMaxWidth().padding(horizontal = Tokens.Space.sp4).clickable { taps++; if (taps >= Tokens.Garden.Layout.devTaps.toInt() && !state.devMode) { state.unlockDev(); android.widget.Toast.makeText(ctx, ctx.getString(R.string.dev_unlocked), android.widget.Toast.LENGTH_SHORT).show() } },
-                color = p.secondary)
+            // 맨 아래: 웹사이트 바닥글처럼 소개 · 문의 · 고지사항, 그 아래 버전 (여러 번 누르면 개발자 모드)
+            SettingsFooter(onVersionTap = { if (!state.devMode) { state.unlockDev(); android.widget.Toast.makeText(ctx, ctx.getString(R.string.dev_unlocked), android.widget.Toast.LENGTH_SHORT).show() } })
         }
     }
     if (confirmErase) {
@@ -503,5 +493,47 @@ fun CountryScreen(state: AppState, selected: String, sex: Sex, onPick: (String) 
                 item { TokenText(stringResource(R.string.country_source), Tokens.TypeScale.footnote, Modifier.padding(vertical = Tokens.Space.sp4), color = p.secondary) }
             }
         }
+    }
+}
+
+private enum class FooterPage { ABOUT, CONTACT, NOTICES }
+
+/** 설정 맨 아래 바닥글: 소개 · 문의 · 고지사항 (누르면 작은 창), 기록은 기기에만 · 버전. */
+@Composable
+private fun SettingsFooter(onVersionTap: () -> Unit) {
+    val p = Theme.palette
+    val ctx = LocalContext.current
+    var page by remember { mutableStateOf<FooterPage?>(null) }
+    var taps by remember { mutableStateOf(0) }
+    Column(Modifier.fillMaxWidth().padding(top = Tokens.Space.sp4), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            listOf(FooterPage.ABOUT to R.string.footer_about, FooterPage.CONTACT to R.string.footer_contact, FooterPage.NOTICES to R.string.footer_notices).forEachIndexed { i, (pg, label) ->
+                if (i > 0) TokenText("·", Tokens.TypeScale.footnote, color = p.secondary)
+                TokenText(stringResource(label), Tokens.TypeScale.footnote, Modifier.clickable { page = pg }.padding(horizontal = Tokens.Space.sp2, vertical = Tokens.Space.sp2), color = p.secondary)
+            }
+        }
+        TokenText(stringResource(R.string.privacy) + " · " + stringResource(R.string.app_name) + " " + ctx.packageManager.getPackageInfo(ctx.packageName, 0).versionName, Tokens.TypeScale.caption2,
+            Modifier.clickable { taps++; if (taps >= Tokens.Garden.Layout.devTaps.toInt()) onVersionTap() }.padding(Tokens.Space.sp1), color = p.secondary, align = TextAlign.Center)
+    }
+    page?.let { pg ->
+        val email = stringResource(R.string.contact_email)
+        AlertDialog(
+            onDismissRequest = { page = null },
+            title = { Text(stringResource(when (pg) { FooterPage.ABOUT -> R.string.app_name; FooterPage.CONTACT -> R.string.footer_contact; FooterPage.NOTICES -> R.string.footer_notices })) },
+            text = {
+                Text(when (pg) {
+                    FooterPage.ABOUT -> stringResource(R.string.about_body)
+                    FooterPage.CONTACT -> stringResource(R.string.contact_body) + "\n\n" + email.ifBlank { stringResource(R.string.contact_soon) }
+                    FooterPage.NOTICES -> stringResource(R.string.notices_privacy) + "\n\n" + stringResource(R.string.licenses_body) + "\n\n" + stringResource(R.string.country_source)
+                })
+            },
+            confirmButton = {
+                if (pg == FooterPage.CONTACT && email.isNotBlank()) TextButton(onClick = {
+                    page = null; runCatching { ctx.startActivity(android.content.Intent(android.content.Intent.ACTION_SENDTO, android.net.Uri.parse("mailto:$email"))) }
+                }) { Text(stringResource(R.string.contact_send)) }
+                else TextButton(onClick = { page = null }) { Text(stringResource(R.string.garden_close)) }
+            },
+            dismissButton = if (pg == FooterPage.CONTACT && email.isNotBlank()) ({ TextButton(onClick = { page = null }) { Text(stringResource(R.string.garden_close)) } }) else null,
+        )
     }
 }

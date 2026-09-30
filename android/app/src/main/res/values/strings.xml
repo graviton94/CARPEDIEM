@@ -287,7 +287,7 @@
     <string name="garden_pet">Pet</string>
     <string name="widget_family_garden">Family garden · Garden</string>
     <string name="widget_family_desc">Your stone and your family\'s, together in the garden.</string>
-    <string name="breath">Breathe with Haru</string>
+    <string name="breath">Breathe, rest</string>
     <string name="breath_kind_calm">Calm breath</string>
     <string name="breath_kind_box">Box breath</string>
     <string name="breath_kind_sleep">Sleep breath</string>
@@ -321,7 +321,7 @@
     <string name="breath_done_sleep_2">You did well today.\nSleep well.</string>
     <string name="breath_done_sleep_3">Haru will sleep beside you.</string>
     <string name="breath_night">A breath to close the day</string>
-    <string name="gaze">Just the garden</string>
+    <string name="gaze">Stone gazing</string>
     <string name="gaze_soundOn">Sound on</string>
     <string name="gaze_soundOff">Sound off</string>
     <string name="gaze_exit">Go back to return to the garden</string>
@@ -360,6 +360,14 @@
     <string name="help_suicide">Suicide prevention line (Korea) 109</string>
     <string name="help_crisis">Mental health crisis line (Korea) 1577-0199 · 24h</string>
     <string name="help_global">In other countries: findahelpline.com</string>
-    <string name="licenses">Open source &amp; data</string>
     <string name="licenses_body">Noto Serif KR · Lora — SIL Open Font License 1.1\nUN World Population Prospects 2024 — CC BY 3.0 IGO\nAndroidX · Jetpack Compose — Apache License 2.0</string>
+    <string name="footer_about">About</string>
+    <string name="footer_contact">Contact</string>
+    <string name="footer_notices">Notices</string>
+    <string name="about_body">A small garden for quietly counting the days left and letting today\'s feelings go in a line.\nNo ads, no account. Everything stays on this phone.\nMade slowly, by one person.</string>
+    <string name="contact_body">Questions, or something to fix? Write any time.</string>
+    <string name="contact_soon">The contact address opens at launch.</string>
+    <string name="contact_send">Send an email</string>
+    <string name="contact_email"></string>
+    <string name="notices_privacy">Privacy: nothing is collected. Everything stays on this phone.</string>
 </resources>

@@ -309,7 +309,8 @@ enum Tokens {
             static let sproutHeight: CGFloat = 22.0
         }
         enum Family {
-            static let max: CGFloat = 5.0
+            static let max: CGFloat = 9.0
+            static let oneRow: CGFloat = 5.0
             static let gap: CGFloat = 10.0
             static let minGap: CGFloat = 6.0
             static let nameChars: CGFloat = 4.0

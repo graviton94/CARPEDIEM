@@ -304,7 +304,8 @@ object Tokens {
             const val sproutHeight = 22.0f
         }
         object Family {
-            const val max = 5.0f
+            const val max = 9.0f
+            const val oneRow = 5.0f
             const val gap = 10.0f
             const val minGap = 6.0f
             const val nameChars = 4.0f

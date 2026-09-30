@@ -285,7 +285,7 @@
 "garden.pet" = "Pet";
 "widget.family.garden" = "Family garden · Garden";
 "widget.family.desc" = "Your stone and your family's, together in the garden.";
-"breath" = "Breathe with Haru";
+"breath" = "Breathe, rest";
 "breath.kind.calm" = "Calm breath";
 "breath.kind.box" = "Box breath";
 "breath.kind.sleep" = "Sleep breath";
@@ -319,7 +319,7 @@
 "breath.done.sleep.2" = "You did well today.\nSleep well.";
 "breath.done.sleep.3" = "Haru will sleep beside you.";
 "breath.night" = "A breath to close the day";
-"gaze" = "Just the garden";
+"gaze" = "Stone gazing";
 "gaze.soundOn" = "Sound on";
 "gaze.soundOff" = "Sound off";
 "gaze.exit" = "Go back to return to the garden";
@@ -358,5 +358,13 @@
 "help.suicide" = "Suicide prevention line (Korea) 109";
 "help.crisis" = "Mental health crisis line (Korea) 1577-0199 · 24h";
 "help.global" = "In other countries: findahelpline.com";
-"licenses" = "Open source & data";
 "licenses.body" = "Noto Serif KR · Lora — SIL Open Font License 1.1\nUN World Population Prospects 2024 — CC BY 3.0 IGO\nAndroidX · Jetpack Compose — Apache License 2.0";
+"footer.about" = "About";
+"footer.contact" = "Contact";
+"footer.notices" = "Notices";
+"about.body" = "A small garden for quietly counting the days left and letting today's feelings go in a line.\nNo ads, no account. Everything stays on this phone.\nMade slowly, by one person.";
+"contact.body" = "Questions, or something to fix? Write any time.";
+"contact.soon" = "The contact address opens at launch.";
+"contact.send" = "Send an email";
+"contact.email" = "";
+"notices.privacy" = "Privacy: nothing is collected. Everything stays on this phone.";

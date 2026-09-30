@@ -207,3 +207,13 @@ design/tokens.json, design/strings.json, data/*.csv   ← 유일한 원본
 | 기록 남기기를 끄면 마음의 하늘 · 편지가 보이지 않음 | 완료 | `AppState.letterDue` · `MoodSky` |
 | 비공개 테스터 확인 | 남음 | |
 
+### 1.3.1 다듬기 — 개발 완료
+| 항목 | 상태 | 어디 |
+|---|---|---|
+| 이름: 한국어 하루의 정원 · 영어 Carpe Diem (홈 화면 · 스토어) | 완료 | `values-ko/app.xml`, iOS `InfoPlist.strings` |
+| ‘숨, 쉼’ · ‘돌멍하기’ (홈의 정원에서 글자만 뺀 화면) | 완료 | `strings.json`, `GardenHome(bare)` |
+| 가족의 정원 최대 9 (나 포함), 6명부터 이름표 두 줄 번갈아 | 완료 | 토큰 `garden.family.max · oneRow` |
+| 설정 바닥글: 소개 · 문의 · 고지사항 (웹사이트처럼), 도움이 필요할 때 | 완료 | `SettingsFooter` |
+| 명언 60개 교체 (저작권이 남았거나 출처가 불분명한 것 → 옛글 · 고전 시), 모든 문장에 ‘사람’ 열 | 완료 | `data/quotes.csv` |
+| 폰을 바꿔도 기록이 남는 백업 규칙, 개인정보처리방침 초안 | 완료 | `res/xml/*_rules.xml`, `docs/privacy.md` |
+

@@ -186,6 +186,13 @@ private fun MainActivity.debugSetup(state: AppState): Screen {
             Person("mom00001", "엄마", Kind.PERSON, birth = today.withYear(1964), sex = Sex.FEMALE, country = "KR", seed = 4254103021, metOn = today),
             Person("dad00001", "아빠", Kind.PERSON, birth = LocalDate.of(1961, 8, 20), sex = Sex.MALE, country = "KR", seed = 31337, metOn = today),
         ).forEach { state.savePerson(it) }
+        // cd.full: 정원을 가득 (나 + 8)
+        if (x.getBooleanExtra("cd.full", false)) listOf(
+            Person("gma00001", "할머니", Kind.PERSON, birth = LocalDate.of(1938, 2, 11), sex = Sex.FEMALE, country = "KR", seed = 777, metOn = today),
+            Person("bro00001", "형", Kind.PERSON, birth = LocalDate.of(1996, 11, 3), sex = Sex.MALE, country = "KR", seed = 2024, metOn = today),
+            Person("cat00001", "나비", Kind.PET, Species.CAT, LocalDate.of(2021, 3, 1), seed = 5150, metOn = today),
+            Person("frd00001", "지우", Kind.PERSON, birth = LocalDate.of(2001, 7, 9), sex = Sex.OTHER, country = "KR", seed = 8080, metOn = today),
+        ).forEach { state.savePerson(it) }
     }
     return when (x.getStringExtra("cd.screen")) { "settings" -> Screen.Settings; "widgets" -> Screen.WidgetPreview; "collection" -> Screen.Collection(Screen.Main); "support" -> Screen.Support(Screen.Main); "stone" -> Screen.Stone(state.people.firstOrNull()?.id, Screen.Main); "add" -> Screen.AddPerson(null, Screen.Main); "breath" -> Screen.Breathe(BreathKind.CALM, 1, Sound.WAVES, Screen.Main); "gaze" -> Screen.Gaze(Screen.Main); else -> Screen.Main }
 }

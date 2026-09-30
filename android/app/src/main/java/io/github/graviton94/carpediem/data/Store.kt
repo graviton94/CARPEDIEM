@@ -206,7 +206,7 @@ class Store(context: Context) {
     /** 시험용: 다음 문득 찾아올 날을 오늘로. */
     fun randomRecallNow(today: LocalDate = LocalDate.now()) = prefs.edit().putLong("randomNext", today.toEpochDay()).remove("randomOn").apply()
 
-    /** 가족의 정원: 함께 앉은 가족 · 반려동물 (나는 빼고, 최대 4). */
+    /** 가족의 정원: 함께 앉은 가족 · 반려동물 (나는 빼고, 최대 8). */
     var people: List<Person>
         get() = Family.decode(prefs.getString("people", null))
         set(v) = prefs.edit().putString("people", Family.encode(v)).apply()

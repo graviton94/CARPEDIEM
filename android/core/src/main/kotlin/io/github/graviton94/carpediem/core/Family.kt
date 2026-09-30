@@ -29,7 +29,7 @@ data class Person(
 
 object Family {
     /** 나를 포함해 한 정원에 앉는 돌 수. */
-    const val MAX = 5
+    const val MAX = 9
     const val NAME_MAX = 8
     const val REROLLS = 3
 
