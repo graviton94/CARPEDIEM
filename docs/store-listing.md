@@ -14,7 +14,7 @@
 기대수명까지 남은 날을 일 · 주 · 개월 · 년으로. 인생 전체를 작은 조약돌 달력으로 한눈에 봐요. 해와 달, 하늘빛은 오늘의 시간을 따라 바뀌어요.
 
 오늘의 한 줄
-기쁨도 슬픔도 한 줄에 실어 떠나보내요. 보낸 마음은 지난 30일의 ‘마음의 하늘’로, 석 달마다 ‘계절의 편지’로 조용히 돌아와요.
+기쁨도 슬픔도 한 줄에 실어 떠나보내요. 보낸 마음은 그 달의 별자리를 따라 ‘마음의 기록’으로 놓이고 (낮엔 꽃, 밤엔 별), 석 달마다 ‘계절의 편지’로 조용히 돌아와요.
 
 숨, 쉼
 하루를 여는 숨, 잠시 쉬어가는 호흡, 하루를 마무리하는 명상. 1 · 3 · 5분, 파도 · 바람 · 빗소리 · 계절의 소리와 함께.
@@ -36,7 +36,7 @@ Time left and a life calendar
 Days, weeks, months or years left. Your whole life as a small calendar of pebbles. The sun, moon and sky follow the time of day.
 
 Today’s line
-Send joy or sorrow off in a single line. What you sent comes back quietly as a 30-day sky of feelings, and as a seasonal letter every three months.
+Send joy or sorrow off in a single line. What you sent settles along the month’s constellation — flowers by day, stars by night — and returns as a seasonal letter every three months.
 
 Breathe, rest
 A breath to open the day, breathing to rest a while, a meditation to close the day. 1, 3 or 5 minutes, with waves, wind, rain or the sounds of the season.
@@ -51,6 +51,6 @@ No account, no server. Everything stays right here.
 | 1 | g03_home | 남은 날을 조용히 세는 정원 |
 | 2 | g02_meet | 세상에 하나뿐인 돌, 하루 |
 | 3 | g36_care | 기쁨도 슬픔도 한 줄에 실어 보내요 |
-| 4 | g30_mood | 지난 30일의 마음을 색으로 |
+| 4 | g49_record_month | 그 달의 별자리를 따라 피는 마음 |
 | 5 | g26_breath_in | 하루를 여는 숨, 하루를 마무리하는 명상 |
 | 6 | g25_family_night | 가족의 돌과 함께, 밤에는 별빛 아래 |
