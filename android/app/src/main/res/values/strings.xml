@@ -14,7 +14,7 @@
     <string name="custom">Custom</string>
     <string name="lifeExpectancy_footer">The average for your country and sex. You can change it.</string>
     <string name="begin">Begin</string>
-    <string name="privacy">Everything stays on this device.</string>
+    <string name="privacy">Everything stays here.</string>
     <string name="timeLeft">Time left</string>
     <string name="unit_days">days</string>
     <string name="unit_weeks">weeks</string>
@@ -168,7 +168,7 @@
     <string name="letgo_hint">Today, in one line</string>
     <string name="letgo_send">Keep this line</string>
     <string name="letgo_done">Today’s line is kept.\nSee you tomorrow.</string>
-    <string name="letgo_privacy">Each line blooms in Memories. It stays on this phone.</string>
+    <string name="letgo_privacy">Each line blooms in Memories. It stays here.</string>
     <string name="feeling_joy">Joy</string>
     <string name="feeling_thanks">Thanks</string>
     <string name="feeling_calm">Calm</string>
@@ -362,7 +362,7 @@
     <string name="contact_soon">The contact address opens at launch.</string>
     <string name="contact_send">Send an email</string>
     <string name="contact_email"></string>
-    <string name="notices_privacy">Privacy: nothing is collected. Everything stays on this phone.</string>
+    <string name="notices_privacy">Privacy: nothing is collected. Everything stays here.</string>
     <string name="care_calm">Breathe together for a minute?</string>
     <string name="care_box">Rest a minute with a walk for the mind?</string>
     <string name="care_look">Look at something far away for 30 seconds?</string>

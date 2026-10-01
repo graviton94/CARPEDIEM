@@ -14,7 +14,7 @@
     <string name="custom">직접</string>
     <string name="lifeExpectancy_footer">나라와 성별의 평균이에요. 직접 바꿀 수도 있어요.</string>
     <string name="begin">시작</string>
-    <string name="privacy">기록은 이 기기에만 머물러요.</string>
+    <string name="privacy">기록은 여기에만 머물러요.</string>
     <string name="timeLeft">남은 시간</string>
     <string name="unit_days">일</string>
     <string name="unit_weeks">주</string>
@@ -168,7 +168,7 @@
     <string name="letgo_hint">오늘 하루를 한 줄로</string>
     <string name="letgo_send">한 줄 남기기</string>
     <string name="letgo_done">오늘의 한 줄을 남겼어요.\n내일 또 만나요.</string>
-    <string name="letgo_privacy">남긴 줄은 추억에 꽃으로 피어요. 이 폰에만 있어요.</string>
+    <string name="letgo_privacy">남긴 줄은 추억에 꽃으로 피어요. 여기에만 있어요.</string>
     <string name="feeling_joy">기쁨</string>
     <string name="feeling_thanks">고마움</string>
     <string name="feeling_calm">평온</string>
@@ -362,7 +362,7 @@
     <string name="contact_soon">문의 주소는 출시 때 열어요.</string>
     <string name="contact_send">메일 보내기</string>
     <string name="contact_email"></string>
-    <string name="notices_privacy">개인정보: 아무것도 모으지 않아요. 모든 기록은 이 폰에만 머물러요.</string>
+    <string name="notices_privacy">개인정보: 아무것도 모으지 않아요. 모든 기록은 여기에만 머물러요.</string>
     <string name="care_calm">1분만 함께 호흡할까요?</string>
     <string name="care_box">마음 산책으로 1분만 쉬어 갈까요?</string>
     <string name="care_look">30초만 먼 곳을 바라볼까요?</string>

@@ -12,7 +12,7 @@
 "custom" = "Custom";
 "lifeExpectancy.footer" = "The average for your country and sex. You can change it.";
 "begin" = "Begin";
-"privacy" = "Everything stays on this device.";
+"privacy" = "Everything stays here.";
 "timeLeft" = "Time left";
 "unit.days" = "days";
 "unit.weeks" = "weeks";
@@ -166,7 +166,7 @@
 "letgo.hint" = "Today, in one line";
 "letgo.send" = "Keep this line";
 "letgo.done" = "Today’s line is kept.\nSee you tomorrow.";
-"letgo.privacy" = "Each line blooms in Memories. It stays on this phone.";
+"letgo.privacy" = "Each line blooms in Memories. It stays here.";
 "feeling.joy" = "Joy";
 "feeling.thanks" = "Thanks";
 "feeling.calm" = "Calm";
@@ -360,7 +360,7 @@
 "contact.soon" = "The contact address opens at launch.";
 "contact.send" = "Send an email";
 "contact.email" = "";
-"notices.privacy" = "Privacy: nothing is collected. Everything stays on this phone.";
+"notices.privacy" = "Privacy: nothing is collected. Everything stays here.";
 "care.calm" = "Breathe together for a minute?";
 "care.box" = "Rest a minute with a walk for the mind?";
 "care.look" = "Look at something far away for 30 seconds?";

@@ -12,7 +12,7 @@
 "custom" = "직접";
 "lifeExpectancy.footer" = "나라와 성별의 평균이에요. 직접 바꿀 수도 있어요.";
 "begin" = "시작";
-"privacy" = "기록은 이 기기에만 머물러요.";
+"privacy" = "기록은 여기에만 머물러요.";
 "timeLeft" = "남은 시간";
 "unit.days" = "일";
 "unit.weeks" = "주";
@@ -166,7 +166,7 @@
 "letgo.hint" = "오늘 하루를 한 줄로";
 "letgo.send" = "한 줄 남기기";
 "letgo.done" = "오늘의 한 줄을 남겼어요.\n내일 또 만나요.";
-"letgo.privacy" = "남긴 줄은 추억에 꽃으로 피어요. 이 폰에만 있어요.";
+"letgo.privacy" = "남긴 줄은 추억에 꽃으로 피어요. 여기에만 있어요.";
 "feeling.joy" = "기쁨";
 "feeling.thanks" = "고마움";
 "feeling.calm" = "평온";
@@ -360,7 +360,7 @@
 "contact.soon" = "문의 주소는 출시 때 열어요.";
 "contact.send" = "메일 보내기";
 "contact.email" = "";
-"notices.privacy" = "개인정보: 아무것도 모으지 않아요. 모든 기록은 이 폰에만 머물러요.";
+"notices.privacy" = "개인정보: 아무것도 모으지 않아요. 모든 기록은 여기에만 머물러요.";
 "care.calm" = "1분만 함께 호흡할까요?";
 "care.box" = "마음 산책으로 1분만 쉬어 갈까요?";
 "care.look" = "30초만 먼 곳을 바라볼까요?";
