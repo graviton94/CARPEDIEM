@@ -97,6 +97,8 @@ class AppState(private val context: Context) {
     fun unlockDev() { store.devMode = true; devMode = true }
     fun nextQuote() { store.skipQuote(); quote = store.todaysQuote(); blinkKick++; Widgets.refresh(context) }
     fun refreshQuote() { quote = store.todaysQuote() }
+    /** 타자기처럼 한 글자씩 다 쳐 본 문장 (같은 문장은 정원에 다시 와도 한 번에). */
+    var typedQuote: String? = null
     fun changeQuoteLanguage(v: QuoteLanguage) { store.quoteLanguage = v; quoteLanguage = v; Widgets.refresh(context) }
     /** 홈에서 칩으로 바꾸면 이번에만 (다음에 열면 기본 단위로). 기본은 설정에서 고정한다. 위젯도 기본 단위를 쓴다. */
     fun changeUnit(v: LifeUnit) { unit = v }

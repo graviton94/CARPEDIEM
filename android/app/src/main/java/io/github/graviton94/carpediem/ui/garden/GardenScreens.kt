@@ -46,6 +46,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import kotlinx.coroutines.delay
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -332,8 +333,12 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                             Modifier.fillMaxWidth().padding(top = Tokens.Space.sp4).clickable { state.nextQuote() },
                             horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1),
                         ) {
-                            QuoteText(if (state.quoteLanguage == QuoteLanguage.ENGLISH) q.english else q.korean)
-                            if (state.quoteLanguage == QuoteLanguage.BOTH && !sleepy) TokenText(q.english, Tokens.TypeScale.footnote.serif(), color = p.secondary, align = TextAlign.Center)
+                            // 새 문장 (누르거나 날이 바뀌어) 은 옛 타자기처럼 한 글자씩. 자리는 처음부터 다 잡아 두어 줄이 흔들리지 않음
+                            val main = if (state.quoteLanguage == QuoteLanguage.ENGLISH) q.english else q.korean
+                            val second = if (state.quoteLanguage == QuoteLanguage.BOTH && !sleepy) q.english else null
+                            val typed = rememberTyping(state, main, second)
+                            QuoteText(main, typed)
+                            if (second != null) TypedText(second, typed - main.length, Tokens.TypeScale.footnote.serif(), p.secondary, Modifier.fillMaxWidth())
                             if (!sleepy) TokenText(stringResource(R.string.words_next), Tokens.TypeScale.caption2, color = p.secondary, weight = FontWeight.Normal)
                         }
                     }
@@ -608,14 +613,53 @@ internal fun gardenMoments(state: AppState, profile: LifeProfile, s: LifeSnapsho
     else Moments.earned(state.store.startDate, profile.birthDate, s.expectancy, now.toLocalDate(), state.store.firstSkip, state.store.returned, state.streaks, state.firstBreath)
 
 /** 오늘의 문장: 두 줄에 안 들어가면 글자를 한 단계씩 줄인다. 어절 단위로 줄을 바꾼다 (TokenText). */
+/** 몇 글자까지 쳤는지 (문장 + 둘째 줄을 이어서). 이미 다 쳐 본 문장이거나 움직임을 끈 기기면 한 번에. */
 @Composable
-private fun QuoteText(text: String) {
+private fun rememberTyping(state: AppState, main: String, second: String?): Int {
+    val key = main + "\n" + second.orEmpty()
+    val ctx = LocalContext.current
+    val still = remember { android.provider.Settings.Global.getFloat(ctx.contentResolver, android.provider.Settings.Global.ANIMATOR_DURATION_SCALE, 1f) == 0f }
+    val done = still || state.typedQuote == key
+    var n by remember(key) { mutableStateOf(if (done) Int.MAX_VALUE else 0) }
+    LaunchedEffect(key) {
+        if (done) return@LaunchedEffect
+        state.typedQuote = key
+        val all = main.length + (second?.length ?: 0)
+        val r = java.util.Random(key.hashCode().toLong())
+        val ms = G.Motion.typeMs
+        while (n < all) {
+            val c = if (n < main.length) main[n] else second!![n - main.length]
+            // 글자마다 조금씩 다른 박자, 쉼표 · 마침표 뒤엔 한 숨. 둘째 줄 (영문) 은 조금 빠르게
+            val base = if (n < main.length) ms else ms * 0.5f
+            delay((base * (0.7f + 0.6f * r.nextFloat()) * (if (c in ",.!?·…") G.Motion.typePause else 1f)).toLong())
+            n++
+        }
+    }
+    return n
+}
+
+/** 친 만큼만 보이는 글 (안 친 글자는 투명하게 자리만). */
+@Composable
+private fun TypedText(text: String, shown: Int, token: io.github.graviton94.carpediem.design.TypeToken, color: Color, modifier: Modifier = Modifier,
+                      maxLines: Int = Int.MAX_VALUE, onTextLayout: (androidx.compose.ui.text.TextLayoutResult) -> Unit = {}) {
+    val k = shown.coerceIn(0, text.length)
+    val shownText = androidx.compose.ui.text.buildAnnotatedString {
+        append(text)
+        if (k < text.length) addStyle(androidx.compose.ui.text.SpanStyle(color = Color.Transparent), k, text.length)
+    }
+    val style = token.style(text).copy(lineBreak = androidx.compose.ui.text.style.LineBreak(androidx.compose.ui.text.style.LineBreak.Strategy.Balanced,
+        androidx.compose.ui.text.style.LineBreak.Strictness.Normal, androidx.compose.ui.text.style.LineBreak.WordBreak.Phrase))
+    Text(shownText, modifier.semantics { contentDescription = text }, color = color, style = style, textAlign = TextAlign.Center, maxLines = maxLines, onTextLayout = onTextLayout)
+}
+
+@Composable
+private fun QuoteText(text: String, shown: Int = Int.MAX_VALUE) {
     val steps = listOf(Tokens.TypeScale.headline, Tokens.TypeScale.callout, Tokens.TypeScale.subhead)
     var step by remember(text) { mutableStateOf(0) }
     var ready by remember(text) { mutableStateOf(false) }
     val last = step == steps.lastIndex
-    TokenText(
-        text, steps[step].serif(), Modifier.fillMaxWidth().graphicsLayer { alpha = if (ready) 1f else 0f }, align = TextAlign.Center,
+    TypedText(
+        text, shown, steps[step].serif(), Theme.palette.foreground, Modifier.fillMaxWidth().graphicsLayer { alpha = if (ready) 1f else 0f },
         maxLines = if (last) Int.MAX_VALUE else 2,
         onTextLayout = { r -> if (r.hasVisualOverflow && !last) step++ else ready = true },
     )

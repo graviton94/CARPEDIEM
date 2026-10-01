@@ -248,6 +248,8 @@ enum Tokens {
             static let turnEdge: CGFloat = 18.0
             static let turnSnap: CGFloat = 0.2
             static let breathDrift: CGFloat = 26.0
+            static let typeMs: CGFloat = 55.0
+            static let typePause: CGFloat = 4.0
         }
         enum Crayon {
             static let vary: CGFloat = 0.3

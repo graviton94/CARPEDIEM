@@ -243,6 +243,8 @@ object Tokens {
             const val turnEdge = 18.0f
             const val turnSnap = 0.2f
             const val breathDrift = 26.0f
+            const val typeMs = 55.0f
+            const val typePause = 4.0f
         }
         object Crayon {
             const val vary = 0.3f
