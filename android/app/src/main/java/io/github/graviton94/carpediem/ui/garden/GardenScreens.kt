@@ -393,7 +393,9 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                     add(x0 to spans.first().first - u * G.Layout.itemFromHaru)
                     for (k in 0 until spans.size - 1) add(spans[k].second + u * G.Layout.itemGap to spans[k + 1].first - u * G.Layout.itemGap)
                 }
-                val spots = gaps.flatMap { (a0, b0) -> buildList { var c = b0 - box * 0.3f; while (c - box * 0.3f >= a0) { add(c); c -= step } } }
+                // 지나온 길 (하루 왼쪽) · 돌 사이부터, 모자라면 하루 오른쪽으로 이어서 (가까운 곳부터)
+                val ahead = buildList { var c = spans.last().second + u * G.Layout.itemFromHaru + box * 0.3f; while (c + box * 0.3f <= x1) { add(c); c += step } }
+                val spots = gaps.flatMap { (a0, b0) -> buildList { var c = b0 - box * 0.3f; while (c - box * 0.3f >= a0) { add(c); c -= step } } } + ahead
                 val ground = G.Layout.objGround / G.Layout.objBox
                 fun tap(m: Moment) = if (bare) Modifier else Modifier.clickable { open = m }
                 fun at(cx: Dp, k: Float = 1f, lift: Dp = 0.dp) = Modifier.offset(cx - box * k / 2, gy - box * k * ground - lift).size(box * k)
