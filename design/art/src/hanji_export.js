@@ -19,7 +19,7 @@
     else if (part === "letter") { var lx = x + 2, ly = bar - 2; paper(ctx, place([[-6, -4], [6, -4], [6, 4], [-6, 4]], lx + 2, ly - 1, 1, -0.18), "#F6EEDC", 1650, { rim: 0.4, sh: 0.9 }); paper(ctx, place([[-6, -4], [6, -4], [0, 0.6]], lx + 2, ly - 1, 1, -0.18), "#EADFC6", 1651, { rim: 0.1, sh: 0.3 }); paper(ctx, blob(lx + 2.3, ly - 1.4, 1.5, 1.5, 1652, 0.05), "#C8553D", 1652, { rim: 0.15, sh: 0.3 }); } }
   function mossApp(ctx, W, se, buds, D) { hj(ctx, W / D.mossBoxW); moss(ctx, D.mossAtX, D.mossAtY, 1, se, buds); }
   function kiteApp(ctx, W, D) { hj(ctx, W / D.kiteBoxW); kite(ctx, D.kiteAtX, D.kiteAtY, 1, "gaori", 0); }
-  function cardApp(ctx, W, key, D) { hj(ctx, W / D.cardBoxW); seasonCard(ctx, D.cardBoxW / 2, D.cardBoxH - 3, 1, key, 0); }
+  function cardApp(ctx, W, key, D) { hj(ctx, W / D.cardBoxW); piece(ctx, D.cardBoxW / 2, D.cardAtY - 24, 1, key); }
   function sunApp(ctx, W) { hj(ctx, W / 60); sun(ctx, 30, 30, 1.2, "#F6C979"); }
   function moonApp(ctx, W) { hj(ctx, W / 60); moon(ctx, 30, 30, 1.2); }
   function fiberApp(ctx) { ensureTex(); ctx.drawImage(TEX.fiber, 0, 0); }

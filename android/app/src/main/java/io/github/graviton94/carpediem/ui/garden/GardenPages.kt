@@ -44,6 +44,9 @@ import io.github.graviton94.carpediem.R
 import io.github.graviton94.carpediem.core.LifeProfile
 import io.github.graviton94.carpediem.core.LifeSnapshot
 import io.github.graviton94.carpediem.core.Moment
+import io.github.graviton94.carpediem.core.GardenDecor
+import io.github.graviton94.carpediem.core.SeasonCard
+import androidx.compose.foundation.background
 import io.github.graviton94.carpediem.design.Theme
 import io.github.graviton94.carpediem.design.Tokens
 import io.github.graviton94.carpediem.design.Tokens.Garden as G
@@ -98,17 +101,26 @@ internal fun CollectionBody(state: AppState, profile: LifeProfile, now: LocalDat
     val s = LifeSnapshot(profile.birthDate, profile.expectancy(state.store.table), now)
     val moments = gardenMoments(state, profile, s, now)
     var open by remember { mutableStateOf<Moment?>(null) }
+    var card by remember { mutableStateOf<Pair<SeasonCard, GardenDecor.SeasonLines?>?>(null) }
     Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp4)) {
             TokenText(stringResource(R.string.collection_sub), Tokens.TypeScale.callout.serif(), Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.Center)
+            // 계절 앨범: 해마다 한 줄, 계절 네 장 (그 계절에 정원을 열면 나무가 남긴 한 장). 테두리 = 그 계절에 가장 많았던 마음
+            SeasonAlbum(state, profile, now) { card = it }
+            // 첫 정원: 한지 정원 전에 받은 옛 꾸밈 (정원에는 놓이지 않고 여기에 날짜와 함께)
+            val legacy = moments.filter { state.previewAll || it.date.isBefore(io.github.graviton94.carpediem.core.Moments.LEGACY_UNTIL) }
+            if (legacy.isNotEmpty()) {
+                TokenText(stringResource(R.string.album_first), Tokens.TypeScale.headline, Modifier.fillMaxWidth().padding(top = Tokens.Space.sp4))
+                TokenText(stringResource(R.string.album_firstSub), Tokens.TypeScale.footnote, Modifier.fillMaxWidth(), color = p.secondary)
+            }
             val cols = 3
-            moments.chunked(cols).forEachIndexed { row, list ->
+            legacy.chunked(cols).forEachIndexed { row, list ->
                 Row(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
                     list.forEachIndexed { i, m ->
                         Column(
                             Modifier.weight(1f).crayonBox(null, G.Radius.box, G.Stroke.chip, seed = 900 + row * cols + i).clickable { open = m }.padding(Tokens.Space.sp2),
                             horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1),
                         ) {
-                            Image(GardenArt.obj(ctx, m.id), null, Modifier.size(u * G.Layout.collectionCell))
+                            Image(GardenArt.obj(ctx, m.id), null, Modifier.size(u * G.Layout.collectionCell * 0.7f))
                             TokenText(stringResource(objName(m.id)), Tokens.TypeScale.subhead, weight = FontWeight.SemiBold, align = TextAlign.Center)
                             TokenText(m.date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)), Tokens.TypeScale.caption2, color = p.secondary, align = TextAlign.Center)
                         }
@@ -133,6 +145,56 @@ internal fun CollectionBody(state: AppState, profile: LifeProfile, now: LocalDat
     }
     open?.let { m ->
         ModalBottomSheet(onDismissRequest = { open = null }, containerColor = Theme.gc.paper) { ItemSheet(m) { open = null } }
+    }
+    card?.let { (c, l) ->
+        ModalBottomSheet(onDismissRequest = { card = null }, containerColor = Theme.gc.paper) {
+            Column(Modifier.fillMaxWidth().padding(horizontal = Theme.deviceClass.pageMargin).padding(bottom = Tokens.Space.sp6), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
+                Image(GardenArt.card(ctx, c.key), null, Modifier.size(u * 160f * G.Decor.cardBoxW / G.Decor.cardBoxH, u * 160f))
+                TokenText(cardName(ctx, c.key), Tokens.TypeScale.title3.serif(), align = TextAlign.Center)
+                TokenText(stringResource(R.string.album_when, "${c.year}", io.github.graviton94.carpediem.ui.Labels.season(ctx, c.season), stringResource(treeName(c.tree))), Tokens.TypeScale.body, align = TextAlign.Center)
+                TokenText(stringResource(R.string.album_lines, "${l?.count ?: 0}"), Tokens.TypeScale.footnote, color = p.secondary, align = TextAlign.Center)
+            }
+        }
+    }
+}
+
+/**
+ * 계절 앨범: 받은 계절 한 장을 해마다 한 줄 (최근 해부터), 봄 · 여름 · 가을 · 겨울 순. 받지 못한 계절은 빈 종이 한 장 (세지 않음, 아쉬워하지 않게 옅게).
+ * 장마다 그 계절에 남긴 한 줄 수, 테두리는 가장 많았던 마음의 색.
+ */
+@Composable
+private fun SeasonAlbum(state: AppState, profile: LifeProfile, now: LocalDateTime, onOpen: (Pair<SeasonCard, GardenDecor.SeasonLines?>) -> Unit) {
+    val p = Theme.palette
+    val ctx = LocalContext.current
+    val today = now.toLocalDate()
+    val s = LifeSnapshot(profile.birthDate, profile.expectancy(state.store.table), now)
+    val here = state.decor(profile, s, today).card
+    // 시험용 미리 보기: 지금 나무로 올해 네 장 모두
+    val cards = (if (state.previewAll) io.github.graviton94.carpediem.core.Season.entries.map { SeasonCard(here.year, it, here.tree) } else state.seasonCards.mapNotNull { SeasonCard.parse(it) } + here)
+        .distinctBy { it.year to it.season }
+    val stats = remember(state.lines, profile.countryCode) { GardenDecor.seasonLines(state.lines, profile.countryCode) }
+    TokenText(stringResource(R.string.album), Tokens.TypeScale.headline, Modifier.fillMaxWidth())
+    cards.groupBy { it.year }.toSortedMap(compareByDescending { it }).forEach { (year, list) ->
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2), verticalAlignment = Alignment.CenterVertically) {
+            TokenText("$year", Tokens.TypeScale.footnote.serif(), Modifier.size(Theme.unit * 34f, Theme.unit * 20f), color = p.secondary)
+            io.github.graviton94.carpediem.core.Season.entries.forEach { se ->
+                val c = list.firstOrNull { it.season == se }
+                val l = stats[year to se]
+                Column(Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
+                    if (c != null) {
+                        Image(GardenArt.card(ctx, c.key), cardName(ctx, c.key), Modifier.fillMaxWidth().aspectRatio(G.Decor.cardBoxW / G.Decor.cardBoxH).clickable { onOpen(c to l) })
+                        // 그 계절의 한 줄 수, 앞의 작은 점 = 가장 많았던 마음
+                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
+                            l?.feeling?.let { f -> Box(Modifier.size(Tokens.Space.sp1 + Tokens.Space.sp1 / 2).background(feelingColor(f), androidx.compose.foundation.shape.CircleShape)) }
+                            TokenText(stringResource(R.string.album_lines, "${l?.count ?: 0}"), Tokens.TypeScale.caption2, color = p.secondary, align = TextAlign.Center)
+                        }
+                    } else {
+                        Box(Modifier.fillMaxWidth().aspectRatio(G.Decor.cardBoxW / G.Decor.cardBoxH).crayonBox(null, G.Radius.box, G.Stroke.chip, seed = 1300 + year % 50 * 4 + se.ordinal))
+                        TokenText(io.github.graviton94.carpediem.ui.Labels.season(ctx, se), Tokens.TypeScale.caption2, color = p.secondary.copy(alpha = 0.6f), align = TextAlign.Center)
+                    }
+                }
+            }
+        }
     }
 }
 

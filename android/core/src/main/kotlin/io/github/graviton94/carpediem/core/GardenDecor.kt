@@ -55,6 +55,14 @@ object GardenDecor {
     /** 앨범의 해 줄 = 그 계절이 시작한 해 (12월에 시작한 계절의 1 · 2월은 앞 해 줄에). */
     fun albumYear(date: LocalDate): Int = if (date.monthValue <= 2) date.year - 1 else date.year
 
+    /** 앨범 한 칸의 글: 그 해 · 계절에 글을 남긴 한 줄 수와 가장 많았던 마음 (카드 테두리 색). */
+    data class SeasonLines(val count: Int, val feeling: Feeling?)
+
+    fun seasonLines(lines: List<DayLine>, country: String?): Map<Pair<Int, Season>, SeasonLines> =
+        lines.filter { it.text.isNotBlank() }.groupBy { albumYear(it.date) to realSeason(it.date, country) }.mapValues { (_, l) ->
+            SeasonLines(l.size, l.mapNotNull { it.feeling }.groupingBy { it }.eachCount().maxWithOrNull(compareBy<Map.Entry<Feeling, Int>> { it.value }.thenByDescending { it.key.ordinal })?.key)
+        }
+
     class Rules(
         val stageDays: List<Int> = listOf(100, 365, 1095),
         val hangBreaths: List<Int> = listOf(1, 30, 100),

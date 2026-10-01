@@ -99,11 +99,11 @@ internal fun DecorBack(decor: Decor, now: LocalDateTime, gy: Dp, x0: Dp, x1: Dp,
     Image(GardenArt.tree(ctx, decor.tree, decor.season, decor.stage), treeA11y,
         Modifier.box(tx, gy, tk, D.treeBoxW, D.treeBoxH, D.treeAtX, D.treeAtY).graphicsLayer { alpha = decor.blend }.then(tap(DecorPart.TREE)), colorFilter = filter)
 
-    // ⑤ 나무 발치: 이번 계절의 한 장이 비스듬히 기대 섬
+    // ⑤ 나무 발치: 이번 계절의 한 장 (꽃 · 풀 · 열매 · 낙엽 · 눈사람 한 조각) 이 땅에 놓임
     val ck = u * D.cardMini
-    Image(GardenArt.card(ctx, decor.card.key), stringResource(R.string.decor_card),
-        Modifier.box(u * (D.treeX + D.cardFromTree), gy + 1.dp, ck, D.cardBoxW, D.cardBoxH, D.cardBoxW / 2, D.cardBoxH - 3f)
-            .graphicsLayer { transformOrigin = TransformOrigin(0.5f, (D.cardBoxH - 3f) / D.cardBoxH); rotationZ = D.cardTilt }.then(tap(DecorPart.CARD)), colorFilter = filter)
+    Image(GardenArt.card(ctx, decor.card.key), cardName(ctx, decor.card.key),
+        Modifier.box(u * (D.treeX + D.cardFromTree), gy + 1.dp, ck, D.cardBoxW, D.cardBoxH, D.cardBoxW / 2, D.cardAtY)
+            .graphicsLayer { transformOrigin = TransformOrigin(0.5f, D.cardAtY / D.cardBoxH); rotationZ = D.cardTilt }.then(tap(DecorPart.CARD)), colorFilter = filter)
 
     // ② 말뚝: 길의 끝 (기대수명). 걸린 것은 가로대에서 따로 흔들림, 등불은 밤에 켜짐, 편지가 오면 봉투
     val pk = u * D.postScale

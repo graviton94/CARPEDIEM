@@ -1,83 +1,42 @@
-  /* ⑤ 계절 한 장: 한지 카드 한 장에 큰 오림 그림 하나 + 붉은 낙관. 나무 종류 × 계절 16장.
-     카드 좌표: 아래 가운데 = (0, 0), 폭 60 · 높이 84, 그림 자리 가운데 (0, -48). */
-  var CW = 60, CH = 84, CY = -48;
-  var DISC = { spring: "#F5D6DD", summer: "#D3E7DC", autumn: "#F3D9A8", winter: "#D8E3EC" }, SEAL = { spring: "春", summer: "夏", autumn: "秋", winter: "冬" };
+  /* ⑤ 계절 한 장: 한 장에 한지 조각 하나, 색 하나 (많아야 둘), 바탕 · 테두리 없이. 나무 종류 × 실제 계절 16가지.
+     봄 = 꽃, 여름 = 풀 · 작은 나무 · 여름 열매, 가을 = 낙엽 · 가을 열매, 겨울 = 눈사람. 좌표: 가운데 (0, 0), 아래 끝 = y 24 (땅). */
   function petal5(cx, cy, r, rot) { var tpl = [[0, 0], [r * 0.32, -r * 0.34], [r * 0.7, -r * 0.4], [r * 0.98, -r * 0.2], [r * 0.84, 0], [r * 0.98, r * 0.2], [r * 0.7, r * 0.4], [r * 0.32, r * 0.34]]; var out = []; for (var i = 0; i < 5; i++) out.push(place(tpl, cx, cy, 1, rot + i * Math.PI * 2 / 5)); return out; }
-  function cherryFlower(ctx, cx, cy, r, rot, seed, col) { paper(ctx, petal5(cx, cy, r, rot), col || "#F6C3CF", seed, { tone: 0.12, rim: 0.7 }); paper(ctx, petal5(cx, cy, r * 0.42, rot + 0.6), "#E68AA0", seed + 1, { rim: 0, sh: 0.2 });
-    for (var i = 0; i < 7; i++) { var a = rot + i * 0.9, l = r * (0.45 + (i % 2) * 0.12); thread(ctx, [[cx, cy], [cx + Math.cos(a) * l, cy + Math.sin(a) * l]], 0.45, "#C9607A"); ctx.fillStyle = "#F2C04E"; ctx.beginPath(); ctx.arc(cx + Math.cos(a) * l, cy + Math.sin(a) * l, 0.75, 0, 7); ctx.fill(); } }
   function serr(len, wid, teeth) { var p = []; for (var i = 0; i <= 20; i++) { var t = i / 20, w = Math.sin(t * Math.PI) * wid * (1 - 0.25 * t) * (1 + (i % 2 ? 0.14 : -0.06) * (teeth ? 1 : 0)); p.push([t * len, -w]); } for (var j = 19; j > 0; j--) { var u = j / 20, w2 = Math.sin(u * Math.PI) * wid * (1 - 0.25 * u) * (1 + (j % 2 ? 0.14 : -0.06) * (teeth ? 1 : 0)); p.push([u * len, w2]); } return p; }
-  function veinLeaf(ctx, x, y, len, wid, rot, col, seed, teeth) { paper(ctx, place(serr(len, wid, teeth), x, y, 1, rot), col, seed, { tone: 0.14 }); var c = Math.cos(rot), s = Math.sin(rot); var vc = mixHex(col, "#FFF6E6", 0.45); thread(ctx, [[x + c * len * 0.04, y + s * len * 0.04], [x + c * len * 0.92, y + s * len * 0.92]], 0.6, vc);
-    for (var i = 1; i < 5; i++) { var t = i / 5.4, px = x + c * len * t, py = y + s * len * t, w = wid * 0.62 * Math.sin(t * Math.PI); [-1, 1].forEach(function (d) { var a = rot + d * 0.85; thread(ctx, [[px, py], [px + Math.cos(a) * w * 1.25, py + Math.sin(a) * w * 1.25]], 0.45, vc); }); }
-    thread(ctx, [[x, y], [x - c * len * 0.16, y - s * len * 0.16]], 0.9, mixHex(col, "#3A2A1A", 0.4)); }
-  function snowflake(ctx, cx, cy, r, seed) { var arms = []; for (var i = 0; i < 6; i++) { var a = i * Math.PI / 3 - Math.PI / 2, ca = Math.cos(a), sa = Math.sin(a); arms.push(rib([[cx, cy], [cx + ca * r, cy + sa * r]], 1.5, 1.1)); [0.45, 0.72].forEach(function (t, k) { var px = cx + ca * r * t, py = cy + sa * r * t, l = r * (k ? 0.22 : 0.3); [-1, 1].forEach(function (d) { var b = a + d * 0.8; arms.push(rib([[px, py], [px + Math.cos(b) * l, py + Math.sin(b) * l]], 1.1, 0.8)); }); }); } arms.push(blob(cx, cy, r * 0.18, r * 0.18, seed + 9, 0.02)); paper(ctx, arms, "#FFFFFF", seed, { rim: 0.4, sh: 0.7 }); }
-  function bark(ctx, pts, w0, w1, col, seed) { paper(ctx, rib(pts, w0, w1), col, seed, { rim: 0.45, sh: 0.8, tone: 0.14 }); }
-  function snowCaps(ctx, list, seed) { paper(ctx, list.map(function (q, i) { return blob(q[0], q[1], q[2], q[3] || 1.6, seed + i, 0.22, q[4] || 0); }), "#FFFFFF", seed, { rim: 0.45, sh: 0.4 }); }
-
-  var CARD = {
-    cherry_spring: ["벚꽃 가지", function (ctx) { bark(ctx, bz(0, 0, 1, [-26, -24, -12, -36, 4, -50, 24, -70]), 3.4, 1.4, BARK.cherry, 3001); bark(ctx, bz(0, 0, 1, [-6, -40, -10, -50, -16, -56, -20, -64]), 1.6, 0.8, BARK.cherry, 3002);
-      [[-21, -64, -0.6], [21, -72, 0.4]].forEach(function (q, i) { paper(ctx, place([[0, 0], [2.6, -1.8], [5.6, 0], [2.6, 1.8]], q[0], q[1], 1, q[2] - Math.PI / 2), "#E68AA0", 3003 + i, { rim: 0.3, sh: 0.4 }); });
-      cherryFlower(ctx, 0, -46, 11.5, 0.3, 3010); cherryFlower(ctx, 14, -62, 8, -0.4, 3020, "#F8D3DC"); cherryFlower(ctx, -16, -32, 7, 0.9, 3030, "#F8D3DC");
-      [[18, -32, 0.5], [-20, -48, -0.8], [6, -24, 1.4]].forEach(function (q, i) { paper(ctx, place([[0, 0], [2.4, -1.6], [4.6, -0.6], [4, 0], [4.6, 0.6], [2.4, 1.6]], q[0], q[1], 1, q[2]), "#F8D3DC", 3040 + i, { rim: 0.3, sh: 0.6 }); }); }],
-    cherry_summer: ["버찌 한 쌍", function (ctx) { veinLeaf(ctx, 3, -72, 26, 7.5, -0.35, "#6F9A52", 3101, true);
-      thread(ctx, bz(0, 0, 1, [2, -70, -2, -60, -8, -50, -9, -40]), 1, "#5E7A44"); thread(ctx, bz(0, 0, 1, [2, -70, 5, -60, 9, -48, 9, -36]), 1, "#5E7A44");
-      [[-9, -34, 8.6], [9.5, -30, 8.6]].forEach(function (q, i) { paper(ctx, blob(q[0], q[1], q[2], q[2] * 0.94, 3110 + i, 0.05), i ? "#C0303C" : "#A82432", 3110 + i, { tone: 0.22 }); paper(ctx, blob(q[0] - q[2] * 0.35, q[1] - q[2] * 0.42, q[2] * 0.3, q[2] * 0.16, 3115 + i, 0.05, -0.6), "#F2A6A8", 3115 + i, { rim: 0, sh: 0 }); }); }],
-    cherry_autumn: ["물든 벚잎", function (ctx) { veinLeaf(ctx, -18, -30, 34, 11, -0.95, "#E9A34E", 3201, true); veinLeaf(ctx, -12, -26, 36, 12, -0.45, "#D45A3C", 3202, true); paper(ctx, place(serr(10, 3.4, true), 16, -66, 1, 2.6), "#C8473A", 3203, { rim: 0.3, sh: 0.8 }); }],
-    cherry_winter: ["꽃눈 가지와 눈송이", function (ctx) { bark(ctx, bz(0, 0, 1, [-26, -30, -10, -38, 6, -44, 26, -56]), 3, 1.4, BARK.cherry, 3301); bark(ctx, bz(0, 0, 1, [0, -42, 2, -48, 6, -54, 8, -60]), 1.5, 0.8, BARK.cherry, 3302);
-      [[-16, -34, -1.9], [-2, -41, -1.4], [12, -49, -1.2], [8, -60, -1.5], [22, -55, -0.9]].forEach(function (q, i) { paper(ctx, place([[0, 0], [2.4, -2.6], [6.6, -0.4], [8.4, 0], [6.6, 0.4], [2.4, 2.6]], q[0], q[1], 1, q[2]), i % 2 ? "#B06A70" : "#9C5A5E", 3310 + i, { rim: 0.35, sh: 0.6, tone: 0.18 }); });
-      snowCaps(ctx, [[-14, -36.6, 6, 1.6, -0.35], [6, -46.6, 6, 1.5, -0.4]], 3320); snowflake(ctx, -14, -62, 9, 3330); }],
-    zelkova_spring: ["새순", function (ctx) { paper(ctx, blob(0, -22, 7, 4.6, 3401, 0.1), "#9A7A55", 3401, { tone: 0.2 }); bark(ctx, bz(0, 0, 1, [0, -24, 1, -34, -1, -42, 0, -50]), 2.2, 1.6, "#7FA35A", 3402);
-      veinLeaf(ctx, 0, -48, 22, 7, -2.55, "#A9C77E", 3403, true); veinLeaf(ctx, 0, -50, 24, 7.6, -0.55, "#C2DA92", 3404, true); paper(ctx, place(serr(9, 2.6, false), 0, -50, 1, -1.62), "#D8E8A8", 3405, { rim: 0.3, sh: 0.5 }); }],
-    zelkova_summer: ["매미", function (ctx) { bark(ctx, [[-4, -14], [-2, -82]], 15, 13, "#8A6E54", 3501); for (var i = 0; i < 5; i++) thread(ctx, [[-9 + (i % 2) * 6, -20 - i * 12], [-7 + (i % 2) * 6, -27 - i * 12]], 0.6, "rgba(60,44,30,.45)");
-      paper(ctx, blob(-2, -44, 5, 11, 3502, 0.05), "#5B4A3A", 3502, { tone: 0.18 });
-      [-1, 1].forEach(function (d, i) { var w = place(serr(30, 6.2, false), -2 + d * 1.6, -56, 1, Math.PI / 2 - d * 0.24); paper(ctx, w, "#E8F0EE", 3503 + i, { rim: 0.5, sh: 0.7, fiber: 1.6, light: 0.9 }); thread(ctx, [[-2 + d * 1.6, -56], [-2 + d * 8.6, -28]], 0.45, "rgba(80,90,90,.45)"); thread(ctx, [[-2 + d * 4, -46], [-2 + d * 9.6, -38]], 0.4, "rgba(80,90,90,.35)"); });
-      paper(ctx, blob(-2, -57, 6, 4.6, 3506, 0.05), "#4A3E32", 3506, { tone: 0.12 }); paper(ctx, blob(-2, -62.5, 7, 3, 3507, 0.05), "#3E342A", 3507, {});
-      [[-8.2, -63], [4.2, -63]].forEach(function (q, i) { paper(ctx, blob(q[0], q[1], 2.1, 2.1, 3508 + i, 0.03), "#2A2420", 3508 + i, { rim: 0.2, sh: 0.2 }); }); }],
-    zelkova_autumn: ["단풍 든 느티잎", function (ctx) { [[-1.95, "#E9A34E"], [-1.2, "#C4622E"], [-0.45, "#A4542E"]].forEach(function (q, i) { veinLeaf(ctx, -2, -24, 32 - i * 2, 8.4, q[0], q[1], 3601 + i, true); }); paper(ctx, blob(-2, -24, 2, 2, 3605, 0.05), "#6E5238", 3605, { rim: 0.2 }); }],
-    zelkova_winter: ["까치", function (ctx) { bark(ctx, bz(0, 0, 1, [-28, -30, -10, -32, 10, -30, 28, -36]), 2.6, 1.6, BARK.zelkova, 3701); snowCaps(ctx, [[-16, -32.6, 7, 1.4], [16, -34, 6, 1.3]], 3702);
-      paper(ctx, [[2, -46], [26, -60], [28, -57], [6, -42]], "#2C3446", 3703, { rim: 0.4, sh: 0.6 }); paper(ctx, [[4, -45], [24, -57], [25, -55.6], [6, -43.6]], "#4D6A9A", 3704, { rim: 0, sh: 0 });
-      paper(ctx, blob(-4, -44, 11, 7.6, 3705, 0.05, -0.35), "#232126", 3705, { tone: 0.1 }); paper(ctx, blob(-6, -40.4, 8, 4.4, 3706, 0.05, -0.3), "#F7F3EA", 3706, { rim: 0.3, sh: 0.4 });
-      paper(ctx, place(serr(14, 3.4, false), -10, -49, 1, 0.25), "#2C3446", 3707, { rim: 0.3, sh: 0.5 }); paper(ctx, place(serr(7, 1.8, false), -6, -48.6, 1, 0.25), "#F7F3EA", 3708, { rim: 0, sh: 0 });
-      paper(ctx, blob(-15, -52, 5.6, 5.2, 3709, 0.04), "#232126", 3709, {}); paper(ctx, [[-20, -53], [-26.6, -52], [-20, -50.6]], "#232126", 3710, { rim: 0.2, sh: 0.3 });
-      ctx.fillStyle = "#FFFFFF"; ctx.beginPath(); ctx.arc(-16.6, -53.4, 1.1, 0, 7); ctx.fill(); ctx.fillStyle = "#141210"; ctx.beginPath(); ctx.arc(-16.8, -53.4, 0.7, 0, 7); ctx.fill();
-      thread(ctx, [[-4, -37.6], [-5, -33]], 0.8, "#3A3430"); thread(ctx, [[1, -38], [1, -33]], 0.8, "#3A3430"); }],
-    ginkgo_spring: ["연둣빛 은행잎", function (ctx) { bark(ctx, [[-2, -22], [0, -34]], 2.6, 2, "#8A7A62", 3801); paper(ctx, fanLeaf(-6, -40, 20, -0.5), "#B7D07A", 3802, { tone: 0.12 }); paper(ctx, fanLeaf(7, -42, 18, 0.45), "#CFE29A", 3803, { tone: 0.12 }); paper(ctx, fanLeaf(0, -46, 12, 0), "#DCEBB0", 3804, { rim: 0.5 }); }],
-    ginkgo_summer: ["은행잎과 푸른 열매", function (ctx) { paper(ctx, fanLeaf(-4, -36, 28, -0.25), "#6F9A50", 3901, { tone: 0.14 }); for (var i = 0; i < 6; i++) { var a = -Math.PI / 2 - 0.25 - 0.95 + i * 0.38; thread(ctx, [[-4 + Math.cos(a + Math.PI / 2 + 0.25) * 0, -44], [-4 + Math.cos(a) * 24, -44 + Math.sin(a) * 22]], 0.4, "rgba(220,235,200,.5)"); }
-      thread(ctx, bz(0, 0, 1, [-2, -30, 6, -34, 12, -32, 14, -26]), 0.9, "#5E7A44"); thread(ctx, bz(0, 0, 1, [-2, -30, 8, -28, 18, -24, 20, -18]), 0.9, "#5E7A44");
-      [[14, -22, 5.2], [20, -14, 5]].forEach(function (q, i) { paper(ctx, blob(q[0], q[1], q[2], q[2] * 1.08, 3910 + i, 0.05), i ? "#A9BE6A" : "#94AE5A", 3910 + i, { tone: 0.2 }); }); }],
-    ginkgo_autumn: ["노란 은행잎", function (ctx) { paper(ctx, fanLeaf(-6, -30, 15, -0.62), "#E9B43A", 4001, { tone: 0.12 }); paper(ctx, fanLeaf(6, -31, 15, 0.58), "#F4CC4E", 4002, { tone: 0.12 }); paper(ctx, fanLeaf(0, -33, 17, 0), "#F7D865", 4003, { tone: 0.12 }); paper(ctx, fanLeaf(14, -64, 7, 2.4), "#F0C43C", 4004, { rim: 0.4, sh: 1 }); }],
-    ginkgo_winter: ["참새", function (ctx) { bark(ctx, bz(0, 0, 1, [-28, -28, -10, -31, 10, -31, 28, -27]), 2.6, 1.8, BARK.ginkgo, 4101); paper(ctx, fanLeaf(20, -27, 7, 2.9), "#E9B43A", 4102, { rim: 0.35, sh: 0.6 }); snowCaps(ctx, [[-18, -31.4, 6, 1.4], [8, -32.6, 5, 1.3]], 4103);
-      paper(ctx, [[8, -38], [22, -34], [21, -31], [8, -35]], "#7A5A40", 4104, { rim: 0.3, sh: 0.5 });
-      paper(ctx, blob(-1, -44, 13, 11, 4105, 0.05), "#A87E58", 4105, { tone: 0.14 }); paper(ctx, blob(-4, -39, 9, 6, 4106, 0.05), "#EFE4D2", 4106, { rim: 0.3, sh: 0.3 });
-      paper(ctx, place(serr(16, 4.6, false), -2, -47, 1, 0.3), "#8A6242", 4107, { rim: 0.3, sh: 0.5 }); for (var i = 0; i < 3; i++) thread(ctx, [[2 + i * 3.6, -46 + i * 1.2], [5 + i * 3.6, -43 + i * 1.2]], 0.6, "#F3E8D4");
-      paper(ctx, blob(-9, -53, 6.4, 5, 4108, 0.04), "#8A5A3A", 4108, {}); paper(ctx, blob(-11, -49.6, 4.2, 2.6, 4109, 0.05), "#F7F3EA", 4109, { rim: 0, sh: 0.1 }); paper(ctx, blob(-11.6, -49.4, 1.3, 1.3, 4110, 0.05), "#2A2420", 4110, { rim: 0, sh: 0 });
-      paper(ctx, [[-14, -53], [-18.6, -52], [-14, -51]], "#3A3430", 4111, { rim: 0, sh: 0.2 }); ctx.fillStyle = "#141210"; ctx.beginPath(); ctx.arc(-11.4, -54.6, 0.95, 0, 7); ctx.fill(); ctx.fillStyle = "#FFFFFF"; ctx.beginPath(); ctx.arc(-11.7, -54.9, 0.35, 0, 7); ctx.fill();
-      thread(ctx, [[-3, -33.4], [-4, -30.6]], 0.8, "#6A5444"); thread(ctx, [[2, -33.4], [2, -30.6]], 0.8, "#6A5444"); }],
-    pine_spring: ["송화", function (ctx) { var nd = []; for (var i = 0; i < 13; i++) { var a = -Math.PI / 2 + (i - 6) * 0.26, l = 20 - Math.abs(i - 6) * 1.2; nd.push(rib([[0, -34], [Math.cos(a) * l * 0.55, -34 + Math.sin(a) * l * 0.55 - 1], [Math.cos(a) * l, -34 + Math.sin(a) * l]], 1.2, 0.5)); } bark(ctx, [[0, -16], [0, -36]], 3.4, 3, BARK.pine, 4201); paper(ctx, nd, "#5C8259", 4202, { rim: 0.25, sh: 0.6 });
-      bark(ctx, [[0, -40], [0.2, -50], [0.4, -60]], 4.6, 2.2, "#D6DFA0", 4203); var r = R(4204); for (var k = 0; k < 14; k++) { var a2 = (k / 14) * Math.PI * 2, rr = 4 + (k % 2) * 1.4; paper(ctx, blob(Math.cos(a2) * rr, -42 + Math.sin(a2) * 2.6 - (k % 3), 1.8, 2.8, 4205 + k, 0.05, a2), k % 2 ? "#E6CF66" : "#D9BE52", 4205 + k, { rim: 0.2, sh: 0.4 }); }
-      ctx.save(); ctx.fillStyle = "rgba(232,208,96,.75)"; for (var d = 0; d < 16; d++) { ctx.beginPath(); ctx.arc((r() - 0.5) * 36, -54 - r() * 22, 0.4 + r() * 0.5, 0, 7); ctx.fill(); } ctx.restore(); }],
-    pine_summer: ["솔잎과 푸른 솔방울", function (ctx) { bark(ctx, bz(0, 0, 1, [-26, -62, -12, -60, 4, -62, 20, -66]), 3, 1.8, BARK.pine, 4301); var nd = []; for (var i = 0; i < 7; i++) { var px = -20 + i * 6.4, py = -61.6 - i * 0.4; [-1, 1].forEach(function (d) { var a = -Math.PI / 2 + d * 0.5 + (i - 3) * 0.06; nd.push(rib([[px, py], [px + Math.cos(a) * 13, py + Math.sin(a) * 12]], 1, 0.45)); }); } paper(ctx, nd, "#4F7A52", 4302, { rim: 0.25, sh: 0.5 });
-      thread(ctx, [[-2, -60], [-1, -54]], 1.2, "#7A5034"); pineCone(ctx, -1, -30, 1.15, "#7F9A58", "#A8BC78", false, 0); }],
-    pine_autumn: ["여문 솔방울", function (ctx) { pineCone(ctx, 1, -26, 1.55, "#9A6A42", "#C8A070", true, 0.12); }],
-    pine_winter: ["소나무 아래 학", function (ctx) { bark(ctx, bz(0, 0, 1, [28, -76, 14, -70, 0, -72, -20, -66]), 3, 1.8, BARK.pine, 4401);
-      paper(ctx, [blob(-14, -68, 12, 4.4, 4402, 0.12), blob(4, -72, 10, 4, 4403, 0.12), blob(20, -76, 9, 3.6, 4404, 0.12)], "#4A6E4E", 4402, { sh: 0.8 }); snowCaps(ctx, [[-14, -71.6, 10, 1.8], [4, -75.4, 8, 1.7], [20, -79, 7, 1.6]], 4405);
-      thread(ctx, [[-1, -34], [-2, -20]], 0.9, "#3A3430"); thread(ctx, [[3, -34], [5, -26], [2, -24]], 0.9, "#3A3430");
-      paper(ctx, [[8, -42], [20, -36], [19, -32], [6, -36]], "#232126", 4410, { rim: 0.3, sh: 0.5 });
-      paper(ctx, blob(1, -40, 12, 6.6, 4411, 0.05, -0.2), "#FBF8F0", 4411, { tone: 0.12 }); paper(ctx, place(serr(14, 3.2, false), 0, -42, 1, 0.12), "#EAE6DE", 4412, { rim: 0.2, sh: 0.4 });
-      paper(ctx, rib(bz(0, 0, 1, [-8, -42, -12, -48, -6, -54, -9, -62]), 2.8, 2), "#232126", 4413, { rim: 0.3, sh: 0.5 });
-      paper(ctx, blob(-9.6, -63.6, 3.2, 2.6, 4414, 0.04), "#F7F3EA", 4414, { rim: 0.2, sh: 0.3 }); paper(ctx, blob(-9.4, -65.6, 1.6, 1.1, 4415, 0.04), "#C8303A", 4415, { rim: 0, sh: 0 });
-      paper(ctx, [[-12.4, -63.6], [-21, -61], [-12, -62.2]], "#B9A27A", 4416, { rim: 0, sh: 0.2 }); ctx.fillStyle = "#141210"; ctx.beginPath(); ctx.arc(-10.6, -64, 0.6, 0, 7); ctx.fill(); }]
+  function one(ctx, pts, col, seed, o) { paper(ctx, pts, col, seed, Object.assign({ rim: 0.45, sh: 0.55, fiber: 0.8 }, o || {})); }
+  function midrib(ctx, x, y, len, rot, col) { var c = Math.cos(rot), s = Math.sin(rot); thread(ctx, [[x + c * len * 0.08, y + s * len * 0.08], [x + c * len * 0.85, y + s * len * 0.85]], 0.5, mixHex(col, "#FFF8EC", 0.4)); }
+  function dot(ctx, x, y, r, col) { ctx.fillStyle = col; ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fill(); }
+  function petals(cx, cy, n, len, wid, rot) { var out = []; for (var i = 0; i < n; i++) out.push(place(leafPts(len, wid), cx, cy, 1, rot + i * Math.PI * 2 / n)); return out; }
+  function stem(ctx, pts, col) { one(ctx, rib(bez(pts, 10), 1.3, 1), col || "#7E9E5A", 5001, { rim: 0.25, sh: 0.4 }); }
+  function snowman(ctx, x, y, k, seed) { one(ctx, blob(x, y + 13 * k, 11 * k, 10 * k, seed, 0.04), "#FBFAF6", seed, { rim: 0.6, sh: 0.8, light: 0.95 }); one(ctx, blob(x, y - 2 * k, 7.6 * k, 7.2 * k, seed + 1, 0.04), "#FBFAF6", seed + 1, { rim: 0.6, sh: 0.7, light: 0.95 });
+    dot(ctx, x - 2.4 * k, y - 3 * k, 0.9 * k, "#3A332C"); dot(ctx, x + 2.4 * k, y - 3 * k, 0.9 * k, "#3A332C"); }
+  var PIECE = {
+    // 봄: 꽃
+    cherry_spring: function (ctx) { stem(ctx, [0, 24, 1, 18, -1, 12, 0, 6]); one(ctx, petal5(0, -2, 12, -0.3), "#F3C2CD", 5101, { rim: 0.5 }); one(ctx, blob(0, -2, 2.2, 2.2, 5102, 0.05), "#E38FA3", 5102, { rim: 0, sh: 0.1 }); },
+    zelkova_spring: function (ctx) { stem(ctx, [0, 24, 1, 18, -1, 12, 0, 6]); one(ctx, petals(0, -2, 4, 11, 3.6, -Math.PI / 4), "#F2CB4A", 5111, { rim: 0.5 }); one(ctx, blob(0, -2, 2, 2, 5112, 0.05), "#D9A72E", 5112, { rim: 0, sh: 0.1 }); },
+    ginkgo_spring: function (ctx) { stem(ctx, [0, 24, -2, 16, 2, 10, 0, 4]); one(ctx, place(leafPts(10, 4), 0, 16, 1, -2.6), "#8DB06A", 5121, { rim: 0.3 }); one(ctx, petals(0, -3, 5, 9.5, 4.6, -Math.PI / 2), "#A895D4", 5122, { rim: 0.5 }); one(ctx, blob(0, -3, 1.8, 1.8, 5123, 0.05), "#F6E7A0", 5123, { rim: 0, sh: 0.1 }); },
+    pine_spring: function (ctx) { stem(ctx, [0, 24, 1, 18, -1, 12, 0, 6]); one(ctx, petals(0, -2, 5, 12, 6, -Math.PI / 2), "#E58AB0", 5131, { rim: 0.5 }); for (var i = 0; i < 3; i++) { var a = -Math.PI / 2 + (i - 1) * 0.35; thread(ctx, [[0, -2], [Math.cos(a) * 9, -2 + Math.sin(a) * 9]], 0.5, "#C2507E"); dot(ctx, Math.cos(a) * 9, -2 + Math.sin(a) * 9, 0.8, "#C2507E"); } },
+    // 여름: 풀 · 작은 나무 · 여름 열매
+    cherry_summer: function (ctx) { thread(ctx, bez([0, -16, -2, -10, -5, -2, -6, 8]), 0.8, "#6E8A50"); thread(ctx, bez([0, -16, 2, -10, 5, 0, 6, 10]), 0.8, "#6E8A50"); one(ctx, [blob(-6, 13, 5.6, 5.6, 5141, 0.04), blob(6.4, 15, 5.6, 5.6, 5142, 0.04)], "#B83A44", 5141); },
+    zelkova_summer: function (ctx) { stem(ctx, [0, 24, 1, 16, -1, 8, 0, 2]); one(ctx, [0, 1, 2].map(function (k) { var ang = -Math.PI / 2 + k * Math.PI * 2 / 3; return heart(Math.cos(ang) * 6.4, 1 + Math.sin(ang) * 6.4, 5.6, ang - Math.PI / 2); }), "#7FAE5E", 5151, { rim: 0.45 }); one(ctx, blob(0, 1, 1.4, 1.4, 5152, 0.05), "#6A9550", 5152, { rim: 0, sh: 0 }); },
+    ginkgo_summer: function (ctx) { one(ctx, rib([[0, 24], [0.4, 6]], 3, 2.2), "#8A6E54", 5161, { rim: 0.3 }); one(ctx, blob(0, -4, 13, 12, 5162, 0.08), "#6F9A58", 5162, { tone: 0.1 }); one(ctx, blob(-3.6, -7.4, 6.4, 4.6, 5163, 0.1), "#8FB672", 5163, { rim: 0.3, sh: 0.3 }); },
+    pine_summer: function (ctx) { var R0 = 16;
+      function wedge(r) { var p = [[-r, 8]]; for (var i = 0; i <= 20; i++) { var a = i / 20 * Math.PI; p.push([-Math.cos(a) * r, 8 + Math.sin(a) * r]); } return p; }
+      one(ctx, wedge(R0), "#5E8A4E", 5171); one(ctx, wedge(R0 - 2.2), "#E8EEC8", 5172, { rim: 0, sh: 0.1 }); one(ctx, wedge(R0 - 3.6), "#E0605A", 5173, { rim: 0, sh: 0.1 });
+      [[-6, 13], [0, 16], [6, 13], [-2.6, 11], [3, 11]].forEach(function (q) { dot(ctx, q[0], q[1], 0.9, "#3A2A26"); }); },
+    // 가을: 낙엽 · 가을 열매
+    cherry_autumn: function (ctx) { one(ctx, maple(0, 4, 15, 0.12), "#D2563C", 5181); thread(ctx, [[0, 10], [1.4, 22]], 0.9, "#8A3E2A"); },
+    zelkova_autumn: function (ctx) { one(ctx, blob(0, 10, 12.5, 11, 5191, 0.05), "#E8893A", 5191, { tone: 0.14 }); one(ctx, [0, 1, 2, 3].map(function (k) { return place(leafPts(6.4, 2.4), 0, -0.6, 1, -Math.PI / 4 + k * Math.PI / 2 - Math.PI / 2 * 0.0); }), "#6E7A40", 5192, { rim: 0.25 }); thread(ctx, [[0, -0.6], [0.6, -4.6]], 1, "#5A4A34"); },
+    ginkgo_autumn: function (ctx) { one(ctx, fanLeaf(0, 22, 24, 0), "#EFC447", 5201); },
+    pine_autumn: function (ctx) { var p = []; for (var i = 0; i < 40; i++) { var t = i / 40 * Math.PI * 2, x = Math.sin(t) * 12, y = -Math.cos(t) * 13; if (y < 0) { x *= 0.86 + 0.14 * (1 + y / 13); y *= 0.9; } p.push([x, 9 + y]); } one(ctx, p, "#8A5636", 5211, { tone: 0.18 }); one(ctx, [[-11.6, 15], [11.6, 15]].concat(bez([11.6, 15, 9, 22.6, -9, 22.6, -11.6, 15], 10)), "#D9B98C", 5212, { rim: 0, sh: 0.1 }); one(ctx, [[-1.2, -2.4], [1.2, -2.4], [0.4, -5.6], [-0.4, -5.6]], "#5A3A24", 5213, { rim: 0, sh: 0.1 }); one(ctx, blob(-4.6, 4, 2.6, 4, 5214, 0.1, 0.4), "#A8704A", 5214, { rim: 0, sh: 0 }); },
+    // 겨울: 눈사람
+    cherry_winter: function (ctx) { snowman(ctx, 0, 0, 1, 5221); one(ctx, [[-7.4, -6.4]].concat(bez([-7.4, -6.4, -7, -14, 7, -14, 7.4, -6.4], 10)), "#C8553D", 5223, { rim: 0.3 }); one(ctx, blob(0, -13.6, 2.4, 2.4, 5224, 0.1), "#FBF6EC", 5224, { rim: 0.2 }); },
+    zelkova_winter: function (ctx) { snowman(ctx, 0, 0, 1, 5231); one(ctx, [rib([[-9, 10], [-17, 3], [-19, 0]], 1.2, 0.7), rib([[9, 10], [17, 4], [20, 1]], 1.2, 0.7)], "#7E5E48", 5233, { rim: 0.2 }); dot(ctx, 0, 9, 0.9, "#3A332C"); dot(ctx, 0, 14, 0.9, "#3A332C"); },
+    ginkgo_winter: function (ctx) { snowman(ctx, 0, 0, 1, 5241); one(ctx, [[0.4, -1.2], [7, 0], [0.4, 0.8]], "#E9883A", 5243, { rim: 0, sh: 0.2 }); dot(ctx, 0, 9, 0.9, "#3A332C"); dot(ctx, 0, 14, 0.9, "#3A332C"); },
+    pine_winter: function (ctx) { snowman(ctx, -6, 0, 1, 5251); snowman(ctx, 9, 8, 0.6, 5253); one(ctx, place(leafPts(9, 2.4), -6, -8.6, 1, -0.3), "#5E7E62", 5255, { rim: 0.2 }); }
   };
-  // 한 장: (x, y) = 카드 아래 가운데, s = 배율, rot = 기울기 (발치에 기대 세울 때)
-  function seasonCard(ctx, x, y, s, key, rot) { var se = key.split("_")[1];
-    ctx.save(); ctx.translate(x, y); ctx.rotate(rot || 0); ctx.scale(s, s);
-    var card = [[-CW / 2, 0], [CW / 2, 0], [CW / 2, -CH], [-CW / 2, -CH]];
-    paper(ctx, resample(card, 2), "#F7F1E3", 3000 + key.length, { rim: 1.3, sh: 1.1, fiber: 1.2 });
-    paper(ctx, blob(0, CY, 25, 25, 3900 + key.length, 0.03), DISC[se], 3950 + key.length, { rim: 0.9, sh: 0.25, light: 0.55 });
-    ctx.save(); multi(ctx, [resample(card, 2)]); ctx.clip(); CARD[key][1](ctx); ctx.restore();
-    var sx = CW / 2 - 9, sy = -9; paper(ctx, [[sx - 4.5, sy - 4.5], [sx + 4.5, sy - 4.5], [sx + 4.5, sy + 4.5], [sx - 4.5, sy + 4.5]], "#C8473A", 3990, { rim: 0.2, sh: 0.2, fiber: 0.4 });
-    ctx.fillStyle = "#FBF3E8"; ctx.font = "7px 'WenQuanYi Zen Hei', sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(SEAL[se], sx, sy + 0.3);
-    ctx.restore(); }
-  Object.keys(CARD).forEach(function (k) { KEEPH[k] = function (ctx, x, y, s) { seasonCard(ctx, x, y, s * 0.42, k, -0.1); }; });
+  function piece(ctx, x, y, s, key) { ctx.save(); ctx.translate(x, y); ctx.scale(s, s); PIECE[key](ctx); ctx.restore(); }
+  // 정원 보기용 (gardenH): 나무 발치에 작게 놓임 (아래 끝이 땅)
+  Object.keys(PIECE).forEach(function (k) { KEEPH[k] = function (ctx, x, y, s) { piece(ctx, x, y - 24 * s * 0.5, s * 0.5, k); }; });
 
   /* 은행나무: 다른 나무처럼 둥글고 풍성하게. 가장자리에 부채잎 몇 장만 */
   function ginkgoCrown(ctx, cx, cy, lk, cols, seed) {

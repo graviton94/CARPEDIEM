@@ -597,12 +597,13 @@ object Tokens {
             const val kiteMs = 12000.0f
             const val kiteDrift = 2.0f
             const val kiteTilt = 3.0f
-            const val cardBoxW = 66.0f
-            const val cardBoxH = 90.0f
+            const val cardBoxW = 60.0f
+            const val cardBoxH = 60.0f
+            const val cardAtY = 56.0f
             const val cardPx = 5.0f
-            const val cardMini = 0.3f
+            const val cardMini = 0.42f
             const val cardFromTree = 30.0f
-            const val cardTilt = -6.0f
+            const val cardTilt = 0.0f
             const val gazeCountMs = 30000.0f
             const val glow = 34.0f
             object Colors {

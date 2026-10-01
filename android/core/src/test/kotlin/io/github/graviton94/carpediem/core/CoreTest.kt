@@ -464,3 +464,12 @@ class GardenDecorTest {
         assertEquals(null, later.prevTree); assertEquals(1f, later.blend)
     }
 }
+
+class SeasonAlbumTest {
+    @Test fun linesGroupByAlbumSeason() {
+        val l = listOf(DayLine(d(2026, 12, 3), "a", Feeling.CALM), DayLine(d(2027, 1, 9), "b", Feeling.CALM), DayLine(d(2027, 2, 9), "c", Feeling.JOY), DayLine(d(2027, 3, 1), "d", null), DayLine(d(2027, 3, 2), "", Feeling.SAD))
+        val m = GardenDecor.seasonLines(l, "KR")
+        assertEquals(GardenDecor.SeasonLines(3, Feeling.CALM), m[2026 to Season.WINTER])
+        assertEquals(GardenDecor.SeasonLines(1, null), m[2027 to Season.SPRING])
+    }
+}

@@ -602,12 +602,13 @@ enum Tokens {
             static let kiteMs: CGFloat = 12000.0
             static let kiteDrift: CGFloat = 2.0
             static let kiteTilt: CGFloat = 3.0
-            static let cardBoxW: CGFloat = 66.0
-            static let cardBoxH: CGFloat = 90.0
+            static let cardBoxW: CGFloat = 60.0
+            static let cardBoxH: CGFloat = 60.0
+            static let cardAtY: CGFloat = 56.0
             static let cardPx: CGFloat = 5.0
-            static let cardMini: CGFloat = 0.3
+            static let cardMini: CGFloat = 0.42
             static let cardFromTree: CGFloat = 30.0
-            static let cardTilt: CGFloat = -6.0
+            static let cardTilt: CGFloat = 0.0
             static let gazeCountMs: CGFloat = 30000.0
             static let glow: CGFloat = 34.0
             enum Colors {

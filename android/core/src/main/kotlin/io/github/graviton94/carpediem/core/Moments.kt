@@ -41,6 +41,9 @@ object Moments {
         return out.sortedByDescending { it.date }
     }
 
+    /** 한지 정원 (자리 여섯) 으로 바뀐 날. 이전에 받은 옛 꾸밈만 앨범의 ‘첫 정원’ 에 남는다 (정원에는 놓이지 않음). */
+    val LEGACY_UNTIL: LocalDate = LocalDate.of(2026, 10, 2)
+
     /** 시험용: 모두 오늘 생긴 것으로. */
     fun all(today: LocalDate) = ids.map { Moment(it, today) }
 
