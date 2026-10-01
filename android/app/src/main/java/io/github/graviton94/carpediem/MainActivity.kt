@@ -1,5 +1,7 @@
 package io.github.graviton94.carpediem
 
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 import android.app.Application
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -234,6 +236,10 @@ private fun MainActivity.debugSetup(state: AppState): Screen {
             Person("cat00001", "나비", Kind.PET, Species.CAT, LocalDate.of(2021, 3, 1), seed = 5150, metOn = today),
             Person("frd00001", "지우", Kind.PERSON, birth = LocalDate.of(2001, 7, 9), sex = Sex.OTHER, country = "KR", seed = 8080, metOn = today),
         ).forEach { state.savePerson(it) }
+    }
+    // 캡처용: 위젯 고르는 화면의 미리보기 그림 (실제 위젯을 그대로 그려 파일로)
+    if (x.getBooleanExtra("cd.widgetShots", false)) lifecycleScope.launch {
+        kotlinx.coroutines.delay(1500); io.github.graviton94.carpediem.widget.WidgetShots.save(this@debugSetup)
     }
     return when (x.getStringExtra("cd.screen")) { "settings" -> Screen.Settings; "widgets" -> Screen.WidgetPreview; "collection" -> Screen.Collection(Screen.Main); "support" -> Screen.Support(Screen.Main); "stone" -> Screen.Stone(x.getStringExtra("cd.stoneId") ?: state.people.firstOrNull()?.id, Screen.Main); "add" -> Screen.AddPerson(null, Screen.Main); "breath" -> Screen.Breathe(BreathKind.CALM, 1, Sound.WAVES, Screen.Main); "gaze" -> Screen.Gaze(Screen.Main); "look" -> Screen.Look(Screen.Main); "thanks" -> Screen.Breathe(BreathKind.THANKS, 1, Sound.SEASON, Screen.Main); "memory" -> Screen.Memory(Screen.Main); else -> Screen.Main }
 }
