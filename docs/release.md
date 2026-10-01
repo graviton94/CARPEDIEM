@@ -35,3 +35,15 @@ Play 앱 서명(Play App Signing)을 켜 두면 Google 이 배포용 키를 관�
 | `support_cake` | 케이크 한 조각 | 11,000원 |
 
 상품이 등록되면 앱의 응원하기에서 Play 가격이 보이고 결제 창이 열림. 등록 전에는 ‘시험판’ 안내만.
+
+## 5. Play Console 등록 순서 (체크리스트)
+
+- [ ] 개발자 계정 (개인, 새 Google 계정) · 본인 확인
+- [ ] 앱 만들기: 이름 ‘하루의 정원’ (한국어) / ‘Carpe Diem’ (영어), 무료, 앱
+- [ ] 스토어 등록정보: 문안 `docs/store-listing.md`, 아이콘 512 × 512, 그래픽 이미지 `docs/store/feature-*.png`, 스크린샷 `docs/store/screenshot-*.png`
+- [ ] 개인정보처리방침 URL: `docs/privacy.md` 를 공개 주소로 (GitHub Pages 를 켜면 `https://graviton94.github.io/CARPEDIEM/privacy`), 문의 이메일 채우기
+- [ ] 데이터 보안: 수집 · 공유하는 데이터 없음, 기기 안에만 저장, 결제는 Google Play
+- [ ] 콘텐츠 등급 설문 (폭력 · 도박 없음), 대상 연령 13세 이상, 광고 없음
+- [ ] 인앱 상품 3개 (4번 표)
+- [ ] 내부 테스트 트랙에 AAB (3번) → 폰에서 받아 확인 → 비공개 테스트 (개인 계정은 테스터 12명 · 14일 이상) → 프로덕션
+- [ ] targetSdk 36 (빌드에 반영됨)
