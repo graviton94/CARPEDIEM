@@ -473,3 +473,26 @@ class SeasonAlbumTest {
         assertEquals(GardenDecor.SeasonLines(1, null), m[2027 to Season.SPRING])
     }
 }
+
+class ChancesTest {
+    @Test fun lineBringsWindOrRainbowAfterHeavyDay() {
+        val today = d(2026, 10, 2)
+        assertEquals(Chance.WIND, Chances.onLine(listOf(DayLine(d(2026, 10, 1), "a", Feeling.JOY)), today))
+        assertEquals(Chance.RAINBOW, Chances.onLine(listOf(DayLine(d(2026, 10, 1), "a", Feeling.SAD)), today))
+    }
+    @Test fun nightBreathBringsFirefliesOrAurora() {
+        assertEquals(null, Chances.onBreath(false, true, 20))
+        assertEquals(Chance.AURORA, Chances.onBreath(true, true, 40))
+        assertEquals(Chance.FIREFLIES, Chances.onBreath(true, true, 41)); assertEquals(Chance.FIREFLIES, Chances.onBreath(true, false, 40))
+    }
+    @Test fun openingBringsSnailBubblesButterfliesOnce() {
+        val today = d(2026, 10, 2)   // 목요일, 짝수 날
+        assertEquals(Chance.SNAIL to "snail:$today", Chances.onOpen(today, Season.AUTUMN, null, today, emptyList(), emptySet()))
+        assertEquals(null, Chances.onOpen(today, Season.AUTUMN, null, today, emptyList(), setOf("snail:$today")))
+        val even = d(2026, 10, 2).let { if (it.toEpochDay() % 2 == 0L) it else it.plusDays(1) }
+        assertEquals(Chance.BUBBLES, Chances.onOpen(even, Season.AUTUMN, even, null, emptyList(), emptySet())?.first)
+        val breaths = listOf(d(2026, 6, 1), d(2026, 6, 2), d(2026, 6, 3))   // 월 · 화 · 수
+        assertEquals(Chance.BUTTERFLIES, Chances.onOpen(d(2026, 6, 3), Season.SUMMER, null, null, breaths, emptySet())?.first)
+        assertEquals(null, Chances.onOpen(d(2026, 6, 3), Season.AUTUMN, null, null, breaths, emptySet()))
+    }
+}

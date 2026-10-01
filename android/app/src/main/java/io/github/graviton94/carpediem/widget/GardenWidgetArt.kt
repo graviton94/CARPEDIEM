@@ -49,7 +49,8 @@ object GardenWidgetArt {
         val bmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
         val c = Canvas(bmp)
         c.drawColor((if (SkyTime.isDark(now)) Tokens.Garden.Night.Colors.base else Tokens.Garden.Colors.paper).toArgb())
-        val season = s?.season ?: Season.SPRING
+        // 하늘 · 땅 · 이끼는 앱 정원처럼 실제 계절 (나라의 반구를 따라)
+        val season = io.github.graviton94.carpediem.core.GardenDecor.realSeason(now.toLocalDate(), io.github.graviton94.carpediem.data.Store(context).profile?.countryCode)
         val units = if (kind == Kind.DAYS || kind == Kind.TODAY) W.small else W.wide
         val u = w / units
         val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
@@ -92,11 +93,13 @@ object GardenWidgetArt {
         if (kind == Kind.CALENDAR && s != null) grid(context, c, RectF(w * W.gridLeft, W.gridInset * u, w - W.gridInset * u, h - W.gridInset * u), s, u)
 
         if (kind == Kind.LARGE && s != null) {
-            val moss = asset(context, "obj_moss.png"); val box = L.objBox * W.mossScale * u
+            val D = Tokens.Garden.Decor
+            val moss = asset(context, "moss_${key(season)}_0.webp")
             val hx = w * 0.1f + w * 0.8f * s.progress.toFloat().coerceIn(0f, 1f)
-            // 이끼 방석은 하루 밑에 (돌보다 조금 넓게, 돌 뒤에)
-            val mb = W.haruLarge * u * 1.35f / 0.676f; val mtop = gy - mb * (L.objGround / L.objBox) + mb * 0.03f
-            c.drawBitmap(moss, null, RectF(hx - mb / 2, mtop, hx + mb / 2, mtop + mb), paint)
+            // 이끼 방석은 하루 밑에 (앱 정원과 같은 한지 그림 · 비율: 상자 90 단위 가운데 68 단위가 방석)
+            val mw = W.haruLarge * u * D.mossWidth * D.mossBoxW / 68f; val mh = mw * D.mossBoxH / D.mossBoxW
+            val mtop = gy + u - mh * (D.mossAtY / D.mossBoxH)
+            c.drawBitmap(moss, null, RectF(hx - mw / 2, mtop, hx + mw / 2, mtop + mh), paint)
             haru(context, c, hx, gy, W.haruLarge * u, u, now)
         }
         if (kind == Kind.DAYS) haru(context, c, w * W.haruX, gy, W.haruSmall * u, u, now)

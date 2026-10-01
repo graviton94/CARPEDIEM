@@ -15,6 +15,16 @@ object GardenArt {
         cache.getOrPut(name) { context.assets.open("garden/$name").use { BitmapFactory.decodeStream(it).asImageBitmap() } }
     }
 
+    /** 모두 읽어 두었는지 (정원은 다 읽은 뒤에 꾸밈을 그림: 그림 여러 장을 한꺼번에 화면 스레드에서 읽으면 멈춘 듯 보임). */
+    fun loaded(names: List<String>) = synchronized(cache) { names.all { it in cache } }
+    /** 지금 꾸밈에 필요한 그림 이름 (미리 읽기용). */
+    fun decorNames(d: io.github.graviton94.carpediem.core.Decor): List<String> = buildList {
+        add("tree_${d.tree.key}_${key(d.season)}_${d.stage.coerceIn(0, 3)}.webp"); d.prevTree?.let { add("tree_${it.key}_${key(d.season)}_${d.stage.coerceIn(0, 3)}.webp") }
+        add("post_${key(d.season)}.webp"); listOf("chime", "bell", "lantern", "lantern_lit").take(d.hang.ordinal + if (d.hang == io.github.graviton94.carpediem.core.Hang.LANTERN) 1 else 0).forEach { add("post_$it.webp") }
+        if (d.letter) add("post_letter.webp"); if (d.kite) add("kite.webp")
+        add("card_${d.card.key}.webp"); add("moss_${key(d.season)}_${d.buds.coerceIn(0, 5)}.webp"); add("fiber.png")
+    }
+
     fun key(s: Season) = when (s) { Season.SPRING -> "spring"; Season.SUMMER -> "summer"; Season.AUTUMN -> "autumn"; Season.WINTER -> "winter" }
     fun sky(context: Context, s: Season) = image(context, "sky_${key(s)}.jpg")
     fun strip(context: Context, s: Season) = image(context, "strip_${key(s)}.webp")

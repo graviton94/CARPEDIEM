@@ -247,6 +247,7 @@ object ShareCards {
             val uri = FileProvider.getUriForFile(ctx, "${ctx.packageName}.share", f)
             val send = Intent(Intent.ACTION_SEND).setType("image/png").putExtra(Intent.EXTRA_STREAM, uri).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             ctx.startActivity(Intent.createChooser(send, ctx.getString(R.string.share_chooser)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+            io.github.graviton94.carpediem.data.Store(ctx).sharedOn = java.time.LocalDate.now()   // 그날 정원에 돌아오면 가끔 비눗방울
         }
     }
 

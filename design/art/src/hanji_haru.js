@@ -35,7 +35,6 @@
     ctx.save(); ctx.filter = "blur(2px)"; ctx.fillStyle = "rgba(50,38,28,.22)"; ctx.beginPath(); ctx.ellipse(cx + width * 0.06, gy + 1, width * 0.52, 2.4, 0, 0, 7); ctx.fill(); ctx.restore();
     V.haru.body(ctx, pts, col, seed % 997, sc);
     hs.eyes.forEach(function (e) { var c = tr(e.c), rr = e.r * k, pr = rr * t.eye.pupil, lx = t.eye.look.x + (e.idx ? t.eye.spread : -t.eye.spread), ly = t.eye.look.y, ll = Math.hypot(lx, ly); if (ll > 1) { lx /= ll; ly /= ll; } var lim = rr - pr - rr * 0.1; V.haru.eye(ctx, c, rr, c[0] + lx * lim, c[1] + ly * lim + lim * 0.2, pr, sc); });
-    if (o.earmuff) earmuffsOn(ctx, V, pts, sc, o.night, seed % 997 + 90);
     if (o.hat) hatOn(ctx, V, pts, hs.eyes.map(function (e) { return tr(e.c); }), sc, seed % 997 + 70);
   }
 

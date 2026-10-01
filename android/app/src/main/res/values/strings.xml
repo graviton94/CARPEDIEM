@@ -159,7 +159,7 @@
     <string name="dev_unlocked">Developer mode on.</string>
     <string name="garden_haruA11y">Haru, %1$s</string>
     <string name="collection">Keepsakes</string>
-    <string name="collection_sub">With time, things find their way into the garden.</string>
+    <string name="collection_sub">One piece each season, gathering slowly.</string>
     <string name="support">Support</string>
     <string name="support_title">Support Haru\'s garden</string>
     <string name="support_body">No ads. Nothing locked.\nIf you like it, a warm cup helps.</string>
@@ -601,4 +601,13 @@
     <string name="album_when">%2$s %1$s · %3$s</string>
     <string name="album_first">First garden</string>
     <string name="album_firstSub">Things you received before the paper garden. They stay here with their dates.</string>
+    <string name="chance_bubbles">Bubbles</string>
+    <string name="chance_fireflies">Fireflies</string>
+    <string name="chance_rainbow">Rainbow</string>
+    <string name="chance_butterflies">A pair of butterflies</string>
+    <string name="chance_snail">Snail guest</string>
+    <string name="chance_aurora">Aurora</string>
+    <string name="chance_wind">Season wind</string>
+    <string name="album_met">Moments you met</string>
+    <string name="album_metSub">Small things you happened upon in the garden, with the day you first met them.</string>
 </resources>

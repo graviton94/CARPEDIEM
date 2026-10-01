@@ -45,12 +45,3 @@
     [[-58, 8, -1.1], [58, 4, 1.0], [-30, -44, -0.5], [34, -40, 0.6], [-6, -46, -0.1], [-50, 22, -1.6], [50, 22, 1.6]].forEach(function (q, i) { paper(ctx, fanLeaf(cx + q[0] * 1.06 * lk, cy + q[1] * 1.04 * lk, 8.5 * lk, q[2]), cols[i % 2 ? 2 : 1], seed + 60 + i, { rim: 0.45, sh: 0.7 }); });
   }
 
-  /* 겨울 귀마개: 정수리 위로 넘어가는 띠 + 양옆의 털 방울 */
-  function hspanAt(pts, y) { var xs = []; for (var i = 0; i < pts.length; i++) { var a = pts[i], b = pts[(i + 1) % pts.length]; if ((a[1] - y) * (b[1] - y) <= 0 && a[1] !== b[1]) xs.push(a[0] + (b[0] - a[0]) * (y - a[1]) / (b[1] - a[1])); } if (xs.length < 2) return null; return [Math.min.apply(null, xs), Math.max.apply(null, xs)]; }
-  function earmuffsOn(ctx, V, pts, sc, night, seed) {
-    var bb = bbox(pts), my = bb[1] + bb[3] * 0.44, hs = hspanAt(pts, my), r = Math.max(4.2, bb[2] * 0.12), L = [hs[0] + r * 0.35, my], Rr = [hs[1] - r * 0.35, my];
-    var band = []; for (var i = 0; i <= 24; i++) { var t = i / 24, x = L[0] + (Rr[0] - L[0]) * t, sp = spanAt(pts, Math.min(bb[0] + bb[2] - 0.5, Math.max(bb[0] + 0.5, x))), ty = sp ? sp[0] : bb[1], e = Math.pow(Math.abs(2 * t - 1), 6); band.push([x, (ty - 1.8) * (1 - e) + my * e]); }
-    var col = night ? "#A85A58" : "#C8553D", fur = night ? "#D6CCBE" : "#F4E9D8";
-    V.haru.body(ctx, resample(rib(band, 2.8, 2.8), 1), col, seed, sc * 0.6);
-    [L, Rr].forEach(function (c, i) { var p = []; for (var k = 0; k < 30; k++) { var a = k / 30 * Math.PI * 2, rr = r * (1 + 0.035 * Math.sin(a * 9 + i)); p.push([c[0] + Math.cos(a) * rr, c[1] + Math.sin(a) * rr * 1.05]); } V.haru.body(ctx, p, fur, seed + 1 + i, sc * 0.65); paper(ctx, blob(c[0] + (i ? -0.8 : 0.8), c[1] - r * 0.15, r * 0.5, r * 0.45, seed + 5 + i, 0.15), night ? "#E6DED2" : "#FFFBF4", seed + 5 + i, { rim: 0, sh: 0 }); });
-  }

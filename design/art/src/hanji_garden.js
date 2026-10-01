@@ -279,11 +279,36 @@
   var MOMENT = {
     bubbles: function (ctx, x, y, s) { [[0, -20, 7], [12, -34, 5], [-10, -40, 4], [6, -52, 3]].forEach(function (b) { var cx = x + b[0] * s, cy = y + b[1] * s, r = b[2] * s; ctx.save(); var g = ctx.createRadialGradient(cx - r * 0.3, cy - r * 0.3, r * 0.1, cx, cy, r); g.addColorStop(0, "rgba(255,255,255,.08)"); g.addColorStop(0.8, "rgba(200,225,235,.18)"); g.addColorStop(1, "rgba(255,255,255,.7)"); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(cx, cy, r, 0, 7); ctx.fill(); ctx.strokeStyle = "rgba(160,190,210,.6)"; ctx.lineWidth = 0.6; ctx.stroke(); ctx.fillStyle = "rgba(255,255,255,.9)"; ctx.beginPath(); ctx.ellipse(cx - r * 0.4, cy - r * 0.42, r * 0.22, r * 0.12, -0.7, 0, 7); ctx.fill(); ctx.restore(); }); },
     fireflies: function (ctx, x, y, s) { var r = R(31); for (var i = 0; i < 9; i++) { var cx = x + (r() - 0.5) * 70 * s, cy = y - 8 * s - r() * 40 * s; ctx.save(); var g = ctx.createRadialGradient(cx, cy, 0, cx, cy, 6 * s); g.addColorStop(0, "rgba(246,236,150,.9)"); g.addColorStop(0.3, "rgba(230,224,120,.35)"); g.addColorStop(1, "rgba(230,224,120,0)"); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(cx, cy, 6 * s, 0, 7); ctx.fill(); ctx.fillStyle = "#FFF6C2"; ctx.beginPath(); ctx.arc(cx, cy, 0.9 * s, 0, 7); ctx.fill(); ctx.restore(); } },
-    rainbow: function (ctx, x, y, s) { ["#E59A8C", "#F2C04E", "#A9C77E", "#8FB2CC", "#B7A0CF"].forEach(function (c, i) { var R0 = (46 - i * 4.6) * s, pts = []; for (var t = 0; t <= 1.0001; t += 0.04) pts.push([x + Math.cos(Math.PI + t * Math.PI) * R0, y + Math.sin(Math.PI + t * Math.PI) * R0]); paper(ctx, rib(pts, 4.2 * s, 4.2 * s), c, 2300 + i, { rim: 0.4, sh: 0.5, light: 0.6 }); }); paper(ctx, [blob(x - 42 * s, y - 2 * s, 12 * s, 5 * s, 2306, 0.2), blob(x + 42 * s, y - 2 * s, 12 * s, 5 * s, 2307, 0.2)], "#FFFFFF", 2306, {}); },
+    // 무지개: 옅은 세 줄, 먼 산 위로 낮게 (구름 없이)
+    rainbow: function (ctx, x, y, s) { ctx.save(); ctx.globalAlpha = 0.7; ["#F0B6A4", "#F3DCA2", "#B9D6C6"].forEach(function (c, i) { var R0 = (62 - i * 5) * s, pts = []; for (var t = 0; t <= 1.0001; t += 0.03) pts.push([x + Math.cos(Math.PI + t * Math.PI) * R0, y + Math.sin(Math.PI + t * Math.PI) * R0]); paper(ctx, rib(pts, 4.6 * s, 4.6 * s), c, 2300 + i, { rim: 0.3, sh: 0.25, light: 0.6 }); }); ctx.restore(); },
     butterfly: function (ctx, x, y, s) { var c = "#F2C04E"; paper(ctx, [blob(x - 5 * s, y - 4 * s, 5.4 * s, 4.4 * s, 2310, 0.1, -0.5), blob(x - 4 * s, y + 2.6 * s, 3.4 * s, 2.8 * s, 2311, 0.1, 0.4)], c, 2310, { tone: 0.1 }); paper(ctx, [blob(x + 4 * s, y - 4.6 * s, 4.4 * s, 4 * s, 2312, 0.1, 0.5), blob(x + 3.6 * s, y + 2.2 * s, 2.8 * s, 2.4 * s, 2313, 0.1, -0.4)], mixHex(c, "#FFFFFF", 0.3), 2312, { tone: 0.1 }); paper(ctx, blob(x, y - 1 * s, 1 * s, 4.6 * s, 2314, 0.05), "#4A3E34", 2314, { rim: 0, sh: 0.2 }); thread(ctx, [[x, y - 5 * s], [x - 2 * s, y - 9 * s]], 0.5, "#4A3E34"); thread(ctx, [[x, y - 5 * s], [x + 2 * s, y - 9 * s]], 0.5, "#4A3E34"); },
     snail: function (ctx, x, y, s) { paper(ctx, [[x - 11 * s, y], [x + 9 * s, y]].concat(bez([x + 9 * s, y, x + 12 * s, y, x + 12 * s, y - 6 * s, x + 9 * s, y - 7 * s], 8)).concat([[x + 6 * s, y - 3 * s], [x - 11 * s, y - 2.4 * s]]), "#D8C6A6", 2320, { tone: 0.1 }); thread(ctx, [[x + 9.6 * s, y - 6.6 * s], [x + 11 * s, y - 11 * s]], 0.6, "#8A7356"); thread(ctx, [[x + 8.4 * s, y - 6.6 * s], [x + 8 * s, y - 11 * s]], 0.6, "#8A7356"); paper(ctx, blob(x - 2 * s, y - 7 * s, 7.4 * s, 7 * s, 2321, 0.04), "#C49A6A", 2321, { tone: 0.12 }); var sp = []; for (var t = 0; t < 1; t += 0.02) { var a = t * Math.PI * 4.2, rr = 6.2 * s * (1 - t * 0.85); sp.push([x - 2 * s + Math.cos(a) * rr, y - 7 * s + Math.sin(a) * rr]); } thread(ctx, sp, 0.8, "rgba(110,76,44,.7)"); },
-    aurora: function (ctx, x, y, s) { ["#8FD0B8", "#9DC4E0", "#B7A0CF"].forEach(function (c, i) { var pts = []; for (var t = 0; t <= 1.0001; t += 0.03) pts.push([x + (t - 0.5) * 150 * s, y - i * 10 * s + Math.sin(t * 7 + i) * 8 * s]); ctx.save(); ctx.globalAlpha = 0.55; paper(ctx, rib(pts, 9 * s, 4 * s), c, 2330 + i, { rim: 0.6, sh: 0.2, light: 0.5 }); ctx.restore(); }); }
+    // 오로라: 하늘 위쪽에 옅게 번진 초록 · 보라 띠 둘
+    aurora: function (ctx, x, y, s) { ctx.save(); ctx.filter = "blur(" + (2.4 * SHK()) + "px)"; ctx.globalAlpha = 0.42; ["#8FD0B8", "#B7A0CF"].forEach(function (c, i) { var pts = []; for (var t = 0; t <= 1.0001; t += 0.025) pts.push([x + (t - 0.5) * 220 * s, y - i * 12 * s + Math.sin(t * 5 + i * 1.3) * 10 * s]); paper(ctx, rib(pts, 14 * s, 5 * s), c, 2330 + i, { rim: 0, sh: 0, fiber: 0.4 }); }); ctx.restore(); }
   };
+
+  // 계절 바람: 한 줄을 보낸 순간, 작은 조각 열둘이 한 번 지나감 (봄 꽃잎 · 여름 풀잎 · 가을 잎 · 겨울 눈)
+  MOMENT.wind = function (ctx, se, x0, y0, w, h) { var r = R(4401);
+    for (var i = 0; i < 12; i++) { var x = x0 + r() * w, y = y0 + r() * h, a = r() * 6.28, k = 0.8 + r() * 0.5;
+      if (se === "spring") paper(ctx, place([[0, 0], [2.4, -1.6], [4.6, -0.6], [4, 0], [4.6, 0.6], [2.4, 1.6]], x, y, k, a), i % 3 ? "#F6C9D3" : "#FBE6EC", 4410 + i, { rim: 0.2, sh: 0.35 });
+      else if (se === "summer") paper(ctx, place(leafPts(7, 1.4), x, y, k, a), i % 2 ? "#9CC27A" : "#B6D394", 4410 + i, { rim: 0.2, sh: 0.35 });
+      else if (se === "autumn") paper(ctx, place(leafPts(6, 2.6), x, y, k, a), ["#D98C4A", "#E9B04E", "#C46B3D"][i % 3], 4410 + i, { rim: 0.2, sh: 0.35 });
+      else paper(ctx, blob(x, y, 1.6 * k, 1.6 * k, 4410 + i, 0.1), "#FFFFFF", 4410 + i, { rim: 0.3, sh: 0.3 }); } };
+  // 나비 한 쌍: 나무에서 말뚝 쪽으로
+  MOMENT.pair = function (ctx, x, y, s) { MOMENT.butterfly(ctx, x, y, s); MOMENT.butterfly(ctx, x + 26 * s, y - 14 * s, s * 0.8); };
+
+  // 나비 한 장 (위에서 본 모습, 머리 = 위). side: -1 왼날개, 1 오른날개, 0 몸통. 상자 40 × 40, 몸통 축 x = 20. 앱이 날개를 접었다 폈다 함
+  function flySprite(ctx, side) { var x = 20, y = 21, c = "#F2C04E", c2 = "#E9A43A";
+    if (side) { var d = side, fw = [[0, 0], [-4, -6], [-11, -9], [-14, -6], [-12, -1], [-6, 1]].map(function (q) { return [x + q[0] * d, y + q[1]]; }), hw = [[0, 1], [-6, 2], [-9, 6], [-7, 10], [-3, 9], [0, 4]].map(function (q) { return [x + q[0] * d, y + q[1]]; });
+      paper(ctx, hw, c2, 2315 + (d > 0 ? 1 : 0), { tone: 0.12, rim: 0.6 }); paper(ctx, fw, c, 2310 + (d > 0 ? 1 : 0), { tone: 0.12, rim: 0.6 });
+      paper(ctx, blob(x + d * 9.5, y - 5.5, 1.6, 1.6, 2318, 0.05), "#8A5A2A", 2318, { rim: 0, sh: 0.1 }); paper(ctx, blob(x + d * 5.5, y + 6.5, 1.2, 1.2, 2320, 0.05), "#FBF3DC", 2320, { rim: 0, sh: 0.1 }); return; }
+    paper(ctx, blob(x, y + 1.5, 1.1, 6, 2314, 0.05), "#4A3E34", 2314, { rim: 0, sh: 0.3 });
+    [-1, 1].forEach(function (d) { var e = [x + d * 4, y - 9]; thread(ctx, bez([x, y - 4, x + d * 1, y - 7, x + d * 2.4, y - 8.6, e[0], e[1]], 8), 0.5, "#4A3E34"); ctx.fillStyle = "#4A3E34"; ctx.beginPath(); ctx.arc(e[0], e[1], 0.8, 0, 7); ctx.fill(); }); }
+  // 계절 바람 한 조각 (상자 10 × 10, 가운데)
+  function windPiece(ctx, se) { if (se === "spring") paper(ctx, place([[0, 0], [2.4, -1.6], [4.6, -0.6], [4, 0], [4.6, 0.6], [2.4, 1.6]], 2.6, 5, 1, 0), "#F6C9D3", 4410, { rim: 0.2, sh: 0.35 });
+    else if (se === "summer") paper(ctx, place(leafPts(7, 1.4), 1.5, 5, 1, 0), "#9CC27A", 4411, { rim: 0.2, sh: 0.35 });
+    else if (se === "autumn") paper(ctx, place(leafPts(6, 2.6), 2, 5, 1, 0), "#D98C4A", 4412, { rim: 0.2, sh: 0.35 });
+    else paper(ctx, blob(5, 5, 1.8, 1.8, 4413, 0.1), "#FFFFFF", 4413, { rim: 0.3, sh: 0.3 }); }
 
   /* ───────── 하늘 ───────── */
   function sun(ctx, x, y, s, col) { paper(ctx, blob(x, y, 22 * s, 22 * s, 2400, 0.03), mixHex(col, "#FFFFFF", 0.35), 2400, { sh: 0.6, rim: 1.4 }); paper(ctx, blob(x, y, 17 * s, 17 * s, 2401, 0.04), col, 2401, { sh: 0.4 }); }
@@ -304,10 +329,10 @@
     ctx.save(); ctx.setTransform(U, 0, 0, U, 0, 0);
     var gr = ctx.createLinearGradient(0, 0, 0, SGY); gr.addColorStop(0, P.sky); gr.addColorStop(1, P.sky2); ctx.fillStyle = gr; ctx.fillRect(0, 0, SW, SH);
     texFill(ctx, TEX.fiber, night ? 0.2 : 0.55, "source-over", 0.4); texFill(ctx, TEX.grain, 0.5, "multiply", 0.5);
-    if (night) { stars(ctx, 40, 77, SW, 330); moon(ctx, 300, 214, 1); if (o.moment === "aurora") MOMENT.aurora(ctx, SW / 2, 270, 1); }
+    if (night) { stars(ctx, 40, 77, SW, 330); moon(ctx, 300, 214, 1); if (o.moment === "aurora") MOMENT.aurora(ctx, SW / 2, 260, 1); }
     else { sun(ctx, 300, 214, 1, P.sun); }
     cloud(ctx, 54, 246, 1, P.cloud, 2500); cloud(ctx, 196, 300, 0.75, P.cloud, 2510); cloud(ctx, 352, 52, 0.9, P.cloud, 2520);
-    if (o.moment === "rainbow" && !night) MOMENT.rainbow(ctx, 150, SGY - 70, 1.1);
+    if (o.moment === "rainbow" && !night) MOMENT.rainbow(ctx, 210, SGY - 40, 1.1);
     ground(ctx, P, SW, SGY, 0, 0.55);
     var POSTX = 352, KX = 300, KY = 268;
     tree(ctx, 70, SGY + 2, 1, sp, se, o.stage == null ? 3 : o.stage, {});
@@ -315,8 +340,10 @@
     post(ctx, POSTX, SGY + 2, 1, { season: se, chime: o.chime == null ? 1 : o.chime, lantern: o.lantern, lit: night && o.lantern, letter: o.letter });
     if (o.kite && !night) kite(ctx, KX, KY, 1, o.kite, o.ribbons || 0, POSTX + 33, SGY - 96);
     moss(ctx, 190, SGY + 2, 1, se, o.buds || 0);
-    var so = { earmuff: se === "winter", night: night }; stoneH(ctx, HV, 2718281, 190, SGY, 48, so); stoneH(ctx, HV, 12345, 250, SGY, 34, so); stoneH(ctx, HV, 31337, 297, SGY, 40, so);
+    var so = { night: night }; stoneH(ctx, HV, 2718281, 190, SGY, 48, so); stoneH(ctx, HV, 12345, 250, SGY, 34, so); stoneH(ctx, HV, 31337, 297, SGY, 40, so);
     if (o.moment === "butterfly") MOMENT.butterfly(ctx, 226, SGY - 60, 1);
+    if (o.moment === "pair") MOMENT.pair(ctx, 150, SGY - 82, 0.7);
+    if (o.moment === "wind") MOMENT.wind(ctx, se, 30, SGY - 150, 330, 110);
     if (o.moment === "bubbles") MOMENT.bubbles(ctx, 204, SGY - 30, 1);
     if (o.moment === "snail") MOMENT.snail(ctx, 140, SGY + 3, 0.9);
     if (o.moment === "fireflies") MOMENT.fireflies(ctx, 200, SGY - 10, 1);

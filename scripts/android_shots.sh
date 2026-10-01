@@ -31,6 +31,14 @@ open --ez cd.preview true --ez cd.family true --es cd.now 2027-01-12T14:00; shot
 adb shell input tap 90 1650; shot q07_decor_sheet 3
 open --ez cd.preview true --es cd.birth 1962-03-02 --es cd.now $NOW; shot q08_decor_ginkgo 6
 open --ez cd.preview true --es cd.screen collection --es cd.now $NOW; shot q09_album 5
+# 우연한 순간 (캡처용으로 바로 띄움): 몇 초 뒤 모습
+open --ez cd.preview false --es cd.birth 2000-05-12 --es cd.chance butterflies --es cd.now 2026-05-20T15:00; shot q10_chance_butterflies 7
+open --es cd.chance rainbow --es cd.now $NOW; shot q11_chance_rainbow 5
+open --es cd.chance wind --es cd.now $NOW; shot q12_chance_wind 3
+open --es cd.chance bubbles --es cd.now $NOW; shot q13_chance_bubbles 4
+open --es cd.chance fireflies --es cd.now 2026-09-30T22:40; shot q14_chance_fireflies 5
+open --es cd.chance aurora --es cd.now 2027-01-12T22:40; shot q15_chance_aurora 5
+open --es cd.chance snail --es cd.now $NOW; shot q16_chance_snail 5
 # 위젯 미리보기 그림 (위젯 고르는 화면용): 가족 · 이번 달 기록이 있는 정원으로 실제 위젯을 그려 꺼냄
 open --ez cd.reset true --es cd.design garden --el cd.seed 2718281 --es cd.birth 2000-05-12 --es cd.sex female --ez cd.meet false --ez cd.family true --ez cd.months true --ez cd.widgetShots true
 W=/sdcard/Android/data/$P/files/widgets

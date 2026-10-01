@@ -157,7 +157,7 @@
 "dev.unlocked" = "개발자 모드를 켰어요.";
 "garden.haruA11y" = "하루, %1$@";
 "collection" = "모은 것";
-"collection.sub" = "시간이 흐르면 정원에 하나씩 놓여요.";
+"collection.sub" = "계절마다 한 조각씩, 천천히 모여요.";
 "support" = "응원하기";
 "support.title" = "하루의 정원을 응원해 주세요";
 "support.body" = "광고도, 잠긴 기능도 없어요.\n마음에 들었다면 따뜻한 한 잔으로 응원해 주세요.";
@@ -599,3 +599,12 @@
 "album.when" = "%1$@ %2$@ · %3$@";
 "album.first" = "첫 정원";
 "album.firstSub" = "한지 정원 전에 받은 것들이에요. 날짜와 함께 여기에 남아요.";
+"chance.bubbles" = "비눗방울";
+"chance.fireflies" = "반딧불";
+"chance.rainbow" = "무지개";
+"chance.butterflies" = "나비 한 쌍";
+"chance.snail" = "달팽이 손님";
+"chance.aurora" = "오로라";
+"chance.wind" = "계절 바람";
+"album.met" = "만난 순간";
+"album.metSub" = "정원에서 우연히 만난 것들이에요. 처음 만난 날이 남아요.";

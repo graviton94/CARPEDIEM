@@ -274,6 +274,22 @@ class Store(context: Context) {
     var seasonCards: Set<String>
         get() = prefs.getStringSet("seasonCards", emptySet()) ?: emptySet()
         set(v) = prefs.edit().putStringSet("seasonCards", v).apply()
+    /** 그림을 보낸 날 (그날 정원에 돌아오면 둘에 한 번 비눗방울). */
+    var sharedOn: LocalDate?
+        get() = if (prefs.contains("sharedOn")) LocalDate.ofEpochDay(prefs.getLong("sharedOn", 0)) else null
+        set(v) = prefs.edit().apply { if (v == null) remove("sharedOn") else putLong("sharedOn", v.toEpochDay()) }.apply()
+    /** 이미 본 우연한 순간 (같은 날 · 같은 주에 두 번 오지 않게): "snail:2026-10-02" 처럼. */
+    var chancesShown: Set<String>
+        get() = prefs.getStringSet("chancesShown", emptySet()) ?: emptySet()
+        set(v) = prefs.edit().putStringSet("chancesShown", v).apply()
+    /** 처음 만난 날 (앨범 ‘만난 순간’): "rainbow:2026-10-02" 처럼, 순간마다 하나. */
+    var chancesMet: Set<String>
+        get() = prefs.getStringSet("chancesMet", emptySet()) ?: emptySet()
+        set(v) = prefs.edit().putStringSet("chancesMet", v).apply()
+    /** 달팽이 손님이 길에 나온 때 (ms). 한 시간쯤 머물며 천천히 건넘. */
+    var snailAt: Long
+        get() = prefs.getLong("snailAt", 0L)
+        set(v) = prefs.edit().putLong("snailAt", v).apply()
     /** 마지막으로 정원에서 본 꾸밈 (새로 생긴 것을 한 번만 알리려고). 처음엔 null = 조용히 기억만. */
     var decorSeen: String?
         get() = prefs.getString("decorSeen", null)

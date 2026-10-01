@@ -157,7 +157,7 @@
 "dev.unlocked" = "Developer mode on.";
 "garden.haruA11y" = "Haru, %1$@";
 "collection" = "Keepsakes";
-"collection.sub" = "With time, things find their way into the garden.";
+"collection.sub" = "One piece each season, gathering slowly.";
 "support" = "Support";
 "support.title" = "Support Haru's garden";
 "support.body" = "No ads. Nothing locked.\nIf you like it, a warm cup helps.";
@@ -599,3 +599,12 @@
 "album.when" = "%2$@ %1$@ · %3$@";
 "album.first" = "First garden";
 "album.firstSub" = "Things you received before the paper garden. They stay here with their dates.";
+"chance.bubbles" = "Bubbles";
+"chance.fireflies" = "Fireflies";
+"chance.rainbow" = "Rainbow";
+"chance.butterflies" = "A pair of butterflies";
+"chance.snail" = "Snail guest";
+"chance.aurora" = "Aurora";
+"chance.wind" = "Season wind";
+"album.met" = "Moments you met";
+"album.metSub" = "Small things you happened upon in the garden, with the day you first met them.";

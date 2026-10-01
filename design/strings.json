@@ -158,7 +158,7 @@
     "dev.unlocked": "개발자 모드를 켰어요.",
     "garden.haruA11y": "하루, {stone}",
     "collection": "모은 것",
-    "collection.sub": "시간이 흐르면 정원에 하나씩 놓여요.",
+    "collection.sub": "계절마다 한 조각씩, 천천히 모여요.",
     "support": "응원하기",
     "support.title": "하루의 정원을 응원해 주세요",
     "support.body": "광고도, 잠긴 기능도 없어요.\n마음에 들었다면 따뜻한 한 잔으로 응원해 주세요.",
@@ -599,7 +599,16 @@
     "album.lines": "한 줄 {n}줄",
     "album.when": "{year} {season} · {tree}",
     "album.first": "첫 정원",
-    "album.firstSub": "한지 정원 전에 받은 것들이에요. 날짜와 함께 여기에 남아요."
+    "album.firstSub": "한지 정원 전에 받은 것들이에요. 날짜와 함께 여기에 남아요.",
+    "chance.bubbles": "비눗방울",
+    "chance.fireflies": "반딧불",
+    "chance.rainbow": "무지개",
+    "chance.butterflies": "나비 한 쌍",
+    "chance.snail": "달팽이 손님",
+    "chance.aurora": "오로라",
+    "chance.wind": "계절 바람",
+    "album.met": "만난 순간",
+    "album.metSub": "정원에서 우연히 만난 것들이에요. 처음 만난 날이 남아요."
   },
   "en": {
     "tagline": "Cherish today.",
@@ -760,7 +769,7 @@
     "dev.unlocked": "Developer mode on.",
     "garden.haruA11y": "Haru, {stone}",
     "collection": "Keepsakes",
-    "collection.sub": "With time, things find their way into the garden.",
+    "collection.sub": "One piece each season, gathering slowly.",
     "support": "Support",
     "support.title": "Support Haru's garden",
     "support.body": "No ads. Nothing locked.\nIf you like it, a warm cup helps.",
@@ -1201,6 +1210,15 @@
     "album.lines": "{n} lines",
     "album.when": "{season} {year} · {tree}",
     "album.first": "First garden",
-    "album.firstSub": "Things you received before the paper garden. They stay here with their dates."
+    "album.firstSub": "Things you received before the paper garden. They stay here with their dates.",
+    "chance.bubbles": "Bubbles",
+    "chance.fireflies": "Fireflies",
+    "chance.rainbow": "Rainbow",
+    "chance.butterflies": "A pair of butterflies",
+    "chance.snail": "Snail guest",
+    "chance.aurora": "Aurora",
+    "chance.wind": "Season wind",
+    "album.met": "Moments you met",
+    "album.metSub": "Small things you happened upon in the garden, with the day you first met them."
   }
 }

@@ -2,6 +2,8 @@ package io.github.graviton94.carpediem.ui
 
 import io.github.graviton94.carpediem.core.BreathKind
 import io.github.graviton94.carpediem.core.Decor
+import io.github.graviton94.carpediem.core.Chance
+import io.github.graviton94.carpediem.core.Chances
 import io.github.graviton94.carpediem.core.GardenDecor
 import io.github.graviton94.carpediem.core.Hang
 import io.github.graviton94.carpediem.core.LifeSnapshot
@@ -144,8 +146,10 @@ class AppState(private val context: Context) {
         val line = if (keepLines) DayLine(today, t, feeling, to, q) else DayLine(today, "", null, to)
         val person = people.firstOrNull { it.id == to }
         toastTitle = if (person != null && feeling in setOf(Feeling.JOY, Feeling.THANKS, Feeling.HOPE)) context.getString(R.string.letgo_modalTo, person.name) else null
+        val moment = Chances.onLine(lines, today)
         val next = Lines.add(lines, line)
         store.lines = next; lines = next
+        showChance(moment, today)   // 정원에 돌아가면 계절 바람 (어제 무거웠으면 무지개)
         val s = Lines.streaks(next, streaks); if (s != streaks) { store.streaks = s; streaks = s }
         val part = Labels.part(fixedNow ?: LocalDateTime.now())
         toast = Labels.letGoMessage(context, feeling, part)
@@ -300,8 +304,30 @@ class AppState(private val context: Context) {
     fun recordBreath(kind: BreathKind, today: LocalDate = (fixedNow ?: LocalDateTime.now()).toLocalDate()) {
         if (breaths.any { it.first == today && it.second == kind }) return
         val next = breaths + (today to kind); store.breaths = next; breaths = next
+        // 밤에 숨을 끝까지 쉬었으면 정원에 반딧불 (겨울 밤엔 스무 번에 한 번 오로라)
+        val night = io.github.graviton94.carpediem.ui.garden.SkyTime.isDark(fixedNow ?: LocalDateTime.now())
+        val winter = profile?.let { GardenDecor.realSeason(today, it.countryCode) } == Season.WINTER
+        Chances.onBreath(night, winter, next.map { it.first }.distinct().size)?.let { showChance(it, today) }
     }
     val firstBreath: LocalDate? get() = breaths.minOfOrNull { it.first }
+
+    // ───── 우연한 순간 (core Chances) ─────
+    /** 정원에 다음에 보일 순간 (보이고 나면 null). 한 번에 하나. */
+    var chance by mutableStateOf<Chance?>(null)
+        private set
+    var chancesMet by mutableStateOf(store.chancesMet)
+        private set
+    fun showChance(c: Chance, today: LocalDate) {
+        chance = c
+        if (chancesMet.none { it.startsWith(c.key + ":") }) { val n = chancesMet + "${c.key}:$today"; store.chancesMet = n; chancesMet = n }
+        if (c == Chance.SNAIL) store.snailAt = System.currentTimeMillis()
+    }
+    fun chanceDone() { chance = null }
+    /** 정원을 열 때: 오랜만에 돌아온 날 달팽이, 그림을 보낸 날 비눗방울, 숨을 세 번 쉰 봄 · 여름 주에 나비 한 쌍 (한 번씩). */
+    fun openChance(today: LocalDate, season: Season) {
+        if (chance != null || previewAll) return
+        Chances.onOpen(today, season, store.sharedOn, store.returned, breaths.map { it.first }, store.chancesShown)?.let { (c, key) -> store.chancesShown = store.chancesShown + key; showChance(c, today) }
+    }
 
     // ───── 정원 꾸밈 (자리 여섯, core GardenDecor) ─────
     var gazeDays by mutableStateOf(store.gazeDays)
@@ -428,7 +454,7 @@ class AppState(private val context: Context) {
 
     fun eraseAll() {
         previewQ = false
-        store.eraseAll(); store.ensureQuoteSeed(); unit = store.unit; grid = store.grid; defaultUnit = unit; defaultGrid = grid; lines = emptyList(); streaks = emptyMap(); keepLines = true; care = null; careOn = true; question = null; answering = null; lettersOpened = emptySet(); toast = null; randomLine = null; people = emptyList(); memories = emptyList(); memoryLines = emptyList(); wishes = emptyMap(); wishSkipped = emptySet(); specialDays = emptyList(); yearsOpened = emptySet(); breaths = emptyList(); gazeDays = emptySet(); seasonCards = emptySet(); breathKind = store.breathKind; breathMinutes = store.breathMinutes; sound = store.sound
+        store.eraseAll(); store.ensureQuoteSeed(); unit = store.unit; grid = store.grid; defaultUnit = unit; defaultGrid = grid; lines = emptyList(); streaks = emptyMap(); keepLines = true; care = null; careOn = true; question = null; answering = null; lettersOpened = emptySet(); toast = null; randomLine = null; people = emptyList(); memories = emptyList(); memoryLines = emptyList(); wishes = emptyMap(); wishSkipped = emptySet(); specialDays = emptyList(); yearsOpened = emptySet(); breaths = emptyList(); gazeDays = emptySet(); seasonCards = emptySet(); chancesMet = emptySet(); chance = null; breathKind = store.breathKind; breathMinutes = store.breathMinutes; sound = store.sound
         profile = null; quoteLanguage = store.quoteLanguage; quote = store.todaysQuote(); design = store.design; meetPending = false; previewAll = false; notify = false; devMode = false; io.github.graviton94.carpediem.notify.Daily.schedule(context, false); io.github.graviton94.carpediem.notify.Evening.schedule(context, false); eveningNotify = false; io.github.graviton94.carpediem.notify.Tomorrow.schedule(context, false); tomorrowNotify = false; morningBreath = true; Widgets.refresh(context)
     }
 

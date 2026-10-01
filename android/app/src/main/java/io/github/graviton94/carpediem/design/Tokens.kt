@@ -550,7 +550,7 @@ object Tokens {
             const val treeBoxH = 200.0f
             const val treeAtX = 110.0f
             const val treeAtY = 190.0f
-            const val treeScale = 0.6f
+            const val treeScale = 1.0f
             const val treeX = 30.0f
             const val treePx = 2.0f
             const val stageDays1 = 100.0f
@@ -560,7 +560,7 @@ object Tokens {
             const val postBoxH = 130.0f
             const val postAtX = 30.0f
             const val postAtY = 125.0f
-            const val postScale = 0.6f
+            const val postScale = 0.9f
             const val postPx = 2.0f
             const val chimeX = 55.0f
             const val chimeY = 30.0f
@@ -587,7 +587,7 @@ object Tokens {
             const val kiteBoxH = 140.0f
             const val kiteAtX = 25.0f
             const val kiteAtY = 25.0f
-            const val kiteScale = 0.6f
+            const val kiteScale = 0.85f
             const val kitePx = 3.0f
             const val kiteX = 292.0f
             const val kiteHigh = 0.4f
@@ -601,19 +601,35 @@ object Tokens {
             const val cardBoxH = 60.0f
             const val cardAtY = 56.0f
             const val cardPx = 5.0f
-            const val cardMini = 0.42f
+            const val cardMini = 0.5f
             const val cardFromTree = 30.0f
             const val cardTilt = 0.0f
             const val gazeCountMs = 30000.0f
             const val glow = 34.0f
             object Colors {
-                val earmuff = Color(0xFFC8553D)
-                val fur = Color(0xFFF4E9D8)
-                val furLight = Color(0xFFFFFBF4)
                 val glow = Color(0xFFFFCE82)
                 val tail = Color(0xFFF4EEDF)
             }
             const val nightKeep = 0.82f
+        }
+        object Chance {
+            const val bubblesMs = 8000.0f
+            const val firefliesMs = 10000.0f
+            const val rainbowMs = 8000.0f
+            const val butterfliesMs = 11000.0f
+            const val auroraMs = 10000.0f
+            const val windMs = 5000.0f
+            const val flapHz = 3.5f
+            const val glideMs = 500.0f
+            const val glideEvery = 2600.0f
+            const val flyBox = 6.6f
+            const val snailMinutes = 60.0f
+            const val snailWalk = 26.0f
+            const val snailScale = 0.5f
+            const val rainbowScale = 1.0f
+            const val auroraScale = 1.3f
+            const val windPieces = 12.0f
+            const val windSize = 5.0f
         }
     }
 }

@@ -23,4 +23,10 @@
   function sunApp(ctx, W) { hj(ctx, W / 60); sun(ctx, 30, 30, 1.2, "#F6C979"); }
   function moonApp(ctx, W) { hj(ctx, W / 60); moon(ctx, 30, 30, 1.2); }
   function fiberApp(ctx) { ensureTex(); ctx.drawImage(TEX.fiber, 0, 0); }
+  // 우연한 순간 (움직임은 앱이): 무지개 140 × 70 (아래 가운데 70, 66) · 오로라 260 × 60 (가운데 130, 40) · 달팽이 40 × 24 (발 20, 20) · 나비 40 × 40 · 바람 조각 10 × 10
+  function rainbowApp(ctx, W) { hj(ctx, W / 140); MOMENT.rainbow(ctx, 70, 66, 1.1); }
+  function auroraApp(ctx, W) { hj(ctx, W / 260); MOMENT.aurora(ctx, 130, 40, 1); }
+  function snailApp(ctx, W) { hj(ctx, W / 40); MOMENT.snail(ctx, 20, 20, 1); }
+  function flyApp(ctx, W, side) { hj(ctx, W / 40); flySprite(ctx, side); }
+  function windApp(ctx, W, se) { hj(ctx, W / 10); windPiece(ctx, se); }
   var TREES = ["cherry", "zelkova", "ginkgo", "pine"], REAL = ["spring", "summer", "autumn", "winter"];

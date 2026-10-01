@@ -87,7 +87,9 @@ internal fun DecorBack(decor: Decor, now: LocalDateTime, gy: Dp, x0: Dp, x1: Dp,
     val wave = rememberInfiniteTransition(label = "decor")
     val sway by wave.animateFloat(-1f, 1f, infiniteRepeatable(tween(D.swayMs.toInt(), easing = FastOutSlowInEasing), RepeatMode.Reverse), label = "sway")
     val drift by wave.animateFloat(0f, 1f, infiniteRepeatable(tween(D.kiteMs.toInt(), easing = LinearEasing)), label = "drift")
-    fun tap(p: DecorPart) = if (onTap == null) Modifier else Modifier.clickable { onTap(p) }
+    // 누를 때 회색 상자가 번지지 않게 (그림이 곧 자리)
+    val quiet = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+    fun tap(p: DecorPart) = if (onTap == null) Modifier else Modifier.clickable(interactionSource = quiet, indication = null) { onTap(p) }
 
     // ① 나무: 길의 시작 (0세) 뒤. 인생의 계절이 막 바뀌었으면 옛 나무가 옅게 남았다가 천천히 바뀜
     val tk = u * D.treeScale
@@ -187,7 +189,7 @@ internal fun MossSeat(decor: Decor, now: LocalDateTime, x: Dp, width: Dp, gy: Dp
     // 이끼 그림 상자 90 단위 가운데 68 단위가 방석
     val k = width * D.mossWidth / 68f
     Image(GardenArt.moss(ctx, decor.season, decor.buds), stringResource(R.string.obj_moss),
-        Modifier.box(x, gy + 1.dp, k, D.mossBoxW, D.mossBoxH, D.mossAtX, D.mossAtY).then(if (onTap == null) Modifier else Modifier.clickable { onTap(DecorPart.MOSS) }),
+        Modifier.box(x, gy + 1.dp, k, D.mossBoxW, D.mossBoxH, D.mossAtX, D.mossAtY).then(if (onTap == null) Modifier else Modifier.clickable(interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }, indication = null) { onTap(DecorPart.MOSS) }),
         colorFilter = nightFilter(SkyTime.isDark(now)))
 }
 

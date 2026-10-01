@@ -18,7 +18,7 @@ const tokens = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "design/tok
 const D = Object.assign({}, tokens.decor, { stripLineY: tokens.layout.stripLineY, stripHeight: tokens.layout.stripHeight });
 const read = (f) => fs.readFileSync(path.join(root, "design/art/src", f), "utf8");
 const src = files.map(read).join("\n") + "\nvar HANJI = (function () {\n" + hanji.map(read).join("\n") +
-  "\nreturn { skyApp, stripApp, treeApp, postApp, mossApp, kiteApp, cardApp, sunApp, moonApp, fiberApp, gardenH, setU, TREES, REAL, CARDS: Object.keys(PIECE) };\n})();";
+  "\nreturn { skyApp, stripApp, treeApp, postApp, mossApp, kiteApp, cardApp, sunApp, moonApp, fiberApp, rainbowApp, auroraApp, snailApp, flyApp, windApp, gardenH, setU, TREES, REAL, CARDS: Object.keys(PIECE) };\n})();";
 const out = path.join(root, "design/art");
 const app = path.join(root, "android/app/src/main/assets/garden");
 
@@ -47,6 +47,12 @@ const app = path.join(root, "android/app/src/main/assets/garden");
     make("app", "sun.png", 180, 180, "image/png", (cv) => H.sunApp(cv.getContext("2d"), 180));
     make("app", "moon.png", 180, 180, "image/png", (cv) => H.moonApp(cv.getContext("2d"), 180));
     make("app", "fiber.png", 320, 320, "image/png", (cv) => H.fiberApp(cv.getContext("2d")));
+    // 우연한 순간
+    webp("moment_rainbow", 140, 70, 3, (c, w) => H.rainbowApp(c, w));
+    webp("moment_aurora", 260, 60, 3, (c, w) => H.auroraApp(c, w));
+    webp("moment_snail", 40, 24, 4, (c, w) => H.snailApp(c, w));
+    [["wing_l", -1], ["wing_r", 1], ["body", 0]].forEach(([n, side]) => webp("fly_" + n, 40, 40, 3, (c, w) => H.flyApp(c, w, side)));
+    H.REAL.forEach((se) => webp("wind_" + se, 10, 10, 6, (c, w) => H.windApp(c, w, se)));
     // 보기용: 사계절 · 밤 정원 한 장
     [["spring", {}], ["summer", { lantern: true, letter: true }], ["autumn", { lantern: true }], ["winter", { lantern: true }], ["night", { night: true, lantern: true }]].forEach(([n, o]) =>
       make("art", "hanji_" + n + ".jpg", 780, 1400, "image/jpeg", (cv) => { const c = cv.getContext("2d"); H.setU(2); H.gardenH(c, Object.assign({ season: n === "night" ? "summer" : n, kite: "gaori", ribbons: 3, buds: 3, chime: 2, keep: true }, o)); }));

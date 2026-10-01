@@ -244,6 +244,8 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
     var decorOpen by remember { mutableStateOf<DecorPart?>(null) }
     // 정원을 열 때마다: 이번 계절의 한 장을 받고, 새로 생긴 것이 있으면 한 줄 (같은 것은 한 번만)
     if (!bare) LaunchedEffect(decor.stage, decor.tree, decor.hang, decor.kite, decor.ribbons.size, decor.buds, decor.card.id, decor.letter) { state.noticeDecor(decor) }
+    // 정원을 열 때의 우연한 순간 (달팽이 · 비눗방울 · 나비, 각각 한 번씩)
+    if (!bare) LaunchedEffect(day0) { state.openChance(day0, real) }
     var breathSheet by remember { mutableStateOf(false) }
     var askBreath by remember { mutableStateOf<Pair<BreathKind, Int>?>(null) }
     val sleepy = !bare && isNight(now)
@@ -392,9 +394,17 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
 
                 // 자리 여섯: 나무 (길의 시작) · 발치의 한 장 · 말뚝 (길의 끝) · 연 (하늘) — 돌들 뒤에. 하루 밑엔 이끼 방석.
                 // 자리는 화면 폭 · 땅 · 길의 양 끝에 붙어 있어, 돌이 어디 앉든 가족이 몇이든 움직이지 않는다.
-                DecorBack(decor, now, gy, x0, x1, topBottom + u * G.Layout.minSkyGap, gy - haruAbove - u * G.Layout.minSkyGap,
-                    if (bare) null else { part -> if (part == DecorPart.LETTER) state.letterDue(day0)?.let { l -> state.openLetter(l.id); letterOpen = l } else decorOpen = part })
-                MossSeat(decor, now, xs[0], widths[0].toFloat().dp, gy, if (bare) null else { part -> decorOpen = part })
+                // 그림은 미리 (화면 스레드 밖에서) 읽어 두고, 다 읽은 뒤에 그림 (한꺼번에 읽으면 멈춘 듯 보임)
+                val decorNames = remember(decor) { GardenArt.decorNames(decor) }
+                var decorReady by remember(decorNames) { mutableStateOf(GardenArt.loaded(decorNames)) }
+                LaunchedEffect(decorNames) { if (!decorReady) { kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { decorNames.forEach { GardenArt.image(ctx, it) } }; decorReady = true } }
+                if (decorReady) {
+                    DecorBack(decor, now, gy, x0, x1, topBottom + u * G.Layout.minSkyGap, gy - haruAbove - u * G.Layout.minSkyGap,
+                        if (bare) null else { part -> if (part == DecorPart.LETTER) state.letterDue(day0)?.let { l -> state.openLetter(l.id); letterOpen = l } else decorOpen = part })
+                    MossSeat(decor, now, xs[0], widths[0].toFloat().dp, gy, if (bare) null else { part -> decorOpen = part })
+                }
+                // 달팽이 손님: 오랜만에 돌아온 날, 한 시간쯤 길을 천천히 건넘
+                if (!bare) SnailGuest(state.store.snailAt, now, gy, u * G.Decor.treeX)
 
                 // 돌들: 한 번 누르면 쓰다듬기, 두 번 누르면 그 돌의 페이지
                 val todayLine = state.lines.lastOrNull { it.date == now.toLocalDate() }
@@ -419,7 +429,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                     HaruFigure(sl.art, sl.scale, Modifier.offset(left, top).graphicsLayer {
                         val a = (song.value - startAt(i)) / 320f
                         translationY = if (song.value >= 0f && a in 0f..1f) -hopPx * sin(a * Math.PI).toFloat() else 0f
-                    }, blinkKick = if (sl.id == null) state.blinkKick else 0, hat = sl.birthday, earmuffs = real == Season.WINTER, tiltOn = sl.id == null, lookDown = if (sl.id == null && heavyToday) G.Care.lookDown else 0f,
+                    }, blinkKick = if (sl.id == null) state.blinkKick else 0, hat = sl.birthday, tiltOn = sl.id == null, lookDown = if (sl.id == null && heavyToday) G.Care.lookDown else 0f,
                         a11y = stringResource(R.string.garden_stoneA11y, sl.name, Labels.stone(ctx, sl.art.meta.stone)), onOpen = { onStone(sl.id) },
                         onLongPress = if (sl.id == null && !bare) ({ sing() }) else null)
                     // 생일 당일: 돌 앞에 작은 케이크 (전날 저녁엔 모자만)
@@ -445,6 +455,8 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                         drawCircle(Tokens.Garden.Colors.now.copy(alpha = (1f - a) * 0.8f), ring * (0.25f + 0.75f * a), c, style = androidx.compose.ui.graphics.drawscope.Stroke(u.toPx() * 1.2f))
                     }
                 }
+                // 우연한 순간 (한 번에 하나, 몇 초 뒤 사라짐)
+                if (!bare) state.chance?.let { c -> ChanceLayer(c, now, real, gy, xs[0], u * G.Decor.treeX, x1, topBottom + u * G.Layout.minSkyGap) { state.chanceDone() } }
                 // 이름표 (가족이 있을 때) · 0세 · 기대수명
                 val px = with(density) { Pair(x0.toPx(), x1.toPx()) }
                 // 돌이 oneRow 명보다 많으면 이름표를 두 줄로 번갈아 (서로 겹치지 않게)

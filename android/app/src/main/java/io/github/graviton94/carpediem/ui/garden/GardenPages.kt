@@ -106,6 +106,19 @@ internal fun CollectionBody(state: AppState, profile: LifeProfile, now: LocalDat
             TokenText(stringResource(R.string.collection_sub), Tokens.TypeScale.callout.serif(), Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.Center)
             // 계절 앨범: 해마다 한 줄, 계절 네 장 (그 계절에 정원을 열면 나무가 남긴 한 장). 테두리 = 그 계절에 가장 많았던 마음
             SeasonAlbum(state, profile, now) { card = it }
+            // 만난 순간: 처음 만난 날과 함께 (순간마다 한 줄)
+            val met = state.chancesMet.mapNotNull { r -> r.split(':', limit = 2).takeIf { it.size == 2 }?.let { (k, d) -> runCatching { k to java.time.LocalDate.parse(d) }.getOrNull() } }.sortedBy { it.second }
+            if (met.isNotEmpty()) {
+                TokenText(stringResource(R.string.album_met), Tokens.TypeScale.headline, Modifier.fillMaxWidth().padding(top = Tokens.Space.sp4))
+                TokenText(stringResource(R.string.album_metSub), Tokens.TypeScale.footnote, Modifier.fillMaxWidth(), color = p.secondary)
+                met.forEach { (k, d) ->
+                    val name = ctx.resources.getIdentifier("chance_$k", "string", ctx.packageName).takeIf { it != 0 }?.let { ctx.getString(it) } ?: k
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                        TokenText(name, Tokens.TypeScale.subhead)
+                        TokenText(d.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)), Tokens.TypeScale.footnote, color = p.secondary)
+                    }
+                }
+            }
             // 첫 정원: 한지 정원 전에 받은 옛 꾸밈 (정원에는 놓이지 않고 여기에 날짜와 함께)
             val legacy = moments.filter { state.previewAll || it.date.isBefore(io.github.graviton94.carpediem.core.Moments.LEGACY_UNTIL) }
             if (legacy.isNotEmpty()) {

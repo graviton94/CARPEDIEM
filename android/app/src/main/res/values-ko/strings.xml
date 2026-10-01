@@ -159,7 +159,7 @@
     <string name="dev_unlocked">개발자 모드를 켰어요.</string>
     <string name="garden_haruA11y">하루, %1$s</string>
     <string name="collection">모은 것</string>
-    <string name="collection_sub">시간이 흐르면 정원에 하나씩 놓여요.</string>
+    <string name="collection_sub">계절마다 한 조각씩, 천천히 모여요.</string>
     <string name="support">응원하기</string>
     <string name="support_title">하루의 정원을 응원해 주세요</string>
     <string name="support_body">광고도, 잠긴 기능도 없어요.\n마음에 들었다면 따뜻한 한 잔으로 응원해 주세요.</string>
@@ -601,4 +601,13 @@
     <string name="album_when">%1$s %2$s · %3$s</string>
     <string name="album_first">첫 정원</string>
     <string name="album_firstSub">한지 정원 전에 받은 것들이에요. 날짜와 함께 여기에 남아요.</string>
+    <string name="chance_bubbles">비눗방울</string>
+    <string name="chance_fireflies">반딧불</string>
+    <string name="chance_rainbow">무지개</string>
+    <string name="chance_butterflies">나비 한 쌍</string>
+    <string name="chance_snail">달팽이 손님</string>
+    <string name="chance_aurora">오로라</string>
+    <string name="chance_wind">계절 바람</string>
+    <string name="album_met">만난 순간</string>
+    <string name="album_metSub">정원에서 우연히 만난 것들이에요. 처음 만난 날이 남아요.</string>
 </resources>
