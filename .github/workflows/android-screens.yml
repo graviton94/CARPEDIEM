@@ -51,7 +51,7 @@ jobs:
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           script: |
             adb install -r android/app/build/outputs/apk/debug/app-debug.apk
-            bash scripts/android_shots.sh shots
+            QUICK="${{ contains(github.event.head_commit.message, '[quick-shots]') && '1' || '' }}" bash scripts/android_shots.sh shots
       - name: Push to screenshots-android branch
         if: always()
         run: |

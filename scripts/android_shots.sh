@@ -17,6 +17,37 @@ sleep 45; adb shell am broadcast -a android.intent.action.CLOSE_SYSTEM_DIALOGS >
 # 기본 언어는 한국어 (영어는 아래에서 따로)
 adb shell cmd locale set-app-locales $P --locales ko-KR 2>/dev/null
 
+quick_scenes() {
+# 타자기 문장: 정원에서 문장을 눌러 다음 문장이 한 글자씩 쳐지는 모습을 잇달아 캡처
+open --ez cd.reset true --es cd.design garden --el cd.seed 2718281 --es cd.birth 2000-05-12 --es cd.sex female --ez cd.meet false --es cd.now $NOW; sleep 8
+mkdir -p "$OUT/typing"; adb shell input tap 540 850
+for i in $(seq -w 1 10); do adb exec-out screencap -p > "$OUT/typing/t$i.png"; done; echo "shot typing"
+# 위젯 미리보기 그림 (위젯 고르는 화면용): 가족 · 이번 달 기록이 있는 정원으로 실제 위젯을 그려 꺼냄
+open --ez cd.reset true --es cd.design garden --el cd.seed 2718281 --es cd.birth 2000-05-12 --es cd.sex female --ez cd.meet false --ez cd.family true --ez cd.months true --ez cd.widgetShots true
+W=/sdcard/Android/data/$P/files/widgets
+for i in $(seq 1 30); do adb shell ls $W/done >/dev/null 2>&1 && break; sleep 2; done
+mkdir -p "$OUT/widgets"; adb pull $W/. "$OUT/widgets/" >/dev/null 2>&1; rm -f "$OUT/widgets/done"; ls "$OUT/widgets"
+}
+finish() {
+# 오류 확인
+adb logcat -d -s AndroidRuntime:E chromium:E > "$OUT/logcat.txt" || true
+# 멈춤 · 느린 첫 화면 살피기: ANR · 앱 쪽 경고 이상
+adb logcat -d ActivityManager:W ActivityTaskManager:W Choreographer:I OpenGLRenderer:W "*:S" > "$OUT/logcat_app.txt" || true
+adb logcat -d | grep -iE "carpediem|ANR in" | tail -300 >> "$OUT/logcat_app.txt" || true
+# 앱이 멈춘 횟수 (0 이어야 함): 느린 첫 화면 · 무거운 그리기를 잡는다
+echo "app ANR: $(grep -c "ANR in $P" "$OUT/logcat_app.txt")" > "$OUT/anr.txt"; cat "$OUT/anr.txt"
+# 멈춘 순간 메인 스레드가 어디 있었는지 (ANR 기록). 루트가 되는 에뮬레이터 이미지에서만
+adb root >/dev/null 2>&1; sleep 3
+mkdir -p "$OUT/anr"; adb shell ls /data/anr 2>/dev/null | tr -d '\r' | while read -r f; do adb pull "/data/anr/$f" "$OUT/anr/" >/dev/null 2>&1; done
+# 우리 앱 것만 남김
+for f in "$OUT"/anr/*; do grep -q "Cmd line: $P" "$f" 2>/dev/null || rm -f "$f"; done
+ls "$OUT/anr" 2>/dev/null | head
+ls -la "$OUT"
+}
+
+# QUICK=1 ([quick-shots] 커밋): 타자기 · 위젯 미리보기만 (5분 남짓)
+if [ -n "${QUICK:-}" ]; then quick_scenes; finish; exit 0; fi
+
 # 정원: 처음 켜기 → 하루를 만남 → 홈
 open --ez cd.reset true --es cd.design garden --es cd.now $NOW;                                       shot g01_onboarding 5
 open --ez cd.reset true --es cd.design garden --el cd.seed 2718281 --es cd.birth 2000-05-12 --es cd.sex female --ez cd.meet true --es cd.now $NOW; shot g02_meet 14
@@ -99,26 +130,5 @@ adb shell settings put system font_scale 1.3; open --es cd.now $NOW;            
 adb shell settings put system font_scale 1.0
 adb shell wm size 720x1280; adb shell wm density 320; open --es cd.now $NOW;                          shot x05_small 6
 adb shell wm size reset; adb shell wm density reset
-# 타자기 문장: 정원에서 문장을 눌러 다음 문장이 한 글자씩 쳐지는 모습을 잇달아 캡처
-open --ez cd.reset true --es cd.design garden --el cd.seed 2718281 --es cd.birth 2000-05-12 --es cd.sex female --ez cd.meet false --es cd.now $NOW; sleep 8
-mkdir -p "$OUT/typing"; adb shell input tap 540 850
-for i in $(seq -w 1 10); do adb exec-out screencap -p > "$OUT/typing/t$i.png"; done; echo "shot typing"
-# 위젯 미리보기 그림 (위젯 고르는 화면용): 가족 · 이번 달 기록이 있는 정원으로 실제 위젯을 그려 꺼냄
-open --ez cd.reset true --es cd.design garden --el cd.seed 2718281 --es cd.birth 2000-05-12 --es cd.sex female --ez cd.meet false --ez cd.family true --ez cd.months true --ez cd.widgetShots true
-W=/sdcard/Android/data/$P/files/widgets
-for i in $(seq 1 30); do adb shell ls $W/done >/dev/null 2>&1 && break; sleep 2; done
-mkdir -p "$OUT/widgets"; adb pull $W/. "$OUT/widgets/" >/dev/null 2>&1; rm -f "$OUT/widgets/done"; ls "$OUT/widgets"
-# 오류 확인
-adb logcat -d -s AndroidRuntime:E chromium:E > "$OUT/logcat.txt" || true
-# 멈춤 · 느린 첫 화면 살피기: ANR · 앱 쪽 경고 이상
-adb logcat -d ActivityManager:W ActivityTaskManager:W Choreographer:I OpenGLRenderer:W "*:S" > "$OUT/logcat_app.txt" || true
-adb logcat -d | grep -iE "carpediem|ANR in" | tail -300 >> "$OUT/logcat_app.txt" || true
-# 앱이 멈춘 횟수 (0 이어야 함): 느린 첫 화면 · 무거운 그리기를 잡는다
-echo "app ANR: $(grep -c "ANR in $P" "$OUT/logcat_app.txt")" > "$OUT/anr.txt"; cat "$OUT/anr.txt"
-# 멈춘 순간 메인 스레드가 어디 있었는지 (ANR 기록). 루트가 되는 에뮬레이터 이미지에서만
-adb root >/dev/null 2>&1; sleep 3
-mkdir -p "$OUT/anr"; adb shell ls /data/anr 2>/dev/null | tr -d '\r' | while read -r f; do adb pull "/data/anr/$f" "$OUT/anr/" >/dev/null 2>&1; done
-# 우리 앱 것만 남김
-for f in "$OUT"/anr/*; do grep -q "Cmd line: $P" "$f" 2>/dev/null || rm -f "$f"; done
-ls "$OUT/anr" 2>/dev/null | head
-ls -la "$OUT"
+quick_scenes
+finish
