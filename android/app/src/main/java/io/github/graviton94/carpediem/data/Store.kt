@@ -170,7 +170,7 @@ class Store(context: Context) {
         set(v) = prefs.edit().putString("lines", Lines.encode(v)).apply()
 
     /** 한 줄 기록만 지우기 (이미 정원에 놓인 이어 쓰기 흔적은 남음). */
-    fun clearLines() = prefs.edit().remove("lines").apply()
+    fun clearLines() = prefs.edit().remove("lines").remove("memoryLines").apply()
 
     /** 기록 남기지 않기를 켜면 보낸 날짜만 남기고 글 · 마음은 저장하지 않는다. */
     var keepLines: Boolean

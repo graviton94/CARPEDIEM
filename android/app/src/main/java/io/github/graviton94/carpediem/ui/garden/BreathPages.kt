@@ -299,7 +299,8 @@ fun LookScreen(onDone: () -> Unit) {
     val ink = Theme.gc.ink; val soft = G.Mood.Colors.calm
     val u = with(androidx.compose.ui.platform.LocalDensity.current) { Theme.unit.toPx() }
     val lineMask = Crayon.tooth(GardenArt.toothLine(ctx), u)
-    Column(Modifier.fillMaxSize().paperBackground().statusBarsPadding().navigationBarsPadding().padding(horizontal = Theme.deviceClass.pageMargin),
+    Column(Modifier.fillMaxSize().paperBackground().clickable(interactionSource = remember { MutableInteractionSource() }, indication = null, onClick = onDone)
+        .statusBarsPadding().navigationBarsPadding().padding(horizontal = Theme.deviceClass.pageMargin),
         horizontalAlignment = Alignment.CenterHorizontally) {
         Spacer(Modifier.weight(1f))
         Canvas(Modifier.size(Theme.unit * c.lookSize)) {

@@ -184,7 +184,7 @@ private fun MainActivity.debugSetup(state: AppState): Screen {
     if (x.getBooleanExtra("cd.moods", false)) state.addSampleMoods()
     if (x.getBooleanExtra("cd.memory", false)) state.addSampleMemory()
     // 캡처용: 한 줄을 보낸 뒤 한마디 창 + 돌봄 권하기 (예: cd.care CALM_BREATH)
-    x.getStringExtra("cd.care")?.let { c -> state.toast = io.github.graviton94.carpediem.ui.Labels.letGoMessage(this, io.github.graviton94.carpediem.core.Feeling.SAD); state.care = io.github.graviton94.carpediem.ui.Care.valueOf(c) }
+    x.getStringExtra("cd.care")?.let { c -> state.toast = io.github.graviton94.carpediem.ui.Labels.letGoMessage(this, io.github.graviton94.carpediem.core.Feeling.SAD); state.care = runCatching { io.github.graviton94.carpediem.ui.Care.valueOf(c) }.getOrNull() }
     state.debugOpenLetter = x.getBooleanExtra("cd.openLetter", false)
     state.refreshQuestion()
     if (x.getBooleanExtra("cd.question", false)) state.previewQuestion()

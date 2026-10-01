@@ -166,7 +166,9 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
     val moments = gardenMoments(state, profile, s, now)
     var open by remember { mutableStateOf<Moment?>(null) }
     var breathSheet by remember { mutableStateOf(false) }
-    var letterOpen by remember { mutableStateOf(if (state.debugOpenLetter) state.letterDue(now.toLocalDate())?.also { state.openLetter(it.id) } else null) }
+    var letterOpen by remember { mutableStateOf<io.github.graviton94.carpediem.core.Letter?>(null) }
+    // 캡처용: 이번 달 편지를 바로 펼침 (그리기 중이 아니라 처음 한 번만)
+    LaunchedEffect(Unit) { if (state.debugOpenLetter && !bare) { state.debugOpenLetter = false; state.letterDue(now.toLocalDate())?.let { state.openLetter(it.id); letterOpen = it } } }
 
     BoxWithConstraints(Modifier.fillMaxSize().paperBackground()) {
         val u = Theme.unit
@@ -218,7 +220,12 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 // 정원만 보기(bare)는 위 글자가 없어도 별이 상태바 · 소리 버튼에 닿지 않게
                 SkyTimeLayer(now, gy, if (bare) screenH * 0.14f else topBottom, gy - haruAbove - u * G.Layout.minSkyGap, Modifier.fillMaxSize())
                 // 기억의 돌 가운데 ‘하늘에 별로 두기’를 켠 것: 하늘에 따뜻한 별 하나 (돌멍하기에는 두지 않음)
-                if (!bare) MemoryStars(state, screenW, topBottom + u * G.Layout.minSkyGap, gy - haruAbove - u * G.Layout.minSkyGap * 2, Theme.gc.night)
+                if (!bare) {
+                    // 위 글자 아래 ~ 돌 머리 위. 글자 높이를 아직 모르거나 띠가 없으면 하늘 위쪽의 작은 띠에
+                    val starTop = if (topBottom > 0.dp) topBottom + u * G.Layout.minSkyGap else screenH * 0.14f
+                    val starBottom = (gy - haruAbove - u * G.Layout.minSkyGap * 2).let { if (it > starTop + u * 12) it else starTop + u * 28 }
+                    MemoryStars(state, screenW, starTop, starBottom, Theme.gc.night)
+                }
 
                 // 위: 남은 시간 · 단위 · 오늘의 문장
                 if (!bare) Column(
@@ -287,7 +294,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 }
                 val spots = gaps.flatMap { (a0, b0) -> buildList { var c = b0 - box * 0.3f; while (c - box * 0.3f >= a0) { add(c); c -= step } } }
                 moments.zip(spots).forEach { (m, cx) ->
-                    Image(GardenArt.obj(ctx, m.id), stringResource(objName(m.id)), Modifier.offset(cx - box / 2, gy - box * (G.Layout.objGround / G.Layout.objBox)).size(box).clickable { open = m })
+                    Image(GardenArt.obj(ctx, m.id), stringResource(objName(m.id)), Modifier.offset(cx - box / 2, gy - box * (G.Layout.objGround / G.Layout.objBox)).size(box).let { if (bare) it else it.clickable { open = m } })
                 }
 
                 // 돌들: 한 번 누르면 쓰다듬기, 두 번 누르면 그 돌의 페이지
@@ -300,7 +307,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                     val left = cx - sl.scale * (sl.art.meta.box / 2); val top = gy - sl.scale * G.Layout.haruGround
                     HaruFigure(sl.art, sl.scale, Modifier.offset(left, top), blinkKick = if (sl.id == null) state.blinkKick else 0, hat = sl.birthday, tiltOn = sl.id == null, lookDown = if (sl.id == null && heavyToday) G.Care.lookDown else 0f,
                         a11y = stringResource(R.string.garden_stoneA11y, sl.name, Labels.stone(ctx, sl.art.meta.stone)), onOpen = { onStone(sl.id) },
-                        onLongPress = if (sl.id == null) ({ breathSheet = true }) else null)
+                        onLongPress = if (sl.id == null && !bare) ({ breathSheet = true }) else null)
                     // 생일: 돌 앞에 작은 케이크
                     if (sl.birthday) {
                         val cw = u * Tokens.Garden.Party.cakeWidth
@@ -317,8 +324,10 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 val px = with(density) { Pair(x0.toPx(), x1.toPx()) }
                 // 돌이 oneRow 명보다 많으면 이름표를 두 줄로 번갈아 (서로 겹치지 않게)
                 val labelRows = if (slots.size > G.Family.oneRow.toInt()) 2 else 1
+                // 화면 왼쪽부터의 순서로 번갈아 (목록 순서가 아니라 실제로 옆에 앉은 돌끼리 다른 줄)
+                val rank = xs.indices.sortedBy { xs[it].value }.withIndex().associate { it.value to it.index }
                 if (family && !bare) Box(Modifier.offset(y = gy + u * G.Layout.labelGap).fillMaxWidth()) {
-                    slots.forEachIndexed { i, sl -> TokenText(shortName(sl.name), Tokens.TypeScale.caption1, Modifier.offset(y = u * G.Layout.labelRow * (i % labelRows)).centerAt(with(density) { xs[i].toPx() }, 0f, with(density) { screenW.toPx() }), weight = FontWeight.Medium, maxLines = 1) }
+                    slots.forEachIndexed { i, sl -> TokenText(shortName(sl.name), Tokens.TypeScale.caption1, Modifier.offset(y = u * G.Layout.labelRow * ((rank[i] ?: i) % labelRows)).centerAt(with(density) { xs[i].toPx() }, 0f, with(density) { screenW.toPx() }), weight = FontWeight.Medium, maxLines = 1) }
                 }
                 if (!bare) Box(Modifier.offset(y = gy + u * (G.Layout.labelGap + if (family) G.Layout.labelRow * labelRows else 0f)).fillMaxWidth()) {
                     TokenText(stringResource(R.string.garden_age0), Tokens.TypeScale.caption1, Modifier.centerAt(px.first, 0f, px.second), color = p.secondary)

@@ -129,6 +129,6 @@ object Memories {
     const val MAX = 4
     /** 북반구 계절 (3–5 봄, 6–8 여름, 9–11 가을, 12–2 겨울). */
     fun seasonOf(d: LocalDate): Season = when (d.monthValue) { in 3..5 -> Season.SPRING; in 6..8 -> Season.SUMMER; in 9..11 -> Season.AUTUMN; else -> Season.WINTER }
-    /** 함께한 첫날: 직접 정한 날, 없으면 생일 · 우리 집에 온 날. */
-    fun from(p: Person): LocalDate? = p.together ?: p.birth
+    /** 함께한 첫날: 직접 정한 날. 반려동물은 없으면 생일 · 우리 집에 온 날 (사람의 생일은 함께한 날이 아니므로 쓰지 않음). */
+    fun from(p: Person): LocalDate? = p.together ?: p.birth?.takeIf { p.kind == Kind.PET }
 }

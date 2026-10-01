@@ -376,7 +376,7 @@ fun AddPersonScreen(state: AppState, profile: LifeProfile, editId: String?, onDo
         AlertDialog(
             onDismissRequest = { confirmMemory = false },
             text = { Text(stringResource(R.string.memory_toMemoryConfirm, editing.name)) },
-            confirmButton = { TextButton(onClick = { confirmMemory = false; if (state.toMemory(editing.id)) onMovedToMemory() }) { Text(stringResource(R.string.memory_toMemoryAction)) } },
+            confirmButton = { TextButton(onClick = { confirmMemory = false; if (state.toMemory(editing.id)) onMovedToMemory() else android.widget.Toast.makeText(ctx, ctx.getString(R.string.memory_full), android.widget.Toast.LENGTH_SHORT).show() }) { Text(stringResource(R.string.memory_toMemoryAction)) } },
             dismissButton = { TextButton(onClick = { confirmMemory = false }) { Text(stringResource(R.string.cancel)) } },
         )
     }

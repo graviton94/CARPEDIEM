@@ -57,6 +57,7 @@ object Daily {
         val q = store.todaysQuote()
         val text = q?.let { if (store.quoteLanguage == QuoteLanguage.ENGLISH) it.english else it.korean } ?: return
         var title = context.getString(R.string.words)
+        var letterId: String? = null
         store.profile?.takeIf { store.design == Design.GARDEN }?.let { p ->
             val today = LocalDate.now()
             val fresh = Moments.earned(store.startDate, p.birthDate, p.expectancy(store.table), today, store.firstSkip, store.returned, store.streaks, store.breaths.minOfOrNull { it.first }).filter { it.date == today && it.id !in store.notifiedMoments }
@@ -82,20 +83,23 @@ object Daily {
                 io.github.graviton94.carpediem.core.Letters.of(store.lines, day, io.github.graviton94.carpediem.design.Tokens.Garden.Letter.minLines.toInt())
                     ?.takeIf { it.id !in store.lettersNotified && it.id !in store.lettersOpened }?.let { l ->
                         val season = context.getString(when (l.season) { io.github.graviton94.carpediem.core.Season.SPRING -> R.string.season_spring; io.github.graviton94.carpediem.core.Season.SUMMER -> R.string.season_summer; io.github.graviton94.carpediem.core.Season.AUTUMN -> R.string.season_autumn; io.github.graviton94.carpediem.core.Season.WINTER -> R.string.season_winter })
-                        title = context.getString(R.string.notify_letter, season); body = context.getString(R.string.notify_letterText)
-                        store.lettersNotified = store.lettersNotified + l.id
+                        title = context.getString(R.string.notify_letter, season); body = context.getString(R.string.notify_letterText); letterId = l.id
                     }
             }
         }
         // 가족 생일이 가장 먼저 (정원 디자인일 때)
         if (store.design == Design.GARDEN) {
             val names = store.people.filter { io.github.graviton94.carpediem.core.Family.isBirthday(it.birth, LocalDate.now()) }.map { it.name }
-            if (names.isNotEmpty()) { title = context.getString(R.string.notify_birthday, names.joinToString(", ")); body = text }
+            if (names.isNotEmpty()) { title = context.getString(R.string.notify_birthday, names.joinToString(", ")); body = text; letterId = null }
         }
         val open = PendingIntent.getActivity(context, 0, Intent(context, MainActivity::class.java), PendingIntent.FLAG_IMMUTABLE)
         val n = NotificationCompat.Builder(context, CHANNEL).setSmallIcon(R.mipmap.ic_launcher_monochrome).setContentTitle(title).setContentText(body)
             .setStyle(NotificationCompat.BigTextStyle().bigText(body)).setContentIntent(open).setAutoCancel(true).build()
-        if (allowed(context)) NotificationManagerCompat.from(context).notify(ID, n)
+        if (allowed(context)) {
+            NotificationManagerCompat.from(context).notify(ID, n)
+            // 편지를 알린 경우에만 ‘알렸음’으로 (생일에 밀렸으면 다음 날 다시)
+            letterId?.let { store.lettersNotified = store.lettersNotified + it }
+        }
     }
 }
 

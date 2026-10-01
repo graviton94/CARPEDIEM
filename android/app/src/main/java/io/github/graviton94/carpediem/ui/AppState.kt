@@ -147,7 +147,7 @@ class AppState(private val context: Context) {
             val m = memoryLines.map { it.copy(text = "") }; store.memoryLines = m; memoryLines = m
         }
     }
-    fun clearLines() { store.clearLines(); lines = emptyList(); randomLine = null }
+    fun clearLines() { store.clearLines(); lines = emptyList(); randomLine = null; memoryLines = emptyList() }
     /** 문득 다시 찾아온 지난 한 줄 (있는 날만). */
     var randomLine by mutableStateOf<DayLine?>(null)
         private set
@@ -162,7 +162,11 @@ class AppState(private val context: Context) {
     /** 오늘의 질문 (질문 날에만). 부를 때마다 폰 시각으로 다시 본다. */
     var question by mutableStateOf<io.github.graviton94.carpediem.core.Question?>(null)
         private set
-    fun refreshQuestion() { if (!previewQ) question = store.todaysQuestion(nowDate()) }
+    fun refreshQuestion() {
+        if (!previewQ) question = store.todaysQuestion(nowDate())
+        // 날이 바뀌었으면 어제 질문에 답하던 것은 놓아 둔다
+        if (answering != null && answering?.id != question?.id) answering = null
+    }
     private var previewQ = false
     /** ‘한 줄로 답하기’를 눌러 지금 답하는 질문 (보내면 null). */
     var answering by mutableStateOf<io.github.graviton94.carpediem.core.Question?>(null)
@@ -193,7 +197,8 @@ class AppState(private val context: Context) {
         var next = lines
         samples.forEach { (ago, res, f) -> next = Lines.add(next, DayLine(day.minusDays(ago), context.getString(res), f)) }
         store.lines = next; lines = next
-        val v = lettersOpened - io.github.graviton94.carpediem.core.Letters.of(next, day, 1)!!.id; store.lettersOpened = v; lettersOpened = v
+        val id = io.github.graviton94.carpediem.core.Letters.of(next, day, 1)?.id ?: return
+        val v = lettersOpened - id; store.lettersOpened = v; lettersOpened = v
     }
 
     /** 시험용 (캡처): 지난 30일에 여러 마음을 넣어 마음의 하늘을 채운다 (글 없이 마음만이라 편지에는 들어가지 않음). */
@@ -282,6 +287,7 @@ class AppState(private val context: Context) {
     fun newPersonId(): String = (1..8).map { "abcdefghijkmnpqrstuvwxyz23456789".random() }.joinToString("")
 
     fun eraseAll() {
+        previewQ = false
         store.eraseAll(); store.ensureQuoteSeed(); unit = store.unit; grid = store.grid; defaultUnit = unit; defaultGrid = grid; lines = emptyList(); streaks = emptyMap(); keepLines = true; care = null; careOn = true; question = null; answering = null; lettersOpened = emptySet(); toast = null; randomLine = null; people = emptyList(); memories = emptyList(); memoryLines = emptyList(); breaths = emptyList(); breathKind = store.breathKind; breathMinutes = store.breathMinutes; sound = store.sound
         profile = null; quoteLanguage = store.quoteLanguage; quote = store.todaysQuote(); design = store.design; meetPending = false; previewAll = false; notify = false; devMode = false; io.github.graviton94.carpediem.notify.Daily.schedule(context, false); Widgets.refresh(context)
     }

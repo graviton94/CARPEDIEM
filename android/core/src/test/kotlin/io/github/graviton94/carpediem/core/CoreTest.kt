@@ -336,5 +336,7 @@ class ReflectTest {
         assertEquals(null, old.until); assertTrue(old.star)
         assertEquals(Season.WINTER, Memories.seasonOf(LocalDate.of(2024, 12, 20)))
         assertEquals(Season.SPRING, Memories.seasonOf(LocalDate.of(2011, 4, 2)))
+        assertEquals(LocalDate.of(2011, 4, 2), Memories.from(m))
+        assertEquals(null, Memories.from(m.copy(kind = Kind.PERSON, species = null)))
     }
 }
