@@ -191,7 +191,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
     // 정원이 아닌 페이지에서 뒤로 가기: 앱을 닫지 않고 정원으로
     BackHandler(enabled = !bare && pager.currentPage != 0) { scope.launch { pager.animateScrollToPage(0) } }
     // 글을 쓰는 동안 (키보드가 떠 있으면) 옆으로 넘어가지 않고, 이름표도 쉬게
-    val typing = WindowInsets.isImeVisible
+    val typing = WindowInsets.isImeVisible && pager.currentPage == 1   // 기록 페이지에서 쓰는 중일 때만
     fun toRecord(v: RecordView) { recordView = v; scope.launch { pager.animateScrollToPage(2) } }
 
     Box(Modifier.fillMaxSize().paperBackground()) {
