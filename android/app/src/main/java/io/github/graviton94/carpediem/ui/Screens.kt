@@ -431,6 +431,36 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
                         TokenText(stringResource(R.string.lines_count, "${state.lines.count { it.text.isNotBlank() }}"), Tokens.TypeScale.subhead, color = p.secondary)
                     }
                     RowDivider()
+                    // 기록 옮기기 (새 폰으로): 모든 것을 파일 하나로 내보내고, 그 파일을 들여온다
+                    val saveFile = androidx.activity.compose.rememberLauncherForActivityResult(androidx.activity.result.contract.ActivityResultContracts.CreateDocument("application/json")) { uri ->
+                        if (uri != null) {
+                            val ok = runCatching { ctx.contentResolver.openOutputStream(uri)?.use { it.write(state.store.backup().toByteArray()) } != null }.getOrDefault(false)
+                            android.widget.Toast.makeText(ctx, ctx.getString(if (ok) R.string.backup_saved else R.string.backup_fail), android.widget.Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                    var restoreFrom by remember { mutableStateOf<android.net.Uri?>(null) }
+                    val openFile = androidx.activity.compose.rememberLauncherForActivityResult(androidx.activity.result.contract.ActivityResultContracts.OpenDocument()) { uri -> restoreFrom = uri }
+                    FormRow(stringResource(R.string.backup_export), onClick = { saveFile.launch("haru-garden-" + java.time.LocalDate.now() + ".json") }) {}
+                    RowDivider()
+                    FormRow(stringResource(R.string.backup_import), onClick = { openFile.launch(arrayOf("application/json", "text/plain", "application/octet-stream")) }) {}
+                    restoreFrom?.let { uri ->
+                        AlertDialog(
+                            onDismissRequest = { restoreFrom = null },
+                            title = { Text(stringResource(R.string.backup_importConfirm)) },
+                            confirmButton = { TextButton(onClick = {
+                                restoreFrom = null
+                                val text = runCatching { ctx.contentResolver.openInputStream(uri)?.use { it.readBytes().decodeToString() } }.getOrNull()
+                                if (text != null && state.store.restore(text)) {
+                                    android.widget.Toast.makeText(ctx, ctx.getString(R.string.backup_done), android.widget.Toast.LENGTH_SHORT).show()
+                                    // 새로 들여온 기록으로 처음부터 (알림 · 위젯도 새로)
+                                    io.github.graviton94.carpediem.widget.Widgets.refresh(ctx)
+                                    (ctx as? android.app.Activity)?.recreate()
+                                } else android.widget.Toast.makeText(ctx, ctx.getString(R.string.backup_fail), android.widget.Toast.LENGTH_SHORT).show()
+                            }) { Text(stringResource(R.string.backup_importAction), color = p.danger) } },
+                            dismissButton = { TextButton(onClick = { restoreFrom = null }) { Text(stringResource(R.string.cancel)) } },
+                        )
+                    }
+                    RowDivider()
                     FormRow(stringResource(R.string.lines_clear), onClick = { confirmClear = true }) {}
                     if (state.devMode) {
                         RowDivider()

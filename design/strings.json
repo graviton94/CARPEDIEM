@@ -516,7 +516,16 @@
     "record.yearHint": "달을 누르면 그 달로 가요.",
     "gaze.ask": "정원으로 돌아갈까요?",
     "gaze.back": "돌아가기",
-    "gaze.stay": "더 머물기"
+    "gaze.stay": "더 머물기",
+    "widget.record.garden": "마음의 기록 · 정원",
+    "widget.record.desc": "이번 달의 마음이 낮엔 꽃, 밤엔 별로 피어나요.",
+    "backup.export": "기록을 파일로 내보내기",
+    "backup.import": "파일에서 기록 들여오기",
+    "backup.importConfirm": "지금 기록을 이 파일의 기록으로 바꿀까요?\n지금 이 폰에 있는 기록은 사라져요.",
+    "backup.importAction": "들여오기",
+    "backup.saved": "파일로 내보냈어요. 새 폰에서 들여올 수 있어요.",
+    "backup.done": "기록을 옮겨 왔어요.",
+    "backup.fail": "이 파일은 읽을 수 없어요."
   },
   "en": {
     "tagline": "Cherish today.",
@@ -1035,6 +1044,15 @@
     "record.yearHint": "Tap a month to open it.",
     "gaze.ask": "Back to the garden?",
     "gaze.back": "Go back",
-    "gaze.stay": "Stay a while"
+    "gaze.stay": "Stay a while",
+    "widget.record.garden": "Heart’s record · Garden",
+    "widget.record.desc": "This month’s feelings, as flowers by day and stars by night.",
+    "backup.export": "Save everything to a file",
+    "backup.import": "Bring records in from a file",
+    "backup.importConfirm": "Replace what’s here with this file?\nWhat’s on this phone now will be gone.",
+    "backup.importAction": "Bring in",
+    "backup.saved": "Saved. You can bring it in on a new phone.",
+    "backup.done": "Your records are here.",
+    "backup.fail": "This file can’t be read."
   }
 }

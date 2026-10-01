@@ -140,6 +140,7 @@ class AppState(private val context: Context) {
         val part = Labels.part(fixedNow ?: LocalDateTime.now())
         toast = Labels.letGoMessage(context, feeling, part)
         care = careFor(feeling, line.to, today, part)
+        Widgets.refresh(context)   // 마음의 기록 위젯에 오늘의 꽃 · 별
     }
     /** 돌봄 권하기 (켜 두었을 때). 하루 한 줄이라 하루 한 번까지. 오늘 이미 숨 쉬었으면 숨은 권하지 않음. */
     var careOn by mutableStateOf(store.care)

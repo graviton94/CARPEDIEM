@@ -516,3 +516,12 @@
 "gaze.ask" = "Back to the garden?";
 "gaze.back" = "Go back";
 "gaze.stay" = "Stay a while";
+"widget.record.garden" = "Heart’s record · Garden";
+"widget.record.desc" = "This month’s feelings, as flowers by day and stars by night.";
+"backup.export" = "Save everything to a file";
+"backup.import" = "Bring records in from a file";
+"backup.importConfirm" = "Replace what’s here with this file?\nWhat’s on this phone now will be gone.";
+"backup.importAction" = "Bring in";
+"backup.saved" = "Saved. You can bring it in on a new phone.";
+"backup.done" = "Your records are here.";
+"backup.fail" = "This file can’t be read.";

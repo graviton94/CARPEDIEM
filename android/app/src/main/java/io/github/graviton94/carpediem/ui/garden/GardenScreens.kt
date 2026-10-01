@@ -511,9 +511,10 @@ private fun FlowPage(state: AppState, profile: LifeProfile, now: LocalDateTime) 
                         val fmt = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
                         val text = byCell[i].orEmpty().joinToString("\n") { "${it.name} · ${it.date.format(fmt)}" }
                         var w by remember { mutableStateOf(0) }
+                        val gapPx = with(density) { (Theme.unit * 6).toPx() }
                         BoxWithConstraints(Modifier.fillMaxWidth()) {
                             val maxX = with(density) { maxWidth.toPx() } - w
-                            Box(Modifier.offset { androidx.compose.ui.unit.IntOffset((at.x - w / 2f).coerceIn(0f, maxX.coerceAtLeast(0f)).toInt(), (at.y + with(density) { (Theme.unit * 6).toPx() }).toInt()) }
+                            Box(Modifier.offset { androidx.compose.ui.unit.IntOffset((at.x - w / 2f).coerceIn(0f, maxX.coerceAtLeast(0f)).toInt(), (at.y + gapPx).toInt()) }
                                 .onGloballyPositioned { w = it.size.width }
                                 .crayonBox(Theme.gc.paper, G.Radius.chip, G.Stroke.chip, 1420 + i).clickable { bubble = null }
                                 .padding(horizontal = Tokens.Space.sp3, vertical = Tokens.Space.sp2)) {

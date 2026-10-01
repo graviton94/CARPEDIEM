@@ -12,6 +12,7 @@
 - **백업:** 폰의 백업을 켜 두었다면 설정과 기록이 Google 계정(또는 iCloud)의 암호화된 백업에 포함될 수 있습니다. 새 폰으로 옮길 때만 쓰입니다.
 - **알림:** 켜 둔 것만 (아침 · 생일과 특별한 날 · 하루 정리), 폰 안에서 만들어집니다. 잠금 화면에는 지난 한 줄의 글을 보이지 않습니다.
 - **그림 보내기:** 직접 ‘그림으로 보내기’를 누른 경우에만, 그 그림 한 장이 고른 앱(메신저 등)으로 넘어갑니다. 개발자에게는 가지 않습니다.
+- **기록 옮기기:** ‘기록을 파일로 내보내기’를 누르면, 고른 곳에만 파일 하나로 저장돼요 (앱이 어디로도 보내지 않아요). 새 폰에서 그 파일을 들여올 수 있어요.
 - **지우기:** 설정의 ‘모든 기록 지우기’ 또는 앱 삭제로 기기에서 지워집니다. 한 줄 기록만 지우거나 내보낼 수도 있습니다.
 - **어린이:** 13세 미만을 대상으로 하지 않습니다.
 - **문의:** (공개용 이메일 주소)
@@ -26,6 +27,7 @@ Carpe Diem does not collect personal data.
 - **Backup:** if device backup is on, settings and records may be included in your encrypted Google (or iCloud) backup, used only when moving to a new phone.
 - **Notifications:** only the ones you turn on (morning, birthdays and special days, end of day), created on the device. Past lines are never shown on the lock screen.
 - **Sending a picture:** only when you tap “Send as a picture”, that one image goes to the app you choose. Nothing goes to the developer.
+- **Moving records:** “Save everything to a file” writes one file only where you choose (the app sends it nowhere). You can bring it in on a new phone.
 - **Deleting:** "Erase all records" in Settings, or uninstalling the app, removes everything from the device. You can also clear or export just your lines.
 - **Children:** not directed at children under 13.
 - **Contact:** (public email address)

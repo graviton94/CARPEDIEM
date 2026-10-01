@@ -518,4 +518,13 @@
     <string name="gaze_ask">정원으로 돌아갈까요?</string>
     <string name="gaze_back">돌아가기</string>
     <string name="gaze_stay">더 머물기</string>
+    <string name="widget_record_garden">마음의 기록 · 정원</string>
+    <string name="widget_record_desc">이번 달의 마음이 낮엔 꽃, 밤엔 별로 피어나요.</string>
+    <string name="backup_export">기록을 파일로 내보내기</string>
+    <string name="backup_import">파일에서 기록 들여오기</string>
+    <string name="backup_importConfirm">지금 기록을 이 파일의 기록으로 바꿀까요?\n지금 이 폰에 있는 기록은 사라져요.</string>
+    <string name="backup_importAction">들여오기</string>
+    <string name="backup_saved">파일로 내보냈어요. 새 폰에서 들여올 수 있어요.</string>
+    <string name="backup_done">기록을 옮겨 왔어요.</string>
+    <string name="backup_fail">이 파일은 읽을 수 없어요.</string>
 </resources>

@@ -518,4 +518,13 @@
     <string name="gaze_ask">Back to the garden?</string>
     <string name="gaze_back">Go back</string>
     <string name="gaze_stay">Stay a while</string>
+    <string name="widget_record_garden">Heart’s record · Garden</string>
+    <string name="widget_record_desc">This month’s feelings, as flowers by day and stars by night.</string>
+    <string name="backup_export">Save everything to a file</string>
+    <string name="backup_import">Bring records in from a file</string>
+    <string name="backup_importConfirm">Replace what’s here with this file?\nWhat’s on this phone now will be gone.</string>
+    <string name="backup_importAction">Bring in</string>
+    <string name="backup_saved">Saved. You can bring it in on a new phone.</string>
+    <string name="backup_done">Your records are here.</string>
+    <string name="backup_fail">This file can’t be read.</string>
 </resources>

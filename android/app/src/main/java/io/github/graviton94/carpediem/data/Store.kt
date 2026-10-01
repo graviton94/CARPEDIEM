@@ -283,7 +283,51 @@ class Store(context: Context) {
 
     fun eraseAll() = prefs.edit().clear().apply()
 
+    /**
+     * 기록 옮기기: 앱 안의 모든 것 (설정 · 한 줄 · 가족 · 기억의 돌 · 특별한 날 …) 을 JSON 한 덩이로.
+     * 새 폰에서 [restore] 로 그대로 들여온다. 파일은 사람이 고른 곳에만 저장된다 (앱은 어디로도 보내지 않음).
+     */
+    fun backup(): String {
+        val all = org.json.JSONObject()
+        prefs.all.forEach { (k, v) ->
+            val e = org.json.JSONObject()
+            when (v) {
+                is Boolean -> e.put("t", "b").put("v", v)
+                is Int -> e.put("t", "i").put("v", v)
+                is Long -> e.put("t", "l").put("v", v)
+                is Float -> e.put("t", "f").put("v", v.toDouble())
+                is String -> e.put("t", "s").put("v", v)
+                is Set<*> -> e.put("t", "ss").put("v", org.json.JSONArray(v.filterIsInstance<String>()))
+                else -> return@forEach
+            }
+            all.put(k, e)
+        }
+        return org.json.JSONObject().put("app", BACKUP_APP).put("v", 1).put("prefs", all).toString()
+    }
+
+    /** [backup] 으로 만든 글을 들여온다. 이 앱의 파일이 아니거나 읽을 수 없으면 아무것도 바꾸지 않고 false. */
+    fun restore(json: String): Boolean {
+        val root = runCatching { org.json.JSONObject(json) }.getOrNull() ?: return false
+        if (root.optString("app") != BACKUP_APP) return false
+        val all = root.optJSONObject("prefs") ?: return false
+        val ed = prefs.edit().clear()
+        for (k in all.keys()) {
+            val e = all.optJSONObject(k) ?: continue
+            when (e.optString("t")) {
+                "b" -> ed.putBoolean(k, e.optBoolean("v"))
+                "i" -> ed.putInt(k, e.optInt("v"))
+                "l" -> ed.putLong(k, e.optLong("v"))
+                "f" -> ed.putFloat(k, e.optDouble("v").toFloat())
+                "s" -> ed.putString(k, e.optString("v"))
+                "ss" -> ed.putStringSet(k, e.optJSONArray("v")?.let { a -> (0 until a.length()).map { a.optString(it) }.toSet() } ?: emptySet())
+            }
+        }
+        return ed.commit()
+    }
+
     companion object {
+        /** 기록 옮기기 파일의 표 (다른 앱의 파일을 들여오지 않게). */
+        private const val BACKUP_APP = "carpediem-backup"
         /** 이만큼 쉬었다 돌아오면 달팽이가 놓인다. */
         const val RETURN_AFTER_DAYS = 30
 

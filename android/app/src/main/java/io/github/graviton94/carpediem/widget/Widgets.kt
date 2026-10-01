@@ -82,6 +82,7 @@ object Widgets {
         TodayWidget().updateAll(context); TodayGardenWidget().updateAll(context)
         LifeCalendarWidget().updateAll(context); LifeCalendarGardenWidget().updateAll(context)
         FamilyGardenWidget().updateAll(context)
+        RecordWidget().updateAll(context)
     }
 
     /** ‘오늘’ 위젯이 한 시간마다, 문장이 자정 무렵 바뀌도록 한 시간마다 새로 그린다. */
