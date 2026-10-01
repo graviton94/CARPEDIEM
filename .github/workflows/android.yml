@@ -48,7 +48,8 @@ jobs:
           name: CarpeDiem-apk
           path: out/*.apk
       - name: Publish to GitHub release (android-latest)
-        if: github.event_name != 'pull_request'
+        # 올리는 건 ‘릴리즈하자’ 할 때만 (Actions → Android → Run workflow). push 는 빌드 · 시험만
+        if: github.event_name == 'workflow_dispatch'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
