@@ -546,10 +546,10 @@ object Tokens {
             }
         }
         object Decor {
-            const val treeBoxW = 240.0f
-            const val treeBoxH = 200.0f
-            const val treeAtX = 110.0f
-            const val treeAtY = 190.0f
+            const val treeBoxW = 300.0f
+            const val treeBoxH = 290.0f
+            const val treeAtX = 140.0f
+            const val treeAtY = 270.0f
             const val treeScale = 1.0f
             const val treeX = 30.0f
             const val treePx = 2.0f
@@ -557,7 +557,7 @@ object Tokens {
             const val stageDays2 = 365.0f
             const val stageDays3 = 1095.0f
             const val postBoxW = 80.0f
-            const val postBoxH = 130.0f
+            const val postBoxH = 134.0f
             const val postAtX = 30.0f
             const val postAtY = 125.0f
             const val postScale = 0.9f
@@ -576,7 +576,7 @@ object Tokens {
             const val swayMs = 3200.0f
             const val swayDeg = 4.0f
             const val mossBoxW = 90.0f
-            const val mossBoxH = 24.0f
+            const val mossBoxH = 28.0f
             const val mossAtX = 45.0f
             const val mossAtY = 18.0f
             const val mossWidth = 1.42f
@@ -598,7 +598,7 @@ object Tokens {
             const val kiteDrift = 2.0f
             const val kiteTilt = 3.0f
             const val cardBoxW = 60.0f
-            const val cardBoxH = 60.0f
+            const val cardBoxH = 64.0f
             const val cardAtY = 56.0f
             const val cardPx = 5.0f
             const val cardMini = 0.5f

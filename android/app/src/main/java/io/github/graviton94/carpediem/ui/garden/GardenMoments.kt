@@ -45,10 +45,12 @@ private fun envelope(t: Float, fadeIn: Float = 0.18f, fadeOut: Float = 0.25f) = 
 
 /**
  * 우연한 순간 한 번 (core Chances 가 정함). 끝나면 onDone. 움직임을 끈 폰에서는 멈춘 한 장면으로 잠깐 보였다 사라지고, 나비는 나오지 않는다.
- * 자리: haruX = 내 하루, treeX · postX = 길의 양 끝 (나무 · 말뚝), skyTop = 글자 아래 하늘.
+ * 자리: haruX = 내 하루, treeX · postX = 길의 양 끝 (나무 · 말뚝), skyTop = 글자 아래 하늘. back = 하늘 겹 (땅 그림 앞에 한 번, 돌들 뒤) 인지.
  */
 @Composable
-internal fun ChanceLayer(chance: Chance, now: LocalDateTime, season: Season, gy: Dp, haruX: Dp, treeX: Dp, postX: Dp, skyTop: Dp, onDone: () -> Unit) {
+internal fun ChanceLayer(chance: Chance, now: LocalDateTime, season: Season, gy: Dp, haruX: Dp, treeX: Dp, postX: Dp, skyTop: Dp, back: Boolean, onDone: () -> Unit) {
+    // 무지개 · 오로라는 하늘에 (먼 산 · 나무 · 돌들 뒤), 나머지는 돌들 앞
+    if ((chance == Chance.RAINBOW || chance == Chance.AURORA) != back) return
     val ctx = LocalContext.current
     val u = Theme.unit
     val moving = remember { !reducedMotion(ctx) }
@@ -67,7 +69,7 @@ internal fun ChanceLayer(chance: Chance, now: LocalDateTime, season: Season, gy:
     when (chance) {
         Chance.RAINBOW -> if (!dark) {
             val img = GardenArt.image(ctx, "moment_rainbow.webp"); val k = u * C.rainbowScale
-            Image(img, null, Modifier.offset(u * 210f - k * 70f, gy - u * 30f - k * 66f).size(k * 140f, k * 70f).graphicsLayer { alpha = envelope(t.value) })
+            Image(img, null, Modifier.offset(u * 210f - k * 80f, gy - u * 34f - k * 84f).size(k * 160f, k * 90f).graphicsLayer { alpha = envelope(t.value) })
         }
         Chance.AURORA -> {
             val img = GardenArt.image(ctx, "moment_aurora.webp"); val k = u * C.auroraScale
@@ -156,5 +158,5 @@ internal fun SnailGuest(snailAt: Long, now: LocalDateTime, gy: Dp, treeX: Dp) {
     if (snailAt <= 0L || a !in 0f..1f) return
     val img = GardenArt.image(ctx, "moment_snail.webp"); val k = u * C.snailScale
     val x = treeX + u * 44f + u * C.snailWalk * a
-    Image(img, null, Modifier.offset(x - k * 20f, gy + u * 5f - k * 20f).size(k * 40f, k * 24f), colorFilter = nightFilter(SkyTime.isDark(now)))
+    Image(img, null, Modifier.offset(x - k * 20f, gy + u * 5f - k * 20f).size(k * 40f, k * 26f), colorFilter = nightFilter(SkyTime.isDark(now)))
 }

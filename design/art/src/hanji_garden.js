@@ -99,7 +99,7 @@
       else if (sp === "ginkgo") L = [[0, -62, 13, 18], [-1, -42, 21, 20], [0, -18, 27, 22], [0, 6, 30, 18], [-14, -30, 16, 16], [14, -34, 16, 16], [-16, 8, 18, 13], [17, 6, 18, 13]];
       else L = null;
       if (L) { var lk = (stage === 1 ? 0.5 : 1) * spread; if (sp === "ginkgo") ginkgoCrown(ctx, cx, cy, lk, cols, seed + 400); else crown(ctx, L, cols, seed + 400, lk, cx, cy); }
-      else pineTiers(ctx, tk, s * (stage === 1 ? 0.55 : stage === 3 ? 1.15 : 1), se, seed, H);
+      else { if (stage === 3 && o.swing !== false) swing(ctx, top[0], top[1], s, sp, seed, y, false); pineTiers(ctx, tk, s * (stage === 1 ? 0.55 : stage === 3 ? 1.15 : 1), se, seed, H); }   // 소나무는 그네 가지가 잎 뒤로
       // 계절 덧칠
       var r = R(seed + 7), lkk = (stage === 1 ? 0.5 : 1) * spread;
       if (sp === "cherry" && se === "spring") { for (var i = 0; i < 16; i++) { var px = cx + (r() - 0.5) * 80 * lkk, py = cy - 30 * lkk + r() * 40 * lkk; paper(ctx, blossom(px, py, 2.2 * s), i % 3 ? "#FFFFFF" : "#F6C3CF", seed + 500 + i, { rim: 0.2, sh: 0.3 }); } }
@@ -112,7 +112,7 @@
     if (se === "spring" && sp === "cherry") { for (var f2 = 0; f2 < 6; f2++) paper(ctx, blossom(x + (fr() - 0.5) * 60 * s, y + 1.5 + fr() * 2, 1.8 * s), "#F8D3DC", seed + 620 + f2, { rim: 0.2, sh: 0.2 }); }
     if (se === "winter") paper(ctx, blob(x, y + 0.5, 24 * s * g.k + 8 * s, 3.2 * s, seed + 640, 0.25), "#FFFFFF", seed + 640, { rim: 0.6, sh: 0.5 });
     // 큰 나무: 오른쪽 가지에 그네
-    if (stage === 3 && o.swing !== false) swing(ctx, top[0], top[1], s, sp, seed, y, bare);
+    if (stage === 3 && o.swing !== false && sp !== "pine") swing(ctx, top[0], top[1], s, sp, seed, y, bare);
     return top;
   }
   function blossom(cx, cy, r) { var p = []; for (var i = 0; i < 20; i++) { var a = i / 20 * Math.PI * 2, k = 0.7 + 0.3 * Math.abs(Math.cos(a * 2.5)); p.push([cx + Math.cos(a) * r * k, cy + Math.sin(a) * r * k]); } return p; }

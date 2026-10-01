@@ -551,10 +551,10 @@ enum Tokens {
             }
         }
         enum Decor {
-            static let treeBoxW: CGFloat = 240.0
-            static let treeBoxH: CGFloat = 200.0
-            static let treeAtX: CGFloat = 110.0
-            static let treeAtY: CGFloat = 190.0
+            static let treeBoxW: CGFloat = 300.0
+            static let treeBoxH: CGFloat = 290.0
+            static let treeAtX: CGFloat = 140.0
+            static let treeAtY: CGFloat = 270.0
             static let treeScale: CGFloat = 1.0
             static let treeX: CGFloat = 30.0
             static let treePx: CGFloat = 2.0
@@ -562,7 +562,7 @@ enum Tokens {
             static let stageDays2: CGFloat = 365.0
             static let stageDays3: CGFloat = 1095.0
             static let postBoxW: CGFloat = 80.0
-            static let postBoxH: CGFloat = 130.0
+            static let postBoxH: CGFloat = 134.0
             static let postAtX: CGFloat = 30.0
             static let postAtY: CGFloat = 125.0
             static let postScale: CGFloat = 0.9
@@ -581,7 +581,7 @@ enum Tokens {
             static let swayMs: CGFloat = 3200.0
             static let swayDeg: CGFloat = 4.0
             static let mossBoxW: CGFloat = 90.0
-            static let mossBoxH: CGFloat = 24.0
+            static let mossBoxH: CGFloat = 28.0
             static let mossAtX: CGFloat = 45.0
             static let mossAtY: CGFloat = 18.0
             static let mossWidth: CGFloat = 1.42
@@ -603,7 +603,7 @@ enum Tokens {
             static let kiteDrift: CGFloat = 2.0
             static let kiteTilt: CGFloat = 3.0
             static let cardBoxW: CGFloat = 60.0
-            static let cardBoxH: CGFloat = 60.0
+            static let cardBoxH: CGFloat = 64.0
             static let cardAtY: CGFloat = 56.0
             static let cardPx: CGFloat = 5.0
             static let cardMini: CGFloat = 0.5

@@ -304,6 +304,8 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
 
                 Image(GardenArt.sky(ctx, real), null, Modifier.fillMaxSize(), contentScale = ContentScale.FillWidth, alignment = Alignment.TopCenter)
                 // 땅 그림도 시간의 빛 아래에 (밤이면 땅까지 어두워짐)
+                // 하늘의 우연한 순간 (무지개 · 오로라): 먼 산 뒤
+                if (!bare) state.chance?.let { c -> ChanceLayer(c, now, real, gy, 0.dp, u * G.Decor.treeX, u * G.Layout.pathEnd, topBottom + u * G.Layout.minSkyGap, back = true) { state.chanceDone() } }
                 Image(GardenArt.strip(ctx, real), null, Modifier.offset(y = gy - u * G.Layout.stripLineY).fillMaxWidth().height(u * G.Layout.stripHeight), contentScale = ContentScale.FillBounds)
                 // 정원만 보기(bare)는 위 글자가 없어도 별이 상태바 · 소리 버튼에 닿지 않게
                 SkyTimeLayer(now, gy, if (bare) screenH * 0.14f else topBottom, gy - haruAbove - u * G.Layout.minSkyGap, Modifier.fillMaxSize())
@@ -456,7 +458,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 // 달팽이 손님: 오랜만에 돌아온 날, 한 시간쯤 돌들 앞 길을 천천히 건넘
                 if (!bare) SnailGuest(state.store.snailAt, now, gy, u * G.Decor.treeX)
                 // 우연한 순간 (한 번에 하나, 몇 초 뒤 사라짐)
-                if (!bare) state.chance?.let { c -> ChanceLayer(c, now, real, gy, xs[0], u * G.Decor.treeX, x1, topBottom + u * G.Layout.minSkyGap) { state.chanceDone() } }
+                if (!bare) state.chance?.let { c -> ChanceLayer(c, now, real, gy, xs[0], u * G.Decor.treeX, x1, topBottom + u * G.Layout.minSkyGap, back = false) { state.chanceDone() } }
                 // 이름표 (가족이 있을 때) · 0세 · 기대수명
                 val px = with(density) { Pair(x0.toPx(), x1.toPx()) }
                 // 돌이 oneRow 명보다 많으면 이름표를 두 줄로 번갈아 (서로 겹치지 않게)
