@@ -107,7 +107,8 @@ fun StoneScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, id: S
     val art = HaruArt.of(person?.seed ?: state.store.haruSeed, sprout)
     val name = person?.name ?: stringResource(R.string.garden_haru)
     val birth = if (me) profile.birthDate else person!!.birth
-    val metOn = person?.metOn ?: state.store.startDate
+    // 만난 날 = 함께한 첫날 (카드의 ‘…에 만난’ 과 ‘함께한 지’ 가 같은 날에서): 나는 하루를 만난 날, 가족은 정한 날 또는 함께 살아온 첫날
+    val metOn = if (person == null) state.store.startDate else Family.togetherSince(profile.birthDate, person)
     val soon = Family.birthdaySoon(birth, now, Tokens.Notify.birthdayFrom.toInt())
     val birthday = soon != null
     var breathSheet by remember { mutableStateOf(false) }
@@ -136,7 +137,7 @@ fun StoneScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, id: S
             }, filled = true, seed = 873)
             // 함께한 날 · 다음 생일
             Row(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
-                val since = if (me) metOn else Family.togetherSince(profile.birthDate, person!!)
+                val since = metOn
                 Info(stringResource(if (me) R.string.stone_sinceMet else R.string.stone_together), stringResource(R.string.stone_days, Labels.number(Family.daysUntil(today, since).toInt().coerceAtLeast(0))), 870, Modifier.weight(1f))
                 if (birth != null) {
                     val next = Family.nextBirthday(birth, today); val left = Family.daysUntil(next, today).toInt()

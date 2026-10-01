@@ -262,7 +262,6 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
         HorizontalPager(pager, Modifier.weight(1f).fillMaxWidth(), beyondViewportPageCount = 0, userScrollEnabled = !bare && !typing,
             // 조금만 밀어도 넘어가게 (기본은 반 장)
             flingBehavior = androidx.compose.foundation.pager.PagerDefaults.flingBehavior(pager, snapPositionalThreshold = G.Motion.turnSnap)) { page ->
-          // 책장 넘기기: 페이지는 제자리에 두고, 넘어가는 장이 왼쪽 등을 축으로 들려 넘어가며 아래 장이 드러남
           // 손으로 넘길 땐 들어오는 장 (아직 오른쪽) 이 위에
           val incoming by remember(page) { derivedStateOf { (pager.currentPage - page) + pager.currentPageOffsetFraction < 0f } }
           Box(Modifier.fillMaxSize().zIndex(if (incoming) 1f else 0f).pageTurn(pager, page) { breath }) {
