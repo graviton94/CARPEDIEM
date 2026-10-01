@@ -291,7 +291,10 @@ fun GazeScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, onBack
     val dim = remember { Animatable(0f) }
     var hint by remember { mutableStateOf(true) }
     LaunchedEffect(Unit) { delay(3000); hint = false }
-    LaunchedEffect(Unit) {
+    // 누를 때마다 처음부터: 밝게 → 조금 뒤 스르르 어두워짐 → 더 지나면 화면을 놓아 줌
+    var idleKick by remember { androidx.compose.runtime.mutableIntStateOf(0) }
+    LaunchedEffect(idleKick) {
+        dim.snapTo(0f); screenOn = true
         delay((z.dimAfter * 1000).toLong()); dim.animateTo(z.dimAlpha, tween(z.dimMs.toInt(), easing = LinearEasing))
         delay(((z.releaseAfter - z.dimAfter) * 1000).toLong() - z.dimMs.toLong()); screenOn = false
     }
@@ -305,8 +308,7 @@ fun GazeScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, onBack
         // 소리 끄고 켜기 (아주 작게, 누름 막 위에), 나가는 법은 처음 3초만
         // 화면을 누르면 (어두워졌으면 다시 밝아지며) 돌아갈지 조용히 묻는다
         var ask by remember { mutableStateOf(false) }
-        val scope = rememberCoroutineScope()
-        Box(Modifier.fillMaxSize().pointerInput(Unit) { detectTapGestures { scope.launch { dim.snapTo(0f) }; screenOn = true; ask = true } })
+        Box(Modifier.fillMaxSize().pointerInput(Unit) { detectTapGestures { idleKick++; ask = true } })
         TokenText(stringResource(if (soundOn) R.string.gaze_soundOff else R.string.gaze_soundOn), Tokens.TypeScale.caption1,
             Modifier.align(Alignment.TopEnd).statusBarsPadding().clickable { soundOn = !soundOn; if (soundOn && state.sound == Sound.NONE) state.changeSound(Sound.WAVES) }.padding(Tokens.Space.sp4),
             color = p.secondary.copy(alpha = 0.7f), weight = FontWeight.Normal)

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.ui.draw.drawWithCache
@@ -209,11 +210,12 @@ fun CrayonCalendar(total: Int, filled: Int, columns: Int, modifier: Modifier = M
     val L = Tokens.Garden.Layout
     val inkC = Theme.gc.ink; val futureC = Theme.gc.future
     // 칸을 누르면 (꽃이 있는 칸이면 말풍선): 몇 번째 칸인지와 그 칸의 가운데 (px)
+    val cb by androidx.compose.runtime.rememberUpdatedState(onCell)   // 꽃이 바뀌어도 늘 지금의 것으로
     val tap = if (onCell == null) Modifier else Modifier.pointerInput(total, columns, rows) {
         detectTapGestures { pos ->
             val cell = min(size.width / columns.toFloat(), size.height / rows.toFloat())
             val i = (pos.y / cell).toInt() * columns + (pos.x / cell).toInt()
-            if (i in 0 until total) onCell(i, Offset((i % columns + 0.5f) * cell, (i / columns + 0.5f) * cell))
+            if (i in 0 until total) cb?.invoke(i, Offset((i % columns + 0.5f) * cell, (i / columns + 0.5f) * cell))
         }
     }
     Spacer(modifier.fillMaxWidth().aspectRatio(columns / rows.toFloat()).then(tap).drawWithCache {

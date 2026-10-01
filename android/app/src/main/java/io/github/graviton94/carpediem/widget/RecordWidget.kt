@@ -17,7 +17,7 @@ import androidx.glance.GlanceModifier
 import androidx.glance.Image
 import androidx.glance.ImageProvider
 import androidx.glance.LocalSize
-import androidx.glance.action.actionStartActivity
+import androidx.glance.appwidget.action.actionStartActivity
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
@@ -62,7 +62,7 @@ class RecordWidget : GlanceAppWidget() {
         val month = today.month.getDisplayName(MonthStyle.FULL_STANDALONE, locale)
         val cons = store.constellations.of(today.monthValue)?.let { if (locale.language == "ko") it.korean else it.english }.orEmpty()
         val open = Intent(context, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-            .putExtra(MainActivity.EXTRA_OPEN, "month:${today.year}-${today.monthValue}")
+            .putExtra(MainActivity.EXTRA_OPEN, "record:${today.year}-${today.monthValue}")
         val ink = if (night) Tokens.Garden.Year.Colors.plain else Tokens.Garden.Colors.ink
         provideContent {
             val size = LocalSize.current
@@ -83,7 +83,9 @@ class RecordReceiver : GlanceAppWidgetReceiver() { override val glanceAppWidget:
 /** 둥근 판 하나에 이번 달의 무늬 (그림 보내기 · 앱과 같은 그리기). */
 private fun recordBitmap(context: Context, w: Dp, h: Dp, dots: List<StarGarden.Dot>, night: Boolean, today: java.time.LocalDate): Bitmap {
     val d = context.resources.displayMetrics.density
-    val bw = (w.value * d).toInt().coerceIn(1, 1200); val bh = (h.value * d).toInt().coerceIn(1, 1200)
+    // 너무 크면 가로세로를 같은 비율로 줄임 (그림이 늘어나지 않게)
+    val k = minOf(1f, 1200f / maxOf(w.value * d, h.value * d, 1f))
+    val bw = (w.value * d * k).toInt().coerceAtLeast(1); val bh = (h.value * d * k).toInt().coerceAtLeast(1)
     val bmp = Bitmap.createBitmap(bw, bh, Bitmap.Config.ARGB_8888)
     val c = Canvas(bmp)
     val r = Tokens.Radius.lg.value * d

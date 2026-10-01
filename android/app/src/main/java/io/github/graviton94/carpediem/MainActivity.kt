@@ -89,8 +89,13 @@ class MainActivity : ComponentActivity() {
         val state = AppState(applicationContext)
         val start = (if (BuildConfig.DEBUG) debugSetup(state) else Screen.Main).let { s ->
             // 아침 알림에서 왔으면 하루를 여는 숨 1분
-            if (intent?.getBooleanExtra(EXTRA_MORNING_BREATH, false) == true && state.profile != null) Screen.Breathe(BreathKind.CALM, 1, state.sound, Screen.Main) else s
-        }.let { s -> openFrom(intent?.getStringExtra(EXTRA_OPEN), state) ?: s }
+            if (savedInstanceState == null && intent?.getBooleanExtra(EXTRA_MORNING_BREATH, false) == true && state.profile != null) Screen.Breathe(BreathKind.CALM, 1, state.sound, Screen.Main) else s
+        }.let { s ->
+            // 알림 · 위젯에서 왔으면 그곳으로. 처음 켤 때 한 번만 (돌리거나 다시 그릴 때 또 가지 않게), 쓴 표는 지운다
+            val open = if (savedInstanceState == null) intent?.getStringExtra(EXTRA_OPEN) else null
+            intent?.removeExtra(EXTRA_OPEN); intent?.removeExtra(EXTRA_MORNING_BREATH)
+            openFrom(open, state) ?: s
+        }
         setContent {
             BoxWithConstraints {
                 val screenW = maxWidth
@@ -145,9 +150,9 @@ class MainActivity : ComponentActivity() {
                         is Screen.Gaze -> state.profile?.let { GazeScreen(state, it, now) { screen = s.back } } ?: run { screen = Screen.Main }
                         is Screen.Look -> LookScreen { screen = s.back }
                         is Screen.AddPerson -> state.profile?.let {
-                            AddPersonScreen(state, it, s.editId, onDone = { id -> screen = if (s.memory) Screen.Memory(Screen.Collection(Screen.Main)) else if (s.editId != null && id != null) (s.back as? Screen.Stone)?.copy() ?: Screen.Main else Screen.Main },
+                            AddPersonScreen(state, it, s.editId, onDone = { id -> screen = if (s.memory) Screen.Memory(Screen.Main) else if (s.editId != null && id != null) (s.back as? Screen.Stone)?.copy() ?: Screen.Main else Screen.Main },
                                 onBack = { screen = s.back }, memory = s.memory, onAddMemory = { screen = Screen.AddPerson(null, s, memory = true) },
-                                onMovedToMemory = { screen = Screen.Memory(Screen.Collection(Screen.Main)) })
+                                onMovedToMemory = { screen = Screen.Memory(Screen.Main) })
                         } ?: run { screen = Screen.Main }
                         Screen.Main -> {
                             val profile = state.profile
@@ -228,7 +233,7 @@ private fun MainActivity.debugSetup(state: AppState): Screen {
             Person("frd00001", "지우", Kind.PERSON, birth = LocalDate.of(2001, 7, 9), sex = Sex.OTHER, country = "KR", seed = 8080, metOn = today),
         ).forEach { state.savePerson(it) }
     }
-    return when (x.getStringExtra("cd.screen")) { "settings" -> Screen.Settings; "widgets" -> Screen.WidgetPreview; "collection" -> Screen.Collection(Screen.Main); "support" -> Screen.Support(Screen.Main); "stone" -> Screen.Stone(x.getStringExtra("cd.stoneId") ?: state.people.firstOrNull()?.id, Screen.Main); "add" -> Screen.AddPerson(null, Screen.Main); "breath" -> Screen.Breathe(BreathKind.CALM, 1, Sound.WAVES, Screen.Main); "gaze" -> Screen.Gaze(Screen.Main); "look" -> Screen.Look(Screen.Main); "thanks" -> Screen.Breathe(BreathKind.THANKS, 1, Sound.SEASON, Screen.Main); "memory" -> Screen.Memory(Screen.Collection(Screen.Main)); else -> Screen.Main }
+    return when (x.getStringExtra("cd.screen")) { "settings" -> Screen.Settings; "widgets" -> Screen.WidgetPreview; "collection" -> Screen.Collection(Screen.Main); "support" -> Screen.Support(Screen.Main); "stone" -> Screen.Stone(x.getStringExtra("cd.stoneId") ?: state.people.firstOrNull()?.id, Screen.Main); "add" -> Screen.AddPerson(null, Screen.Main); "breath" -> Screen.Breathe(BreathKind.CALM, 1, Sound.WAVES, Screen.Main); "gaze" -> Screen.Gaze(Screen.Main); "look" -> Screen.Look(Screen.Main); "thanks" -> Screen.Breathe(BreathKind.THANKS, 1, Sound.SEASON, Screen.Main); "memory" -> Screen.Memory(Screen.Main); else -> Screen.Main }
 }
 
 /** 알림에서 왔을 때 열 곳. 홈 안의 페이지 · 판은 state 에 적어 두고 (홈이 처음 그릴 때 씀), 돌 페이지는 그 화면으로. */
@@ -239,8 +244,11 @@ private fun openFrom(open: String?, state: AppState): Screen? {
         "letter" -> { state.homePage = 0; state.debugOpenLetter = true }
         "write" -> state.homePage = 1
         "flow" -> state.homePage = 3
-        "month" -> arg?.split('-')?.mapNotNull { it.toIntOrNull() }?.takeIf { it.size == 2 }?.let { (y, m) -> state.homePage = 2; state.pendingRecord = io.github.graviton94.carpediem.ui.garden.RecordView(y, m); state.openMonth(y, m) }
-        "year" -> arg?.toIntOrNull()?.let { y -> state.homePage = 2; state.pendingRecord = io.github.graviton94.carpediem.ui.garden.RecordView(y, null); state.openYear(y) }
+        // month = 알림 (지난 달의 정원이 피었다는 소식, 펼친 것으로 남김) · record = 위젯 (이번 달을 보기만)
+        "month", "record" -> arg?.split('-')?.mapNotNull { it.toIntOrNull() }?.takeIf { it.size == 2 && it[1] in 1..12 && it[0] in 1900..java.time.LocalDate.now().year }?.let { (y, m) ->
+            state.homePage = 2; state.pendingRecord = io.github.graviton94.carpediem.ui.garden.RecordView(y, m); if (kind == "month") state.openMonth(y, m)
+        }
+        "year" -> arg?.toIntOrNull()?.takeIf { it in 1900..java.time.LocalDate.now().year }?.let { y -> state.homePage = 2; state.pendingRecord = io.github.graviton94.carpediem.ui.garden.RecordView(y, null); state.openYear(y) }
         "stone" -> return arg?.takeIf { id -> state.people.any { it.id == id } }?.let { Screen.Stone(it, Screen.Main) }
     }
     return null

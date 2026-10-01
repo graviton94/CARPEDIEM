@@ -310,6 +310,7 @@ class Store(context: Context) {
         val root = runCatching { org.json.JSONObject(json) }.getOrNull() ?: return false
         if (root.optString("app") != BACKUP_APP) return false
         val all = root.optJSONObject("prefs") ?: return false
+        if (!all.has("birth")) return false   // 하루의 정보 (생년월일) 가 없는 파일로는 지금 기록을 지우지 않음
         val ed = prefs.edit().clear()
         for (k in all.keys()) {
             val e = all.optJSONObject(k) ?: continue
