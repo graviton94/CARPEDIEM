@@ -151,28 +151,58 @@ private fun DrawScope.partyHat(art: HaruArt, k: Float) {
     val ink = Tokens.Garden.Colors.ink
     val top = art.meta.top * k
     val w = pt.hatWidth * k; val h = pt.hatHeight * k
-    rotate(Math.toDegrees(art.shape.traits.rot).toFloat() * 0.5f, top) {
+    // 비스듬히 얹은 작은 고깔: 크림 · 살구 줄무늬, 하얀 점, 아래는 머리에 살짝 묻히듯 둥글게, 꼭대기엔 보송한 털방울
+    rotate(Math.toDegrees(art.shape.traits.rot).toFloat() * 0.5f + pt.tilt, top) {
         val base = top.y + d.line * k * 0.6f
-        val cone = Path().apply { moveTo(top.x - w / 2, base); lineTo(top.x, base - h); lineTo(top.x + w / 2, base); close() }
+        val cone = Path().apply { moveTo(top.x - w / 2, base); lineTo(top.x, base - h); lineTo(top.x + w / 2, base); quadraticTo(top.x, base + w * 0.18f, top.x - w / 2, base); close() }
         drawPath(cone, Tokens.Garden.Party.Colors.hat)
-        clipPath(cone) { repeat(2) { n -> val y = base - h * (0.3f + 0.3f * n); drawLine(Tokens.Garden.Party.Colors.stripe, Offset(top.x - w, y + w * 0.12f), Offset(top.x + w, y - w * 0.12f), h * 0.1f) } }
-        drawPath(cone, ink, style = Stroke(d.line * k * 0.55f, join = StrokeJoin.Round))
-        drawCircle(Tokens.Garden.Party.Colors.pompom, w * 0.16f, Offset(top.x, base - h))
-        drawCircle(ink, w * 0.16f, Offset(top.x, base - h), style = Stroke(d.line * k * 0.45f))
+        clipPath(cone) {
+            repeat(4) { n -> val y = base - h * (0.1f + 0.25f * n); drawLine(Tokens.Garden.Party.Colors.stripe, Offset(top.x - w, y + w * 0.2f), Offset(top.x + w, y - w * 0.2f), h * 0.085f) }
+            listOf(-0.16f to 0.22f, 0.12f to 0.47f, -0.05f to 0.7f).forEach { (dx, dy) -> drawCircle(Tokens.Garden.Party.Colors.dot, w * 0.045f, Offset(top.x + dx * w, base - dy * h), 0.8f) }
+        }
+        drawPath(cone, ink, style = Stroke(d.line * k * 0.5f, join = StrokeJoin.Round))
+        val pc = Offset(top.x, base - h)
+        repeat(7) { i -> val a = i * 0.9f; drawCircle(Tokens.Garden.Party.Colors.pompom, w * 0.1f, pc + Offset(kotlin.math.cos(a) * w * 0.07f, kotlin.math.sin(a) * w * 0.07f)) }
+        drawCircle(ink.copy(alpha = 0.5f), w * 0.16f, pc, style = Stroke(d.line * k * 0.35f))
     }
 }
 
-/** 생일 케이크 한 조각 (촛불 하나). 정원이 돌 앞에 놓는다. 크기 = size. */
+/** 생일 케이크 (촛불 하나): 접시 위 2단, 크림이 흘러내리고 딸기 한 알, 줄무늬 초. 정원이 돌 곁에 놓는다. 크기 = size. */
 fun DrawScope.birthdayCake(flame: Float = 1f) {
-    val pt = Tokens.Garden.Party; val ink = Tokens.Garden.Colors.ink
+    val c = Tokens.Garden.Party.Colors; val ink = Tokens.Garden.Colors.ink
     val w = size.width; val h = size.height
-    val line = w * 0.07f
-    val body = Rect(Offset(w * 0.08f, h * 0.45f), Size(w * 0.84f, h * 0.5f))
-    drawRoundRect(Tokens.Garden.Party.Colors.cake, body.topLeft, body.size, androidx.compose.ui.geometry.CornerRadius(w * 0.08f))
-    drawRect(Tokens.Garden.Party.Colors.cream, Offset(body.left, body.top + body.height * 0.38f), Size(body.width, body.height * 0.18f))
-    drawRoundRect(ink, body.topLeft, body.size, androidx.compose.ui.geometry.CornerRadius(w * 0.08f), style = Stroke(line))
-    drawLine(ink, Offset(w / 2, body.top), Offset(w / 2, h * 0.22f), line * 0.9f, StrokeCap.Round)
-    drawOval(Tokens.Garden.Party.Colors.flame, Offset(w / 2 - w * 0.07f, h * 0.02f + (1f - flame) * h * 0.02f), Size(w * 0.14f, h * 0.2f * flame))
+    val line = w * 0.045f
+    drawOval(c.plate, Offset(w * 0.02f, h * 0.88f), Size(w * 0.96f, h * 0.11f))
+    drawOval(ink, Offset(w * 0.02f, h * 0.88f), Size(w * 0.96f, h * 0.11f), style = Stroke(line * 0.8f))
+    fun tier(l: Float, t: Float, r: Float, b: Float) {
+        val rr = androidx.compose.ui.geometry.CornerRadius(w * 0.05f)
+        drawRoundRect(c.cake, Offset(l, t), Size(r - l, b - t), rr)
+        // 위 가장자리에서 흘러내리는 크림
+        val n = 6; val drip = Path().apply {
+            moveTo(l, t); lineTo(r, t)
+            for (k in n downTo 0) lineTo(l + (r - l) * k / n, t + (b - t) * (if (k % 2 == 1) 0.42f else 0.24f))
+            close()
+        }
+        drawPath(drip, c.cream)
+        drawRoundRect(ink, Offset(l, t), Size(r - l, b - t), rr, style = Stroke(line))
+    }
+    tier(w * 0.12f, h * 0.56f, w * 0.88f, h * 0.9f)
+    tier(w * 0.27f, h * 0.34f, w * 0.73f, h * 0.57f)
+    listOf(0.22f to 0.78f, 0.38f to 0.83f, 0.58f to 0.8f, 0.76f to 0.84f, 0.4f to 0.5f).forEachIndexed { i, (x, y) ->
+        drawCircle(listOf(c.flame, c.candleStripe, c.stripe)[i % 3], w * 0.022f, Offset(w * x, h * y))
+    }
+    // 딸기 한 알
+    val berry = Path().apply { moveTo(w * 0.6f, h * 0.34f); quadraticTo(w * 0.7f, h * 0.2f, w * 0.71f, h * 0.31f); quadraticTo(w * 0.69f, h * 0.36f, w * 0.6f, h * 0.34f); close() }
+    drawPath(berry, c.berry); drawPath(berry, ink, style = Stroke(line * 0.7f, join = StrokeJoin.Round))
+    // 줄무늬 초
+    val candle = Rect(Offset(w * 0.465f, h * 0.15f), Size(w * 0.07f, h * 0.2f))
+    drawRect(c.candle, candle.topLeft, candle.size)
+    repeat(3) { i -> val y = candle.top + candle.height * (0.25f + 0.28f * i); drawLine(c.candleStripe, Offset(candle.left, y + w * 0.02f), Offset(candle.right, y - w * 0.02f), w * 0.02f) }
+    drawRect(ink, candle.topLeft, candle.size, style = Stroke(line * 0.7f))
+    val fc = Offset(w / 2, h * 0.09f + (1f - flame) * h * 0.02f)
+    drawCircle(androidx.compose.ui.graphics.Brush.radialGradient(listOf(c.glow.copy(alpha = 0.5f), Color.Transparent), fc, w * 0.16f), w * 0.16f, fc)
+    drawOval(c.flame, Offset(fc.x - w * 0.055f, fc.y - h * 0.08f * flame), Size(w * 0.11f, h * 0.15f * flame))
+    drawOval(c.flameCore, Offset(fc.x - w * 0.025f, fc.y - h * 0.02f), Size(w * 0.05f, h * 0.07f))
 }
 
 /** 돌 종류마다 다른 옅은 무늬 (번호로 정해짐). */

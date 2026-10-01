@@ -126,10 +126,10 @@ object GardenWidgetArt {
         val me = LifeSnapshot(profile.birthDate, profile.expectancy(store.table), now)
         val sprout = me.season == Season.SPRING
         val base = W.familyHaru * u / L.haruArtWidth * shrink
-        data class S(val art: io.github.graviton94.carpediem.ui.garden.HaruArt, val k: Float, val prog: Double?, val bday: Boolean)
-        val slots = listOf(S(io.github.graviton94.carpediem.ui.garden.HaruArt.of(store.haruSeed, sprout), base, me.progress, Family.isBirthday(profile.birthDate, today))) +
+        data class S(val art: io.github.graviton94.carpediem.ui.garden.HaruArt, val k: Float, val prog: Double?, val soon: Int?) { val bday get() = soon != null }
+        val slots = listOf(S(io.github.graviton94.carpediem.ui.garden.HaruArt.of(store.haruSeed, sprout), base, me.progress, Family.birthdaySoon(profile.birthDate, now, Tokens.Notify.birthdayFrom.toInt()))) +
             store.people.map { p -> S(io.github.graviton94.carpediem.ui.garden.HaruArt.of(p.seed, sprout), if (p.kind == PersonKind.PET) base * Tokens.Garden.Family.petScale else base,
-                p.birth?.let { LifeSnapshot(it, store.expectancy(p), now).progress }, Family.isBirthday(p.birth, today)) }
+                p.birth?.let { LifeSnapshot(it, store.expectancy(p), now).progress }, Family.birthdaySoon(p.birth, now, Tokens.Notify.birthdayFrom.toInt())) }
         val lo = W.gridInset * u; val hi = w - W.gridInset * u
         // 돌이 많으면 모두 같은 비율로 작게 (앱과 같은 규칙)
         val fit = Family.fitScale(slots.map { (it.art.meta.bbox.width * it.k).toDouble() }, (hi - lo).toDouble(), (Tokens.Garden.Family.minGap * u).toDouble()).toFloat()
@@ -138,7 +138,7 @@ object GardenWidgetArt {
             lo.toDouble(), hi.toDouble(), (Tokens.Garden.Family.gap * u).toDouble(), (Tokens.Garden.Family.minGap * u).toDouble())
         slots.forEachIndexed { i, sl ->
             stone(c, sl.art, xs[i].toFloat(), gy, sl.k, sl.bday)
-            if (sl.bday) {
+            if (sl.soon == 0) {
                 val cw = Tokens.Garden.Party.cakeWidth * u; val cx = xs[i].toFloat() + sl.art.meta.bbox.width * sl.k * 0.18f
                 c.save(); c.translate(cx - cw / 2, gy - cw + u * 1.5f)
                 androidx.compose.ui.graphics.drawscope.CanvasDrawScope().draw(androidx.compose.ui.unit.Density(1f), androidx.compose.ui.unit.LayoutDirection.Ltr,

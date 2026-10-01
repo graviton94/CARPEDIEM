@@ -30,7 +30,12 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import java.util.concurrent.TimeUnit
 
-/** 하루 한 번 조용한 알림: 오늘의 문장, 그리고 그날 정원에 새로 놓인 것이 있으면 그것. 기본은 꺼 둔다. */
+/**
+ * 알림은 하루에 많아야 세 번: 아침 (Daily, 오늘의 문장 · 그날 도착한 것), 전날 저녁 (Tomorrow, 내일의 생일 · 특별한 날),
+ * 밤 (Evening, 하루 정리). 셋 다 기본은 꺼 둔다.
+ *
+ * 아침 알림: 오늘의 문장. 그날 정원에 새로 놓인 것 · 돌아온 한 줄 · 피어난 정원 · 도착한 편지가 있으면 그 소식이 먼저.
+ */
 object Daily {
     private const val WORK = "daily-notify"
     private const val CHANNEL = "daily"
@@ -40,12 +45,20 @@ object Daily {
         val wm = WorkManager.getInstance(context)
         if (!on) { wm.cancelUniqueWork(WORK); return }
         val now = LocalDateTime.now()
-        val at = LocalTime.of(Tokens.Notify.hour.toInt(), Tokens.Notify.minute.toInt())
-        var next = now.toLocalDate().atTime(at)
-        if (!next.isAfter(now)) next = next.plusDays(1)
-        val work = PeriodicWorkRequestBuilder<DailyWorker>(1, TimeUnit.DAYS).setInitialDelay(Duration.between(now, next).toMinutes(), TimeUnit.MINUTES).build()
+        val work = PeriodicWorkRequestBuilder<DailyWorker>(1, TimeUnit.DAYS).setInitialDelay(delayTo(Tokens.Notify.hour.toInt(), Tokens.Notify.minute.toInt()), TimeUnit.MINUTES).build()
         wm.enqueueUniquePeriodicWork(WORK, ExistingPeriodicWorkPolicy.UPDATE, work)
     }
+
+    /** 지금부터 다음 hour:minute 까지 (분). */
+    internal fun delayTo(hour: Int, minute: Int): Long {
+        val now = LocalDateTime.now()
+        var next = now.toLocalDate().atTime(LocalTime.of(hour.coerceIn(0, 23), minute.coerceIn(0, 59)))
+        if (!next.isAfter(now)) next = next.plusDays(1)
+        return Duration.between(now, next).toMinutes()
+    }
+
+    internal fun channel(context: Context) =
+        context.getSystemService(NotificationManager::class.java).createNotificationChannel(NotificationChannel(CHANNEL, context.getString(R.string.notify_channel), NotificationManager.IMPORTANCE_LOW))
 
     fun allowed(context: Context) = Build.VERSION.SDK_INT < 33 || ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
 
@@ -74,9 +87,15 @@ object Daily {
         else if (store.keepLines && store.randomRecall() != null) { title = context.getString(R.string.recall_randomNotify); body = context.getString(R.string.recall_notifyText) }
         if (store.design == Design.GARDEN) {
             val today = LocalDate.now()
-            // 질문 날: 문장 대신 오늘의 질문
-            store.todaysQuestion(today)?.takeIf { yearAgo == null }?.let { qq ->
-                title = context.getString(R.string.question_label); body = if (store.quoteLanguage == QuoteLanguage.ENGLISH) qq.english else qq.korean
+            // 지난 달 · 지난 해의 정원이 핀 날 (달의 첫날 · 1월 1일, 그때 한 줄이 있었으면)
+            val prev = today.minusMonths(1)
+            if (store.keepLines && today.dayOfMonth == 1) {
+                if (today.monthValue == 1 && store.lines.any { it.date.year == today.year - 1 }) {
+                    title = context.getString(R.string.year_card, "${today.year - 1}"); body = context.getString(R.string.notify_gardenText)
+                } else if (store.lines.any { it.date.year == prev.year && it.date.monthValue == prev.monthValue }) {
+                    title = context.getString(R.string.record_card, java.time.Month.of(prev.monthValue).getDisplayName(java.time.format.TextStyle.FULL_STANDALONE, context.resources.configuration.locales[0]))
+                    body = context.getString(R.string.notify_gardenText)
+                }
             }
             // 계절의 편지가 도착한 날 (한 번만, 잠금 화면엔 글 없이)
             io.github.graviton94.carpediem.core.Letters.due(today)?.takeIf { store.keepLines }?.let { day ->
@@ -86,11 +105,6 @@ object Daily {
                         title = context.getString(R.string.notify_letter, season); body = context.getString(R.string.notify_letterText); letterId = l.id
                     }
             }
-        }
-        // 가족 생일이 가장 먼저 (정원 디자인일 때)
-        if (store.design == Design.GARDEN) {
-            val names = store.people.filter { io.github.graviton94.carpediem.core.Family.isBirthday(it.birth, LocalDate.now()) }.map { it.name }
-            if (names.isNotEmpty()) { title = context.getString(R.string.notify_birthday, names.joinToString(", ")); body = text; letterId = null }
         }
         // 아침 알림을 누르면 (정원 디자인 · 켜 두었을 때) 하루를 여는 숨 1분으로
         val tap = Intent(context, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
@@ -110,18 +124,15 @@ class DailyWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
     override suspend fun doWork(): Result { Daily.post(applicationContext); return Result.success() }
 }
 
-/** 저녁 한 줄 알림: 고른 시각에 하루 한 번, 그날 한 줄을 아직 보내지 않았을 때만. 기본 꺼짐. */
+/** 하루 정리 알림: 밤에 한 번, 그날 한 줄을 아직 보내지 않았을 때만. 기본 꺼짐. */
 object Evening {
     private const val WORK = "evening-notify"
     private const val ID = 2
 
-    fun schedule(context: Context, on: Boolean, hour: Int) {
+    fun schedule(context: Context, on: Boolean) {
         val wm = WorkManager.getInstance(context)
         if (!on) { wm.cancelUniqueWork(WORK); return }
-        val now = LocalDateTime.now()
-        var next = now.toLocalDate().atTime(LocalTime.of(hour.coerceIn(0, 23), 0))
-        if (!next.isAfter(now)) next = next.plusDays(1)
-        val work = PeriodicWorkRequestBuilder<EveningWorker>(1, TimeUnit.DAYS).setInitialDelay(Duration.between(now, next).toMinutes(), TimeUnit.MINUTES).build()
+        val work = PeriodicWorkRequestBuilder<EveningWorker>(1, TimeUnit.DAYS).setInitialDelay(Daily.delayTo(Tokens.Notify.eveningHour.toInt(), 0), TimeUnit.MINUTES).build()
         wm.enqueueUniquePeriodicWork(WORK, ExistingPeriodicWorkPolicy.UPDATE, work)
     }
 
@@ -141,4 +152,42 @@ object Evening {
 
 class EveningWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
     override suspend fun doWork(): Result { Evening.post(applicationContext); return Result.success() }
+}
+
+/**
+ * 내일 알림: 전날 저녁에 한 번, 내일이 가족의 생일이거나 지난 해들의 특별한 날과 같은 날일 때만 (겹치면 한 번에). 기본 꺼짐.
+ * 생일 당일에는 따로 울리지 않는다.
+ */
+object Tomorrow {
+    private const val WORK = "tomorrow-notify"
+    private const val ID = 3
+
+    fun schedule(context: Context, on: Boolean) {
+        val wm = WorkManager.getInstance(context)
+        if (!on) { wm.cancelUniqueWork(WORK); return }
+        val work = PeriodicWorkRequestBuilder<TomorrowWorker>(1, TimeUnit.DAYS).setInitialDelay(Daily.delayTo(Tokens.Notify.tomorrowHour.toInt(), 0), TimeUnit.MINUTES).build()
+        wm.enqueueUniquePeriodicWork(WORK, ExistingPeriodicWorkPolicy.UPDATE, work)
+    }
+
+    fun post(context: Context) {
+        val store = Store(context)
+        if (!store.tomorrowNotify || store.design != Design.GARDEN || !Daily.allowed(context)) return
+        val tomorrow = LocalDate.now().plusDays(1)
+        val names = store.people.filter { io.github.graviton94.carpediem.core.Family.isBirthday(it.birth, tomorrow) }.map { it.name }
+        val days = io.github.graviton94.carpediem.core.SpecialDays.anniversaries(store.specialDays, tomorrow)
+            .map { (d, years) -> context.getString(R.string.notify_tomorrowSpecial, d.name, "$years") }
+        if (names.isEmpty() && days.isEmpty()) return
+        val title: String; val body: String
+        if (names.isNotEmpty()) { title = context.getString(R.string.notify_tomorrowBirthday, names.joinToString(", ")); body = days.firstOrNull() ?: context.getString(R.string.notify_tomorrowBirthdayText) }
+        else { title = days.first(); body = days.drop(1).firstOrNull() ?: context.getString(R.string.notify_tomorrowSpecialText) }
+        Daily.channel(context)
+        val open = PendingIntent.getActivity(context, 2, Intent(context, MainActivity::class.java), PendingIntent.FLAG_IMMUTABLE)
+        val n = NotificationCompat.Builder(context, "daily").setSmallIcon(R.mipmap.ic_launcher_monochrome)
+            .setContentTitle(title).setContentText(body).setContentIntent(open).setAutoCancel(true).build()
+        NotificationManagerCompat.from(context).notify(ID, n)
+    }
+}
+
+class TomorrowWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
+    override suspend fun doWork(): Result { Tomorrow.post(applicationContext); return Result.success() }
 }

@@ -385,7 +385,7 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
                     }
                 }
             }
-            // 저녁 한 줄 알림 (선택, 기본 꺼짐): 오늘 한 줄을 아직 보내지 않은 날에만
+            // 하루 정리 알림 (선택, 기본 꺼짐): 밤에 한 번, 오늘 한 줄을 아직 보내지 않은 날에만
             val eveningPermission = androidx.activity.compose.rememberLauncherForActivityResult(androidx.activity.result.contract.ActivityResultContracts.RequestPermission()) { ok -> state.changeEvening(ok) }
             fun toggleEvening(on: Boolean) {
                 if (on && android.os.Build.VERSION.SDK_INT >= 33 && !io.github.graviton94.carpediem.notify.Daily.allowed(ctx)) eveningPermission.launch(android.Manifest.permission.POST_NOTIFICATIONS)
@@ -395,10 +395,17 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
                 FormRow(stringResource(R.string.notify_eveningRow), onClick = { toggleEvening(!state.eveningNotify) }) {
                     Switch(state.eveningNotify, { toggleEvening(it) }, colors = SwitchDefaults.colors(checkedTrackColor = p.olive))
                 }
-                if (state.eveningNotify) {
-                    RowDivider()
-                    FormRow(stringResource(R.string.notify_eveningRow)) {
-                        ChipPicker(listOf(20, 21, 22), state.eveningHour, { stringResource(R.string.notify_eveningHour, "$it") }) { h -> state.changeEvening(true, h) }
+            }
+            // 내일 알림 (정원, 선택, 기본 꺼짐): 내일이 가족의 생일 · 특별한 날이면 전날 저녁에 한 번
+            if (Theme.garden) {
+                val tomorrowPermission = androidx.activity.compose.rememberLauncherForActivityResult(androidx.activity.result.contract.ActivityResultContracts.RequestPermission()) { ok -> state.changeTomorrow(ok) }
+                fun toggleTomorrow(on: Boolean) {
+                    if (on && android.os.Build.VERSION.SDK_INT >= 33 && !io.github.graviton94.carpediem.notify.Daily.allowed(ctx)) tomorrowPermission.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+                    else state.changeTomorrow(on)
+                }
+                FormSection(footer = stringResource(R.string.notify_tomorrowFooter)) {
+                    FormRow(stringResource(R.string.notify_tomorrowRow), onClick = { toggleTomorrow(!state.tomorrowNotify) }) {
+                        Switch(state.tomorrowNotify, { toggleTomorrow(it) }, colors = SwitchDefaults.colors(checkedTrackColor = p.olive))
                     }
                 }
             }

@@ -139,9 +139,11 @@ object Tokens {
     }
 
     object Notify {
-        const val hour = 8.0f
-        const val minute = 50.0f
-        const val eveningHour = 21.0f
+        const val hour = 7.0f
+        const val minute = 0.0f
+        const val eveningHour = 22.0f
+        const val tomorrowHour = 19.0f
+        const val birthdayFrom = 17.0f
     }
 
     object Garden {
@@ -338,13 +340,23 @@ object Tokens {
             const val hatHeight = 26.0f
             const val cakeWidth = 11.0f
             object Colors {
-                val hat = Color(0xFFE9A43A)
-                val stripe = Color(0xFFD98C7A)
-                val pompom = Color(0xFFF6F1E6)
-                val cake = Color(0xFFF4EEDF)
-                val cream = Color(0xFFD98C7A)
+                val hat = Color(0xFFF7E9CF)
+                val stripe = Color(0xFFEFA27C)
+                val dot = Color(0xFFFFFFFF)
+                val pompom = Color(0xFFFFF8EC)
+                val cake = Color(0xFFF1C9B8)
+                val cream = Color(0xFFFFF6EA)
+                val berry = Color(0xFFE2655F)
+                val plate = Color(0xFFFBF8F0)
+                val candle = Color(0xFFFBF8F0)
+                val candleStripe = Color(0xFF7FA6C4)
                 val flame = Color(0xFFF0A84A)
+                val flameCore = Color(0xFFFFE7A8)
+                val glow = Color(0xFFF4C37A)
+                val heart = Color(0xFFE98F86)
             }
+            const val tilt = 12.0f
+            const val card = 0.2f
         }
         object Breath {
             const val calmIn = 4.0f

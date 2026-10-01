@@ -146,8 +146,8 @@
     <string name="obj_acorn_line">계절이 한 칸 넘어갔어요.</string>
     <string name="notify_channel">오늘의 문장</string>
     <string name="notify_keepsake">정원에 새로 놓인 것: %1$s</string>
-    <string name="notify_row">하루 한 번 알림</string>
-    <string name="notify_footer">아침에 오늘의 문장을 한 번 보내요.\n정원에 새로 놓인 것도 함께 알려요.</string>
+    <string name="notify_row">아침 알림</string>
+    <string name="notify_footer">아침 7시에 오늘의 문장을 한 번 보내요.\n편지나 정원이 도착한 날은 그 소식을 먼저 알려요.</string>
     <string name="dev_unlocked">개발자 모드를 켰어요.</string>
     <string name="garden_haruA11y">하루, %1$s</string>
     <string name="collection">모은 것</string>
@@ -282,7 +282,6 @@
     <string name="stone_petAge">%1$s살</string>
     <string name="letgo_to">누구에게 (선택)</string>
     <string name="letgo_modalTo">%1$s에게 보냈어요</string>
-    <string name="notify_birthday">오늘은 %1$s의 생일이에요.</string>
     <string name="garden_stoneA11y">%1$s의 돌, %2$s. 두 번 탭하면 자세히 보기</string>
     <string name="garden_pet">쓰다듬기</string>
     <string name="widget_family_garden">가족의 정원 · 정원</string>
@@ -437,9 +436,8 @@
     <string name="look_done_night">창밖의 밤을 잘 바라봤어요.</string>
     <string name="notify_evening">오늘의 한 줄</string>
     <string name="notify_eveningText">오늘 하루를 한 줄로 떠나보낼까요?</string>
-    <string name="notify_eveningRow">저녁 한 줄 알림</string>
-    <string name="notify_eveningFooter">오늘 한 줄을 아직 보내지 않은 날에만, 고른 시각에 한 번.</string>
-    <string name="notify_eveningHour">%1$s시</string>
+    <string name="notify_eveningRow">하루 정리 알림</string>
+    <string name="notify_eveningFooter">밤 10시에 한 번. 오늘 한 줄을 이미 보낸 날은 울리지 않아요.</string>
     <string name="notify_morningBreath">아침 알림을 누르면 1분, 하루를 여는 숨</string>
     <string name="haru_state_rest">눈을 감고 쉬고 있어요</string>
     <string name="haru_state_smile">웃고 있어요</string>
@@ -497,4 +495,16 @@
     <string name="record_card">%1$s의 정원이 피었어요</string>
     <string name="record_cardNight">%1$s의 정원에 별이 떴어요</string>
     <string name="record_dayPattern">M월 d일</string>
+    <string name="notify_tomorrowRow">내일 알림</string>
+    <string name="notify_tomorrowFooter">내일이 가족의 생일이거나 특별한 날이면, 전날 저녁 7시에 한 번 알려요.</string>
+    <string name="notify_tomorrowBirthday">내일은 %1$s 생일이에요</string>
+    <string name="notify_tomorrowBirthdayText">정원에서 생일 카드를 미리 보낼 수 있어요.</string>
+    <string name="notify_tomorrowSpecial">내일은 %1$s, %2$s년 전 그날이에요</string>
+    <string name="notify_tomorrowSpecialText">인생 달력에 그날의 꽃이 피어 있어요.</string>
+    <string name="notify_gardenText">앱을 열어 천천히 둘러보세요.</string>
+    <string name="bday_tomorrow">내일은 %1$s 생일이에요</string>
+    <string name="bday_today">오늘은 %1$s 생일이에요</string>
+    <string name="bday_mineTomorrow">내일은 생일이에요</string>
+    <string name="bday_mineToday">생일 축하해요</string>
+    <string name="stone_birthdayTomorrow">내일이에요</string>
 </resources>

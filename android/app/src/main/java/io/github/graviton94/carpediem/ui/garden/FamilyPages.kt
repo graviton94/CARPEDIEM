@@ -108,7 +108,8 @@ fun StoneScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, id: S
     val name = person?.name ?: stringResource(R.string.garden_haru)
     val birth = if (me) profile.birthDate else person!!.birth
     val metOn = person?.metOn ?: state.store.startDate
-    val birthday = Family.isBirthday(birth, today)
+    val soon = Family.birthdaySoon(birth, now, Tokens.Notify.birthdayFrom.toInt())
+    val birthday = soon != null
     var breathSheet by remember { mutableStateOf(false) }
     BackHandler(onBack = onBack)
     SkyBackground {
@@ -127,9 +128,11 @@ fun StoneScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, id: S
                     TokenText(stringResource(if (person?.kind == Kind.PET) R.string.stone_petAge else R.string.stone_age, "$age"), Tokens.TypeScale.footnote, color = p.secondary)
                 }
             }
-            // 가족의 생일 아침: 그 사람의 돌 · 모자 · 케이크가 그려진 카드 한 장
+            // 가족의 생일 (전날 저녁부터 그날까지): 나와 그 사람의 돌이 나란히 앉은 카드 한 장
+            if (birthday) TokenText(if (me) stringResource(if (soon == 0) R.string.bday_mineToday else R.string.bday_mineTomorrow) else stringResource(if (soon == 0) R.string.bday_today else R.string.bday_tomorrow, name),
+                Tokens.TypeScale.callout.serif(), Modifier.fillMaxWidth(), align = TextAlign.Center)
             if (birthday && !me) GardenButton(stringResource(R.string.bday_card), {
-                io.github.graviton94.carpediem.share.ShareCards.send(ctx, io.github.graviton94.carpediem.share.ShareCards.birthday(ctx, name, person!!.seed, person.kind == Kind.PET), "birthday-${person.id}-$today")
+                io.github.graviton94.carpediem.share.ShareCards.send(ctx, io.github.graviton94.carpediem.share.ShareCards.birthday(ctx, name, person!!.seed, person.kind == Kind.PET, state.store.haruSeed, SkyTime.isDark(now)), "birthday-${person.id}-$today")
             }, filled = true, seed = 873)
             // 함께한 날 · 다음 생일
             Row(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
@@ -137,7 +140,7 @@ fun StoneScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, id: S
                 Info(stringResource(if (me) R.string.stone_sinceMet else R.string.stone_together), stringResource(R.string.stone_days, Labels.number(Family.daysUntil(today, since).toInt().coerceAtLeast(0))), 870, Modifier.weight(1f))
                 if (birth != null) {
                     val next = Family.nextBirthday(birth, today); val left = Family.daysUntil(next, today).toInt()
-                    Info(stringResource(R.string.stone_nextBirthday), if (left == 0) stringResource(R.string.stone_birthdayToday) else stringResource(R.string.stone_days, Labels.number(left)), 872, Modifier.weight(1f))
+                    Info(stringResource(R.string.stone_nextBirthday), when (left) { 0 -> stringResource(R.string.stone_birthdayToday); 1 -> stringResource(R.string.stone_birthdayTomorrow); else -> stringResource(R.string.stone_days, Labels.number(left)) }, 872, Modifier.weight(1f))
                 }
             }
             // 그 사람의 인생 달력 (조약돌): 함께한 해는 호박빛 테두리, 남은 칸은 켜야만

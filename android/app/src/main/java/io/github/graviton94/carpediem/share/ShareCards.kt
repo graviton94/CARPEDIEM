@@ -16,6 +16,7 @@ import io.github.graviton94.carpediem.R
 import io.github.graviton94.carpediem.core.DayLine
 import io.github.graviton94.carpediem.core.Feeling
 import io.github.graviton94.carpediem.design.Tokens
+import io.github.graviton94.carpediem.ui.garden.Crayon
 import io.github.graviton94.carpediem.ui.garden.HaruArt
 import io.github.graviton94.carpediem.ui.garden.birthdayCake
 import io.github.graviton94.carpediem.ui.garden.drawHaru
@@ -155,28 +156,69 @@ object ShareCards {
         return b
     }
 
-    /** 생일 카드: 그 사람의 돌이 생일 모자를 쓰고, 앞에 작은 케이크. “○○, 생일 축하해요.” */
-    fun birthday(ctx: Context, name: String, seed: Long, pet: Boolean): Bitmap {
+    /**
+     * 생일 카드: 나와 그 사람의 돌이 작게 나란히, 사이에 케이크와 작은 하트. 그 사람만 고깔, 둘 다 웃는 눈 · 발그레한 볼.
+     * 낮엔 종이에 깃발 줄, 밤 (보내는 때가 어두우면) 엔 남색에 작은 전구 줄과 별, 촛불 빛.
+     */
+    fun birthday(ctx: Context, name: String, seed: Long, pet: Boolean, mySeed: Long, night: Boolean): Bitmap {
         val w = S.lineW.toInt(); val h = S.lineH.toInt(); val pad = S.pad
-        val (b, c) = base(w, h)
-        val tp = paint(ctx, S.text, ink)
-        text(c, ctx.getString(R.string.bday_cardTitle, name), tp, pad, h * 0.16f, (w - pad * 2).toInt())
-        text(c, ctx.getString(R.string.bday_cardSub), paint(ctx, S.small, inkSoft), pad, h * 0.16f + S.text * 1.8f, (w - pad * 2).toInt())
-        val art = HaruArt.of(seed, false)
-        val stoneW = w * (if (pet) 0.26f else 0.34f); val k = stoneW / art.meta.bbox.width; val gy = h * 0.74f; val cx = w / 2f
-        c.save(); c.translate(cx - art.meta.bbox.center.x * k, gy - art.meta.ground * k)
-        androidx.compose.ui.graphics.drawscope.CanvasDrawScope().draw(androidx.compose.ui.unit.Density(1f), androidx.compose.ui.unit.LayoutDirection.Ltr,
-            androidx.compose.ui.graphics.Canvas(c), androidx.compose.ui.geometry.Size(art.meta.box * k, art.meta.box * k)) { drawHaru(art, k, smile = 1f, hat = true) }
-        c.restore()
-        // 돌 앞 케이크
-        val cw = stoneW * 0.42f
-        c.save(); c.translate(cx + stoneW * 0.42f - cw / 2, gy - cw + 4f)
+        val (b, c) = board(w, h, night)
+        val fg = if (night) Y.plain.toArgb() else ink; val soft = if (night) Y.plain.copy(alpha = 0.7f).toArgb() else inkSoft
+        val P = Tokens.Garden.Party
+        // 깃발 줄 · 전구 줄 (위), 밤엔 별 몇 개
+        drawCompose(c, 0f, 0f, w.toFloat(), h.toFloat()) {
+            val y0 = h * 0.08f; val sag = h * 0.05f; val x1 = w * 0.1f; val x2 = w * 0.9f
+            val string = androidx.compose.ui.graphics.Path().apply { moveTo(x1, y0); quadraticTo(w / 2f, y0 + sag * 2, x2, y0) }
+            drawPath(string, if (night) Y.plain.copy(alpha = 0.55f) else Tokens.Garden.Colors.ink.copy(alpha = 0.6f), style = androidx.compose.ui.graphics.drawscope.Stroke(3f))
+            val cols = listOf(Tokens.Garden.Party.Colors.stripe, Tokens.Garden.Party.Colors.flame, Tokens.Garden.Mood.Colors.calm, Tokens.Garden.Mood.Colors.hope, Tokens.Garden.Party.Colors.heart)
+            for (k in 1 until 9) {
+                val t = k / 9f
+                val px = (1 - t) * (1 - t) * x1 + 2 * (1 - t) * t * (w / 2f) + t * t * x2
+                val py = (1 - t) * (1 - t) * y0 + 2 * (1 - t) * t * (y0 + sag * 2) + t * t * y0
+                if (night) {
+                    val o = androidx.compose.ui.geometry.Offset(px, py + w * 0.012f)
+                    drawCircle(androidx.compose.ui.graphics.Brush.radialGradient(listOf(Tokens.Garden.Party.Colors.glow.copy(alpha = 0.45f), androidx.compose.ui.graphics.Color.Transparent), o, w * 0.03f), w * 0.03f, o)
+                    drawOval(Tokens.Garden.Party.Colors.flameCore, androidx.compose.ui.geometry.Offset(px - w * 0.007f, py + w * 0.003f), androidx.compose.ui.geometry.Size(w * 0.014f, w * 0.02f))
+                } else {
+                    val flag = androidx.compose.ui.graphics.Path().apply { moveTo(px - w * 0.022f, py); lineTo(px + w * 0.022f, py); lineTo(px, py + w * 0.045f); close() }
+                    drawPath(flag, cols[k % cols.size])
+                }
+            }
+            if (night) { val r = Crayon.Rng(5); repeat(18) { drawCircle(Y.core, 1.5f + 2f * r.next(), androidx.compose.ui.geometry.Offset(w * (0.08f + 0.84f * r.next()), h * (0.32f + 0.25f * r.next())), 0.2f + 0.4f * r.next()) } }
+        }
+        val tp = paint(ctx, S.text, fg)
+        text(c, ctx.getString(R.string.bday_cardTitle, name), tp, pad, h * 0.17f, (w - pad * 2).toInt())
+        text(c, ctx.getString(R.string.bday_cardSub), paint(ctx, S.small, soft), pad, h * 0.17f + S.text * 1.8f, (w - pad * 2).toInt())
+        val gy = h * 0.72f; val cx = w / 2f
+        val myArt = HaruArt.of(mySeed, false); val art = HaruArt.of(seed, false)
+        val sw = w * P.card
+        fun stone(a: HaruArt, x: Float, width: Float, hat: Boolean) {
+            val k = width / a.meta.bbox.width
+            c.save(); c.translate(x - a.meta.bbox.center.x * k, gy - a.meta.ground * k)
+            androidx.compose.ui.graphics.drawscope.CanvasDrawScope().draw(androidx.compose.ui.unit.Density(1f), androidx.compose.ui.unit.LayoutDirection.Ltr,
+                androidx.compose.ui.graphics.Canvas(c), androidx.compose.ui.geometry.Size(a.meta.box * k, a.meta.box * k)) { drawHaru(a, k, smile = 1f, blush = 0.8f, hat = hat) }
+            c.restore()
+        }
+        // 촛불 빛 (밤): 두 돌을 비춤
+        if (night) drawCompose(c, 0f, 0f, w.toFloat(), h.toFloat()) {
+            val o = androidx.compose.ui.geometry.Offset(cx, gy - sw * 0.5f)
+            drawCircle(androidx.compose.ui.graphics.Brush.radialGradient(listOf(Tokens.Garden.Party.Colors.glow.copy(alpha = 0.22f), androidx.compose.ui.graphics.Color.Transparent), o, sw * 1.6f), sw * 1.6f, o)
+        }
+        val gap = sw * 0.95f
+        stone(myArt, cx - gap, sw, false)
+        stone(art, cx + gap, sw * (if (pet) 0.78f else 1f), true)
+        val cw = sw * 0.62f
+        c.save(); c.translate(cx - cw / 2, gy - cw + 4f)
         androidx.compose.ui.graphics.drawscope.CanvasDrawScope().draw(androidx.compose.ui.unit.Density(1f), androidx.compose.ui.unit.LayoutDirection.Ltr,
             androidx.compose.ui.graphics.Canvas(c), androidx.compose.ui.geometry.Size(cw, cw)) { birthdayCake() }
         c.restore()
-        val p = Paint(Paint.ANTI_ALIAS_FLAG).apply { strokeWidth = 5f; color = ink; strokeCap = Paint.Cap.ROUND }
-        c.drawLine(cx - stoneW * 1.3f, gy, cx + stoneW * 1.3f, gy, p)
-        text(c, ctx.getString(R.string.share_footer), paint(ctx, S.small * 0.8f, inkSoft), pad, h - pad * 1.25f, (w - pad * 2).toInt())
+        // 작은 하트
+        val hp = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Tokens.Garden.Party.Colors.heart.toArgb() }
+        val hx = cx; val hy = gy - cw * 1.35f; val hs = sw * 0.07f
+        c.drawPath(android.graphics.Path().apply { moveTo(hx, hy + hs); cubicTo(hx - hs * 2f, hy - hs * 0.6f, hx - hs, hy - hs * 2.2f, hx, hy - hs); cubicTo(hx + hs, hy - hs * 2.2f, hx + hs * 2f, hy - hs * 0.6f, hx, hy + hs); close() }, hp)
+        val lp = Paint(Paint.ANTI_ALIAS_FLAG).apply { strokeWidth = 5f; color = fg; strokeCap = Paint.Cap.ROUND }
+        c.drawLine(cx - sw * 2.1f, gy, cx + sw * 2.1f, gy, lp)
+        text(c, ctx.getString(R.string.share_footer), paint(ctx, S.small * 0.8f, soft), pad, h - pad * 1.25f, (w - pad * 2).toInt())
         return b
     }
 

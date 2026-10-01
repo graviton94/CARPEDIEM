@@ -69,6 +69,9 @@ open --ez cd.year true --ez cd.openYear true --es cd.now 2026-12-31T15:00;      
 # 1.7: 특별한 날 꽃 (인생 달력) · 엄마 생일의 돌 페이지 (생일 카드 보내기)
 open --ez cd.special true --es cd.now $NOW; sleep 5; swipe_up; sleep 3; swipe_up;                      shot g47_special 3
 open --es cd.screen stone --es cd.stoneId mom00001 --es cd.now $NOW;                                  shot g48_birthday_card 5
+# 생일 전날 밤: 엄마의 돌이 먼저 고깔을 쓰고 “내일은 엄마 생일이에요”
+open --es cd.now 2026-09-29T21:00;                                                                     shot g54_birthday_eve 5
+open --es cd.screen stone --es cd.stoneId mom00001 --es cd.now 2026-09-29T21:00;                      shot g55_birthday_eve_stone 4
 # 별자리 정원: 마음의 기록 (이번 달 · 낮/밤) · 지난 달의 정원 카드 · 한 해의 띠 (밤) · 지난 정원
 open --ez cd.months true --ez cd.openMonth true --es cd.now 2026-09-28T15:00;                       shot g49_record_month 6
 open --ez cd.openMonth true --es cd.now 2026-09-28T22:30;                                             shot g50_record_month_night 6

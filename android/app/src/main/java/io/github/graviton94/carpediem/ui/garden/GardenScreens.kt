@@ -134,17 +134,21 @@ internal fun Haru(load: HaruLoad, scale: Dp, modifier: Modifier, blinkKick: Int 
 }
 
 /** 정원에 앉는 돌 하나 (내 돌 id = null). */
-internal class Slot(val id: String?, val name: String, val art: HaruArt, val scale: Dp, val progress: Double?, val birthday: Boolean)
+internal class Slot(val id: String?, val name: String, val art: HaruArt, val scale: Dp, val progress: Double?, val soon: Int?) {
+    /** 생일 전날 저녁부터 그날 끝까지 모자. */
+    val birthday get() = soon != null
+}
 
 /** 나와 가족의 돌 (나부터). 반려동물은 petScale 만큼 작게. */
 @Composable
 internal fun gardenSlots(state: AppState, profile: LifeProfile, s: LifeSnapshot, now: LocalDateTime, base: Dp): List<Slot> {
     val today = now.toLocalDate()
     val sprout = s.season == Season.SPRING
-    val me = Slot(null, stringResource(R.string.family_me), HaruArt.of(state.store.haruSeed, sprout), base, s.progress, Family.isBirthday(profile.birthDate, today))
+    val from = Tokens.Notify.birthdayFrom.toInt()
+    val me = Slot(null, stringResource(R.string.family_me), HaruArt.of(state.store.haruSeed, sprout), base, s.progress, Family.birthdaySoon(profile.birthDate, now, from))
     return listOf(me) + state.people.map { p ->
         val prog = p.birth?.let { LifeSnapshot(it, state.store.expectancy(p), now).progress }
-        Slot(p.id, p.name, HaruArt.of(p.seed, sprout), if (p.kind == Kind.PET) base * G.Family.petScale else base, prog, Family.isBirthday(p.birth, today))
+        Slot(p.id, p.name, HaruArt.of(p.seed, sprout), if (p.kind == Kind.PET) base * G.Family.petScale else base, prog, Family.birthdaySoon(p.birth, now, from))
     }
 }
 
@@ -315,8 +319,8 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                     HaruFigure(sl.art, sl.scale, Modifier.offset(left, top), blinkKick = if (sl.id == null) state.blinkKick else 0, hat = sl.birthday, tiltOn = sl.id == null, lookDown = if (sl.id == null && heavyToday) G.Care.lookDown else 0f,
                         a11y = stringResource(R.string.garden_stoneA11y, sl.name, Labels.stone(ctx, sl.art.meta.stone)), onOpen = { onStone(sl.id) },
                         onLongPress = if (sl.id == null && !bare) ({ breathSheet = true }) else null)
-                    // 생일: 돌 앞에 작은 케이크
-                    if (sl.birthday) {
+                    // 생일 당일: 돌 앞에 작은 케이크 (전날 저녁엔 모자만)
+                    if (sl.soon == 0) {
                         val cw = u * Tokens.Garden.Party.cakeWidth
                         androidx.compose.foundation.Canvas(Modifier.offset(xs[i] + u * widths[i].toFloat() / u.value * 0.18f - cw / 2, gy - cw + u * 1.5f).size(cw)) { birthdayCake() }
                     }
@@ -339,6 +343,14 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 if (!bare) Box(Modifier.offset(y = gy + u * (G.Layout.labelGap + if (family) G.Layout.labelRow * labelRows else 0f)).fillMaxWidth()) {
                     TokenText(stringResource(R.string.garden_age0), Tokens.TypeScale.caption1, Modifier.centerAt(px.first, 0f, px.second), color = p.secondary)
                     TokenText(stringResource(R.string.expectancy_value, Labels.years(s.expectancy)), Tokens.TypeScale.caption1, Modifier.centerAt(px.second, px.first, with(density) { screenW.toPx() }), color = p.secondary)
+                }
+                // 생일: 전날 저녁부터 한 줄 (“내일은 엄마 생일이에요”), 그날엔 “오늘은 …”
+                slots.firstOrNull { it.soon != null }?.takeIf { !bare }?.let { sl ->
+                    val line = when {
+                        sl.id == null -> stringResource(if (sl.soon == 0) R.string.bday_mineToday else R.string.bday_mineTomorrow)
+                        else -> stringResource(if (sl.soon == 0) R.string.bday_today else R.string.bday_tomorrow, sl.name)
+                    }
+                    TokenText(line, Tokens.TypeScale.callout.serif(), Modifier.offset(y = gy + u * (G.Layout.labelGap + (if (family) G.Layout.labelRow * labelRows else 0f) + G.Layout.labelRow * 1.6f)).fillMaxWidth(), align = TextAlign.Center)
                 }
                 // 잠들기 전 정원: 화면 전체를 조금 더 어둡게
                 if (sleepy) Box(Modifier.fillMaxSize().background(Color.Black.copy(alpha = G.SleepGarden.dim)))

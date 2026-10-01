@@ -144,9 +144,11 @@ enum Tokens {
     }
 
     enum Notify {
-        static let hour: CGFloat = 8.0
-        static let minute: CGFloat = 50.0
-        static let eveningHour: CGFloat = 21.0
+        static let hour: CGFloat = 7.0
+        static let minute: CGFloat = 0.0
+        static let eveningHour: CGFloat = 22.0
+        static let tomorrowHour: CGFloat = 19.0
+        static let birthdayFrom: CGFloat = 17.0
     }
 
     enum Garden {
@@ -343,13 +345,23 @@ enum Tokens {
             static let hatHeight: CGFloat = 26.0
             static let cakeWidth: CGFloat = 11.0
             enum Colors {
-                static let hat: UInt32 = 0xE9A43AFF
-                static let stripe: UInt32 = 0xD98C7AFF
-                static let pompom: UInt32 = 0xF6F1E6FF
-                static let cake: UInt32 = 0xF4EEDFFF
-                static let cream: UInt32 = 0xD98C7AFF
+                static let hat: UInt32 = 0xF7E9CFFF
+                static let stripe: UInt32 = 0xEFA27CFF
+                static let dot: UInt32 = 0xFFFFFFFF
+                static let pompom: UInt32 = 0xFFF8ECFF
+                static let cake: UInt32 = 0xF1C9B8FF
+                static let cream: UInt32 = 0xFFF6EAFF
+                static let berry: UInt32 = 0xE2655FFF
+                static let plate: UInt32 = 0xFBF8F0FF
+                static let candle: UInt32 = 0xFBF8F0FF
+                static let candleStripe: UInt32 = 0x7FA6C4FF
                 static let flame: UInt32 = 0xF0A84AFF
+                static let flameCore: UInt32 = 0xFFE7A8FF
+                static let glow: UInt32 = 0xF4C37AFF
+                static let heart: UInt32 = 0xE98F86FF
             }
+            static let tilt: CGFloat = 12.0
+            static let card: CGFloat = 0.2
         }
         enum Breath {
             static let calmIn: CGFloat = 4.0

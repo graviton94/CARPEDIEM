@@ -146,8 +146,8 @@
     <string name="obj_acorn_line">A season has turned.</string>
     <string name="notify_channel">Today\'s words</string>
     <string name="notify_keepsake">New in your garden: %1$s</string>
-    <string name="notify_row">Daily notification</string>
-    <string name="notify_footer">Today\'s words, once each morning.\nAlso when something new is in the garden.</string>
+    <string name="notify_row">Morning note</string>
+    <string name="notify_footer">Today’s words, once at 7 each morning.\nOn days a letter or a garden arrives, that comes first.</string>
     <string name="dev_unlocked">Developer mode on.</string>
     <string name="garden_haruA11y">Haru, %1$s</string>
     <string name="collection">Keepsakes</string>
@@ -282,7 +282,6 @@
     <string name="stone_petAge">%1$s yrs</string>
     <string name="letgo_to">To someone (optional)</string>
     <string name="letgo_modalTo">Sent to %1$s</string>
-    <string name="notify_birthday">Today is %1$s\'s birthday.</string>
     <string name="garden_stoneA11y">%1$s\'s stone, %2$s. Double-tap for details</string>
     <string name="garden_pet">Pet</string>
     <string name="widget_family_garden">Family garden · Garden</string>
@@ -437,9 +436,8 @@
     <string name="look_done_night">A good long look at the night.</string>
     <string name="notify_evening">Today’s line</string>
     <string name="notify_eveningText">Shall we send today off in a line?</string>
-    <string name="notify_eveningRow">Evening reminder</string>
-    <string name="notify_eveningFooter">Once, at the hour you choose, only on days you haven’t sent a line.</string>
-    <string name="notify_eveningHour">%1$s:00</string>
+    <string name="notify_eveningRow">End-of-day note</string>
+    <string name="notify_eveningFooter">Once at 10 pm, only on days you haven’t sent a line.</string>
     <string name="notify_morningBreath">Tap the morning reminder for a minute of opening breath</string>
     <string name="haru_state_rest">resting with eyes closed</string>
     <string name="haru_state_smile">smiling</string>
@@ -497,4 +495,16 @@
     <string name="record_card">The garden of %1$s has bloomed</string>
     <string name="record_cardNight">Stars are out over the garden of %1$s</string>
     <string name="record_dayPattern">MMMM d</string>
+    <string name="notify_tomorrowRow">A note for tomorrow</string>
+    <string name="notify_tomorrowFooter">When tomorrow is a family birthday or a special day, a note at 7 the evening before.</string>
+    <string name="notify_tomorrowBirthday">Tomorrow is %1$s’s birthday</string>
+    <string name="notify_tomorrowBirthdayText">You can send a birthday card from the garden.</string>
+    <string name="notify_tomorrowSpecial">Tomorrow: %1$s, %2$s yr ago</string>
+    <string name="notify_tomorrowSpecialText">Its flower is on your life calendar.</string>
+    <string name="notify_gardenText">Open the app and take a slow look.</string>
+    <string name="bday_tomorrow">Tomorrow is %1$s’s birthday</string>
+    <string name="bday_today">Today is %1$s’s birthday</string>
+    <string name="bday_mineTomorrow">Tomorrow is your birthday</string>
+    <string name="bday_mineToday">Happy birthday</string>
+    <string name="stone_birthdayTomorrow">Tomorrow</string>
 </resources>

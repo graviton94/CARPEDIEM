@@ -62,7 +62,13 @@ class AppState(private val context: Context) {
     /** 온보딩 · 설정에서 고치는 중인 정보 (나라 선택 화면을 다녀와도 유지). */
     var draft by mutableStateOf<LifeProfile?>(null)
 
-    init { store.ensureQuoteSeed(); quote = store.todaysQuote() }
+    init {
+        store.ensureQuoteSeed(); quote = store.todaysQuote()
+        // 알림 시각이 바뀌어도 켜 둔 알림은 새 시각으로 (예전에 맞춘 시각에 머물지 않게)
+        if (store.notify) io.github.graviton94.carpediem.notify.Daily.schedule(context, true)
+        if (store.eveningNotify) io.github.graviton94.carpediem.notify.Evening.schedule(context, true)
+        if (store.tomorrowNotify) io.github.graviton94.carpediem.notify.Tomorrow.schedule(context, true)
+    }
     // question 은 fixedNow 를 정한 뒤 (MainActivity) · 날이 바뀔 때 refreshQuestion 으로 채운다
 
     fun save(p: LifeProfile) { store.profile = p; profile = p; Widgets.refresh(context) }
@@ -74,13 +80,17 @@ class AppState(private val context: Context) {
     fun opened() { store.markOpened(); checkRandomRecall() }
     var eveningNotify by mutableStateOf(store.eveningNotify)
         private set
-    var eveningHour by mutableStateOf(store.eveningHour)
+    var tomorrowNotify by mutableStateOf(store.tomorrowNotify)
         private set
     var morningBreath by mutableStateOf(store.morningBreath)
         private set
-    fun changeEvening(on: Boolean, hour: Int = eveningHour) {
-        store.eveningNotify = on; store.eveningHour = hour; eveningNotify = on; eveningHour = hour
-        io.github.graviton94.carpediem.notify.Evening.schedule(context, on, hour)
+    fun changeEvening(on: Boolean) {
+        store.eveningNotify = on; eveningNotify = on
+        io.github.graviton94.carpediem.notify.Evening.schedule(context, on)
+    }
+    fun changeTomorrow(on: Boolean) {
+        store.tomorrowNotify = on; tomorrowNotify = on
+        io.github.graviton94.carpediem.notify.Tomorrow.schedule(context, on)
     }
     fun changeMorningBreath(v: Boolean) { store.morningBreath = v; morningBreath = v }
     fun changeNotify(v: Boolean) { store.notify = v; notify = v; io.github.graviton94.carpediem.notify.Daily.schedule(context, v) }
@@ -364,7 +374,7 @@ class AppState(private val context: Context) {
     fun eraseAll() {
         previewQ = false
         store.eraseAll(); store.ensureQuoteSeed(); unit = store.unit; grid = store.grid; defaultUnit = unit; defaultGrid = grid; lines = emptyList(); streaks = emptyMap(); keepLines = true; care = null; careOn = true; question = null; answering = null; lettersOpened = emptySet(); toast = null; randomLine = null; people = emptyList(); memories = emptyList(); memoryLines = emptyList(); wishes = emptyMap(); wishSkipped = emptySet(); specialDays = emptyList(); yearsOpened = emptySet(); breaths = emptyList(); breathKind = store.breathKind; breathMinutes = store.breathMinutes; sound = store.sound
-        profile = null; quoteLanguage = store.quoteLanguage; quote = store.todaysQuote(); design = store.design; meetPending = false; previewAll = false; notify = false; devMode = false; io.github.graviton94.carpediem.notify.Daily.schedule(context, false); io.github.graviton94.carpediem.notify.Evening.schedule(context, false, 21); eveningNotify = false; morningBreath = true; Widgets.refresh(context)
+        profile = null; quoteLanguage = store.quoteLanguage; quote = store.todaysQuote(); design = store.design; meetPending = false; previewAll = false; notify = false; devMode = false; io.github.graviton94.carpediem.notify.Daily.schedule(context, false); io.github.graviton94.carpediem.notify.Evening.schedule(context, false); eveningNotify = false; io.github.graviton94.carpediem.notify.Tomorrow.schedule(context, false); tomorrowNotify = false; morningBreath = true; Widgets.refresh(context)
     }
 
     fun defaultProfile(): LifeProfile {

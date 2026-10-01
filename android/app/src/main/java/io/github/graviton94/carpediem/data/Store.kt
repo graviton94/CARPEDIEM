@@ -95,9 +95,9 @@ class Store(context: Context) {
     var eveningNotify: Boolean
         get() = prefs.getBoolean("eveningNotify", false)
         set(v) = prefs.edit().putBoolean("eveningNotify", v).apply()
-    var eveningHour: Int
-        get() = prefs.getInt("eveningHour", io.github.graviton94.carpediem.design.Tokens.Notify.eveningHour.toInt())
-        set(v) = prefs.edit().putInt("eveningHour", v).apply()
+    var tomorrowNotify: Boolean
+        get() = prefs.getBoolean("tomorrowNotify", false)
+        set(v) = prefs.edit().putBoolean("tomorrowNotify", v).apply()
     /** 아침 알림을 누르면 숨, 쉼 1분 (하루를 여는 숨). 기본 켬. */
     var morningBreath: Boolean
         get() = prefs.getBoolean("morningBreath", true)

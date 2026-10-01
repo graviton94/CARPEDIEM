@@ -144,8 +144,8 @@
 "obj.acorn.line" = "A season has turned.";
 "notify.channel" = "Today's words";
 "notify.keepsake" = "New in your garden: %1$@";
-"notify.row" = "Daily notification";
-"notify.footer" = "Today's words, once each morning.\nAlso when something new is in the garden.";
+"notify.row" = "Morning note";
+"notify.footer" = "Today’s words, once at 7 each morning.\nOn days a letter or a garden arrives, that comes first.";
 "dev.unlocked" = "Developer mode on.";
 "garden.haruA11y" = "Haru, %1$@";
 "collection" = "Keepsakes";
@@ -280,7 +280,6 @@
 "stone.petAge" = "%1$@ yrs";
 "letgo.to" = "To someone (optional)";
 "letgo.modalTo" = "Sent to %1$@";
-"notify.birthday" = "Today is %1$@'s birthday.";
 "garden.stoneA11y" = "%1$@'s stone, %2$@. Double-tap for details";
 "garden.pet" = "Pet";
 "widget.family.garden" = "Family garden · Garden";
@@ -435,9 +434,8 @@
 "look.done.night" = "A good long look at the night.";
 "notify.evening" = "Today’s line";
 "notify.eveningText" = "Shall we send today off in a line?";
-"notify.eveningRow" = "Evening reminder";
-"notify.eveningFooter" = "Once, at the hour you choose, only on days you haven’t sent a line.";
-"notify.eveningHour" = "%1$@:00";
+"notify.eveningRow" = "End-of-day note";
+"notify.eveningFooter" = "Once at 10 pm, only on days you haven’t sent a line.";
 "notify.morningBreath" = "Tap the morning reminder for a minute of opening breath";
 "haru.state.rest" = "resting with eyes closed";
 "haru.state.smile" = "smiling";
@@ -495,3 +493,15 @@
 "record.card" = "The garden of %1$@ has bloomed";
 "record.cardNight" = "Stars are out over the garden of %1$@";
 "record.dayPattern" = "MMMM d";
+"notify.tomorrowRow" = "A note for tomorrow";
+"notify.tomorrowFooter" = "When tomorrow is a family birthday or a special day, a note at 7 the evening before.";
+"notify.tomorrowBirthday" = "Tomorrow is %1$@’s birthday";
+"notify.tomorrowBirthdayText" = "You can send a birthday card from the garden.";
+"notify.tomorrowSpecial" = "Tomorrow: %1$@, %2$@ yr ago";
+"notify.tomorrowSpecialText" = "Its flower is on your life calendar.";
+"notify.gardenText" = "Open the app and take a slow look.";
+"bday.tomorrow" = "Tomorrow is %1$@’s birthday";
+"bday.today" = "Today is %1$@’s birthday";
+"bday.mineTomorrow" = "Tomorrow is your birthday";
+"bday.mineToday" = "Happy birthday";
+"stone.birthdayTomorrow" = "Tomorrow";
