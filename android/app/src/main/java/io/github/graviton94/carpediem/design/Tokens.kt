@@ -160,6 +160,7 @@ object Tokens {
             val bars = listOf(Color(0xFFF3C66A), Color(0xFFE9C98E), Color(0xFFC9B98E), Color(0xFFA9BC84))
             val calendar = listOf(Color(0xFFA9BC84), Color(0xFF8FAA6A), Color(0xFFC9A46A), Color(0xFFA8B2B6))
             val fallback = Color(0xFFA7A399)
+            val moss = Color(0xFFA9BC7A)
         }
         object Layout {
             const val groundRatio = 0.76f

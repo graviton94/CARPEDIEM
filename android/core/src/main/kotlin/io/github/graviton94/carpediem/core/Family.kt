@@ -25,16 +25,20 @@ data class Person(
     val showAhead: Boolean = false,
     /** 함께한 첫날을 직접 정했으면 그날 (null = 저절로: 두 삶이 겹친 첫날). */
     val together: LocalDate? = null,
+    /** 기억의 돌: 곁을 떠난 날 (적어 준 경우만). */
+    val until: LocalDate? = null,
+    /** 기억의 돌: 정원 하늘에 작은 별로 둘지 (기본 켬). */
+    val star: Boolean = true,
 )
 
 object Family {
-    /** 나를 포함해 한 정원에 앉는 돌 수. */
     /** 돌이 많아 길(span)에 다 앉지 못하면 모두를 같은 비율로 줄인다 (1 = 그대로). gap = 돌 사이 최소 간격. */
     fun fitScale(widths: List<Double>, span: Double, gap: Double): Double {
         val need = widths.sum() + gap * (widths.size - 1).coerceAtLeast(0)
         return if (need <= span || widths.isEmpty()) 1.0 else ((span - gap * (widths.size - 1)) / widths.sum()).coerceIn(0.3, 1.0)
     }
 
+    /** 나를 포함해 한 정원에 앉는 돌 수. */
     const val MAX = 9
     const val NAME_MAX = 8
     const val REROLLS = 3
@@ -44,7 +48,8 @@ object Family {
     // ───── 저장: 한 줄에 한 명, 칸은 탭 ─────
     fun encode(list: List<Person>): String = list.joinToString("\n") { p ->
         listOf(p.id, cleanName(p.name), p.kind.name, p.species?.name ?: "-", p.birth?.toEpochDay()?.toString() ?: "-", p.sex.name, p.country,
-            p.seed.toString(), p.rerolls.toString(), p.metOn.toEpochDay().toString(), if (p.showAhead) "1" else "0", p.together?.toEpochDay()?.toString() ?: "-").joinToString("\t")
+            p.seed.toString(), p.rerolls.toString(), p.metOn.toEpochDay().toString(), if (p.showAhead) "1" else "0", p.together?.toEpochDay()?.toString() ?: "-",
+            p.until?.toEpochDay()?.toString() ?: "-", if (p.star) "1" else "0").joinToString("\t")
     }
 
     fun decode(s: String?): List<Person> = s.orEmpty().lineSequence().mapNotNull { row ->
@@ -52,7 +57,8 @@ object Family {
         runCatching {
             Person(f[0], f[1], Kind.valueOf(f[2]), f[3].takeIf { it != "-" }?.let { Species.valueOf(it) }, f[4].toLongOrNull()?.let { LocalDate.ofEpochDay(it) },
                 Sex.valueOf(f[5]), f[6], f[7].toLong(), f[8].toInt(), LocalDate.ofEpochDay(f[9].toLong()), f[10] == "1",
-                f.getOrNull(11)?.toLongOrNull()?.let { LocalDate.ofEpochDay(it) })
+                f.getOrNull(11)?.toLongOrNull()?.let { LocalDate.ofEpochDay(it) },
+                f.getOrNull(12)?.toLongOrNull()?.let { LocalDate.ofEpochDay(it) }, f.getOrNull(13) != "0")
         }.getOrNull()
     }.toList()
 
@@ -113,4 +119,16 @@ object Family {
         val g = if (total + gap * (n - 1) <= hi - lo) gap else ((hi - lo - total) / (n - 1).coerceAtLeast(1)).coerceAtLeast(minGap)
         return solve(g).toList()
     }
+}
+
+/**
+ * 기억의 돌: 곁을 떠난 가족 · 반려동물. 정원 · 위젯 · 알림에는 나오지 않고 ‘기억의 자리’에서만 (가족 9개와 따로, 넷까지).
+ * 숫자(나이 · 떠난 지 며칠)는 쓰지 않고, 적어 준 날을 계절까지만 보여 준다.
+ */
+object Memories {
+    const val MAX = 4
+    /** 북반구 계절 (3–5 봄, 6–8 여름, 9–11 가을, 12–2 겨울). */
+    fun seasonOf(d: LocalDate): Season = when (d.monthValue) { in 3..5 -> Season.SPRING; in 6..8 -> Season.SUMMER; in 9..11 -> Season.AUTUMN; else -> Season.WINTER }
+    /** 함께한 첫날: 직접 정한 날, 없으면 생일 · 우리 집에 온 날. */
+    fun from(p: Person): LocalDate? = p.together ?: p.birth
 }

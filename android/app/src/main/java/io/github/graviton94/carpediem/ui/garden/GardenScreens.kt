@@ -217,6 +217,8 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 Image(GardenArt.strip(ctx, season), null, Modifier.offset(y = gy - u * G.Layout.stripLineY).fillMaxWidth().height(u * G.Layout.stripHeight), contentScale = ContentScale.FillBounds)
                 // 정원만 보기(bare)는 위 글자가 없어도 별이 상태바 · 소리 버튼에 닿지 않게
                 SkyTimeLayer(now, gy, if (bare) screenH * 0.14f else topBottom, gy - haruAbove - u * G.Layout.minSkyGap, Modifier.fillMaxSize())
+                // 기억의 돌 가운데 ‘하늘에 별로 두기’를 켠 것: 하늘에 따뜻한 별 하나 (돌멍하기에는 두지 않음)
+                if (!bare) MemoryStars(state, screenW, topBottom + u * G.Layout.minSkyGap, gy - haruAbove - u * G.Layout.minSkyGap * 2, Theme.gc.night)
 
                 // 위: 남은 시간 · 단위 · 오늘의 문장
                 if (!bare) Column(

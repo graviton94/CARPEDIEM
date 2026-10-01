@@ -327,4 +327,14 @@ class ReflectTest {
         val k = Family.fitScale(w, 330.0, 6.0)
         assertTrue(k < 1.0 && w.sum() * k + 6.0 * 8 <= 330.0 + 1e-6)
     }
+
+    @Test fun memoryStoneFields() {
+        val m = Person("m1", "보리", Kind.PET, Species.DOG, LocalDate.of(2011, 4, 2), seed = 7, metOn = LocalDate.of(2026, 10, 1), until = LocalDate.of(2024, 12, 20), star = false)
+        assertEquals(listOf(m), Family.decode(Family.encode(listOf(m))))
+        // 예전 기록 (칸 12개) 은 별 켬, 떠난 날 없음
+        val old = Family.decode(Family.encode(listOf(m.copy(until = null, star = true))).split('\t').take(12).joinToString("\t")).single()
+        assertEquals(null, old.until); assertTrue(old.star)
+        assertEquals(Season.WINTER, Memories.seasonOf(LocalDate.of(2024, 12, 20)))
+        assertEquals(Season.SPRING, Memories.seasonOf(LocalDate.of(2011, 4, 2)))
+    }
 }

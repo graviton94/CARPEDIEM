@@ -216,6 +216,15 @@ class Store(context: Context) {
         get() = Family.decode(prefs.getString("people", null))
         set(v) = prefs.edit().putString("people", Family.encode(v)).apply()
 
+    /** 기억의 돌 (곁을 떠난 가족 · 반려동물, 넷까지). 정원 · 위젯 · 알림에는 나오지 않는다. */
+    var memories: List<Person>
+        get() = Family.decode(prefs.getString("memories", null))
+        set(v) = prefs.edit().putString("memories", Family.encode(v)).apply()
+    /** 기억의 자리에서 보낸 한 줄 (오늘의 한 줄 · 회상 · 편지와 섞이지 않게 따로). */
+    var memoryLines: List<DayLine>
+        get() = Lines.decode(prefs.getString("memoryLines", null))
+        set(v) = prefs.edit().putString("memoryLines", Lines.encode(v)).apply()
+
     /** 그 사람의 기대수명 (반려동물은 종의 기대수명). */
     fun expectancy(p: Person): Double = Family.expectancy(p, table) {
         val f = io.github.graviton94.carpediem.design.Tokens.Garden.Family

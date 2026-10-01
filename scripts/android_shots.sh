@@ -54,6 +54,9 @@ open --es cd.screen collection --es cd.now 2026-12-02T10:00; swipe_up; swipe_up;
 # 1.4 돌봄: 한마디 창 아래 권유 · 잠깐 바라보기 · 고마움 책
 open --es cd.care CALM_BREATH --es cd.now $NOW;                                                       shot g36_care 14
 open --es cd.screen look --es cd.now $NOW;                                                             shot g37_look 12
+# 1.4 기억의 돌: 기억의 자리 (모은 것 안) · 하늘의 별 (밤)
+open --ez cd.memory true --es cd.screen memory --es cd.now $NOW;                                      shot g38_memory 6
+open --ez cd.memory true --es cd.now 2026-09-30T22:40;                                                shot g39_memory_star 8
 # 인생의 계절 (다른 생년월일 · 다른 하루)
 open --el cd.seed 12345 --es cd.birth 2016-03-01 --es cd.now $NOW;                                     shot g12_spring 14
 open --el cd.seed 99 --es cd.birth 1968-08-20 --ez cd.preview true --es cd.now $NOW;                   shot g13_autumn 14

@@ -165,6 +165,7 @@ enum Tokens {
             static let bars: [UInt32] = [0xF3C66AFF, 0xE9C98EFF, 0xC9B98EFF, 0xA9BC84FF]
             static let calendar: [UInt32] = [0xA9BC84FF, 0x8FAA6AFF, 0xC9A46AFF, 0xA8B2B6FF]
             static let fallback: UInt32 = 0xA7A399FF
+            static let moss: UInt32 = 0xA9BC7AFF
         }
         enum Layout {
             static let groundRatio: CGFloat = 0.76

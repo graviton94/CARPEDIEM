@@ -142,7 +142,10 @@ class AppState(private val context: Context) {
     fun changeKeepLines(v: Boolean) {
         store.keepLines = v; keepLines = v
         // 끄는 순간 지금까지의 글도 지운다 (날짜는 남겨 흔적을 잇는다)
-        if (!v) { val dates = lines.map { DayLine(it.date, "", null) }; store.lines = dates; lines = dates }
+        if (!v) {
+            val dates = lines.map { DayLine(it.date, "", null) }; store.lines = dates; lines = dates
+            val m = memoryLines.map { it.copy(text = "") }; store.memoryLines = m; memoryLines = m
+        }
     }
     fun clearLines() { store.clearLines(); lines = emptyList(); randomLine = null }
     /** 문득 다시 찾아온 지난 한 줄 (있는 날만). */
@@ -238,10 +241,48 @@ class AppState(private val context: Context) {
         store.people = next; people = next; Widgets.refresh(context)
     }
     fun removePerson(id: String) { val next = people.filterNot { it.id == id }; store.people = next; people = next; Widgets.refresh(context) }
+    // ───── 기억의 돌 ─────
+    var memories by mutableStateOf(store.memories)
+        private set
+    var memoryLines by mutableStateOf(store.memoryLines)
+        private set
+    private fun putMemories(v: List<Person>) { store.memories = v; memories = v }
+    fun saveMemory(p: Person) = putMemories(if (memories.any { it.id == p.id }) memories.map { if (it.id == p.id) p else it } else (memories + p).take(io.github.graviton94.carpediem.core.Memories.MAX))
+    fun setStar(id: String, on: Boolean) = putMemories(memories.map { if (it.id == id) it.copy(star = on) else it })
+    /** 가족의 돌을 기억의 자리로 (넷이 차 있으면 false). */
+    fun toMemory(id: String, until: LocalDate? = null): Boolean {
+        val p = people.firstOrNull { it.id == id } ?: return false
+        if (memories.size >= io.github.graviton94.carpediem.core.Memories.MAX) return false
+        saveMemory(p.copy(star = true, until = until)); removePerson(id); return true
+    }
+    /** 기억의 자리에서 다시 정원으로 (정원이 가득이면 false). */
+    fun backToGarden(id: String): Boolean {
+        val p = memories.firstOrNull { it.id == id } ?: return false
+        if (people.size >= Tokens.Garden.Family.max.toInt() - 1) return false
+        savePerson(p.copy(until = null)); putMemories(memories.filterNot { it.id == id }); return true
+    }
+    fun removeMemory(id: String) {
+        putMemories(memories.filterNot { it.id == id })
+        val l = memoryLines.filterNot { it.to == id }; store.memoryLines = l; memoryLines = l
+    }
+    /** 기억의 돌에게 한 줄 (그 돌마다 하루 한 번). 기록 남기기를 끄면 날짜만. */
+    fun sendToMemory(id: String, text: String, today: LocalDate = (fixedNow ?: LocalDateTime.now()).toLocalDate()): Boolean {
+        val t = Lines.clean(text, Tokens.Garden.LetGo.maxChars.toInt()); if (t.isEmpty()) return false
+        if (memoryLines.any { it.to == id && it.date == today }) return false
+        val l = (memoryLines + DayLine(today, if (keepLines) t else "", null, id)).sortedBy { it.date }; store.memoryLines = l; memoryLines = l
+        return true
+    }
+    /** 캡처용: 기억의 돌 하나 (반려견, 2011년 봄 ~ 2024년 겨울). */
+    fun addSampleMemory() {
+        if (memories.isNotEmpty()) return
+        saveMemory(Person("mem00001", context.getString(R.string.memory_sampleName), io.github.graviton94.carpediem.core.Kind.PET, io.github.graviton94.carpediem.core.Species.DOG,
+            LocalDate.of(2011, 4, 2), seed = 6060, metOn = LocalDate.of(2026, 9, 1), until = LocalDate.of(2024, 12, 20)))
+    }
+
     fun newPersonId(): String = (1..8).map { "abcdefghijkmnpqrstuvwxyz23456789".random() }.joinToString("")
 
     fun eraseAll() {
-        store.eraseAll(); store.ensureQuoteSeed(); unit = store.unit; grid = store.grid; defaultUnit = unit; defaultGrid = grid; lines = emptyList(); streaks = emptyMap(); keepLines = true; care = null; careOn = true; question = null; answering = null; lettersOpened = emptySet(); toast = null; randomLine = null; people = emptyList(); breaths = emptyList(); breathKind = store.breathKind; breathMinutes = store.breathMinutes; sound = store.sound
+        store.eraseAll(); store.ensureQuoteSeed(); unit = store.unit; grid = store.grid; defaultUnit = unit; defaultGrid = grid; lines = emptyList(); streaks = emptyMap(); keepLines = true; care = null; careOn = true; question = null; answering = null; lettersOpened = emptySet(); toast = null; randomLine = null; people = emptyList(); memories = emptyList(); memoryLines = emptyList(); breaths = emptyList(); breathKind = store.breathKind; breathMinutes = store.breathMinutes; sound = store.sound
         profile = null; quoteLanguage = store.quoteLanguage; quote = store.todaysQuote(); design = store.design; meetPending = false; previewAll = false; notify = false; devMode = false; io.github.graviton94.carpediem.notify.Daily.schedule(context, false); Widgets.refresh(context)
     }
 
