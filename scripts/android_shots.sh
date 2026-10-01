@@ -20,15 +20,16 @@ adb shell cmd locale set-app-locales $P --locales ko-KR 2>/dev/null
 quick_scenes() {
 # 부팅 직후 느린 에뮬레이터: 한 번 열어 데워 둠 (첫 화면이 ‘응답 없음’으로 닫히지 않게)
 open --es cd.now $NOW; sleep 25
-# 정원의 놓인 것 모두 (낮 · 밤 · 가족)
-open --ez cd.reset true --es cd.design garden --el cd.seed 2718281 --es cd.birth 2000-05-12 --es cd.sex female --ez cd.meet false --ez cd.preview true --es cd.now $NOW; shot q01_objects_day 8
-open --ez cd.preview true --es cd.now 2026-09-30T22:40; shot q02_objects_night 8
-open --ez cd.preview true --es cd.birth 1962-03-02 --es cd.now $NOW; shot q04_objects_older 8
-open --ez cd.preview true --ez cd.family true --es cd.now $NOW; shot q03_objects_family 8
-# 타자기 문장: 정원에서 문장을 눌러 다음 문장이 한 글자씩 쳐지는 모습을 잇달아 캡처
-open --ez cd.reset true --es cd.design garden --el cd.seed 2718281 --es cd.birth 2000-05-12 --es cd.sex female --ez cd.meet false --es cd.now $NOW; sleep 8
-mkdir -p "$OUT/typing"; adb shell input tap 540 850
-for i in $(seq -w 1 10); do adb exec-out screencap -p > "$OUT/typing/t$i.png"; done; echo "shot typing"
+# 한지 정원의 자리 여섯: 처음 (새싹 · 빈 말뚝) → 모두 자란 모습 (preview) 을 실제 계절 넷 · 밤 · 가족 · 인생의 가을로
+open --ez cd.reset true --es cd.design garden --el cd.seed 2718281 --es cd.birth 2000-05-12 --es cd.sex female --ez cd.meet false --es cd.now $NOW; shot q00_decor_first 8
+open --ez cd.preview true --es cd.now $NOW; shot q01_decor_autumn 6
+open --ez cd.preview true --es cd.now 2026-09-30T22:40; shot q02_decor_night 6
+open --ez cd.preview true --es cd.now 2026-04-15T15:00; shot q03_decor_spring 6
+open --ez cd.preview true --es cd.now 2026-07-20T15:00; shot q04_decor_summer 6
+open --ez cd.preview true --es cd.now 2027-01-12T14:00; shot q05_decor_winter 6
+open --ez cd.preview true --ez cd.family true --es cd.now 2027-01-12T14:00; shot q06_decor_family_winter 6
+adb shell input tap 90 1650; shot q07_decor_sheet 3
+open --ez cd.preview true --es cd.birth 1962-03-02 --es cd.now $NOW; shot q08_decor_ginkgo 6
 # 위젯 미리보기 그림 (위젯 고르는 화면용): 가족 · 이번 달 기록이 있는 정원으로 실제 위젯을 그려 꺼냄
 open --ez cd.reset true --es cd.design garden --el cd.seed 2718281 --es cd.birth 2000-05-12 --es cd.sex female --ez cd.meet false --ez cd.family true --ez cd.months true --ez cd.widgetShots true
 W=/sdcard/Android/data/$P/files/widgets

@@ -198,8 +198,8 @@ enum Tokens {
             static let chimeSwing: CGFloat = 4.0
             static let itemFromHaru: CGFloat = 20.0
             static let itemGap: CGFloat = 6.0
-            static let stripLineY: CGFloat = 40.0
-            static let stripHeight: CGFloat = 200.0
+            static let stripLineY: CGFloat = 110.0
+            static let stripHeight: CGFloat = 300.0
             static let calendarGap: CGFloat = 1.3
             static let sparkle: CGFloat = 9.0
             static let devTaps: CGFloat = 7.0
@@ -326,6 +326,10 @@ enum Tokens {
             static let lidCurve: CGFloat = 0.22
             static let pattern: CGFloat = 0.1
             static let sproutHeight: CGFloat = 22.0
+            static let fiber: CGFloat = 0.55
+            static let fiberScale: CGFloat = 0.5
+            static let light: CGFloat = 0.16
+            static let shade: CGFloat = 0.1
         }
         enum Family {
             static let max: CGFloat = 9.0
@@ -441,7 +445,6 @@ enum Tokens {
                 static let lamp: UInt32 = 0xF4C37AFF
                 static let firefly: UInt32 = 0xF3E38EFF
                 static let moonGlow: UInt32 = 0xF1E9CFFF
-                static let post: UInt32 = 0x0C101BFF
             }
             static let skyAlpha: CGFloat = 0.84
             static let groundAlpha: CGFloat = 0.78
@@ -449,10 +452,6 @@ enum Tokens {
             static let twinkleMs: CGFloat = 3400.0
             static let fireflies: CGFloat = 2.0
             static let fireflyMs: CGFloat = 5200.0
-            static let lampX: CGFloat = 376.0
-            static let lampHeight: CGFloat = 118.0
-            static let lampGlow: CGFloat = 0.22
-            static let lampPool: CGFloat = 0.12
             static let stoneGlow: CGFloat = 0.1
             static let moonGlow: CGFloat = 0.16
         }
@@ -550,6 +549,75 @@ enum Tokens {
                 static let petal: UInt32 = 0xE9A3B4FF
                 static let heart: UInt32 = 0xF2C04EFF
             }
+        }
+        enum Decor {
+            static let treeBoxW: CGFloat = 240.0
+            static let treeBoxH: CGFloat = 200.0
+            static let treeAtX: CGFloat = 110.0
+            static let treeAtY: CGFloat = 190.0
+            static let treeScale: CGFloat = 0.6
+            static let treeX: CGFloat = 30.0
+            static let treePx: CGFloat = 2.0
+            static let stageDays1: CGFloat = 100.0
+            static let stageDays2: CGFloat = 365.0
+            static let stageDays3: CGFloat = 1095.0
+            static let postBoxW: CGFloat = 80.0
+            static let postBoxH: CGFloat = 130.0
+            static let postAtX: CGFloat = 30.0
+            static let postAtY: CGFloat = 125.0
+            static let postScale: CGFloat = 0.6
+            static let postPx: CGFloat = 2.0
+            static let chimeX: CGFloat = 55.0
+            static let chimeY: CGFloat = 30.0
+            static let bellX: CGFloat = 24.0
+            static let bellY: CGFloat = 30.5
+            static let lanternX: CGFloat = 42.0
+            static let lanternY: CGFloat = 30.5
+            static let tieX: CGFloat = 63.0
+            static let tieY: CGFloat = 28.5
+            static let chimeBreaths: CGFloat = 1.0
+            static let bellBreaths: CGFloat = 30.0
+            static let lanternBreaths: CGFloat = 100.0
+            static let swayMs: CGFloat = 3200.0
+            static let swayDeg: CGFloat = 4.0
+            static let mossBoxW: CGFloat = 90.0
+            static let mossBoxH: CGFloat = 24.0
+            static let mossAtX: CGFloat = 45.0
+            static let mossAtY: CGFloat = 18.0
+            static let mossWidth: CGFloat = 1.42
+            static let mossPx: CGFloat = 3.0
+            static let budGazes: CGFloat = 10.0
+            static let budMax: CGFloat = 5.0
+            static let kiteBoxW: CGFloat = 50.0
+            static let kiteBoxH: CGFloat = 140.0
+            static let kiteAtX: CGFloat = 25.0
+            static let kiteAtY: CGFloat = 25.0
+            static let kiteScale: CGFloat = 0.6
+            static let kitePx: CGFloat = 3.0
+            static let kiteX: CGFloat = 292.0
+            static let kiteHigh: CGFloat = 0.4
+            static let kiteLines: CGFloat = 30.0
+            static let ribbonLines: CGFloat = 30.0
+            static let ribbonMax: CGFloat = 8.0
+            static let kiteMs: CGFloat = 12000.0
+            static let kiteDrift: CGFloat = 2.0
+            static let kiteTilt: CGFloat = 3.0
+            static let cardBoxW: CGFloat = 66.0
+            static let cardBoxH: CGFloat = 90.0
+            static let cardPx: CGFloat = 5.0
+            static let cardMini: CGFloat = 0.3
+            static let cardFromTree: CGFloat = 30.0
+            static let cardTilt: CGFloat = -6.0
+            static let gazeCountMs: CGFloat = 30000.0
+            static let glow: CGFloat = 34.0
+            enum Colors {
+                static let earmuff: UInt32 = 0xC8553DFF
+                static let fur: UInt32 = 0xF4E9D8FF
+                static let furLight: UInt32 = 0xFFFBF4FF
+                static let glow: UInt32 = 0xFFCE82FF
+                static let tail: UInt32 = 0xF4EEDFFF
+            }
+            static let nightKeep: CGFloat = 0.82
         }
     }
 }

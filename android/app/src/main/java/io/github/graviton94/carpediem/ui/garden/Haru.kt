@@ -33,6 +33,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
@@ -84,9 +85,11 @@ class HaruArt(val shape: HaruShape.Shape, val sprout: Boolean) {
 /**
  * 하루를 그린다 (앱 화면 · 위젯이 같이 씀). k = 한 칸의 크기(px).
  * 눈은 세 가지뿐: 동그란 눈(기본), 지긋이 감은 눈(lid → 1, 깜빡임 · 쉼), 웃는 눈(smile, 쓰다듬을 때).
- * look: 기본 시선에 더할 기울기. blush: 볼의 분홍 (0 ~ 1). hat: 생일 모자.
+ * look: 기본 시선에 더할 기울기. blush: 볼의 분홍 (0 ~ 1). hat: 생일 모자. earmuffs: 겨울 귀마개 (모자가 있으면 모자만).
+ * fiber: 한지 섬유 무늬 (assets/garden/fiber.png). 있으면 몸을 물들인 한지처럼: 결 · 왼쪽 위의 빛 · 아래 그늘, 그 위에 먹선 (정원은 한지, 하루만 먹선).
  */
-fun DrawScope.drawHaru(art: HaruArt, k: Float, lid: Float = 0f, look: Offset = Offset.Zero, smile: Float = 0f, blush: Float = 0f, hat: Boolean = false) {
+fun DrawScope.drawHaru(art: HaruArt, k: Float, lid: Float = 0f, look: Offset = Offset.Zero, smile: Float = 0f, blush: Float = 0f, hat: Boolean = false,
+                       earmuffs: Boolean = false, fiber: ImageBitmap? = null) {
     val d = Tokens.Garden.HaruDraw
     val ink = Tokens.Garden.Colors.ink
     val t = art.shape.traits
@@ -96,10 +99,21 @@ fun DrawScope.drawHaru(art: HaruArt, k: Float, lid: Float = 0f, look: Offset = O
     // 몸은 칸 좌표 그대로 그리고 전체를 k 배로 (선 굵기도 함께 커짐)
     scale(k, k, pivot = Offset.Zero) {
         drawPath(art.body, art.bodyColor)
-        clipPath(art.body) { stonePattern(art, 1f) }   // 돌의 무늬 (아주 옅게, 몸 안에서만)
+        clipPath(art.body) {
+            stonePattern(art, 1f)   // 돌의 무늬 (아주 옅게, 몸 안에서만)
+            if (fiber != null) {
+                // 한지 결: 무늬 한 칸을 칸 좌표 절반 크기로 깔고, 빛은 왼쪽 위에서
+                scale(d.fiberScale, d.fiberScale, pivot = Offset.Zero) {
+                    drawRect(androidx.compose.ui.graphics.ShaderBrush(androidx.compose.ui.graphics.ImageShader(fiber, androidx.compose.ui.graphics.TileMode.Repeated, androidx.compose.ui.graphics.TileMode.Repeated)),
+                        Offset.Zero, Size(art.meta.box / d.fiberScale, art.meta.box / d.fiberScale), alpha = d.fiber)
+                }
+                drawRect(androidx.compose.ui.graphics.Brush.linearGradient(listOf(Color.White.copy(alpha = d.light), Color.Transparent, Color.Black.copy(alpha = d.shade)),
+                    Offset(bb.left, bb.top), Offset(bb.left + bb.width * 0.5f, bb.bottom)), Offset(bb.left, bb.top), Size(bb.width, bb.height))
+            }
+        }
         drawPath(art.body, ink, style = Stroke(d.line, join = StrokeJoin.Round))
     }
-    if (hat) partyHat(art, k) else if (art.sprout) sprout(art, k)
+    if (hat) partyHat(art, k) else { if (earmuffs) drawEarmuffs(art, k); if (art.sprout) sprout(art, k) }
 
     art.shape.eyes.forEachIndexed { i, e ->
         val c = Offset(e.x.toFloat() * k, e.y.toFloat() * k); val r = e.r.toFloat() * k
@@ -141,6 +155,48 @@ fun DrawScope.drawHaru(art: HaruArt, k: Float, lid: Float = 0f, look: Offset = O
                 }
                 drawPath(eye, ink, style = Stroke(d.eyeLine * k))
             }
+        }
+    }
+}
+
+/** 몸 윤곽을 높이 y 에서 가로로 자른 왼쪽 · 오른쪽 끝 (칸 좌표). */
+private fun spanX(pts: List<Offset>, y: Float): Pair<Float, Float>? {
+    val xs = ArrayList<Float>()
+    for (i in pts.indices) { val a = pts[i]; val b = pts[(i + 1) % pts.size]; if ((a.y - y) * (b.y - y) <= 0f && a.y != b.y) xs.add(a.x + (b.x - a.x) * (y - a.y) / (b.y - a.y)) }
+    return if (xs.size < 2) null else xs.min() to xs.max()
+}
+/** 몸 윤곽의 x 자리 맨 위 (칸 좌표). */
+private fun topAt(pts: List<Offset>, x: Float): Float? {
+    val ys = ArrayList<Float>()
+    for (i in pts.indices) { val a = pts[i]; val b = pts[(i + 1) % pts.size]; if ((a.x - x) * (b.x - x) <= 0f && a.x != b.x) ys.add(a.y + (b.y - a.y) * (x - a.x) / (b.x - a.x)) }
+    return ys.minOrNull()
+}
+
+/** 겨울 귀마개: 정수리를 넘어가는 붉은 띠 + 양옆 (몸 높이의 44%) 의 털 방울. 하루가 쓰는 것이라 먹선. */
+private fun DrawScope.drawEarmuffs(art: HaruArt, k: Float) {
+    val d = Tokens.Garden.HaruDraw; val c = Tokens.Garden.Decor.Colors; val ink = Tokens.Garden.Colors.ink
+    val pts = art.shape.body.map { Offset(it.first.toFloat(), it.second.toFloat()) }
+    val bb = art.meta.bbox
+    val my = bb.top + bb.height * 0.44f
+    val (l0, r0) = spanX(pts, my) ?: return
+    val r = maxOf(6f, bb.width * 0.12f)
+    val L = Offset(l0 + r * 0.35f, my); val R = Offset(r0 - r * 0.35f, my)
+    scale(k, k, pivot = Offset.Zero) {
+        val band = Path()
+        for (i in 0..24) {
+            val t = i / 24f; val x = L.x + (R.x - L.x) * t
+            val ty = topAt(pts, x.coerceIn(bb.left + 0.5f, bb.right - 0.5f)) ?: bb.top
+            val e = Math.pow(kotlin.math.abs(2 * t - 1).toDouble(), 6.0).toFloat()
+            val y = (ty - 2.6f) * (1 - e) + my * e
+            if (i == 0) band.moveTo(x, y) else band.lineTo(x, y)
+        }
+        drawPath(band, ink, style = Stroke(4.2f + d.line * 1.2f, cap = StrokeCap.Round, join = StrokeJoin.Round))
+        drawPath(band, c.earmuff, style = Stroke(4.2f, cap = StrokeCap.Round, join = StrokeJoin.Round))
+        listOf(L, R).forEachIndexed { i, m ->
+            val muff = Path().apply { for (j in 0 until 30) { val a = j / 30f * 2f * Math.PI.toFloat(); val rr = r * (1 + 0.035f * kotlin.math.sin(a * 9 + i)); val p = Offset(m.x + kotlin.math.cos(a) * rr, m.y + kotlin.math.sin(a) * rr * 1.05f); if (j == 0) moveTo(p.x, p.y) else lineTo(p.x, p.y) }; close() }
+            drawPath(muff, c.fur)
+            drawOval(c.furLight, Offset(m.x + (if (i == 0) 0.8f else -0.8f) - r * 0.5f, m.y - r * 0.15f - r * 0.45f), Size(r, r * 0.9f))
+            drawPath(muff, ink, style = Stroke(d.line * 0.65f, join = StrokeJoin.Round))
         }
     }
 }
@@ -291,8 +347,9 @@ fun rememberTilt(enabled: Boolean): Offset {
  */
 @Composable
 fun HaruFigure(art: HaruArt, scale: Dp, modifier: Modifier = Modifier, blinkKick: Int = 0, hat: Boolean = false, a11y: String? = null, onOpen: (() -> Unit)? = null,
-               onLongPress: (() -> Unit)? = null, lid: Float? = null, tiltOn: Boolean = true, lookDown: Float = 0f) {
+               onLongPress: (() -> Unit)? = null, lid: Float? = null, tiltOn: Boolean = true, lookDown: Float = 0f, earmuffs: Boolean = false) {
     val ctx = LocalContext.current
+    val fiber = remember { GardenArt.fiber(ctx) }
     val view = androidx.compose.ui.platform.LocalView.current
     val m = Tokens.Garden.Motion; val tc = Tokens.Garden.Touch
     val animate = remember { !reducedMotion(ctx) }
@@ -371,6 +428,6 @@ fun HaruFigure(art: HaruArt, scale: Dp, modifier: Modifier = Modifier, blinkKick
                 }
             },
     ) {
-        drawHaru(art, size.width / art.meta.box, lid ?: maxOf(blink.value, rest.value), if (lookDown > 0f) Offset(tilt.x, (tilt.y + lookDown).coerceAtMost(1f)) else tilt, smile = if (lid != null) 0f else smile.value, blush = blush.value, hat = hat)
+        drawHaru(art, size.width / art.meta.box, lid ?: maxOf(blink.value, rest.value), if (lookDown > 0f) Offset(tilt.x, (tilt.y + lookDown).coerceAtMost(1f)) else tilt, smile = if (lid != null) 0f else smile.value, blush = blush.value, hat = hat, earmuffs = earmuffs, fiber = fiber)
     }
 }

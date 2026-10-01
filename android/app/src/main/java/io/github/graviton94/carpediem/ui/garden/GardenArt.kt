@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import io.github.graviton94.carpediem.core.Season
+import io.github.graviton94.carpediem.core.Tree
 
 /** scripts/build_art.js 가 구운 정원 그림 (assets/garden). 한 번 읽으면 메모리에 둔다. */
 object GardenArt {
@@ -16,7 +17,7 @@ object GardenArt {
 
     fun key(s: Season) = when (s) { Season.SPRING -> "spring"; Season.SUMMER -> "summer"; Season.AUTUMN -> "autumn"; Season.WINTER -> "winter" }
     fun sky(context: Context, s: Season) = image(context, "sky_${key(s)}.jpg")
-    fun strip(context: Context, s: Season) = image(context, "strip_${key(s)}.png")
+    fun strip(context: Context, s: Season) = image(context, "strip_${key(s)}.webp")
     fun obj(context: Context, id: String) = image(context, "obj_$id.png")
     fun sun(context: Context) = image(context, "sun.png")
     fun moon(context: Context) = image(context, "moon.png")
@@ -25,4 +26,14 @@ object GardenArt {
     fun toothFill(context: Context) = image(context, "tooth_fill.png")
     fun paper(context: Context) = image(context, "paper.png")
     fun support(context: Context) = image(context, "support.jpg")
+    fun fiber(context: Context) = image(context, "fiber.png")
+
+    // 한지 정원의 자리 (design/art/src/hanji_export.js, 상자 · 기준점 = 토큰 garden.decor)
+    fun tree(context: Context, t: Tree, s: Season, stage: Int) = image(context, "tree_${t.key}_${key(s)}_${stage.coerceIn(0, 3)}.webp")
+    fun post(context: Context, s: Season) = image(context, "post_${key(s)}.webp")
+    /** chime · bell · lantern · lantern_lit · letter */
+    fun postPart(context: Context, part: String) = image(context, "post_$part.webp")
+    fun moss(context: Context, s: Season, buds: Int) = image(context, "moss_${key(s)}_${buds.coerceIn(0, 5)}.webp")
+    fun kite(context: Context) = image(context, "kite.webp")
+    fun card(context: Context, key: String) = image(context, "card_$key.webp")
 }

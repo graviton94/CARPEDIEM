@@ -305,6 +305,8 @@ fun GazeScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, onBack
     val dim = remember { Animatable(0f) }
     var hint by remember { mutableStateOf(true) }
     LaunchedEffect(Unit) { delay(3000); hint = false }
+    // 조금 머문 날만 돌멍하기 한 날로 (열 날마다 이끼에 봉오리 하나)
+    LaunchedEffect(Unit) { delay(Tokens.Garden.Decor.gazeCountMs.toLong()); state.recordGaze() }
     // 누를 때마다 처음부터: 밝게 → 조금 뒤 스르르 어두워짐 → 더 지나면 화면을 놓아 줌
     var idleKick by remember { androidx.compose.runtime.mutableIntStateOf(0) }
     LaunchedEffect(idleKick) {

@@ -400,3 +400,67 @@ class ReflectTest {
         assertEquals(emptyList(), SpecialDays.anniversaries(listOf(work), LocalDate.of(2022, 4, 4)))   // 그해 당일은 아님
     }
 }
+
+/** 정원 꾸밈 (자리 여섯): 쌓인 수만 세고, 실제 계절은 나라의 반구를 따른다. */
+class GardenDecorTest {
+    private fun line(y: Int, m: Int, day: Int, f: Feeling?) = DayLine(d(y, m, day), "한 줄", f)
+
+    @Test fun realSeasonFollowsHemisphere() {
+        assertEquals(Season.AUTUMN, GardenDecor.realSeason(d(2026, 10, 1), "KR"))
+        assertEquals(Season.SPRING, GardenDecor.realSeason(d(2026, 10, 1), "AU"))
+        assertEquals(Season.WINTER, GardenDecor.realSeason(d(2027, 2, 28), "KR"))
+        assertEquals(Season.SUMMER, GardenDecor.realSeason(d(2027, 1, 5), "nz"))
+    }
+
+    @Test fun albumYearKeepsDecemberSeasonTogether() {
+        assertEquals(2026, GardenDecor.albumYear(d(2026, 12, 20)))
+        assertEquals(2026, GardenDecor.albumYear(d(2027, 2, 1)))
+        assertEquals(2027, GardenDecor.albumYear(d(2027, 3, 1)))
+    }
+
+    @Test fun treeGrowsWithDaysTogether() {
+        val days = listOf(100, 365, 1095)
+        assertEquals(0, GardenDecor.stage(d(2026, 1, 1), d(2026, 4, 10), days))
+        assertEquals(1, GardenDecor.stage(d(2026, 1, 1), d(2026, 4, 11), days))
+        assertEquals(2, GardenDecor.stage(d(2026, 1, 1), d(2027, 1, 1), days))
+        assertEquals(3, GardenDecor.stage(d(2026, 1, 1), d(2029, 1, 1), days))
+    }
+
+    @Test fun hangsByBreathDays() {
+        val lv = listOf(1, 30, 100)
+        assertEquals(Hang.NONE, GardenDecor.hang(0, lv)); assertEquals(Hang.CHIME, GardenDecor.hang(1, lv))
+        assertEquals(Hang.BELL, GardenDecor.hang(30, lv)); assertEquals(Hang.LANTERN, GardenDecor.hang(140, lv))
+    }
+
+    @Test fun kiteAndRibbonsFromWrittenLines() {
+        val r = GardenDecor.Rules()
+        val few = (1..29).map { line(2026, 1, 1, Feeling.JOY).copy(date = d(2026, 1, 1).plusDays(it.toLong())) }
+        assertTrue(GardenDecor.ribbons(few, r).isEmpty())
+        // 30줄 = 연 + 리본 하나 (가장 많은 마음), 빈 한 줄은 세지 않음, 마음 없는 묶음은 null
+        val joy = (0 until 20).map { DayLine(d(2026, 1, 1).plusDays(it.toLong()), "글", Feeling.JOY) } + (20 until 30).map { DayLine(d(2026, 1, 1).plusDays(it.toLong()), "글", Feeling.CALM) }
+        val blank = listOf(DayLine(d(2026, 3, 1), "", Feeling.SAD))
+        val none = (40 until 70).map { DayLine(d(2026, 1, 1).plusDays(it.toLong()), "글", null) }
+        assertEquals(listOf(Feeling.JOY), GardenDecor.ribbons(joy + blank, r))
+        assertEquals(listOf(Feeling.JOY, null), GardenDecor.ribbons(joy + none, r))
+        // 많아야 여덟, 최근 것
+        val many = (0 until 300).map { DayLine(d(2020, 1, 1).plusDays(it.toLong()), "글", if (it < 30) Feeling.SAD else Feeling.HOPE) }
+        assertEquals(8, GardenDecor.ribbons(many, r).size); assertEquals(Feeling.HOPE, GardenDecor.ribbons(many, r).first())
+    }
+
+    @Test fun decorPutsTogetherTheSixSlots() {
+        val birth = d(1990, 5, 5)
+        val dec = GardenDecor.of(d(2026, 10, 1), "KR", Season.SUMMER, birth, 84.0, d(2025, 1, 1), breathDays = 31, lines = emptyList(), gazeDays = 57, letterDue = true)
+        assertEquals(Season.AUTUMN, dec.season); assertEquals(Tree.ZELKOVA, dec.tree); assertEquals(2, dec.stage)
+        assertEquals(Hang.BELL, dec.hang); assertTrue(dec.letter); assertEquals(false, dec.kite); assertEquals(5, dec.buds)
+        assertEquals("zelkova_autumn", dec.card.key); assertEquals(dec.card, SeasonCard.parse(dec.card.id))
+    }
+
+    @Test fun treeChangesSlowlyAfterLifeSeasonTurns() {
+        val birth = d(2000, 1, 1)
+        val turn = GardenDecor.lifeChange(birth, 80.0, d(2021, 1, 1))!!   // 1/4 = 인생의 여름이 시작한 날
+        val first = GardenDecor.of(turn, "KR", Season.SUMMER, birth, 80.0, d(2019, 1, 1), 0, emptyList(), 0, false)
+        assertEquals(Tree.CHERRY, first.prevTree); assertTrue(first.blend < 0.2f)
+        val later = GardenDecor.of(turn.plusDays(8), "KR", Season.SUMMER, birth, 80.0, d(2019, 1, 1), 0, emptyList(), 0, false)
+        assertEquals(null, later.prevTree); assertEquals(1f, later.blend)
+    }
+}

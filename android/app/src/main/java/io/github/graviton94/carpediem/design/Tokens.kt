@@ -193,8 +193,8 @@ object Tokens {
             const val chimeSwing = 4.0f
             const val itemFromHaru = 20.0f
             const val itemGap = 6.0f
-            const val stripLineY = 40.0f
-            const val stripHeight = 200.0f
+            const val stripLineY = 110.0f
+            const val stripHeight = 300.0f
             const val calendarGap = 1.3f
             const val sparkle = 9.0f
             const val devTaps = 7.0f
@@ -321,6 +321,10 @@ object Tokens {
             const val lidCurve = 0.22f
             const val pattern = 0.1f
             const val sproutHeight = 22.0f
+            const val fiber = 0.55f
+            const val fiberScale = 0.5f
+            const val light = 0.16f
+            const val shade = 0.1f
         }
         object Family {
             const val max = 9.0f
@@ -436,7 +440,6 @@ object Tokens {
                 val lamp = Color(0xFFF4C37A)
                 val firefly = Color(0xFFF3E38E)
                 val moonGlow = Color(0xFFF1E9CF)
-                val post = Color(0xFF0C101B)
             }
             const val skyAlpha = 0.84f
             const val groundAlpha = 0.78f
@@ -444,10 +447,6 @@ object Tokens {
             const val twinkleMs = 3400.0f
             const val fireflies = 2.0f
             const val fireflyMs = 5200.0f
-            const val lampX = 376.0f
-            const val lampHeight = 118.0f
-            const val lampGlow = 0.22f
-            const val lampPool = 0.12f
             const val stoneGlow = 0.1f
             const val moonGlow = 0.16f
         }
@@ -545,6 +544,75 @@ object Tokens {
                 val petal = Color(0xFFE9A3B4)
                 val heart = Color(0xFFF2C04E)
             }
+        }
+        object Decor {
+            const val treeBoxW = 240.0f
+            const val treeBoxH = 200.0f
+            const val treeAtX = 110.0f
+            const val treeAtY = 190.0f
+            const val treeScale = 0.6f
+            const val treeX = 30.0f
+            const val treePx = 2.0f
+            const val stageDays1 = 100.0f
+            const val stageDays2 = 365.0f
+            const val stageDays3 = 1095.0f
+            const val postBoxW = 80.0f
+            const val postBoxH = 130.0f
+            const val postAtX = 30.0f
+            const val postAtY = 125.0f
+            const val postScale = 0.6f
+            const val postPx = 2.0f
+            const val chimeX = 55.0f
+            const val chimeY = 30.0f
+            const val bellX = 24.0f
+            const val bellY = 30.5f
+            const val lanternX = 42.0f
+            const val lanternY = 30.5f
+            const val tieX = 63.0f
+            const val tieY = 28.5f
+            const val chimeBreaths = 1.0f
+            const val bellBreaths = 30.0f
+            const val lanternBreaths = 100.0f
+            const val swayMs = 3200.0f
+            const val swayDeg = 4.0f
+            const val mossBoxW = 90.0f
+            const val mossBoxH = 24.0f
+            const val mossAtX = 45.0f
+            const val mossAtY = 18.0f
+            const val mossWidth = 1.42f
+            const val mossPx = 3.0f
+            const val budGazes = 10.0f
+            const val budMax = 5.0f
+            const val kiteBoxW = 50.0f
+            const val kiteBoxH = 140.0f
+            const val kiteAtX = 25.0f
+            const val kiteAtY = 25.0f
+            const val kiteScale = 0.6f
+            const val kitePx = 3.0f
+            const val kiteX = 292.0f
+            const val kiteHigh = 0.4f
+            const val kiteLines = 30.0f
+            const val ribbonLines = 30.0f
+            const val ribbonMax = 8.0f
+            const val kiteMs = 12000.0f
+            const val kiteDrift = 2.0f
+            const val kiteTilt = 3.0f
+            const val cardBoxW = 66.0f
+            const val cardBoxH = 90.0f
+            const val cardPx = 5.0f
+            const val cardMini = 0.3f
+            const val cardFromTree = 30.0f
+            const val cardTilt = -6.0f
+            const val gazeCountMs = 30000.0f
+            const val glow = 34.0f
+            object Colors {
+                val earmuff = Color(0xFFC8553D)
+                val fur = Color(0xFFF4E9D8)
+                val furLight = Color(0xFFFFFBF4)
+                val glow = Color(0xFFFFCE82)
+                val tail = Color(0xFFF4EEDF)
+            }
+            const val nightKeep = 0.82f
         }
     }
 }

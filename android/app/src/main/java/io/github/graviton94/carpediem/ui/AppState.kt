@@ -1,6 +1,10 @@
 package io.github.graviton94.carpediem.ui
 
 import io.github.graviton94.carpediem.core.BreathKind
+import io.github.graviton94.carpediem.core.Decor
+import io.github.graviton94.carpediem.core.GardenDecor
+import io.github.graviton94.carpediem.core.Hang
+import io.github.graviton94.carpediem.core.LifeSnapshot
 import io.github.graviton94.carpediem.core.Person
 import java.time.LocalDateTime
 import io.github.graviton94.carpediem.design.Tokens
@@ -299,6 +303,46 @@ class AppState(private val context: Context) {
     }
     val firstBreath: LocalDate? get() = breaths.minOfOrNull { it.first }
 
+    // ───── 정원 꾸밈 (자리 여섯, core GardenDecor) ─────
+    var gazeDays by mutableStateOf(store.gazeDays)
+        private set
+    /** 돌멍하기를 연 날 (하루에 한 번만 셈). */
+    fun recordGaze(today: LocalDate = (fixedNow ?: LocalDateTime.now()).toLocalDate()) {
+        val k = today.toEpochDay().toString(); if (k in gazeDays) return
+        val next = gazeDays + k; store.gazeDays = next; gazeDays = next
+    }
+    var seasonCards by mutableStateOf(store.seasonCards)
+        private set
+    /** 지금 정원의 꾸밈. 시험용 미리 보기(previewAll)면 모두 다 자라고 걸린 모습. */
+    fun decor(profile: LifeProfile, s: LifeSnapshot, today: LocalDate): Decor {
+        val D = Tokens.Garden.Decor
+        val rules = GardenDecor.Rules(listOf(D.stageDays1.toInt(), D.stageDays2.toInt(), D.stageDays3.toInt()), listOf(D.chimeBreaths.toInt(), D.bellBreaths.toInt(), D.lanternBreaths.toInt()),
+            D.kiteLines.toInt(), D.ribbonLines.toInt(), D.ribbonMax.toInt(), D.budGazes.toInt(), D.budMax.toInt())
+        val d = GardenDecor.of(today, profile.countryCode, s.season, profile.birthDate, s.expectancy, store.startDate, breaths.map { it.first }.distinct().size, lines, gazeDays.size, letterDue(today) != null, rules)
+        return if (!previewAll) d else d.copy(stage = 3, hang = Hang.LANTERN, kite = true, ribbons = Feeling.entries.toList() + null, buds = rules.budMax)
+    }
+    /** 정원을 열 때: 이번 계절의 한 장을 받고, 지난번에 본 것보다 새로 생긴 것이 있으면 한 줄로 알림 (처음엔 조용히 기억만). */
+    fun noticeDecor(d: Decor) {
+        if (previewAll) return
+        if (d.card.id !in seasonCards) { val next = seasonCards + d.card.id; store.seasonCards = next; seasonCards = next }
+        val now = listOf(d.stage, d.tree.ordinal, d.hang.ordinal, if (d.kite) 1 else 0, d.ribbons.size, d.buds).joinToString(",") + "," + d.card.id + "," + (if (d.letter) 1 else 0)
+        val before = store.decorSeen; store.decorSeen = now
+        if (before == null || before == now) return
+        val b = before.split(","); fun n(i: Int) = b.getOrNull(i)?.toIntOrNull() ?: 0
+        val msg = when {
+            d.tree.ordinal != n(1) -> R.string.decor_new_tree
+            d.stage > n(0) -> R.string.decor_new_stage
+            d.hang.ordinal > n(2) -> when (d.hang) { Hang.LANTERN -> R.string.decor_new_lantern; Hang.BELL -> R.string.decor_new_bell; else -> R.string.decor_new_chime }
+            d.kite && n(3) == 0 -> R.string.decor_new_kite
+            d.ribbons.size > n(4) -> R.string.decor_new_ribbon
+            d.buds > n(5) -> R.string.decor_new_bud
+            d.letter && n(7) == 0 -> R.string.decor_new_letter
+            d.card.id != b.getOrNull(6) -> R.string.decor_new_card
+            else -> null
+        }
+        msg?.let { say(context.getString(it)) }
+    }
+
     // ───── 가족의 정원 ─────
     var people by mutableStateOf(store.people)
         private set
@@ -384,7 +428,7 @@ class AppState(private val context: Context) {
 
     fun eraseAll() {
         previewQ = false
-        store.eraseAll(); store.ensureQuoteSeed(); unit = store.unit; grid = store.grid; defaultUnit = unit; defaultGrid = grid; lines = emptyList(); streaks = emptyMap(); keepLines = true; care = null; careOn = true; question = null; answering = null; lettersOpened = emptySet(); toast = null; randomLine = null; people = emptyList(); memories = emptyList(); memoryLines = emptyList(); wishes = emptyMap(); wishSkipped = emptySet(); specialDays = emptyList(); yearsOpened = emptySet(); breaths = emptyList(); breathKind = store.breathKind; breathMinutes = store.breathMinutes; sound = store.sound
+        store.eraseAll(); store.ensureQuoteSeed(); unit = store.unit; grid = store.grid; defaultUnit = unit; defaultGrid = grid; lines = emptyList(); streaks = emptyMap(); keepLines = true; care = null; careOn = true; question = null; answering = null; lettersOpened = emptySet(); toast = null; randomLine = null; people = emptyList(); memories = emptyList(); memoryLines = emptyList(); wishes = emptyMap(); wishSkipped = emptySet(); specialDays = emptyList(); yearsOpened = emptySet(); breaths = emptyList(); gazeDays = emptySet(); seasonCards = emptySet(); breathKind = store.breathKind; breathMinutes = store.breathMinutes; sound = store.sound
         profile = null; quoteLanguage = store.quoteLanguage; quote = store.todaysQuote(); design = store.design; meetPending = false; previewAll = false; notify = false; devMode = false; io.github.graviton94.carpediem.notify.Daily.schedule(context, false); io.github.graviton94.carpediem.notify.Evening.schedule(context, false); eveningNotify = false; io.github.graviton94.carpediem.notify.Tomorrow.schedule(context, false); tomorrowNotify = false; morningBreath = true; Widgets.refresh(context)
     }
 

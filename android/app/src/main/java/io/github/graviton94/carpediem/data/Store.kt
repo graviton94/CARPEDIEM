@@ -265,6 +265,20 @@ class Store(context: Context) {
         when (it) { Species.DOG -> f.dogYears; Species.CAT -> f.catYears; Species.OTHER -> f.otherYears }.toDouble()
     }
 
+    // ───── 정원 꾸밈 (core GardenDecor) ─────
+    /** 돌멍하기를 한 날 (epoch day). 열 날마다 이끼에 봉오리 하나. */
+    var gazeDays: Set<String>
+        get() = prefs.getStringSet("gazeDays", emptySet()) ?: emptySet()
+        set(v) = prefs.edit().putStringSet("gazeDays", v).apply()
+    /** 받은 계절 한 장 (SeasonCard.id). 그 계절에 정원을 열면 하나. */
+    var seasonCards: Set<String>
+        get() = prefs.getStringSet("seasonCards", emptySet()) ?: emptySet()
+        set(v) = prefs.edit().putStringSet("seasonCards", v).apply()
+    /** 마지막으로 정원에서 본 꾸밈 (새로 생긴 것을 한 번만 알리려고). 처음엔 null = 조용히 기억만. */
+    var decorSeen: String?
+        get() = prefs.getString("decorSeen", null)
+        set(v) = prefs.edit().putString("decorSeen", v).apply()
+
     // ───── 숨 ─────
     /** 숨 쉰 날과 종류 (시간 · 횟수는 세지 않음). */
     var breaths: List<Pair<LocalDate, BreathKind>>

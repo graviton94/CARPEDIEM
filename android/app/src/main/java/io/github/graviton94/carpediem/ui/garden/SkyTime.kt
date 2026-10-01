@@ -108,17 +108,6 @@ fun NightLights(now: LocalDateTime, groundY: Dp, stonesFrom: Dp, stonesTo: Dp, m
         // 돌들 발치의 따뜻한 빛 (땅 위에 납작한 둥근 빛)
         val a0 = stonesFrom.toPx(); val a1 = stonesTo.toPx(); val cx = (a0 + a1) / 2; val rx = (a1 - a0) / 2 + u * 46
         scale(1f, 0.32f, pivot = Offset(cx, gy)) { glow(G.Night.Colors.lamp, n.stoneGlow, Offset(cx, gy), rx) }
-        // 가로등: 길 끝에 기둥 · 팔 · 등, 등 둘레와 땅에 불빛
-        val lx = n.lampX * u; val top = gy - n.lampHeight * u
-        val head = Offset(lx - u * 12, top + u * 8)
-        scale(1f, 0.3f, pivot = Offset(head.x, gy)) { glow(G.Night.Colors.lamp, n.lampPool, Offset(head.x, gy), u * 70) }
-        glow(G.Night.Colors.lamp, n.lampGlow, head, u * 48)
-        val post = G.Night.Colors.post
-        drawLine(post, Offset(lx, gy + u * 2), Offset(lx, top), u * 3.2f, StrokeCap.Round)
-        drawLine(post, Offset(lx, top + u * 2), Offset(head.x, top + u * 2), u * 2.4f, StrokeCap.Round)
-        drawLine(post, Offset(head.x, top + u * 2), Offset(head.x, head.y - u * 4), u * 1.6f, StrokeCap.Round)
-        drawCircle(G.Night.Colors.lamp, u * 4.2f, head)
-        drawCircle(Color.White.copy(alpha = 0.7f), u * 1.8f, head)
         // 반딧불: 땅 위를 천천히 맴돌며 깜빡
         val r = Crayon.Rng(31)
         repeat(n.fireflies.toInt()) { i ->

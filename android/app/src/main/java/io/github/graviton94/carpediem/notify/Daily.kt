@@ -19,7 +19,7 @@ import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import io.github.graviton94.carpediem.MainActivity
 import io.github.graviton94.carpediem.R
-import io.github.graviton94.carpediem.core.Moments
+import io.github.graviton94.carpediem.core.GardenDecor
 import io.github.graviton94.carpediem.data.Design
 import io.github.graviton94.carpediem.data.QuoteLanguage
 import io.github.graviton94.carpediem.data.Store
@@ -83,25 +83,25 @@ object Daily {
         val q = store.todaysQuote()
         val text = q?.let { if (store.quoteLanguage == QuoteLanguage.ENGLISH) it.english else it.korean } ?: return
         var title = context.getString(R.string.words)
-        var keepsakeLine: String? = null
         var letterId: String? = null
         var openAt: String? = null   // 누르면 열 곳 (MainActivity.EXTRA_OPEN)
         store.profile?.takeIf { store.design == Design.GARDEN }?.let { p ->
+            // 정원에 무언가 새로 생기는 날 (날짜로 정해지는 것만): 나무가 자라는 날 · 계절이 바뀌어 새 한 장이 오는 날
             val today = LocalDate.now()
-            val fresh = Moments.earned(store.startDate, p.birthDate, p.expectancy(store.table), today, store.firstSkip, store.returned, store.streaks, store.breaths.minOfOrNull { it.first }).filter { it.date == today && it.id !in store.notifiedMoments }
-            fresh.firstOrNull()?.let { m ->
-                val id = context.resources.getIdentifier("obj_${m.id}", "string", context.packageName)
-                if (id != 0) {
-                    // “이끼 방석이 정원에 놓였어요” + 그것의 한 줄 (문장 대신)
-                    val name = context.getString(id)
-                    title = context.getString(R.string.notify_keepsake, name + subject(name, context))
-                    keepsakeLine = context.resources.getIdentifier("obj_${m.id}_line", "string", context.packageName).takeIf { it != 0 }?.let { context.getString(it) }
-                }
-                store.notifiedMoments = store.notifiedMoments + fresh.map { it.id }
+            val days = java.time.temporal.ChronoUnit.DAYS.between(store.startDate, today)
+            val dc = io.github.graviton94.carpediem.design.Tokens.Garden.Decor
+            val event = when {
+                days in listOf(dc.stageDays1, dc.stageDays2, dc.stageDays3).map { it.toLong() } -> "stage$days" to R.string.decor_new_stage
+                GardenDecor.realSeason(today, p.countryCode) != GardenDecor.realSeason(today.minusDays(1), p.countryCode) -> "card$today" to R.string.decor_new_card
+                else -> null
+            }
+            event?.takeIf { it.first !in store.notifiedMoments }?.let { (id, res) ->
+                title = context.getString(res)
+                store.notifiedMoments = store.notifiedMoments + id
             }
         }
         // 몇 해 전 오늘 보낸 한 줄이 있으면 그것을 알린다 (잠금 화면에는 글을 보이지 않음)
-        var body = keepsakeLine ?: text
+        var body = text
         val yearAgo = Lines.yearsAgo(store.lines, LocalDate.now()).firstOrNull()
         if (yearAgo != null) { title = context.getString(R.string.recall_notify, "${yearAgo.first}"); body = context.getString(R.string.recall_notifyText); openAt = "write" }
         else if (store.keepLines && store.randomRecall() != null) { title = context.getString(R.string.recall_randomNotify); body = context.getString(R.string.recall_notifyText); openAt = "write" }

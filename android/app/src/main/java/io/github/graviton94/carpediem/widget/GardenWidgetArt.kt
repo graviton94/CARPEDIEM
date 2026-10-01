@@ -60,7 +60,7 @@ object GardenWidgetArt {
 
         val gy = h * when (kind) { Kind.LARGE -> W.largeGroundRatio; Kind.FAMILY -> W.familyGround; else -> W.groundRatio }
         if (kind != Kind.CALENDAR) {
-            val strip = asset(context, "strip_${key(season)}.png")
+            val strip = asset(context, "strip_${key(season)}.webp")
             val sh = w * strip.height / strip.width.toFloat(); val lineY = sh * (L.stripLineY / L.stripHeight)
             c.drawBitmap(strip, null, RectF(0f, gy - lineY, w.toFloat(), gy - lineY + sh), paint)
         }

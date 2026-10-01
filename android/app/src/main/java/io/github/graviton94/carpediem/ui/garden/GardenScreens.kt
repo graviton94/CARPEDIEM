@@ -237,8 +237,13 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
     val season = s.season
     val load = haruArt(state, season == Season.SPRING)
     val art = load.art
-    val moments = gardenMoments(state, profile, s, now)
-    var open by remember { mutableStateOf<Moment?>(null) }
+    // 정원의 자리 여섯 (core GardenDecor): 하늘 · 땅 · 나무 옷은 실제 계절, 나무 종류는 인생의 계절
+    val day0 = now.toLocalDate()
+    val decor = state.decor(profile, s, day0)
+    val real = decor.season
+    var decorOpen by remember { mutableStateOf<DecorPart?>(null) }
+    // 정원을 열 때마다: 이번 계절의 한 장을 받고, 새로 생긴 것이 있으면 한 줄 (같은 것은 한 번만)
+    if (!bare) LaunchedEffect(decor.stage, decor.tree, decor.hang, decor.kite, decor.ribbons.size, decor.buds, decor.card.id, decor.letter) { state.noticeDecor(decor) }
     var breathSheet by remember { mutableStateOf(false) }
     var askBreath by remember { mutableStateOf<Pair<BreathKind, Int>?>(null) }
     val sleepy = !bare && isNight(now)
@@ -295,9 +300,9 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 val labels = u * (G.Layout.labelGap + G.Layout.labelRow * 4)
                 val gy = maxOf(screenH * G.Layout.groundRatio, topBottom + u * G.Layout.minSkyGap + haruAbove).coerceAtMost(screenH - labels - blockH)
 
-                Image(GardenArt.sky(ctx, season), null, Modifier.fillMaxSize(), contentScale = ContentScale.FillWidth, alignment = Alignment.TopCenter)
+                Image(GardenArt.sky(ctx, real), null, Modifier.fillMaxSize(), contentScale = ContentScale.FillWidth, alignment = Alignment.TopCenter)
                 // 땅 그림도 시간의 빛 아래에 (밤이면 땅까지 어두워짐)
-                Image(GardenArt.strip(ctx, season), null, Modifier.offset(y = gy - u * G.Layout.stripLineY).fillMaxWidth().height(u * G.Layout.stripHeight), contentScale = ContentScale.FillBounds)
+                Image(GardenArt.strip(ctx, real), null, Modifier.offset(y = gy - u * G.Layout.stripLineY).fillMaxWidth().height(u * G.Layout.stripHeight), contentScale = ContentScale.FillBounds)
                 // 정원만 보기(bare)는 위 글자가 없어도 별이 상태바 · 소리 버튼에 닿지 않게
                 SkyTimeLayer(now, gy, if (bare) screenH * 0.14f else topBottom, gy - haruAbove - u * G.Layout.minSkyGap, Modifier.fillMaxSize())
                 // 기억의 돌 가운데 ‘하늘에 별로 두기’를 켠 것: 하늘에 따뜻한 별 하나 (돌멍하기에는 두지 않음)
@@ -385,77 +390,11 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 ShootingStars(now, topBottom, gy - haruAbove - u * G.Layout.minSkyGap, Modifier.fillMaxSize())
 
 
-                // 놓인 것: 돌 사이 빈틈과 가장 왼쪽 돌의 왼편에, 최근 것부터. 자리가 없으면 거기까지만 (모은 것에는 모두).
-                val box = u * (G.Layout.objBox * G.Layout.objScale)
-                val step = box * 0.6f + u * G.Layout.itemGap
-                val spans = slots.indices.map { i -> (xs[i] - u * widths[i].toFloat() / u.value / 2) to (xs[i] + u * widths[i].toFloat() / u.value / 2) }.sortedBy { it.first }
-                val gaps = buildList {
-                    add(x0 to spans.first().first - u * G.Layout.itemFromHaru)
-                    for (k in 0 until spans.size - 1) add(spans[k].second + u * G.Layout.itemGap to spans[k + 1].first - u * G.Layout.itemGap)
-                }
-                // 지나온 길 (하루 왼쪽) · 돌 사이부터, 모자라면 하루 오른쪽으로 이어서 (가까운 곳부터)
-                val ahead = buildList { var c = spans.last().second + u * G.Layout.itemFromHaru + box * 0.3f; while (c + box * 0.3f <= x1) { add(c); c += step } }
-                val spots = gaps.flatMap { (a0, b0) -> buildList { var c = b0 - box * 0.3f; while (c - box * 0.3f >= a0) { add(c); c -= step } } } + ahead
-                val ground = G.Layout.objGround / G.Layout.objBox
-                fun tap(m: Moment) = if (bare) Modifier else Modifier.clickable { open = m }
-                fun at(cx: Dp, k: Float = 1f, lift: Dp = 0.dp) = Modifier.offset(cx - box * k / 2, gy - box * k * ground - lift).size(box * k)
-                // 이끼 방석: 자리를 차지하지 않고 하루 밑에 (돌보다 조금 넓게, 돌 뒤에)
-                moments.firstOrNull { it.id == "moss" }?.let { m ->
-                    val mb = (widths[0].toFloat() * 1.35f / 0.676f).dp
-                    Image(GardenArt.obj(ctx, "moss"), stringResource(objName(m.id)), Modifier.offset(xs[0] - mb / 2, gy - mb * ground + mb * 0.03f).size(mb).then(tap(m)))
-                }
-                val earned = moments.filter { it.id != "moss" }
-                // 종이배는 물웅덩이가 있으면 그 위에 (따로 자리를 차지하지 않음)
-                val boat = earned.firstOrNull { it.id == "paperboat" }?.takeIf { earned.any { it.id == "pond" } }
-                val laid = earned.filter { it !== boat }.zip(spots)
-                // 촛불: 생일 날엔 케이크 초가 있어 숨기고, 생일 주간 · 밤에만 불을 켬
-                val today0 = now.toLocalDate()
-                val bday = runCatching { profile.birthDate.withYear(today0.year) }.getOrElse { java.time.LocalDate.of(today0.year, 3, 1) }
-                val sinceBday = java.time.temporal.ChronoUnit.DAYS.between(bday, today0)
-                val candleLit = sinceBday in 1..6 || SkyTime.isDark(now)
-                val moving = remember { !reducedMotion(ctx) }
-                val sway = rememberInfiniteTransition(label = "objects")
-                val spin by sway.animateFloat(0f, 360f, infiniteRepeatable(tween(G.Layout.pinwheelMs.toInt(), easing = androidx.compose.animation.core.LinearEasing)), label = "spin")
-                val swing by sway.animateFloat(-1f, 1f, infiniteRepeatable(tween(G.Layout.chimeMs.toInt(), easing = androidx.compose.animation.core.FastOutSlowInEasing), androidx.compose.animation.core.RepeatMode.Reverse), label = "swing")
-                // 소나무는 크게, 조금 멀리 (맨 먼저 그려 뒤에 둠)
-                laid.sortedBy { if (it.first.id == "pine") 0 else 1 }.forEach { (m, cx) ->
-                    val name = stringResource(objName(m.id))
-                    when (m.id) {
-                        "pine" -> Image(GardenArt.obj(ctx, "pine"), name, at(cx, G.Layout.pineScale, u * 2).then(tap(m)))
-                        "candle" -> if (sinceBday != 0L) Image(GardenArt.obj(ctx, if (candleLit) "candle" else "candle_off"), name, at(cx).then(tap(m)))
-                        "pinwheel" -> Box(at(cx).then(tap(m))) {
-                            Image(GardenArt.obj(ctx, "pinwheel_stick"), name, Modifier.fillMaxSize())
-                            Image(GardenArt.obj(ctx, "pinwheel_blades"), null, Modifier.fillMaxSize().graphicsLayer { transformOrigin = androidx.compose.ui.graphics.TransformOrigin(0.5f, 0.411f); rotationZ = if (moving) spin else 0f })
-                        }
-                        "windchime" -> Box(at(cx).then(tap(m))) {
-                            Image(GardenArt.obj(ctx, "windchime_pole"), name, Modifier.fillMaxSize())
-                            Image(GardenArt.obj(ctx, "windchime_hang"), null, Modifier.fillMaxSize().graphicsLayer { transformOrigin = androidx.compose.ui.graphics.TransformOrigin(0.643f, 0.2615f); rotationZ = if (moving) swing * G.Layout.chimeSwing else 0f })
-                        }
-                        "paperboat" -> Box(at(cx).then(tap(m))) {
-                            Image(GardenArt.obj(ctx, "puddle"), null, Modifier.fillMaxSize())
-                            Image(GardenArt.obj(ctx, "paperboat"), name, Modifier.fillMaxSize().graphicsLayer { translationY = -box.toPx() * 0.02f })
-                        }
-                        "pond" -> {
-                            Image(GardenArt.obj(ctx, "pond"), name, at(cx).then(tap(m)))
-                            boat?.let { b -> Image(GardenArt.obj(ctx, "paperboat"), stringResource(objName(b.id)), at(cx + box * 0.12f, 0.9f, -box * 0.01f).graphicsLayer { translationY = if (moving) swing * 1.2f * density.density else 0f }.then(tap(b))) }
-                        }
-                        // 연은 하늘에 (해 · 달 아래), 땅의 작은 말뚝까지 실 한 줄
-                        "kite" -> {
-                            val kb = box * 1.1f
-                            val ky = maxOf(topBottom + kb / 2 + u * 4, topBottom + (gy - haruAbove - topBottom) * 0.42f)
-                            val kx = cx + box * 0.45f
-                            val inkC = Theme.gc.ink
-                            androidx.compose.foundation.Canvas(Modifier.fillMaxSize()) {
-                                val from = Offset(cx.toPx(), gy.toPx()); val to = Offset(kx.toPx(), (ky - kb / 2 + kb * 0.67f).toPx() + (if (moving) swing * 3f * density.density else 0f))
-                                val path = androidx.compose.ui.graphics.Path().apply { moveTo(from.x, from.y); quadraticTo((from.x + to.x) / 2 + 10f * density.density, (from.y + to.y) / 2 + 14f * density.density, to.x, to.y) }
-                                drawPath(path, inkC.copy(alpha = 0.45f), style = androidx.compose.ui.graphics.drawscope.Stroke(0.9f * density.density))
-                                drawLine(inkC.copy(alpha = 0.8f), from, Offset(from.x, from.y - 5f * density.density), strokeWidth = 2.2f * density.density)
-                            }
-                            Image(GardenArt.obj(ctx, "kite"), name, Modifier.offset(kx - kb / 2, ky - kb / 2).size(kb).graphicsLayer { translationY = if (moving) swing * 3f * density.density else 0f; rotationZ = if (moving) swing * 3f else 0f }.then(tap(m)))
-                        }
-                        else -> Image(GardenArt.obj(ctx, m.id), name, at(cx).then(tap(m)))
-                    }
-                }
+                // 자리 여섯: 나무 (길의 시작) · 발치의 한 장 · 말뚝 (길의 끝) · 연 (하늘) — 돌들 뒤에. 하루 밑엔 이끼 방석.
+                // 자리는 화면 폭 · 땅 · 길의 양 끝에 붙어 있어, 돌이 어디 앉든 가족이 몇이든 움직이지 않는다.
+                DecorBack(decor, now, gy, x0, x1, topBottom + u * G.Layout.minSkyGap, gy - haruAbove - u * G.Layout.minSkyGap,
+                    if (bare) null else { part -> if (part == DecorPart.LETTER) state.letterDue(day0)?.let { l -> state.openLetter(l.id); letterOpen = l } else decorOpen = part })
+                MossSeat(decor, now, xs[0], widths[0].toFloat().dp, gy, if (bare) null else { part -> decorOpen = part })
 
                 // 돌들: 한 번 누르면 쓰다듬기, 두 번 누르면 그 돌의 페이지
                 val todayLine = state.lines.lastOrNull { it.date == now.toLocalDate() }
@@ -480,7 +419,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                     HaruFigure(sl.art, sl.scale, Modifier.offset(left, top).graphicsLayer {
                         val a = (song.value - startAt(i)) / 320f
                         translationY = if (song.value >= 0f && a in 0f..1f) -hopPx * sin(a * Math.PI).toFloat() else 0f
-                    }, blinkKick = if (sl.id == null) state.blinkKick else 0, hat = sl.birthday, tiltOn = sl.id == null, lookDown = if (sl.id == null && heavyToday) G.Care.lookDown else 0f,
+                    }, blinkKick = if (sl.id == null) state.blinkKick else 0, hat = sl.birthday, earmuffs = real == Season.WINTER, tiltOn = sl.id == null, lookDown = if (sl.id == null && heavyToday) G.Care.lookDown else 0f,
                         a11y = stringResource(R.string.garden_stoneA11y, sl.name, Labels.stone(ctx, sl.art.meta.stone)), onOpen = { onStone(sl.id) },
                         onLongPress = if (sl.id == null && !bare) ({ sing() }) else null)
                     // 생일 당일: 돌 앞에 작은 케이크 (전날 저녁엔 모자만)
@@ -535,9 +474,9 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                         TokenText(line, Tokens.TypeScale.callout.serif(), Modifier.fillMaxWidth(), align = TextAlign.Center)
                     }
                     val today = now.toLocalDate()
-                    val letter = state.letterDue(today); val year = state.yearDue(today); val month = if (year == null) state.monthDue(today) else null
+                    // 계절의 편지는 말뚝에 꽂힌 봉투로 (누르면 펼침). 여기엔 지난 해 · 지난 달의 정원만
+                    val year = state.yearDue(today); val month = if (year == null) state.monthDue(today) else null
                     when {
-                        letter != null -> LetterEnvelope(letter) { state.openLetter(letter.id); letterOpen = letter }
                         year != null -> YearCard(year) { state.openYear(year); toRecord(RecordView(year, null)) }
                         month != null -> MonthCard(month.second) { state.openMonth(month.first, month.second); toRecord(RecordView(month.first, month.second)) }
                     }
@@ -573,10 +512,8 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
         }
     }
 
-    open?.let { m ->
-        ModalBottomSheet(onDismissRequest = { open = null }, containerColor = Theme.gc.paper) {
-            ItemSheet(m) { open = null }
-        }
+    decorOpen?.let { part ->
+        ModalBottomSheet(onDismissRequest = { decorOpen = null }, containerColor = Theme.gc.paper) { DecorSheet(part, decor, state, now) }
     }
     letterOpen?.let { LetterSheet(it, state.wishFor(it)) { letterOpen = null } }
     if (breathSheet) BreathSheet(state, now, { k, m, snd -> breathSheet = false; onBreath(k, m, snd) }) { breathSheet = false }
