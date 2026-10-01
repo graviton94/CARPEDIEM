@@ -10,8 +10,8 @@ data class Constellation(val month: Int, val korean: String, val english: String
 data class Spot(val x: Float, val y: Float, val size: Float)
 
 /**
- * 마음의 기록: 그 달의 별자리는 길잡이일 뿐. 1일부터 선을 따라 가되 간격은 고르지 않고, 선에서 천천히 굽이치며 벗어나
- * 흩뿌려진다. 판 전체도 해마다 조금 돌고 줄고 옮겨져, 같은 달이라도 해마다 · 사람마다 다른 무늬가 된다.
+ * 마음의 기록: 그 달의 별자리는 좌표의 힌트일 뿐. 1일부터 선을 따라 가되 간격은 고르지 않고, 선에서 크게 굽이치며 벗어나고
+ * 판 위 아무 곳으로도 조금씩 끌려가, 별자리인 줄 거의 모를 만큼 흩뿌려진다. 판 전체도 해마다 조금 돌고 줄고 옮겨져, 같은 달이라도 해마다 · 사람마다 다른 무늬가 된다.
  * 같은 seed 면 늘 같은 자리.
  */
 class ConstellationBook(csv: String) {
@@ -27,8 +27,8 @@ class ConstellationBook(csv: String) {
 }
 
 object Constellations {
-    /** 흩뿌림의 정도 (판 대비): spread = 선에서 벗어나는 폭, wander = 천천히 굽이치는 폭, tilt = 판이 도는 최대 각 (라디안). */
-    class Scatter(val spread: Float = 0.085f, val wander: Float = 0.065f, val tilt: Float = 0.22f)
+    /** 흩뿌림의 정도 (판 대비): spread = 선에서 벗어나는 폭, wander = 천천히 굽이치는 폭, tilt = 판이 도는 최대 각 (라디안), loose = 날마다 판 위 아무 곳으로 끌려가는 정도 (loose ~ 2 × loose). */
+    class Scatter(val spread: Float = 0.15f, val wander: Float = 0.11f, val tilt: Float = 0.5f, val loose: Float = 0.25f)
 
     /** 그 해 그 달의 seed (설치 seed 와 함께): 같은 달이어도 해마다 · 사람마다 다르게. */
     fun seed(install: Long, year: Int, month: Int): Long = install * 31 + year * 12L + month
@@ -72,9 +72,12 @@ object Constellations {
             val ux = (bx - ax) / len[e]; val uy = (by - ay) / len[e]
             val u = s / total
             val off = k.wander * (0.6f * kotlin.math.sin(u * 6.283f * f1 + p1) + 0.4f * kotlin.math.sin(u * 6.283f * f2 + p2)) + k.spread * gauss()
-            val along = k.spread * 0.4f * gauss()
+            val along = k.spread * 0.8f * gauss()
             var x = ax + (bx - ax) * t - uy * off + ux * along
             var y = ay + (by - ay) * t + ux * off + uy * along
+            // 별자리에서 더 멀어지게: 판 위 아무 곳으로 조금씩 끌려감 (별자리인 줄 거의 모르게)
+            val mix = k.loose * (1f + rng.nextFloat()); val fx = 0.1f + 0.8f * rng.nextFloat(); val fy = 0.1f + 0.8f * rng.nextFloat()
+            x += (fx - x) * mix; y += (fy - y) * mix
             // 판 돌리기 · 줄이기 · 옮기기 (가운데 기준)
             val rx = (x - 0.5f) * sc; val ry = (y - 0.5f) * sc
             x = 0.5f + rx * cr - ry * sr + dx0; y = 0.5f + rx * sr + ry * cr + dy0

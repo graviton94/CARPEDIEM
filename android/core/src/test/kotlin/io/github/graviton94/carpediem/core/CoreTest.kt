@@ -377,9 +377,9 @@ class ReflectTest {
             assertEquals(a, Constellations.scatter(c, 30, Constellations.seed(7, 2026, c.month)))   // 같은 seed 면 같은 자리
             assertNotEquals(a, Constellations.scatter(c, 30, Constellations.seed(7, 2027, c.month)))   // 해마다 다르게
             assertNotEquals(a, Constellations.scatter(c, 30, Constellations.seed(8, 2026, c.month)))   // 사람마다 다르게
-            // 흩어져도 별자리 근처: 가장 가까운 별까지 평균 거리가 판의 1/4 안
+            // 흩어져도 별자리에서 온 무늬: 가장 가까운 별까지 평균 거리가 판의 1/3 안
             val near = a.map { s -> c.stars.minOf { (x, y) -> kotlin.math.hypot(x - s.x, y - s.y) } }.average()
-            assertTrue(near < 0.25, "${c.korean} $near")
+            assertTrue(near < 0.33, "${c.korean} $near")
         }
         val m = Constellations.monthDays(listOf(DayLine(LocalDate.of(2026, 2, 28), "a", Feeling.JOY)), 2026, 2)
         assertEquals(28, m.size); assertEquals("a", m.last().second?.text)
