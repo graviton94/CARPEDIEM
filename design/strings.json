@@ -471,7 +471,8 @@
     "share.chooser": "그림 보내기",
     "share.footer": "하루의 정원",
     "dev.year": "시험: 한 해의 정원 피게",
-    "wish.sample": "조금 더 자주 하늘 보기."
+    "wish.sample": "조금 더 자주 하늘 보기.",
+    "support.thanks": "응원해 주셔서 고마워요.\n정원이 조금 더 따뜻해졌어요."
   },
   "en": {
     "tagline": "Cherish today.",
@@ -945,6 +946,7 @@
     "share.chooser": "Send picture",
     "share.footer": "Carpe Diem",
     "dev.year": "Test: bloom the year garden",
-    "wish.sample": "Look at the sky a little more often."
+    "wish.sample": "Look at the sky a little more often.",
+    "support.thanks": "Thank you for your support.\nThe garden feels a little warmer."
   }
 }

@@ -14,7 +14,7 @@ android {
         targetSdk = 35
         // CI 실행 번호로 버전 코드를 올려, 새 APK 가 이전 것을 덮어쓸 수 있게 한다
         versionCode = (System.getenv("GITHUB_RUN_NUMBER") ?: "1").toInt()
-        versionName = "1.0.0"
+        versionName = System.getenv("CD_VERSION_NAME") ?: "1.0.0"
     }
 
     signingConfigs {
@@ -25,12 +25,22 @@ android {
             keyAlias = "sideload"
             keyPassword = "carpediem-sideload"
         }
+        // Google Play 업로드 키: GitHub Secrets 에서만 (android-release.yml 이 파일로 풀어 경로 · 암호를 환경 변수로 넘김)
+        System.getenv("CD_UPLOAD_STORE")?.let { path ->
+            create("upload") {
+                storeFile = file(path)
+                storePassword = System.getenv("CD_UPLOAD_STORE_PASSWORD")
+                keyAlias = System.getenv("CD_UPLOAD_KEY_ALIAS")
+                keyPassword = System.getenv("CD_UPLOAD_KEY_PASSWORD")
+            }
+        }
     }
 
     buildTypes {
         release {
             isMinifyEnabled = false
-            signingConfig = signingConfigs.getByName("sideload")
+            // 업로드 키가 있으면 (스토어용 AAB) 그것으로, 없으면 직접 설치용 키로
+            signingConfig = signingConfigs.findByName("upload") ?: signingConfigs.getByName("sideload")
         }
         debug {
             signingConfig = signingConfigs.getByName("sideload")
@@ -57,6 +67,8 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
     implementation("androidx.core:core-ktx:1.15.0")
+    // 응원하기 결제 (Google Play)
+    implementation("com.android.billingclient:billing-ktx:7.1.1")
     implementation("androidx.glance:glance-appwidget:1.1.1")
     implementation("androidx.work:work-runtime-ktx:2.10.0")
 }

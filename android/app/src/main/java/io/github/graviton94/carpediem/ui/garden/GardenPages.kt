@@ -132,7 +132,7 @@ fun CollectionScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, 
 
 /**
  * 응원하기: 보상 없이, 한 번 결제 3단계 (docs/plan.md M3). 그림 가운데에 내 하루가 앉아 있다.
- * 결제(Play Billing)는 스토어 등록 뒤에 붙인다. 지금은 누르면 시험판 안내가 나온다.
+ * 결제는 Google Play (billing/Support.kt). Play 에 상품이 아직 없으면 누르면 시험판 안내가 나온다.
  */
 @Composable
 fun SupportScreen(state: AppState, now: LocalDateTime, onBack: () -> Unit) {
@@ -140,6 +140,8 @@ fun SupportScreen(state: AppState, now: LocalDateTime, onBack: () -> Unit) {
     val ctx = LocalContext.current
     val load = haruArt(state, sprout = false)
     var soon by remember { mutableStateOf(false) }
+    val support = remember { io.github.graviton94.carpediem.billing.Support(ctx) }
+    androidx.compose.runtime.DisposableEffect(support) { support.connect(); onDispose { support.close() } }
     BackHandler(onBack = onBack)
     SkyBackground {
         Column(
@@ -161,18 +163,26 @@ fun SupportScreen(state: AppState, now: LocalDateTime, onBack: () -> Unit) {
                 Triple(R.string.support_tier2, R.string.support_tier2_price, "teacup"),
                 Triple(R.string.support_tier3, R.string.support_tier3_price, "candle"),
             ).forEachIndexed { i, (name, price, obj) ->
+                val id = io.github.graviton94.carpediem.billing.Support.IDS[i]
                 Row(
                     Modifier.fillMaxWidth().heightIn(min = Tokens.Layout.tapTarget + Tokens.Space.sp4)
-                        .crayonBox(if (i == 1) Theme.gc.chip else null, G.Radius.button, G.Stroke.box, seed = 920 + i * 3).clickable { soon = true }
+                        .crayonBox(if (i == 1) Theme.gc.chip else null, G.Radius.button, G.Stroke.box, seed = 920 + i * 3).clickable {
+                            // Play 에 상품이 있으면 결제 창, 없으면 시험판 안내
+                            val act = ctx as? android.app.Activity
+                            soon = act == null || !support.buy(act, id)
+                        }
                         .padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp2),
                     verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp3),
                 ) {
                     Image(GardenArt.obj(ctx, obj), null, Modifier.size(Theme.unit * G.Layout.collectionCell * 0.42f))
                     TokenText(stringResource(name), Tokens.TypeScale.headline, Modifier.weight(1f))
-                    TokenText(stringResource(price), Tokens.TypeScale.headline, color = p.secondary)
+                    TokenText(support.prices[id]?.takeIf { it.isNotBlank() } ?: stringResource(price), Tokens.TypeScale.headline, color = p.secondary)
                 }
             }
-            if (soon) Box(Modifier.fillMaxWidth().crayonBox(Theme.gc.paper, G.Radius.box, G.Stroke.chip, seed = 940).padding(Tokens.Space.sp4)) {
+            if (support.thanked) Box(Modifier.fillMaxWidth().crayonBox(Theme.gc.chip, G.Radius.box, G.Stroke.chip, seed = 941).padding(Tokens.Space.sp4)) {
+                TokenText(stringResource(R.string.support_thanks), Tokens.TypeScale.subhead.serif(), Modifier.fillMaxWidth(), align = TextAlign.Center)
+            }
+            else if (soon) Box(Modifier.fillMaxWidth().crayonBox(Theme.gc.paper, G.Radius.box, G.Stroke.chip, seed = 940).padding(Tokens.Space.sp4)) {
                 TokenText(stringResource(R.string.support_soon), Tokens.TypeScale.subhead, Modifier.fillMaxWidth(), align = TextAlign.Center)
             }
             TokenText(stringResource(R.string.support_once), Tokens.TypeScale.footnote, Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.Center)
