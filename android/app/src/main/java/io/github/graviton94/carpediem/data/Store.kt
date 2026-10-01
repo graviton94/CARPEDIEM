@@ -228,6 +228,11 @@ class Store(context: Context) {
         get() = Family.decode(prefs.getString("people", null))
         set(v) = prefs.edit().putString("people", Family.encode(v)).apply()
 
+    /** 특별한 날 꽃 (인생 달력 위). */
+    var specialDays: List<io.github.graviton94.carpediem.core.SpecialDay>
+        get() = io.github.graviton94.carpediem.core.SpecialDays.decode(prefs.getString("specialDays", null))
+        set(v) = prefs.edit().putString("specialDays", io.github.graviton94.carpediem.core.SpecialDays.encode(v)).apply()
+
     /** 계절 첫날의 바람: 편지 id ("2026-12") → 한 줄. 석 달 뒤 편지 첫 장에 돌아온다. 저장 형식 `id<TAB>글` 한 줄에 하나. */
     var wishes: Map<String, String>
         get() = prefs.getString("wishes", null).orEmpty().lineSequence().mapNotNull { r -> r.split('\t', limit = 2).takeIf { it.size == 2 }?.let { it[0] to it[1] } }.toMap()

@@ -472,3 +472,14 @@
 "dev.year" = "Test: bloom the year garden";
 "wish.sample" = "Look at the sky a little more often.";
 "support.thanks" = "Thank you for your support.\nThe garden feels a little warmer.";
+"bday.card" = "Send a birthday card";
+"bday.cardTitle" = "Happy birthday, %1$@";
+"bday.cardSub" = "Thank you for being here.";
+"special.add" = "Place a flower on a special day";
+"special.title" = "Days with a flower";
+"special.name" = "What day was it?";
+"special.nameHint" = "First job, moving day";
+"special.save" = "Place the flower";
+"special.remove" = "Remove";
+"special.removeConfirm" = "Remove the flower for %1$@?";
+"special.full" = "You can place up to thirty flowers.";

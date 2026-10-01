@@ -17,7 +17,7 @@ permissions:
 jobs:
   shots:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 70
     steps:
       - name: Free disk space
         # 에뮬레이터 userdata 에 7GB 넘게 필요하다. 쓰지 않는 도구를 지운다.

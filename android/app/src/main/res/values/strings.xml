@@ -474,4 +474,15 @@
     <string name="dev_year">Test: bloom the year garden</string>
     <string name="wish_sample">Look at the sky a little more often.</string>
     <string name="support_thanks">Thank you for your support.\nThe garden feels a little warmer.</string>
+    <string name="bday_card">Send a birthday card</string>
+    <string name="bday_cardTitle">Happy birthday, %1$s</string>
+    <string name="bday_cardSub">Thank you for being here.</string>
+    <string name="special_add">Place a flower on a special day</string>
+    <string name="special_title">Days with a flower</string>
+    <string name="special_name">What day was it?</string>
+    <string name="special_nameHint">First job, moving day</string>
+    <string name="special_save">Place the flower</string>
+    <string name="special_remove">Remove</string>
+    <string name="special_removeConfirm">Remove the flower for %1$s?</string>
+    <string name="special_full">You can place up to thirty flowers.</string>
 </resources>

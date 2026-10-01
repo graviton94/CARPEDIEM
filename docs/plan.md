@@ -248,3 +248,10 @@ design/tokens.json, design/strings.json, data/*.csv   ← 유일한 원본
 | 고마움 명상: 고요한 호흡 리듬, 내쉴 때 “고마운 것 하나”, 끝나면 한 줄로 고마움 책에 | 완료 | `BreathKind.THANKS`, `ThanksAfter` |
 | 그림 보내기: 오늘의 한 줄 카드 (한마디 창), 한 해의 정원 그림 → 폰의 보내기 창 (서버 없음, 그림 한 장만) | 완료 | `share/ShareCards.kt`, FileProvider `share_paths.xml` |
 
+### 1.7 조용한 연결 — 개발 완료, 폰 확인 전
+| 항목 | 상태 | 어디 |
+|---|---|---|
+| 생일 카드: 가족의 생일, 그 사람의 돌 페이지에서 모자 · 케이크가 그려진 카드를 보내기 창으로 | 완료 | `ShareCards.birthday`, `StoneScreen` |
+| 특별한 날 꽃: 인생 달력 칸에 작은 꽃 (이름 · 날짜, 알림 없음, 서른 송이까지), 누르면 거두기 | 완료 | `SpecialDaysRow`, `CrayonCalendar(flowers)`, `core SpecialDays` |
+| 아침 숨 · 한 줄 카드 | 1.5 · 1.6 에서 | |
+

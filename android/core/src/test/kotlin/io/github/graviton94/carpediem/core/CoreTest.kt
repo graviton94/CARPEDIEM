@@ -353,4 +353,14 @@ class ReflectTest {
         assertEquals(null, Lines.yearDue(LocalDate.of(2027, 1, 8))); assertEquals(null, Lines.yearDue(LocalDate.of(2026, 12, 30)))
         assertEquals("2026-12", Lines.wishDue(LocalDate.of(2026, 12, 14))); assertEquals(null, Lines.wishDue(LocalDate.of(2026, 12, 15))); assertEquals(null, Lines.wishDue(LocalDate.of(2026, 11, 1)))
     }
+
+    @Test fun specialDays() {
+        val a = SpecialDay(LocalDate.of(2020, 3, 2), "첫 출근"); val b = SpecialDay(LocalDate.of(2018, 5, 1), "이사한 날")
+        val list = SpecialDays.put(SpecialDays.put(emptyList(), a), b)
+        assertEquals(listOf(b, a), list)
+        assertEquals(list, SpecialDays.decode(SpecialDays.encode(list)))
+        assertEquals("결혼", SpecialDays.put(list, a.copy(name = "결혼")).last().name)
+        // 그 날이 든 달력 칸: 그날까지 지나온 단위 수
+        assertEquals(22, LifeSnapshot(LocalDate.of(1998, 1, 15), 80.0, LocalDate.of(2020, 3, 2).atStartOfDay()).lived(LifeUnit.YEARS))
+    }
 }

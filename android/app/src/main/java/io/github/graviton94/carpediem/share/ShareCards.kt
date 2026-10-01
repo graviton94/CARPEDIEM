@@ -17,6 +17,7 @@ import io.github.graviton94.carpediem.core.DayLine
 import io.github.graviton94.carpediem.core.Feeling
 import io.github.graviton94.carpediem.design.Tokens
 import io.github.graviton94.carpediem.ui.garden.HaruArt
+import io.github.graviton94.carpediem.ui.garden.birthdayCake
 import io.github.graviton94.carpediem.ui.garden.drawHaru
 import io.github.graviton94.carpediem.ui.garden.moodColor
 import java.io.File
@@ -104,6 +105,31 @@ object ShareCards {
         y += cell * ((days.size + cols - 1) / cols) + pad * 0.5f
         y += text(c, count, paint(ctx, S.small, inkSoft), pad, y, (w - pad * 2).toInt()) + pad * 0.3f
         thanks.forEach { t -> y += text(c, "“$t”", paint(ctx, S.small * 1.05f, ink), pad, y, (w - pad * 2).toInt()) + pad * 0.15f }
+        text(c, ctx.getString(R.string.share_footer), paint(ctx, S.small * 0.8f, inkSoft), pad, h - pad * 1.25f, (w - pad * 2).toInt())
+        return b
+    }
+
+    /** 생일 카드: 그 사람의 돌이 생일 모자를 쓰고, 앞에 작은 케이크. “○○, 생일 축하해요.” */
+    fun birthday(ctx: Context, name: String, seed: Long, pet: Boolean): Bitmap {
+        val w = S.lineW.toInt(); val h = S.lineH.toInt(); val pad = S.pad
+        val (b, c) = base(w, h)
+        val tp = paint(ctx, S.text, ink)
+        text(c, ctx.getString(R.string.bday_cardTitle, name), tp, pad, h * 0.16f, (w - pad * 2).toInt())
+        text(c, ctx.getString(R.string.bday_cardSub), paint(ctx, S.small, inkSoft), pad, h * 0.16f + S.text * 1.8f, (w - pad * 2).toInt())
+        val art = HaruArt.of(seed, false)
+        val stoneW = w * (if (pet) 0.26f else 0.34f); val k = stoneW / art.meta.bbox.width; val gy = h * 0.74f; val cx = w / 2f
+        c.save(); c.translate(cx - art.meta.bbox.center.x * k, gy - art.meta.ground * k)
+        androidx.compose.ui.graphics.drawscope.CanvasDrawScope().draw(androidx.compose.ui.unit.Density(1f), androidx.compose.ui.unit.LayoutDirection.Ltr,
+            androidx.compose.ui.graphics.Canvas(c), androidx.compose.ui.geometry.Size(art.meta.box * k, art.meta.box * k)) { drawHaru(art, k, smile = 1f, hat = true) }
+        c.restore()
+        // 돌 앞 케이크
+        val cw = stoneW * 0.42f
+        c.save(); c.translate(cx + stoneW * 0.42f - cw / 2, gy - cw + 4f)
+        androidx.compose.ui.graphics.drawscope.CanvasDrawScope().draw(androidx.compose.ui.unit.Density(1f), androidx.compose.ui.unit.LayoutDirection.Ltr,
+            androidx.compose.ui.graphics.Canvas(c), androidx.compose.ui.geometry.Size(cw, cw)) { birthdayCake() }
+        c.restore()
+        val p = Paint(Paint.ANTI_ALIAS_FLAG).apply { strokeWidth = 5f; color = ink; strokeCap = Paint.Cap.ROUND }
+        c.drawLine(cx - stoneW * 1.3f, gy, cx + stoneW * 1.3f, gy, p)
         text(c, ctx.getString(R.string.share_footer), paint(ctx, S.small * 0.8f, inkSoft), pad, h - pad * 1.25f, (w - pad * 2).toInt())
         return b
     }

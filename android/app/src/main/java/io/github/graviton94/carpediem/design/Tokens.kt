@@ -468,5 +468,12 @@ object Tokens {
             const val small = 34.0f
             const val pad = 96.0f
         }
+        object Special {
+            const val size = 1.25f
+            object Colors {
+                val petal = Color(0xFFE9A3B4)
+                val heart = Color(0xFFF2C04E)
+            }
+        }
     }
 }

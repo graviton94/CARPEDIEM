@@ -473,5 +473,12 @@ enum Tokens {
             static let small: CGFloat = 34.0
             static let pad: CGFloat = 96.0
         }
+        enum Special {
+            static let size: CGFloat = 1.25
+            enum Colors {
+                static let petal: UInt32 = 0xE9A3B4FF
+                static let heart: UInt32 = 0xF2C04EFF
+            }
+        }
     }
 }

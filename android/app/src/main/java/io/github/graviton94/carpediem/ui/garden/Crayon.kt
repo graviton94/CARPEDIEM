@@ -197,7 +197,7 @@ fun CrayonBar(value: Float, color: Color, modifier: Modifier = Modifier, seed: I
  * sharedFrom: 이 칸부터 지금까지는 ‘함께한’ 칸 (호박빛 테두리). showAhead = false 면 남은 칸을 그리지 않는다 (가족의 달력).
  */
 @Composable
-fun CrayonCalendar(total: Int, filled: Int, columns: Int, modifier: Modifier = Modifier, sharedFrom: Int = Int.MAX_VALUE, showAhead: Boolean = true) {
+fun CrayonCalendar(total: Int, filled: Int, columns: Int, modifier: Modifier = Modifier, sharedFrom: Int = Int.MAX_VALUE, showAhead: Boolean = true, flowers: Set<Int> = emptySet()) {
     val ctx = LocalContext.current
     val u = with(LocalDensity.current) { Theme.unit.toPx() }
     val mask = Crayon.tooth(GardenArt.toothFill(ctx), u)
@@ -239,6 +239,14 @@ fun CrayonCalendar(total: Int, filled: Int, columns: Int, modifier: Modifier = M
                     drawPath(shared, Tokens.Garden.Colors.now, style = Stroke(u * 1.1f))
                     drawPath(now, ink, style = Stroke(u * 0.9f))
                     drawPath(ahead, futureC, style = Stroke(u * 0.8f))
+                }
+                // 특별한 날 꽃: 그 칸 위에 다섯 잎 작은 꽃
+                val sp = Tokens.Garden.Special
+                flowers.filter { it in 0 until total }.forEach { i ->
+                    val c = Offset((i % columns + 0.5f) * cell, (i / columns + 0.5f) * cell); val r = cell / 2 * sp.size
+                    repeat(5) { k -> val a = k * 6.283f / 5 - 1.571f; drawCircle(sp.Colors.petal, r * 0.42f, Offset(c.x + cos(a) * r * 0.5f, c.y + sin(a) * r * 0.5f)) }
+                    drawCircle(sp.Colors.heart, r * 0.32f, c)
+                    drawCircle(ink.copy(alpha = 0.6f), r * 0.32f, c, style = Stroke(u * 0.5f))
                 }
             }
         }

@@ -472,3 +472,14 @@
 "dev.year" = "시험: 한 해의 정원 피게";
 "wish.sample" = "조금 더 자주 하늘 보기.";
 "support.thanks" = "응원해 주셔서 고마워요.\n정원이 조금 더 따뜻해졌어요.";
+"bday.card" = "생일 카드 보내기";
+"bday.cardTitle" = "%1$@, 생일 축하해요";
+"bday.cardSub" = "오늘도 곁에 있어 줘서 고마워요.";
+"special.add" = "특별한 날 꽃 놓기";
+"special.title" = "꽃을 놓은 날";
+"special.name" = "어떤 날인가요?";
+"special.nameHint" = "첫 출근, 이사한 날";
+"special.save" = "꽃 놓기";
+"special.remove" = "꽃 거두기";
+"special.removeConfirm" = "%1$@의 꽃을 거둘까요?";
+"special.full" = "꽃은 서른 송이까지 놓을 수 있어요.";

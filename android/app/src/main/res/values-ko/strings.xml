@@ -474,4 +474,15 @@
     <string name="dev_year">시험: 한 해의 정원 피게</string>
     <string name="wish_sample">조금 더 자주 하늘 보기.</string>
     <string name="support_thanks">응원해 주셔서 고마워요.\n정원이 조금 더 따뜻해졌어요.</string>
+    <string name="bday_card">생일 카드 보내기</string>
+    <string name="bday_cardTitle">%1$s, 생일 축하해요</string>
+    <string name="bday_cardSub">오늘도 곁에 있어 줘서 고마워요.</string>
+    <string name="special_add">특별한 날 꽃 놓기</string>
+    <string name="special_title">꽃을 놓은 날</string>
+    <string name="special_name">어떤 날인가요?</string>
+    <string name="special_nameHint">첫 출근, 이사한 날</string>
+    <string name="special_save">꽃 놓기</string>
+    <string name="special_remove">꽃 거두기</string>
+    <string name="special_removeConfirm">%1$s의 꽃을 거둘까요?</string>
+    <string name="special_full">꽃은 서른 송이까지 놓을 수 있어요.</string>
 </resources>

@@ -391,8 +391,13 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 }
                 val cols = when (state.grid) { GridScale.WEEKS -> Tokens.Grid.weeksColumns; GridScale.MONTHS -> Tokens.Grid.monthsColumns; GridScale.YEARS -> Tokens.Grid.yearsColumns }
                 // 칸이 수천 개라 한 번 그려 두고(레이어) 넘길 때는 옮기기만 한다
-                CrayonCalendar(s.total(state.grid.unit), s.lived(state.grid.unit), cols, Modifier.graphicsLayer())
+                // 특별한 날 꽃: 그날이 든 칸 (그날까지 지나온 단위 수)
+                val flowers = remember(state.specialDays, state.grid, profile) {
+                    state.specialDays.map { d -> LifeSnapshot(profile.birthDate, s.expectancy, d.date.atStartOfDay()).lived(state.grid.unit) }.toSet()
+                }
+                CrayonCalendar(s.total(state.grid.unit), s.lived(state.grid.unit), cols, Modifier.graphicsLayer(), flowers = flowers)
                 TokenText(stringResource(R.string.calendar_legend, Labels.season(ctx, season)), Tokens.TypeScale.caption1, color = p.secondary)
+                SpecialDaysRow(state, profile.birthDate)
                 // 마음의 하늘: 지난 30일을 손으로 그린 동그라미로
                 Spacer(Modifier.height(Tokens.Space.sp4))
                 MoodSky(state, now.toLocalDate())

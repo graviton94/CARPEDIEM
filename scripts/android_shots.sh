@@ -66,6 +66,9 @@ open --es cd.now 2026-10-03T23:20;                                              
 open --es cd.screen thanks --es cd.now 2026-10-03T15:00;                                              shot g44_thanks_breath 7
 open --es cd.now 2026-12-03T10:00; sleep 5; swipe_up;                                                  shot g45_wish 3
 open --ez cd.year true --ez cd.openYear true --es cd.now 2026-12-31T15:00;                            shot g46_year 6
+# 1.7: 특별한 날 꽃 (인생 달력) · 엄마 생일의 돌 페이지 (생일 카드 보내기)
+open --ez cd.special true --es cd.now $NOW; sleep 5; swipe_up; sleep 3; swipe_up;                      shot g47_special 3
+open --es cd.screen stone --es cd.stoneId mom00001 --es cd.now $NOW;                                  shot g48_birthday_card 5
 # 인생의 계절 (다른 생년월일 · 다른 하루)
 open --el cd.seed 12345 --es cd.birth 2016-03-01 --es cd.now $NOW;                                     shot g12_spring 14
 open --el cd.seed 99 --es cd.birth 1968-08-20 --ez cd.preview true --es cd.now $NOW;                   shot g13_autumn 14

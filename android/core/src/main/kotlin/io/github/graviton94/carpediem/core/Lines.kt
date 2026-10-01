@@ -103,3 +103,18 @@ object Lines {
     fun add(list: List<DayLine>, line: DayLine): List<DayLine> =
         if (list.any { it.date == line.date }) list else (list + line).sortedBy { it.date }
 }
+
+/** 특별한 날 꽃: 인생 달력의 한 칸에 놓는 작은 꽃 (이름만, 알림 없음). */
+data class SpecialDay(val date: LocalDate, val name: String)
+
+object SpecialDays {
+    const val MAX = 30
+    const val NAME_MAX = 12
+    fun encode(list: List<SpecialDay>): String = list.joinToString("\n") { "${it.date.toEpochDay()}\t${Lines.clean(it.name, NAME_MAX)}" }
+    fun decode(s: String?): List<SpecialDay> = s.orEmpty().lineSequence().mapNotNull { r ->
+        val p = r.split('\t', limit = 2); val d = p.getOrNull(0)?.toLongOrNull() ?: return@mapNotNull null
+        SpecialDay(LocalDate.ofEpochDay(d), p.getOrNull(1).orEmpty())
+    }.toList()
+    /** 같은 날은 하나만 (이름을 바꿈), 날짜순, 최대 MAX. */
+    fun put(list: List<SpecialDay>, day: SpecialDay): List<SpecialDay> = (list.filterNot { it.date == day.date } + day).sortedBy { it.date }.takeLast(MAX)
+}

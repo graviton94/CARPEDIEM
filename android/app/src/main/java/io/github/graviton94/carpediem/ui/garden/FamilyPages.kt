@@ -127,6 +127,10 @@ fun StoneScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, id: S
                     TokenText(stringResource(if (person?.kind == Kind.PET) R.string.stone_petAge else R.string.stone_age, "$age"), Tokens.TypeScale.footnote, color = p.secondary)
                 }
             }
+            // 가족의 생일 아침: 그 사람의 돌 · 모자 · 케이크가 그려진 카드 한 장
+            if (birthday && !me) GardenButton(stringResource(R.string.bday_card), {
+                io.github.graviton94.carpediem.share.ShareCards.send(ctx, io.github.graviton94.carpediem.share.ShareCards.birthday(ctx, name, person!!.seed, person.kind == Kind.PET), "birthday-${person.id}-$today")
+            }, filled = true, seed = 873)
             // 함께한 날 · 다음 생일
             Row(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
                 val since = if (me) metOn else Family.togetherSince(profile.birthDate, person!!)

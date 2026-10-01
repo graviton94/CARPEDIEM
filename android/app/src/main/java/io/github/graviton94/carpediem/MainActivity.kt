@@ -193,6 +193,11 @@ private fun MainActivity.debugSetup(state: AppState): Screen {
     x.getStringExtra("cd.care")?.let { c -> state.toast = io.github.graviton94.carpediem.ui.Labels.letGoMessage(this, io.github.graviton94.carpediem.core.Feeling.SAD); state.care = runCatching { io.github.graviton94.carpediem.ui.Care.valueOf(c) }.getOrNull() }
     state.debugOpenLetter = x.getBooleanExtra("cd.openLetter", false)
     if (x.getBooleanExtra("cd.year", false)) state.addSampleYear()
+    // 캡처용: 특별한 날 꽃 둘 (태어난 지 18년 · 22년쯤)
+    if (x.getBooleanExtra("cd.special", false)) state.profile?.birthDate?.let { b ->
+        state.putSpecialDay(io.github.graviton94.carpediem.core.SpecialDay(b.plusYears(18).plusDays(40), "입학"))
+        state.putSpecialDay(io.github.graviton94.carpediem.core.SpecialDay(b.plusYears(22).plusDays(100), "첫 출근"))
+    }
     // 캡처용: 이번 편지가 돌려줄 지난 계절의 바람
     if (x.getBooleanExtra("cd.wish", false)) io.github.graviton94.carpediem.core.Letters.due((state.fixedNow ?: LocalDateTime.now()).toLocalDate())?.minusMonths(3)?.let { d -> state.saveWish("%04d-%02d".format(d.year, d.monthValue), getString(R.string.wish_sample)) }
     state.debugOpenYear = x.getBooleanExtra("cd.openYear", false)
@@ -216,5 +221,5 @@ private fun MainActivity.debugSetup(state: AppState): Screen {
             Person("frd00001", "지우", Kind.PERSON, birth = LocalDate.of(2001, 7, 9), sex = Sex.OTHER, country = "KR", seed = 8080, metOn = today),
         ).forEach { state.savePerson(it) }
     }
-    return when (x.getStringExtra("cd.screen")) { "settings" -> Screen.Settings; "widgets" -> Screen.WidgetPreview; "collection" -> Screen.Collection(Screen.Main); "support" -> Screen.Support(Screen.Main); "stone" -> Screen.Stone(state.people.firstOrNull()?.id, Screen.Main); "add" -> Screen.AddPerson(null, Screen.Main); "breath" -> Screen.Breathe(BreathKind.CALM, 1, Sound.WAVES, Screen.Main); "gaze" -> Screen.Gaze(Screen.Main); "look" -> Screen.Look(Screen.Main); "thanks" -> Screen.Breathe(BreathKind.THANKS, 1, Sound.SEASON, Screen.Main); "memory" -> Screen.Memory(Screen.Collection(Screen.Main)); else -> Screen.Main }
+    return when (x.getStringExtra("cd.screen")) { "settings" -> Screen.Settings; "widgets" -> Screen.WidgetPreview; "collection" -> Screen.Collection(Screen.Main); "support" -> Screen.Support(Screen.Main); "stone" -> Screen.Stone(x.getStringExtra("cd.stoneId") ?: state.people.firstOrNull()?.id, Screen.Main); "add" -> Screen.AddPerson(null, Screen.Main); "breath" -> Screen.Breathe(BreathKind.CALM, 1, Sound.WAVES, Screen.Main); "gaze" -> Screen.Gaze(Screen.Main); "look" -> Screen.Look(Screen.Main); "thanks" -> Screen.Breathe(BreathKind.THANKS, 1, Sound.SEASON, Screen.Main); "memory" -> Screen.Memory(Screen.Collection(Screen.Main)); else -> Screen.Main }
 }

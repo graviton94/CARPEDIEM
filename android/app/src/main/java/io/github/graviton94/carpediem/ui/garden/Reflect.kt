@@ -389,7 +389,7 @@ internal fun YearSheet(state: AppState, year: Int, onClose: () -> Unit) {
     val days = remember(state.lines, year) { Lines.yearDays(state.lines, year) }
     val sent = days.count { it.second != null }
     val thanksAll = state.lines.filter { it.date.year == year && it.feeling == Feeling.THANKS && it.text.isNotBlank() }
-    val thanks = remember(year, thanksAll.size) { thanksAll.shuffled(kotlin.random.Random(year)).take(G.Year.thanks.toInt()).map { it.text } }
+    val thanks = remember(year, thanksAll.size) { thanksAll.map { it.text }.distinct().shuffled(kotlin.random.Random(year)).take(G.Year.thanks.toInt()) }
     val title = stringResource(R.string.year_title, "$year"); val count = stringResource(R.string.year_count, "$sent", "${thanksAll.size}")
     ModalBottomSheet(onDismissRequest = onClose, containerColor = Theme.gc.paper, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
         Column(
@@ -426,4 +426,79 @@ internal fun PastYears(state: AppState, today: LocalDate) {
         }
     }
     open?.let { YearSheet(state, it) { open = null } }
+}
+
+// ───────────────────────── 특별한 날 꽃 ─────────────────────────
+
+/** 인생 달력 아래: 꽃을 놓은 날들 (이름 · 날짜, 누르면 거두기) + ‘특별한 날 꽃 놓기’. 알림은 없다. */
+@OptIn(ExperimentalMaterial3Api::class, androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
+@Composable
+internal fun SpecialDaysRow(state: AppState, birth: LocalDate) {
+    val p = Theme.palette
+    var adding by remember { mutableStateOf(false) }
+    var removing by remember { mutableStateOf<io.github.graviton94.carpediem.core.SpecialDay?>(null) }
+    val fmt = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
+    Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
+        if (state.specialDays.isNotEmpty()) {
+            TokenText(stringResource(R.string.special_title), Tokens.TypeScale.caption1, color = p.secondary)
+            androidx.compose.foundation.layout.FlowRow(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
+                state.specialDays.forEachIndexed { i, d -> GardenChip("${d.name} · ${d.date.format(fmt)}", false, 1400 + i) { removing = d } }
+            }
+        }
+        TokenText(stringResource(R.string.special_add), Tokens.TypeScale.footnote, Modifier.clickable {
+            adding = true
+        }.padding(vertical = Tokens.Space.sp1), color = p.secondary, weight = FontWeight.SemiBold)
+    }
+    if (adding) SpecialDaySheet(state, birth) { adding = false }
+    removing?.let { d ->
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { removing = null },
+            title = { androidx.compose.material3.Text(stringResource(R.string.special_removeConfirm, d.name)) },
+            confirmButton = { androidx.compose.material3.TextButton(onClick = { state.removeSpecialDay(d.date); removing = null }) { androidx.compose.material3.Text(stringResource(R.string.special_remove)) } },
+            dismissButton = { androidx.compose.material3.TextButton(onClick = { removing = null }) { androidx.compose.material3.Text(stringResource(R.string.cancel)) } },
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun SpecialDaySheet(state: AppState, birth: LocalDate, onClose: () -> Unit) {
+    val p = Theme.palette
+    var name by rememberSaveable { mutableStateOf("") }
+    var date by rememberSaveable { mutableStateOf<Long?>(null) }
+    var picking by remember { mutableStateOf(false) }
+    val full = state.specialDays.size >= io.github.graviton94.carpediem.core.SpecialDays.MAX
+    ModalBottomSheet(onDismissRequest = onClose, containerColor = Theme.gc.paper) {
+        Column(Modifier.fillMaxWidth().padding(horizontal = Theme.deviceClass.pageMargin).navigationBarsPadding().padding(bottom = Tokens.Space.sp6),
+            verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
+            TokenText(stringResource(R.string.special_name), Tokens.TypeScale.title3.serif())
+            androidx.compose.foundation.text.BasicTextField(
+                value = name, onValueChange = { v -> val one = v.replace('\n', ' '); if (one.codePointCount(0, one.length) <= io.github.graviton94.carpediem.core.SpecialDays.NAME_MAX) name = one },
+                singleLine = true, textStyle = Tokens.TypeScale.headline.style().copy(color = p.foreground), cursorBrush = androidx.compose.ui.graphics.SolidColor(p.foreground),
+                modifier = Modifier.fillMaxWidth().crayonBox(null, G.Radius.box, G.Stroke.chip, 1410).padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3),
+                decorationBox = { inner -> Box { if (name.isEmpty()) TokenText(stringResource(R.string.special_nameHint), Tokens.TypeScale.headline, color = p.secondary); inner() } },
+            )
+            GardenChip(date?.let { LocalDate.ofEpochDay(it).format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)) } ?: stringResource(R.string.add_birthPick), date != null, 1411) { picking = true }
+            if (full) TokenText(stringResource(R.string.special_full), Tokens.TypeScale.footnote, color = p.secondary)
+            val ok = name.isNotBlank() && date != null && !full
+            GardenButton(stringResource(R.string.special_save), {
+                if (ok) { state.putSpecialDay(io.github.graviton94.carpediem.core.SpecialDay(LocalDate.ofEpochDay(date!!), name.trim())); onClose() }
+            }, filled = ok, seed = 1412)
+        }
+    }
+    if (picking) {
+        val init = (date?.let { LocalDate.ofEpochDay(it) } ?: LocalDate.now()).atStartOfDay().toInstant(java.time.ZoneOffset.UTC).toEpochMilli()
+        val dp = androidx.compose.material3.rememberDatePickerState(initialSelectedDateMillis = init)
+        androidx.compose.material3.DatePickerDialog(
+            onDismissRequest = { picking = false },
+            confirmButton = {
+                androidx.compose.material3.TextButton(onClick = {
+                    // 태어난 날부터 오늘까지만
+                    dp.selectedDateMillis?.let { ms -> val d = java.time.Instant.ofEpochMilli(ms).atZone(java.time.ZoneOffset.UTC).toLocalDate(); if (!d.isAfter(LocalDate.now()) && !d.isBefore(birth)) date = d.toEpochDay() }
+                    picking = false
+                }) { androidx.compose.material3.Text(stringResource(R.string.done)) }
+            },
+            dismissButton = { androidx.compose.material3.TextButton(onClick = { picking = false }) { androidx.compose.material3.Text(stringResource(R.string.cancel)) } },
+        ) { androidx.compose.material3.DatePicker(state = dp) }
+    }
 }
