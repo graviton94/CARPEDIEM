@@ -211,7 +211,8 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 val headroom = slots.maxOf { sl -> sl.scale * (sl.art.meta.ground - sl.art.meta.bbox.top + if (sl.birthday) Tokens.Garden.Party.hatHeight else if (sl.art.sprout) Tokens.Garden.HaruDraw.sproutHeight else 0f) }
                 val haruAbove = headroom
                 val family = slots.size > 1
-                val labels = u * (G.Layout.labelGap + G.Layout.labelRow * 3)
+                // 이름표 두 줄 + 나이 한 줄 + 아래 버튼 · 카드와의 틈
+                val labels = u * (G.Layout.labelGap + G.Layout.labelRow * 4)
                 val gy = maxOf(screenH * G.Layout.groundRatio, topBottom + u * G.Layout.minSkyGap + haruAbove).coerceAtMost(screenH - labels - blockH)
 
                 Image(GardenArt.sky(ctx, season), null, Modifier.fillMaxSize(), contentScale = ContentScale.FillWidth, alignment = Alignment.TopCenter)
