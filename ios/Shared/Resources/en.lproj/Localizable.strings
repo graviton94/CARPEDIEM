@@ -266,11 +266,11 @@
 "stone.nextBirthday" = "Next birthday in";
 "stone.birthdayToday" = "Today";
 "stone.calendar" = "%1$@'s life calendar";
-"stone.calendarLegend" = "Years together have an amber edge.";
+"stone.calendarLegend" = "Each dot’s color is a season of that life (spring · summer · autumn · winter); the orange dot is now.\nAn amber edge marks the years together.";
 "stone.showAhead" = "Show the years ahead";
 "stone.lines" = "Lines sent to this stone";
 "stone.linesCount" = "%1$@";
-"stone.edit" = "Edit";
+"stone.edit" = "Tend";
 "stone.save" = "Save";
 "stone.remove" = "Take out of the garden";
 "stone.removeConfirm" = "Take %1$@’s stone out of the garden?\nYour lines stay.";
@@ -320,7 +320,7 @@
 "gaze" = "Stone gazing";
 "gaze.soundOn" = "Sound on";
 "gaze.soundOff" = "Sound off";
-"gaze.exit" = "Go back to return to the garden";
+"gaze.exit" = "Tap the screen to go back to the garden";
 "obj.windchime" = "Wind chime";
 "obj.windchime.when" = "The first time you breathed and rested together";
 "obj.windchime.line" = "Each time the wind passes, one breath.";
@@ -399,7 +399,7 @@
 "memory.add" = "Family or a pet who has passed";
 "memory.addMore" = "Add a stone to remember";
 "memory.full" = "You can keep up to four stones here.";
-"memory.toMemory" = "Move to the place of memory";
+"memory.toMemory" = "To the place of memory";
 "memory.toMemoryConfirm" = "Move %1$@’s stone to the place of memory?\nIt won’t be in the garden; it rests quietly in Memories.\nYou can bring it back any time.";
 "memory.toMemoryAction" = "Move";
 "memory.addUntil" = "The day they left (optional)";
@@ -517,3 +517,6 @@
 "memory.toMemoryHelp" = "For family or pets who have passed. The stone rests in Memories › Place of memory, and can return to the garden any time.";
 "record.off" = "Keeping lines is off, so there’s no record to show. You can turn it on in Settings.";
 "record.yearHint" = "Tap a month to open it.";
+"gaze.ask" = "Back to the garden?";
+"gaze.back" = "Go back";
+"gaze.stay" = "Stay a while";

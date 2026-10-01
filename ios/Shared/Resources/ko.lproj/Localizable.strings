@@ -266,11 +266,11 @@
 "stone.nextBirthday" = "다음 생일까지";
 "stone.birthdayToday" = "오늘이에요";
 "stone.calendar" = "%1$@의 인생 달력";
-"stone.calendarLegend" = "함께한 해는 호박빛 테두리예요.";
+"stone.calendarLegend" = "칸의 색은 그 삶의 계절 (봄 · 여름 · 가을 · 겨울), 주황 칸은 지금이에요.\n호박빛 테두리는 함께한 해예요.";
 "stone.showAhead" = "남은 칸 보이기";
 "stone.lines" = "이 돌에게 보낸 마음";
 "stone.linesCount" = "%1$@번";
-"stone.edit" = "고치기";
+"stone.edit" = "다듬기";
 "stone.save" = "저장";
 "stone.remove" = "정원에서 빼기";
 "stone.removeConfirm" = "%1$@의 돌을 정원에서 뺄까요?\n보낸 한 줄은 남아요.";
@@ -320,7 +320,7 @@
 "gaze" = "돌멍하기";
 "gaze.soundOn" = "소리 켜기";
 "gaze.soundOff" = "소리 끄기";
-"gaze.exit" = "뒤로 가면 정원으로 돌아가요";
+"gaze.exit" = "화면을 누르면 정원으로 돌아갈 수 있어요";
 "obj.windchime" = "작은 풍경";
 "obj.windchime.when" = "처음 숨, 쉼을 함께한 날";
 "obj.windchime.line" = "바람이 지날 때마다, 숨 한 번.";
@@ -399,9 +399,9 @@
 "memory.add" = "곁을 떠난 가족 · 반려동물";
 "memory.addMore" = "기억의 돌 더하기";
 "memory.full" = "기억의 돌은 넷까지 둘 수 있어요.";
-"memory.toMemory" = "기억의 자리로 모시기";
+"memory.toMemory" = "기억의 자리로";
 "memory.toMemoryConfirm" = "%1$@의 돌을 기억의 자리로 모실까요?\n정원에서는 보이지 않고, 추억 안 기억의 자리에 조용히 있어요.\n언제든 다시 정원으로 옮길 수 있어요.";
-"memory.toMemoryAction" = "모시기";
+"memory.toMemoryAction" = "기억의 자리로";
 "memory.addUntil" = "곁을 떠난 날 (선택)";
 "memory.meet" = "%1$@의 돌이 기억의 자리에 앉았어요.";
 "memory.a11y" = "%1$@의 기억의 돌, 눈을 감고 있어요";
@@ -517,3 +517,6 @@
 "memory.toMemoryHelp" = "곁을 떠난 가족 · 반려동물이라면. 정원에서는 쉬고, 추억 › 기억의 자리에 조용히 있어요. 언제든 다시 정원으로 옮길 수 있어요.";
 "record.off" = "기록 남기기를 꺼 두어 마음의 기록이 보이지 않아요. 설정에서 켤 수 있어요.";
 "record.yearHint" = "달을 누르면 그 달로 가요.";
+"gaze.ask" = "정원으로 돌아갈까요?";
+"gaze.back" = "돌아가기";
+"gaze.stay" = "더 머물기";

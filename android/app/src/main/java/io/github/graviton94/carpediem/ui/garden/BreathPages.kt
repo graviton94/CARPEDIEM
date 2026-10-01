@@ -41,6 +41,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameMillis
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import kotlinx.coroutines.launch
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
@@ -298,11 +302,22 @@ fun GazeScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, onBack
         GardenHome(state, profile, now, onSettings = {}, onCollection = {}, onSupport = {}, onStone = {}, onAddPerson = {}, bare = true)
         // 스르르 어두워짐
         Box(Modifier.fillMaxSize().graphicsLayer { alpha = dim.value }.background(Color.Black))
-        // 소리 끄고 켜기 (아주 작게), 나가는 법은 처음 3초만
+        // 소리 끄고 켜기 (아주 작게, 누름 막 위에), 나가는 법은 처음 3초만
+        // 화면을 누르면 (어두워졌으면 다시 밝아지며) 돌아갈지 조용히 묻는다
+        var ask by remember { mutableStateOf(false) }
+        val scope = rememberCoroutineScope()
+        Box(Modifier.fillMaxSize().pointerInput(Unit) { detectTapGestures { scope.launch { dim.snapTo(0f) }; screenOn = true; ask = true } })
         TokenText(stringResource(if (soundOn) R.string.gaze_soundOff else R.string.gaze_soundOn), Tokens.TypeScale.caption1,
             Modifier.align(Alignment.TopEnd).statusBarsPadding().clickable { soundOn = !soundOn; if (soundOn && state.sound == Sound.NONE) state.changeSound(Sound.WAVES) }.padding(Tokens.Space.sp4),
             color = p.secondary.copy(alpha = 0.7f), weight = FontWeight.Normal)
         if (hint) TokenText(stringResource(R.string.gaze_exit), Tokens.TypeScale.caption1, Modifier.align(Alignment.BottomCenter).navigationBarsPadding().padding(bottom = Tokens.Space.sp6), color = p.secondary)
+        if (ask) androidx.compose.material3.AlertDialog(
+            onDismissRequest = { ask = false },
+            containerColor = Theme.gc.paper,
+            text = { TokenText(stringResource(R.string.gaze_ask), Tokens.TypeScale.callout.serif()) },
+            confirmButton = { androidx.compose.material3.TextButton(onClick = { ask = false; onBack() }) { TokenText(stringResource(R.string.gaze_back), Tokens.TypeScale.subhead, weight = FontWeight.SemiBold) } },
+            dismissButton = { androidx.compose.material3.TextButton(onClick = { ask = false }) { TokenText(stringResource(R.string.gaze_stay), Tokens.TypeScale.subhead, color = p.secondary) } },
+        )
     }
 }
 

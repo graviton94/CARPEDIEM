@@ -268,11 +268,11 @@
     <string name="stone_nextBirthday">다음 생일까지</string>
     <string name="stone_birthdayToday">오늘이에요</string>
     <string name="stone_calendar">%1$s의 인생 달력</string>
-    <string name="stone_calendarLegend">함께한 해는 호박빛 테두리예요.</string>
+    <string name="stone_calendarLegend">칸의 색은 그 삶의 계절 (봄 · 여름 · 가을 · 겨울), 주황 칸은 지금이에요.\n호박빛 테두리는 함께한 해예요.</string>
     <string name="stone_showAhead">남은 칸 보이기</string>
     <string name="stone_lines">이 돌에게 보낸 마음</string>
     <string name="stone_linesCount">%1$s번</string>
-    <string name="stone_edit">고치기</string>
+    <string name="stone_edit">다듬기</string>
     <string name="stone_save">저장</string>
     <string name="stone_remove">정원에서 빼기</string>
     <string name="stone_removeConfirm">%1$s의 돌을 정원에서 뺄까요?\n보낸 한 줄은 남아요.</string>
@@ -322,7 +322,7 @@
     <string name="gaze">돌멍하기</string>
     <string name="gaze_soundOn">소리 켜기</string>
     <string name="gaze_soundOff">소리 끄기</string>
-    <string name="gaze_exit">뒤로 가면 정원으로 돌아가요</string>
+    <string name="gaze_exit">화면을 누르면 정원으로 돌아갈 수 있어요</string>
     <string name="obj_windchime">작은 풍경</string>
     <string name="obj_windchime_when">처음 숨, 쉼을 함께한 날</string>
     <string name="obj_windchime_line">바람이 지날 때마다, 숨 한 번.</string>
@@ -401,9 +401,9 @@
     <string name="memory_add">곁을 떠난 가족 · 반려동물</string>
     <string name="memory_addMore">기억의 돌 더하기</string>
     <string name="memory_full">기억의 돌은 넷까지 둘 수 있어요.</string>
-    <string name="memory_toMemory">기억의 자리로 모시기</string>
+    <string name="memory_toMemory">기억의 자리로</string>
     <string name="memory_toMemoryConfirm">%1$s의 돌을 기억의 자리로 모실까요?\n정원에서는 보이지 않고, 추억 안 기억의 자리에 조용히 있어요.\n언제든 다시 정원으로 옮길 수 있어요.</string>
-    <string name="memory_toMemoryAction">모시기</string>
+    <string name="memory_toMemoryAction">기억의 자리로</string>
     <string name="memory_addUntil">곁을 떠난 날 (선택)</string>
     <string name="memory_meet">%1$s의 돌이 기억의 자리에 앉았어요.</string>
     <string name="memory_a11y">%1$s의 기억의 돌, 눈을 감고 있어요</string>
@@ -519,4 +519,7 @@
     <string name="memory_toMemoryHelp">곁을 떠난 가족 · 반려동물이라면. 정원에서는 쉬고, 추억 › 기억의 자리에 조용히 있어요. 언제든 다시 정원으로 옮길 수 있어요.</string>
     <string name="record_off">기록 남기기를 꺼 두어 마음의 기록이 보이지 않아요. 설정에서 켤 수 있어요.</string>
     <string name="record_yearHint">달을 누르면 그 달로 가요.</string>
+    <string name="gaze_ask">정원으로 돌아갈까요?</string>
+    <string name="gaze_back">돌아가기</string>
+    <string name="gaze_stay">더 머물기</string>
 </resources>

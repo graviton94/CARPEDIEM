@@ -321,8 +321,7 @@ fun AddPersonScreen(state: AppState, profile: LifeProfile, editId: String?, onDo
             } else when (step) {
                 0 -> {
                     KindPicker(); GardenButton(stringResource(R.string.add_next), { step = 1 }, filled = true, seed = 907)
-                    if (state.memories.size < io.github.graviton94.carpediem.core.Memories.MAX) TokenText(stringResource(R.string.memory_add), Tokens.TypeScale.footnote,
-                        Modifier.fillMaxWidth().clickable(onClick = onAddMemory).padding(vertical = Tokens.Space.sp3), color = p.secondary, align = TextAlign.Center)
+                    // 곁을 떠난 가족 · 반려동물은 여기서 더하지 않고, 정원의 돌을 다듬기에서 기억의 자리로 옮긴다
                 }
                 1 -> { NameField(); GardenButton(stringResource(R.string.add_next), { if (name.isNotBlank()) step = 2 }, filled = name.isNotBlank(), seed = 908) }
                 2 -> { BirthField(); GardenButton(stringResource(R.string.add_next), { step = 3 }, filled = true, seed = 909) }

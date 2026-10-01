@@ -361,9 +361,9 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                         month != null -> MonthCard(month.second) { state.openMonth(month.first, month.second); toRecord(RecordView(month.first, month.second)) }
                     }
                     Row(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
-                        GardenButton(stringResource(R.string.breath), { breathSheet = true }, filled = false, seed = 888, modifier = Modifier.weight(1f))
-                        GardenButton(stringResource(R.string.gaze), onGaze, filled = false, seed = 889, modifier = Modifier.weight(1f))
-                        if (state.people.size < G.Family.max.toInt() - 1) GardenButton(stringResource(R.string.family_addShort), onAddPerson, filled = false, seed = 886, modifier = Modifier.weight(0.7f))
+                        GardenButton(stringResource(R.string.breath), { breathSheet = true }, filled = false, seed = 888, modifier = Modifier.weight(1f), paper = true)
+                        GardenButton(stringResource(R.string.gaze), onGaze, filled = false, seed = 889, modifier = Modifier.weight(1f), paper = true)
+                        if (state.people.size < G.Family.max.toInt() - 1) GardenButton(stringResource(R.string.family_addShort), onAddPerson, filled = false, seed = 886, modifier = Modifier.weight(0.7f), paper = true)
                     }
                 }
             }
@@ -609,9 +609,9 @@ fun GardenChip(text: String, selected: Boolean, seed: Int, onClick: () -> Unit) 
 }
 
 @Composable
-fun GardenButton(text: String, onClick: () -> Unit, filled: Boolean, seed: Int, modifier: Modifier = Modifier) {
+fun GardenButton(text: String, onClick: () -> Unit, filled: Boolean, seed: Int, modifier: Modifier = Modifier, paper: Boolean = false) {
     Box(
-        modifier.fillMaxWidth().heightIn(min = Tokens.Layout.tapTarget + Tokens.Space.sp2).crayonBox(if (filled) Theme.gc.button else null, G.Radius.button, G.Stroke.box, seed).clickable(onClick = onClick),
+        modifier.fillMaxWidth().heightIn(min = Tokens.Layout.tapTarget + Tokens.Space.sp2).crayonBox(if (filled) Theme.gc.button else if (paper) Theme.gc.paper else null, G.Radius.button, G.Stroke.box, seed).clickable(onClick = onClick),
         contentAlignment = Alignment.Center,
     ) { TokenText(text, Tokens.TypeScale.headline) }
 }

@@ -120,9 +120,12 @@ object ShareCards {
         var y = pad * 1.2f
         y += text(c, title, paint(ctx, S.text * 0.9f, fg), pad, y, (w - pad * 2).toInt()) + pad * 0.2f
         y += text(c, sub, paint(ctx, S.small, soft), pad, y, (w - pad * 2).toInt()) + pad * 0.4f
-        val gw = w - pad * 2; val gh = gw / Tokens.Garden.Year.monthAspect
+        // 판은 아래 글 · 이름과 겹치지 않는 만큼만 (넘치면 가운데로 줄임)
+        val avail = h - pad * 1.8f - y
+        val gh = minOf((w - pad * 2) / Tokens.Garden.Year.monthAspect, avail); val gw = gh * Tokens.Garden.Year.monthAspect
+        val gx = (w - gw) / 2f
         val dots = StarGarden.month(book, days, install)
-        drawCompose(c, pad, y, gw, gh) {
+        drawCompose(c, gx, y, gw, gh) {
             if (night) nightSky() else meadow()
             monthIn(androidx.compose.ui.geometry.Rect(androidx.compose.ui.geometry.Offset.Zero, size), dots, night, today, MONTH_SIZES)
         }
@@ -137,9 +140,14 @@ object ShareCards {
         val fg = if (night) Y.plain.toArgb() else ink; val soft = if (night) Y.plain.copy(alpha = 0.7f).toArgb() else inkSoft
         var y = pad * 1.2f
         y += text(c, title, paint(ctx, S.text * 0.9f, fg), pad, y, (w - pad * 2).toInt()) + pad * 0.4f
-        val gw = w - pad * 2; val cw = gw / 4f; val ch = cw / Tokens.Garden.Year.monthAspect; val label = S.small * 1.3f
+        // 열두 칸은 아래 글 (한 줄 수 · 고마움 몇 줄) 과 이름에 닿지 않는 만큼만
+        val label = S.small * 1.3f
+        val reserve = S.small * 1.7f * (1 + thanks.size) + pad * 2.2f
+        val rowH = (h - y - reserve) / 3f
+        val cw = minOf((w - pad * 2) / 4f, (rowH - label) * Tokens.Garden.Year.monthAspect); val ch = cw / Tokens.Garden.Year.monthAspect
+        val gw = cw * 4; val gx = (w - gw) / 2f
         val months = days.groupBy { it.first.monthValue }
-        drawCompose(c, pad, y, gw, (ch + label) * 3) {
+        drawCompose(c, gx, y, gw, (ch + label) * 3) {
             if (night) nightSky() else meadow()
             months.forEach { (m, ds) ->
                 val r = androidx.compose.ui.geometry.Rect(((m - 1) % 4) * cw, ((m - 1) / 4) * (ch + label), ((m - 1) % 4 + 1) * cw, ((m - 1) / 4) * (ch + label) + ch)
@@ -147,7 +155,7 @@ object ShareCards {
             }
         }
         val lp = paint(ctx, S.small * 0.75f, soft)
-        (1..12).forEach { m -> text(c, java.time.Month.of(m).getDisplayName(java.time.format.TextStyle.SHORT_STANDALONE, ctx.resources.configuration.locales[0]), lp, pad + ((m - 1) % 4) * cw, y + ((m - 1) / 4) * (ch + label) + ch, cw.toInt()) }
+        (1..12).forEach { m -> text(c, java.time.Month.of(m).getDisplayName(java.time.format.TextStyle.SHORT_STANDALONE, ctx.resources.configuration.locales[0]), lp, gx + ((m - 1) % 4) * cw, y + ((m - 1) / 4) * (ch + label) + ch, cw.toInt()) }
         y += (ch + label) * 3 + pad * 0.4f
         y += text(c, count, paint(ctx, S.small, soft), pad, y, (w - pad * 2).toInt()) + pad * 0.3f
         thanks.forEach { t -> y += text(c, "“$t”", paint(ctx, S.small * 1.05f, fg), pad, y, (w - pad * 2).toInt()) + pad * 0.15f }

@@ -268,11 +268,11 @@
     <string name="stone_nextBirthday">Next birthday in</string>
     <string name="stone_birthdayToday">Today</string>
     <string name="stone_calendar">%1$s\'s life calendar</string>
-    <string name="stone_calendarLegend">Years together have an amber edge.</string>
+    <string name="stone_calendarLegend">Each dot’s color is a season of that life (spring · summer · autumn · winter); the orange dot is now.\nAn amber edge marks the years together.</string>
     <string name="stone_showAhead">Show the years ahead</string>
     <string name="stone_lines">Lines sent to this stone</string>
     <string name="stone_linesCount">%1$s</string>
-    <string name="stone_edit">Edit</string>
+    <string name="stone_edit">Tend</string>
     <string name="stone_save">Save</string>
     <string name="stone_remove">Take out of the garden</string>
     <string name="stone_removeConfirm">Take %1$s’s stone out of the garden?\nYour lines stay.</string>
@@ -322,7 +322,7 @@
     <string name="gaze">Stone gazing</string>
     <string name="gaze_soundOn">Sound on</string>
     <string name="gaze_soundOff">Sound off</string>
-    <string name="gaze_exit">Go back to return to the garden</string>
+    <string name="gaze_exit">Tap the screen to go back to the garden</string>
     <string name="obj_windchime">Wind chime</string>
     <string name="obj_windchime_when">The first time you breathed and rested together</string>
     <string name="obj_windchime_line">Each time the wind passes, one breath.</string>
@@ -401,7 +401,7 @@
     <string name="memory_add">Family or a pet who has passed</string>
     <string name="memory_addMore">Add a stone to remember</string>
     <string name="memory_full">You can keep up to four stones here.</string>
-    <string name="memory_toMemory">Move to the place of memory</string>
+    <string name="memory_toMemory">To the place of memory</string>
     <string name="memory_toMemoryConfirm">Move %1$s’s stone to the place of memory?\nIt won’t be in the garden; it rests quietly in Memories.\nYou can bring it back any time.</string>
     <string name="memory_toMemoryAction">Move</string>
     <string name="memory_addUntil">The day they left (optional)</string>
@@ -519,4 +519,7 @@
     <string name="memory_toMemoryHelp">For family or pets who have passed. The stone rests in Memories › Place of memory, and can return to the garden any time.</string>
     <string name="record_off">Keeping lines is off, so there’s no record to show. You can turn it on in Settings.</string>
     <string name="record_yearHint">Tap a month to open it.</string>
+    <string name="gaze_ask">Back to the garden?</string>
+    <string name="gaze_back">Go back</string>
+    <string name="gaze_stay">Stay a while</string>
 </resources>
