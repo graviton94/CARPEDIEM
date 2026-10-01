@@ -333,9 +333,9 @@
 "question.answer" = "한 줄로 답하기";
 "question.skip" = "오늘은 문장으로";
 "question.answered" = "오늘은 이미 한 줄을 보냈어요.";
-"mood.title" = "마음의 하늘";
-"mood.sub" = "지난 30일의 마음이 색으로 남아요.";
-"mood.a11y" = "지난 30일 가운데 마음을 남긴 날 %1$@일";
+"mood.title" = "마음의 기록";
+"mood.sub" = "%1$@의 별자리는 %2$@. 1일부터 선을 따라 하루씩 놓여요.";
+"mood.a11y" = "%1$@ 가운데 한 줄을 남긴 날 %2$@일";
 "letter.arrived" = "%1$@의 편지가 도착했어요";
 "letter.title" = "%1$@년 %2$@의 편지";
 "letter.range" = "%1$@부터 %2$@까지 보낸 한 줄";
@@ -465,7 +465,7 @@
 "year.title" = "%1$@년의 정원";
 "year.count" = "한 줄 %1$@개 · 고마움 %2$@번";
 "year.end" = "한 해를 잘 건너왔어요.";
-"year.list" = "한 해의 정원";
+"year.list" = "지난 정원";
 "share.image" = "그림으로 보내기";
 "share.chooser" = "그림 보내기";
 "share.footer" = "하루의 정원";
@@ -483,3 +483,15 @@
 "special.remove" = "꽃 거두기";
 "special.removeConfirm" = "%1$@의 꽃을 거둘까요?";
 "special.full" = "꽃은 서른 송이까지 놓을 수 있어요.";
+"year.cardNight" = "%1$@년의 정원에 별이 떴어요";
+"record.month" = "월";
+"record.year" = "해";
+"record.monthTitle" = "%1$@의 정원";
+"record.prev" = "지난 달";
+"record.next" = "다음 달";
+"record.rest" = "쉬어 간 날";
+"record.noText" = "글 없이 보낸 날";
+"record.hint" = "날을 누르면 그날의 한 줄이 보여요.";
+"record.card" = "%1$@의 정원이 피었어요";
+"record.cardNight" = "%1$@의 정원에 별이 떴어요";
+"record.dayPattern" = "M월 d일";

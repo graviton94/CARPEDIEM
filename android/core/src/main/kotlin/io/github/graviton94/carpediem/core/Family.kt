@@ -71,6 +71,19 @@ object Family {
 
     fun isBirthday(birth: LocalDate?, today: LocalDate) = birth != null && birthdayIn(birth, today.year) == today
 
+    /**
+     * 생일이 정원에 머무는 때: 전날 eveHour 시부터 그날 끝까지. 그날이면 0, 전날 저녁이면 1, 아니면 null.
+     */
+    fun birthdaySoon(birth: LocalDate?, now: java.time.LocalDateTime, eveHour: Int): Int? {
+        if (birth == null) return null
+        val today = now.toLocalDate()
+        return when {
+            isBirthday(birth, today) -> 0
+            now.hour >= eveHour && isBirthday(birth, today.plusDays(1)) -> 1
+            else -> null
+        }
+    }
+
     /** 오늘을 포함해 다음에 오는 생일. */
     fun nextBirthday(birth: LocalDate, today: LocalDate): LocalDate =
         birthdayIn(birth, today.year).let { if (it.isBefore(today)) birthdayIn(birth, today.year + 1) else it }

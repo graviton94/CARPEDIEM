@@ -233,6 +233,7 @@ class AppState(private val context: Context) {
     /** 캡처용: 홈을 열면 이번 달 편지를 바로 펼친다. */
     var debugOpenLetter = false
     var debugOpenYear = false
+    var debugOpenMonth = false
     /** 시험용 (개발자 모드 · 캡처): 오늘이 12월 31일 ~ 1월 7일이면 그 해에 여러 마음을 흩어 놓아 한 해의 정원이 피게. */
     fun addSampleYear(today: LocalDate = nowDate()) {
         val y = Lines.yearDue(today) ?: return
@@ -240,6 +241,15 @@ class AppState(private val context: Context) {
         var next = lines; val r = kotlin.random.Random(y)
         for (k in 0 until 220) { val d = LocalDate.of(y, 1, 1).plusDays(r.nextLong(0, 365)); next = Lines.add(next, DayLine(d, if (r.nextInt(5) == 0) context.getString(R.string.letter_sample1) else "", fs[r.nextInt(fs.size)])) }
         store.lines = next; lines = next; val v = yearsOpened - "$y"; store.yearsOpened = v; yearsOpened = v
+    }
+    /** 시험용 (캡처): 지난 달과 이번 달에 여러 마음을 흩어 놓아 마음의 기록 · 지난 달의 정원이 보이게. */
+    fun addSampleMonths(today: LocalDate = nowDate()) {
+        val fs = Feeling.entries + listOf<Feeling?>(null, Feeling.CALM, Feeling.JOY)
+        var next = lines; val r = kotlin.random.Random(today.monthValue)
+        val from = today.withDayOfMonth(1).minusMonths(1)
+        var d = from
+        while (!d.isAfter(today)) { if (r.nextInt(5) < 3) next = Lines.add(next, DayLine(d, if (r.nextInt(4) == 0) context.getString(R.string.letter_sample1) else "", fs[r.nextInt(fs.size)])); d = d.plusDays(1) }
+        store.lines = next; lines = next; val v = monthsOpened - "${from.year}-${from.monthValue}"; store.monthsOpened = v; monthsOpened = v
     }
 
     fun exportLines(): String = Lines.export(lines) { Labels.feeling(context, it) }
@@ -301,9 +311,15 @@ class AppState(private val context: Context) {
     fun yearDue(today: LocalDate = nowDate()): Int? =
         Lines.yearDue(today)?.takeIf { y -> keepLines && "$y" !in yearsOpened && lines.any { it.date.year == y } }
     fun openYear(y: Int) { val v = yearsOpened + "$y"; store.yearsOpened = v; yearsOpened = v }
-    /** 지난 해들 (한 줄이 있는 해, 최근부터). 올해는 12월 31일부터. */
-    fun pastYears(today: LocalDate = nowDate()): List<Int> =
-        if (!keepLines) emptyList() else lines.map { it.date.year }.distinct().filter { it < today.year || (it == today.year && today.monthValue == 12 && today.dayOfMonth == 31) }.sortedDescending()
+    /** 지난 정원에 놓일 해들 (한 줄이 있는 해, 올해부터 거꾸로). */
+    fun gardenYears(): List<Int> = if (!keepLines) emptyList() else lines.map { it.date.year }.distinct().sortedDescending()
+    var monthsOpened by mutableStateOf(store.monthsOpened)
+        private set
+    /** 지난 달의 정원이 핀 때 (달이 바뀐 뒤 사흘, 그 달에 한 줄이 하나라도 있고 아직 펼치지 않았을 때). (연, 월). */
+    fun monthDue(today: LocalDate = nowDate()): Pair<Int, Int>? =
+        io.github.graviton94.carpediem.core.Constellations.monthDue(today, Tokens.Garden.Year.monthDue.toInt())
+            ?.takeIf { (y, m) -> keepLines && "$y-$m" !in monthsOpened && lines.any { it.date.year == y && it.date.monthValue == m } }
+    fun openMonth(y: Int, m: Int) { val v = monthsOpened + "$y-$m"; store.monthsOpened = v; monthsOpened = v }
 
     // ───── 기억의 돌 ─────
     var memories by mutableStateOf(store.memories)

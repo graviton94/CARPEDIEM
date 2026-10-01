@@ -34,6 +34,7 @@ class Store(context: Context) {
     val table: LifeExpectancyTable by lazy { LifeExpectancyTable(assets.open("life-expectancy.csv").bufferedReader().readText()) }
     val book: QuoteBook by lazy { QuoteBook(assets.open("quotes.csv").bufferedReader().readText()) }
     val questions: QuestionBook by lazy { QuestionBook(assets.open("questions.csv").bufferedReader().readText()) }
+    val constellations: io.github.graviton94.carpediem.core.ConstellationBook by lazy { io.github.graviton94.carpediem.core.ConstellationBook(assets.open("constellations.csv").bufferedReader().readText()) }
 
     var profile: LifeProfile?
         get() {
@@ -242,6 +243,9 @@ class Store(context: Context) {
         get() = prefs.getStringSet("wishSkipped", emptySet()) ?: emptySet()
         set(v) = prefs.edit().putStringSet("wishSkipped", v).apply()
     /** 펼쳐 본 한 해의 정원 (해). */
+    var monthsOpened: Set<String>
+        get() = prefs.getStringSet("monthsOpened", emptySet()) ?: emptySet()
+        set(v) = prefs.edit().putStringSet("monthsOpened", v).apply()
     var yearsOpened: Set<String>
         get() = prefs.getStringSet("yearsOpened", emptySet()) ?: emptySet()
         set(v) = prefs.edit().putStringSet("yearsOpened", v).apply()

@@ -193,6 +193,7 @@ private fun MainActivity.debugSetup(state: AppState): Screen {
     x.getStringExtra("cd.care")?.let { c -> state.toast = io.github.graviton94.carpediem.ui.Labels.letGoMessage(this, io.github.graviton94.carpediem.core.Feeling.SAD); state.care = runCatching { io.github.graviton94.carpediem.ui.Care.valueOf(c) }.getOrNull() }
     state.debugOpenLetter = x.getBooleanExtra("cd.openLetter", false)
     if (x.getBooleanExtra("cd.year", false)) state.addSampleYear()
+    if (x.getBooleanExtra("cd.months", false)) state.addSampleMonths()
     // 캡처용: 특별한 날 꽃 둘 (태어난 지 18년 · 22년쯤)
     if (x.getBooleanExtra("cd.special", false)) state.profile?.birthDate?.let { b ->
         state.putSpecialDay(io.github.graviton94.carpediem.core.SpecialDay(b.plusYears(18).plusDays(40), "입학"))
@@ -201,6 +202,7 @@ private fun MainActivity.debugSetup(state: AppState): Screen {
     // 캡처용: 이번 편지가 돌려줄 지난 계절의 바람
     if (x.getBooleanExtra("cd.wish", false)) io.github.graviton94.carpediem.core.Letters.due((state.fixedNow ?: LocalDateTime.now()).toLocalDate())?.minusMonths(3)?.let { d -> state.saveWish("%04d-%02d".format(d.year, d.monthValue), getString(R.string.wish_sample)) }
     state.debugOpenYear = x.getBooleanExtra("cd.openYear", false)
+    state.debugOpenMonth = x.getBooleanExtra("cd.openMonth", false)
     state.refreshQuestion()
     if (x.getBooleanExtra("cd.question", false)) state.previewQuestion()
     // 가족의 정원 시험: 동생 · 콩이(강아지) · 엄마(오늘 생일) · 아빠

@@ -98,62 +98,6 @@ internal fun handCircle(c: Offset, r: Float, seed: Int): List<Offset> {
     }
 }
 
-/**
- * 지난 30일의 마음을 손으로 그린 동그라미로 (글도 숫자도 없이, 오른쪽 아래가 오늘). 쉰 날은 빈 테두리, 마음을 안 고른 날은 종이빛.
- * 누르면 아무것도 열리지 않는다 (돌아보기만). 기록 남기기를 끄면 보이지 않는다.
- */
-@Composable
-internal fun MoodSky(state: AppState, today: LocalDate) {
-    if (!state.keepLines) return
-    val p = Theme.palette
-    val ctx = LocalContext.current
-    val u = with(LocalDensity.current) { Theme.unit.toPx() }
-    val days = remember(state.lines, today) { Lines.lastDays(state.lines, today, G.Mood.days.toInt()) }
-    val cols = G.Mood.columns.toInt(); val rows = (days.size + cols - 1) / cols
-    val lineMask = Crayon.tooth(GardenArt.toothLine(ctx), u); val fillMask = Crayon.tooth(GardenArt.toothFill(ctx), u)
-    val night = Theme.gc.night; val ink = Theme.gc.ink; val future = Theme.gc.future
-    val a11y = stringResource(R.string.mood_a11y, "${days.count { it.second?.text?.isNotBlank() == true || it.second?.feeling != null }}")
-    Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
-        TokenText(stringResource(R.string.mood_title), Tokens.TypeScale.title3)
-        MoodCircles(days, cols, Modifier.fillMaxWidth().semantics { contentDescription = a11y })
-        TokenText(stringResource(R.string.mood_sub), Tokens.TypeScale.caption1, color = p.secondary)
-    }
-}
-
-
-/** 손그림 마음 동그라미 격자 (마음의 하늘 · 한 해의 정원). 날마다 조금씩 다른 모양, 쉰 날은 빈 테두리. */
-@Composable
-internal fun MoodCircles(days: List<Pair<LocalDate, DayLine?>>, cols: Int, modifier: Modifier) {
-    val ctx = LocalContext.current
-    val u = with(LocalDensity.current) { Theme.unit.toPx() }
-    val rows = maxOf(1, (days.size + cols - 1) / cols)
-    val lineMask = Crayon.tooth(GardenArt.toothLine(ctx), u); val fillMask = Crayon.tooth(GardenArt.toothFill(ctx), u)
-    val night = Theme.gc.night; val ink = Theme.gc.ink; val future = Theme.gc.future
-    androidx.compose.foundation.layout.Spacer(modifier.aspectRatio(cols / rows.toFloat()).drawWithCache {
-        val cell = size.width / cols
-        val shapes = days.mapIndexed { i, (d, l) ->
-            val c = Offset((i % cols + 0.5f) * cell, (i / cols + 0.5f) * cell)
-            Triple(handCircle(c, cell / 2 / G.Mood.gap, d.toEpochDay().toInt()), l, d.toEpochDay().toInt())
-        }
-        val paths = shapes.map { (pts, l, _) -> Triple(Crayon.path(pts), l, pts) }
-        onDrawBehind {
-            // 결 한 겹에 모두 칠하고, 선도 한 겹에 (동그라미마다 겹을 만들면 무거워짐)
-            with(Crayon) {
-                textured(fillMask) {
-                    paths.forEach { (path, l, _) ->
-                        if (l != null) { val base = moodColor(l.feeling); drawPath(path, if (night) lerp(base, Color.Black, G.Mood.nightDarken) else base) }
-                    }
-                }
-                textured(lineMask) {
-                    paths.forEachIndexed { i, (_, l, pts) ->
-                        stroke(pts, G.Mood.line * u, if (l != null) ink.copy(alpha = if (night) 0.5f else 0.55f) else future, shapes[i].third, passes = 1)
-                    }
-                }
-            }
-        }
-    })
-}
-
 // ───────────────────────── 계절의 편지 ─────────────────────────
 
 /** 봉투 한 장 (손으로 그린 선: 몸통 + 접힌 덮개). */
@@ -360,73 +304,6 @@ internal fun WishCard(state: AppState, id: String, today: LocalDate) {
             TokenText(stringResource(R.string.wish_later), Tokens.TypeScale.footnote, Modifier.clickable { state.skipWish(id) }.padding(Tokens.Space.sp2), color = p.secondary)
         }
     }
-}
-
-// ───────────────────────── 한 해의 정원 ─────────────────────────
-
-/** 12월 31일 ~ 1월 7일, 둘째 장 위에 한 장. */
-@Composable
-internal fun YearCard(state: AppState, year: Int, onOpen: () -> Unit) {
-    val p = Theme.palette
-    Row(
-        Modifier.fillMaxWidth().crayonBox(Theme.gc.paper, G.Radius.box, G.Stroke.chip, 1180).clickable(onClick = onOpen).padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3),
-        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp3),
-    ) {
-        YearGalaxy(remember(state.lines, year) { Lines.yearDays(state.lines, year) }, Modifier.size(Theme.unit * 56, Theme.unit * 56 / G.Year.aspect))
-        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
-            TokenText(stringResource(R.string.year_card, "$year"), Tokens.TypeScale.subhead, weight = FontWeight.SemiBold)
-            TokenText(stringResource(R.string.recall_open), Tokens.TypeScale.footnote, color = p.secondary)
-        }
-    }
-}
-
-/** 한 해의 정원: 365개의 마음 동그라미, 한 줄 · 고마움 수, 고마움 몇 줄. 그림으로 보내기. */
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-internal fun YearSheet(state: AppState, year: Int, onClose: () -> Unit) {
-    val p = Theme.palette
-    val ctx = LocalContext.current
-    val days = remember(state.lines, year) { Lines.yearDays(state.lines, year) }
-    val sent = days.count { it.second != null }
-    val thanksAll = state.lines.filter { it.date.year == year && it.feeling == Feeling.THANKS && it.text.isNotBlank() }
-    val thanks = remember(year, thanksAll.size) { thanksAll.map { it.text }.distinct().shuffled(kotlin.random.Random(year)).take(G.Year.thanks.toInt()) }
-    val title = stringResource(R.string.year_title, "$year"); val count = stringResource(R.string.year_count, "$sent", "${thanksAll.size}")
-    ModalBottomSheet(onDismissRequest = onClose, containerColor = Theme.gc.paper, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
-        Column(
-            Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(horizontal = Theme.deviceClass.pageMargin).navigationBarsPadding().padding(bottom = Tokens.Space.sp8),
-            verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3),
-        ) {
-            TokenText(title, Tokens.TypeScale.title3.serif())
-            // 은하수: 1월에서 12월로 흐르는 띠, 날마다 별 하나
-            YearGalaxy(days, Modifier.fillMaxWidth())
-            TokenText(count, Tokens.TypeScale.footnote, color = p.secondary)
-            thanks.forEach { TokenText("“$it”", Tokens.TypeScale.callout.serif()) }
-            Spacer(Modifier.height(Tokens.Space.sp2))
-            TokenText(stringResource(R.string.year_end), Tokens.TypeScale.callout.serif(), Modifier.fillMaxWidth(), align = TextAlign.Center)
-            GardenButton(stringResource(R.string.share_image), {
-                io.github.graviton94.carpediem.share.ShareCards.send(ctx, io.github.graviton94.carpediem.share.ShareCards.year(ctx, year, days, title, count, thanks), "year-$year")
-            }, filled = false, seed = 1181)
-            GardenButton(stringResource(R.string.garden_close), onClose, filled = false, seed = 1182)
-        }
-    }
-}
-
-/** 모은 것 아래: 지난 해들의 정원. */
-@Composable
-internal fun PastYears(state: AppState, today: LocalDate) {
-    val years = remember(state.lines, today, state.keepLines) { state.pastYears(today) }
-    if (years.isEmpty()) return
-    var open by remember { mutableStateOf<Int?>(null) }
-    Column(Modifier.fillMaxWidth().padding(top = Tokens.Space.sp4), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
-        TokenText(stringResource(R.string.year_list), Tokens.TypeScale.title3)
-        years.forEachIndexed { i, y ->
-            Row(Modifier.fillMaxWidth().heightIn(min = Tokens.Layout.tapTarget).crayonBox(null, G.Radius.box, G.Stroke.chip, 1190 + i).clickable { state.openYear(y); open = y }
-                .padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp2), verticalAlignment = Alignment.CenterVertically) {
-                TokenText(stringResource(R.string.year_title, "$y"), Tokens.TypeScale.subhead, Modifier.weight(1f))
-            }
-        }
-    }
-    open?.let { YearSheet(state, it) { open = null } }
 }
 
 // ───────────────────────── 특별한 날 꽃 ─────────────────────────

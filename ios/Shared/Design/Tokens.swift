@@ -461,21 +461,40 @@ enum Tokens {
             static let dim: CGFloat = 0.18
         }
         enum Year {
-            static let columns: CGFloat = 21.0
             static let thanks: CGFloat = 3.0
-            static let aspect: CGFloat = 1.45
-            static let band: CGFloat = 0.15
-            static let star: CGFloat = 0.0048
-            static let dust: CGFloat = 0.0019
+            static let monthAspect: CGFloat = 0.86
+            static let flowAspect: CGFloat = 0.62
+            static let span: CGFloat = 3.0
+            static let boxW: CGFloat = 0.2
+            static let boxH: CGFloat = 0.24
+            static let flowMs: CGFloat = 70000.0
+            static let twinkleMs: CGFloat = 4200.0
+            static let monthDue: CGFloat = 3.0
+            static let monthFlower: CGFloat = 0.03
+            static let monthFlowerSmall: CGFloat = 0.02
+            static let monthStar: CGFloat = 0.011
+            static let monthStarSmall: CGFloat = 0.006
+            static let yearFlower: CGFloat = 0.013
+            static let yearFlowerSmall: CGFloat = 0.008
+            static let yearStar: CGFloat = 0.0055
+            static let yearStarSmall: CGFloat = 0.003
+            static let tileFlower: CGFloat = 0.06
+            static let tileFlowerSmall: CGFloat = 0.038
+            static let lineAlpha: CGFloat = 0.12
             static let hazeAlpha: CGFloat = 0.07
+            static let field: CGFloat = 120.0
             enum Colors {
                 static let skyTop: UInt32 = 0x101426FF
                 static let skyBottom: UInt32 = 0x1E253CFF
                 static let haze: UInt32 = 0xC9C3E8FF
-                static let plain: UInt32 = 0xECE4CFFF
                 static let core: UInt32 = 0xF3E6C8FF
+                static let plain: UInt32 = 0xECE4CFFF
+                static let meadowTop: UInt32 = 0xF6F1E3FF
+                static let meadowBottom: UInt32 = 0xE7EDDAFF
+                static let meadowHaze: UInt32 = 0xC9D8A8FF
+                static let heart: UInt32 = 0xFFF6DEFF
+                static let rest: UInt32 = 0x82965FFF
             }
-            static let field: CGFloat = 220.0
         }
         enum Share {
             static let lineW: CGFloat = 1080.0

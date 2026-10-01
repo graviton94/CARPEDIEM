@@ -363,4 +363,36 @@ class ReflectTest {
         // 그 날이 든 달력 칸: 그날까지 지나온 단위 수
         assertEquals(22, LifeSnapshot(LocalDate.of(1998, 1, 15), 80.0, LocalDate.of(2020, 3, 2).atStartOfDay()).lived(LifeUnit.YEARS))
     }
+
+    @Test fun constellationGarden() {
+        val book = ConstellationBook(data("constellations.csv"))
+        assertEquals((1..12).toList(), book.all.map { it.month })
+        book.all.forEach { c ->
+            for (n in listOf(28, 29, 30, 31)) {
+                val spots = Constellations.layout(c, n)
+                assertEquals(n, spots.size, c.korean)
+                // 별자리의 별은 모두 한 번씩 꼭짓점으로, 자리는 판 안에
+                assertEquals(c.lines.flatMap { listOf(it.first, it.second) }.distinct().size, spots.count { it.vertex }, c.korean)
+                spots.forEach { assertTrue(it.x in -0.05f..1.05f && it.y in -0.05f..1.05f, c.korean) }
+            }
+            assertEquals(Constellations.layout(c, 30), Constellations.layout(c, 30))   // 늘 같은 자리
+        }
+        val m = Constellations.monthDays(listOf(DayLine(LocalDate.of(2026, 2, 28), "a", Feeling.JOY)), 2026, 2)
+        assertEquals(28, m.size); assertEquals("a", m.last().second?.text)
+        assertEquals(2026 to 9, Constellations.monthDue(LocalDate.of(2026, 10, 3), 3))
+        assertEquals(null, Constellations.monthDue(LocalDate.of(2026, 10, 4), 3))
+        assertEquals(null, Constellations.monthDue(LocalDate.of(2027, 1, 2), 3))   // 1월 초는 한 해의 정원
+    }
+
+    @Test fun birthdayEveAndAnniversaries() {
+        val birth = LocalDate.of(1964, 10, 2)
+        assertEquals(null, Family.birthdaySoon(birth, LocalDate.of(2026, 10, 1).atTime(16, 59), 17))
+        assertEquals(1, Family.birthdaySoon(birth, LocalDate.of(2026, 10, 1).atTime(17, 0), 17))
+        assertEquals(0, Family.birthdaySoon(birth, LocalDate.of(2026, 10, 2).atTime(23, 59), 17))
+        assertEquals(null, Family.birthdaySoon(birth, LocalDate.of(2026, 10, 3).atTime(0, 0), 17))
+        val work = SpecialDay(LocalDate.of(2022, 4, 4), "첫 출근"); val leap = SpecialDay(LocalDate.of(2020, 2, 29), "윤일")
+        assertEquals(listOf(work to 4), SpecialDays.anniversaries(listOf(work, leap), LocalDate.of(2026, 4, 4)))
+        assertEquals(listOf(leap to 6), SpecialDays.anniversaries(listOf(work, leap), LocalDate.of(2026, 2, 28)))
+        assertEquals(emptyList(), SpecialDays.anniversaries(listOf(work), LocalDate.of(2022, 4, 4)))   // 그해 당일은 아님
+    }
 }

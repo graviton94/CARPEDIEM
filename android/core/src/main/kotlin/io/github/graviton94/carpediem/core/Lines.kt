@@ -104,7 +104,7 @@ object Lines {
         if (list.any { it.date == line.date }) list else (list + line).sortedBy { it.date }
 }
 
-/** 특별한 날 꽃: 인생 달력의 한 칸에 놓는 작은 꽃 (이름만, 알림 없음). */
+/** 특별한 날 꽃: 인생 달력의 한 칸에 놓는 작은 꽃 (이름만). 해마다 그 전날 저녁에 한 번 알림. */
 data class SpecialDay(val date: LocalDate, val name: String)
 
 object SpecialDays {
@@ -115,6 +115,10 @@ object SpecialDays {
         val p = r.split('\t', limit = 2); val d = p.getOrNull(0)?.toLongOrNull() ?: return@mapNotNull null
         SpecialDay(LocalDate.ofEpochDay(d), p.getOrNull(1).orEmpty())
     }.toList()
+    /** day 가 지난 해들의 특별한 날과 같은 날짜이면 (그 날, 몇 년 전). 2월 29일은 평년엔 2월 28일. */
+    fun anniversaries(list: List<SpecialDay>, day: LocalDate): List<Pair<SpecialDay, Int>> =
+        list.filter { it.date.year < day.year && Family.birthdayIn(it.date, day.year) == day }.map { it to day.year - it.date.year }
+
     /** 같은 날은 하나만 (이름을 바꿈), 날짜순, 최대 MAX. */
     fun put(list: List<SpecialDay>, day: SpecialDay): List<SpecialDay> = (list.filterNot { it.date == day.date } + day).sortedBy { it.date }.takeLast(MAX)
 }

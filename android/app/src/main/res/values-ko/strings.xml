@@ -335,9 +335,9 @@
     <string name="question_answer">한 줄로 답하기</string>
     <string name="question_skip">오늘은 문장으로</string>
     <string name="question_answered">오늘은 이미 한 줄을 보냈어요.</string>
-    <string name="mood_title">마음의 하늘</string>
-    <string name="mood_sub">지난 30일의 마음이 색으로 남아요.</string>
-    <string name="mood_a11y">지난 30일 가운데 마음을 남긴 날 %1$s일</string>
+    <string name="mood_title">마음의 기록</string>
+    <string name="mood_sub">%1$s의 별자리는 %2$s. 1일부터 선을 따라 하루씩 놓여요.</string>
+    <string name="mood_a11y">%1$s 가운데 한 줄을 남긴 날 %2$s일</string>
     <string name="letter_arrived">%1$s의 편지가 도착했어요</string>
     <string name="letter_title">%1$s년 %2$s의 편지</string>
     <string name="letter_range">%1$s부터 %2$s까지 보낸 한 줄</string>
@@ -467,7 +467,7 @@
     <string name="year_title">%1$s년의 정원</string>
     <string name="year_count">한 줄 %1$s개 · 고마움 %2$s번</string>
     <string name="year_end">한 해를 잘 건너왔어요.</string>
-    <string name="year_list">한 해의 정원</string>
+    <string name="year_list">지난 정원</string>
     <string name="share_image">그림으로 보내기</string>
     <string name="share_chooser">그림 보내기</string>
     <string name="share_footer">하루의 정원</string>
@@ -485,4 +485,16 @@
     <string name="special_remove">꽃 거두기</string>
     <string name="special_removeConfirm">%1$s의 꽃을 거둘까요?</string>
     <string name="special_full">꽃은 서른 송이까지 놓을 수 있어요.</string>
+    <string name="year_cardNight">%1$s년의 정원에 별이 떴어요</string>
+    <string name="record_month">월</string>
+    <string name="record_year">해</string>
+    <string name="record_monthTitle">%1$s의 정원</string>
+    <string name="record_prev">지난 달</string>
+    <string name="record_next">다음 달</string>
+    <string name="record_rest">쉬어 간 날</string>
+    <string name="record_noText">글 없이 보낸 날</string>
+    <string name="record_hint">날을 누르면 그날의 한 줄이 보여요.</string>
+    <string name="record_card">%1$s의 정원이 피었어요</string>
+    <string name="record_cardNight">%1$s의 정원에 별이 떴어요</string>
+    <string name="record_dayPattern">M월 d일</string>
 </resources>

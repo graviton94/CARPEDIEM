@@ -20,6 +20,12 @@ import io.github.graviton94.carpediem.ui.garden.HaruArt
 import io.github.graviton94.carpediem.ui.garden.birthdayCake
 import io.github.graviton94.carpediem.ui.garden.drawHaru
 import io.github.graviton94.carpediem.ui.garden.moodColor
+import io.github.graviton94.carpediem.ui.garden.MONTH_SIZES
+import io.github.graviton94.carpediem.ui.garden.StarGarden
+import io.github.graviton94.carpediem.ui.garden.TILE_SIZES
+import io.github.graviton94.carpediem.ui.garden.meadow
+import io.github.graviton94.carpediem.ui.garden.monthIn
+import io.github.graviton94.carpediem.ui.garden.nightSky
 import java.io.File
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -84,19 +90,68 @@ object ShareCards {
         return b
     }
 
-    /** 한 해의 정원: 은하수 (날마다 별 하나), 한 줄 · 고마움 수, 고마움 한 줄 몇 개. */
-    fun year(ctx: Context, year: Int, days: List<Pair<LocalDate, DayLine?>>, title: String, count: String, thanks: List<String>): Bitmap {
-        val w = S.yearW.toInt(); val h = S.yearH.toInt(); val pad = S.pad
+    /** Compose 그리기를 그림 위 (left, top) 의 w × h 판에 (앱 화면과 같은 그리기). */
+    private fun drawCompose(c: Canvas, left: Float, top: Float, w: Float, h: Float, block: androidx.compose.ui.graphics.drawscope.DrawScope.() -> Unit) {
+        c.save(); c.translate(left, top)
+        c.clipPath(android.graphics.Path().apply { addRoundRect(RectF(0f, 0f, w, h), w * 0.04f, w * 0.04f, android.graphics.Path.Direction.CW) })
+        androidx.compose.ui.graphics.drawscope.CanvasDrawScope().draw(androidx.compose.ui.unit.Density(1f), androidx.compose.ui.unit.LayoutDirection.Ltr,
+            androidx.compose.ui.graphics.Canvas(c), androidx.compose.ui.geometry.Size(w, h), block)
+        c.restore()
+    }
+
+    /** 밤이면 남색 바탕 · 옅은 크림 글자. */
+    private fun board(w: Int, h: Int, night: Boolean): Pair<Bitmap, Canvas> {
         val (b, c) = base(w, h)
+        if (night) {
+            c.drawColor(Y.skyBottom.toArgb())
+            val p = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE; strokeWidth = 5f; color = Y.plain.toArgb(); strokeCap = Paint.Cap.ROUND }
+            val m = S.pad * 0.45f; c.drawRoundRect(RectF(m, m, w - m, h - m), 48f, 48f, p)
+        }
+        return b to c
+    }
+    private val Y = Tokens.Garden.Year.Colors
+
+    /** 한 달의 정원: 그 달의 별자리 (보내는 때가 밤이면 별, 낮이면 꽃), 별자리 이름 · 한 줄 수. */
+    fun month(ctx: Context, book: io.github.graviton94.carpediem.core.ConstellationBook, days: List<Pair<LocalDate, DayLine?>>, night: Boolean, today: LocalDate, title: String, sub: String): Bitmap {
+        val w = S.yearW.toInt(); val h = S.yearH.toInt(); val pad = S.pad
+        val (b, c) = board(w, h, night)
+        val fg = if (night) Y.plain.toArgb() else ink; val soft = if (night) Y.plain.copy(alpha = 0.7f).toArgb() else inkSoft
         var y = pad * 1.2f
-        y += text(c, title, paint(ctx, S.text * 0.9f, ink), pad, y, (w - pad * 2).toInt()) + pad * 0.4f
-        // 은하수 (앱 화면과 같은 자리)
-        val gw = w - pad * 2
-        io.github.graviton94.carpediem.ui.garden.drawGalaxy(c, pad, y, gw, days)
-        y += gw / Tokens.Garden.Year.aspect + pad * 0.5f
-        y += text(c, count, paint(ctx, S.small, inkSoft), pad, y, (w - pad * 2).toInt()) + pad * 0.3f
-        thanks.forEach { t -> y += text(c, "“$t”", paint(ctx, S.small * 1.05f, ink), pad, y, (w - pad * 2).toInt()) + pad * 0.15f }
-        text(c, ctx.getString(R.string.share_footer), paint(ctx, S.small * 0.8f, inkSoft), pad, h - pad * 1.25f, (w - pad * 2).toInt())
+        y += text(c, title, paint(ctx, S.text * 0.9f, fg), pad, y, (w - pad * 2).toInt()) + pad * 0.2f
+        y += text(c, sub, paint(ctx, S.small, soft), pad, y, (w - pad * 2).toInt()) + pad * 0.4f
+        val gw = w - pad * 2; val gh = gw / Tokens.Garden.Year.monthAspect
+        val dots = StarGarden.month(book, days)
+        val cons = days.firstOrNull()?.first?.monthValue?.let(book::of)
+        drawCompose(c, pad, y, gw, gh) {
+            if (night) nightSky() else meadow()
+            monthIn(androidx.compose.ui.geometry.Rect(androidx.compose.ui.geometry.Offset.Zero, size), dots, cons, night, today, MONTH_SIZES)
+        }
+        text(c, ctx.getString(R.string.share_footer), paint(ctx, S.small * 0.8f, soft), pad, h - pad * 1.25f, (w - pad * 2).toInt())
+        return b
+    }
+
+    /** 한 해의 정원: 열두 달의 별자리를 4 × 3 칸에, 한 줄 · 고마움 수, 고마움 한 줄 몇 개. */
+    fun year(ctx: Context, book: io.github.graviton94.carpediem.core.ConstellationBook, days: List<Pair<LocalDate, DayLine?>>, night: Boolean, today: LocalDate, title: String, count: String, thanks: List<String>): Bitmap {
+        val w = S.yearW.toInt(); val h = S.yearH.toInt(); val pad = S.pad
+        val (b, c) = board(w, h, night)
+        val fg = if (night) Y.plain.toArgb() else ink; val soft = if (night) Y.plain.copy(alpha = 0.7f).toArgb() else inkSoft
+        var y = pad * 1.2f
+        y += text(c, title, paint(ctx, S.text * 0.9f, fg), pad, y, (w - pad * 2).toInt()) + pad * 0.4f
+        val gw = w - pad * 2; val cw = gw / 4f; val ch = cw / Tokens.Garden.Year.monthAspect; val label = S.small * 1.3f
+        val months = days.groupBy { it.first.monthValue }
+        drawCompose(c, pad, y, gw, (ch + label) * 3) {
+            if (night) nightSky() else meadow()
+            months.forEach { (m, ds) ->
+                val r = androidx.compose.ui.geometry.Rect(((m - 1) % 4) * cw, ((m - 1) / 4) * (ch + label), ((m - 1) % 4 + 1) * cw, ((m - 1) / 4) * (ch + label) + ch)
+                monthIn(r, StarGarden.month(book, ds), book.of(m), night, today, TILE_SIZES)
+            }
+        }
+        val lp = paint(ctx, S.small * 0.75f, soft)
+        (1..12).forEach { m -> text(c, java.time.Month.of(m).getDisplayName(java.time.format.TextStyle.SHORT_STANDALONE, ctx.resources.configuration.locales[0]), lp, pad + ((m - 1) % 4) * cw, y + ((m - 1) / 4) * (ch + label) + ch, cw.toInt()) }
+        y += (ch + label) * 3 + pad * 0.4f
+        y += text(c, count, paint(ctx, S.small, soft), pad, y, (w - pad * 2).toInt()) + pad * 0.3f
+        thanks.forEach { t -> y += text(c, "“$t”", paint(ctx, S.small * 1.05f, fg), pad, y, (w - pad * 2).toInt()) + pad * 0.15f }
+        text(c, ctx.getString(R.string.share_footer), paint(ctx, S.small * 0.8f, soft), pad, h - pad * 1.25f, (w - pad * 2).toInt())
         return b
     }
 

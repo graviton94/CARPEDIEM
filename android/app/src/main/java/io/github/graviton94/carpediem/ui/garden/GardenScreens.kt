@@ -171,8 +171,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
     // 캡처용: 이번 달 편지를 바로 펼침. 고르기만 그리기 중에, ‘연 편지’로 남기기는 그 뒤에
     var letterOpen by remember { mutableStateOf(if (state.debugOpenLetter && !bare) state.letterDue(now.toLocalDate()) else null) }
     LaunchedEffect(letterOpen) { letterOpen?.let { state.openLetter(it.id) } }
-    var yearOpen by remember { mutableStateOf(if (state.debugOpenYear && !bare) state.yearDue(now.toLocalDate()) else null) }
-    LaunchedEffect(yearOpen) { yearOpen?.let { state.openYear(it) } }
+    var recordOpen by remember { mutableStateOf(when { bare -> null; state.debugOpenYear -> RecordView(state.yearDue(now.toLocalDate()) ?: now.year, null); state.debugOpenMonth -> RecordView(now.year, now.monthValue); else -> null }) }
 
     BoxWithConstraints(Modifier.fillMaxSize().paperBackground()) {
         val u = Theme.unit
@@ -362,7 +361,8 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 // 계절의 편지: 이번 달에 도착해 아직 펼치지 않았으면 맨 위에 봉투 한 장
                 state.letterDue(now.toLocalDate())?.let { l -> LetterEnvelope(l) { state.openLetter(l.id); letterOpen = l } }
                 // 한 해의 정원 (12월 31일 ~ 1월 7일) · 계절 첫날의 바람 (3 · 6 · 9 · 12월 첫 두 주)
-                state.yearDue(now.toLocalDate())?.let { y -> YearCard(state, y) { state.openYear(y); yearOpen = y } }
+                state.yearDue(now.toLocalDate())?.let { y -> YearCard(y) { state.openYear(y); recordOpen = RecordView(y, null) } }
+                if (state.yearDue(now.toLocalDate()) == null) state.monthDue(now.toLocalDate())?.let { (y, m) -> MonthCard(m) { state.openMonth(y, m); recordOpen = RecordView(y, m) } }
                 state.wishDue(now.toLocalDate())?.let { id -> WishCard(state, id, now.toLocalDate()) }
                 TokenText(stringResource(R.string.flow), Tokens.TypeScale.title3)
                 LifePeriod.entries.forEachIndexed { i, period ->
@@ -398,9 +398,9 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 CrayonCalendar(s.total(state.grid.unit), s.lived(state.grid.unit), cols, Modifier.graphicsLayer(), flowers = flowers)
                 TokenText(stringResource(R.string.calendar_legend, Labels.season(ctx, season)), Tokens.TypeScale.caption1, color = p.secondary)
                 SpecialDaysRow(state, profile.birthDate)
-                // 마음의 하늘: 지난 30일을 손으로 그린 동그라미로
+                // 마음의 기록: 이번 달의 날들이 그 달의 별자리로 (낮엔 꽃, 밤엔 별)
                 Spacer(Modifier.height(Tokens.Space.sp4))
-                MoodSky(state, now.toLocalDate())
+                MoodRecord(state, now.toLocalDate()) { recordOpen = it }
                 Spacer(Modifier.height(Tokens.Space.sp4))
                 Row(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
                     GardenButton(stringResource(R.string.collection), onCollection, filled = false, seed = 880, modifier = Modifier.weight(1f))
@@ -439,7 +439,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
         }
     }
     letterOpen?.let { LetterSheet(it, state.wishFor(it)) { letterOpen = null } }
-    yearOpen?.let { YearSheet(state, it) { yearOpen = null } }
+    recordOpen?.let { RecordSheet(state, it, now.toLocalDate()) { recordOpen = null } }
     if (breathSheet) BreathSheet(state, now, { k, m, snd -> breathSheet = false; onBreath(k, m, snd) }) { breathSheet = false }
 }
 

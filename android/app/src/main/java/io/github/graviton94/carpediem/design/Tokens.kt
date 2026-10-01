@@ -456,21 +456,40 @@ object Tokens {
             const val dim = 0.18f
         }
         object Year {
-            const val columns = 21.0f
             const val thanks = 3.0f
-            const val aspect = 1.45f
-            const val band = 0.15f
-            const val star = 0.0048f
-            const val dust = 0.0019f
+            const val monthAspect = 0.86f
+            const val flowAspect = 0.62f
+            const val span = 3.0f
+            const val boxW = 0.2f
+            const val boxH = 0.24f
+            const val flowMs = 70000.0f
+            const val twinkleMs = 4200.0f
+            const val monthDue = 3.0f
+            const val monthFlower = 0.03f
+            const val monthFlowerSmall = 0.02f
+            const val monthStar = 0.011f
+            const val monthStarSmall = 0.006f
+            const val yearFlower = 0.013f
+            const val yearFlowerSmall = 0.008f
+            const val yearStar = 0.0055f
+            const val yearStarSmall = 0.003f
+            const val tileFlower = 0.06f
+            const val tileFlowerSmall = 0.038f
+            const val lineAlpha = 0.12f
             const val hazeAlpha = 0.07f
+            const val field = 120.0f
             object Colors {
                 val skyTop = Color(0xFF101426)
                 val skyBottom = Color(0xFF1E253C)
                 val haze = Color(0xFFC9C3E8)
-                val plain = Color(0xFFECE4CF)
                 val core = Color(0xFFF3E6C8)
+                val plain = Color(0xFFECE4CF)
+                val meadowTop = Color(0xFFF6F1E3)
+                val meadowBottom = Color(0xFFE7EDDA)
+                val meadowHaze = Color(0xFFC9D8A8)
+                val heart = Color(0xFFFFF6DE)
+                val rest = Color(0xFF82965F)
             }
-            const val field = 220.0f
         }
         object Share {
             const val lineW = 1080.0f

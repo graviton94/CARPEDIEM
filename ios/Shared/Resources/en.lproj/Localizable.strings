@@ -333,9 +333,9 @@
 "question.answer" = "Answer in a line";
 "question.skip" = "Just the words today";
 "question.answered" = "You already sent a line today.";
-"mood.title" = "Sky of the heart";
-"mood.sub" = "The last 30 days, in colors.";
-"mood.a11y" = "%1$@ of the last 30 days hold a feeling";
+"mood.title" = "Heart’s record";
+"mood.sub" = "%1$@’s constellation is %2$@. One day at a time along its lines.";
+"mood.a11y" = "%2$@ days of %1$@ hold a line";
 "letter.arrived" = "A letter for %1$@ has arrived";
 "letter.title" = "%2$@ %1$@";
 "letter.range" = "Lines sent from %1$@ to %2$@";
@@ -465,7 +465,7 @@
 "year.title" = "The garden of %1$@";
 "year.count" = "%1$@ lines · %2$@ thanks";
 "year.end" = "You made it through the year.";
-"year.list" = "Gardens of the year";
+"year.list" = "Past gardens";
 "share.image" = "Send as a picture";
 "share.chooser" = "Send picture";
 "share.footer" = "Carpe Diem";
@@ -483,3 +483,15 @@
 "special.remove" = "Remove";
 "special.removeConfirm" = "Remove the flower for %1$@?";
 "special.full" = "You can place up to thirty flowers.";
+"year.cardNight" = "Stars are out over the garden of %1$@";
+"record.month" = "Month";
+"record.year" = "Year";
+"record.monthTitle" = "The garden of %1$@";
+"record.prev" = "Previous month";
+"record.next" = "Next month";
+"record.rest" = "A day of rest";
+"record.noText" = "Sent without words";
+"record.hint" = "Tap a day to see its line.";
+"record.card" = "The garden of %1$@ has bloomed";
+"record.cardNight" = "Stars are out over the garden of %1$@";
+"record.dayPattern" = "MMMM d";

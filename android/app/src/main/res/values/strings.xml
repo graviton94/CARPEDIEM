@@ -335,9 +335,9 @@
     <string name="question_answer">Answer in a line</string>
     <string name="question_skip">Just the words today</string>
     <string name="question_answered">You already sent a line today.</string>
-    <string name="mood_title">Sky of the heart</string>
-    <string name="mood_sub">The last 30 days, in colors.</string>
-    <string name="mood_a11y">%1$s of the last 30 days hold a feeling</string>
+    <string name="mood_title">Heart’s record</string>
+    <string name="mood_sub">%1$s’s constellation is %2$s. One day at a time along its lines.</string>
+    <string name="mood_a11y">%2$s days of %1$s hold a line</string>
     <string name="letter_arrived">A letter for %1$s has arrived</string>
     <string name="letter_title">%2$s %1$s</string>
     <string name="letter_range">Lines sent from %1$s to %2$s</string>
@@ -467,7 +467,7 @@
     <string name="year_title">The garden of %1$s</string>
     <string name="year_count">%1$s lines · %2$s thanks</string>
     <string name="year_end">You made it through the year.</string>
-    <string name="year_list">Gardens of the year</string>
+    <string name="year_list">Past gardens</string>
     <string name="share_image">Send as a picture</string>
     <string name="share_chooser">Send picture</string>
     <string name="share_footer">Carpe Diem</string>
@@ -485,4 +485,16 @@
     <string name="special_remove">Remove</string>
     <string name="special_removeConfirm">Remove the flower for %1$s?</string>
     <string name="special_full">You can place up to thirty flowers.</string>
+    <string name="year_cardNight">Stars are out over the garden of %1$s</string>
+    <string name="record_month">Month</string>
+    <string name="record_year">Year</string>
+    <string name="record_monthTitle">The garden of %1$s</string>
+    <string name="record_prev">Previous month</string>
+    <string name="record_next">Next month</string>
+    <string name="record_rest">A day of rest</string>
+    <string name="record_noText">Sent without words</string>
+    <string name="record_hint">Tap a day to see its line.</string>
+    <string name="record_card">The garden of %1$s has bloomed</string>
+    <string name="record_cardNight">Stars are out over the garden of %1$s</string>
+    <string name="record_dayPattern">MMMM d</string>
 </resources>
