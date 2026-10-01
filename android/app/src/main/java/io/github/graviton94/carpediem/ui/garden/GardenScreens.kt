@@ -403,8 +403,6 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                         if (bare) null else { part -> if (part == DecorPart.LETTER) state.letterDue(day0)?.let { l -> state.openLetter(l.id); letterOpen = l } else decorOpen = part })
                     MossSeat(decor, now, xs[0], widths[0].toFloat().dp, gy, if (bare) null else { part -> decorOpen = part })
                 }
-                // 달팽이 손님: 오랜만에 돌아온 날, 한 시간쯤 길을 천천히 건넘
-                if (!bare) SnailGuest(state.store.snailAt, now, gy, u * G.Decor.treeX)
 
                 // 돌들: 한 번 누르면 쓰다듬기, 두 번 누르면 그 돌의 페이지
                 val todayLine = state.lines.lastOrNull { it.date == now.toLocalDate() }
@@ -455,6 +453,8 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                         drawCircle(Tokens.Garden.Colors.now.copy(alpha = (1f - a) * 0.8f), ring * (0.25f + 0.75f * a), c, style = androidx.compose.ui.graphics.drawscope.Stroke(u.toPx() * 1.2f))
                     }
                 }
+                // 달팽이 손님: 오랜만에 돌아온 날, 한 시간쯤 돌들 앞 길을 천천히 건넘
+                if (!bare) SnailGuest(state.store.snailAt, now, gy, u * G.Decor.treeX)
                 // 우연한 순간 (한 번에 하나, 몇 초 뒤 사라짐)
                 if (!bare) state.chance?.let { c -> ChanceLayer(c, now, real, gy, xs[0], u * G.Decor.treeX, x1, topBottom + u * G.Layout.minSkyGap) { state.chanceDone() } }
                 // 이름표 (가족이 있을 때) · 0세 · 기대수명

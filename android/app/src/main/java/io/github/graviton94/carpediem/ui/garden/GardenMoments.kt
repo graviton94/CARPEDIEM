@@ -145,7 +145,7 @@ internal fun ChanceLayer(chance: Chance, now: LocalDateTime, season: Season, gy:
     }
 }
 
-/** 달팽이 손님: 오랜만에 돌아온 날, 나무 발치 옆 길을 한 시간쯤 아주 천천히 건넘 (그동안 정원을 열 때마다 그 자리에). */
+/** 달팽이 손님: 오랜만에 돌아온 날, 돌들 앞 길을 한 시간쯤 아주 천천히 건넘 (그동안 정원을 열 때마다 그 자리에, 돌보다 앞 · 조금 아래). */
 @Composable
 internal fun SnailGuest(snailAt: Long, now: LocalDateTime, gy: Dp, treeX: Dp) {
     val ctx = LocalContext.current
@@ -155,6 +155,6 @@ internal fun SnailGuest(snailAt: Long, now: LocalDateTime, gy: Dp, treeX: Dp) {
     val a = (wall - snailAt) / span
     if (snailAt <= 0L || a !in 0f..1f) return
     val img = GardenArt.image(ctx, "moment_snail.webp"); val k = u * C.snailScale
-    val x = treeX + u * 56f + u * C.snailWalk * a
-    Image(img, null, Modifier.offset(x - k * 20f, gy + u * 1f - k * 20f).size(k * 40f, k * 24f), colorFilter = nightFilter(SkyTime.isDark(now)))
+    val x = treeX + u * 44f + u * C.snailWalk * a
+    Image(img, null, Modifier.offset(x - k * 20f, gy + u * 5f - k * 20f).size(k * 40f, k * 24f), colorFilter = nightFilter(SkyTime.isDark(now)))
 }

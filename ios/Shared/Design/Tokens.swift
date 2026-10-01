@@ -627,7 +627,7 @@ enum Tokens {
             static let flapHz: CGFloat = 3.5
             static let glideMs: CGFloat = 500.0
             static let glideEvery: CGFloat = 2600.0
-            static let flyBox: CGFloat = 6.6
+            static let flyBox: CGFloat = 9.0
             static let snailMinutes: CGFloat = 60.0
             static let snailWalk: CGFloat = 26.0
             static let snailScale: CGFloat = 0.5

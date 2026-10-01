@@ -622,7 +622,7 @@ object Tokens {
             const val flapHz = 3.5f
             const val glideMs = 500.0f
             const val glideEvery = 2600.0f
-            const val flyBox = 6.6f
+            const val flyBox = 9.0f
             const val snailMinutes = 60.0f
             const val snailWalk = 26.0f
             const val snailScale = 0.5f
