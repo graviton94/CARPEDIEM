@@ -63,6 +63,9 @@ import androidx.compose.ui.semantics.selected
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.zIndex
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.boundsInParent
@@ -158,6 +161,38 @@ internal fun gardenSlots(state: AppState, profile: LifeProfile, s: LifeSnapshot,
     }
 }
 
+/** 책장 한 장: o = 이 장이 넘어간 정도 (0 = 펼쳐짐, 1 = 다 넘어감, -1 = 아직 아래). 넘어가는 장은 등 (왼쪽 가장자리) 을 축으로 돌고, 아래 장은 조금 그늘졌다가 밝아짐. */
+@Composable
+private fun Modifier.bookPage(pager: androidx.compose.foundation.pager.PagerState, page: Int): Modifier {
+    val shade = Theme.gc.scrim
+    val depth = LocalDensity.current.density * G.Motion.bookDepth
+    return paperBackground().graphicsLayer {
+        val o = (pager.currentPage - page) + pager.currentPageOffsetFraction
+        translationX = o * size.width
+        transformOrigin = androidx.compose.ui.graphics.TransformOrigin(0f, 0.5f)
+        cameraDistance = depth
+        rotationY = if (o > 0f) -G.Motion.bookTurn * o else 0f
+    }.drawWithContent {
+        drawContent()
+        val o = (pager.currentPage - page) + pager.currentPageOffsetFraction
+        val a = kotlin.math.abs(o) * G.Motion.bookShade
+        if (a > 0f) drawRect(shade.copy(alpha = shade.alpha * a.coerceIn(0f, 1f)))
+    }
+}
+
+/** 정원 아래 작은 한 줄: 깃털과 함께 ‘돌아온 한 줄’을 알림. */
+@Composable
+private fun RecallNote(text: String, onOpen: () -> Unit) {
+    Row(
+        Modifier.fillMaxWidth().crayonBox(Theme.gc.paper, G.Radius.button, G.Stroke.chip, 1190).clickable(onClick = onOpen)
+            .padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp2),
+        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2),
+    ) {
+        Image(GardenArt.obj(LocalContext.current, "feather"), null, Modifier.size(Theme.unit * G.LetGo.feather))
+        TokenText(text, Tokens.TypeScale.footnote, Modifier.weight(1f), weight = FontWeight.Medium, maxLines = 2)
+    }
+}
+
 /** 이름표: nameChars 글자까지, 넘으면 말줄임. */
 internal fun shortName(n: String): String { val max = G.Family.nameChars.toInt(); return if (n.codePointCount(0, n.length) <= max) n else n.substring(0, n.offsetByCodePoints(0, max)) + "…" }
 
@@ -198,6 +233,9 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
       Column(Modifier.fillMaxSize()) {
         // 보이지 않는 페이지는 그리지 않는다 (반짝임 · 살랑임이 화면 밖에서 돌지 않게). 쓰던 글은 rememberSaveable 로 남음
         HorizontalPager(pager, Modifier.weight(1f).fillMaxWidth(), beyondViewportPageCount = 0, userScrollEnabled = !bare && !typing) { page ->
+          // 책장 넘기기: 페이지는 제자리에 두고, 넘어가는 장이 왼쪽 등을 축으로 들려 넘어가며 아래 장이 드러남
+          val lifted by remember(page) { derivedStateOf { (pager.currentPage - page) + pager.currentPageOffsetFraction > 0f } }
+          Box(Modifier.fillMaxSize().zIndex(if (lifted) 1f else 0f).bookPage(pager, page)) {
           when (page) {
             1 -> WritePage(state, now)
             2 -> MemoriesPage(state, profile, now, recordView, { recordView = it }, onMemory)
@@ -368,6 +406,12 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                         year != null -> YearCard(year) { state.openYear(year); toRecord(RecordView(year, null)) }
                         month != null -> MonthCard(month.second) { state.openMonth(month.first, month.second); toRecord(RecordView(month.first, month.second)) }
                     }
+                    // 돌아온 한 줄 (몇 해 전 오늘 · 문득): 정원에서도 알 수 있게, 누르면 기록 페이지에서 펼쳐 봄
+                    val recall = remember(state.lines, today, state.randomLine) {
+                        io.github.graviton94.carpediem.core.Lines.yearsAgo(state.lines, today).firstOrNull()?.first?.let { ctx.getString(R.string.recall_notify, "$it") }
+                            ?: state.randomLine?.let { ctx.getString(R.string.recall_randomNotify) }
+                    }
+                    recall?.let { t -> RecallNote(t) { scope.launch { pager.animateScrollToPage(1, animationSpec = androidx.compose.animation.core.tween(G.Motion.pageMs.toInt())) } } }
                     Row(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
                         GardenButton(stringResource(R.string.breath), { breathSheet = true }, filled = false, seed = 888, modifier = Modifier.weight(1f), paper = true)
                         GardenButton(stringResource(R.string.gaze), onGaze, filled = false, seed = 889, modifier = Modifier.weight(1f), paper = true)
@@ -377,8 +421,9 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
             }
             }
           }
+          }
         }
-        if (!bare && !typing) PageTabs(pager.currentPage) { scope.launch { pager.animateScrollToPage(it) } }
+        if (!bare && !typing) PageTabs(pager.currentPage) { scope.launch { pager.animateScrollToPage(it, animationSpec = androidx.compose.animation.core.tween(G.Motion.pageMs.toInt())) } }
       }
         // 한 줄을 보낸 뒤: 깃털이 내려오며 한마디 창
         if (!bare) LetGoModal(state, Modifier.fillMaxSize()) { c ->

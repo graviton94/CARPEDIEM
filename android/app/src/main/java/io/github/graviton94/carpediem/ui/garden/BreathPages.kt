@@ -1,5 +1,6 @@
 package io.github.graviton94.carpediem.ui.garden
 
+import io.github.graviton94.carpediem.ui.GardenAlert
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
@@ -313,7 +314,7 @@ fun GazeScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, onBack
             Modifier.align(Alignment.TopEnd).statusBarsPadding().clickable { soundOn = !soundOn; if (soundOn && state.sound == Sound.NONE) state.changeSound(Sound.WAVES) }.padding(Tokens.Space.sp4),
             color = p.secondary.copy(alpha = 0.7f), weight = FontWeight.Normal)
         if (hint) TokenText(stringResource(R.string.gaze_exit), Tokens.TypeScale.caption1, Modifier.align(Alignment.BottomCenter).navigationBarsPadding().padding(bottom = Tokens.Space.sp6), color = p.secondary)
-        if (ask) androidx.compose.material3.AlertDialog(
+        if (ask) GardenAlert(
             onDismissRequest = { ask = false },
             containerColor = Theme.gc.paper,
             text = { TokenText(stringResource(R.string.gaze_ask), Tokens.TypeScale.callout.serif()) },

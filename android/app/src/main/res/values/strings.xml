@@ -51,6 +51,12 @@
     <string name="words_english">English</string>
     <string name="words_both">Both</string>
     <string name="widgets">Widgets</string>
+    <string name="widgets_list">Widgets you can add</string>
+    <string name="widgets_name_daysLeft">Days left</string>
+    <string name="widgets_name_today">Today</string>
+    <string name="widgets_name_calendar">Life calendar</string>
+    <string name="widgets_name_family">Family garden</string>
+    <string name="widgets_name_record">Heart’s record</string>
     <string name="widgets_help1">Touch and hold the Home Screen, tap Edit → Add Widget</string>
     <string name="widgets_help2">Find Carpe Diem and pick a size</string>
     <string name="widgets_help3">Touch and hold Days Left to change the unit</string>
@@ -69,9 +75,9 @@
     <string name="android_notification">Get today\'s words once a day</string>
     <string name="widget_unit">Unit</string>
     <string name="widget_unit_desc">Choose how to count the days left.</string>
-    <string name="widget_daysLeft_desc">Days left until your life expectancy.</string>
-    <string name="widget_today_desc">How much of today has passed.</string>
-    <string name="widget_calendar_desc">Your whole life at a glance. The large size adds today\'s words.</string>
+    <string name="widget_daysLeft_desc">Quietly counts the days left.</string>
+    <string name="widget_today_desc">Where today\'s sun is now.</string>
+    <string name="widget_calendar_desc">A whole life in small cells. Larger, with today\'s words.</string>
     <string name="widget_empty">Add your birthday in the app.</string>
     <string name="erase_confirm">Erase everything?</string>
     <string name="erase_action">Erase</string>
@@ -519,7 +525,7 @@
     <string name="gaze_back">Go back</string>
     <string name="gaze_stay">Stay a while</string>
     <string name="widget_record_garden">Heart’s record · Garden</string>
-    <string name="widget_record_desc">This month, in flowers and stars.</string>
+    <string name="widget_record_desc">This month\'s heart, in flowers and stars. Tap to open the record.</string>
     <string name="backup_export">Save to a file</string>
     <string name="backup_import">Bring in from a file</string>
     <string name="backup_importConfirm">Replace with this file?\nWhat’s here now will be gone.</string>

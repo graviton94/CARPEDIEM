@@ -126,6 +126,10 @@ class AppState(private val context: Context) {
     /** 보낸 뒤 창의 제목 (기쁨 · 고마움 · 희망을 누군가에게 보냈을 때만 “엄마에게 보냈어요”). */
     var toastTitle by mutableStateOf<String?>(null)
 
+    /** 화면 아래 잠깐 떠오르는 짧은 알림 (모든 화면이 같은 움직임으로). 글과 때 (같은 글을 다시 띄울 때도 새로). */
+    var note by mutableStateOf<Pair<String, Long>?>(null)
+    fun say(text: String) { note = text to System.nanoTime() }
+
     fun letGo(text: String, feeling: Feeling?, to: String? = null, today: LocalDate = (fixedNow ?: LocalDateTime.now()).toLocalDate()) {
         val t = Lines.clean(text, Tokens.Garden.LetGo.maxChars.toInt()); if (t.isEmpty()) return
         // 질문에 답한 한 줄이면 질문 번호도 함께

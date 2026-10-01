@@ -1,5 +1,6 @@
 package io.github.graviton94.carpediem.ui.garden
 
+import io.github.graviton94.carpediem.ui.GardenAlert
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -22,7 +23,6 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -380,15 +380,15 @@ fun AddPersonScreen(state: AppState, profile: LifeProfile, editId: String?, onDo
         ) { DatePicker(state = dp) }
     }
     if (confirmMemory && editing != null) {
-        AlertDialog(
+        GardenAlert(
             onDismissRequest = { confirmMemory = false },
             text = { Text(stringResource(R.string.memory_toMemoryConfirm, editing.name)) },
-            confirmButton = { TextButton(onClick = { confirmMemory = false; if (state.toMemory(editing.id)) onMovedToMemory() else android.widget.Toast.makeText(ctx, ctx.getString(R.string.memory_full), android.widget.Toast.LENGTH_SHORT).show() }) { Text(stringResource(R.string.memory_toMemoryAction)) } },
+            confirmButton = { TextButton(onClick = { confirmMemory = false; if (state.toMemory(editing.id)) onMovedToMemory() else state.say(ctx.getString(R.string.memory_full)) }) { Text(stringResource(R.string.memory_toMemoryAction)) } },
             dismissButton = { TextButton(onClick = { confirmMemory = false }) { Text(stringResource(R.string.cancel)) } },
         )
     }
     if (confirmRemove && editing != null) {
-        AlertDialog(
+        GardenAlert(
             onDismissRequest = { confirmRemove = false },
             title = { Text(stringResource(R.string.stone_removeConfirm, editing.name)) },
             confirmButton = { TextButton(onClick = { confirmRemove = false; state.removePerson(editing.id); onDone(null) }) { Text(stringResource(R.string.stone_removeAction), color = p.danger) } },

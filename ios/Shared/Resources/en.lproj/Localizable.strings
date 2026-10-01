@@ -49,6 +49,12 @@
 "words.english" = "English";
 "words.both" = "Both";
 "widgets" = "Widgets";
+"widgets.list" = "Widgets you can add";
+"widgets.name.daysLeft" = "Days left";
+"widgets.name.today" = "Today";
+"widgets.name.calendar" = "Life calendar";
+"widgets.name.family" = "Family garden";
+"widgets.name.record" = "Heart’s record";
 "widgets.help1" = "Touch and hold the Home Screen, tap Edit → Add Widget";
 "widgets.help2" = "Find Carpe Diem and pick a size";
 "widgets.help3" = "Touch and hold Days Left to change the unit";
@@ -67,9 +73,9 @@
 "android.notification" = "Get today's words once a day";
 "widget.unit" = "Unit";
 "widget.unit.desc" = "Choose how to count the days left.";
-"widget.daysLeft.desc" = "Days left until your life expectancy.";
-"widget.today.desc" = "How much of today has passed.";
-"widget.calendar.desc" = "Your whole life at a glance. The large size adds today's words.";
+"widget.daysLeft.desc" = "Quietly counts the days left.";
+"widget.today.desc" = "Where today's sun is now.";
+"widget.calendar.desc" = "A whole life in small cells. Larger, with today's words.";
 "widget.empty" = "Add your birthday in the app.";
 "erase.confirm" = "Erase everything?";
 "erase.action" = "Erase";
@@ -517,7 +523,7 @@
 "gaze.back" = "Go back";
 "gaze.stay" = "Stay a while";
 "widget.record.garden" = "Heart’s record · Garden";
-"widget.record.desc" = "This month, in flowers and stars.";
+"widget.record.desc" = "This month's heart, in flowers and stars. Tap to open the record.";
 "backup.export" = "Save to a file";
 "backup.import" = "Bring in from a file";
 "backup.importConfirm" = "Replace with this file?\nWhat’s here now will be gone.";

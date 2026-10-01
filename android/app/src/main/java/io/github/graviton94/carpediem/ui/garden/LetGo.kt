@@ -5,6 +5,8 @@ import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import kotlinx.coroutines.launch
+import io.github.graviton94.carpediem.ui.pop
+import io.github.graviton94.carpediem.ui.modalBox
 import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.runtime.rememberCoroutineScope
@@ -279,11 +281,9 @@ fun LetGoModal(state: AppState, modifier: Modifier = Modifier, onCare: (Care) ->
     val px = with(LocalDensity.current) { u.toPx() }
     val m = G.Motion
     val fall = remember(msg) { Animatable(0f) }
-    val card = remember(msg) { Animatable(0f) }
-    LaunchedEffect(msg) {
-        launch { fall.animateTo(1f, tween(m.fallMs.toInt(), easing = LinearEasing)) }
-        delay(m.cardDelayMs.toLong()); card.animateTo(1f, tween(m.modalFadeMs.toInt(), easing = LinearOutSlowInEasing))
-    }
+    // 창은 앱의 다른 떠오르는 것과 같은 나타남 (깃털이 먼저 내려오고 조금 뒤에)
+    val card = io.github.graviton94.carpediem.ui.rememberPop(msg, m.cardDelayMs.toLong())
+    LaunchedEffect(msg) { fall.animateTo(1f, tween(m.fallMs.toInt(), easing = LinearEasing)) }
     BackHandler { state.toast = null; state.care = null }
     val feather = GardenArt.obj(ctx, "feather")
     val scrim = Theme.gc.scrim
@@ -310,8 +310,7 @@ fun LetGoModal(state: AppState, modifier: Modifier = Modifier, onCare: (Care) ->
         }
         Column(
             Modifier.align(Alignment.Center).padding(horizontal = Theme.deviceClass.pageMargin)
-                .graphicsLayer { alpha = card.value; val k = 0.94f + 0.06f * card.value; scaleX = k; scaleY = k }
-                .modalBox().padding(Tokens.Space.sp6).semantics { liveRegion = LiveRegionMode.Polite },
+                .pop(card).modalBox().padding(Tokens.Space.sp6).semantics { liveRegion = LiveRegionMode.Polite },
             horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3),
         ) {
             Image(feather, null, Modifier.size(u * G.LetGo.feather * 1.3f))
@@ -330,15 +329,6 @@ fun LetGoModal(state: AppState, modifier: Modifier = Modifier, onCare: (Care) ->
             state.care?.let { c -> CareLine(state, c) { state.toast = null; state.care = null; onCare(c) } }
         }
     }
-}
-
-/** 창 바탕: 정원은 종이 위 크레용 선, 유리는 불투명한 판 (뒤가 비치면 글이 흐려서). */
-@Composable
-private fun Modifier.modalBox(): Modifier {
-    if (Theme.garden) return crayonBox(Theme.gc.paper, G.Radius.box, G.Stroke.box, 997)
-    val p = Theme.palette
-    val shape = RoundedCornerShape(Tokens.Radius.lg)
-    return clip(shape).background(p.base).border(Tokens.Stroke.line, p.glassEdge, shape)
 }
 
 /** 한마디 창 맨 아래 권유 한 줄. 누구에게는 가족 이름 칩, 나머지는 누르면 바로 그 일로. */

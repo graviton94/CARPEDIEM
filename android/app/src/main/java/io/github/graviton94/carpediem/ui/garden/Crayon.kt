@@ -30,6 +30,7 @@ import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipPath
+import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -210,6 +211,7 @@ fun CrayonCalendar(total: Int, filled: Int, columns: Int, modifier: Modifier = M
     val L = Tokens.Garden.Layout
     val inkC = Theme.gc.ink; val futureC = Theme.gc.future
     // 칸을 누르면 (꽃이 있는 칸이면 말풍선): 몇 번째 칸인지와 그 칸의 가운데 (px)
+    val flowerShapes = androidx.compose.runtime.remember { HashMap<Int, Pair<Path, Path>>() }   // 칸마다 한 번만 그려 둔 꽃 모양
     val cb by androidx.compose.runtime.rememberUpdatedState(onCell)   // 꽃이 바뀌어도 늘 지금의 것으로
     val tap = if (onCell == null) Modifier else Modifier.pointerInput(total, columns, rows) {
         detectTapGestures { pos ->
@@ -257,9 +259,16 @@ fun CrayonCalendar(total: Int, filled: Int, columns: Int, modifier: Modifier = M
                 val sp = Tokens.Garden.Special
                 flowers.filter { it in 0 until total }.forEach { i ->
                     val c = Offset((i % columns + 0.5f) * cell, (i / columns + 0.5f) * cell); val r = cell / 2 * sp.size
-                    repeat(5) { k -> val a = k * 6.283f / 5 - 1.571f; drawCircle(Tokens.Garden.Special.Colors.petal, r * 0.42f, Offset(c.x + cos(a) * r * 0.5f, c.y + sin(a) * r * 0.5f)) }
-                    drawCircle(Tokens.Garden.Special.Colors.heart, r * 0.32f, c)
-                    drawCircle(ink.copy(alpha = 0.6f), r * 0.32f, c, style = Stroke(u * 0.5f))
+                    // 마음의 기록 꽃과 같은 손그림 모양: 잎 수 · 크기 · 기울기가 칸마다 조금씩 달라
+                    val fl = flowerShapes.getOrPut(i) { StarGarden.flowerPath(i * 131 + 17) to StarGarden.blobPath(i * 131 + 20, 7, 0.2f) }
+                    withTransform({ translate(c.x, c.y); rotate((i * 47 % 360).toFloat(), Offset.Zero); scale(r * 0.95f, r * 0.95f, Offset.Zero) }) {
+                        drawPath(fl.first, Tokens.Garden.Special.Colors.petal)
+                        drawPath(fl.first, ink.copy(alpha = 0.35f), style = Stroke(u * 0.5f / (r * 0.95f)))
+                        withTransform({ scale(0.34f, 0.34f, Offset.Zero) }) {
+                            drawPath(fl.second, Tokens.Garden.Special.Colors.heart)
+                            drawPath(fl.second, ink.copy(alpha = 0.6f), style = Stroke(u * 0.5f / (r * 0.95f * 0.34f)))
+                        }
+                    }
                 }
             }
         }

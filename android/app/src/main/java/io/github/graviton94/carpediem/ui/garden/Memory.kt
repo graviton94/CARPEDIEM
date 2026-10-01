@@ -1,5 +1,6 @@
 package io.github.graviton94.carpediem.ui.garden
 
+import io.github.graviton94.carpediem.ui.GardenAlert
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
@@ -23,7 +24,6 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
@@ -186,7 +186,7 @@ private fun MemoryStone(state: AppState, m: Person, today: LocalDate, seed: Int)
         }
         if (full) TokenText(stringResource(R.string.memory_backFull), Tokens.TypeScale.caption1, color = p.secondary)
     }
-    if (confirmRemove) AlertDialog(
+    if (confirmRemove) GardenAlert(
         onDismissRequest = { confirmRemove = false },
         title = { Text(stringResource(R.string.memory_removeConfirm, m.name)) },
         confirmButton = { TextButton(onClick = { confirmRemove = false; state.removeMemory(m.id) }) { Text(stringResource(R.string.stone_removeAction), color = p.danger) } },

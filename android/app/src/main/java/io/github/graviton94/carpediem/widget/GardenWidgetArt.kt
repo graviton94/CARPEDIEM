@@ -76,11 +76,14 @@ object GardenWidgetArt {
             val day = hour in Tokens.Garden.Motion.sunrise..Tokens.Garden.Motion.sunset
             val t = if (day) (hour - Tokens.Garden.Motion.sunrise) / (Tokens.Garden.Motion.sunset - Tokens.Garden.Motion.sunrise)
             else ((hour - Tokens.Garden.Motion.sunset + 24f) % 24f) / (24f - (Tokens.Garden.Motion.sunset - Tokens.Garden.Motion.sunrise))
-            val base = h * W.sunArcBase; val top = h * W.sunArcTop; val r = W.sunRadius * u
-            val x = w * 0.14f + (w * 0.72f) * t; val y = base - (base - top) * sin(t * Math.PI).toFloat()
+            // 해 · 달은 늘 땅 위, 가장자리에서도 반쪽이 잘리지 않게 (가로 끝은 반지름만큼 안쪽)
+            val r = W.sunRadius * u
+            val base = minOf(h * W.sunArcBase, gy - r * 1.4f); val top = minOf(h * W.sunArcTop, base - r * 2f).coerceAtLeast(r * 1.2f)
+            val x0 = maxOf(w * 0.14f, r * 1.6f); val span = (w - 2 * x0).coerceAtLeast(0f)
+            val x = x0 + span * t; val y = base - (base - top) * sin(t * Math.PI).toFloat()
             if (kind == Kind.TODAY) {
                 val arc = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE; strokeWidth = u * 1.2f; color = Tokens.Garden.Colors.ink.copy(alpha = 0.35f).toArgb() }
-                val path = android.graphics.Path(); for (i in 0..40) { val tt = i / 40f; val px = w * 0.14f + w * 0.72f * tt; val py = base - (base - top) * sin(tt * Math.PI).toFloat(); if (i == 0) path.moveTo(px, py) else path.lineTo(px, py) }
+                val path = android.graphics.Path(); for (i in 0..40) { val tt = i / 40f; val px = x0 + span * tt; val py = base - (base - top) * sin(tt * Math.PI).toFloat(); if (i == 0) path.moveTo(px, py) else path.lineTo(px, py) }
                 c.drawPath(path, arc)
             }
             c.drawBitmap(asset(context, if (day) "sun.png" else "moon.png"), null, RectF(x - r, y - r, x + r, y + r), paint)

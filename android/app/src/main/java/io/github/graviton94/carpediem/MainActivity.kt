@@ -170,6 +170,8 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                     }
+                    // 짧은 알림 한마디: 어느 화면에서든 같은 자리 · 같은 움직임
+                    io.github.graviton94.carpediem.ui.NoteHost(state.note) { state.note = null }
                 }
             }
         }

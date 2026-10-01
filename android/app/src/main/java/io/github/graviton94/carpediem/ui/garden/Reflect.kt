@@ -1,5 +1,6 @@
 package io.github.graviton94.carpediem.ui.garden
 
+import io.github.graviton94.carpediem.ui.GardenAlert
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -328,7 +329,7 @@ internal fun SpecialDaysRow(state: AppState, birth: LocalDate) {
     }
     if (adding) SpecialDaySheet(state, birth) { adding = false }
     removing?.let { d ->
-        androidx.compose.material3.AlertDialog(
+        GardenAlert(
             onDismissRequest = { removing = null },
             title = { androidx.compose.material3.Text(stringResource(R.string.special_removeConfirm, d.name)) },
             confirmButton = { androidx.compose.material3.TextButton(onClick = { state.removeSpecialDay(d.date); removing = null }) { androidx.compose.material3.Text(stringResource(R.string.special_remove)) } },

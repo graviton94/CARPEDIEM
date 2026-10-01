@@ -31,7 +31,6 @@ import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenu
@@ -424,7 +423,7 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
                     RowDivider()
                     FormRow(stringResource(R.string.lines_export), onClick = {
                         val text = state.exportLines()
-                        if (text.isBlank()) android.widget.Toast.makeText(ctx, ctx.getString(R.string.lines_exportEmpty), android.widget.Toast.LENGTH_SHORT).show()
+                        if (text.isBlank()) state.say(ctx.getString(R.string.lines_exportEmpty))
                         else ctx.startActivity(android.content.Intent.createChooser(android.content.Intent(android.content.Intent.ACTION_SEND).setType("text/plain")
                             .putExtra(android.content.Intent.EXTRA_SUBJECT, ctx.getString(R.string.lines_exportTitle)).putExtra(android.content.Intent.EXTRA_TEXT, text), null))
                     }) {
@@ -435,7 +434,7 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
                     val saveFile = androidx.activity.compose.rememberLauncherForActivityResult(androidx.activity.result.contract.ActivityResultContracts.CreateDocument("application/json")) { uri ->
                         if (uri != null) {
                             val ok = runCatching { ctx.contentResolver.openOutputStream(uri)?.use { it.write(state.store.backup().toByteArray()) } != null }.getOrDefault(false)
-                            android.widget.Toast.makeText(ctx, ctx.getString(if (ok) R.string.backup_saved else R.string.backup_fail), android.widget.Toast.LENGTH_SHORT).show()
+                            state.say(ctx.getString(if (ok) R.string.backup_saved else R.string.backup_fail))
                         }
                     }
                     var restoreFrom by remember { mutableStateOf<android.net.Uri?>(null) }
@@ -444,18 +443,19 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
                     RowDivider()
                     FormRow(stringResource(R.string.backup_import), onClick = { openFile.launch(arrayOf("application/json", "text/plain", "application/octet-stream")) }) {}
                     restoreFrom?.let { uri ->
-                        AlertDialog(
+                        GardenAlert(
                             onDismissRequest = { restoreFrom = null },
                             title = { Text(stringResource(R.string.backup_importConfirm)) },
                             confirmButton = { TextButton(onClick = {
                                 restoreFrom = null
                                 val text = runCatching { ctx.contentResolver.openInputStream(uri)?.use { it.readBytes().decodeToString() } }.getOrNull()
                                 if (text != null && state.store.restore(text)) {
-                                    android.widget.Toast.makeText(ctx, ctx.getString(R.string.backup_done), android.widget.Toast.LENGTH_SHORT).show()
+                                    state.say(ctx.getString(R.string.backup_done))
                                     // 새로 들여온 기록으로 처음부터 (알림 · 위젯도 새로)
                                     io.github.graviton94.carpediem.widget.Widgets.refresh(ctx)
-                                    (ctx as? android.app.Activity)?.recreate()
-                                } else android.widget.Toast.makeText(ctx, ctx.getString(R.string.backup_fail), android.widget.Toast.LENGTH_SHORT).show()
+                                    // 한마디를 잠깐 보인 뒤에
+                                    android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({ (ctx as? android.app.Activity)?.recreate() }, (Tokens.Garden.Motion.noteMs / 2).toLong())
+                                } else state.say(ctx.getString(R.string.backup_fail))
                             }) { Text(stringResource(R.string.backup_importAction), color = p.danger) } },
                             dismissButton = { TextButton(onClick = { restoreFrom = null }) { Text(stringResource(R.string.cancel)) } },
                         )
@@ -480,7 +480,7 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
                         }) {}
                     }
                 }
-                if (confirmClear) AlertDialog(
+                if (confirmClear) GardenAlert(
                     onDismissRequest = { confirmClear = false },
                     title = { Text(stringResource(R.string.lines_clearConfirm)) },
                     confirmButton = { TextButton(onClick = { confirmClear = false; state.clearLines() }) { Text(stringResource(R.string.lines_clearAction), color = p.danger) } },
@@ -496,6 +496,18 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
                     }
                 }
             }
+            // 둘 수 있는 위젯 (정원): 이름과 한 줄
+            if (state.design == Design.GARDEN) FormSection(header = stringResource(R.string.widgets_list)) {
+                listOf(R.string.widgets_name_daysLeft to R.string.widget_daysLeft_desc, R.string.widgets_name_today to R.string.widget_today_desc,
+                    R.string.widgets_name_calendar to R.string.widget_calendar_desc, R.string.widgets_name_family to R.string.widget_family_desc,
+                    R.string.widgets_name_record to R.string.widget_record_desc).forEachIndexed { i, (name, desc) ->
+                    if (i > 0) RowDivider()
+                    Column(Modifier.padding(vertical = Tokens.Space.sp3), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
+                        TokenText(stringResource(name), Tokens.TypeScale.subhead, weight = FontWeight.SemiBold)
+                        TokenText(stringResource(desc), Tokens.TypeScale.footnote, color = p.secondary)
+                    }
+                }
+            }
             FormSection {
                 FormRow(stringResource(R.string.support), onClick = onSupport) {
                     Icon(Icons.Filled.KeyboardArrowRight, null, tint = p.secondary)
@@ -505,11 +517,11 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
                 FormRow(stringResource(R.string.erase), onClick = { confirmErase = true }) {}
             }
             // 맨 아래: 웹사이트 바닥글처럼 소개 · 문의 · 고지사항, 그 아래 버전 (여러 번 누르면 개발자 모드)
-            SettingsFooter(onVersionTap = { if (!state.devMode) { state.unlockDev(); android.widget.Toast.makeText(ctx, ctx.getString(R.string.dev_unlocked), android.widget.Toast.LENGTH_SHORT).show() } })
+            SettingsFooter(onVersionTap = { if (!state.devMode) { state.unlockDev(); state.say(ctx.getString(R.string.dev_unlocked)) } })
         }
     }
     if (confirmErase) {
-        AlertDialog(
+        GardenAlert(
             onDismissRequest = { confirmErase = false },
             title = { Text(stringResource(R.string.erase_confirm)) },
             confirmButton = { TextButton(onClick = { confirmErase = false; state.eraseAll(); onClose() }) { Text(stringResource(R.string.erase_action), color = p.danger) } },
@@ -583,7 +595,7 @@ private fun SettingsFooter(onVersionTap: () -> Unit) {
     }
     page?.let { pg ->
         val email = stringResource(R.string.contact_email)
-        AlertDialog(
+        GardenAlert(
             onDismissRequest = { page = null },
             title = { Text(stringResource(when (pg) { FooterPage.ABOUT -> R.string.app_name; FooterPage.CONTACT -> R.string.footer_contact; FooterPage.NOTICES -> R.string.footer_notices })) },
             text = {

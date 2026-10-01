@@ -63,6 +63,9 @@ object ShareCards {
         return l.height.toFloat()
     }
 
+    private fun measure(s: String, tp: TextPaint, width: Int): Float =
+        StaticLayout.Builder.obtain(s, 0, s.length, tp, width).setLineSpacing(0f, 1.25f).build().height.toFloat()
+
     private fun haru(c: Canvas, seed: Long, cx: Float, groundY: Float, widthPx: Float) {
         val art = HaruArt.of(seed, false)
         val k = widthPx / art.meta.bbox.width
@@ -117,48 +120,33 @@ object ShareCards {
         val w = S.yearW.toInt(); val h = S.yearH.toInt(); val pad = S.pad
         val (b, c) = board(w, h, night)
         val fg = if (night) Y.plain.toArgb() else ink; val soft = if (night) Y.plain.copy(alpha = 0.7f).toArgb() else inkSoft
+        val tw = (w - pad * 2).toInt()
+        val titleP = paint(ctx, S.text * 0.9f, fg); val countP = paint(ctx, S.small, soft); val thanksP = paint(ctx, S.small * 1.05f, fg); val lp = paint(ctx, S.small * 0.75f, soft)
+        // 아래 글 (한 줄 수 · 고마움) 은 먼저 재어 두고, 열두 칸은 남은 자리 한가운데에 (글과 그림이 겹치지 않게)
+        val footY = h - pad * 1.25f
+        val below = measure(count, countP, tw) + pad * 0.3f + thanks.sumOf { (measure("“$it”", thanksP, tw) + pad * 0.15f).toDouble() }.toFloat()
         var y = pad * 1.2f
-        y += text(c, title, paint(ctx, S.text * 0.9f, fg), pad, y, (w - pad * 2).toInt()) + pad * 0.2f
-        y += text(c, sub, paint(ctx, S.small, soft), pad, y, (w - pad * 2).toInt()) + pad * 0.4f
-        // 판은 아래 글 · 이름과 겹치지 않는 만큼만 (넘치면 가운데로 줄임)
-        val avail = h - pad * 1.8f - y
-        val gh = minOf((w - pad * 2) / Tokens.Garden.Year.monthAspect, avail); val gw = gh * Tokens.Garden.Year.monthAspect
-        val gx = (w - gw) / 2f
-        val dots = StarGarden.month(book, days, install)
-        drawCompose(c, gx, y, gw, gh) {
-            if (night) nightSky() else meadow()
-            monthIn(androidx.compose.ui.geometry.Rect(androidx.compose.ui.geometry.Offset.Zero, size), dots, night, today, MONTH_SIZES)
-        }
-        text(c, ctx.getString(R.string.share_footer), paint(ctx, S.small * 0.8f, soft), pad, h - pad * 1.25f, (w - pad * 2).toInt())
-        return b
-    }
-
-    /** 한 해의 정원: 열두 달의 별자리를 4 × 3 칸에, 한 줄 · 고마움 수, 고마움 한 줄 몇 개. */
-    fun year(ctx: Context, book: io.github.graviton94.carpediem.core.ConstellationBook, days: List<Pair<LocalDate, DayLine?>>, install: Long, night: Boolean, today: LocalDate, title: String, count: String, thanks: List<String>): Bitmap {
-        val w = S.yearW.toInt(); val h = S.yearH.toInt(); val pad = S.pad
-        val (b, c) = board(w, h, night)
-        val fg = if (night) Y.plain.toArgb() else ink; val soft = if (night) Y.plain.copy(alpha = 0.7f).toArgb() else inkSoft
-        var y = pad * 1.2f
-        y += text(c, title, paint(ctx, S.text * 0.9f, fg), pad, y, (w - pad * 2).toInt()) + pad * 0.4f
-        // 열두 칸은 아래 글 (한 줄 수 · 고마움 몇 줄) 과 이름에 닿지 않는 만큼만
-        val label = S.small * 1.3f
-        val reserve = S.small * 1.7f * (1 + thanks.size) + pad * 2.2f
-        val rowH = (h - y - reserve) / 3f
-        val cw = minOf((w - pad * 2) / 4f, (rowH - label) * Tokens.Garden.Year.monthAspect); val ch = cw / Tokens.Garden.Year.monthAspect
-        val gw = cw * 4; val gx = (w - gw) / 2f
+        y += text(c, title, titleP, pad, y, tw) + pad * 0.5f
+        val gridTop = y; val gridBottom = footY - pad * 0.4f - below - pad * 0.5f
+        val gap = pad * 0.18f; val label = lp.textSize * 1.6f
+        val cw = minOf((w - pad * 2 - gap * 3) / 4f, ((gridBottom - gridTop - gap * 2) / 3f - label) * Tokens.Garden.Year.monthAspect).coerceAtLeast(1f)
+        val ch = cw / Tokens.Garden.Year.monthAspect
+        val gw = cw * 4 + gap * 3; val gh = (ch + label) * 3 + gap * 2
+        val gx = (w - gw) / 2f; val gy = gridTop + ((gridBottom - gridTop) - gh).coerceAtLeast(0f) / 2f
         val months = days.groupBy { it.first.monthValue }
-        drawCompose(c, gx, y, gw, (ch + label) * 3) {
-            if (night) nightSky() else meadow()
-            months.forEach { (m, ds) ->
-                val r = androidx.compose.ui.geometry.Rect(((m - 1) % 4) * cw, ((m - 1) / 4) * (ch + label), ((m - 1) % 4 + 1) * cw, ((m - 1) / 4) * (ch + label) + ch)
-                monthIn(r, StarGarden.month(book, ds, install), night, today, TILE_SIZES)
+        val loc = ctx.resources.configuration.locales[0]
+        (1..12).forEach { m ->
+            val x = gx + ((m - 1) % 4) * (cw + gap); val ty = gy + ((m - 1) / 4) * (ch + label + gap)
+            // 한 칸씩 둥근 판: 그 달의 정원 (낮) · 은하수 (밤)
+            drawCompose(c, x, ty, cw, ch) {
+                if (night) nightSky() else meadow()
+                months[m]?.let { ds -> monthIn(androidx.compose.ui.geometry.Rect(0f, 0f, cw, ch), StarGarden.month(book, ds, install), night, today, TILE_SIZES) }
             }
+            text(c, java.time.Month.of(m).getDisplayName(java.time.format.TextStyle.SHORT_STANDALONE, loc), lp, x, ty + ch + label * 0.15f, cw.toInt())
         }
-        val lp = paint(ctx, S.small * 0.75f, soft)
-        (1..12).forEach { m -> text(c, java.time.Month.of(m).getDisplayName(java.time.format.TextStyle.SHORT_STANDALONE, ctx.resources.configuration.locales[0]), lp, gx + ((m - 1) % 4) * cw, y + ((m - 1) / 4) * (ch + label) + ch, cw.toInt()) }
-        y += (ch + label) * 3 + pad * 0.4f
-        y += text(c, count, paint(ctx, S.small, soft), pad, y, (w - pad * 2).toInt()) + pad * 0.3f
-        thanks.forEach { t -> y += text(c, "“$t”", paint(ctx, S.small * 1.05f, fg), pad, y, (w - pad * 2).toInt()) + pad * 0.15f }
+        y = footY - pad * 0.4f - below
+        y += text(c, count, countP, pad, y, tw) + pad * 0.3f
+        thanks.forEach { t -> y += text(c, "“$t”", thanksP, pad, y, tw) + pad * 0.15f }
         text(c, ctx.getString(R.string.share_footer), paint(ctx, S.small * 0.8f, soft), pad, h - pad * 1.25f, (w - pad * 2).toInt())
         return b
     }
