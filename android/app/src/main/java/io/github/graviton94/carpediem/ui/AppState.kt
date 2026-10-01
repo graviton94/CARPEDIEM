@@ -246,6 +246,8 @@ class AppState(private val context: Context) {
     var debugOpenMonth = false
     /** 홈에서 보던 페이지 (0 정원 · 1 기록 · 2 추억 · 3 흐름). 돌 페이지 등에서 돌아오면 그 페이지로. 캡처용으로 처음 페이지를 정하기도. */
     var homePage = 0
+    /** 알림에서 열 마음의 기록 판 (홈이 처음 그릴 때 한 번 씀). */
+    var pendingRecord: io.github.graviton94.carpediem.ui.garden.RecordView? = null
     /** 시험용 (개발자 모드 · 캡처): 오늘이 12월 31일 ~ 1월 7일이면 그 해에 여러 마음을 흩어 놓아 한 해의 정원이 피게. */
     fun addSampleYear(today: LocalDate = nowDate()) {
         val y = Lines.yearDue(today) ?: return

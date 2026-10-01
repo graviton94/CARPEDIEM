@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
@@ -197,7 +199,8 @@ fun CrayonBar(value: Float, color: Color, modifier: Modifier = Modifier, seed: I
  * sharedFrom: 이 칸부터 지금까지는 ‘함께한’ 칸 (호박빛 테두리). showAhead = false 면 남은 칸을 그리지 않는다 (가족의 달력).
  */
 @Composable
-fun CrayonCalendar(total: Int, filled: Int, columns: Int, modifier: Modifier = Modifier, sharedFrom: Int = Int.MAX_VALUE, showAhead: Boolean = true, flowers: Set<Int> = emptySet()) {
+fun CrayonCalendar(total: Int, filled: Int, columns: Int, modifier: Modifier = Modifier, sharedFrom: Int = Int.MAX_VALUE, showAhead: Boolean = true, flowers: Set<Int> = emptySet(),
+                   onCell: ((Int, Offset) -> Unit)? = null) {
     val ctx = LocalContext.current
     val u = with(LocalDensity.current) { Theme.unit.toPx() }
     val mask = Crayon.tooth(GardenArt.toothFill(ctx), u)
@@ -205,7 +208,15 @@ fun CrayonCalendar(total: Int, filled: Int, columns: Int, modifier: Modifier = M
     val rows = max(1, ceil(max(shown, 1) / columns.toFloat()).toInt())
     val L = Tokens.Garden.Layout
     val inkC = Theme.gc.ink; val futureC = Theme.gc.future
-    Spacer(modifier.fillMaxWidth().aspectRatio(columns / rows.toFloat()).drawWithCache {
+    // 칸을 누르면 (꽃이 있는 칸이면 말풍선): 몇 번째 칸인지와 그 칸의 가운데 (px)
+    val tap = if (onCell == null) Modifier else Modifier.pointerInput(total, columns, rows) {
+        detectTapGestures { pos ->
+            val cell = min(size.width / columns.toFloat(), size.height / rows.toFloat())
+            val i = (pos.y / cell).toInt() * columns + (pos.x / cell).toInt()
+            if (i in 0 until total) onCell(i, Offset((i % columns + 0.5f) * cell, (i / columns + 0.5f) * cell))
+        }
+    }
+    Spacer(modifier.fillMaxWidth().aspectRatio(columns / rows.toFloat()).then(tap).drawWithCache {
         val cell = min(size.width / columns, size.height / rows)
         val r = Crayon.Rng(860)
         val season = List(4) { Path() }; val now = Path(); val ahead = Path(); val shared = Path()

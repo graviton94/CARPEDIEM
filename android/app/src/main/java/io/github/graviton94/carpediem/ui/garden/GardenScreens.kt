@@ -56,6 +56,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.ui.semantics.selected
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.pager.HorizontalPager
@@ -160,7 +163,7 @@ internal fun shortName(n: String): String { val max = G.Family.nameChars.toInt()
 
 // ───────────────────────── 홈 = 정원 ─────────────────────────
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
 @Composable
 fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSettings: () -> Unit, onCollection: () -> Unit, onSupport: () -> Unit, onStone: (String?) -> Unit, onAddPerson: () -> Unit,
                onBreath: (BreathKind, Int, Sound) -> Unit = { _, _, _ -> }, onGaze: () -> Unit = {}, bare: Boolean = false, onLook: () -> Unit = {}, onMemory: () -> Unit = {}) {
@@ -184,12 +187,17 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
     val pager = rememberPagerState(initialPage = if (bare) 0 else state.homePage.coerceIn(0, 3)) { if (bare) 1 else 4 }
     if (!bare) LaunchedEffect(pager) { snapshotFlow { pager.currentPage }.collect { state.homePage = it } }
     val scope = rememberCoroutineScope()
-    var recordView by remember { mutableStateOf(if (state.debugOpenYear) RecordView(state.yearDue(now.toLocalDate()) ?: now.year, null) else RecordView(now.year, now.monthValue)) }
+    var recordView by remember { mutableStateOf(state.pendingRecord?.also { state.pendingRecord = null } ?: if (state.debugOpenYear) RecordView(state.yearDue(now.toLocalDate()) ?: now.year, null) else RecordView(now.year, now.monthValue)) }
+    // 정원이 아닌 페이지에서 뒤로 가기: 앱을 닫지 않고 정원으로
+    BackHandler(enabled = !bare && pager.currentPage != 0) { scope.launch { pager.animateScrollToPage(0) } }
+    // 글을 쓰는 동안 (키보드가 떠 있으면) 옆으로 넘어가지 않고, 이름표도 쉬게
+    val typing = WindowInsets.isImeVisible
     fun toRecord(v: RecordView) { recordView = v; scope.launch { pager.animateScrollToPage(2) } }
 
     Box(Modifier.fillMaxSize().paperBackground()) {
       Column(Modifier.fillMaxSize()) {
-        HorizontalPager(pager, Modifier.weight(1f).fillMaxWidth(), beyondViewportPageCount = 1) { page ->
+        // 보이지 않는 페이지는 그리지 않는다 (반짝임 · 살랑임이 화면 밖에서 돌지 않게). 쓰던 글은 rememberSaveable 로 남음
+        HorizontalPager(pager, Modifier.weight(1f).fillMaxWidth(), beyondViewportPageCount = 0, userScrollEnabled = !bare && !typing) { page ->
           when (page) {
             1 -> WritePage(state, now)
             2 -> MemoriesPage(state, profile, now, recordView, { recordView = it }, onMemory)
@@ -370,7 +378,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
             }
           }
         }
-        if (!bare) PageTabs(pager.currentPage) { scope.launch { pager.animateScrollToPage(it) } }
+        if (!bare && !typing) PageTabs(pager.currentPage) { scope.launch { pager.animateScrollToPage(it) } }
       }
         // 한 줄을 보낸 뒤: 깃털이 내려오며 한마디 창
         if (!bare) LetGoModal(state, Modifier.fillMaxSize()) { c ->
@@ -489,10 +497,31 @@ private fun FlowPage(state: AppState, profile: LifeProfile, now: LocalDateTime) 
                 val cols = when (state.grid) { GridScale.WEEKS -> Tokens.Grid.weeksColumns; GridScale.MONTHS -> Tokens.Grid.monthsColumns; GridScale.YEARS -> Tokens.Grid.yearsColumns }
                 // 칸이 수천 개라 한 번 그려 두고(레이어) 넘길 때는 옮기기만 한다
                 // 특별한 날 꽃: 그날이 든 칸 (그날까지 지나온 단위 수)
-                val flowers = remember(state.specialDays, state.grid, profile) {
-                    state.specialDays.map { d -> LifeSnapshot(profile.birthDate, s.expectancy, d.date.atStartOfDay()).lived(state.grid.unit) }.toSet()
+                val byCell = remember(state.specialDays, state.grid, profile) {
+                    state.specialDays.groupBy { d -> LifeSnapshot(profile.birthDate, s.expectancy, d.date.atStartOfDay()).lived(state.grid.unit) }
                 }
-                CrayonCalendar(s.total(state.grid.unit), s.lived(state.grid.unit), cols, Modifier.graphicsLayer(), flowers = flowers)
+                // 꽃이 있는 칸을 누르면 그 칸 위에 작은 말풍선 (이름 · 날짜), 다시 누르거나 다른 칸을 누르면 닫힘
+                var bubble by remember(state.grid) { mutableStateOf<Pair<Int, Offset>?>(null) }
+                val density = LocalDensity.current
+                Box(Modifier.fillMaxWidth()) {
+                    CrayonCalendar(s.total(state.grid.unit), s.lived(state.grid.unit), cols, Modifier.graphicsLayer(), flowers = byCell.keys) { i, at ->
+                        bubble = if (bubble?.first == i || i !in byCell) null else i to at
+                    }
+                    bubble?.let { (i, at) ->
+                        val fmt = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
+                        val text = byCell[i].orEmpty().joinToString("\n") { "${it.name} · ${it.date.format(fmt)}" }
+                        var w by remember { mutableStateOf(0) }
+                        BoxWithConstraints(Modifier.fillMaxWidth()) {
+                            val maxX = with(density) { maxWidth.toPx() } - w
+                            Box(Modifier.offset { androidx.compose.ui.unit.IntOffset((at.x - w / 2f).coerceIn(0f, maxX.coerceAtLeast(0f)).toInt(), (at.y + with(density) { (Theme.unit * 6).toPx() }).toInt()) }
+                                .onGloballyPositioned { w = it.size.width }
+                                .crayonBox(Theme.gc.paper, G.Radius.chip, G.Stroke.chip, 1420 + i).clickable { bubble = null }
+                                .padding(horizontal = Tokens.Space.sp3, vertical = Tokens.Space.sp2)) {
+                                TokenText(text, Tokens.TypeScale.footnote, weight = FontWeight.SemiBold)
+                            }
+                        }
+                    }
+                }
                 TokenText(stringResource(R.string.calendar_legend, Labels.season(ctx, season)), Tokens.TypeScale.caption1, color = p.secondary)
                 SpecialDaysRow(state, profile.birthDate)
     }

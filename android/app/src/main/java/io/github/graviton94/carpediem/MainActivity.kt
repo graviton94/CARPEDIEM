@@ -77,7 +77,11 @@ private sealed interface Screen {
 }
 
 class MainActivity : ComponentActivity() {
-    companion object { const val EXTRA_MORNING_BREATH = "carpediem.morningBreath" }
+    companion object {
+        const val EXTRA_MORNING_BREATH = "carpediem.morningBreath"
+        /** 알림을 누르면 열 곳: letter · write · flow · month:2026-9 · year:2026 · stone:<id> */
+        const val EXTRA_OPEN = "carpediem.open"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -86,7 +90,7 @@ class MainActivity : ComponentActivity() {
         val start = (if (BuildConfig.DEBUG) debugSetup(state) else Screen.Main).let { s ->
             // 아침 알림에서 왔으면 하루를 여는 숨 1분
             if (intent?.getBooleanExtra(EXTRA_MORNING_BREATH, false) == true && state.profile != null) Screen.Breathe(BreathKind.CALM, 1, state.sound, Screen.Main) else s
-        }
+        }.let { s -> openFrom(intent?.getStringExtra(EXTRA_OPEN), state) ?: s }
         setContent {
             BoxWithConstraints {
                 val screenW = maxWidth
@@ -225,4 +229,19 @@ private fun MainActivity.debugSetup(state: AppState): Screen {
         ).forEach { state.savePerson(it) }
     }
     return when (x.getStringExtra("cd.screen")) { "settings" -> Screen.Settings; "widgets" -> Screen.WidgetPreview; "collection" -> Screen.Collection(Screen.Main); "support" -> Screen.Support(Screen.Main); "stone" -> Screen.Stone(x.getStringExtra("cd.stoneId") ?: state.people.firstOrNull()?.id, Screen.Main); "add" -> Screen.AddPerson(null, Screen.Main); "breath" -> Screen.Breathe(BreathKind.CALM, 1, Sound.WAVES, Screen.Main); "gaze" -> Screen.Gaze(Screen.Main); "look" -> Screen.Look(Screen.Main); "thanks" -> Screen.Breathe(BreathKind.THANKS, 1, Sound.SEASON, Screen.Main); "memory" -> Screen.Memory(Screen.Collection(Screen.Main)); else -> Screen.Main }
+}
+
+/** 알림에서 왔을 때 열 곳. 홈 안의 페이지 · 판은 state 에 적어 두고 (홈이 처음 그릴 때 씀), 돌 페이지는 그 화면으로. */
+private fun openFrom(open: String?, state: AppState): Screen? {
+    if (open == null || state.profile == null) return null
+    val (kind, arg) = open.split(':', limit = 2).let { it[0] to it.getOrNull(1) }
+    when (kind) {
+        "letter" -> { state.homePage = 0; state.debugOpenLetter = true }
+        "write" -> state.homePage = 1
+        "flow" -> state.homePage = 3
+        "month" -> arg?.split('-')?.mapNotNull { it.toIntOrNull() }?.takeIf { it.size == 2 }?.let { (y, m) -> state.homePage = 2; state.pendingRecord = io.github.graviton94.carpediem.ui.garden.RecordView(y, m); state.openMonth(y, m) }
+        "year" -> arg?.toIntOrNull()?.let { y -> state.homePage = 2; state.pendingRecord = io.github.graviton94.carpediem.ui.garden.RecordView(y, null); state.openYear(y) }
+        "stone" -> return arg?.takeIf { id -> state.people.any { it.id == id } }?.let { Screen.Stone(it, Screen.Main) }
+    }
+    return null
 }
