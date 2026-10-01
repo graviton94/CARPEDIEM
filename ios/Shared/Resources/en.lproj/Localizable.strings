@@ -122,7 +122,7 @@
 "obj.cairn.line" = "A hundred days, stacked slowly.";
 "obj.pine" = "Little pine";
 "obj.pine.when" = "One year together";
-"obj.pine.line" = "A small tree that weathered a year.";
+"obj.pine.line" = "A small tree that grew with you for a year.";
 "obj.flower" = "Wildflower";
 "obj.flower.when" = "Spring arrived";
 "obj.flower.line" = "Spring comes without a sound.";
@@ -138,9 +138,9 @@
 "obj.dandelion" = "Dandelion seeds";
 "obj.dandelion.when" = "New Year's Day";
 "obj.dandelion.line" = "The new year rides in on the wind.";
-"obj.feather" = "A feather";
-"obj.feather.when" = "First turned page";
-"obj.feather.line" = "A page turned lightly.";
+"obj.bookmark" = "A bookmark";
+"obj.bookmark.when" = "First turned page";
+"obj.bookmark.line" = "A page turned lightly.";
 "obj.snail" = "Slow snail";
 "obj.snail.when" = "Coming back";
 "obj.snail.line" = "Slow is fine.";
@@ -148,7 +148,10 @@
 "obj.acorn.when" = "Your season changed";
 "obj.acorn.line" = "A season has turned.";
 "notify.channel" = "Today's words";
-"notify.keepsake" = "New in your garden: %1$@";
+"notify.channelEvening" = "Close of the day";
+"notify.channelDays" = "Birthdays · special days";
+"notify.mineBirthdayText" = "Haru is wearing a party hat too.";
+"notify.keepsake" = "%1$@ is in your garden now";
 "notify.row" = "Morning note";
 "notify.footer" = "One line of words at 7 each morning.";
 "dev.unlocked" = "Developer mode on.";
@@ -207,7 +210,7 @@
 "recall.open" = "Open";
 "recall.close" = "Let it go again";
 "recall.notify" = "A line from %1$@ yr ago came back";
-"recall.notifyText" = "Open the app and read it quietly.";
+"recall.notifyText" = "Open it quietly in the garden.";
 "recall.sample" = "May this be a year of smiling at small things.";
 "recall.addSample" = "Test: add a line from a year ago";
 "lines" = "Today's line";
@@ -355,7 +358,7 @@
 "letters" = "Letters";
 "letters.sub" = "One arrives each season.";
 "notify.letter" = "A letter for %1$@ has arrived";
-"notify.letterText" = "Open the app and read it slowly.";
+"notify.letterText" = "Read it slowly in the garden.";
 "letter.sample1" = "The tangerines Mom packed were sweet.";
 "letter.sample2" = "A little slower this year.";
 "letter.sample3" = "Worried about the presentation.";
@@ -439,7 +442,7 @@
 "look.done.morning" = "A clear, long look.";
 "look.done.night" = "A good long look at the night.";
 "notify.evening" = "Today’s line";
-"notify.eveningText" = "Shall we send today off in a line?";
+"notify.eveningText" = "Leave today in a line?";
 "notify.eveningRow" = "End-of-day note";
 "notify.eveningFooter" = "At 10 pm. Quiet on days you’ve written.";
 "notify.morningBreath" = "Tap the morning reminder for a minute of opening breath";
@@ -503,7 +506,7 @@
 "notify.tomorrowFooter" = "7 pm the day before, 9 am on the day.";
 "notify.tomorrowBirthday" = "Tomorrow is %1$@’s birthday";
 "notify.tomorrowBirthdayText" = "A card can go out early.";
-"notify.tomorrowSpecial" = "Tomorrow: %1$@, %2$@ yr ago";
+"notify.tomorrowSpecial" = "Tomorrow, ‘%1$@’ turns %2$@ years";
 "notify.tomorrowSpecialText" = "A flower waits on your calendar.";
 "notify.gardenText" = "Take a slow look.";
 "bday.tomorrow" = "Tomorrow is %1$@’s birthday";
@@ -512,7 +515,7 @@
 "bday.mineToday" = "Happy birthday";
 "stone.birthdayTomorrow" = "Tomorrow";
 "notify.todayBirthdayText" = "A birthday card, from the garden.";
-"notify.todaySpecial" = "Today: %1$@, %2$@ yr ago";
+"notify.todaySpecial" = "Today, ‘%1$@’ turns %2$@ years";
 "dev.notify" = "Test: send all three notes now";
 "tab.garden" = "Garden";
 "tab.write" = "Journal";

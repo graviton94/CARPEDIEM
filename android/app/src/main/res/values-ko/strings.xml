@@ -124,7 +124,7 @@
     <string name="obj_cairn_line">천천히 쌓아 온 백 날.</string>
     <string name="obj_pine">작은 소나무</string>
     <string name="obj_pine_when">함께한 지 1년</string>
-    <string name="obj_pine_line">한 해를 견딘 작은 나무.</string>
+    <string name="obj_pine_line">한 해를 함께 자란 작은 나무.</string>
     <string name="obj_flower">들꽃 한 송이</string>
     <string name="obj_flower_when">봄이 온 날</string>
     <string name="obj_flower_line">봄은 소리 없이 와요.</string>
@@ -140,9 +140,9 @@
     <string name="obj_dandelion">민들레 홀씨</string>
     <string name="obj_dandelion_when">새해 첫날</string>
     <string name="obj_dandelion_line">새해가 바람을 타고 와요.</string>
-    <string name="obj_feather">깃털 하나</string>
-    <string name="obj_feather_when">처음 문장을 넘긴 날</string>
-    <string name="obj_feather_line">가볍게 넘긴 한 장.</string>
+    <string name="obj_bookmark">책갈피 하나</string>
+    <string name="obj_bookmark_when">처음 문장을 넘긴 날</string>
+    <string name="obj_bookmark_line">가볍게 넘긴 한 장.</string>
     <string name="obj_snail">느린 달팽이</string>
     <string name="obj_snail_when">오랜만에 돌아온 날</string>
     <string name="obj_snail_line">느려도 괜찮아요.</string>
@@ -150,7 +150,10 @@
     <string name="obj_acorn_when">인생의 계절이 바뀐 날</string>
     <string name="obj_acorn_line">계절이 한 칸 넘어갔어요.</string>
     <string name="notify_channel">오늘의 문장</string>
-    <string name="notify_keepsake">정원에 새로 놓인 것: %1$s</string>
+    <string name="notify_channelEvening">하루 정리</string>
+    <string name="notify_channelDays">생일 · 특별한 날</string>
+    <string name="notify_mineBirthdayText">정원의 하루도 고깔을 썼어요.</string>
+    <string name="notify_keepsake">%1$s 정원에 놓였어요</string>
     <string name="notify_row">아침 알림</string>
     <string name="notify_footer">아침 7시, 오늘의 문장 하나.</string>
     <string name="dev_unlocked">개발자 모드를 켰어요.</string>
@@ -209,7 +212,7 @@
     <string name="recall_open">펼쳐 보기</string>
     <string name="recall_close">다시 보내기</string>
     <string name="recall_notify">%1$s년 전 오늘의 한 줄이 돌아왔어요</string>
-    <string name="recall_notifyText">앱을 열어 조용히 읽어 보세요.</string>
+    <string name="recall_notifyText">정원에서 조용히 펼쳐 보세요.</string>
     <string name="recall_sample">작은 일에도 웃을 수 있는 한 해가 되기를.</string>
     <string name="recall_addSample">시험: 1년 전 오늘 한 줄 넣기</string>
     <string name="lines">오늘의 한 줄</string>
@@ -357,7 +360,7 @@
     <string name="letters">받은 편지</string>
     <string name="letters_sub">계절마다 한 통씩 쌓여요.</string>
     <string name="notify_letter">%1$s의 편지가 도착했어요</string>
-    <string name="notify_letterText">앱을 열어 천천히 읽어 보세요.</string>
+    <string name="notify_letterText">정원에서 천천히 읽어 보세요.</string>
     <string name="letter_sample1">엄마가 싸 준 귤이 달았다.</string>
     <string name="letter_sample2">올해는 조금 더 천천히.</string>
     <string name="letter_sample3">발표가 걱정된다.</string>
@@ -441,7 +444,7 @@
     <string name="look_done_morning">맑게 바라봤어요.</string>
     <string name="look_done_night">창밖의 밤을 잘 바라봤어요.</string>
     <string name="notify_evening">오늘의 한 줄</string>
-    <string name="notify_eveningText">오늘 하루를 한 줄로 떠나보낼까요?</string>
+    <string name="notify_eveningText">오늘 하루, 한 줄로 남겨 볼까요?</string>
     <string name="notify_eveningRow">하루 정리 알림</string>
     <string name="notify_eveningFooter">밤 10시. 한 줄을 남긴 날은 조용히.</string>
     <string name="notify_morningBreath">아침 알림을 누르면 1분, 하루를 여는 숨</string>
@@ -505,7 +508,7 @@
     <string name="notify_tomorrowFooter">전날 저녁 7시, 그날 아침 9시.</string>
     <string name="notify_tomorrowBirthday">내일은 %1$s 생일이에요</string>
     <string name="notify_tomorrowBirthdayText">생일 카드를 미리 보내도 좋아요.</string>
-    <string name="notify_tomorrowSpecial">내일은 %1$s, %2$s년 전 그날이에요</string>
+    <string name="notify_tomorrowSpecial">내일은 ‘%1$s’ %2$s년이 되는 날이에요</string>
     <string name="notify_tomorrowSpecialText">인생 달력에 꽃이 피어 있어요.</string>
     <string name="notify_gardenText">천천히 둘러보세요.</string>
     <string name="bday_tomorrow">내일은 %1$s 생일이에요</string>
@@ -514,7 +517,7 @@
     <string name="bday_mineToday">생일 축하해요</string>
     <string name="stone_birthdayTomorrow">내일이에요</string>
     <string name="notify_todayBirthdayText">생일 카드 한 장, 정원에서.</string>
-    <string name="notify_todaySpecial">오늘은 %1$s, %2$s년 전 그날이에요</string>
+    <string name="notify_todaySpecial">오늘은 ‘%1$s’ %2$s년이 되는 날이에요</string>
     <string name="dev_notify">시험: 알림 세 가지 지금 보내기</string>
     <string name="tab_garden">정원</string>
     <string name="tab_write">기록</string>

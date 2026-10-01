@@ -17,6 +17,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.background
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -391,8 +394,65 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                     for (k in 0 until spans.size - 1) add(spans[k].second + u * G.Layout.itemGap to spans[k + 1].first - u * G.Layout.itemGap)
                 }
                 val spots = gaps.flatMap { (a0, b0) -> buildList { var c = b0 - box * 0.3f; while (c - box * 0.3f >= a0) { add(c); c -= step } } }
-                moments.zip(spots).forEach { (m, cx) ->
-                    Image(GardenArt.obj(ctx, m.id), stringResource(objName(m.id)), Modifier.offset(cx - box / 2, gy - box * (G.Layout.objGround / G.Layout.objBox)).size(box).let { if (bare) it else it.clickable { open = m } })
+                val ground = G.Layout.objGround / G.Layout.objBox
+                fun tap(m: Moment) = if (bare) Modifier else Modifier.clickable { open = m }
+                fun at(cx: Dp, k: Float = 1f, lift: Dp = 0.dp) = Modifier.offset(cx - box * k / 2, gy - box * k * ground - lift).size(box * k)
+                // 이끼 방석: 자리를 차지하지 않고 하루 밑에 (돌보다 조금 넓게, 돌 뒤에)
+                moments.firstOrNull { it.id == "moss" }?.let { m ->
+                    val mb = (widths[0].toFloat() * 1.35f / 0.676f).dp
+                    Image(GardenArt.obj(ctx, "moss"), stringResource(objName(m.id)), Modifier.offset(xs[0] - mb / 2, gy - mb * ground + mb * 0.03f).size(mb).then(tap(m)))
+                }
+                val earned = moments.filter { it.id != "moss" }
+                // 종이배는 물웅덩이가 있으면 그 위에 (따로 자리를 차지하지 않음)
+                val boat = earned.firstOrNull { it.id == "paperboat" }?.takeIf { earned.any { it.id == "pond" } }
+                val laid = earned.filter { it !== boat }.zip(spots)
+                // 촛불: 생일 날엔 케이크 초가 있어 숨기고, 생일 주간 · 밤에만 불을 켬
+                val today0 = now.toLocalDate()
+                val bday = runCatching { profile.birthDate.withYear(today0.year) }.getOrElse { java.time.LocalDate.of(today0.year, 3, 1) }
+                val sinceBday = java.time.temporal.ChronoUnit.DAYS.between(bday, today0)
+                val candleLit = sinceBday in 1..6 || SkyTime.isDark(now)
+                val moving = remember { !reducedMotion(ctx) }
+                val sway = rememberInfiniteTransition(label = "objects")
+                val spin by sway.animateFloat(0f, 360f, infiniteRepeatable(tween(G.Layout.pinwheelMs.toInt(), easing = androidx.compose.animation.core.LinearEasing)), label = "spin")
+                val swing by sway.animateFloat(-1f, 1f, infiniteRepeatable(tween(G.Layout.chimeMs.toInt(), easing = androidx.compose.animation.core.FastOutSlowInEasing), androidx.compose.animation.core.RepeatMode.Reverse), label = "swing")
+                // 소나무는 크게, 조금 멀리 (맨 먼저 그려 뒤에 둠)
+                laid.sortedBy { if (it.first.id == "pine") 0 else 1 }.forEach { (m, cx) ->
+                    val name = stringResource(objName(m.id))
+                    when (m.id) {
+                        "pine" -> Image(GardenArt.obj(ctx, "pine"), name, at(cx, G.Layout.pineScale, u * 2).then(tap(m)))
+                        "candle" -> if (sinceBday != 0L) Image(GardenArt.obj(ctx, if (candleLit) "candle" else "candle_off"), name, at(cx).then(tap(m)))
+                        "pinwheel" -> Box(at(cx).then(tap(m))) {
+                            Image(GardenArt.obj(ctx, "pinwheel_stick"), name, Modifier.fillMaxSize())
+                            Image(GardenArt.obj(ctx, "pinwheel_blades"), null, Modifier.fillMaxSize().graphicsLayer { transformOrigin = androidx.compose.ui.graphics.TransformOrigin(0.5f, 0.411f); rotationZ = if (moving) spin else 0f })
+                        }
+                        "windchime" -> Box(at(cx).then(tap(m))) {
+                            Image(GardenArt.obj(ctx, "windchime_pole"), name, Modifier.fillMaxSize())
+                            Image(GardenArt.obj(ctx, "windchime_hang"), null, Modifier.fillMaxSize().graphicsLayer { transformOrigin = androidx.compose.ui.graphics.TransformOrigin(0.643f, 0.2615f); rotationZ = if (moving) swing * G.Layout.chimeSwing else 0f })
+                        }
+                        "paperboat" -> Box(at(cx).then(tap(m))) {
+                            Image(GardenArt.obj(ctx, "puddle"), null, Modifier.fillMaxSize())
+                            Image(GardenArt.obj(ctx, "paperboat"), name, Modifier.fillMaxSize().graphicsLayer { translationY = -box.toPx() * 0.02f })
+                        }
+                        "pond" -> {
+                            Image(GardenArt.obj(ctx, "pond"), name, at(cx).then(tap(m)))
+                            boat?.let { b -> Image(GardenArt.obj(ctx, "paperboat"), stringResource(objName(b.id)), at(cx + box * 0.12f, 0.9f, -box * 0.01f).graphicsLayer { translationY = if (moving) swing * 1.2f * density.density else 0f }.then(tap(b))) }
+                        }
+                        // 연은 하늘에 (해 · 달 아래), 땅의 작은 말뚝까지 실 한 줄
+                        "kite" -> {
+                            val kb = box * 1.1f
+                            val ky = maxOf(topBottom + kb / 2 + u * 4, topBottom + (gy - haruAbove - topBottom) * 0.42f)
+                            val kx = cx + box * 0.45f
+                            val inkC = Theme.gc.ink
+                            androidx.compose.foundation.Canvas(Modifier.fillMaxSize()) {
+                                val from = Offset(cx.toPx(), gy.toPx()); val to = Offset(kx.toPx(), (ky - kb / 2 + kb * 0.67f).toPx() + (if (moving) swing * 3f * density.density else 0f))
+                                val path = androidx.compose.ui.graphics.Path().apply { moveTo(from.x, from.y); quadraticTo((from.x + to.x) / 2 + 10f * density.density, (from.y + to.y) / 2 + 14f * density.density, to.x, to.y) }
+                                drawPath(path, inkC.copy(alpha = 0.45f), style = androidx.compose.ui.graphics.drawscope.Stroke(0.9f * density.density))
+                                drawLine(inkC.copy(alpha = 0.8f), from, Offset(from.x, from.y - 5f * density.density), strokeWidth = 2.2f * density.density)
+                            }
+                            Image(GardenArt.obj(ctx, "kite"), name, Modifier.offset(kx - kb / 2, ky - kb / 2).size(kb).graphicsLayer { translationY = if (moving) swing * 3f * density.density else 0f; rotationZ = if (moving) swing * 3f else 0f }.then(tap(m)))
+                        }
+                        else -> Image(GardenArt.obj(ctx, m.id), name, at(cx).then(tap(m)))
+                    }
                 }
 
                 // 돌들: 한 번 누르면 쓰다듬기, 두 번 누르면 그 돌의 페이지
@@ -723,19 +783,19 @@ private fun QuoteText(text: String, shown: Int = Int.MAX_VALUE) {
 internal fun objName(id: String) = when (id) {
     "moss" -> R.string.obj_moss; "teacup" -> R.string.obj_teacup; "cairn" -> R.string.obj_cairn; "pine" -> R.string.obj_pine
     "flower" -> R.string.obj_flower; "pond" -> R.string.obj_pond; "leaf" -> R.string.obj_leaf; "candle" -> R.string.obj_candle
-    "dandelion" -> R.string.obj_dandelion; "feather" -> R.string.obj_feather; "snail" -> R.string.obj_snail
+    "dandelion" -> R.string.obj_dandelion; "bookmark" -> R.string.obj_bookmark; "snail" -> R.string.obj_snail
     "pinwheel" -> R.string.obj_pinwheel; "paperboat" -> R.string.obj_paperboat; "kite" -> R.string.obj_kite; "windchime" -> R.string.obj_windchime; else -> R.string.obj_acorn
 }
 internal fun objWhen(id: String) = when (id) {
     "moss" -> R.string.obj_moss_when; "teacup" -> R.string.obj_teacup_when; "cairn" -> R.string.obj_cairn_when; "pine" -> R.string.obj_pine_when
     "flower" -> R.string.obj_flower_when; "pond" -> R.string.obj_pond_when; "leaf" -> R.string.obj_leaf_when; "candle" -> R.string.obj_candle_when
-    "dandelion" -> R.string.obj_dandelion_when; "feather" -> R.string.obj_feather_when; "snail" -> R.string.obj_snail_when
+    "dandelion" -> R.string.obj_dandelion_when; "bookmark" -> R.string.obj_bookmark_when; "snail" -> R.string.obj_snail_when
     "pinwheel" -> R.string.obj_pinwheel_when; "paperboat" -> R.string.obj_paperboat_when; "kite" -> R.string.obj_kite_when; "windchime" -> R.string.obj_windchime_when; else -> R.string.obj_acorn_when
 }
 internal fun objLine(id: String) = when (id) {
     "moss" -> R.string.obj_moss_line; "teacup" -> R.string.obj_teacup_line; "cairn" -> R.string.obj_cairn_line; "pine" -> R.string.obj_pine_line
     "flower" -> R.string.obj_flower_line; "pond" -> R.string.obj_pond_line; "leaf" -> R.string.obj_leaf_line; "candle" -> R.string.obj_candle_line
-    "dandelion" -> R.string.obj_dandelion_line; "feather" -> R.string.obj_feather_line; "snail" -> R.string.obj_snail_line
+    "dandelion" -> R.string.obj_dandelion_line; "bookmark" -> R.string.obj_bookmark_line; "snail" -> R.string.obj_snail_line
     "pinwheel" -> R.string.obj_pinwheel_line; "paperboat" -> R.string.obj_paperboat_line; "kite" -> R.string.obj_kite_line; "windchime" -> R.string.obj_windchime_line; else -> R.string.obj_acorn_line
 }
 

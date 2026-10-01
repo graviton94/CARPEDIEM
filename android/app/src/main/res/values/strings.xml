@@ -124,7 +124,7 @@
     <string name="obj_cairn_line">A hundred days, stacked slowly.</string>
     <string name="obj_pine">Little pine</string>
     <string name="obj_pine_when">One year together</string>
-    <string name="obj_pine_line">A small tree that weathered a year.</string>
+    <string name="obj_pine_line">A small tree that grew with you for a year.</string>
     <string name="obj_flower">Wildflower</string>
     <string name="obj_flower_when">Spring arrived</string>
     <string name="obj_flower_line">Spring comes without a sound.</string>
@@ -140,9 +140,9 @@
     <string name="obj_dandelion">Dandelion seeds</string>
     <string name="obj_dandelion_when">New Year\'s Day</string>
     <string name="obj_dandelion_line">The new year rides in on the wind.</string>
-    <string name="obj_feather">A feather</string>
-    <string name="obj_feather_when">First turned page</string>
-    <string name="obj_feather_line">A page turned lightly.</string>
+    <string name="obj_bookmark">A bookmark</string>
+    <string name="obj_bookmark_when">First turned page</string>
+    <string name="obj_bookmark_line">A page turned lightly.</string>
     <string name="obj_snail">Slow snail</string>
     <string name="obj_snail_when">Coming back</string>
     <string name="obj_snail_line">Slow is fine.</string>
@@ -150,7 +150,10 @@
     <string name="obj_acorn_when">Your season changed</string>
     <string name="obj_acorn_line">A season has turned.</string>
     <string name="notify_channel">Today\'s words</string>
-    <string name="notify_keepsake">New in your garden: %1$s</string>
+    <string name="notify_channelEvening">Close of the day</string>
+    <string name="notify_channelDays">Birthdays · special days</string>
+    <string name="notify_mineBirthdayText">Haru is wearing a party hat too.</string>
+    <string name="notify_keepsake">%1$s is in your garden now</string>
     <string name="notify_row">Morning note</string>
     <string name="notify_footer">One line of words at 7 each morning.</string>
     <string name="dev_unlocked">Developer mode on.</string>
@@ -209,7 +212,7 @@
     <string name="recall_open">Open</string>
     <string name="recall_close">Let it go again</string>
     <string name="recall_notify">A line from %1$s yr ago came back</string>
-    <string name="recall_notifyText">Open the app and read it quietly.</string>
+    <string name="recall_notifyText">Open it quietly in the garden.</string>
     <string name="recall_sample">May this be a year of smiling at small things.</string>
     <string name="recall_addSample">Test: add a line from a year ago</string>
     <string name="lines">Today\'s line</string>
@@ -357,7 +360,7 @@
     <string name="letters">Letters</string>
     <string name="letters_sub">One arrives each season.</string>
     <string name="notify_letter">A letter for %1$s has arrived</string>
-    <string name="notify_letterText">Open the app and read it slowly.</string>
+    <string name="notify_letterText">Read it slowly in the garden.</string>
     <string name="letter_sample1">The tangerines Mom packed were sweet.</string>
     <string name="letter_sample2">A little slower this year.</string>
     <string name="letter_sample3">Worried about the presentation.</string>
@@ -441,7 +444,7 @@
     <string name="look_done_morning">A clear, long look.</string>
     <string name="look_done_night">A good long look at the night.</string>
     <string name="notify_evening">Today’s line</string>
-    <string name="notify_eveningText">Shall we send today off in a line?</string>
+    <string name="notify_eveningText">Leave today in a line?</string>
     <string name="notify_eveningRow">End-of-day note</string>
     <string name="notify_eveningFooter">At 10 pm. Quiet on days you’ve written.</string>
     <string name="notify_morningBreath">Tap the morning reminder for a minute of opening breath</string>
@@ -505,7 +508,7 @@
     <string name="notify_tomorrowFooter">7 pm the day before, 9 am on the day.</string>
     <string name="notify_tomorrowBirthday">Tomorrow is %1$s’s birthday</string>
     <string name="notify_tomorrowBirthdayText">A card can go out early.</string>
-    <string name="notify_tomorrowSpecial">Tomorrow: %1$s, %2$s yr ago</string>
+    <string name="notify_tomorrowSpecial">Tomorrow, ‘%1$s’ turns %2$s years</string>
     <string name="notify_tomorrowSpecialText">A flower waits on your calendar.</string>
     <string name="notify_gardenText">Take a slow look.</string>
     <string name="bday_tomorrow">Tomorrow is %1$s’s birthday</string>
@@ -514,7 +517,7 @@
     <string name="bday_mineToday">Happy birthday</string>
     <string name="stone_birthdayTomorrow">Tomorrow</string>
     <string name="notify_todayBirthdayText">A birthday card, from the garden.</string>
-    <string name="notify_todaySpecial">Today: %1$s, %2$s yr ago</string>
+    <string name="notify_todaySpecial">Today, ‘%1$s’ turns %2$s years</string>
     <string name="dev_notify">Test: send all three notes now</string>
     <string name="tab_garden">Garden</string>
     <string name="tab_write">Journal</string>

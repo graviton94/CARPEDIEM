@@ -12,7 +12,7 @@ data class Moment(val id: String, val date: LocalDate)
  * 날짜로만 정하므로 앱을 다시 설치해도 생년월일 · 시작일만 있으면 같은 것이 돌아온다 (문장 넘김 · 돌아옴 제외).
  */
 object Moments {
-    val ids = listOf("moss", "teacup", "cairn", "pine", "flower", "pond", "leaf", "candle", "dandelion", "feather", "snail", "acorn", "pinwheel", "paperboat", "kite", "windchime")
+    val ids = listOf("moss", "teacup", "cairn", "pine", "flower", "pond", "leaf", "candle", "dandelion", "bookmark", "snail", "acorn", "pinwheel", "paperboat", "kite", "windchime")
 
     /** 북반구 기준 계절이 시작하는 날. */
     private val spring = MonthDay.of(3, 1)
@@ -33,7 +33,7 @@ object Moments {
         add("leaf", next(autumn, start))
         add("candle", next(MonthDay.from(birth), start))
         add("dandelion", next(newYear, start))
-        add("feather", firstSkip)
+        add("bookmark", firstSkip)
         add("snail", returned)
         add("acorn", nextSeasonChange(birth, expectancy, start))
         add("pinwheel", streaks[7]); add("paperboat", streaks[30]); add("kite", streaks[100])

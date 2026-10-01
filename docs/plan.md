@@ -284,3 +284,13 @@ design/tokens.json, design/strings.json, data/*.csv   ← 유일한 원본
 
 ### 출시 전 마지막 할 일
 - [ ] 테스트가 끝나면 개발자 모드 (버전 누르기 → 시험 알림 · 시험 기록) 를 디버그 빌드에서만 켜지게 막기 — `docs/release.md` 5번 체크리스트
+
+### 2.1 정원 오브젝트 · 알림 다듬기 — 개발 완료, 폰 확인 전
+| 항목 | 상태 | 어디 |
+|---|---|---|
+| 이끼 방석은 하루 밑에 (앱 · 큰 위젯) | 완료 | `GardenHome`, `GardenWidgetArt` |
+| 깃털 기념물 → 책갈피 (깃털은 ‘보낸 한 줄’ 표시에만) | 완료 | `Moments` (`bookmark`), `objects.js` |
+| 연은 하늘에 실 한 줄로, 소나무 1.6배 뒤에, 종이배는 물웅덩이 위에, 촛불은 생일 주간 · 밤에만 불 (생일 날은 숨김), 바람개비 돎, 풍경 흔들림 | 완료 | `GardenHome`, `garden.layout.pineScale · pinwheelMs · chimeMs · chimeSwing` |
+| 그림 새로: 쌓은 돌 (새싹), 이끼 방석 (작은 싹), 물웅덩이 (부들), 떨어진 잎 (가지), 달팽이 (풀잎), 도토리 (참나무 싹), 종이배 (깃발), 연, 책갈피 | 완료 | `design/art/src/objects.js` → `node scripts/build_art.js` |
+| 알림 말: 하루 정리 ‘남겨 볼까요’, 특별한 날 ‘… 년이 되는 날’, ‘정원에서 펼쳐 보세요’, 새로 놓인 것은 이름 + 그 한 줄, 내 생일 아침 ‘생일 축하해요’ | 완료 | `notify.*`, `Daily.kt` |
+| 알림 채널 셋: 오늘의 문장 · 하루 정리 (조용히) · 생일과 특별한 날 (보통) | 완료 | `Daily.channel · eveningChannel · daysChannel` |

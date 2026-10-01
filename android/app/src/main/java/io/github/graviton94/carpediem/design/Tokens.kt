@@ -187,6 +187,10 @@ object Tokens {
             const val objBox = 200.0f
             const val objGround = 168.0f
             const val objScale = 0.36f
+            const val pineScale = 1.6f
+            const val pinwheelMs = 7000.0f
+            const val chimeMs = 3200.0f
+            const val chimeSwing = 4.0f
             const val itemFromHaru = 20.0f
             const val itemGap = 6.0f
             const val stripLineY = 40.0f

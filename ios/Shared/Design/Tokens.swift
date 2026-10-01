@@ -192,6 +192,10 @@ enum Tokens {
             static let objBox: CGFloat = 200.0
             static let objGround: CGFloat = 168.0
             static let objScale: CGFloat = 0.36
+            static let pineScale: CGFloat = 1.6
+            static let pinwheelMs: CGFloat = 7000.0
+            static let chimeMs: CGFloat = 3200.0
+            static let chimeSwing: CGFloat = 4.0
             static let itemFromHaru: CGFloat = 20.0
             static let itemGap: CGFloat = 6.0
             static let stripLineY: CGFloat = 40.0

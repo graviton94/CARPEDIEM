@@ -133,7 +133,7 @@ class DataTest {
         val m = Moments.earned(start, d(1992, 2, 29), 80.0, d(2026, 3, 5), firstSkip = d(2026, 1, 11), returned = d(2026, 3, 4))
         assertEquals(m.map { it.date }, m.map { it.date }.sortedDescending())
         assertEquals(d(2026, 3, 1), m.first { it.id == "candle" }.date)
-        assertTrue(m.any { it.id == "feather" } && m.any { it.id == "snail" })
+        assertTrue(m.any { it.id == "bookmark" } && m.any { it.id == "snail" })
         assertEquals(16, Moments.all(start).size)
     }
 

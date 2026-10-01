@@ -59,6 +59,19 @@ object Daily {
 
     internal fun channel(context: Context) =
         context.getSystemService(NotificationManager::class.java).createNotificationChannel(NotificationChannel(CHANNEL, context.getString(R.string.notify_channel), NotificationManager.IMPORTANCE_LOW))
+    /** 하루 정리 (조용히) · 생일과 특별한 날 (보통: 화면 위에 잠깐 · 기본 소리). 폰 설정에서 따로 끌 수 있게 채널을 나눔. */
+    internal fun eveningChannel(context: Context) =
+        context.getSystemService(NotificationManager::class.java).createNotificationChannel(NotificationChannel("evening", context.getString(R.string.notify_channelEvening), NotificationManager.IMPORTANCE_LOW))
+    internal fun daysChannel(context: Context) =
+        context.getSystemService(NotificationManager::class.java).createNotificationChannel(NotificationChannel("days", context.getString(R.string.notify_channelDays), NotificationManager.IMPORTANCE_DEFAULT))
+
+    /** 한글 이름 뒤 ‘이 · 가’ (받침 있으면 이). 한글이 아니면 없음 (영어 문장은 따로). */
+    internal fun subject(name: String, context: Context): String {
+        if (context.resources.configuration.locales[0].language != "ko") return ""
+        val c = name.lastOrNull() ?: return ""
+        if (c !in '가'..'힣') return ""
+        return if ((c - '가') % 28 != 0) "이" else "가"
+    }
 
     fun allowed(context: Context) = Build.VERSION.SDK_INT < 33 || ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
 
@@ -70,6 +83,7 @@ object Daily {
         val q = store.todaysQuote()
         val text = q?.let { if (store.quoteLanguage == QuoteLanguage.ENGLISH) it.english else it.korean } ?: return
         var title = context.getString(R.string.words)
+        var keepsakeLine: String? = null
         var letterId: String? = null
         var openAt: String? = null   // 누르면 열 곳 (MainActivity.EXTRA_OPEN)
         store.profile?.takeIf { store.design == Design.GARDEN }?.let { p ->
@@ -77,12 +91,17 @@ object Daily {
             val fresh = Moments.earned(store.startDate, p.birthDate, p.expectancy(store.table), today, store.firstSkip, store.returned, store.streaks, store.breaths.minOfOrNull { it.first }).filter { it.date == today && it.id !in store.notifiedMoments }
             fresh.firstOrNull()?.let { m ->
                 val id = context.resources.getIdentifier("obj_${m.id}", "string", context.packageName)
-                if (id != 0) title = context.getString(R.string.notify_keepsake, context.getString(id))
+                if (id != 0) {
+                    // “이끼 방석이 정원에 놓였어요” + 그것의 한 줄 (문장 대신)
+                    val name = context.getString(id)
+                    title = context.getString(R.string.notify_keepsake, name + subject(name, context))
+                    keepsakeLine = context.resources.getIdentifier("obj_${m.id}_line", "string", context.packageName).takeIf { it != 0 }?.let { context.getString(it) }
+                }
                 store.notifiedMoments = store.notifiedMoments + fresh.map { it.id }
             }
         }
         // 몇 해 전 오늘 보낸 한 줄이 있으면 그것을 알린다 (잠금 화면에는 글을 보이지 않음)
-        var body = text
+        var body = keepsakeLine ?: text
         val yearAgo = Lines.yearsAgo(store.lines, LocalDate.now()).firstOrNull()
         if (yearAgo != null) { title = context.getString(R.string.recall_notify, "${yearAgo.first}"); body = context.getString(R.string.recall_notifyText); openAt = "write" }
         else if (store.keepLines && store.randomRecall() != null) { title = context.getString(R.string.recall_randomNotify); body = context.getString(R.string.recall_notifyText); openAt = "write" }
@@ -144,10 +163,10 @@ object Evening {
         if (!force && (!store.eveningNotify || store.lines.any { it.date == LocalDate.now() })) return   // 꺼 두었거나 오늘은 이미 보냄
         if (!Daily.allowed(context)) return
         val nm = context.getSystemService(NotificationManager::class.java)
-        nm.createNotificationChannel(NotificationChannel("daily", context.getString(R.string.notify_channel), NotificationManager.IMPORTANCE_LOW))
+        Daily.eveningChannel(context)
         val open = PendingIntent.getActivity(context, 1, Intent(context, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK).putExtra(MainActivity.EXTRA_OPEN, "write"),
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
-        val n = NotificationCompat.Builder(context, "daily").setSmallIcon(R.mipmap.ic_launcher_monochrome)
+        val n = NotificationCompat.Builder(context, "evening").setSmallIcon(R.mipmap.ic_launcher_monochrome)
             .setContentTitle(context.getString(R.string.notify_evening)).setContentText(context.getString(R.string.notify_eveningText))
             .setContentIntent(open).setAutoCancel(true).build()
         NotificationManagerCompat.from(context).notify(ID, n)
@@ -181,22 +200,26 @@ object Tomorrow {
         if ((!sample && (!store.tomorrowNotify || store.design != Design.GARDEN)) || !Daily.allowed(context)) return
         val day = LocalDate.now().plusDays(ahead.toLong())
         val who = if (sample) store.people.take(1) else store.people.filter { io.github.graviton94.carpediem.core.Family.isBirthday(it.birth, day) }
-        val names = if (sample && who.isEmpty()) listOf(context.getString(R.string.family_me)) else who.map { it.name }
+        val names = who.map { it.name }
+        // 내 생일 (그날 아침에만): “생일 축하해요”. 시험 버튼은 가족이 없으면 이것으로
+        val mine = ahead == 0 && (store.profile?.birthDate?.let { io.github.graviton94.carpediem.core.Family.isBirthday(it, day) } == true || (sample && who.isEmpty()))
         val days = io.github.graviton94.carpediem.core.SpecialDays.anniversaries(store.specialDays, day)
             .map { (d, years) -> context.getString(if (ahead == 0) R.string.notify_todaySpecial else R.string.notify_tomorrowSpecial, d.name, "$years") }
-        if (names.isEmpty() && days.isEmpty()) return
+        if (names.isEmpty() && days.isEmpty() && !mine) return
         val title: String; val body: String
-        if (names.isNotEmpty()) {
+        if (mine) {
+            title = context.getString(R.string.bday_mineToday); body = days.firstOrNull() ?: context.getString(R.string.notify_mineBirthdayText)
+        } else if (names.isNotEmpty()) {
             val who = names.joinToString(", ")
             title = if (ahead == 0) context.getString(R.string.bday_today, who) else context.getString(R.string.notify_tomorrowBirthday, who)
             body = days.firstOrNull() ?: context.getString(if (ahead == 0) R.string.notify_todayBirthdayText else R.string.notify_tomorrowBirthdayText)
         } else { title = days.first(); body = days.drop(1).firstOrNull() ?: context.getString(R.string.notify_tomorrowSpecialText) }
-        Daily.channel(context)
-        // 생일이면 그 사람의 돌 페이지, 특별한 날이면 흐름 (인생 달력의 꽃)
-        val target = who.firstOrNull()?.let { "stone:${it.id}" } ?: "flow"
+        Daily.daysChannel(context)
+        // 생일이면 그 사람의 돌 페이지 (내 생일이면 내 돌), 특별한 날이면 흐름 (인생 달력의 꽃)
+        val target = if (mine) "stone:" else who.firstOrNull()?.let { "stone:${it.id}" } ?: "flow"
         val open = PendingIntent.getActivity(context, 2 + ahead * 10, Intent(context, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK).putExtra(MainActivity.EXTRA_OPEN, target),
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
-        val n = NotificationCompat.Builder(context, "daily").setSmallIcon(R.mipmap.ic_launcher_monochrome)
+        val n = NotificationCompat.Builder(context, "days").setSmallIcon(R.mipmap.ic_launcher_monochrome)
             .setContentTitle(title).setContentText(body).setContentIntent(open).setAutoCancel(true).build()
         NotificationManagerCompat.from(context).notify(3 + ahead, n)
     }

@@ -94,8 +94,9 @@ object GardenWidgetArt {
         if (kind == Kind.LARGE && s != null) {
             val moss = asset(context, "obj_moss.png"); val box = L.objBox * W.mossScale * u
             val hx = w * 0.1f + w * 0.8f * s.progress.toFloat().coerceIn(0f, 1f)
-            val mx = max(box * 0.3f, hx - W.haruLarge * u * 1.2f)
-            c.drawBitmap(moss, null, RectF(mx - box / 2, gy - box * (L.objGround / L.objBox), mx + box / 2, gy - box * (L.objGround / L.objBox) + box), paint)
+            // 이끼 방석은 하루 밑에 (돌보다 조금 넓게, 돌 뒤에)
+            val mb = W.haruLarge * u * 1.35f / 0.676f; val mtop = gy - mb * (L.objGround / L.objBox) + mb * 0.03f
+            c.drawBitmap(moss, null, RectF(hx - mb / 2, mtop, hx + mb / 2, mtop + mb), paint)
             haru(context, c, hx, gy, W.haruLarge * u, u, now)
         }
         if (kind == Kind.DAYS) haru(context, c, w * W.haruX, gy, W.haruSmall * u, u, now)
