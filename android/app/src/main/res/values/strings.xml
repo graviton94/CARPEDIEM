@@ -306,9 +306,9 @@
     <string name="breath_hold">Hold</string>
     <string name="breath_out">Breathe out</string>
     <string name="breath_rest">Rest</string>
-    <string name="breath_pause">Stop here?</string>
+    <string name="breath_pause">Rest here for now?</string>
     <string name="breath_keep">Keep going</string>
-    <string name="breath_stop">Stop</string>
+    <string name="breath_stop">That’s enough for now</string>
     <string name="breath_startA11y">Starting %1$s for %2$s min.</string>
     <string name="breath_home">Back to the garden</string>
     <string name="breath_done_calm_1">Your mind has settled.</string>
@@ -412,7 +412,7 @@
     <string name="memory_sampleName">Bori</string>
     <string name="sound_season">Sounds of the season</string>
     <string name="breath_part_morning">A breath to open the day</string>
-    <string name="breath_part_day">Breathing to pause</string>
+    <string name="breath_part_day">Breathing to rest a while</string>
     <string name="breath_part_evening">A meditation to set the day down</string>
     <string name="breath_part_night">A meditation to close the day</string>
     <string name="breath_done_morning_1">The day has opened, slowly.</string>

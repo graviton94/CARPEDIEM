@@ -109,7 +109,7 @@ fun BreathSheet(state: AppState, now: LocalDateTime, onStart: (BreathKind, Int, 
         Column(Modifier.fillMaxWidth().padding(horizontal = Theme.deviceClass.pageMargin).navigationBarsPadding().padding(bottom = Tokens.Space.sp6),
             verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
             TokenText(stringResource(R.string.breath), Tokens.TypeScale.title3.serif())
-            // 때에 맞는 숨의 이름 (하루를 여는 · 잠시 멈추는 · 내려놓는 · 마무리하는)
+            // 때에 맞는 숨의 이름 (하루를 여는 · 잠시 쉬어가는 · 내려놓는 · 마무리하는)
             TokenText(stringResource(partTitle(io.github.graviton94.carpediem.ui.Labels.part(now))), Tokens.TypeScale.footnote.serif(), color = p.secondary)
             FlowRow(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
                 BreathKind.entries.forEachIndexed { i, k -> GardenChip(stringResource(kindName(k)), kind == k, 1000 + i) { kind = k } }

@@ -306,9 +306,9 @@
     <string name="breath_hold">머물고</string>
     <string name="breath_out">내쉬고</string>
     <string name="breath_rest">쉬고</string>
-    <string name="breath_pause">여기서 멈출까요?</string>
+    <string name="breath_pause">여기서 쉬어갈까요?</string>
     <string name="breath_keep">계속하기</string>
-    <string name="breath_stop">멈추기</string>
+    <string name="breath_stop">여기까지</string>
     <string name="breath_startA11y">%1$s %2$s분을 시작해요.</string>
     <string name="breath_home">정원으로</string>
     <string name="breath_done_calm_1">마음이 고요해졌어요.</string>
@@ -412,7 +412,7 @@
     <string name="memory_sampleName">보리</string>
     <string name="sound_season">계절의 소리</string>
     <string name="breath_part_morning">하루를 여는 숨</string>
-    <string name="breath_part_day">잠시 멈추는 호흡</string>
+    <string name="breath_part_day">잠시 쉬어가는 호흡</string>
     <string name="breath_part_evening">하루를 내려놓는 명상</string>
     <string name="breath_part_night">하루를 마무리하는 명상</string>
     <string name="breath_done_morning_1">하루가 천천히 열렸어요.</string>

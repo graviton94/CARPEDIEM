@@ -304,9 +304,9 @@
 "breath.hold" = "Hold";
 "breath.out" = "Breathe out";
 "breath.rest" = "Rest";
-"breath.pause" = "Stop here?";
+"breath.pause" = "Rest here for now?";
 "breath.keep" = "Keep going";
-"breath.stop" = "Stop";
+"breath.stop" = "That’s enough for now";
 "breath.startA11y" = "Starting %1$@ for %2$@ min.";
 "breath.home" = "Back to the garden";
 "breath.done.calm.1" = "Your mind has settled.";
@@ -410,7 +410,7 @@
 "memory.sampleName" = "Bori";
 "sound.season" = "Sounds of the season";
 "breath.part.morning" = "A breath to open the day";
-"breath.part.day" = "Breathing to pause";
+"breath.part.day" = "Breathing to rest a while";
 "breath.part.evening" = "A meditation to set the day down";
 "breath.part.night" = "A meditation to close the day";
 "breath.done.morning.1" = "The day has opened, slowly.";
