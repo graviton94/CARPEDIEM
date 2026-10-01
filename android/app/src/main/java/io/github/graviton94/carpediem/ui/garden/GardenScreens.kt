@@ -643,13 +643,29 @@ private fun rememberTyping(state: AppState, main: String, second: String?): Int 
 private fun TypedText(text: String, shown: Int, token: io.github.graviton94.carpediem.design.TypeToken, color: Color, modifier: Modifier = Modifier,
                       maxLines: Int = Int.MAX_VALUE, onTextLayout: (androidx.compose.ui.text.TextLayoutResult) -> Unit = {}) {
     val k = shown.coerceIn(0, text.length)
+    // 줄은 띄어쓰기에서만 바뀌게 (낱말 · 어절 가운데서 끊기지 않게, 모든 Android 버전에서), 마지막 줄에 한 낱말만 남지 않게 끝 두 낱말은 붙여 둠
+    val (shaped, at) = remember(text) { keepWords(text) }
     val shownText = androidx.compose.ui.text.buildAnnotatedString {
-        append(text)
-        if (k < text.length) addStyle(androidx.compose.ui.text.SpanStyle(color = Color.Transparent), k, text.length)
+        append(shaped)
+        if (k < text.length) addStyle(androidx.compose.ui.text.SpanStyle(color = Color.Transparent), at[k], shaped.length)
     }
     val style = token.style(text).copy(lineBreak = androidx.compose.ui.text.style.LineBreak(androidx.compose.ui.text.style.LineBreak.Strategy.Balanced,
         androidx.compose.ui.text.style.LineBreak.Strictness.Normal, androidx.compose.ui.text.style.LineBreak.WordBreak.Phrase))
     Text(shownText, modifier.semantics { contentDescription = text }, color = color, style = style, textAlign = TextAlign.Center, maxLines = maxLines, onTextLayout = onTextLayout)
+}
+
+/** 낱말 안 글자 사이에 WORD JOINER 를 넣고 마지막 띄어쓰기는 붙는 띄어쓰기로. at[i] = 원래 i 번째 글자가 바뀐 글에서 놓인 자리. */
+internal fun keepWords(text: String): Pair<String, IntArray> {
+    val lastSpace = text.trimEnd().lastIndexOf(' ').takeIf { text.trim().count { it == ' ' } >= 2 } ?: -1
+    val b = StringBuilder(); val at = IntArray(text.length + 1)
+    text.forEachIndexed { i, c ->
+        at[i] = b.length
+        b.append(if (i == lastSpace) '\u00A0' else c)
+        val n = text.getOrNull(i + 1)
+        if (n != null && !c.isWhitespace() && !n.isWhitespace() && !c.isHighSurrogate()) b.append('\u2060')
+    }
+    at[text.length] = b.length
+    return b.toString() to at
 }
 
 @Composable
