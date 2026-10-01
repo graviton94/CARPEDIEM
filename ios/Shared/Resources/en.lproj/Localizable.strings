@@ -323,6 +323,11 @@
 "breath.done.sleep.2" = "You did well today.\nSleep well.";
 "breath.done.sleep.3" = "Haru will sleep beside you.";
 "breath.night" = "A meditation to close the day";
+"breath.ask" = "%1$@ — shall we?";
+"breath.askHelp" = "Just one minute.";
+"breath.askGo" = "Let's go";
+"breath.askStay" = "Later";
+"breath.bells" = "Breathe in with the bright bell,\nout with the low one.";
 "gaze" = "Stone gazing";
 "gaze.soundOn" = "Sound on";
 "gaze.soundOff" = "Sound off";

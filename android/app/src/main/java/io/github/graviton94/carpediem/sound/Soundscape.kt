@@ -140,6 +140,44 @@ object Soundscape {
         }
     }
 
+/**
+     * 명상 종 (싱잉볼) 한 번: 낮은 바탕음에 실제 주발처럼 어긋난 배음 (1 · 2.71 · 5.15 · 8.1 배),
+     * 배음마다 아주 가까운 두 음이 맞물려 천천히 일렁이며 (beat), 부드러운 채로 쳐서 오래 잦아듦. hz = 바탕음, strikes = 치는 횟수.
+     */
+    fun bowl(hz: Double, strikes: Int = 1) {
+        Thread({
+            runCatching {
+                val sr = T.sampleRate.toInt()
+                val ring = T.bowlRing.toDouble(); val gapS = 1.6
+                val lenS = ring + gapS * (strikes - 1)
+                val mix = FloatArray((sr * lenS).toInt())
+                val partials = listOf(1.0 to 1.0, 2.71 to 0.42, 5.15 to 0.16, 8.1 to 0.06)
+                val decay = listOf(0.42, 0.75, 1.4, 2.6)
+                val attack = T.bowlAttackMs / 1000.0; val beat = T.bowlBeat.toDouble()
+                for (k in 0 until strikes) {
+                    val start = (k * gapS * sr).toInt(); val f0 = hz * (if (k == 0) 1.0 else 0.89)
+                    for (i in start until mix.size) {
+                        val t = (i - start).toDouble() / sr
+                        val a = if (t < attack) sin(PI / 2 * t / attack) else 1.0
+                        var v = 0.0
+                        partials.forEachIndexed { j, (r, amp) ->
+                            val f = f0 * r; val d = beat * (j + 1) * 0.5
+                            v += amp * exp(-decay[j] * t) * 0.5 * (sin(2 * PI * (f - d / 2) * t) + sin(2 * PI * (f + d / 2) * t + j))
+                        }
+                        mix[i] += (v * a).toFloat()
+                    }
+                }
+                val peak = mix.maxOf { kotlin.math.abs(it) }.coerceAtLeast(1f)
+                val buf = ShortArray(mix.size) { (mix[it] / peak * T.bowl * 0.8 * Short.MAX_VALUE).toInt().toShort() }
+                val track = AudioTrack.Builder().setAudioAttributes(attributes()).setAudioFormat(format(sr))
+                    .setBufferSizeInBytes(buf.size * 2).setTransferMode(AudioTrack.MODE_STATIC).build()
+                track.write(buf, 0, buf.size); track.play()
+                Thread.sleep((lenS * 1000).toLong() + 200)
+                runCatching { track.stop() }; track.release()
+            }
+        }, "bowl").apply { isDaemon = true; start() }
+    }
+
     /** 작은 종소리 (시작 한 번, 끝 두 번). strikes = 치는 횟수. */
     fun chime(strikes: Int = 1) {
         Thread({

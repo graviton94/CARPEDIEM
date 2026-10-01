@@ -407,6 +407,13 @@ object Tokens {
             const val fadeInMs = 2500.0f
             const val fadeOutMs = 1800.0f
             const val waveSeconds = 9.0f
+            const val bowl = 0.55f
+            const val bowlInHz = 220.0f
+            const val bowlOutHz = 164.8f
+            const val bowlRing = 8.0f
+            const val bowlAttackMs = 35.0f
+            const val bowlBeat = 0.7f
+            const val introMs = 6000.0f
         }
         object Night {
             const val darkFrom = 20.0f

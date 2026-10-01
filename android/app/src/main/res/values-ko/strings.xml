@@ -325,6 +325,11 @@
     <string name="breath_done_sleep_2">오늘 하루도 수고했어요.\n잘 자요.</string>
     <string name="breath_done_sleep_3">하루도 곁에서 잘게요.</string>
     <string name="breath_night">하루를 마무리하는 명상</string>
+    <string name="breath_ask">%1$s, 하러 갈까요?</string>
+    <string name="breath_askHelp">1분이면 돼요.</string>
+    <string name="breath_askGo">갈게요</string>
+    <string name="breath_askStay">다음에</string>
+    <string name="breath_bells">맑은 종에 들이쉬고,\n낮은 종에 내쉬어요.</string>
     <string name="gaze">돌멍하기</string>
     <string name="gaze_soundOn">소리 켜기</string>
     <string name="gaze_soundOff">소리 끄기</string>

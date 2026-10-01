@@ -237,6 +237,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
     val moments = gardenMoments(state, profile, s, now)
     var open by remember { mutableStateOf<Moment?>(null) }
     var breathSheet by remember { mutableStateOf(false) }
+    var askBreath by remember { mutableStateOf<Pair<BreathKind, Int>?>(null) }
     val sleepy = !bare && isNight(now)
     // 캡처용: 이번 달 편지를 바로 펼침. 고르기만 그리기 중에, ‘연 편지’로 남기기는 그 뒤에
     var letterOpen by remember { mutableStateOf(if (state.debugOpenLetter && !bare) state.letterDue(now.toLocalDate()) else null) }
@@ -343,11 +344,21 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                         }
                     }
                     // 밤: 잠드는 명상 1분 · 아침 (오늘 아직 숨 쉬지 않았으면): 하루를 여는 숨 1분, 옅은 한 줄로
+                    // 누르면 바로 가지 않고 “… 하러 갈까요?” 한 번 묻기
                     if (isNight(now)) TokenText(stringResource(R.string.breath_night), Tokens.TypeScale.footnote.serif(),
-                        Modifier.clickable { onBreath(BreathKind.SLEEP, 1, state.sound) }.padding(Tokens.Space.sp2), color = p.secondary)
+                        Modifier.clickable { askBreath = BreathKind.SLEEP to R.string.breath_night }.padding(Tokens.Space.sp2), color = p.secondary)
                     else if (Labels.part(now) == io.github.graviton94.carpediem.core.DayPart.MORNING && state.breaths.none { it.first == now.toLocalDate() })
                         TokenText(stringResource(R.string.breath_morning), Tokens.TypeScale.footnote.serif(),
-                            Modifier.clickable { onBreath(BreathKind.CALM, 1, state.sound) }.padding(Tokens.Space.sp2), color = p.secondary)
+                            Modifier.clickable { askBreath = BreathKind.CALM to R.string.breath_morning }.padding(Tokens.Space.sp2), color = p.secondary)
+                    askBreath?.let { (kind, name) ->
+                        io.github.graviton94.carpediem.ui.GardenAlert(
+                            onDismissRequest = { askBreath = null },
+                            title = { Text(stringResource(R.string.breath_ask, stringResource(name))) },
+                            text = { Text(stringResource(R.string.breath_askHelp)) },
+                            confirmButton = { androidx.compose.material3.TextButton(onClick = { askBreath = null; onBreath(kind, 1, state.sound) }) { Text(stringResource(R.string.breath_askGo)) } },
+                            dismissButton = { androidx.compose.material3.TextButton(onClick = { askBreath = null }) { Text(stringResource(R.string.breath_askStay), color = p.secondary) } },
+                        )
+                    }
                 }
 
                 val x0 = u * G.Layout.pathStart; val x1 = u * G.Layout.pathEnd

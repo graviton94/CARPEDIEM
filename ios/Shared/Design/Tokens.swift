@@ -412,6 +412,13 @@ enum Tokens {
             static let fadeInMs: CGFloat = 2500.0
             static let fadeOutMs: CGFloat = 1800.0
             static let waveSeconds: CGFloat = 9.0
+            static let bowl: CGFloat = 0.55
+            static let bowlInHz: CGFloat = 220.0
+            static let bowlOutHz: CGFloat = 164.8
+            static let bowlRing: CGFloat = 8.0
+            static let bowlAttackMs: CGFloat = 35.0
+            static let bowlBeat: CGFloat = 0.7
+            static let introMs: CGFloat = 6000.0
         }
         enum Night {
             static let darkFrom: CGFloat = 20.0

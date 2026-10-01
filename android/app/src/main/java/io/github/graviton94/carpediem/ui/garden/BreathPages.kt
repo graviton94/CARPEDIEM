@@ -39,6 +39,7 @@ import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.runtime.withFrameMillis
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -172,15 +173,23 @@ fun BreathScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, kind
     }
     KeepScreenOn(!done)
     DisposableEffect(player) { player.start(); onDispose { player.stop() } }
-    LaunchedEffect(Unit) { if (sound != Sound.NONE) Soundscape.chime(1) }
+    // 숨 시작 전: “맑은 종에 들이쉬고, 낮은 종에 내쉬어요” 와 두 종을 한 번씩 (소리가 있을 때만)
+    val S = Tokens.Garden.Sound
+    var intro by remember { mutableStateOf(sound != Sound.NONE) }
+    LaunchedEffect(Unit) {
+        if (!intro) return@LaunchedEffect
+        delay(300); Soundscape.bowl(S.bowlInHz.toDouble())
+        delay((S.introMs * 0.42f).toLong()); Soundscape.bowl(S.bowlOutHz.toDouble())
+        delay((S.introMs * 0.58f).toLong() - 300); intro = false
+    }
     // 시계: 멈춘 동안은 흐르지 않음
-    LaunchedEffect(paused, done) {
-        if (paused || done) return@LaunchedEffect
+    LaunchedEffect(paused, done, intro) {
+        if (paused || done || intro) return@LaunchedEffect
         var last = withFrameMillis { it }
         while (!done) {
             val t = withFrameMillis { it }
             elapsed += t - last; last = t
-            if (elapsed >= total) { done = true; state.recordBreath(kind); if (sound != Sound.NONE) Soundscape.chime(2); player.stop() }
+            if (elapsed >= total) { done = true; state.recordBreath(kind); if (sound != Sound.NONE) Soundscape.bowl(S.bowlOutHz.toDouble(), 2); player.stop() }
         }
     }
     val at = Breath.at(plan, elapsed)
@@ -188,7 +197,10 @@ fun BreathScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, kind
     player.breath = full
     // 단계가 바뀌면 아주 짧게 (들이쉼 한 번, 내쉼 두 번)
     val step = at?.first?.step
-    LaunchedEffect(step) {
+    LaunchedEffect(step, intro) {
+        if (intro) return@LaunchedEffect
+        // 숨마다 명상 종: 들이쉴 땐 맑은 종, 내쉴 땐 낮은 종 (머무는 숨에는 없음)
+        if (sound != Sound.NONE) when (step) { BreathStep.IN -> Soundscape.bowl(S.bowlInHz.toDouble()); BreathStep.OUT -> Soundscape.bowl(S.bowlOutHz.toDouble()); else -> {} }
         if (step == BreathStep.IN) view.performHapticFeedback(android.view.HapticFeedbackConstants.CLOCK_TICK)
         if (step == BreathStep.OUT) { view.performHapticFeedback(android.view.HapticFeedbackConstants.CLOCK_TICK); delay(120); view.performHapticFeedback(android.view.HapticFeedbackConstants.CLOCK_TICK) }
     }
@@ -226,7 +238,8 @@ fun BreathScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, kind
             val cue = if (done) null else step?.takeIf { elapsed < b.cueSeconds * 1000 }
             Box(Modifier.height(Tokens.Space.sp10), contentAlignment = Alignment.Center) {
                 // 고마움 명상: 내쉴 때 “고마운 것 하나”
-                if (cue != null) TokenText(stringResource(if (kind == BreathKind.THANKS && cue == BreathStep.OUT) R.string.breath_out_thanks else stepName(cue)), Tokens.TypeScale.title2.serif(), color = p.secondary, align = TextAlign.Center)
+                if (intro) TokenText(stringResource(R.string.breath_bells), Tokens.TypeScale.headline.serif(), color = p.secondary, align = TextAlign.Center)
+                else if (cue != null) TokenText(stringResource(if (kind == BreathKind.THANKS && cue == BreathStep.OUT) R.string.breath_out_thanks else stepName(cue)), Tokens.TypeScale.title2.serif(), color = p.secondary, align = TextAlign.Center)
             }
             if (done) {
                 // 아침 · 저녁 · 밤은 때의 말, 낮은 숨마다의 말

@@ -325,6 +325,11 @@
     <string name="breath_done_sleep_2">You did well today.\nSleep well.</string>
     <string name="breath_done_sleep_3">Haru will sleep beside you.</string>
     <string name="breath_night">A meditation to close the day</string>
+    <string name="breath_ask">%1$s — shall we?</string>
+    <string name="breath_askHelp">Just one minute.</string>
+    <string name="breath_askGo">Let\'s go</string>
+    <string name="breath_askStay">Later</string>
+    <string name="breath_bells">Breathe in with the bright bell,\nout with the low one.</string>
     <string name="gaze">Stone gazing</string>
     <string name="gaze_soundOn">Sound on</string>
     <string name="gaze_soundOff">Sound off</string>
