@@ -25,7 +25,7 @@ for i in $(seq -w 1 10); do adb exec-out screencap -p > "$OUT/typing/t$i.png"; d
 # 위젯 미리보기 그림 (위젯 고르는 화면용): 가족 · 이번 달 기록이 있는 정원으로 실제 위젯을 그려 꺼냄
 open --ez cd.reset true --es cd.design garden --el cd.seed 2718281 --es cd.birth 2000-05-12 --es cd.sex female --ez cd.meet false --ez cd.family true --ez cd.months true --ez cd.widgetShots true
 W=/sdcard/Android/data/$P/files/widgets
-for i in $(seq 1 30); do adb shell ls $W/done >/dev/null 2>&1 && break; sleep 2; done
+for i in $(seq 1 90); do adb shell ls $W/done >/dev/null 2>&1 && break; sleep 2; done
 mkdir -p "$OUT/widgets"; adb pull $W/. "$OUT/widgets/" >/dev/null 2>&1; rm -f "$OUT/widgets/done"; ls "$OUT/widgets"
 }
 finish() {
