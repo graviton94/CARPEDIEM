@@ -512,6 +512,22 @@ object Tokens {
             const val small = 34.0f
             const val pad = 96.0f
         }
+        object Song {
+            const val gapMs = 320.0f
+            const val firstMs = 520.0f
+            const val ringMs = 1800.0f
+            const val ringSize = 64.0f
+            const val volume = 0.22f
+            const val hop = 3.0f
+        }
+        object ShootingStar {
+            const val firstMin = 6.0f
+            const val firstMax = 18.0f
+            const val min = 25.0f
+            const val max = 80.0f
+            const val ms = 1100.0f
+            const val length = 0.2f
+        }
         object Special {
             const val size = 1.25f
             object Colors {

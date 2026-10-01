@@ -167,3 +167,41 @@ fun MoodWeather(state: io.github.graviton94.carpediem.ui.AppState, now: LocalDat
         }
     }
 }
+
+/**
+ * 밤 하늘의 별똥별: 가끔, 정해지지 않은 때에 하나가 [top, bottom] 띠를 비스듬히 스쳐 감. 알려 주지 않는 작은 선물.
+ * 낮이나 움직임을 끈 기기에서는 없음.
+ */
+@Composable
+fun ShootingStars(now: LocalDateTime, top: Dp, bottom: Dp, modifier: Modifier = Modifier) {
+    if (!SkyTime.isDark(now)) return
+    val ctx = LocalContext.current
+    if (androidx.compose.runtime.remember { reducedMotion(ctx) }) return
+    val k = G.ShootingStar
+    val p = androidx.compose.runtime.remember { androidx.compose.animation.core.Animatable(-1f) }
+    val seed = androidx.compose.runtime.remember { androidx.compose.runtime.mutableIntStateOf(0) }
+    androidx.compose.runtime.LaunchedEffect(Unit) {
+        val r = java.util.Random()
+        fun wait(a: Float, b: Float) = ((a + (b - a) * r.nextFloat()) * 1000).toLong()
+        kotlinx.coroutines.delay(wait(k.firstMin, k.firstMax))
+        while (true) {
+            seed.intValue = r.nextInt()
+            p.snapTo(0f); p.animateTo(1f, tween(k.ms.toInt(), easing = androidx.compose.animation.core.LinearOutSlowInEasing)); p.snapTo(-1f)
+            kotlinx.coroutines.delay(wait(k.min, k.max))
+        }
+    }
+    val c = G.Night.Colors.moonGlow
+    Canvas(modifier) {
+        val t = p.value; if (t < 0f) return@Canvas
+        val y0 = top.toPx(); val y1 = bottom.toPx(); if (y1 <= y0) return@Canvas
+        val r = Crayon.Rng(seed.intValue)
+        val sx = size.width * (0.08f + 0.5f * r.next()); val sy = y0 + (y1 - y0) * 0.6f * r.next()
+        val dx = 0.91f; val dy = 0.41f; val travel = size.width * 0.35f
+        val hx = sx + dx * travel * t; val hy = sy + dy * travel * t
+        val tail = size.width * k.length * (if (t < 0.3f) t / 0.3f else 1f)
+        val a = if (t > 0.7f) (1f - t) / 0.3f else 1f
+        val from = Offset(hx - dx * tail, hy - dy * tail); val head = Offset(hx, hy)
+        drawLine(Brush.linearGradient(listOf(Color.Transparent, c.copy(alpha = a)), from, head), from, head, strokeWidth = 1.6f * density, cap = StrokeCap.Round)
+        drawCircle(c.copy(alpha = a), 1.5f * density, head)
+    }
+}

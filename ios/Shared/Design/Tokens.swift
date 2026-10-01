@@ -517,6 +517,22 @@ enum Tokens {
             static let small: CGFloat = 34.0
             static let pad: CGFloat = 96.0
         }
+        enum Song {
+            static let gapMs: CGFloat = 320.0
+            static let firstMs: CGFloat = 520.0
+            static let ringMs: CGFloat = 1800.0
+            static let ringSize: CGFloat = 64.0
+            static let volume: CGFloat = 0.22
+            static let hop: CGFloat = 3.0
+        }
+        enum ShootingStar {
+            static let firstMin: CGFloat = 6.0
+            static let firstMax: CGFloat = 18.0
+            static let min: CGFloat = 25.0
+            static let max: CGFloat = 80.0
+            static let ms: CGFloat = 1100.0
+            static let length: CGFloat = 0.2
+        }
         enum Special {
             static let size: CGFloat = 1.25
             enum Colors {

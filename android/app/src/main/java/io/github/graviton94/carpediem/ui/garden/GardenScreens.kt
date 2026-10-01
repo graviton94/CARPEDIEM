@@ -367,6 +367,8 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 // 밤 · 새벽: 달빛 · 돌들 발치의 빛 · 가로등 · 반딧불
                 val spanL = slots.indices.minOf { xs[it] - (widths[it].toFloat() / 2).dp }; val spanR = slots.indices.maxOf { xs[it] + (widths[it].toFloat() / 2).dp }
                 NightLights(now, gy, spanL, spanR, if (day) null else androidx.compose.ui.unit.DpOffset(sx, sy), Modifier.fillMaxSize())
+                // 가끔 별똥별 (밤 · 새벽, 글자와 하루 머리 사이 하늘)
+                ShootingStars(now, topBottom, gy - haruAbove - u * G.Layout.minSkyGap, Modifier.fillMaxSize())
 
 
                 // 놓인 것: 돌 사이 빈틈과 가장 왼쪽 돌의 왼편에, 최근 것부터. 자리가 없으면 거기까지만 (모은 것에는 모두).
@@ -387,12 +389,27 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 val sentTo = todayLine?.to
                 // 무거운 마음을 보낸 날, 내 하루는 살짝 아래를 본다 (다음 날 평소대로)
                 val heavyToday = todayLine?.feeling in io.github.graviton94.carpediem.core.Letters.HEAVY
+                // 노래하는 돌: 하루를 길게 누르면 한 음, 가족 돌들이 왼쪽부터 차례로 저마다의 음으로 대답 (빛 동그라미 + 살짝 뜀)
+                val S = G.Song
+                val singOrder = listOf(0) + slots.indices.drop(1).sortedBy { xs[it].value }
+                fun startAt(i: Int): Float { val k = singOrder.indexOf(i); return if (k <= 0) 0f else S.firstMs + (k - 1) * S.gapMs }
+                fun slotSeed(i: Int): Long = slots[i].id?.let { id -> state.people.firstOrNull { it.id == id }?.seed } ?: state.store.haruSeed
+                val song = remember { androidx.compose.animation.core.Animatable(-1f) }   // 노래가 시작된 뒤 지난 ms (-1 = 쉼)
+                fun sing() {
+                    val total = startAt(singOrder.last()) + S.ringMs
+                    if (state.sound != Sound.NONE) io.github.graviton94.carpediem.sound.StoneSong.play(singOrder.map { i -> io.github.graviton94.carpediem.sound.StoneSong.pitch(slotSeed(i), i == 0) to startAt(i).toLong() })
+                    scope.launch { song.snapTo(0f); song.animateTo(total, androidx.compose.animation.core.tween(total.toInt(), easing = androidx.compose.animation.core.LinearEasing)); song.snapTo(-1f) }
+                }
+                val hopPx = with(density) { (u * S.hop).toPx() }
                 slots.forEachIndexed { i, sl ->
                     val cx = xs[i] - sl.scale * (sl.art.meta.bbox.center.x - sl.art.meta.box / 2)
                     val left = cx - sl.scale * (sl.art.meta.box / 2); val top = gy - sl.scale * G.Layout.haruGround
-                    HaruFigure(sl.art, sl.scale, Modifier.offset(left, top), blinkKick = if (sl.id == null) state.blinkKick else 0, hat = sl.birthday, tiltOn = sl.id == null, lookDown = if (sl.id == null && heavyToday) G.Care.lookDown else 0f,
+                    HaruFigure(sl.art, sl.scale, Modifier.offset(left, top).graphicsLayer {
+                        val a = (song.value - startAt(i)) / 320f
+                        translationY = if (song.value >= 0f && a in 0f..1f) -hopPx * sin(a * Math.PI).toFloat() else 0f
+                    }, blinkKick = if (sl.id == null) state.blinkKick else 0, hat = sl.birthday, tiltOn = sl.id == null, lookDown = if (sl.id == null && heavyToday) G.Care.lookDown else 0f,
                         a11y = stringResource(R.string.garden_stoneA11y, sl.name, Labels.stone(ctx, sl.art.meta.stone)), onOpen = { onStone(sl.id) },
-                        onLongPress = if (sl.id == null && !bare) ({ breathSheet = true }) else null)
+                        onLongPress = if (sl.id == null && !bare) ({ sing() }) else null)
                     // 생일 당일: 돌 앞에 작은 케이크 (전날 저녁엔 모자만)
                     if (sl.soon == 0) {
                         val cw = u * Tokens.Garden.Party.cakeWidth
@@ -405,6 +422,17 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                     }
                 }
 
+                androidx.compose.foundation.Canvas(Modifier.fillMaxSize()) {
+                    val e = song.value; if (e < 0f) return@Canvas
+                    val ring = S.ringSize * u.toPx()
+                    slots.indices.forEach { i ->
+                        val a = (e - startAt(i)) / S.ringMs; if (a !in 0f..1f) return@forEach
+                        val sl = slots[i]
+                        val c = Offset(xs[i].toPx(), (gy - sl.scale * (sl.art.meta.ground - sl.art.meta.bbox.center.y)).toPx())
+                        drawCircle(Tokens.Garden.Night.Colors.firefly.copy(alpha = (1f - a) * 0.3f), ring * 0.5f * (0.3f + a), c)
+                        drawCircle(Tokens.Garden.Colors.now.copy(alpha = (1f - a) * 0.8f), ring * (0.25f + 0.75f * a), c, style = androidx.compose.ui.graphics.drawscope.Stroke(u.toPx() * 1.2f))
+                    }
+                }
                 // 이름표 (가족이 있을 때) · 0세 · 기대수명
                 val px = with(density) { Pair(x0.toPx(), x1.toPx()) }
                 // 돌이 oneRow 명보다 많으면 이름표를 두 줄로 번갈아 (서로 겹치지 않게)

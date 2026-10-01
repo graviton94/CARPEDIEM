@@ -278,6 +278,8 @@ design/tokens.json, design/strings.json, data/*.csv   ← 유일한 원본
 | 추억: 마음의 기록 (테두리 안, 월 · 해) + 모은 것 전부. 해는 열두 달을 한 화면에 멈춰서 | 완료 | `MemoriesPage`, `RecordPanel`, `YearTiles`, `CollectionBody` |
 | 흐름: 흐르는 시간 · 인생 달력 · 특별한 날 (버튼 모양 ‘＋ 특별한 날 꽃 놓기’) | 완료 | `FlowPage`, `SpecialDaysRow` |
 | 돌 정리: ‘기억의 자리로 모시기’ · ‘정원에서 빼기’ + 설명 한 줄 | 완료 | `ActionNote` |
+| 노래하는 돌: 하루를 길게 누르면 한 음 + 빛 동그라미, 가족 돌들이 왼쪽부터 저마다의 음으로 대답 (오음계, 숨 소리 ‘없음’이면 빛만). 숨 시트는 ‘숨, 쉼’ 버튼으로 | 완료 | `StoneSong`, `garden.song` |
+| 별똥별: 밤 · 새벽 하늘에 가끔 (처음 6–18초, 그 뒤 25–80초 사이 아무 때) | 완료 | `ShootingStars`, `garden.shootingStar` |
 | 페이지 넘김: 손으로는 ‘내려앉는 종이’ (살짝 기운 새 장이 덮으며 내려앉음), 이름표 · 버튼으로는 ‘숨 한 번’ (옅어졌다 스며듦). 1/5 장만 밀어도 넘어감 | 완료 | `pageTurn`, `garden.motion.turn*` |
 
 ### 출시 전 마지막 할 일
