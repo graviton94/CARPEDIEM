@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 그림 보내기: 캐시의 share/ 폴더만 다른 앱에 잠깐 읽게 한다. -->
+<paths>
+    <cache-path name="share" path="share/" />
+</paths>

@@ -319,6 +319,13 @@ fun LetGoModal(state: AppState, modifier: Modifier = Modifier, onCare: (Care) ->
             TokenText(msg, lineType(Tokens.TypeScale.callout, Theme.garden), color = p.secondary, align = TextAlign.Center)
             Spacer(Modifier.height(Tokens.Space.sp2))
             Action(stringResource(R.string.letgo_ok), filled = true, seed = 999) { state.toast = null; state.care = null }
+            // 그림으로 보내기: 오늘 보낸 한 줄을 카드 한 장으로 (글을 남겼을 때만)
+            val todayLine = state.lines.lastOrNull { it.date == (state.fixedNow ?: java.time.LocalDateTime.now()).toLocalDate() }
+            if (Theme.garden && todayLine != null && todayLine.text.isNotBlank()) TokenText(stringResource(R.string.share_image), Tokens.TypeScale.footnote,
+                Modifier.clickable {
+                    io.github.graviton94.carpediem.share.ShareCards.send(ctx, io.github.graviton94.carpediem.share.ShareCards.line(ctx, todayLine,
+                        io.github.graviton94.carpediem.share.ShareCards.feelingName(ctx, todayLine.feeling), state.store.haruSeed), "line-${todayLine.date}")
+                }.padding(vertical = Tokens.Space.sp1), color = p.secondary, align = TextAlign.Center)
             // 돌봄 권하기: 확인 아래 작은 한 줄 (지나쳐도 되는 곳에)
             state.care?.let { c -> CareLine(state, c) { state.toast = null; state.care = null; onCare(c) } }
         }

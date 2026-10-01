@@ -455,5 +455,18 @@ object Tokens {
         object SleepGarden {
             const val dim = 0.18f
         }
+        object Year {
+            const val columns = 21.0f
+            const val thanks = 3.0f
+        }
+        object Share {
+            const val lineW = 1080.0f
+            const val lineH = 1350.0f
+            const val yearW = 1080.0f
+            const val yearH = 1350.0f
+            const val text = 58.0f
+            const val small = 34.0f
+            const val pad = 96.0f
+        }
     }
 }

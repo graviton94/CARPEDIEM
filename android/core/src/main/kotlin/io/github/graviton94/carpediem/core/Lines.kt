@@ -81,6 +81,24 @@ object Lines {
         return (n - 1 downTo 0).map { k -> today.minusDays(k.toLong()).let { d -> d to byDay[d] } }
     }
 
+    /** 한 해의 정원: 그해의 모든 날 (1월 1일부터), 날마다 보낸 한 줄 또는 null. */
+    fun yearDays(list: List<DayLine>, year: Int): List<Pair<LocalDate, DayLine?>> {
+        val byDay = list.associateBy { it.date }
+        val first = LocalDate.of(year, 1, 1)
+        return (0 until first.lengthOfYear()).map { k -> first.plusDays(k.toLong()).let { d -> d to byDay[d] } }
+    }
+
+    /** 한 해의 정원이 피는 때: 12월 31일 ~ 다음 해 1월 7일. 그 해 (없으면 null). */
+    fun yearDue(today: LocalDate): Int? = when {
+        today.monthValue == 12 && today.dayOfMonth == 31 -> today.year
+        today.monthValue == 1 && today.dayOfMonth <= 7 -> today.year - 1
+        else -> null
+    }
+
+    /** 계절 첫날의 바람: 3 · 6 · 9 · 12월 1 ~ 14일 (그 계절 이름의 편지 id, 예 "2026-12"). */
+    fun wishDue(today: LocalDate): String? =
+        if (today.monthValue in listOf(3, 6, 9, 12) && today.dayOfMonth <= 14) "%04d-%02d".format(today.year, today.monthValue) else null
+
     /** 같은 날에 이미 보냈으면 그대로 (하루에 한 줄). 날짜순. */
     fun add(list: List<DayLine>, line: DayLine): List<DayLine> =
         if (list.any { it.date == line.date }) list else (list + line).sortedBy { it.date }

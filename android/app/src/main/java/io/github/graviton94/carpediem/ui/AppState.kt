@@ -196,7 +196,11 @@ class AppState(private val context: Context) {
     fun letterDue(today: LocalDate = nowDate()): io.github.graviton94.carpediem.core.Letter? {
         if (!keepLines) return null
         val day = io.github.graviton94.carpediem.core.Letters.due(today) ?: return null
-        return io.github.graviton94.carpediem.core.Letters.of(lines, day, Tokens.Garden.Letter.minLines.toInt())?.takeIf { it.id !in lettersOpened }
+        // 한 줄이 모자라도 지난 계절의 바람이 있으면 그 바람만 담긴 편지가 온다
+        val l = io.github.graviton94.carpediem.core.Letters.of(lines, day, Tokens.Garden.Letter.minLines.toInt())
+            ?: io.github.graviton94.carpediem.core.Letter(day, io.github.graviton94.carpediem.core.Memories.seasonOf(day), day.minusMonths(3), day.minusDays(1), emptyList(), emptyList())
+                .takeIf { wishFor(it) != null }
+        return l?.takeIf { it.id !in lettersOpened }
     }
     fun received(today: LocalDate = nowDate()): List<io.github.graviton94.carpediem.core.Letter> =
         if (!keepLines) emptyList() else io.github.graviton94.carpediem.core.Letters.received(lines, today, Tokens.Garden.Letter.minLines.toInt())
@@ -228,6 +232,15 @@ class AppState(private val context: Context) {
     }
     /** 캡처용: 홈을 열면 이번 달 편지를 바로 펼친다. */
     var debugOpenLetter = false
+    var debugOpenYear = false
+    /** 시험용 (개발자 모드 · 캡처): 오늘이 12월 31일 ~ 1월 7일이면 그 해에 여러 마음을 흩어 놓아 한 해의 정원이 피게. */
+    fun addSampleYear(today: LocalDate = nowDate()) {
+        val y = Lines.yearDue(today) ?: return
+        val fs = Feeling.entries + listOf<Feeling?>(null, Feeling.CALM, Feeling.JOY, Feeling.THANKS)
+        var next = lines; val r = kotlin.random.Random(y)
+        for (k in 0 until 220) { val d = LocalDate.of(y, 1, 1).plusDays(r.nextLong(0, 365)); next = Lines.add(next, DayLine(d, if (r.nextInt(5) == 0) context.getString(R.string.letter_sample1) else "", fs[r.nextInt(fs.size)])) }
+        store.lines = next; lines = next; val v = yearsOpened - "$y"; store.yearsOpened = v; yearsOpened = v
+    }
 
     fun exportLines(): String = Lines.export(lines) { Labels.feeling(context, it) }
     /** 시험용 (개발자 모드): 1년 전 오늘 보낸 한 줄을 하나 넣어 ‘1년 뒤 오늘’을 확인한다. */
@@ -264,6 +277,28 @@ class AppState(private val context: Context) {
         store.people = next; people = next; Widgets.refresh(context)
     }
     fun removePerson(id: String) { val next = people.filterNot { it.id == id }; store.people = next; people = next; Widgets.refresh(context) }
+    // ───── 계절 첫날의 바람 · 한 해의 정원 ─────
+    var wishes by mutableStateOf(store.wishes)
+        private set
+    var wishSkipped by mutableStateOf(store.wishSkipped)
+        private set
+    var yearsOpened by mutableStateOf(store.yearsOpened)
+        private set
+    /** 이번 계절 첫 두 주에 묻는 바람 (이미 답했거나 ‘다음에’를 눌렀으면 null). 기록 남기기를 끄면 묻지 않음. */
+    fun wishDue(today: LocalDate = nowDate()): String? =
+        Lines.wishDue(today)?.takeIf { keepLines && it !in wishes && it !in wishSkipped }
+    fun saveWish(id: String, text: String) { val t = Lines.clean(text, Tokens.Garden.LetGo.maxChars.toInt()); if (t.isEmpty()) return; val v = wishes + (id to t); store.wishes = v; wishes = v }
+    fun skipWish(id: String) { val v = wishSkipped + id; store.wishSkipped = v; wishSkipped = v }
+    /** 이 편지가 돌려줄 지난 계절의 바람 (석 달 전 계절 id). */
+    fun wishFor(letter: io.github.graviton94.carpediem.core.Letter): String? = wishes["%04d-%02d".format(letter.arrives.minusMonths(3).year, letter.arrives.minusMonths(3).monthValue)]
+    /** 한 해의 정원이 핀 해 (12월 31일 ~ 1월 7일, 한 줄이 하나라도 있고 아직 펼치지 않았을 때). */
+    fun yearDue(today: LocalDate = nowDate()): Int? =
+        Lines.yearDue(today)?.takeIf { y -> keepLines && "$y" !in yearsOpened && lines.any { it.date.year == y } }
+    fun openYear(y: Int) { val v = yearsOpened + "$y"; store.yearsOpened = v; yearsOpened = v }
+    /** 지난 해들 (한 줄이 있는 해, 최근부터). 올해는 12월 31일부터. */
+    fun pastYears(today: LocalDate = nowDate()): List<Int> =
+        if (!keepLines) emptyList() else lines.map { it.date.year }.distinct().filter { it < today.year || (it == today.year && today.monthValue == 12 && today.dayOfMonth == 31) }.sortedDescending()
+
     // ───── 기억의 돌 ─────
     var memories by mutableStateOf(store.memories)
         private set
@@ -306,7 +341,7 @@ class AppState(private val context: Context) {
 
     fun eraseAll() {
         previewQ = false
-        store.eraseAll(); store.ensureQuoteSeed(); unit = store.unit; grid = store.grid; defaultUnit = unit; defaultGrid = grid; lines = emptyList(); streaks = emptyMap(); keepLines = true; care = null; careOn = true; question = null; answering = null; lettersOpened = emptySet(); toast = null; randomLine = null; people = emptyList(); memories = emptyList(); memoryLines = emptyList(); breaths = emptyList(); breathKind = store.breathKind; breathMinutes = store.breathMinutes; sound = store.sound
+        store.eraseAll(); store.ensureQuoteSeed(); unit = store.unit; grid = store.grid; defaultUnit = unit; defaultGrid = grid; lines = emptyList(); streaks = emptyMap(); keepLines = true; care = null; careOn = true; question = null; answering = null; lettersOpened = emptySet(); toast = null; randomLine = null; people = emptyList(); memories = emptyList(); memoryLines = emptyList(); wishes = emptyMap(); wishSkipped = emptySet(); yearsOpened = emptySet(); breaths = emptyList(); breathKind = store.breathKind; breathMinutes = store.breathMinutes; sound = store.sound
         profile = null; quoteLanguage = store.quoteLanguage; quote = store.todaysQuote(); design = store.design; meetPending = false; previewAll = false; notify = false; devMode = false; io.github.graviton94.carpediem.notify.Daily.schedule(context, false); io.github.graviton94.carpediem.notify.Evening.schedule(context, false, 21); eveningNotify = false; morningBreath = true; Widgets.refresh(context)
     }
 

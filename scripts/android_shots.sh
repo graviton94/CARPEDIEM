@@ -48,7 +48,7 @@ open --es cd.now 2026-09-30T05:20;                                              
 open --ez cd.question true --es cd.now $NOW;                                                          shot g29_question 5
 open --ez cd.moods true --es cd.now $NOW; sleep 5; swipe_up; sleep 3; swipe_up;                        shot g30_mood 3
 open --ez cd.letter true --es cd.now 2026-12-02T10:00; sleep 5; swipe_up;                              shot g31_letter 3
-open --ez cd.openLetter true --es cd.now 2026-12-02T10:00;                                              shot g32_letter_open 4
+open --ez cd.wish true --ez cd.openLetter true --es cd.now 2026-12-02T10:00;                            shot g32_letter_open 4
 open --ez cd.letter true --ez cd.openLetter true --es cd.now 2026-12-02T21:30;                         shot g33_letter_night 4
 open --es cd.screen collection --es cd.now 2026-12-02T10:00; swipe_up; swipe_up;                       shot g34_letters 3
 # 1.4 돌봄: 한마디 창 아래 권유 · 잠깐 바라보기 · 고마움 책
@@ -62,6 +62,10 @@ open --es cd.today SAD --es cd.now 2026-10-01T15:00;                            
 open --es cd.today JOY --es cd.now 2026-10-02T15:00;                                                  shot g41_weather_sun 4
 open --es cd.screen breath --es cd.now 2026-10-03T07:30;                                              shot g42_breath_morning 4
 open --es cd.now 2026-10-03T23:20;                                                                     shot g43_sleepy 8
+# 1.6 작은 의식: 고마움 숨 (내쉴 때) · 계절 첫날의 바람 · 한 해의 정원
+open --es cd.screen thanks --es cd.now 2026-10-03T15:00;                                              shot g44_thanks_breath 7
+open --es cd.now 2026-12-03T10:00; sleep 5; swipe_up;                                                  shot g45_wish 3
+open --ez cd.year true --ez cd.openYear true --es cd.now 2026-12-31T15:00;                            shot g46_year 6
 # 인생의 계절 (다른 생년월일 · 다른 하루)
 open --el cd.seed 12345 --es cd.birth 2016-03-01 --es cd.now $NOW;                                     shot g12_spring 14
 open --el cd.seed 99 --es cd.birth 1968-08-20 --ez cd.preview true --es cd.now $NOW;                   shot g13_autumn 14

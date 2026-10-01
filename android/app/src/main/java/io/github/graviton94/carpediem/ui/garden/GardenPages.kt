@@ -109,8 +109,9 @@ fun CollectionScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, 
             }
             // 계절마다 한 통씩 쌓이는 편지
             ReceivedLetters(state, now.toLocalDate())
-            // 고마움 책 · 흘려보낸 마음
+            // 고마움 책 · 흘려보낸 마음 · 지난 해들의 정원
             ThanksAndLetGo(state)
+            PastYears(state, now.toLocalDate())
             // 기억의 자리: 기억의 돌이 있을 때만 (앱이 먼저 권하지 않음)
             if (state.memories.isNotEmpty()) Row(
                 Modifier.fillMaxWidth().padding(top = Tokens.Space.sp4).heightIn(min = Tokens.Layout.tapTarget).crayonBox(null, G.Radius.box, G.Stroke.chip, 1160).clickable(onClick = onMemory)

@@ -80,14 +80,15 @@ internal fun rhythm(k: BreathKind): Breath.Rhythm {
         BreathKind.CALM -> Breath.Rhythm(b.calmIn.toDouble(), 0.0, b.calmOut.toDouble(), 0.0)
         BreathKind.BOX -> Breath.Rhythm(b.boxIn.toDouble(), b.boxHold.toDouble(), b.boxOut.toDouble(), b.boxRest.toDouble())
         BreathKind.SLEEP -> Breath.Rhythm(b.sleepIn.toDouble(), b.sleepHold.toDouble(), b.sleepOut.toDouble(), 0.0)
+        BreathKind.THANKS -> Breath.Rhythm(b.calmIn.toDouble(), 0.0, b.calmOut.toDouble(), 0.0)
     }
 }
 internal fun partTitle(p: io.github.graviton94.carpediem.core.DayPart) = when (p) {
     io.github.graviton94.carpediem.core.DayPart.MORNING -> R.string.breath_part_morning; io.github.graviton94.carpediem.core.DayPart.DAY -> R.string.breath_part_day
     io.github.graviton94.carpediem.core.DayPart.EVENING -> R.string.breath_part_evening; io.github.graviton94.carpediem.core.DayPart.NIGHT -> R.string.breath_part_night
 }
-internal fun kindName(k: BreathKind) = when (k) { BreathKind.CALM -> R.string.breath_kind_calm; BreathKind.BOX -> R.string.breath_kind_box; BreathKind.SLEEP -> R.string.breath_kind_sleep }
-private fun kindDesc(k: BreathKind) = when (k) { BreathKind.CALM -> R.string.breath_kindDesc_calm; BreathKind.BOX -> R.string.breath_kindDesc_box; BreathKind.SLEEP -> R.string.breath_kindDesc_sleep }
+internal fun kindName(k: BreathKind) = when (k) { BreathKind.CALM -> R.string.breath_kind_calm; BreathKind.BOX -> R.string.breath_kind_box; BreathKind.SLEEP -> R.string.breath_kind_sleep; BreathKind.THANKS -> R.string.breath_kind_thanks }
+private fun kindDesc(k: BreathKind) = when (k) { BreathKind.CALM -> R.string.breath_kindDesc_calm; BreathKind.BOX -> R.string.breath_kindDesc_box; BreathKind.SLEEP -> R.string.breath_kindDesc_sleep; BreathKind.THANKS -> R.string.breath_kindDesc_thanks }
 private fun soundName(s: Sound) = when (s) { Sound.NONE -> R.string.sound_none; Sound.WAVES -> R.string.sound_waves; Sound.WIND -> R.string.sound_wind; Sound.RAIN -> R.string.sound_rain; Sound.TONE -> R.string.sound_tone; Sound.SEASON -> R.string.sound_season }
 private fun stepName(s: BreathStep) = when (s) { BreathStep.IN -> R.string.breath_in; BreathStep.HOLD -> R.string.breath_hold; BreathStep.OUT -> R.string.breath_out; BreathStep.REST -> R.string.breath_rest }
 
@@ -219,13 +220,16 @@ fun BreathScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, kind
             // 글자: 첫 1분만. 끝나면 한 줄 + 정원으로
             val cue = if (done) null else step?.takeIf { elapsed < b.cueSeconds * 1000 }
             Box(Modifier.height(Tokens.Space.sp10), contentAlignment = Alignment.Center) {
-                if (cue != null) TokenText(stringResource(stepName(cue)), Tokens.TypeScale.title2.serif(), color = p.secondary, align = TextAlign.Center)
+                // 고마움 숨: 내쉴 때 “고마운 것 하나”
+                if (cue != null) TokenText(stringResource(if (kind == BreathKind.THANKS && cue == BreathStep.OUT) R.string.breath_out_thanks else stepName(cue)), Tokens.TypeScale.title2.serif(), color = p.secondary, align = TextAlign.Center)
             }
             if (done) {
                 // 아침 · 저녁 · 밤은 때의 말, 낮은 숨마다의 말
                 val msg = remember { io.github.graviton94.carpediem.ui.Labels.timed(ctx, "breath_done", part) ?: ctx.getString(ctx.resources.getIdentifier("breath_done_${kind.name.lowercase()}_${(1..3).random()}", "string", ctx.packageName)) }
                 TokenText(msg, Tokens.TypeScale.headline.serif(), Modifier.fillMaxWidth().semantics { liveRegion = LiveRegionMode.Polite }, align = TextAlign.Center)
                 Spacer(Modifier.height(Tokens.Space.sp6))
+                // 고마움 숨 뒤: 떠오른 고마움을 오늘의 한 줄로 (오늘 아직 보내지 않았을 때)
+                if (kind == BreathKind.THANKS && state.keepLines) ThanksAfter(state, now.toLocalDate())
                 GardenButton(stringResource(R.string.breath_home), onDone, filled = true, seed = 1021)
             } else TokenText(stringResource(R.string.breath_startA11y, stringResource(kindName(kind)), "$minutes"), Tokens.TypeScale.caption2,
                 Modifier.semantics { liveRegion = LiveRegionMode.Polite }.graphicsLayer { alpha = 0f })
@@ -339,5 +343,27 @@ fun LookScreen(onDone: () -> Unit) {
         Spacer(Modifier.height(Tokens.Space.sp6))
         Box(Modifier.height(Tokens.Layout.tapTarget + Tokens.Space.sp2)) { if (done) GardenButton(stringResource(R.string.breath_home), onDone, filled = true, seed = 1210) }
         Spacer(Modifier.weight(1f))
+    }
+}
+
+/** 고마움 숨을 마친 뒤: 떠오른 것을 한 줄로 고마움 책에 (오늘의 한 줄이 된다, 하루 한 줄). */
+@Composable
+private fun ThanksAfter(state: AppState, today: java.time.LocalDate) {
+    val p = Theme.palette
+    var text by remember { mutableStateOf("") }
+    var kept by remember { mutableStateOf(false) }
+    if (state.sentOn(today) && !kept) return
+    Column(Modifier.fillMaxWidth().padding(bottom = Tokens.Space.sp4), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp2), horizontalAlignment = Alignment.CenterHorizontally) {
+        if (kept) { TokenText(stringResource(R.string.breath_thanksKept), Tokens.TypeScale.subhead.serif(), align = TextAlign.Center); return@Column }
+        TokenText(stringResource(R.string.breath_thanksAsk), Tokens.TypeScale.footnote, color = p.secondary, align = TextAlign.Center)
+        androidx.compose.foundation.text.BasicTextField(
+            value = text, onValueChange = { v -> val one = v.replace('\n', ' '); if (one.codePointCount(0, one.length) <= G.LetGo.maxChars.toInt()) text = one },
+            singleLine = true, textStyle = Tokens.TypeScale.callout.style().copy(color = p.foreground), cursorBrush = androidx.compose.ui.graphics.SolidColor(p.foreground),
+            modifier = Modifier.fillMaxWidth().crayonBox(null, G.Radius.box, G.Stroke.chip, 1025).padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3),
+            decorationBox = { inner -> Box { if (text.isEmpty()) TokenText(stringResource(R.string.breath_thanksHint), Tokens.TypeScale.callout, color = p.secondary); inner() } },
+        )
+        GardenButton(stringResource(R.string.breath_thanksKeep), {
+            if (text.isNotBlank()) { state.letGo(text, io.github.graviton94.carpediem.core.Feeling.THANKS); state.toast = null; state.care = null; kept = true }
+        }, filled = text.isNotBlank(), seed = 1026)
     }
 }

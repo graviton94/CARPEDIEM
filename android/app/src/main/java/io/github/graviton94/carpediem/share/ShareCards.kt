@@ -1,0 +1,124 @@
+package io.github.graviton94.carpediem.share
+
+import android.content.Context
+import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.RectF
+import android.text.Layout
+import android.text.StaticLayout
+import android.text.TextPaint
+import androidx.compose.ui.graphics.toArgb
+import androidx.core.content.FileProvider
+import androidx.core.content.res.ResourcesCompat
+import io.github.graviton94.carpediem.R
+import io.github.graviton94.carpediem.core.DayLine
+import io.github.graviton94.carpediem.core.Feeling
+import io.github.graviton94.carpediem.design.Tokens
+import io.github.graviton94.carpediem.ui.garden.HaruArt
+import io.github.graviton94.carpediem.ui.garden.drawHaru
+import io.github.graviton94.carpediem.ui.garden.moodColor
+import java.io.File
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
+import kotlin.math.cos
+import kotlin.math.sin
+
+/**
+ * 그림 보내기: 한 줄 카드 · 한 해의 정원을 그림 한 장으로 만들어 폰의 ‘보내기’ 창으로 (서버 없음, 앱 밖으로 나가는 것은 그 그림 한 장뿐).
+ * 낮의 종이 · 먹선 · 내 하루 · 명조 글자. 크기는 토큰 garden.share.
+ */
+object ShareCards {
+    private val S = Tokens.Garden.Share
+    private val paper = Tokens.Garden.Colors.paper.toArgb()
+    private val ink = Tokens.Garden.Colors.ink.toArgb()
+    private val inkSoft = Tokens.Garden.Colors.inkSoft.toArgb()
+
+    private fun serif(ctx: Context) = ResourcesCompat.getFont(ctx, R.font.notoserifkr_medium)
+    private fun paint(ctx: Context, size: Float, color: Int) = TextPaint(Paint.ANTI_ALIAS_FLAG).apply { typeface = serif(ctx); textSize = size; this.color = color }
+
+    private fun base(w: Int, h: Int): Pair<Bitmap, Canvas> {
+        val b = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888); val c = Canvas(b)
+        c.drawColor(paper)
+        // 손으로 그은 듯한 테두리 한 줄
+        val p = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE; strokeWidth = 5f; color = ink; strokeCap = Paint.Cap.ROUND }
+        val m = S.pad * 0.45f
+        c.drawRoundRect(RectF(m, m, w - m, h - m), 48f, 48f, p)
+        return b to c
+    }
+
+    private fun text(c: Canvas, s: String, tp: TextPaint, x: Float, y: Float, width: Int, align: Layout.Alignment = Layout.Alignment.ALIGN_CENTER): Float {
+        val l = StaticLayout.Builder.obtain(s, 0, s.length, tp, width).setAlignment(align).setLineSpacing(0f, 1.25f).build()
+        c.save(); c.translate(x, y); l.draw(c); c.restore()
+        return l.height.toFloat()
+    }
+
+    private fun haru(c: Canvas, seed: Long, cx: Float, groundY: Float, widthPx: Float) {
+        val art = HaruArt.of(seed, false)
+        val k = widthPx / art.meta.bbox.width
+        c.save(); c.translate(cx - art.meta.bbox.center.x * k, groundY - art.meta.ground * k)
+        androidx.compose.ui.graphics.drawscope.CanvasDrawScope().draw(
+            androidx.compose.ui.unit.Density(1f), androidx.compose.ui.unit.LayoutDirection.Ltr, androidx.compose.ui.graphics.Canvas(c),
+            androidx.compose.ui.geometry.Size(art.meta.box * k, art.meta.box * k),
+        ) { drawHaru(art, k, smile = 1f) }
+        c.restore()
+        val p = Paint(Paint.ANTI_ALIAS_FLAG).apply { strokeWidth = 5f; color = ink; strokeCap = Paint.Cap.ROUND }
+        c.drawLine(cx - widthPx * 1.4f, groundY, cx + widthPx * 1.4f, groundY, p)
+    }
+
+    /** 오늘의 한 줄 카드: 날짜 · 마음, 한 줄, 그 아래 웃는 하루. */
+    fun line(ctx: Context, l: DayLine, feelingName: String?, seed: Long): Bitmap {
+        val w = S.lineW.toInt(); val h = S.lineH.toInt(); val pad = S.pad
+        val (b, c) = base(w, h)
+        val date = l.date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG))
+        text(c, listOfNotNull(date, feelingName).joinToString(" · "), paint(ctx, S.small, inkSoft), pad, pad * 1.4f, (w - pad * 2).toInt())
+        val tp = paint(ctx, S.text, ink)
+        val bodyW = (w - pad * 2.4f).toInt()
+        val hBody = StaticLayout.Builder.obtain(l.text, 0, l.text.length, tp, bodyW).setLineSpacing(0f, 1.25f).build().height
+        text(c, l.text, tp, pad * 1.2f, h * 0.42f - hBody / 2f, bodyW)
+        haru(c, seed, w / 2f, h * 0.8f, w * 0.2f)
+        text(c, ctx.getString(R.string.share_footer), paint(ctx, S.small * 0.8f, inkSoft), pad, h - pad * 1.25f, (w - pad * 2).toInt())
+        return b
+    }
+
+    /** 한 해의 정원: 365개의 마음 동그라미, 한 줄 · 고마움 수, 고마움 한 줄 몇 개. */
+    fun year(ctx: Context, year: Int, days: List<Pair<LocalDate, DayLine?>>, title: String, count: String, thanks: List<String>): Bitmap {
+        val w = S.yearW.toInt(); val h = S.yearH.toInt(); val pad = S.pad
+        val (b, c) = base(w, h)
+        var y = pad * 1.2f
+        y += text(c, title, paint(ctx, S.text * 0.9f, ink), pad, y, (w - pad * 2).toInt()) + pad * 0.4f
+        val cols = Tokens.Garden.Year.columns.toInt(); val cell = (w - pad * 2) / cols
+        val fill = Paint(Paint.ANTI_ALIAS_FLAG); val line = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE; strokeWidth = 2f }
+        days.forEachIndexed { i, (d, l) ->
+            val cx = pad + (i % cols + 0.5f) * cell; val cy = y + (i / cols + 0.5f) * cell; val r = cell * 0.38f
+            // 날마다 조금씩 다른 손그림 동그라미
+            val path = android.graphics.Path(); val ph = (d.toEpochDay() % 7).toFloat()
+            for (k in 0..24) { val a = k / 24f * 6.283f; val rr = r * (1f + 0.08f * sin(a * 3 + ph)); val px = cx + cos(a) * rr; val py = cy + sin(a) * rr; if (k == 0) path.moveTo(px, py) else path.lineTo(px, py) }
+            path.close()
+            if (l != null) { fill.color = moodColor(l.feeling).toArgb(); c.drawPath(path, fill); line.color = ink; line.alpha = 120 }
+            else { line.color = inkSoft; line.alpha = 90 }
+            c.drawPath(path, line)
+        }
+        y += cell * ((days.size + cols - 1) / cols) + pad * 0.5f
+        y += text(c, count, paint(ctx, S.small, inkSoft), pad, y, (w - pad * 2).toInt()) + pad * 0.3f
+        thanks.forEach { t -> y += text(c, "“$t”", paint(ctx, S.small * 1.05f, ink), pad, y, (w - pad * 2).toInt()) + pad * 0.15f }
+        text(c, ctx.getString(R.string.share_footer), paint(ctx, S.small * 0.8f, inkSoft), pad, h - pad * 1.25f, (w - pad * 2).toInt())
+        return b
+    }
+
+    /** 그림을 캐시에 두고 폰의 ‘보내기’ 창을 연다. */
+    fun send(ctx: Context, bmp: Bitmap, name: String) {
+        runCatching {
+            val dir = File(ctx.cacheDir, "share").apply { mkdirs() }
+            val f = File(dir, "$name.png")
+            f.outputStream().use { bmp.compress(Bitmap.CompressFormat.PNG, 100, it) }
+            val uri = FileProvider.getUriForFile(ctx, "${ctx.packageName}.share", f)
+            val send = Intent(Intent.ACTION_SEND).setType("image/png").putExtra(Intent.EXTRA_STREAM, uri).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            ctx.startActivity(Intent.createChooser(send, ctx.getString(R.string.share_chooser)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+        }
+    }
+
+    fun feelingName(ctx: Context, f: Feeling?) = f?.let { io.github.graviton94.carpediem.ui.Labels.feeling(ctx, it) }
+}

@@ -228,6 +228,19 @@ class Store(context: Context) {
         get() = Family.decode(prefs.getString("people", null))
         set(v) = prefs.edit().putString("people", Family.encode(v)).apply()
 
+    /** 계절 첫날의 바람: 편지 id ("2026-12") → 한 줄. 석 달 뒤 편지 첫 장에 돌아온다. 저장 형식 `id<TAB>글` 한 줄에 하나. */
+    var wishes: Map<String, String>
+        get() = prefs.getString("wishes", null).orEmpty().lineSequence().mapNotNull { r -> r.split('\t', limit = 2).takeIf { it.size == 2 }?.let { it[0] to it[1] } }.toMap()
+        set(v) = prefs.edit().putString("wishes", v.entries.joinToString("\n") { "${it.key}\t${it.value.replace('\n', ' ').replace('\t', ' ')}" }).apply()
+    /** ‘다음에’를 누른 계절 (그 계절엔 다시 묻지 않음). */
+    var wishSkipped: Set<String>
+        get() = prefs.getStringSet("wishSkipped", emptySet()) ?: emptySet()
+        set(v) = prefs.edit().putStringSet("wishSkipped", v).apply()
+    /** 펼쳐 본 한 해의 정원 (해). */
+    var yearsOpened: Set<String>
+        get() = prefs.getStringSet("yearsOpened", emptySet()) ?: emptySet()
+        set(v) = prefs.edit().putStringSet("yearsOpened", v).apply()
+
     /** 기억의 돌 (곁을 떠난 가족 · 반려동물, 넷까지). 정원 · 위젯 · 알림에는 나오지 않는다. */
     var memories: List<Person>
         get() = Family.decode(prefs.getString("memories", null))

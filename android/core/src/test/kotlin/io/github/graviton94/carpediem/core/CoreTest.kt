@@ -344,4 +344,13 @@ class ReflectTest {
         assertEquals(DayPart.NIGHT, DayPart.of(4)); assertEquals(DayPart.MORNING, DayPart.of(5)); assertEquals(DayPart.MORNING, DayPart.of(10))
         assertEquals(DayPart.DAY, DayPart.of(11)); assertEquals(DayPart.EVENING, DayPart.of(17)); assertEquals(DayPart.NIGHT, DayPart.of(21)); assertEquals(DayPart.NIGHT, DayPart.of(0))
     }
+
+    @Test fun yearAndWish() {
+        val list = listOf(DayLine(LocalDate.of(2024, 2, 29), "a", Feeling.JOY), DayLine(LocalDate.of(2024, 12, 31), "b", null))
+        val y = Lines.yearDays(list, 2024)
+        assertEquals(366, y.size); assertEquals(Feeling.JOY, y[59].second?.feeling); assertEquals("b", y.last().second?.text)
+        assertEquals(2026, Lines.yearDue(LocalDate.of(2026, 12, 31))); assertEquals(2026, Lines.yearDue(LocalDate.of(2027, 1, 7)))
+        assertEquals(null, Lines.yearDue(LocalDate.of(2027, 1, 8))); assertEquals(null, Lines.yearDue(LocalDate.of(2026, 12, 30)))
+        assertEquals("2026-12", Lines.wishDue(LocalDate.of(2026, 12, 14))); assertEquals(null, Lines.wishDue(LocalDate.of(2026, 12, 15))); assertEquals(null, Lines.wishDue(LocalDate.of(2026, 11, 1)))
+    }
 }

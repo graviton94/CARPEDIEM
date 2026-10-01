@@ -432,6 +432,8 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
                         FormRow(stringResource(R.string.recall_addRandom), onClick = { state.addSampleRandom() }) {}
                         RowDivider()
                         FormRow(stringResource(R.string.dev_letter), onClick = { state.addSampleLetter() }) {}
+                        RowDivider()
+                        FormRow(stringResource(R.string.dev_year), onClick = { state.addSampleYear() }) {}
                     }
                 }
                 if (confirmClear) AlertDialog(

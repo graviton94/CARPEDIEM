@@ -460,5 +460,18 @@ enum Tokens {
         enum SleepGarden {
             static let dim: CGFloat = 0.18
         }
+        enum Year {
+            static let columns: CGFloat = 21.0
+            static let thanks: CGFloat = 3.0
+        }
+        enum Share {
+            static let lineW: CGFloat = 1080.0
+            static let lineH: CGFloat = 1350.0
+            static let yearW: CGFloat = 1080.0
+            static let yearH: CGFloat = 1350.0
+            static let text: CGFloat = 58.0
+            static let small: CGFloat = 34.0
+            static let pad: CGFloat = 96.0
+        }
     }
 }
