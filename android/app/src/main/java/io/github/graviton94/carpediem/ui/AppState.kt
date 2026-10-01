@@ -104,7 +104,7 @@ class AppState(private val context: Context) {
     var lines by mutableStateOf(store.lines)
         private set
     /** 오늘 이미 한 줄을 떠나보냈는지 (날이 바뀌면 다시 쓸 수 있다). */
-    val sentOn: LocalDate? get() = lines.lastOrNull()?.date
+    fun sentOn(day: LocalDate): Boolean = lines.any { it.date == day }
     var keepLines by mutableStateOf(store.keepLines)
         private set
     /** 이어 쓰기 흔적 (7 · 30 · 100일 → 얻은 날). */

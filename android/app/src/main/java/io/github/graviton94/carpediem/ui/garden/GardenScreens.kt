@@ -168,9 +168,9 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
     var open by remember { mutableStateOf<Moment?>(null) }
     var breathSheet by remember { mutableStateOf(false) }
     val sleepy = !bare && isNight(now)
-    var letterOpen by remember { mutableStateOf<io.github.graviton94.carpediem.core.Letter?>(null) }
-    // 캡처용: 이번 달 편지를 바로 펼침 (그리기 중이 아니라 처음 한 번만)
-    LaunchedEffect(Unit) { if (state.debugOpenLetter && !bare) { state.debugOpenLetter = false; state.letterDue(now.toLocalDate())?.let { state.openLetter(it.id); letterOpen = it } } }
+    // 캡처용: 이번 달 편지를 바로 펼침. 고르기만 그리기 중에, ‘연 편지’로 남기기는 그 뒤에
+    var letterOpen by remember { mutableStateOf(if (state.debugOpenLetter && !bare) state.letterDue(now.toLocalDate()) else null) }
+    LaunchedEffect(letterOpen) { letterOpen?.let { state.openLetter(it.id) } }
 
     BoxWithConstraints(Modifier.fillMaxSize().paperBackground()) {
         val u = Theme.unit
@@ -250,7 +250,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                         LifeUnit.entries.forEachIndexed { i, unit -> GardenChip(Labels.unit(ctx, unit), unit == state.unit, seed = 800 + i) { state.changeUnit(unit) } }
                     }
                     val question = state.question
-                    if (question != null) QuestionBlock(state, question, sent = state.sentOn == now.toLocalDate()) {
+                    if (question != null) QuestionBlock(state, question, sent = state.sentOn(now.toLocalDate())) {
                         // 한 줄로 답하기: 둘째 장 맨 아래 오늘의 한 줄로 부드럽게
                         state.answer(); scope.launch { scroll.animateScrollTo(scroll.maxValue, tween(G.Motion.pageMs.toInt() * 2, easing = FastOutSlowInEasing)) }
                     } else state.quote?.let { q ->
@@ -304,7 +304,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 }
 
                 // 돌들: 한 번 누르면 쓰다듬기, 두 번 누르면 그 돌의 페이지
-                val todayLine = state.lines.lastOrNull()?.takeIf { it.date == now.toLocalDate() }
+                val todayLine = state.lines.lastOrNull { it.date == now.toLocalDate() }
                 val sentTo = todayLine?.to
                 // 무거운 마음을 보낸 날, 내 하루는 살짝 아래를 본다 (다음 날 평소대로)
                 val heavyToday = todayLine?.feeling in io.github.graviton94.carpediem.core.Letters.HEAVY

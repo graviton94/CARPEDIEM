@@ -145,7 +145,7 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
         if (flying == null) return@LaunchedEffect
         fly.snapTo(0f); fly.animateTo(1f, tween(G.Motion.letGoMs.toInt(), easing = LinearOutSlowInEasing)); flying = null
     }
-    val sent = state.sentOn == today
+    val sent = state.sentOn(today)
     val formView = remember { BringIntoViewRequester() }
     val scope = rememberCoroutineScope()
     fun send() {

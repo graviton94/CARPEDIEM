@@ -138,7 +138,7 @@ fun NightLights(now: LocalDateTime, groundY: Dp, stonesFrom: Dp, stonesTo: Dp, m
  */
 @Composable
 fun MoodWeather(state: io.github.graviton94.carpediem.ui.AppState, now: LocalDateTime, skyBottom: Dp) {
-    val f = state.lines.lastOrNull()?.takeIf { it.date == now.toLocalDate() }?.feeling ?: return
+    val f = state.lines.lastOrNull { it.date == now.toLocalDate() }?.feeling ?: return
     val rain = f in io.github.graviton94.carpediem.core.Letters.HEAVY
     val sun = f == io.github.graviton94.carpediem.core.Feeling.JOY || f == io.github.graviton94.carpediem.core.Feeling.HOPE || f == io.github.graviton94.carpediem.core.Feeling.THANKS
     if (!rain && !sun) return
