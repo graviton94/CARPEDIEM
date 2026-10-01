@@ -220,7 +220,7 @@ design/tokens.json, design/strings.json, data/*.csv   ← 유일한 원본
 ### 1.4 돌봄 — 개발 완료, 폰 확인 전
 | 항목 | 상태 | 어디 |
 |---|---|---|
-| 돌봄 권하기: 한마디 창 아래 한 줄 (슬픔 → 숨, 쉼 1분 · 걱정 → 네모 숨 1분 · 실망 → 잠깐 바라보기 · 기쁨 · 고마움 → 누구에게) | 완료 | `AppState.careFor`, `LetGo.kt` CareLine |
+| 돌봄 권하기: 한마디 창 아래 한 줄 (슬픔 → 숨, 쉼 1분 · 걱정 → 고른 호흡 1분 · 실망 → 잠깐 바라보기 · 기쁨 · 고마움 → 누구에게) | 완료 | `AppState.careFor`, `LetGo.kt` CareLine |
 | 잠깐 바라보기 30초 (손그림 동그라미가 차오름) | 완료 | `BreathPages.kt` LookScreen |
 | 설정 ‘작은 권유’ (기본 켬), 오늘 숨 쉬었으면 숨은 권하지 않음 | 완료 | `Store.care` |
 | 고마움 책 · 흘려보낸 마음 N번 (모은 것) | 완료 | `Reflect.kt` ThanksAndLetGo |
@@ -235,9 +235,9 @@ design/tokens.json, design/strings.json, data/*.csv   ← 유일한 원본
 |---|---|---|
 | 계절의 소리 (봄 새소리 · 여름 풀벌레 · 가을 바람과 귀뚜라미 · 겨울 장작 불, 앱이 만듦) | 완료 | `Soundscape` `Sound.SEASON` |
 | 마음의 날씨: 오늘 보낸 마음이 홈 하늘에 10초 (무거운 마음 = 몇 방울 비, 기쁨 · 희망 · 고마움 = 햇살) | 완료 | `SkyTime.kt` MoodWeather, 토큰 `garden.weather` |
-| 잠들기 전 정원 (밤 10시 이후): 글자 줄이고 조금 더 어둡게, 잠드는 숨이 끝나면 화면이 어두워지고 앱이 물러남 | 완료 | `GardenHome(sleepy)`, `BreathScreen(sleepAfter)` |
+| 잠들기 전 정원 (밤 10시 이후): 글자 줄이고 조금 더 어둡게, 잠드는 호흡이 끝나면 화면이 어두워지고 앱이 물러남 | 완료 | `GardenHome(sleepy)`, `BreathScreen(sleepAfter)` |
 | 알림: 아침 = 오늘의 문장 (누르면 하루를 여는 숨 1분, 선택), 저녁 = 오늘의 한 줄 (선택, 20 · 21 · 22시, 아직 안 보낸 날만) | 완료 | `notify/Daily.kt` Daily · Evening |
-| 때의 말 (아침 · 낮 · 저녁 · 밤): 숨의 이름 · 숨을 마친 말 · 홈의 때 한 줄 · 오늘의 한 줄 소개 · 마음 없이 보낸 한마디 · 권하기 (밤엔 잠드는 숨) · 잠깐 바라보기 | 완료 | `DayPart`, `Labels.timed` |
+| 때의 말 (아침 · 낮 · 저녁 · 밤): 숨의 이름 · 숨을 마친 말 · 홈의 때 한 줄 · 오늘의 한 줄 소개 · 마음 없이 보낸 한마디 · 권하기 (밤엔 잠드는 호흡) · 잠깐 바라보기 | 완료 | `DayPart`, `Labels.timed` |
 | 표정을 읽어 주기 (TalkBack): 쉬는 중 · 웃는 중 · 아래를 봄 · 생일 모자 | 완료 | `HaruFigure` stateDescription |
 
 ### 1.6 작은 의식 · 그림 보내기 — 개발 완료, 폰 확인 전
@@ -245,6 +245,6 @@ design/tokens.json, design/strings.json, data/*.csv   ← 유일한 원본
 |---|---|---|
 | 계절 첫날의 바람: 3 · 6 · 9 · 12월 1–14일 둘째 장에 “이번 겨울에 바라는 것 하나는?” → 석 달 뒤 편지 첫 장에 (한 줄이 모자라도 바람만 담긴 편지가 옴) | 완료 | `WishCard`, `Store.wishes`, `Lines.wishDue` |
 | 한 해의 정원: 12월 31일 ~ 1월 7일 둘째 장 카드 → 365개 동그라미 · 한 줄 · 고마움 수 · 고마움 몇 줄, 모은 것에 해마다 | 완료 | `YearCard` · `YearSheet` · `PastYears`, `Lines.yearDays` |
-| 고마움 숨: 고요한 숨 리듬, 내쉴 때 “고마운 것 하나”, 끝나면 한 줄로 고마움 책에 | 완료 | `BreathKind.THANKS`, `ThanksAfter` |
+| 고마움 명상: 고요한 호흡 리듬, 내쉴 때 “고마운 것 하나”, 끝나면 한 줄로 고마움 책에 | 완료 | `BreathKind.THANKS`, `ThanksAfter` |
 | 그림 보내기: 오늘의 한 줄 카드 (한마디 창), 한 해의 정원 그림 → 폰의 보내기 창 (서버 없음, 그림 한 장만) | 완료 | `share/ShareCards.kt`, FileProvider `share_paths.xml` |
 
