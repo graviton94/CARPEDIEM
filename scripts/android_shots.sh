@@ -18,6 +18,10 @@ sleep 45; adb shell am broadcast -a android.intent.action.CLOSE_SYSTEM_DIALOGS >
 adb shell cmd locale set-app-locales $P --locales ko-KR 2>/dev/null
 
 quick_scenes() {
+# 정원의 놓인 것 모두 (낮 · 밤 · 가족)
+open --ez cd.reset true --es cd.design garden --el cd.seed 2718281 --es cd.birth 2000-05-12 --es cd.sex female --ez cd.meet false --ez cd.preview true --es cd.now $NOW; shot q01_objects_day 8
+open --ez cd.preview true --es cd.now 2026-09-30T22:40; shot q02_objects_night 8
+open --ez cd.preview true --ez cd.family true --es cd.now $NOW; shot q03_objects_family 8
 # 타자기 문장: 정원에서 문장을 눌러 다음 문장이 한 글자씩 쳐지는 모습을 잇달아 캡처
 open --ez cd.reset true --es cd.design garden --el cd.seed 2718281 --es cd.birth 2000-05-12 --es cd.sex female --ez cd.meet false --es cd.now $NOW; sleep 8
 mkdir -p "$OUT/typing"; adb shell input tap 540 850
