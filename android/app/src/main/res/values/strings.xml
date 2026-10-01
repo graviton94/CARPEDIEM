@@ -353,10 +353,6 @@
     <string name="letter_sample4">Kong gave me a paw for the first time.</string>
     <string name="letter_sample5">Snow fell quietly outside the window.</string>
     <string name="dev_letter">Test: bring a seasonal letter</string>
-    <string name="help">When you need help</string>
-    <string name="help_suicide">Suicide prevention line (Korea) 109</string>
-    <string name="help_crisis">Mental health crisis line (Korea) 1577-0199 · 24h</string>
-    <string name="help_global">In other countries: findahelpline.com</string>
     <string name="licenses_body">Noto Serif KR · Lora — SIL Open Font License 1.1\nUN World Population Prospects 2024 — CC BY 3.0 IGO\nAndroidX · Jetpack Compose — Apache License 2.0</string>
     <string name="footer_about">About</string>
     <string name="footer_contact">Contact</string>

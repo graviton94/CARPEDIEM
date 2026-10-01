@@ -351,10 +351,6 @@
 "letter.sample4" = "콩이가 처음으로 손을 줬다.";
 "letter.sample5" = "창밖에 눈이 조용히 내렸다.";
 "dev.letter" = "시험: 계절의 편지 오게";
-"help" = "도움이 필요할 때";
-"help.suicide" = "자살예방 상담전화 109";
-"help.crisis" = "정신건강 위기상담 1577-0199 · 24시간";
-"help.global" = "다른 나라에서는 findahelpline.com";
 "licenses.body" = "Noto Serif KR · Lora — SIL Open Font License 1.1\nUN 세계인구전망 2024 — CC BY 3.0 IGO\nAndroidX · Jetpack Compose — Apache License 2.0";
 "footer.about" = "소개";
 "footer.contact" = "문의";

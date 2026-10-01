@@ -213,7 +213,7 @@ design/tokens.json, design/strings.json, data/*.csv   ← 유일한 원본
 | 이름: 한국어 하루의 정원 · 영어 Carpe Diem (홈 화면 · 스토어) | 완료 | `values-ko/app.xml`, iOS `InfoPlist.strings` |
 | ‘숨, 쉼’ · ‘돌멍하기’ (홈의 정원에서 글자만 뺀 화면) | 완료 | `strings.json`, `GardenHome(bare)` |
 | 가족의 정원 최대 9 (나 포함), 6명부터 이름표 두 줄 번갈아 | 완료 | 토큰 `garden.family.max · oneRow` |
-| 설정 바닥글: 소개 · 문의 · 고지사항 (웹사이트처럼), 도움이 필요할 때 | 완료 | `SettingsFooter` |
+| 설정 바닥글: 소개 · 문의 · 고지사항 (웹사이트처럼) | 완료 | `SettingsFooter` |
 | 명언 60개 교체 (저작권이 남았거나 출처가 불분명한 것 → 옛글 · 고전 시), 모든 문장에 ‘사람’ 열 | 완료 | `data/quotes.csv` |
 | 폰을 바꿔도 기록이 남는 백업 규칙, 개인정보처리방침 초안 | 완료 | `res/xml/*_rules.xml`, `docs/privacy.md` |
 
@@ -226,7 +226,7 @@ design/tokens.json, design/strings.json, data/*.csv   ← 유일한 원본
 | 고마움 책 · 흘려보낸 마음 N번 (모은 것) | 완료 | `Reflect.kt` ThanksAndLetGo |
 | 무거운 마음을 보낸 날 하루가 살짝 아래를 봄 | 완료 | `HaruFigure(lookDown)` |
 | 돌이 많을 때: 모두 같은 비율로 작게 (9개), 기울기 센서는 내 하루만 | 완료 | `Family.fitScale` |
-| 도움 카드 (109 · 1577-0199 자동 표시) | 하지 않음 | 설정의 ‘도움이 필요할 때’만 |
+| 도움 카드 (109 · 1577-0199) | 하지 않음 | 설정의 ‘도움이 필요할 때’ 도 뺌 (유리 · 정원 모두) |
 | 기억의 돌: 기억의 자리 (모은 것 안, 이끼 방석 위 눈 감은 돌, 계절까지만, 그 돌에게만 한 줄) + 하늘의 별 (기본 켬, 누르면 이름만) | 완료 | `ui/garden/Memory.kt`, `Store.memories · memoryLines` |
 | 기억의 돌 지킬 것: 앱이 먼저 묻지 않음 · 숫자 · 알림 · 생일 없음 · 정원 · 위젯 · 돌멍하기 · 누구에게 칩에 안 나옴 · 회상 · 편지와 섞이지 않음 · 언제든 되돌리기 | 완료 | 고치기 맨 아래 ‘기억의 돌로 두기’, 돌 더하기 첫 장 맨 아래 |
 
