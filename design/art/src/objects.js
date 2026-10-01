@@ -19,13 +19,15 @@
       pastel(c, L.b(-5, -63, 5, 2.2, 17, 0.1, 0.5), "#86A05C", { seed: 17, lw: L.n(0.6) });
     } },
     { id: "moss", ko: "이끼 방석", when: "시작한 날", draw: function (c, x, y, s) { var L = loc(x, y, s);
-      // 하루가 앉는 방석: 낮고 넓게, 가장자리에 아주 작은 이끼 싹들
-      smudge(c, x, y + L.n(1), L.n(52), L.n(5), "#3B3325", 0.22);
-      pastel(c, L.b(0, -6, 52, 8, 21, 0.1), "#8C9A5B", { seed: 21, ang: -0.3, lw: L.n(0.9) });
-      pastel(c, L.b(-14, -10, 26, 3.5, 22, 0.1), "#A9B679", { seed: 22, line: false, shade: false, press: 0.45 });
-      [[-46, -9], [-38, -12], [-30, -13], [30, -13], [39, -12], [47, -9], [-6, -14], [8, -14]].forEach(function (q, i) {
-        var h = 5 + (i % 3) * 2; scribble(c, L.c([q[0], q[1], q[0] + 0.5, q[1] - h * 0.4, q[0] - 0.5, q[1] - h * 0.7, q[0] + 0.6, q[1] - h]), "#6F8A4A", 23 + i, L.n(0.8));
-        pastel(c, L.b(q[0] + 0.6, q[1] - h - 1, 1.4, 1.6, 33 + i, 0.1), i % 2 ? "#C9A46A" : "#B8C98E", { seed: 33 + i, line: false, press: 0.9 }); });
+      // 하루가 앉는 방석: 몽글몽글한 이끼 언덕 (윗선이 작은 구름처럼), 사이사이 가는 싹과 꽃봉오리
+      smudge(c, x, y + L.n(1), L.n(52), L.n(4), "#3B3325", 0.2);
+      var top = [], n = 7; for (var i = 0; i <= n * 10; i++) { var t = i / (n * 10), xx = -50 + 100 * t, env = Math.sin(t * Math.PI), bump = Math.abs(Math.sin(t * Math.PI * n)) * 1.6 * env; top.push([xx, -1 - 9 * Math.pow(env, 0.7) - bump]); }
+      var shape = top.concat([[46, 0], [-46, 0]]).map(function (q) { return [x + q[0] * s, y + q[1] * s]; });
+      pastel(c, organic(shape, L.n(0.4), 21, L.n(2)), "#93A862", { seed: 21, ang: -0.3, lw: L.n(0.9) });
+      for (var k = 0; k < 12; k++) { var t = (k + 0.5) / 12, r = (k * 37 % 100) / 100; pastel(c, L.b(-42 + 84 * t, -3 - 6 * Math.sin(t * Math.PI) * r, 1.4, 1.1, 22 + k, 0.1), "#B8C98E", { line: false, shade: false, press: 0.7 }); }
+      [[-30, 7, -6, "#F4ECD8"], [26, 9, -8, "#E9A3B4"]].forEach(function (q, i) {
+        scribble(c, L.c([q[0], q[2], q[0] + 1, q[2] - q[1] * 0.4, q[0] - 1, q[2] - q[1] * 0.7, q[0] + 0.5, q[2] - q[1]]), "#6F8A4A", 40 + i, L.n(0.9));
+        pastel(c, L.b(q[0] + 0.5, q[2] - 1 - q[1], 1.8, 2, 45 + i, 0.1), q[3], { seed: 45 + i, lw: L.n(0.5) }); });
     } },
     { id: "pine", ko: "작은 소나무", when: "함께한 지 1년", draw: function (c, x, y, s) { var L = loc(x, y, s);
       smudge(c, x, y + L.n(1), L.n(40), L.n(5), "#3B3325", 0.25);
@@ -55,13 +57,17 @@
       scribble(c, L.c([-26, -3, -14, -20, -10, -34, -6, -40]), "#86A05C", 60, L.n(1));
     } },
     { id: "teacup", ko: "따뜻한 차 한 잔", when: "함께한 지 7일", draw: function (c, x, y, s) { var L = loc(x, y, s);
-      smudge(c, x, y, L.n(44), L.n(6), "#3B3325", 0.25);
-      pastel(c, L.b(0, -4, 40, 6.5, 61, 0.05), "#E6DDCB", { seed: 61, lw: L.n(0.8) });
-      scribble(c, L.c([22, -30, 38, -30, 38, -14, 20, -14]), INK, 62, L.n(1.6));
-      pastel(c, organic([[-26, -34], [26, -34], [22, -16], [12, -7], [-12, -7], [-22, -16]].map(function (q) { return [x + q[0] * s, y + q[1] * s]; }), L.n(0.8), 63, L.n(3)), "#F1EADB", { seed: 63, lw: L.n(1) });
-      pastel(c, L.b(0, -33, 23, 4, 64, 0.05), "#8E6536", { seed: 64, shade: false, line: false, press: 0.8 });
-      scribble(c, L.c([-4, -42, -10, -52, 2, -60, -6, -74]), "#B9B1A2", 65, L.n(1.1), { alpha: 0.8 });
-      scribble(c, L.c([8, -42, 2, -54, 14, -62, 6, -78]), "#B9B1A2", 66, L.n(1.1), { alpha: 0.7 });
+      // 가는 나무 받침 위의 작은 찻잔, 길게 피어오르는 김 두 줄기
+      function A(q) { return q.map(function (v) { return [x + v[0] * s, y + v[1] * s]; }); }
+      smudge(c, x, y + L.n(1), L.n(18), L.n(4), "#3B3325", 0.22);
+      scribble(c, L.c([-7, 0, -6, -10, -6, -20, -5, -30]), "#8A6A48", 61, L.n(1.8), { press: 0.8 });
+      scribble(c, L.c([7, 0, 6, -10, 6, -20, 5, -30]), "#8A6A48", 62, L.n(1.8), { press: 0.8 });
+      scribble(c, L.c([-12, -31, -4, -32, 4, -32, 12, -31]), "#8A6A48", 63, L.n(2.2), { press: 0.8 });
+      pastel(c, organic(A([[-9, -46], [9, -46], [7, -37], [3, -33], [-3, -33], [-7, -37]]), L.n(0.4), 64, L.n(2)), "#F1EADB", { seed: 64, lw: L.n(0.9) });
+      scribble(c, L.c([8, -44, 14, -44, 14, -38, 7, -38]), INK, 65, L.n(1));
+      pastel(c, L.b(0, -45, 7, 1.6, 66, 0.05), "#B5652D", { seed: 66, shade: false, line: false, press: 0.8 });
+      scribble(c, L.c([-2, -50, -8, -62, 4, -72, -3, -88]), "#B9B1A2", 67, L.n(1.1), { alpha: 0.85 });
+      scribble(c, L.c([3, -50, -1, -60, 9, -70, 3, -82]), "#B9B1A2", 68, L.n(1), { alpha: 0.7 });
     } },
     { id: "candle", ko: "작은 촛불", when: "생일", draw: function (c, x, y, s) { var L = loc(x, y, s);
       smudge(c, x, y - L.n(58), L.n(40), L.n(40), "#F2B35A", 0.28);
@@ -107,13 +113,14 @@
       for (var i = 0; i < 18; i++) { var a = i / 18 * Math.PI * 2, r0 = 19 + (i % 3) * 2; scribble(c, [[x + L.n(2), y - L.n(82)], [x + L.n(2 + Math.cos(a) * r0 * 0.6), y + L.n(-82 + Math.sin(a) * r0 * 0.6)], [x + L.n(2 + Math.cos(a) * r0), y + L.n(-82 + Math.sin(a) * r0)]], "#A8A194", 123 + i, L.n(0.5), { alpha: 0.75, passes: 1 }); pastel(c, L.b(2 + Math.cos(a) * r0, -82 + Math.sin(a) * r0, 2.2, 2.2, 150 + i, 0.2), "#EDE9DF", { line: false, shade: false, press: 0.8 }); }
     } },
     { id: "acorn", ko: "도토리", when: "인생의 계절이 바뀐 날", draw: function (c, x, y, s) { var L = loc(x, y, s);
-      // 도토리에서 돋은 어린 참나무 싹
-      smudge(c, x + L.n(2), y + L.n(1), L.n(20), L.n(3), "#3B3325", 0.25);
-      scribble(c, L.c([2, -8, 3, -24, 0, -40, 2, -56]), "#6F8A4A", 134, L.n(1.5));
-      [[10, -48, 9, 3.6, -0.6], [-6, -40, 8, 3.2, 0.6], [6, -60, 6, 3, -0.2]].forEach(function (q, i) {
-        pastel(c, L.b(q[0], q[1], q[2], q[3], 135 + i, 0.24, q[4]), "#7F9A58", { seed: 135 + i, lw: L.n(0.6) }); });
-      pastel(c, L.b(-6, -9, 9, 7.5, 131, 0.06, 0.3), "#B07A45", { seed: 131, lw: L.n(0.8) });
-      pastel(c, L.b(-8, -15, 9.5, 4, 132, 0.08, 0.3), "#7A5B3A", { seed: 132, lw: L.n(0.8) });
+      // 휘어진 가는 참나무 가지 끝에 매달린 도토리 하나, 잎 두 장
+      smudge(c, x, y + L.n(1), L.n(14), L.n(3), "#3B3325", 0.22);
+      scribble(c, L.c([0, 0, 2, -30, -2, -62, 6, -86]), "#7A5634", 131, L.n(2), { press: 0.8 });
+      scribble(c, L.c([6, -86, 14, -90, 22, -88, 28, -80]), "#7A5634", 132, L.n(1.4));
+      [[-6, -70, 9, 3.4, 0.7], [14, -92, 8, 3, -0.3]].forEach(function (q, i) { pastel(c, L.b(q[0], q[1], q[2], q[3], 133 + i, 0.3, q[4]), "#7F9A58", { seed: 133 + i, lw: L.n(0.6) }); });
+      scribble(c, L.c([28, -80, 28, -77, 28, -74, 28, -71]), "#7A5634", 135, L.n(0.9));
+      pastel(c, L.b(28, -61, 6.5, 8.5, 136, 0.05), "#B07A45", { seed: 136, lw: L.n(0.8) });
+      pastel(c, L.b(28, -69, 7.5, 3.2, 137, 0.08), "#7A5B3A", { seed: 137, lw: L.n(0.7) });
     } },
     // 오늘의 한 줄을 이어 쓴 날 (7 · 30 · 100일). 바람에 실어 보내는 것들
     { id: "pinwheel", ko: "바람개비", when: "한 줄을 7일 이어 쓴 날", draw: function (c, x, y, s) { var L = loc(x, y, s);
@@ -156,13 +163,18 @@
     } },
     // 처음 문장을 넘긴 날: 꽂아 둔 한 장 (넘긴 책장 깃발 + 리본)
     { id: "bookmark", ko: "책갈피", when: "처음 문장을 넘긴 날", draw: function (c, x, y, s) { var L = loc(x, y, s);
+      // 바람에 넘어온 한 장이 키 큰 풀줄기에 살짝 걸림 (가볍게 넘긴 한 장)
       function A(q) { return q.map(function (v) { return [x + v[0] * s, y + v[1] * s]; }); }
-      smudge(c, x, y + L.n(1), L.n(16), L.n(4), "#3B3325", 0.22);
-      scribble(c, L.c([0, 0, 1, -24, -1, -50, 0, -76]), "#8A6A48", 201, L.n(2.2), { press: 0.8 });
-      pastel(c, organic(A([[1, -74], [30, -70], [31, -46], [2, -50]]), L.n(0.5), 202, L.n(2.5)), "#F4EEDF", { seed: 202, lw: L.n(0.9) });
-      pastel(c, organic(A([[31, -52], [31, -46], [25, -47]]), L.n(0.3), 203, L.n(1.5)), "#E2D8C2", { seed: 203, lw: L.n(0.6) });
-      [[-66], [-61], [-56]].forEach(function (r, i) { scribble(c, L.c([6, r[0] + 1, 12, r[0], 18, r[0] + 0.5, 24 - i * 3, r[0]]), "#B9B1A2", 204 + i, L.n(0.7), { alpha: 0.8, passes: 1 }); });
-      scribble(c, L.c([1, -74, 4, -66, -2, -60, 3, -52]), "#D98C7A", 208, L.n(1.6));
+      smudge(c, x, y + L.n(1), L.n(14), L.n(3), "#3B3325", 0.22);
+      scribble(c, L.c([0, 0, -2, -30, 4, -60, 12, -88]), "#6F8A4A", 201, L.n(1.6));
+      scribble(c, L.c([2, -2, 6, -18, 4, -32, 10, -44]), "#86A05C", 202, L.n(1.1));
+      // 한 장: 작고, 아래 귀퉁이가 바람에 살짝 말림
+      var cc = Math.cos(0.55), ss = Math.sin(0.55);
+      function T(q) { return [x + (q[0] * cc - q[1] * ss + 9) * s, y + (q[0] * ss + q[1] * cc - 62) * s]; }
+      var page = [[-8, -10], [8, -10], [8.5, 4], [6, 8.5], [2, 10], [-8, 10]];
+      pastel(c, organic(page.map(T), L.n(0.3), 203, L.n(1.6)), "#F8F3E6", { seed: 203, lw: L.n(0.7), lineA: 0.85 });
+      scribble(c, [T([8.5, 4]), T([4, 4.5]), T([2, 10])], "#CFC5B0", 204, L.n(0.6), { passes: 1 });
+      [-5, -1.5, 2].forEach(function (yy, i) { scribble(c, [T([-5, yy]), T([0, yy - 0.2]), T([5 - i * 1.5, yy])], "#C9C0AD", 205 + i, L.n(0.55), { alpha: 0.8, passes: 1 }); });
     } },
     // 종이배가 물웅덩이 없이 혼자일 때 아래에 까는 물
     { id: "puddle", ko: "", when: "", draw: function (c, x, y, s) { var L = loc(x, y, s);
