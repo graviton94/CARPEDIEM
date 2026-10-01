@@ -458,6 +458,19 @@ object Tokens {
         object Year {
             const val columns = 21.0f
             const val thanks = 3.0f
+            const val aspect = 1.45f
+            const val band = 0.15f
+            const val star = 0.0048f
+            const val dust = 0.0019f
+            const val hazeAlpha = 0.07f
+            object Colors {
+                val skyTop = Color(0xFF101426)
+                val skyBottom = Color(0xFF1E253C)
+                val haze = Color(0xFFC9C3E8)
+                val plain = Color(0xFFECE4CF)
+                val core = Color(0xFFF3E6C8)
+            }
+            const val field = 220.0f
         }
         object Share {
             const val lineW = 1080.0f

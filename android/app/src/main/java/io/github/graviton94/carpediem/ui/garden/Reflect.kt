@@ -366,13 +366,13 @@ internal fun WishCard(state: AppState, id: String, today: LocalDate) {
 
 /** 12월 31일 ~ 1월 7일, 둘째 장 위에 한 장. */
 @Composable
-internal fun YearCard(year: Int, onOpen: () -> Unit) {
+internal fun YearCard(state: AppState, year: Int, onOpen: () -> Unit) {
     val p = Theme.palette
     Row(
         Modifier.fillMaxWidth().crayonBox(Theme.gc.paper, G.Radius.box, G.Stroke.chip, 1180).clickable(onClick = onOpen).padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3),
         verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp3),
     ) {
-        MoodCircles(List(7) { LocalDate.of(year, 1, 1).plusDays(it.toLong()) to null }, 7, Modifier.size(Theme.unit * 44, Theme.unit * 8))
+        YearGalaxy(remember(state.lines, year) { Lines.yearDays(state.lines, year) }, Modifier.size(Theme.unit * 56, Theme.unit * 56 / G.Year.aspect))
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
             TokenText(stringResource(R.string.year_card, "$year"), Tokens.TypeScale.subhead, weight = FontWeight.SemiBold)
             TokenText(stringResource(R.string.recall_open), Tokens.TypeScale.footnote, color = p.secondary)
@@ -397,7 +397,8 @@ internal fun YearSheet(state: AppState, year: Int, onClose: () -> Unit) {
             verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3),
         ) {
             TokenText(title, Tokens.TypeScale.title3.serif())
-            MoodCircles(days, G.Year.columns.toInt(), Modifier.fillMaxWidth())
+            // 은하수: 1월에서 12월로 흐르는 띠, 날마다 별 하나
+            YearGalaxy(days, Modifier.fillMaxWidth())
             TokenText(count, Tokens.TypeScale.footnote, color = p.secondary)
             thanks.forEach { TokenText("“$it”", Tokens.TypeScale.callout.serif()) }
             Spacer(Modifier.height(Tokens.Space.sp2))

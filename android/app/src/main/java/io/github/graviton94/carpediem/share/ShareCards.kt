@@ -84,25 +84,16 @@ object ShareCards {
         return b
     }
 
-    /** 한 해의 정원: 365개의 마음 동그라미, 한 줄 · 고마움 수, 고마움 한 줄 몇 개. */
+    /** 한 해의 정원: 은하수 (날마다 별 하나), 한 줄 · 고마움 수, 고마움 한 줄 몇 개. */
     fun year(ctx: Context, year: Int, days: List<Pair<LocalDate, DayLine?>>, title: String, count: String, thanks: List<String>): Bitmap {
         val w = S.yearW.toInt(); val h = S.yearH.toInt(); val pad = S.pad
         val (b, c) = base(w, h)
         var y = pad * 1.2f
         y += text(c, title, paint(ctx, S.text * 0.9f, ink), pad, y, (w - pad * 2).toInt()) + pad * 0.4f
-        val cols = Tokens.Garden.Year.columns.toInt(); val cell = (w - pad * 2) / cols
-        val fill = Paint(Paint.ANTI_ALIAS_FLAG); val line = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE; strokeWidth = 2f }
-        days.forEachIndexed { i, (d, l) ->
-            val cx = pad + (i % cols + 0.5f) * cell; val cy = y + (i / cols + 0.5f) * cell; val r = cell * 0.38f
-            // 날마다 조금씩 다른 손그림 동그라미
-            val path = android.graphics.Path(); val ph = (d.toEpochDay() % 7).toFloat()
-            for (k in 0..24) { val a = k / 24f * 6.283f; val rr = r * (1f + 0.08f * sin(a * 3 + ph)); val px = cx + cos(a) * rr; val py = cy + sin(a) * rr; if (k == 0) path.moveTo(px, py) else path.lineTo(px, py) }
-            path.close()
-            if (l != null) { fill.color = moodColor(l.feeling).toArgb(); c.drawPath(path, fill); line.color = ink; line.alpha = 120 }
-            else { line.color = inkSoft; line.alpha = 90 }
-            c.drawPath(path, line)
-        }
-        y += cell * ((days.size + cols - 1) / cols) + pad * 0.5f
+        // 은하수 (앱 화면과 같은 자리)
+        val gw = w - pad * 2
+        io.github.graviton94.carpediem.ui.garden.drawGalaxy(c, pad, y, gw, days)
+        y += gw / Tokens.Garden.Year.aspect + pad * 0.5f
         y += text(c, count, paint(ctx, S.small, inkSoft), pad, y, (w - pad * 2).toInt()) + pad * 0.3f
         thanks.forEach { t -> y += text(c, "“$t”", paint(ctx, S.small * 1.05f, ink), pad, y, (w - pad * 2).toInt()) + pad * 0.15f }
         text(c, ctx.getString(R.string.share_footer), paint(ctx, S.small * 0.8f, inkSoft), pad, h - pad * 1.25f, (w - pad * 2).toInt())

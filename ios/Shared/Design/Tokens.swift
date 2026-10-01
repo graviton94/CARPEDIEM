@@ -463,6 +463,19 @@ enum Tokens {
         enum Year {
             static let columns: CGFloat = 21.0
             static let thanks: CGFloat = 3.0
+            static let aspect: CGFloat = 1.45
+            static let band: CGFloat = 0.15
+            static let star: CGFloat = 0.0048
+            static let dust: CGFloat = 0.0019
+            static let hazeAlpha: CGFloat = 0.07
+            enum Colors {
+                static let skyTop: UInt32 = 0x101426FF
+                static let skyBottom: UInt32 = 0x1E253CFF
+                static let haze: UInt32 = 0xC9C3E8FF
+                static let plain: UInt32 = 0xECE4CFFF
+                static let core: UInt32 = 0xF3E6C8FF
+            }
+            static let field: CGFloat = 220.0
         }
         enum Share {
             static let lineW: CGFloat = 1080.0

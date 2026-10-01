@@ -362,7 +362,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 // 계절의 편지: 이번 달에 도착해 아직 펼치지 않았으면 맨 위에 봉투 한 장
                 state.letterDue(now.toLocalDate())?.let { l -> LetterEnvelope(l) { state.openLetter(l.id); letterOpen = l } }
                 // 한 해의 정원 (12월 31일 ~ 1월 7일) · 계절 첫날의 바람 (3 · 6 · 9 · 12월 첫 두 주)
-                state.yearDue(now.toLocalDate())?.let { y -> YearCard(y) { state.openYear(y); yearOpen = y } }
+                state.yearDue(now.toLocalDate())?.let { y -> YearCard(state, y) { state.openYear(y); yearOpen = y } }
                 state.wishDue(now.toLocalDate())?.let { id -> WishCard(state, id, now.toLocalDate()) }
                 TokenText(stringResource(R.string.flow), Tokens.TypeScale.title3)
                 LifePeriod.entries.forEachIndexed { i, period ->
