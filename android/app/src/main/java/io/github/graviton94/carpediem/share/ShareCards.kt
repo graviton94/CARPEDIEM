@@ -120,6 +120,27 @@ object ShareCards {
         val w = S.yearW.toInt(); val h = S.yearH.toInt(); val pad = S.pad
         val (b, c) = board(w, h, night)
         val fg = if (night) Y.plain.toArgb() else ink; val soft = if (night) Y.plain.copy(alpha = 0.7f).toArgb() else inkSoft
+        var y = pad * 1.2f
+        y += text(c, title, paint(ctx, S.text * 0.9f, fg), pad, y, (w - pad * 2).toInt()) + pad * 0.2f
+        y += text(c, sub, paint(ctx, S.small, soft), pad, y, (w - pad * 2).toInt()) + pad * 0.4f
+        // 판은 아래 글 · 이름과 겹치지 않는 만큼만 (넘치면 가운데로 줄임)
+        val avail = h - pad * 1.8f - y
+        val gh = minOf((w - pad * 2) / Tokens.Garden.Year.monthAspect, avail); val gw = gh * Tokens.Garden.Year.monthAspect
+        val gx = (w - gw) / 2f
+        val dots = StarGarden.month(book, days, install)
+        drawCompose(c, gx, y, gw, gh) {
+            if (night) nightSky() else meadow()
+            monthIn(androidx.compose.ui.geometry.Rect(androidx.compose.ui.geometry.Offset.Zero, size), dots, night, today, MONTH_SIZES)
+        }
+        text(c, ctx.getString(R.string.share_footer), paint(ctx, S.small * 0.8f, soft), pad, h - pad * 1.25f, (w - pad * 2).toInt())
+        return b
+    }
+
+    /** 한 해의 정원: 열두 달의 별자리를 4 × 3 칸에, 한 줄 · 고마움 수, 고마움 한 줄 몇 개. */
+    fun year(ctx: Context, book: io.github.graviton94.carpediem.core.ConstellationBook, days: List<Pair<LocalDate, DayLine?>>, install: Long, night: Boolean, today: LocalDate, title: String, count: String, thanks: List<String>): Bitmap {
+        val w = S.yearW.toInt(); val h = S.yearH.toInt(); val pad = S.pad
+        val (b, c) = board(w, h, night)
+        val fg = if (night) Y.plain.toArgb() else ink; val soft = if (night) Y.plain.copy(alpha = 0.7f).toArgb() else inkSoft
         val tw = (w - pad * 2).toInt()
         val titleP = paint(ctx, S.text * 0.9f, fg); val countP = paint(ctx, S.small, soft); val thanksP = paint(ctx, S.small * 1.05f, fg); val lp = paint(ctx, S.small * 0.75f, soft)
         // 아래 글 (한 줄 수 · 고마움) 은 먼저 재어 두고, 열두 칸은 남은 자리 한가운데에 (글과 그림이 겹치지 않게)
