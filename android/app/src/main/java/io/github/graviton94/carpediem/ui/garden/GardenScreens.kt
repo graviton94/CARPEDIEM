@@ -265,7 +265,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
           // 책장 넘기기: 페이지는 제자리에 두고, 넘어가는 장이 왼쪽 등을 축으로 들려 넘어가며 아래 장이 드러남
           // 손으로 넘길 땐 들어오는 장 (아직 오른쪽) 이 위에
           val incoming by remember(page) { derivedStateOf { (pager.currentPage - page) + pager.currentPageOffsetFraction < 0f } }
-          Box(Modifier.fillMaxSize().zIndex(if (incoming) 1f else 0f).pageTurn(pager, page) { breath })) {
+          Box(Modifier.fillMaxSize().zIndex(if (incoming) 1f else 0f).pageTurn(pager, page) { breath }) {
           when (page) {
             1 -> WritePage(state, now)
             2 -> MemoriesPage(state, profile, now, recordView, { recordView = it }, onMemory)
