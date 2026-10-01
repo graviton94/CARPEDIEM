@@ -507,3 +507,4 @@
 "stone.birthdayTomorrow" = "Tomorrow";
 "notify.todayBirthdayText" = "Send a birthday card from the garden.";
 "notify.todaySpecial" = "Today: %1$@, %2$@ yr ago";
+"dev.notify" = "Test: send all three notes now";

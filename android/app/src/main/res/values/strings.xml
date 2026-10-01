@@ -509,4 +509,5 @@
     <string name="stone_birthdayTomorrow">Tomorrow</string>
     <string name="notify_todayBirthdayText">Send a birthday card from the garden.</string>
     <string name="notify_todaySpecial">Today: %1$s, %2$s yr ago</string>
+    <string name="dev_notify">Test: send all three notes now</string>
 </resources>

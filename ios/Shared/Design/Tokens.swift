@@ -324,7 +324,7 @@ enum Tokens {
             static let catYears: CGFloat = 15.0
             static let otherYears: CGFloat = 10.0
             static let feather: CGFloat = 16.0
-            static let pageStone: CGFloat = 0.68
+            static let pageStone: CGFloat = 0.45
         }
         enum Touch {
             static let petMs: CGFloat = 900.0

@@ -509,4 +509,5 @@
     <string name="stone_birthdayTomorrow">내일이에요</string>
     <string name="notify_todayBirthdayText">정원에서 생일 카드를 보내 보세요.</string>
     <string name="notify_todaySpecial">오늘은 %1$s, %2$s년 전 그날이에요</string>
+    <string name="dev_notify">시험: 알림 세 가지 지금 보내기</string>
 </resources>

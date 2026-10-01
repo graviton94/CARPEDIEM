@@ -319,7 +319,7 @@ object Tokens {
             const val catYears = 15.0f
             const val otherYears = 10.0f
             const val feather = 16.0f
-            const val pageStone = 0.68f
+            const val pageStone = 0.45f
         }
         object Touch {
             const val petMs = 900.0f

@@ -441,6 +441,13 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
                         FormRow(stringResource(R.string.dev_letter), onClick = { state.addSampleLetter() }) {}
                         RowDivider()
                         FormRow(stringResource(R.string.dev_year), onClick = { state.addSampleYear() }) {}
+                        RowDivider()
+                        // 아침 · 생일 (내일) · 하루 정리 알림을 지금 한 번씩 (켜 두지 않았어도, 알림 권한만 있으면)
+                        FormRow(stringResource(R.string.dev_notify), onClick = {
+                            io.github.graviton94.carpediem.notify.Daily.post(ctx, force = true)
+                            io.github.graviton94.carpediem.notify.Tomorrow.post(ctx, 1, sample = true)
+                            io.github.graviton94.carpediem.notify.Evening.post(ctx, force = true)
+                        }) {}
                     }
                 }
                 if (confirmClear) AlertDialog(

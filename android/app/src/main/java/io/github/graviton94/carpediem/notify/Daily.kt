@@ -62,9 +62,9 @@ object Daily {
 
     fun allowed(context: Context) = Build.VERSION.SDK_INT < 33 || ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
 
-    fun post(context: Context) {
+    fun post(context: Context, force: Boolean = false) {
         val store = Store(context)
-        if (!store.notify || !allowed(context)) return
+        if ((!store.notify && !force) || !allowed(context)) return
         val nm = context.getSystemService(NotificationManager::class.java)
         nm.createNotificationChannel(NotificationChannel(CHANNEL, context.getString(R.string.notify_channel), NotificationManager.IMPORTANCE_LOW))
         val q = store.todaysQuote()
@@ -136,10 +136,10 @@ object Evening {
         wm.enqueueUniquePeriodicWork(WORK, ExistingPeriodicWorkPolicy.UPDATE, work)
     }
 
-    fun post(context: Context) {
+    fun post(context: Context, force: Boolean = false) {
         val store = Store(context)
-        if (!store.eveningNotify || !Daily.allowed(context)) return
-        if (store.lines.any { it.date == LocalDate.now() }) return   // 오늘은 이미 보냄
+        if (!force && (!store.eveningNotify || store.lines.any { it.date == LocalDate.now() })) return   // 꺼 두었거나 오늘은 이미 보냄
+        if (!Daily.allowed(context)) return
         val nm = context.getSystemService(NotificationManager::class.java)
         nm.createNotificationChannel(NotificationChannel("daily", context.getString(R.string.notify_channel), NotificationManager.IMPORTANCE_LOW))
         val open = PendingIntent.getActivity(context, 1, Intent(context, MainActivity::class.java), PendingIntent.FLAG_IMMUTABLE)
@@ -171,12 +171,12 @@ object Tomorrow {
             PeriodicWorkRequestBuilder<DayOfWorker>(1, TimeUnit.DAYS).setInitialDelay(Daily.delayTo(Tokens.Notify.dayOfHour.toInt(), 0), TimeUnit.MINUTES).build())
     }
 
-    /** ahead = 1 이면 내일의 일을 오늘 저녁에, 0 이면 오늘의 일을 오늘 아침에. */
-    fun post(context: Context, ahead: Int) {
+    /** ahead = 1 이면 내일의 일을 오늘 저녁에, 0 이면 오늘의 일을 오늘 아침에. sample = 시험용 (그런 날이 아니어도 첫 가족의 이름으로). */
+    fun post(context: Context, ahead: Int, sample: Boolean = false) {
         val store = Store(context)
-        if (!store.tomorrowNotify || store.design != Design.GARDEN || !Daily.allowed(context)) return
+        if ((!sample && (!store.tomorrowNotify || store.design != Design.GARDEN)) || !Daily.allowed(context)) return
         val day = LocalDate.now().plusDays(ahead.toLong())
-        val names = store.people.filter { io.github.graviton94.carpediem.core.Family.isBirthday(it.birth, day) }.map { it.name }
+        val names = if (sample) listOf(store.people.firstOrNull()?.name ?: context.getString(R.string.family_me)) else store.people.filter { io.github.graviton94.carpediem.core.Family.isBirthday(it.birth, day) }.map { it.name }
         val days = io.github.graviton94.carpediem.core.SpecialDays.anniversaries(store.specialDays, day)
             .map { (d, years) -> context.getString(if (ahead == 0) R.string.notify_todaySpecial else R.string.notify_tomorrowSpecial, d.name, "$years") }
         if (names.isEmpty() && days.isEmpty()) return

@@ -6,12 +6,12 @@ plugins {
 
 android {
     namespace = "io.github.graviton94.carpediem"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "io.github.graviton94.carpediem"
         minSdk = 26
-        targetSdk = 35
+        targetSdk = 36
         // CI 실행 번호로 버전 코드를 올려, 새 APK 가 이전 것을 덮어쓸 수 있게 한다
         versionCode = (System.getenv("GITHUB_RUN_NUMBER") ?: "1").toInt()
         versionName = System.getenv("CD_VERSION_NAME") ?: "1.0.0"

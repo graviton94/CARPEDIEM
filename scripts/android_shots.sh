@@ -77,7 +77,7 @@ open --ez cd.months true --ez cd.openMonth true --es cd.now 2026-09-28T15:00;   
 open --ez cd.openMonth true --es cd.now 2026-09-28T22:30;                                             shot g50_record_month_night 6
 open --es cd.now 2026-10-02T15:00; sleep 5; swipe_up;                                                  shot g51_month_card 3
 open --ez cd.year true --ez cd.openYear true --es cd.now 2026-12-31T22:00;                            shot g52_year_night 8
-open --es cd.screen collection --es cd.now 2026-10-02T15:00; swipe_up; swipe_up;                      shot g53_past_gardens 3
+open --es cd.screen collection --es cd.now 2026-10-02T15:00; swipe_up; swipe_up; swipe_up;            shot g53_past_gardens 3
 # 인생의 계절 (다른 생년월일 · 다른 하루)
 open --el cd.seed 12345 --es cd.birth 2016-03-01 --es cd.now $NOW;                                     shot g12_spring 14
 open --el cd.seed 99 --es cd.birth 1968-08-20 --ez cd.preview true --es cd.now $NOW;                   shot g13_autumn 14
