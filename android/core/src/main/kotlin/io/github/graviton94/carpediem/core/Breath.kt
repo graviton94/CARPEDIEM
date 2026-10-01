@@ -2,8 +2,8 @@ package io.github.graviton94.carpediem.core
 
 import java.time.LocalDate
 
-/** 숨의 종류: 고요한 호흡 · 고른 호흡 · 잠드는 호흡. */
-/** 고요한 호흡 · 고른 호흡 · 잠드는 호흡 · 고마움 명상 (고요한 호흡의 리듬, 내쉴 때마다 고마운 것 하나). */
+/** 숨의 종류: 고요한 호흡 · 마음 산책 · 잠드는 명상. */
+/** 고요한 호흡 · 마음 산책 · 잠드는 명상 · 고마움 명상 (고요한 호흡의 리듬, 내쉴 때마다 고마운 것 하나). */
 enum class BreathKind { CALM, BOX, SLEEP, THANKS }
 
 /** 숨 한 단계. */

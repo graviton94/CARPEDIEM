@@ -92,7 +92,7 @@ private fun kindDesc(k: BreathKind) = when (k) { BreathKind.CALM -> R.string.bre
 private fun soundName(s: Sound) = when (s) { Sound.NONE -> R.string.sound_none; Sound.WAVES -> R.string.sound_waves; Sound.WIND -> R.string.sound_wind; Sound.RAIN -> R.string.sound_rain; Sound.TONE -> R.string.sound_tone; Sound.SEASON -> R.string.sound_season }
 private fun stepName(s: BreathStep) = when (s) { BreathStep.IN -> R.string.breath_in; BreathStep.HOLD -> R.string.breath_hold; BreathStep.OUT -> R.string.breath_out; BreathStep.REST -> R.string.breath_rest }
 
-/** 밤(nightFrom ~ 새벽)에는 잠드는 호흡을 먼저. */
+/** 밤(nightFrom ~ 새벽)에는 잠드는 명상을 먼저. */
 internal fun isNight(now: LocalDateTime) = now.hour >= G.Breath.nightFrom.toInt() || now.hour < G.Motion.sunrise.toInt()
 
 // ───────────────────────── 숨 고르기 창 ─────────────────────────
@@ -156,7 +156,7 @@ fun BreathScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, kind
     val animate = remember { !reducedMotion(ctx) }
     val player = remember(sound) { Soundscape.Player(sound, io.github.graviton94.carpediem.core.Memories.seasonOf(now.toLocalDate())) }
     val part = io.github.graviton94.carpediem.ui.Labels.part(now)
-    // 밤의 잠드는 호흡: 끝나면 화면이 스르르 어두워지고 앱이 물러남 (화면은 폰이 스스로 끔)
+    // 밤의 잠드는 명상: 끝나면 화면이 스르르 어두워지고 앱이 물러남 (화면은 폰이 스스로 끔)
     val sleepAfter = kind == BreathKind.SLEEP && isNight(now)
     val blackout = remember { Animatable(0f) }
     LaunchedEffect(done) {

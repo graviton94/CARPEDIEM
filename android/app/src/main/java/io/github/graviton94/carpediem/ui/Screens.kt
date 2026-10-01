@@ -458,11 +458,11 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
                 }
             }
             // 도움이 필요할 때: 앱이 먼저 판단해 띄우지 않고, 늘 여기 조용히
-            FormSection(header = stringResource(R.string.help), footer = stringResource(R.string.help_body)) {
-                fun dial(n: String) = runCatching { ctx.startActivity(android.content.Intent(android.content.Intent.ACTION_DIAL, android.net.Uri.parse("tel:$n"))) }
-                FormRow(stringResource(R.string.help_suicide), onClick = { dial("109") }) {}
+            FormSection(header = stringResource(R.string.help)) {
+                // 번호는 안내로만 (앱이 전화를 걸지 않음)
+                FormRow(stringResource(R.string.help_suicide)) {}
                 RowDivider()
-                FormRow(stringResource(R.string.help_crisis), onClick = { dial("15770199") }) {}
+                FormRow(stringResource(R.string.help_crisis)) {}
                 RowDivider()
                 FormRow(stringResource(R.string.help_global), onClick = { runCatching { ctx.startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse("https://findahelpline.com"))) } }) {}
             }
