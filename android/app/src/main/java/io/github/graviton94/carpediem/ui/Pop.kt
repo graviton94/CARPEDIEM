@@ -33,6 +33,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
@@ -103,9 +106,9 @@ fun GardenAlert(
 fun NoteHost(note: Pair<String, Long>?, onDone: () -> Unit) {
     val (text, id) = note ?: return
     val a = rememberPop(id)
-    LaunchedEffect(id) { delay(Tokens.Garden.Motion.noteMs.toLong()); onDone() }
+    LaunchedEffect(id) { delay(Tokens.Garden.Motion.noteMs.toLong()); a.animateTo(0f, tween(Tokens.Garden.Motion.modalFadeMs.toInt())); onDone() }
     Box(Modifier.fillMaxSize().navigationBarsPadding().padding(bottom = Tokens.Space.sp10 * 2), contentAlignment = Alignment.BottomCenter) {
-        TokenText(text, Tokens.TypeScale.subhead, Modifier.padding(horizontal = Theme.deviceClass.pageMargin).pop(a).modalBox(998)
+        TokenText(text, Tokens.TypeScale.subhead, Modifier.padding(horizontal = Theme.deviceClass.pageMargin).semantics { liveRegion = LiveRegionMode.Polite }.pop(a).modalBox(998)
             .padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3), align = TextAlign.Center)
     }
 }

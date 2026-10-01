@@ -454,7 +454,7 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
                                     // 새로 들여온 기록으로 처음부터 (알림 · 위젯도 새로)
                                     io.github.graviton94.carpediem.widget.Widgets.refresh(ctx)
                                     // 한마디를 잠깐 보인 뒤에
-                                    android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({ (ctx as? android.app.Activity)?.recreate() }, (Tokens.Garden.Motion.noteMs / 2).toLong())
+                                    android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({ (ctx as? android.app.Activity)?.takeIf { !it.isFinishing && !it.isDestroyed }?.recreate() }, (Tokens.Garden.Motion.noteMs / 2).toLong())
                                 } else state.say(ctx.getString(R.string.backup_fail))
                             }) { Text(stringResource(R.string.backup_importAction), color = p.danger) } },
                             dismissButton = { TextButton(onClick = { restoreFrom = null }) { Text(stringResource(R.string.cancel)) } },

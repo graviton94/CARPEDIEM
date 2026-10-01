@@ -165,12 +165,11 @@ internal fun gardenSlots(state: AppState, profile: LifeProfile, s: LifeSnapshot,
 @Composable
 private fun Modifier.bookPage(pager: androidx.compose.foundation.pager.PagerState, page: Int): Modifier {
     val shade = Theme.gc.scrim
-    val depth = LocalDensity.current.density * G.Motion.bookDepth
     return paperBackground().graphicsLayer {
         val o = (pager.currentPage - page) + pager.currentPageOffsetFraction
         translationX = o * size.width
         transformOrigin = androidx.compose.ui.graphics.TransformOrigin(0f, 0.5f)
-        cameraDistance = depth
+        cameraDistance = G.Motion.bookDepth
         rotationY = if (o > 0f) -G.Motion.bookTurn * o else 0f
     }.drawWithContent {
         drawContent()
