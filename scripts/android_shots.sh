@@ -18,6 +18,8 @@ sleep 45; adb shell am broadcast -a android.intent.action.CLOSE_SYSTEM_DIALOGS >
 adb shell cmd locale set-app-locales $P --locales ko-KR 2>/dev/null
 
 quick_scenes() {
+# 부팅 직후 느린 에뮬레이터: 한 번 열어 데워 둠 (첫 화면이 ‘응답 없음’으로 닫히지 않게)
+open --es cd.now $NOW; sleep 25
 # 정원의 놓인 것 모두 (낮 · 밤 · 가족)
 open --ez cd.reset true --es cd.design garden --el cd.seed 2718281 --es cd.birth 2000-05-12 --es cd.sex female --ez cd.meet false --ez cd.preview true --es cd.now $NOW; shot q01_objects_day 8
 open --ez cd.preview true --es cd.now 2026-09-30T22:40; shot q02_objects_night 8
