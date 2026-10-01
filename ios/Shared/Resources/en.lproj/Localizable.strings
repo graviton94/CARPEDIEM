@@ -333,7 +333,7 @@
 "question.skip" = "Just the words today";
 "question.answered" = "You already sent a line today.";
 "mood.title" = "Heart’s record";
-"mood.sub" = "%1$@’s constellation is %2$@. One day at a time along its lines.";
+"mood.sub" = "%1$@ · a pattern grown from %2$@, one day at a time.";
 "mood.a11y" = "%2$@ days of %1$@ hold a line";
 "letter.arrived" = "A letter for %1$@ has arrived";
 "letter.title" = "%2$@ %1$@";
@@ -493,8 +493,8 @@
 "record.card" = "The garden of %1$@ has bloomed";
 "record.cardNight" = "Stars are out over the garden of %1$@";
 "record.dayPattern" = "MMMM d";
-"notify.tomorrowRow" = "A note for tomorrow";
-"notify.tomorrowFooter" = "When tomorrow is a family birthday or a special day, a note at 7 the evening before.";
+"notify.tomorrowRow" = "Birthdays & special days";
+"notify.tomorrowFooter" = "For family birthdays and special days: once at 7 the evening before, and once at 9 that morning.";
 "notify.tomorrowBirthday" = "Tomorrow is %1$@’s birthday";
 "notify.tomorrowBirthdayText" = "You can send a birthday card from the garden.";
 "notify.tomorrowSpecial" = "Tomorrow: %1$@, %2$@ yr ago";
@@ -505,3 +505,5 @@
 "bday.mineTomorrow" = "Tomorrow is your birthday";
 "bday.mineToday" = "Happy birthday";
 "stone.birthdayTomorrow" = "Tomorrow";
+"notify.todayBirthdayText" = "Send a birthday card from the garden.";
+"notify.todaySpecial" = "Today: %1$@, %2$@ yr ago";

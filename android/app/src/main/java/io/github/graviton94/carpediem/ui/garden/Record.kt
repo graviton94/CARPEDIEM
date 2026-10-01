@@ -70,7 +70,7 @@ internal fun MoodRecord(state: AppState, today: LocalDate, onOpen: (RecordView) 
     val a11y = stringResource(R.string.mood_a11y, RecordText.month(ctx, today.monthValue), "$kept")
     Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
         TokenText(stringResource(R.string.mood_title), Tokens.TypeScale.title3)
-        MonthGarden(state.store.constellations, days, Theme.gc.night, today,
+        MonthGarden(state.store.constellations, days, state.store.haruSeed, Theme.gc.night, today,
             Modifier.fillMaxWidth().crayonBox(null, G.Radius.box, G.Stroke.chip, 1170).clickable(role = Role.Button) { onOpen(RecordView(today.year, today.monthValue)) }
                 .semantics { contentDescription = a11y })
         TokenText(stringResource(R.string.mood_sub, RecordText.month(ctx, today.monthValue), RecordText.constellation(ctx, state, today.monthValue)), Tokens.TypeScale.caption1, color = p.secondary)
@@ -115,7 +115,7 @@ internal fun RecordSheet(state: AppState, start: RecordView, today: LocalDate, o
                     TokenText("›", Tokens.TypeScale.title3, Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable(enabled = canNext, role = Role.Button) { view = RecordView(next.year, next.monthValue) }
                         .padding(horizontal = Tokens.Space.sp3).semantics { contentDescription = ctx.getString(R.string.record_next) }, color = if (canNext) p.secondary else p.secondary.copy(alpha = 0.3f))
                 }
-                MonthGarden(book, days, night, today, Modifier.fillMaxWidth().crayonBox(null, G.Radius.box, G.Stroke.chip, 1171), picked = picked) { d -> picked = if (picked == d.date) null else d.date }
+                MonthGarden(book, days, state.store.haruSeed, night, today, Modifier.fillMaxWidth().crayonBox(null, G.Radius.box, G.Stroke.chip, 1171), picked = picked) { d -> picked = if (picked == d.date) null else d.date }
                 val pickedLine = picked?.let { d -> days.firstOrNull { it.first == d } }
                 if (pickedLine != null) {
                     Column(Modifier.fillMaxWidth().crayonBox(Theme.gc.paper, G.Radius.box, G.Stroke.chip, 1172).padding(Tokens.Space.sp3), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
@@ -125,7 +125,7 @@ internal fun RecordSheet(state: AppState, start: RecordView, today: LocalDate, o
                     }
                 } else TokenText(stringResource(R.string.record_hint), Tokens.TypeScale.caption1, Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.Center)
                 GardenButton(stringResource(R.string.share_image), {
-                    io.github.graviton94.carpediem.share.ShareCards.send(ctx, io.github.graviton94.carpediem.share.ShareCards.month(ctx, book, days, night, today,
+                    io.github.graviton94.carpediem.share.ShareCards.send(ctx, io.github.graviton94.carpediem.share.ShareCards.month(ctx, book, days, state.store.haruSeed, night, today,
                         if (view.year == today.year) title else "${view.year} · $title", RecordText.constellation(ctx, state, m) + " · " + ctx.getString(R.string.year_count, "$sent", "$thanks")), "month-${view.year}-$m")
                 }, filled = false, seed = 1173)
             } else {
@@ -144,7 +144,7 @@ internal fun RecordSheet(state: AppState, start: RecordView, today: LocalDate, o
                     TokenText("›", Tokens.TypeScale.title3, Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable(enabled = canNext, role = Role.Button) { view = RecordView(y + 1, null) }.padding(horizontal = Tokens.Space.sp3),
                         color = if (canNext) p.secondary else p.secondary.copy(alpha = 0.3f))
                 }
-                YearFlow(book, days, night, today, Modifier.fillMaxWidth().crayonBox(null, G.Radius.box, G.Stroke.chip, 1174)) { shown = it }
+                YearFlow(book, days, state.store.haruSeed, night, today, Modifier.fillMaxWidth().crayonBox(null, G.Radius.box, G.Stroke.chip, 1174)) { shown = it }
                 TokenText(RecordText.month(ctx, shown) + " · " + RecordText.constellation(ctx, state, shown), Tokens.TypeScale.caption1, Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.Center)
                 TokenText(count, Tokens.TypeScale.footnote, color = p.secondary)
                 thanks.forEach { TokenText("“$it”", Tokens.TypeScale.callout.serif()) }
@@ -153,7 +153,7 @@ internal fun RecordSheet(state: AppState, start: RecordView, today: LocalDate, o
                     TokenText(stringResource(R.string.year_end), Tokens.TypeScale.callout.serif(), Modifier.fillMaxWidth(), align = TextAlign.Center)
                 }
                 GardenButton(stringResource(R.string.share_image), {
-                    io.github.graviton94.carpediem.share.ShareCards.send(ctx, io.github.graviton94.carpediem.share.ShareCards.year(ctx, book, days, night, today, title, count, thanks), "year-$y")
+                    io.github.graviton94.carpediem.share.ShareCards.send(ctx, io.github.graviton94.carpediem.share.ShareCards.year(ctx, book, days, state.store.haruSeed, night, today, title, count, thanks), "year-$y")
                 }, filled = false, seed = 1181)
             }
             GardenButton(stringResource(R.string.garden_close), onClose, filled = false, seed = 1182)
@@ -208,7 +208,7 @@ internal fun PastGardens(state: AppState, today: LocalDate) {
                         Column(Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
                             if (passed) {
                                 val days = remember(state.lines, y, m) { Constellations.monthDays(state.lines, y, m) }
-                                MonthGarden(state.store.constellations, days, night, today,
+                                MonthGarden(state.store.constellations, days, state.store.haruSeed, night, today,
                                     Modifier.fillMaxWidth().crayonBox(null, G.Radius.chip, G.Stroke.chip, 1190 + m).clickable(role = Role.Button) { open = RecordView(y, m) },
                                     animate = false, sizes = TILE_SIZES)
                             } else Spacer(Modifier.fillMaxWidth().aspectRatio(G.Year.monthAspect).crayonBox(null, G.Radius.chip, G.Stroke.chip * 0.5f, 1190 + m))

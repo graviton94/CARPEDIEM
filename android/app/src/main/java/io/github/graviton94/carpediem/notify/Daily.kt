@@ -155,39 +155,49 @@ class EveningWorker(context: Context, params: WorkerParameters) : CoroutineWorke
 }
 
 /**
- * 내일 알림: 전날 저녁에 한 번, 내일이 가족의 생일이거나 지난 해들의 특별한 날과 같은 날일 때만 (겹치면 한 번에). 기본 꺼짐.
- * 생일 당일에는 따로 울리지 않는다.
+ * 생일 · 특별한 날 알림: 전날 저녁 (tomorrowHour) 과 그날 아침 (dayOfHour) 에 한 번씩. 가족의 생일이거나 지난 해들의 특별한 날과 같은 날일 때만
+ * (겹치면 한 번에). 기본 꺼짐.
  */
 object Tomorrow {
     private const val WORK = "tomorrow-notify"
-    private const val ID = 3
+    private const val WORK_TODAY = "dayof-notify"
 
     fun schedule(context: Context, on: Boolean) {
         val wm = WorkManager.getInstance(context)
-        if (!on) { wm.cancelUniqueWork(WORK); return }
-        val work = PeriodicWorkRequestBuilder<TomorrowWorker>(1, TimeUnit.DAYS).setInitialDelay(Daily.delayTo(Tokens.Notify.tomorrowHour.toInt(), 0), TimeUnit.MINUTES).build()
-        wm.enqueueUniquePeriodicWork(WORK, ExistingPeriodicWorkPolicy.UPDATE, work)
+        if (!on) { wm.cancelUniqueWork(WORK); wm.cancelUniqueWork(WORK_TODAY); return }
+        wm.enqueueUniquePeriodicWork(WORK, ExistingPeriodicWorkPolicy.UPDATE,
+            PeriodicWorkRequestBuilder<TomorrowWorker>(1, TimeUnit.DAYS).setInitialDelay(Daily.delayTo(Tokens.Notify.tomorrowHour.toInt(), 0), TimeUnit.MINUTES).build())
+        wm.enqueueUniquePeriodicWork(WORK_TODAY, ExistingPeriodicWorkPolicy.UPDATE,
+            PeriodicWorkRequestBuilder<DayOfWorker>(1, TimeUnit.DAYS).setInitialDelay(Daily.delayTo(Tokens.Notify.dayOfHour.toInt(), 0), TimeUnit.MINUTES).build())
     }
 
-    fun post(context: Context) {
+    /** ahead = 1 이면 내일의 일을 오늘 저녁에, 0 이면 오늘의 일을 오늘 아침에. */
+    fun post(context: Context, ahead: Int) {
         val store = Store(context)
         if (!store.tomorrowNotify || store.design != Design.GARDEN || !Daily.allowed(context)) return
-        val tomorrow = LocalDate.now().plusDays(1)
-        val names = store.people.filter { io.github.graviton94.carpediem.core.Family.isBirthday(it.birth, tomorrow) }.map { it.name }
-        val days = io.github.graviton94.carpediem.core.SpecialDays.anniversaries(store.specialDays, tomorrow)
-            .map { (d, years) -> context.getString(R.string.notify_tomorrowSpecial, d.name, "$years") }
+        val day = LocalDate.now().plusDays(ahead.toLong())
+        val names = store.people.filter { io.github.graviton94.carpediem.core.Family.isBirthday(it.birth, day) }.map { it.name }
+        val days = io.github.graviton94.carpediem.core.SpecialDays.anniversaries(store.specialDays, day)
+            .map { (d, years) -> context.getString(if (ahead == 0) R.string.notify_todaySpecial else R.string.notify_tomorrowSpecial, d.name, "$years") }
         if (names.isEmpty() && days.isEmpty()) return
         val title: String; val body: String
-        if (names.isNotEmpty()) { title = context.getString(R.string.notify_tomorrowBirthday, names.joinToString(", ")); body = days.firstOrNull() ?: context.getString(R.string.notify_tomorrowBirthdayText) }
-        else { title = days.first(); body = days.drop(1).firstOrNull() ?: context.getString(R.string.notify_tomorrowSpecialText) }
+        if (names.isNotEmpty()) {
+            val who = names.joinToString(", ")
+            title = if (ahead == 0) context.getString(R.string.bday_today, who) else context.getString(R.string.notify_tomorrowBirthday, who)
+            body = days.firstOrNull() ?: context.getString(if (ahead == 0) R.string.notify_todayBirthdayText else R.string.notify_tomorrowBirthdayText)
+        } else { title = days.first(); body = days.drop(1).firstOrNull() ?: context.getString(R.string.notify_tomorrowSpecialText) }
         Daily.channel(context)
         val open = PendingIntent.getActivity(context, 2, Intent(context, MainActivity::class.java), PendingIntent.FLAG_IMMUTABLE)
         val n = NotificationCompat.Builder(context, "daily").setSmallIcon(R.mipmap.ic_launcher_monochrome)
             .setContentTitle(title).setContentText(body).setContentIntent(open).setAutoCancel(true).build()
-        NotificationManagerCompat.from(context).notify(ID, n)
+        NotificationManagerCompat.from(context).notify(3 + ahead, n)
     }
 }
 
 class TomorrowWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
-    override suspend fun doWork(): Result { Tomorrow.post(applicationContext); return Result.success() }
+    override suspend fun doWork(): Result { Tomorrow.post(applicationContext, 1); return Result.success() }
+}
+
+class DayOfWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
+    override suspend fun doWork(): Result { Tomorrow.post(applicationContext, 0); return Result.success() }
 }

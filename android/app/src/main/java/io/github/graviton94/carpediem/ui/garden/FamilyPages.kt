@@ -74,9 +74,9 @@ private fun speciesName(s: Species) = when (s) { Species.DOG -> R.string.species
 
 /** 돌 하나를 크게 (만남 · 돌의 페이지): 땅 한 줄 위에. */
 @Composable
-internal fun BigStone(art: HaruArt, pet: Boolean, hat: Boolean, onOpen: (() -> Unit)? = null, sparkle: Boolean = false) {
+internal fun BigStone(art: HaruArt, pet: Boolean, hat: Boolean, onOpen: (() -> Unit)? = null, sparkle: Boolean = false, size: Float = 1f) {
     val u = Theme.unit
-    val scale = u * (G.Layout.meetHaruWidth / G.Layout.haruArtWidth) * (if (pet) G.Family.petScale else 1f)
+    val scale = u * (G.Layout.meetHaruWidth / G.Layout.haruArtWidth) * (if (pet) G.Family.petScale else 1f) * size
     val boxH = scale * (G.Layout.haruGround - art.meta.bbox.top + if (hat) Tokens.Garden.Party.hatHeight else G.Layout.sparkle * 2)
     BoxWithConstraints(Modifier.fillMaxWidth().height(boxH + u * G.Layout.labelGap)) {
         val w = maxWidth
@@ -119,7 +119,7 @@ fun StoneScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, id: S
             verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp4),
         ) {
             PageBar(name, onBack)
-            BigStone(art, person?.kind == Kind.PET, birthday)
+            BigStone(art, person?.kind == Kind.PET, birthday, size = G.Family.pageStone)
             Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
                 TokenText(name, Tokens.TypeScale.title3.serif(), align = TextAlign.Center)
                 TokenText(stringResource(R.string.garden_metOn, dateText(metOn), Labels.stone(ctx, art.meta.stone)), Tokens.TypeScale.footnote, color = p.secondary, align = TextAlign.Center)

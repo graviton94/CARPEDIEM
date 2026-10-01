@@ -149,6 +149,7 @@ enum Tokens {
         static let eveningHour: CGFloat = 22.0
         static let tomorrowHour: CGFloat = 19.0
         static let birthdayFrom: CGFloat = 17.0
+        static let dayOfHour: CGFloat = 9.0
     }
 
     enum Garden {
@@ -323,6 +324,7 @@ enum Tokens {
             static let catYears: CGFloat = 15.0
             static let otherYears: CGFloat = 10.0
             static let feather: CGFloat = 16.0
+            static let pageStone: CGFloat = 0.68
         }
         enum Touch {
             static let petMs: CGFloat = 900.0
@@ -482,17 +484,11 @@ enum Tokens {
             static let flowMs: CGFloat = 70000.0
             static let twinkleMs: CGFloat = 4200.0
             static let monthDue: CGFloat = 3.0
-            static let monthFlower: CGFloat = 0.03
-            static let monthFlowerSmall: CGFloat = 0.02
-            static let monthStar: CGFloat = 0.011
-            static let monthStarSmall: CGFloat = 0.006
-            static let yearFlower: CGFloat = 0.013
-            static let yearFlowerSmall: CGFloat = 0.008
-            static let yearStar: CGFloat = 0.0055
-            static let yearStarSmall: CGFloat = 0.003
-            static let tileFlower: CGFloat = 0.06
-            static let tileFlowerSmall: CGFloat = 0.038
-            static let lineAlpha: CGFloat = 0.12
+            static let monthFlower: CGFloat = 0.026
+            static let monthStar: CGFloat = 0.009
+            static let yearFlower: CGFloat = 0.011
+            static let yearStar: CGFloat = 0.0042
+            static let tileFlower: CGFloat = 0.05
             static let hazeAlpha: CGFloat = 0.07
             static let field: CGFloat = 120.0
             enum Colors {
@@ -507,6 +503,7 @@ enum Tokens {
                 static let heart: UInt32 = 0xFFF6DEFF
                 static let rest: UInt32 = 0x82965FFF
             }
+            static let tileStar: CGFloat = 0.018
         }
         enum Share {
             static let lineW: CGFloat = 1080.0

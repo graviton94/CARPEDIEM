@@ -369,13 +369,17 @@ class ReflectTest {
         assertEquals((1..12).toList(), book.all.map { it.month })
         book.all.forEach { c ->
             for (n in listOf(28, 29, 30, 31)) {
-                val spots = Constellations.layout(c, n)
+                val spots = Constellations.scatter(c, n, Constellations.seed(7, 2026, c.month))
                 assertEquals(n, spots.size, c.korean)
-                // 별자리의 별은 모두 한 번씩 꼭짓점으로, 자리는 판 안에
-                assertEquals(c.lines.flatMap { listOf(it.first, it.second) }.distinct().size, spots.count { it.vertex }, c.korean)
-                spots.forEach { assertTrue(it.x in -0.05f..1.05f && it.y in -0.05f..1.05f, c.korean) }
+                spots.forEach { assertTrue(it.x in 0f..1f && it.y in 0f..1f && it.size in 0.6f..1.75f, c.korean) }
             }
-            assertEquals(Constellations.layout(c, 30), Constellations.layout(c, 30))   // 늘 같은 자리
+            val a = Constellations.scatter(c, 30, Constellations.seed(7, 2026, c.month))
+            assertEquals(a, Constellations.scatter(c, 30, Constellations.seed(7, 2026, c.month)))   // 같은 seed 면 같은 자리
+            assertNotEquals(a, Constellations.scatter(c, 30, Constellations.seed(7, 2027, c.month)))   // 해마다 다르게
+            assertNotEquals(a, Constellations.scatter(c, 30, Constellations.seed(8, 2026, c.month)))   // 사람마다 다르게
+            // 흩어져도 별자리 근처: 가장 가까운 별까지 평균 거리가 판의 1/4 안
+            val near = a.map { s -> c.stars.minOf { (x, y) -> kotlin.math.hypot(x - s.x, y - s.y) } }.average()
+            assertTrue(near < 0.25, "${c.korean} $near")
         }
         val m = Constellations.monthDays(listOf(DayLine(LocalDate.of(2026, 2, 28), "a", Feeling.JOY)), 2026, 2)
         assertEquals(28, m.size); assertEquals("a", m.last().second?.text)

@@ -335,7 +335,7 @@
     <string name="question_skip">Just the words today</string>
     <string name="question_answered">You already sent a line today.</string>
     <string name="mood_title">Heart’s record</string>
-    <string name="mood_sub">%1$s’s constellation is %2$s. One day at a time along its lines.</string>
+    <string name="mood_sub">%1$s · a pattern grown from %2$s, one day at a time.</string>
     <string name="mood_a11y">%2$s days of %1$s hold a line</string>
     <string name="letter_arrived">A letter for %1$s has arrived</string>
     <string name="letter_title">%2$s %1$s</string>
@@ -495,8 +495,8 @@
     <string name="record_card">The garden of %1$s has bloomed</string>
     <string name="record_cardNight">Stars are out over the garden of %1$s</string>
     <string name="record_dayPattern">MMMM d</string>
-    <string name="notify_tomorrowRow">A note for tomorrow</string>
-    <string name="notify_tomorrowFooter">When tomorrow is a family birthday or a special day, a note at 7 the evening before.</string>
+    <string name="notify_tomorrowRow">Birthdays &amp; special days</string>
+    <string name="notify_tomorrowFooter">For family birthdays and special days: once at 7 the evening before, and once at 9 that morning.</string>
     <string name="notify_tomorrowBirthday">Tomorrow is %1$s’s birthday</string>
     <string name="notify_tomorrowBirthdayText">You can send a birthday card from the garden.</string>
     <string name="notify_tomorrowSpecial">Tomorrow: %1$s, %2$s yr ago</string>
@@ -507,4 +507,6 @@
     <string name="bday_mineTomorrow">Tomorrow is your birthday</string>
     <string name="bday_mineToday">Happy birthday</string>
     <string name="stone_birthdayTomorrow">Tomorrow</string>
+    <string name="notify_todayBirthdayText">Send a birthday card from the garden.</string>
+    <string name="notify_todaySpecial">Today: %1$s, %2$s yr ago</string>
 </resources>

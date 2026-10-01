@@ -113,7 +113,7 @@ object ShareCards {
     private val Y = Tokens.Garden.Year.Colors
 
     /** 한 달의 정원: 그 달의 별자리 (보내는 때가 밤이면 별, 낮이면 꽃), 별자리 이름 · 한 줄 수. */
-    fun month(ctx: Context, book: io.github.graviton94.carpediem.core.ConstellationBook, days: List<Pair<LocalDate, DayLine?>>, night: Boolean, today: LocalDate, title: String, sub: String): Bitmap {
+    fun month(ctx: Context, book: io.github.graviton94.carpediem.core.ConstellationBook, days: List<Pair<LocalDate, DayLine?>>, install: Long, night: Boolean, today: LocalDate, title: String, sub: String): Bitmap {
         val w = S.yearW.toInt(); val h = S.yearH.toInt(); val pad = S.pad
         val (b, c) = board(w, h, night)
         val fg = if (night) Y.plain.toArgb() else ink; val soft = if (night) Y.plain.copy(alpha = 0.7f).toArgb() else inkSoft
@@ -121,18 +121,17 @@ object ShareCards {
         y += text(c, title, paint(ctx, S.text * 0.9f, fg), pad, y, (w - pad * 2).toInt()) + pad * 0.2f
         y += text(c, sub, paint(ctx, S.small, soft), pad, y, (w - pad * 2).toInt()) + pad * 0.4f
         val gw = w - pad * 2; val gh = gw / Tokens.Garden.Year.monthAspect
-        val dots = StarGarden.month(book, days)
-        val cons = days.firstOrNull()?.first?.monthValue?.let(book::of)
+        val dots = StarGarden.month(book, days, install)
         drawCompose(c, pad, y, gw, gh) {
             if (night) nightSky() else meadow()
-            monthIn(androidx.compose.ui.geometry.Rect(androidx.compose.ui.geometry.Offset.Zero, size), dots, cons, night, today, MONTH_SIZES)
+            monthIn(androidx.compose.ui.geometry.Rect(androidx.compose.ui.geometry.Offset.Zero, size), dots, night, today, MONTH_SIZES)
         }
         text(c, ctx.getString(R.string.share_footer), paint(ctx, S.small * 0.8f, soft), pad, h - pad * 1.25f, (w - pad * 2).toInt())
         return b
     }
 
     /** 한 해의 정원: 열두 달의 별자리를 4 × 3 칸에, 한 줄 · 고마움 수, 고마움 한 줄 몇 개. */
-    fun year(ctx: Context, book: io.github.graviton94.carpediem.core.ConstellationBook, days: List<Pair<LocalDate, DayLine?>>, night: Boolean, today: LocalDate, title: String, count: String, thanks: List<String>): Bitmap {
+    fun year(ctx: Context, book: io.github.graviton94.carpediem.core.ConstellationBook, days: List<Pair<LocalDate, DayLine?>>, install: Long, night: Boolean, today: LocalDate, title: String, count: String, thanks: List<String>): Bitmap {
         val w = S.yearW.toInt(); val h = S.yearH.toInt(); val pad = S.pad
         val (b, c) = board(w, h, night)
         val fg = if (night) Y.plain.toArgb() else ink; val soft = if (night) Y.plain.copy(alpha = 0.7f).toArgb() else inkSoft
@@ -144,7 +143,7 @@ object ShareCards {
             if (night) nightSky() else meadow()
             months.forEach { (m, ds) ->
                 val r = androidx.compose.ui.geometry.Rect(((m - 1) % 4) * cw, ((m - 1) / 4) * (ch + label), ((m - 1) % 4 + 1) * cw, ((m - 1) / 4) * (ch + label) + ch)
-                monthIn(r, StarGarden.month(book, ds), book.of(m), night, today, TILE_SIZES)
+                monthIn(r, StarGarden.month(book, ds, install), night, today, TILE_SIZES)
             }
         }
         val lp = paint(ctx, S.small * 0.75f, soft)

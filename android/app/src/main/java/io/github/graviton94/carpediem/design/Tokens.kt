@@ -144,6 +144,7 @@ object Tokens {
         const val eveningHour = 22.0f
         const val tomorrowHour = 19.0f
         const val birthdayFrom = 17.0f
+        const val dayOfHour = 9.0f
     }
 
     object Garden {
@@ -318,6 +319,7 @@ object Tokens {
             const val catYears = 15.0f
             const val otherYears = 10.0f
             const val feather = 16.0f
+            const val pageStone = 0.68f
         }
         object Touch {
             const val petMs = 900.0f
@@ -477,17 +479,11 @@ object Tokens {
             const val flowMs = 70000.0f
             const val twinkleMs = 4200.0f
             const val monthDue = 3.0f
-            const val monthFlower = 0.03f
-            const val monthFlowerSmall = 0.02f
-            const val monthStar = 0.011f
-            const val monthStarSmall = 0.006f
-            const val yearFlower = 0.013f
-            const val yearFlowerSmall = 0.008f
-            const val yearStar = 0.0055f
-            const val yearStarSmall = 0.003f
-            const val tileFlower = 0.06f
-            const val tileFlowerSmall = 0.038f
-            const val lineAlpha = 0.12f
+            const val monthFlower = 0.026f
+            const val monthStar = 0.009f
+            const val yearFlower = 0.011f
+            const val yearStar = 0.0042f
+            const val tileFlower = 0.05f
             const val hazeAlpha = 0.07f
             const val field = 120.0f
             object Colors {
@@ -502,6 +498,7 @@ object Tokens {
                 val heart = Color(0xFFFFF6DE)
                 val rest = Color(0xFF82965F)
             }
+            const val tileStar = 0.018f
         }
         object Share {
             const val lineW = 1080.0f
