@@ -237,9 +237,12 @@ object Tokens {
             const val sunset = 19.0f
             const val keyboardMs = 320.0f
             const val noteMs = 2400.0f
-            const val bookTurn = 90.0f
-            const val bookDepth = 12.0f
-            const val bookShade = 0.8f
+            const val turnTilt = 3.0f
+            const val turnLift = 8.0f
+            const val turnShade = 0.5f
+            const val turnEdge = 18.0f
+            const val turnSnap = 0.2f
+            const val breathDrift = 26.0f
         }
         object Crayon {
             const val vary = 0.3f
