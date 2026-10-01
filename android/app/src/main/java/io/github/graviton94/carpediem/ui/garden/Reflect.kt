@@ -317,15 +317,14 @@ internal fun SpecialDaysRow(state: AppState, birth: LocalDate) {
     var removing by remember { mutableStateOf<io.github.graviton94.carpediem.core.SpecialDay?>(null) }
     val fmt = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
     Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
+        TokenText(stringResource(R.string.special_title), Tokens.TypeScale.title3)
         if (state.specialDays.isNotEmpty()) {
-            TokenText(stringResource(R.string.special_title), Tokens.TypeScale.caption1, color = p.secondary)
             androidx.compose.foundation.layout.FlowRow(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
                 state.specialDays.forEachIndexed { i, d -> GardenChip("${d.name} · ${d.date.format(fmt)}", false, 1400 + i) { removing = d } }
             }
         }
-        TokenText(stringResource(R.string.special_add), Tokens.TypeScale.footnote, Modifier.clickable {
-            adding = true
-        }.padding(vertical = Tokens.Space.sp1), color = p.secondary, weight = FontWeight.SemiBold)
+        // 버튼인 줄 바로 알게: 테두리 있는 버튼 (서른 송이까지)
+        GardenButton("＋ " + stringResource(R.string.special_add), { adding = true }, filled = false, seed = 1410)
     }
     if (adding) SpecialDaySheet(state, birth) { adding = false }
     removing?.let { d ->

@@ -204,6 +204,7 @@ object Tokens {
             const val pebbleSquash = 0.24f
             const val pebbleWobble = 0.22f
             const val pebbleLine = 0.45f
+            const val tabMark = 14.0f
         }
         object Stroke {
             const val ground = 3.2f
@@ -472,17 +473,10 @@ object Tokens {
         object Year {
             const val thanks = 3.0f
             const val monthAspect = 0.86f
-            const val flowAspect = 0.62f
-            const val span = 3.0f
-            const val boxW = 0.2f
-            const val boxH = 0.24f
-            const val flowMs = 70000.0f
             const val twinkleMs = 4200.0f
             const val monthDue = 3.0f
             const val monthFlower = 0.026f
             const val monthStar = 0.009f
-            const val yearFlower = 0.011f
-            const val yearStar = 0.0042f
             const val tileFlower = 0.05f
             const val hazeAlpha = 0.07f
             const val field = 120.0f

@@ -155,7 +155,7 @@ class MainActivity : ComponentActivity() {
                                     onCollection = { screen = Screen.Collection(Screen.Main) }, onSupport = { screen = Screen.Support(Screen.Main) },
                                     onStone = { id -> screen = Screen.Stone(id, Screen.Main) }, onAddPerson = { screen = Screen.AddPerson(null, Screen.Main) },
                                     onBreath = { k, m, snd -> screen = Screen.Breathe(k, m, snd, Screen.Main) }, onGaze = { screen = Screen.Gaze(Screen.Main) },
-                                    onLook = { screen = Screen.Look(Screen.Main) })
+                                    onLook = { screen = Screen.Look(Screen.Main) }, onMemory = { screen = Screen.Memory(Screen.Main) })
                                 else -> HomeScreen(state, profile, now, onSettings = { screen = Screen.Settings }, onSupport = { screen = Screen.Support(Screen.Main) })
                             }
                         }
@@ -203,6 +203,7 @@ private fun MainActivity.debugSetup(state: AppState): Screen {
     if (x.getBooleanExtra("cd.wish", false)) io.github.graviton94.carpediem.core.Letters.due((state.fixedNow ?: LocalDateTime.now()).toLocalDate())?.minusMonths(3)?.let { d -> state.saveWish("%04d-%02d".format(d.year, d.monthValue), getString(R.string.wish_sample)) }
     state.debugOpenYear = x.getBooleanExtra("cd.openYear", false)
     state.debugOpenMonth = x.getBooleanExtra("cd.openMonth", false)
+    state.homePage = if (state.debugOpenYear || state.debugOpenMonth) 2 else x.getIntExtra("cd.page", 0)
     state.refreshQuestion()
     if (x.getBooleanExtra("cd.question", false)) state.previewQuestion()
     // 가족의 정원 시험: 동생 · 콩이(강아지) · 엄마(오늘 생일) · 아빠

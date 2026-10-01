@@ -209,6 +209,7 @@ enum Tokens {
             static let pebbleSquash: CGFloat = 0.24
             static let pebbleWobble: CGFloat = 0.22
             static let pebbleLine: CGFloat = 0.45
+            static let tabMark: CGFloat = 14.0
         }
         enum Stroke {
             static let ground: CGFloat = 3.2
@@ -477,17 +478,10 @@ enum Tokens {
         enum Year {
             static let thanks: CGFloat = 3.0
             static let monthAspect: CGFloat = 0.86
-            static let flowAspect: CGFloat = 0.62
-            static let span: CGFloat = 3.0
-            static let boxW: CGFloat = 0.2
-            static let boxH: CGFloat = 0.24
-            static let flowMs: CGFloat = 70000.0
             static let twinkleMs: CGFloat = 4200.0
             static let monthDue: CGFloat = 3.0
             static let monthFlower: CGFloat = 0.026
             static let monthStar: CGFloat = 0.009
-            static let yearFlower: CGFloat = 0.011
-            static let yearStar: CGFloat = 0.0042
             static let tileFlower: CGFloat = 0.05
             static let hazeAlpha: CGFloat = 0.07
             static let field: CGFloat = 120.0

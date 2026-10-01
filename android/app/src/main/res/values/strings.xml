@@ -90,7 +90,6 @@
     <string name="garden_drawing">Drawing Haru…</string>
     <string name="garden_haru">My Haru</string>
     <string name="garden_age0">Age 0</string>
-    <string name="garden_down">Scroll for more</string>
     <string name="garden_close">Close</string>
     <string name="garden_preview">Preview all keepsakes (test)</string>
     <string name="garden_itemDate">%1$s · %2$s</string>
@@ -167,9 +166,9 @@
     <string name="letgo_sub">Joy or sorrow, one line, then let it go.</string>
     <string name="letgo_feeling">How it feels (optional)</string>
     <string name="letgo_hint">Today, in one line</string>
-    <string name="letgo_send">Let it go</string>
-    <string name="letgo_done">Today\'s line has drifted away.\nSee you tomorrow.</string>
-    <string name="letgo_privacy">Your lines stay on this phone.</string>
+    <string name="letgo_send">Keep this line</string>
+    <string name="letgo_done">Today’s line is kept.\nYou’ll find it as a flower in Memories.</string>
+    <string name="letgo_privacy">Each line you keep blooms as a flower in Memories › Heart’s record. It stays on this phone.</string>
     <string name="feeling_joy">Joy</string>
     <string name="feeling_thanks">Thanks</string>
     <string name="feeling_calm">Calm</string>
@@ -236,7 +235,7 @@
     <string name="widget_today_garden">Today · Garden</string>
     <string name="widget_calendar_glass">Life calendar · Glass</string>
     <string name="widget_calendar_garden">Life calendar · Garden</string>
-    <string name="letgo_modalTitle">Let go</string>
+    <string name="letgo_modalTitle">Your line is kept</string>
     <string name="letgo_ok">OK</string>
     <string name="recall_random">Out of nowhere, a line from %1$s came back</string>
     <string name="recall_randomNotify">A past line came back to you</string>
@@ -275,9 +274,9 @@
     <string name="stone_linesCount">%1$s</string>
     <string name="stone_edit">Edit</string>
     <string name="stone_save">Save</string>
-    <string name="stone_remove">Let this stone go</string>
-    <string name="stone_removeConfirm">Let %1$s\'s stone go from the garden?\nYour lines stay.</string>
-    <string name="stone_removeAction">Let go</string>
+    <string name="stone_remove">Take out of the garden</string>
+    <string name="stone_removeConfirm">Take %1$s’s stone out of the garden?\nYour lines stay.</string>
+    <string name="stone_removeAction">Take out</string>
     <string name="stone_age">Age %1$s</string>
     <string name="stone_petAge">%1$s yrs</string>
     <string name="letgo_to">To someone (optional)</string>
@@ -402,8 +401,8 @@
     <string name="memory_add">Family or a pet who has passed</string>
     <string name="memory_addMore">Add a stone to remember</string>
     <string name="memory_full">You can keep up to four stones here.</string>
-    <string name="memory_toMemory">Move to the place to remember</string>
-    <string name="memory_toMemoryConfirm">Move %1$s’s stone to the place to remember?\nIt won’t appear in the garden. It rests quietly in the place to remember, inside Collection.\nYou can move it back any time.</string>
+    <string name="memory_toMemory">Move to the place of memory</string>
+    <string name="memory_toMemoryConfirm">Move %1$s’s stone to the place of memory?\nIt won’t be in the garden; it rests quietly in Memories.\nYou can bring it back any time.</string>
     <string name="memory_toMemoryAction">Move</string>
     <string name="memory_addUntil">The day they left (optional)</string>
     <string name="memory_meet">%1$s’s stone rests in the place to remember.</string>
@@ -476,7 +475,7 @@
     <string name="bday_cardTitle">Happy birthday, %1$s</string>
     <string name="bday_cardSub">Thank you for being here.</string>
     <string name="special_add">Place a flower on a special day</string>
-    <string name="special_title">Days with a flower</string>
+    <string name="special_title">Special days</string>
     <string name="special_name">What day was it?</string>
     <string name="special_nameHint">First job, moving day</string>
     <string name="special_save">Place the flower</string>
@@ -510,4 +509,14 @@
     <string name="notify_todayBirthdayText">Send a birthday card from the garden.</string>
     <string name="notify_todaySpecial">Today: %1$s, %2$s yr ago</string>
     <string name="dev_notify">Test: send all three notes now</string>
+    <string name="tab_garden">Garden</string>
+    <string name="tab_write">Journal</string>
+    <string name="tab_memories">Memories</string>
+    <string name="tab_flow">Time</string>
+    <string name="family_addShort">＋ Stone</string>
+    <string name="stone_removeHelp">Only the stone leaves the garden. Lines you sent to it stay.</string>
+    <string name="stone_tidy">Tidy this stone</string>
+    <string name="memory_toMemoryHelp">For family or pets who have passed. The stone rests in Memories › Place of memory, and can return to the garden any time.</string>
+    <string name="record_off">Keeping lines is off, so there’s no record to show. You can turn it on in Settings.</string>
+    <string name="record_yearHint">Tap a month to open it.</string>
 </resources>

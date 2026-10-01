@@ -22,7 +22,9 @@ open --ez cd.reset true --es cd.design garden --es cd.now $NOW;                 
 open --ez cd.reset true --es cd.design garden --el cd.seed 2718281 --es cd.birth 2000-05-12 --es cd.sex female --ez cd.meet true --es cd.now $NOW; shot g02_meet 14
 open --ez cd.meet false --es cd.now $NOW;                                                              shot g03_home 6
 open --ez cd.preview true --es cd.now $NOW;                                                            shot g04_home_all 5
-swipe_up; shot g05_below 3; swipe_up; shot g06_calendar 3
+open --ei cd.page 1 --es cd.now $NOW;                                                             shot g05_write 3
+open --ei cd.page 2 --es cd.now $NOW;                                                             shot g06_memories 3
+open --ei cd.page 3 --es cd.now $NOW;                                                             shot g06_flow 3
 open --ez cd.preview false --es cd.now 2026-09-30T07:10;                                               shot g07_morning 5
 open --es cd.now 2026-09-30T23:30;                                                                     shot g08_night 5; shot g08_night_late 8
 open --es cd.screen settings --es cd.now $NOW;                                                         shot g09_settings 4
@@ -31,7 +33,7 @@ open --es cd.screen widgets --es cd.now $NOW;                                   
 open --ez cd.preview true --es cd.screen collection --es cd.now $NOW;                                  shot g16_collection 5
 open --ez cd.preview false --es cd.screen support --es cd.now $NOW;                                    shot g17_support 6
 adb shell input tap 540 1700; shot g18_support_tap 2
-open --es cd.now $NOW --ez cd.recall true; swipe_up; sleep 2; swipe_up; swipe_up; shot g21_letgo_recall 3
+open --es cd.now $NOW --ez cd.recall true --ei cd.page 1;                                           shot g21_letgo_recall 4
 # 가족의 정원 (엄마는 오늘 생일): 홈 · 돌의 페이지 · 돌 더하기
 open --ez cd.family true --es cd.now $NOW;                                                             shot g22_family 5
 open --es cd.screen stone --es cd.now $NOW;                                                            shot g23_stone 4
@@ -46,8 +48,8 @@ open --es cd.now 2026-09-30T18:20;                                              
 open --es cd.now 2026-09-30T05:20;                                                                     shot g20_dawn 5
 # 1.3 깨닫기: 오늘의 질문 · 마음의 하늘 · 계절의 편지 (12월 2일)
 open --ez cd.question true --es cd.now $NOW;                                                          shot g29_question 5
-open --ez cd.moods true --es cd.now $NOW; sleep 5; swipe_up; sleep 3; swipe_up;                        shot g30_mood 3
-open --ez cd.letter true --es cd.now 2026-12-02T10:00; sleep 5; swipe_up;                              shot g31_letter 3
+open --ez cd.moods true --ei cd.page 2 --es cd.now $NOW;                                            shot g30_mood 5
+open --ez cd.letter true --es cd.now 2026-12-02T10:00;                                             shot g31_letter 5
 open --ez cd.wish true --ez cd.openLetter true --es cd.now 2026-12-02T10:00;                            shot g32_letter_open 4
 open --ez cd.letter true --ez cd.openLetter true --es cd.now 2026-12-02T21:30;                         shot g33_letter_night 4
 open --es cd.screen collection --es cd.now 2026-12-02T10:00; swipe_up; swipe_up;                       shot g34_letters 3
@@ -64,10 +66,10 @@ open --es cd.screen breath --es cd.now 2026-10-03T07:30;                        
 open --es cd.now 2026-10-03T23:20;                                                                     shot g43_sleepy 8
 # 1.6 작은 의식: 고마움 숨 (내쉴 때) · 계절 첫날의 바람 · 한 해의 정원
 open --es cd.screen thanks --es cd.now 2026-10-03T15:00;                                              shot g44_thanks_breath 7
-open --es cd.now 2026-12-03T10:00; sleep 5; swipe_up;                                                  shot g45_wish 3
+open --ei cd.page 1 --es cd.now 2026-12-03T10:00;                                                 shot g45_wish 4
 open --ez cd.year true --ez cd.openYear true --es cd.now 2026-12-31T15:00;                            shot g46_year 6
 # 1.7: 특별한 날 꽃 (인생 달력) · 엄마 생일의 돌 페이지 (생일 카드 보내기)
-open --ez cd.special true --es cd.now $NOW; sleep 5; swipe_up; sleep 3; swipe_up;                      shot g47_special 3
+open --ez cd.special true --ei cd.page 3 --es cd.now $NOW;                                         shot g47_special 5
 open --es cd.screen stone --es cd.stoneId mom00001 --es cd.now $NOW;                                  shot g48_birthday_card 5
 # 생일 전날 밤: 엄마의 돌이 먼저 고깔을 쓰고 “내일은 엄마 생일이에요”
 open --es cd.now 2026-09-29T21:00;                                                                     shot g54_birthday_eve 5
@@ -75,7 +77,7 @@ open --es cd.screen stone --es cd.stoneId mom00001 --es cd.now 2026-09-29T21:00;
 # 별자리 정원: 마음의 기록 (이번 달 · 낮/밤) · 지난 달의 정원 카드 · 한 해의 띠 (밤) · 지난 정원
 open --ez cd.months true --ez cd.openMonth true --es cd.now 2026-09-28T15:00;                       shot g49_record_month 6
 open --ez cd.openMonth true --es cd.now 2026-09-28T22:30;                                             shot g50_record_month_night 6
-open --es cd.now 2026-10-02T15:00; sleep 5; swipe_up;                                                  shot g51_month_card 3
+open --es cd.now 2026-10-02T15:00;                                                                  shot g51_month_card 5
 open --ez cd.year true --ez cd.openYear true --es cd.now 2026-12-31T22:00;                            shot g52_year_night 8
 open --es cd.screen collection --es cd.now 2026-10-02T15:00; swipe_up; swipe_up; swipe_up;            shot g53_past_gardens 3
 # 인생의 계절 (다른 생년월일 · 다른 하루)

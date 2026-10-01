@@ -56,6 +56,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.selected
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
@@ -160,7 +163,7 @@ internal fun shortName(n: String): String { val max = G.Family.nameChars.toInt()
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSettings: () -> Unit, onCollection: () -> Unit, onSupport: () -> Unit, onStone: (String?) -> Unit, onAddPerson: () -> Unit,
-               onBreath: (BreathKind, Int, Sound) -> Unit = { _, _, _ -> }, onGaze: () -> Unit = {}, bare: Boolean = false, onLook: () -> Unit = {}) {
+               onBreath: (BreathKind, Int, Sound) -> Unit = { _, _, _ -> }, onGaze: () -> Unit = {}, bare: Boolean = false, onLook: () -> Unit = {}, onMemory: () -> Unit = {}) {
     val p = Theme.palette
     val ctx = LocalContext.current
     val density = LocalDensity.current
@@ -175,40 +178,30 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
     // 캡처용: 이번 달 편지를 바로 펼침. 고르기만 그리기 중에, ‘연 편지’로 남기기는 그 뒤에
     var letterOpen by remember { mutableStateOf(if (state.debugOpenLetter && !bare) state.letterDue(now.toLocalDate()) else null) }
     LaunchedEffect(letterOpen) { letterOpen?.let { state.openLetter(it.id) } }
-    var recordOpen by remember { mutableStateOf(when { bare -> null; state.debugOpenYear -> RecordView(state.yearDue(now.toLocalDate()) ?: now.year, null); state.debugOpenMonth -> RecordView(now.year, now.monthValue); else -> null }) }
 
-    BoxWithConstraints(Modifier.fillMaxSize().paperBackground()) {
+    // 네 장: 정원 · 기록 (오늘의 한 줄) · 추억 (마음의 기록 · 모은 것) · 흐름 (흐르는 시간 · 인생 달력 · 특별한 날). 옆으로 넘기거나 아래 이름표로.
+    // bare = 돌멍하기: 정원 한 장, 글자 · 이름표 · 아래 버튼 없이
+    val pager = rememberPagerState(initialPage = if (bare) 0 else state.homePage.coerceIn(0, 3)) { if (bare) 1 else 4 }
+    if (!bare) LaunchedEffect(pager) { snapshotFlow { pager.currentPage }.collect { state.homePage = it } }
+    val scope = rememberCoroutineScope()
+    var recordView by remember { mutableStateOf(if (state.debugOpenYear) RecordView(state.yearDue(now.toLocalDate()) ?: now.year, null) else RecordView(now.year, now.monthValue)) }
+    fun toRecord(v: RecordView) { recordView = v; scope.launch { pager.animateScrollToPage(2) } }
+
+    Box(Modifier.fillMaxSize().paperBackground()) {
+      Column(Modifier.fillMaxSize()) {
+        HorizontalPager(pager, Modifier.weight(1f).fillMaxWidth(), beyondViewportPageCount = 1) { page ->
+          when (page) {
+            1 -> WritePage(state, now)
+            2 -> MemoriesPage(state, profile, now, recordView, { recordView = it }, onMemory)
+            3 -> FlowPage(state, profile, now)
+            else -> BoxWithConstraints(Modifier.fillMaxSize()) {
         val u = Theme.unit
         val screenH = maxHeight
         val screenW = maxWidth
         val margin = Theme.deviceClass.pageMargin
-        val pagePx = with(density) { screenH.toPx() }
         var topBottom by remember { mutableStateOf(0.dp) }
-        val scroll = rememberScrollState()
-        val scope = rememberCoroutineScope()
-        // 첫 장(정원)과 둘째 장(시간 · 달력) 사이에서 손을 떼면 가까운 장으로 부드럽게 넘어간다.
-        LaunchedEffect(pagePx) {
-            var from = scroll.value
-            snapshotFlow { scroll.isScrollInProgress }.collect { moving ->
-                val v = scroll.value
-                if (moving) from = v
-                else if (v in 1 until pagePx.toInt()) {
-                    val goDown = if (from < pagePx) v > pagePx * G.Layout.pageSnap else v > pagePx * (1 - G.Layout.pageSnap)
-                    // 넘어가는 중에 손가락이 닿으면 멈추고 손을 따른다
-                    try { scroll.animateScrollTo(if (goDown) pagePx.toInt() else 0, tween(G.Motion.pageMs.toInt(), easing = FastOutSlowInEasing)) }
-                    catch (e: CancellationException) { if (!isActive) throw e }
-                }
-            }
-        }
-        // 넘긴 정도 (0 = 정원, 1 = 둘째 장). 읽는 곳은 그리기 단계뿐이라 넘길 때 다시 구성하지 않는다.
-        fun turned() = (scroll.value / pagePx).coerceIn(0f, 1f)
-
-        // 키보드가 올라오면 넘기는 창 자체를 줄여, 입력칸을 키보드 위로 끌어올릴 수 있게
-        // bare = 정원만 보기: 같은 정원에서 글자 · 이름표 · 둘째 장만 뺀다
-        Column(Modifier.fillMaxSize().imePadding().verticalScroll(scroll, enabled = !bare)) {
-            Box(Modifier.fillMaxWidth().height(screenH).graphicsLayer {
-                val f = turned(); translationY = scroll.value * G.Layout.parallax; alpha = 1f - f * f
-            }.clipToBounds()) {
+        var blockH by remember { mutableStateOf(0.dp) }
+            Box(Modifier.fillMaxSize().clipToBounds()) {
                 // 아래: 지나온 길 (땅 한 줄) 위에 나와 가족의 돌 · 놓인 것. 자리를 먼저 정해 하늘빛 · 별 · 해가 쓰게 한다.
                 // 돌이 많아 길에 다 앉지 못하면 모두 같은 비율로 조금씩 작게 (나 포함 9개까지)
                 val haruBase = u * (G.Layout.haruWidth / G.Layout.haruArtWidth)
@@ -219,7 +212,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 val haruAbove = headroom
                 val family = slots.size > 1
                 val labels = u * (G.Layout.labelGap + G.Layout.labelRow * 3)
-                val gy = maxOf(screenH * G.Layout.groundRatio, topBottom + u * G.Layout.minSkyGap + haruAbove).coerceAtMost(screenH - labels)
+                val gy = maxOf(screenH * G.Layout.groundRatio, topBottom + u * G.Layout.minSkyGap + haruAbove).coerceAtMost(screenH - labels - blockH)
 
                 Image(GardenArt.sky(ctx, season), null, Modifier.fillMaxSize(), contentScale = ContentScale.FillWidth, alignment = Alignment.TopCenter)
                 // 땅 그림도 시간의 빛 아래에 (밤이면 땅까지 어두워짐)
@@ -256,8 +249,8 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                     }
                     val question = state.question
                     if (question != null) QuestionBlock(state, question, sent = state.sentOn(now.toLocalDate())) {
-                        // 한 줄로 답하기: 둘째 장 맨 아래 오늘의 한 줄로 부드럽게
-                        state.answer(); scope.launch { scroll.animateScrollTo(scroll.maxValue, tween(G.Motion.pageMs.toInt() * 2, easing = FastOutSlowInEasing)) }
+                        // 한 줄로 답하기: 기록 페이지의 오늘의 한 줄로
+                        state.answer(); scope.launch { pager.animateScrollToPage(1) }
                     } else state.quote?.let { q ->
                         Column(
                             Modifier.fillMaxWidth().padding(top = Tokens.Space.sp4).clickable { state.nextQuote() },
@@ -344,38 +337,129 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                     TokenText(stringResource(R.string.garden_age0), Tokens.TypeScale.caption1, Modifier.centerAt(px.first, 0f, px.second), color = p.secondary)
                     TokenText(stringResource(R.string.expectancy_value, Labels.years(s.expectancy)), Tokens.TypeScale.caption1, Modifier.centerAt(px.second, px.first, with(density) { screenW.toPx() }), color = p.secondary)
                 }
-                // 생일: 전날 저녁부터 한 줄 (“내일은 엄마 생일이에요”), 그날엔 “오늘은 …”
-                slots.firstOrNull { it.soon != null }?.takeIf { !bare }?.let { sl ->
-                    val line = when {
-                        sl.id == null -> stringResource(if (sl.soon == 0) R.string.bday_mineToday else R.string.bday_mineTomorrow)
-                        else -> stringResource(if (sl.soon == 0) R.string.bday_today else R.string.bday_tomorrow, sl.name)
-                    }
-                    TokenText(line, Tokens.TypeScale.callout.serif(), Modifier.offset(y = gy + u * (G.Layout.labelGap + (if (family) G.Layout.labelRow * labelRows else 0f) + G.Layout.labelRow * 1.6f)).fillMaxWidth(), align = TextAlign.Center)
-                }
                 // 잠들기 전 정원: 화면 전체를 조금 더 어둡게
                 if (sleepy) Box(Modifier.fillMaxSize().background(Color.Black.copy(alpha = G.SleepGarden.dim)))
                 // 마음의 날씨: 오늘 보낸 마음이 하늘에 잠깐 (무거운 마음 = 몇 방울 비, 기쁨 · 희망 · 고마움 = 햇살 한 줄기)
                 if (!bare) MoodWeather(state, now, gy - haruAbove)
-                // 정원 아래쪽은 종이로 번져 둘째 장과 이어진다
-                Box(Modifier.align(Alignment.BottomCenter).fillMaxWidth().height(screenH * G.Layout.fadeTail)
-                    .background(Brush.verticalGradient(listOf(Theme.gc.base.copy(alpha = 0f), Theme.gc.base))))
-                if (!bare) TokenText(stringResource(R.string.garden_down), Tokens.TypeScale.caption2, Modifier.align(Alignment.BottomCenter).navigationBarsPadding().padding(bottom = Tokens.Space.sp3), color = p.secondary, weight = FontWeight.Normal)
+                // 아래, 엄지가 닿는 곳: 생일 한 줄 · 도착한 것 한 장 · 정원에서 하는 일 (숨, 쉼 · 돌멍하기 · 돌 더하기)
+                if (!bare) Column(
+                    Modifier.align(Alignment.BottomCenter).fillMaxWidth().padding(horizontal = margin).padding(bottom = Tokens.Space.sp3)
+                        .onGloballyPositioned { c -> blockH = with(density) { c.size.height.toDp() } },
+                    verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp2),
+                ) {
+                    slots.firstOrNull { it.soon != null }?.let { sl ->
+                        val line = if (sl.id == null) stringResource(if (sl.soon == 0) R.string.bday_mineToday else R.string.bday_mineTomorrow)
+                            else stringResource(if (sl.soon == 0) R.string.bday_today else R.string.bday_tomorrow, sl.name)
+                        TokenText(line, Tokens.TypeScale.callout.serif(), Modifier.fillMaxWidth(), align = TextAlign.Center)
+                    }
+                    val today = now.toLocalDate()
+                    val letter = state.letterDue(today); val year = state.yearDue(today); val month = if (year == null) state.monthDue(today) else null
+                    when {
+                        letter != null -> LetterEnvelope(letter) { state.openLetter(letter.id); letterOpen = letter }
+                        year != null -> YearCard(year) { state.openYear(year); toRecord(RecordView(year, null)) }
+                        month != null -> MonthCard(month.second) { state.openMonth(month.first, month.second); toRecord(RecordView(month.first, month.second)) }
+                    }
+                    Row(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
+                        GardenButton(stringResource(R.string.breath), { breathSheet = true }, filled = false, seed = 888, modifier = Modifier.weight(1f))
+                        GardenButton(stringResource(R.string.gaze), onGaze, filled = false, seed = 889, modifier = Modifier.weight(1f))
+                        if (state.people.size < G.Family.max.toInt() - 1) GardenButton(stringResource(R.string.family_addShort), onAddPerson, filled = false, seed = 886, modifier = Modifier.weight(0.7f))
+                    }
+                }
             }
+            }
+          }
+        }
+        if (!bare) PageTabs(pager.currentPage) { scope.launch { pager.animateScrollToPage(it) } }
+      }
+        // 한 줄을 보낸 뒤: 깃털이 내려오며 한마디 창
+        if (!bare) LetGoModal(state, Modifier.fillMaxSize()) { c ->
+            when (c) {
+                io.github.graviton94.carpediem.ui.Care.CALM_BREATH -> onBreath(BreathKind.CALM, 1, state.sound)
+                io.github.graviton94.carpediem.ui.Care.BOX_BREATH -> onBreath(BreathKind.BOX, 1, state.sound)
+                io.github.graviton94.carpediem.ui.Care.LOOK -> onLook()
+                io.github.graviton94.carpediem.ui.Care.SLEEP_BREATH -> onBreath(BreathKind.SLEEP, 1, state.sound)
+                io.github.graviton94.carpediem.ui.Care.MORNING_BREATH -> onBreath(BreathKind.CALM, 1, state.sound)
+                io.github.graviton94.carpediem.ui.Care.SEND_TO -> {}
+            }
+        }
+    }
 
-            // 둘째 장: 흐르는 시간 · 인생 달력 · 모은 것 · 응원하기. 넘길수록 떠오른다.
-            if (!bare) Column(
-                Modifier.fillMaxWidth().heightIn(min = screenH).graphicsLayer {
-                    val f = turned(); alpha = f; translationY = (1f - f) * pagePx * (1f - G.Layout.parallax) * G.Layout.pageSnap
-                }.statusBarsPadding().padding(horizontal = margin).padding(top = Tokens.Space.sp6)
-                    .navigationBarsPadding().padding(bottom = Tokens.Space.sp10),
-                verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3),
-            ) {
-                // 계절의 편지: 이번 달에 도착해 아직 펼치지 않았으면 맨 위에 봉투 한 장
-                state.letterDue(now.toLocalDate())?.let { l -> LetterEnvelope(l) { state.openLetter(l.id); letterOpen = l } }
-                // 한 해의 정원 (12월 31일 ~ 1월 7일) · 계절 첫날의 바람 (3 · 6 · 9 · 12월 첫 두 주)
-                state.yearDue(now.toLocalDate())?.let { y -> YearCard(y) { state.openYear(y); recordOpen = RecordView(y, null) } }
-                if (state.yearDue(now.toLocalDate()) == null) state.monthDue(now.toLocalDate())?.let { (y, m) -> MonthCard(m) { state.openMonth(y, m); recordOpen = RecordView(y, m) } }
-                state.wishDue(now.toLocalDate())?.let { id -> WishCard(state, id, now.toLocalDate()) }
+    open?.let { m ->
+        ModalBottomSheet(onDismissRequest = { open = null }, containerColor = Theme.gc.paper) {
+            ItemSheet(m) { open = null }
+        }
+    }
+    letterOpen?.let { LetterSheet(it, state.wishFor(it)) { letterOpen = null } }
+    if (breathSheet) BreathSheet(state, now, { k, m, snd -> breathSheet = false; onBreath(k, m, snd) }) { breathSheet = false }
+}
+
+/** 아래 이름표: 정원 · 기록 · 추억 · 흐름. */
+@Composable
+private fun PageTabs(current: Int, onPick: (Int) -> Unit) {
+    val p = Theme.palette
+    val names = listOf(R.string.tab_garden, R.string.tab_write, R.string.tab_memories, R.string.tab_flow)
+    Column(Modifier.fillMaxWidth().navigationBarsPadding()) {
+        CrayonRule(seed = 1300)
+        Row(Modifier.fillMaxWidth()) {
+            names.forEachIndexed { i, id ->
+                val on = i == current
+                Column(
+                    Modifier.weight(1f).heightIn(min = Tokens.Layout.tapTarget).clickable(role = androidx.compose.ui.semantics.Role.Tab) { onPick(i) }
+                        .semantics { selected = on }.padding(vertical = Tokens.Space.sp1),
+                    horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center,
+                ) {
+                    TokenText(stringResource(id), Tokens.TypeScale.subhead, color = if (on) p.foreground else p.secondary, weight = if (on) FontWeight.SemiBold else FontWeight.Normal)
+                    Box(Modifier.padding(top = Tokens.Space.sp1).size(Theme.unit * G.Layout.tabMark, Theme.unit * 0.8f)
+                        .background(if (on) p.olive else Color.Transparent, androidx.compose.foundation.shape.RoundedCornerShape(Theme.unit)))
+                }
+            }
+        }
+    }
+}
+
+/** 기록: 계절 첫날의 바람 · 오늘의 한 줄. */
+@Composable
+private fun WritePage(state: AppState, now: LocalDateTime) {
+    val today = now.toLocalDate()
+    Column(
+        Modifier.fillMaxSize().imePadding().verticalScroll(rememberScrollState()).statusBarsPadding()
+            .padding(horizontal = Theme.deviceClass.pageMargin).padding(top = Tokens.Space.sp6, bottom = Tokens.Space.sp8),
+        verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3),
+    ) {
+        state.wishDue(today)?.let { id -> WishCard(state, id, today) }
+        LetGoSection(state, today)
+    }
+}
+
+/** 추억: 마음의 기록 (월 · 해) 과 모은 것 (편지 · 고마움 책 · 놓인 것 · 지난 정원 · 기억의 자리). */
+@Composable
+private fun MemoriesPage(state: AppState, profile: LifeProfile, now: LocalDateTime, view: RecordView, onView: (RecordView) -> Unit, onMemory: () -> Unit) {
+    Column(
+        Modifier.fillMaxSize().verticalScroll(rememberScrollState()).statusBarsPadding()
+            .padding(horizontal = Theme.deviceClass.pageMargin).padding(top = Tokens.Space.sp6, bottom = Tokens.Space.sp8),
+        verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3),
+    ) {
+        TokenText(stringResource(R.string.mood_title), Tokens.TypeScale.title3)
+        if (state.keepLines) RecordPanel(state, view, onView, now.toLocalDate())
+        else TokenText(stringResource(R.string.record_off), Tokens.TypeScale.footnote, color = Theme.palette.secondary)
+        Spacer(Modifier.height(Tokens.Space.sp4))
+        TokenText(stringResource(R.string.collection), Tokens.TypeScale.title3)
+        CollectionBody(state, profile, now, onMemory)
+    }
+}
+
+/** 흐름: 흐르는 시간 · 인생 달력 · 특별한 날. */
+@Composable
+private fun FlowPage(state: AppState, profile: LifeProfile, now: LocalDateTime) {
+    val p = Theme.palette
+    val ctx = LocalContext.current
+    val s = LifeSnapshot(profile.birthDate, profile.expectancy(state.store.table), now)
+    val season = s.season
+    Column(
+        Modifier.fillMaxSize().verticalScroll(rememberScrollState()).statusBarsPadding()
+            .padding(horizontal = Theme.deviceClass.pageMargin).padding(top = Tokens.Space.sp6, bottom = Tokens.Space.sp8),
+        verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3),
+    ) {
                 TokenText(stringResource(R.string.flow), Tokens.TypeScale.title3)
                 LifePeriod.entries.forEachIndexed { i, period ->
                     val pp = s.period(period)
@@ -410,49 +494,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 CrayonCalendar(s.total(state.grid.unit), s.lived(state.grid.unit), cols, Modifier.graphicsLayer(), flowers = flowers)
                 TokenText(stringResource(R.string.calendar_legend, Labels.season(ctx, season)), Tokens.TypeScale.caption1, color = p.secondary)
                 SpecialDaysRow(state, profile.birthDate)
-                // 마음의 기록: 이번 달의 날들이 그 달의 별자리로 (낮엔 꽃, 밤엔 별)
-                Spacer(Modifier.height(Tokens.Space.sp4))
-                MoodRecord(state, now.toLocalDate()) { recordOpen = it }
-                Spacer(Modifier.height(Tokens.Space.sp4))
-                Row(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
-                    GardenButton(stringResource(R.string.collection), onCollection, filled = false, seed = 880, modifier = Modifier.weight(1f))
-                    GardenButton(stringResource(R.string.support), onSupport, filled = false, seed = 884, modifier = Modifier.weight(1f))
-                }
-                // 가족의 돌 더하기 (정원이 가득 차면 안내만)
-                if (state.people.size < G.Family.max.toInt() - 1) GardenButton(stringResource(R.string.family_add), onAddPerson, filled = false, seed = 886)
-                else TokenText(stringResource(R.string.family_full), Tokens.TypeScale.footnote, Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.Center)
-                // 숨 · 정원만 보기
-                Row(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
-                    GardenButton(stringResource(R.string.breath), { breathSheet = true }, filled = false, seed = 888, modifier = Modifier.weight(1f))
-                    GardenButton(stringResource(R.string.gaze), onGaze, filled = false, seed = 889, modifier = Modifier.weight(1f))
-                }
-                // 맨 아래: 오늘의 한 줄 (기쁨도 슬픔도 실어 떠나보내기)
-                Spacer(Modifier.height(Tokens.Space.sp6))
-                CrayonRule(seed = 958)
-                LetGoSection(state, now.toLocalDate())
-            }
-        }
-        // 한 줄을 보낸 뒤: 깃털이 내려오며 한마디 창
-        if (!bare) LetGoModal(state, Modifier.fillMaxSize()) { c ->
-            when (c) {
-                io.github.graviton94.carpediem.ui.Care.CALM_BREATH -> onBreath(BreathKind.CALM, 1, state.sound)
-                io.github.graviton94.carpediem.ui.Care.BOX_BREATH -> onBreath(BreathKind.BOX, 1, state.sound)
-                io.github.graviton94.carpediem.ui.Care.LOOK -> onLook()
-                io.github.graviton94.carpediem.ui.Care.SLEEP_BREATH -> onBreath(BreathKind.SLEEP, 1, state.sound)
-                io.github.graviton94.carpediem.ui.Care.MORNING_BREATH -> onBreath(BreathKind.CALM, 1, state.sound)
-                io.github.graviton94.carpediem.ui.Care.SEND_TO -> {}
-            }
-        }
     }
-
-    open?.let { m ->
-        ModalBottomSheet(onDismissRequest = { open = null }, containerColor = Theme.gc.paper) {
-            ItemSheet(m) { open = null }
-        }
-    }
-    letterOpen?.let { LetterSheet(it, state.wishFor(it)) { letterOpen = null } }
-    recordOpen?.let { RecordSheet(state, it, now.toLocalDate()) { recordOpen = null } }
-    if (breathSheet) BreathSheet(state, now, { k, m, snd -> breathSheet = false; onBreath(k, m, snd) }) { breathSheet = false }
 }
 
 /** 정원에 놓인 것 (최근 것부터). 개발자 모드의 ‘모두 미리 보기’면 전부. */

@@ -313,10 +313,11 @@ fun AddPersonScreen(state: AppState, profile: LifeProfile, editId: String?, onDo
                 KindPicker(); NameField(); BirthField()
                 Spacer(Modifier.height(Tokens.Space.sp2))
                 GardenButton(stringResource(R.string.stone_save), { if (name.isNotBlank()) { state.savePerson(person()); onDone(editing.id) } }, filled = name.isNotBlank(), seed = 905)
-                GardenButton(stringResource(R.string.stone_remove), { confirmRemove = true }, filled = false, seed = 906)
-                // 곁을 떠났다면: 작은 글자로만 (앱이 먼저 묻지 않음)
-                TokenText(stringResource(R.string.memory_toMemory), Tokens.TypeScale.footnote,
-                    Modifier.fillMaxWidth().clickable { confirmMemory = true }.padding(vertical = Tokens.Space.sp3), color = p.secondary, align = TextAlign.Center)
+                // 이 돌 정리하기: 무엇이 되는지 이름과 설명 한 줄로 (둘 다 한 번 더 묻는다)
+                Spacer(Modifier.height(Tokens.Space.sp4))
+                TokenText(stringResource(R.string.stone_tidy), Tokens.TypeScale.caption1, color = p.secondary)
+                ActionNote(stringResource(R.string.memory_toMemory), stringResource(R.string.memory_toMemoryHelp), 919) { confirmMemory = true }
+                ActionNote(stringResource(R.string.stone_remove), stringResource(R.string.stone_removeHelp), 906) { confirmRemove = true }
             } else when (step) {
                 0 -> {
                     KindPicker(); GardenButton(stringResource(R.string.add_next), { step = 1 }, filled = true, seed = 907)
@@ -394,5 +395,19 @@ fun AddPersonScreen(state: AppState, profile: LifeProfile, editId: String?, onDo
             confirmButton = { TextButton(onClick = { confirmRemove = false; state.removePerson(editing.id); onDone(null) }) { Text(stringResource(R.string.stone_removeAction), color = p.danger) } },
             dismissButton = { TextButton(onClick = { confirmRemove = false }) { Text(stringResource(R.string.cancel)) } },
         )
+    }
+}
+
+/** 버튼 하나와 그 아래 설명 한 줄 (무엇이 되는지 바로 알게). */
+@Composable
+internal fun ActionNote(title: String, help: String, seed: Int, onClick: () -> Unit) {
+    val p = Theme.palette
+    Column(
+        Modifier.fillMaxWidth().crayonBox(null, G.Radius.box, G.Stroke.chip, seed).clickable(role = androidx.compose.ui.semantics.Role.Button, onClick = onClick)
+            .padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3),
+        verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1),
+    ) {
+        TokenText(title, Tokens.TypeScale.subhead, weight = FontWeight.SemiBold)
+        TokenText(help, Tokens.TypeScale.footnote, color = p.secondary)
     }
 }

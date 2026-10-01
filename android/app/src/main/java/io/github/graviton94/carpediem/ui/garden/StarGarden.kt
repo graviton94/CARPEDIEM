@@ -176,23 +176,6 @@ private fun field(seed: Int, span: Float): List<FloatArray> {
     val r = Crayon.Rng(seed); return List(G.Year.field.toInt()) { floatArrayOf(r.next() * span, r.next(), 0.0006f + 0.0012f * r.next(), 0.06f + 0.22f * r.next()) }
 }
 
-/** 한 해 띠: 열두 달의 별자리가 띠를 따라 차례로. off = 왼쪽 끝에서 흘러간 거리 (px). */
-internal fun DrawScope.yearBand(dots: List<StarGarden.Dot>, night: Boolean, today: LocalDate, off: Float, pick: Int, e: Float, sky: List<FloatArray>) {
-    val w = size.width; val h = size.height; val len = G.Year.span * w
-    if (night) nightSky() else meadow()
-    if (night) sky.forEach { s -> val x = s[0] * w - off * 0.6f; if (x > -2f && x < w + 2f) drawCircle(Color.White, s[2] * w, Offset(x, s[1] * h), s[3]) }
-    for (k in 0..60) { val t = k / 60f; val x = t * len - off; if (x > -w * 0.4f && x < w * 1.4f) haze(Offset(x, StarGarden.spine(t) * h), w * 0.3f, night) }
-    fun at(month: Int, p: Pair<Float, Float>): Offset {
-        val t = StarGarden.monthCenter(month)
-        return Offset(t * len - off + (p.first - 0.5f) * G.Year.boxW * w, StarGarden.spine(t) * h + (p.second - 0.5f) * G.Year.boxH * w)
-    }
-    val flower = w * G.Year.yearFlower; val star = w * G.Year.yearStar
-    dots.forEachIndexed { i, d ->
-        val c = at(d.month, d.x to d.y)
-        if (c.x > -flower * 2 && c.x < w + flower * 2) day(d, c, night, flower, star, today, if (i == pick) e else 0f, false)
-    }
-}
-
 /** 몇 초에 하나씩 살랑 · 반짝: (고른 순번, 남은 정도 0..1). 움직임을 끄면 멈춘 그림. */
 @Composable
 internal fun rememberTwinkle(dots: List<StarGarden.Dot>, animate: Boolean): Pair<State<Int>, State<Float>> {
@@ -231,26 +214,6 @@ internal fun MonthGarden(
     Canvas(modifier.aspectRatio(G.Year.monthAspect).then(tap)) {
         if (night) { nightSky(); sky.forEach { s -> drawCircle(Color.White, s[2] * size.width, Offset(s[0] * size.width, s[1] * size.height), s[3] * 0.7f) } } else meadow()
         monthIn(Rect(Offset.Zero, size), dots, night, today, sizes, pick.value, e.value, picked)
-    }
-}
-
-/** 한 해의 정원 띠: 아주 천천히 흐르고 (끝에 닿으면 되돌아), 옆으로 밀면 멈추고 따라온다. month = 지금 가운데 있는 달. */
-@Composable
-internal fun YearFlow(book: ConstellationBook, days: List<Pair<LocalDate, DayLine?>>, install: Long, night: Boolean, today: LocalDate, modifier: Modifier, onMonth: (Int) -> Unit = {}) {
-    val dots = remember(book, days, install) { StarGarden.year(book, days, install) }
-    val sky = remember(days) { field(days.firstOrNull()?.first?.year ?: 0, G.Year.span) }
-    val (pick, e) = rememberTwinkle(dots, true)
-    val still = reducedMotion(LocalContext.current)
-    val flow = rememberInfiniteTransition(label = "year")
-    val auto = flow.animateFloat(0f, 1f, infiniteRepeatable(tween(G.Year.flowMs.toInt(), easing = LinearEasing), RepeatMode.Reverse), label = "flow")
-    var manual by remember { mutableStateOf<Float?>(if (still) 0f else null) }
-    val frac = remember { derivedStateOf { manual ?: auto.value } }
-    val month by remember { derivedStateOf { (1 + ((frac.value * (G.Year.span - 1f) + 0.5f) / G.Year.span * 12f).toInt()).coerceIn(1, 12) } }
-    LaunchedEffect(month) { onMonth(month) }
-    Canvas(modifier.aspectRatio(G.Year.flowAspect).pointerInput(Unit) {
-        detectHorizontalDragGestures { _, dx -> val travel = (G.Year.span - 1f) * size.width; manual = ((manual ?: auto.value) - dx / travel).coerceIn(0f, 1f) }
-    }) {
-        yearBand(dots, night, today, frac.value * (G.Year.span - 1f) * size.width, pick.value, e.value, sky)
     }
 }
 

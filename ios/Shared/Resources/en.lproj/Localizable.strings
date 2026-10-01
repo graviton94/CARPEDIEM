@@ -88,7 +88,6 @@
 "garden.drawing" = "Drawing Haru…";
 "garden.haru" = "My Haru";
 "garden.age0" = "Age 0";
-"garden.down" = "Scroll for more";
 "garden.close" = "Close";
 "garden.preview" = "Preview all keepsakes (test)";
 "garden.itemDate" = "%1$@ · %2$@";
@@ -165,9 +164,9 @@
 "letgo.sub" = "Joy or sorrow, one line, then let it go.";
 "letgo.feeling" = "How it feels (optional)";
 "letgo.hint" = "Today, in one line";
-"letgo.send" = "Let it go";
-"letgo.done" = "Today's line has drifted away.\nSee you tomorrow.";
-"letgo.privacy" = "Your lines stay on this phone.";
+"letgo.send" = "Keep this line";
+"letgo.done" = "Today’s line is kept.\nYou’ll find it as a flower in Memories.";
+"letgo.privacy" = "Each line you keep blooms as a flower in Memories › Heart’s record. It stays on this phone.";
 "feeling.joy" = "Joy";
 "feeling.thanks" = "Thanks";
 "feeling.calm" = "Calm";
@@ -234,7 +233,7 @@
 "widget.today.garden" = "Today · Garden";
 "widget.calendar.glass" = "Life calendar · Glass";
 "widget.calendar.garden" = "Life calendar · Garden";
-"letgo.modalTitle" = "Let go";
+"letgo.modalTitle" = "Your line is kept";
 "letgo.ok" = "OK";
 "recall.random" = "Out of nowhere, a line from %1$@ came back";
 "recall.randomNotify" = "A past line came back to you";
@@ -273,9 +272,9 @@
 "stone.linesCount" = "%1$@";
 "stone.edit" = "Edit";
 "stone.save" = "Save";
-"stone.remove" = "Let this stone go";
-"stone.removeConfirm" = "Let %1$@'s stone go from the garden?\nYour lines stay.";
-"stone.removeAction" = "Let go";
+"stone.remove" = "Take out of the garden";
+"stone.removeConfirm" = "Take %1$@’s stone out of the garden?\nYour lines stay.";
+"stone.removeAction" = "Take out";
 "stone.age" = "Age %1$@";
 "stone.petAge" = "%1$@ yrs";
 "letgo.to" = "To someone (optional)";
@@ -400,8 +399,8 @@
 "memory.add" = "Family or a pet who has passed";
 "memory.addMore" = "Add a stone to remember";
 "memory.full" = "You can keep up to four stones here.";
-"memory.toMemory" = "Move to the place to remember";
-"memory.toMemoryConfirm" = "Move %1$@’s stone to the place to remember?\nIt won’t appear in the garden. It rests quietly in the place to remember, inside Collection.\nYou can move it back any time.";
+"memory.toMemory" = "Move to the place of memory";
+"memory.toMemoryConfirm" = "Move %1$@’s stone to the place of memory?\nIt won’t be in the garden; it rests quietly in Memories.\nYou can bring it back any time.";
 "memory.toMemoryAction" = "Move";
 "memory.addUntil" = "The day they left (optional)";
 "memory.meet" = "%1$@’s stone rests in the place to remember.";
@@ -474,7 +473,7 @@
 "bday.cardTitle" = "Happy birthday, %1$@";
 "bday.cardSub" = "Thank you for being here.";
 "special.add" = "Place a flower on a special day";
-"special.title" = "Days with a flower";
+"special.title" = "Special days";
 "special.name" = "What day was it?";
 "special.nameHint" = "First job, moving day";
 "special.save" = "Place the flower";
@@ -508,3 +507,13 @@
 "notify.todayBirthdayText" = "Send a birthday card from the garden.";
 "notify.todaySpecial" = "Today: %1$@, %2$@ yr ago";
 "dev.notify" = "Test: send all three notes now";
+"tab.garden" = "Garden";
+"tab.write" = "Journal";
+"tab.memories" = "Memories";
+"tab.flow" = "Time";
+"family.addShort" = "＋ Stone";
+"stone.removeHelp" = "Only the stone leaves the garden. Lines you sent to it stay.";
+"stone.tidy" = "Tidy this stone";
+"memory.toMemoryHelp" = "For family or pets who have passed. The stone rests in Memories › Place of memory, and can return to the garden any time.";
+"record.off" = "Keeping lines is off, so there’s no record to show. You can turn it on in Settings.";
+"record.yearHint" = "Tap a month to open it.";

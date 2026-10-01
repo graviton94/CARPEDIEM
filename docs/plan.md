@@ -268,3 +268,13 @@ design/tokens.json, design/strings.json, data/*.csv   ← 유일한 원본
 | 생일은 전날 저녁 5시부터 그날 끝까지: 고깔, ‘내일은 엄마 생일이에요’ (정원 · 돌 페이지), 케이크는 그날만 | 완료 | `Family.birthdaySoon`, `Slot.soon` |
 | 고깔 · 케이크 새로, 생일 카드에 나와 그 사람의 작은 돌 (낮 깃발 줄 · 밤 전구 줄), 돌 페이지의 큰 돌은 조금 작게 (`family.pageStone`) | 완료 | `partyHat`, `birthdayCake`, `ShareCards.birthday` |
 
+
+### 1.9 네 페이지 — 개발 완료, 폰 확인 전
+| 항목 | 상태 | 어디 |
+|---|---|---|
+| 홈을 옆으로 넘기는 네 장 + 아래 이름표: 정원 · 기록 · 추억 · 흐름 (세로 두 장 대신) | 완료 | `GardenHome` (HorizontalPager), `PageTabs` |
+| 도착한 것 (편지 · 달 · 해의 정원) 은 정원 아래 엄지 자리, 숨, 쉼 · 돌멍하기 · ＋ 돌도 정원 아래 | 완료 | `GardenHome` |
+| 기록: 오늘의 한 줄 ‘한 줄 남기기’, 남긴 줄이 추억에 꽃으로 핀다는 안내 | 완료 | `WritePage`, `letgo.*` |
+| 추억: 마음의 기록 (테두리 안, 월 · 해) + 모은 것 전부. 해는 열두 달을 한 화면에 멈춰서 | 완료 | `MemoriesPage`, `RecordPanel`, `YearTiles`, `CollectionBody` |
+| 흐름: 흐르는 시간 · 인생 달력 · 특별한 날 (버튼 모양 ‘＋ 특별한 날 꽃 놓기’) | 완료 | `FlowPage`, `SpecialDaysRow` |
+| 돌 정리: ‘기억의 자리로 모시기’ · ‘정원에서 빼기’ + 설명 한 줄 | 완료 | `ActionNote` |

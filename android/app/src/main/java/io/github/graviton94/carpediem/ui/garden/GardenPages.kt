@@ -73,15 +73,8 @@ internal fun PageBar(title: String, onBack: () -> Unit) {
  * 정원에 놓인 것을 한곳에서. 받은 것만 보인다 (빈칸 · 개수 · 남은 것 목록은 없다 — 모으는 놀이가 아니라 지나온 날의 흔적).
  * 누르면 정원에서와 같은 한 장 (생긴 날과 한 줄).
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CollectionScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, onMemory: () -> Unit = {}, onBack: () -> Unit) {
-    val p = Theme.palette
-    val ctx = LocalContext.current
-    val u = Theme.unit
-    val s = LifeSnapshot(profile.birthDate, profile.expectancy(state.store.table), now)
-    val moments = gardenMoments(state, profile, s, now)
-    var open by remember { mutableStateOf<Moment?>(null) }
     BackHandler(onBack = onBack)
     SkyBackground {
         Column(
@@ -90,6 +83,22 @@ fun CollectionScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, 
             verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp4),
         ) {
             PageBar(stringResource(R.string.collection), onBack)
+            CollectionBody(state, profile, now, onMemory)
+        }
+    }
+}
+
+/** 모은 것의 내용 (모은 것 화면 · 추억 페이지): 놓인 것 · 받은 편지 · 고마움 책 · 지난 정원 · 기억의 자리. */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+internal fun CollectionBody(state: AppState, profile: LifeProfile, now: LocalDateTime, onMemory: () -> Unit) {
+    val p = Theme.palette
+    val ctx = LocalContext.current
+    val u = Theme.unit
+    val s = LifeSnapshot(profile.birthDate, profile.expectancy(state.store.table), now)
+    val moments = gardenMoments(state, profile, s, now)
+    var open by remember { mutableStateOf<Moment?>(null) }
+    Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp4)) {
             TokenText(stringResource(R.string.collection_sub), Tokens.TypeScale.callout.serif(), Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.Center)
             val cols = 3
             moments.chunked(cols).forEachIndexed { row, list ->
@@ -121,7 +130,6 @@ fun CollectionScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, 
                 TokenText(stringResource(R.string.memory), Tokens.TypeScale.headline, Modifier.weight(1f))
                 TokenText(stringResource(R.string.memory_sub), Tokens.TypeScale.footnote, color = p.secondary)
             }
-        }
     }
     open?.let { m ->
         ModalBottomSheet(onDismissRequest = { open = null }, containerColor = Theme.gc.paper) { ItemSheet(m) { open = null } }

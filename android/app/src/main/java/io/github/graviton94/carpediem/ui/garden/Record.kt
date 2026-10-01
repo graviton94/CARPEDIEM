@@ -59,74 +59,62 @@ internal object RecordText {
     fun day(ctx: android.content.Context, d: LocalDate): String = d.format(java.time.format.DateTimeFormatter.ofPattern(ctx.getString(R.string.record_dayPattern), locale(ctx)))
 }
 
-/** 둘째 장: 이번 달의 마음의 기록 (그 달의 별자리, 낮엔 꽃 · 밤엔 별). 누르면 시트. 기록 남기기를 끄면 보이지 않는다. */
-@Composable
-internal fun MoodRecord(state: AppState, today: LocalDate, onOpen: (RecordView) -> Unit) {
-    if (!state.keepLines) return
-    val p = Theme.palette
-    val ctx = LocalContext.current
-    val days = remember(state.lines, today) { Constellations.monthDays(state.lines, today.year, today.monthValue) }
-    val kept = days.count { it.second != null }
-    val a11y = stringResource(R.string.mood_a11y, RecordText.month(ctx, today.monthValue), "$kept")
-    Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
-        TokenText(stringResource(R.string.mood_title), Tokens.TypeScale.title3)
-        MonthGarden(state.store.constellations, days, state.store.haruSeed, Theme.gc.night, today,
-            Modifier.fillMaxWidth().crayonBox(null, G.Radius.box, G.Stroke.chip, 1170).clickable(role = Role.Button) { onOpen(RecordView(today.year, today.monthValue)) }
-                .semantics { contentDescription = a11y })
-        TokenText(stringResource(R.string.mood_sub, RecordText.month(ctx, today.monthValue), RecordText.constellation(ctx, state, today.monthValue)), Tokens.TypeScale.caption1, color = p.secondary)
-    }
-}
-
-/** 마음의 기록: 월 · 해. 월은 ‹ › 로 지난 달, 날을 누르면 그날의 한 줄. 해는 열두 별자리의 띠. 그림으로 보내기. */
+/** 마음의 기록 시트 (지난 정원에서 열 때): 추억 페이지와 같은 판. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun RecordSheet(state: AppState, start: RecordView, today: LocalDate, onClose: () -> Unit) {
-    val p = Theme.palette
-    val ctx = LocalContext.current
-    val night = Theme.gc.night
-    val book = state.store.constellations
     var view by remember { mutableStateOf(start) }
-    var picked by remember(view) { mutableStateOf<LocalDate?>(null) }
-    val first = remember(state.lines) { state.lines.minOfOrNull { it.date } ?: today }
     ModalBottomSheet(onDismissRequest = onClose, containerColor = Theme.gc.paper, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
         Column(
             Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(horizontal = Theme.deviceClass.pageMargin).navigationBarsPadding().padding(bottom = Tokens.Space.sp8),
             verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3),
         ) {
-            Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                Segments(listOf(true, false), view.month != null, { if (it) stringResource(R.string.record_month) else stringResource(R.string.record_year) }) { m ->
-                    view = if (m) RecordView(view.year, view.month ?: if (view.year == today.year) today.monthValue else 12) else view.copy(month = null)
-                }
+            RecordPanel(state, view, { view = it }, today)
+            GardenButton(stringResource(R.string.garden_close), onClose, filled = false, seed = 1182)
+        }
+    }
+}
+
+/**
+ * 마음의 기록: 위에 월 · 해. 월은 ‹ › 로 지난 달, 날을 누르면 그날의 한 줄. 해는 열두 달의 무늬를 한 화면에 (누르면 그 달).
+ * 판은 크레용 테두리 안에, 위에 이름 · 별자리 · 수. 그림으로 보내기.
+ */
+@Composable
+internal fun RecordPanel(state: AppState, view: RecordView, onView: (RecordView) -> Unit, today: LocalDate) {
+    val p = Theme.palette
+    val ctx = LocalContext.current
+    val night = Theme.gc.night
+    val book = state.store.constellations
+    var picked by remember(view) { mutableStateOf<LocalDate?>(null) }
+    val first = remember(state.lines) { state.lines.minOfOrNull { it.date } ?: today }
+    Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
+        Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+            Segments(listOf(true, false), view.month != null, { if (it) stringResource(R.string.record_month) else stringResource(R.string.record_year) }) { m ->
+                onView(if (m) RecordView(view.year, view.month ?: if (view.year == today.year) today.monthValue else 12) else view.copy(month = null))
             }
-            val m = view.month
+        }
+        val m = view.month
+        Column(Modifier.fillMaxWidth().crayonBox(null, G.Radius.box, G.Stroke.chip, 1171).padding(Tokens.Space.sp2), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
             if (m != null) {
                 val days = remember(state.lines, view) { Constellations.monthDays(state.lines, view.year, m) }
                 val sent = days.count { it.second != null }; val thanks = days.count { it.second?.feeling == Feeling.THANKS }
                 val prev = LocalDate.of(view.year, m, 1).minusMonths(1); val next = LocalDate.of(view.year, m, 1).plusMonths(1)
                 val canPrev = !prev.plusMonths(1).minusDays(1).isBefore(first.withDayOfMonth(1)); val canNext = !next.isAfter(today)
                 val title = stringResource(R.string.record_monthTitle, RecordText.month(ctx, m))
-                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                    TokenText("‹", Tokens.TypeScale.title3, Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable(enabled = canPrev, role = Role.Button) { view = RecordView(prev.year, prev.monthValue) }
-                        .padding(horizontal = Tokens.Space.sp3).semantics { contentDescription = ctx.getString(R.string.record_prev) }, color = if (canPrev) p.secondary else p.secondary.copy(alpha = 0.3f))
-                    Column(Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
-                        TokenText(if (view.year == today.year) title else "${view.year} · $title", Tokens.TypeScale.title3.serif(), align = TextAlign.Center)
-                        TokenText(RecordText.constellation(ctx, state, m) + " · " + stringResource(R.string.year_count, "$sent", "$thanks"), Tokens.TypeScale.caption1, color = p.secondary, align = TextAlign.Center)
-                    }
-                    TokenText("›", Tokens.TypeScale.title3, Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable(enabled = canNext, role = Role.Button) { view = RecordView(next.year, next.monthValue) }
-                        .padding(horizontal = Tokens.Space.sp3).semantics { contentDescription = ctx.getString(R.string.record_next) }, color = if (canNext) p.secondary else p.secondary.copy(alpha = 0.3f))
-                }
-                MonthGarden(book, days, state.store.haruSeed, night, today, Modifier.fillMaxWidth().crayonBox(null, G.Radius.box, G.Stroke.chip, 1171), picked = picked) { d -> picked = if (picked == d.date) null else d.date }
+                val shown = if (view.year == today.year) title else "${view.year} · $title"
+                val sub = RecordText.constellation(ctx, state, m) + " · " + stringResource(R.string.year_count, "$sent", "$thanks")
+                PanelHead(shown, sub, canPrev, canNext, { onView(RecordView(prev.year, prev.monthValue)) }, { onView(RecordView(next.year, next.monthValue)) })
+                MonthGarden(book, days, state.store.haruSeed, night, today, Modifier.fillMaxWidth(), picked = picked) { d -> picked = if (picked == d.date) null else d.date }
                 val pickedLine = picked?.let { d -> days.firstOrNull { it.first == d } }
                 if (pickedLine != null) {
-                    Column(Modifier.fillMaxWidth().crayonBox(Theme.gc.paper, G.Radius.box, G.Stroke.chip, 1172).padding(Tokens.Space.sp3), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
+                    Column(Modifier.fillMaxWidth().padding(horizontal = Tokens.Space.sp2), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
                         TokenText(RecordText.day(ctx, pickedLine.first), Tokens.TypeScale.caption1, color = p.secondary)
                         val l = pickedLine.second
                         TokenText(when { l == null -> stringResource(R.string.record_rest); l.text.isBlank() -> stringResource(R.string.record_noText); else -> l.text }, Tokens.TypeScale.callout.serif())
                     }
                 } else TokenText(stringResource(R.string.record_hint), Tokens.TypeScale.caption1, Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.Center)
                 GardenButton(stringResource(R.string.share_image), {
-                    io.github.graviton94.carpediem.share.ShareCards.send(ctx, io.github.graviton94.carpediem.share.ShareCards.month(ctx, book, days, state.store.haruSeed, night, today,
-                        if (view.year == today.year) title else "${view.year} · $title", RecordText.constellation(ctx, state, m) + " · " + ctx.getString(R.string.year_count, "$sent", "$thanks")), "month-${view.year}-$m")
+                    io.github.graviton94.carpediem.share.ShareCards.send(ctx, io.github.graviton94.carpediem.share.ShareCards.month(ctx, book, days, state.store.haruSeed, night, today, shown, sub), "month-${view.year}-$m")
                 }, filled = false, seed = 1173)
             } else {
                 val y = view.year
@@ -135,28 +123,59 @@ internal fun RecordSheet(state: AppState, start: RecordView, today: LocalDate, o
                 val thanksAll = state.lines.filter { it.date.year == y && it.feeling == Feeling.THANKS && it.text.isNotBlank() }
                 val thanks = remember(y, thanksAll.size) { thanksAll.map { it.text }.distinct().shuffled(kotlin.random.Random(y)).take(G.Year.thanks.toInt()) }
                 val title = stringResource(R.string.year_title, "$y"); val count = stringResource(R.string.year_count, "$sent", "${thanksAll.size}")
-                var shown by remember { mutableIntStateOf(1) }
-                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                    val canPrev = y > first.year; val canNext = y < today.year
-                    TokenText("‹", Tokens.TypeScale.title3, Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable(enabled = canPrev, role = Role.Button) { view = RecordView(y - 1, null) }.padding(horizontal = Tokens.Space.sp3),
-                        color = if (canPrev) p.secondary else p.secondary.copy(alpha = 0.3f))
-                    TokenText(title, Tokens.TypeScale.title3.serif(), Modifier.weight(1f), align = TextAlign.Center)
-                    TokenText("›", Tokens.TypeScale.title3, Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable(enabled = canNext, role = Role.Button) { view = RecordView(y + 1, null) }.padding(horizontal = Tokens.Space.sp3),
-                        color = if (canNext) p.secondary else p.secondary.copy(alpha = 0.3f))
-                }
-                YearFlow(book, days, state.store.haruSeed, night, today, Modifier.fillMaxWidth().crayonBox(null, G.Radius.box, G.Stroke.chip, 1174)) { shown = it }
-                TokenText(RecordText.month(ctx, shown) + " · " + RecordText.constellation(ctx, state, shown), Tokens.TypeScale.caption1, Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.Center)
-                TokenText(count, Tokens.TypeScale.footnote, color = p.secondary)
-                thanks.forEach { TokenText("“$it”", Tokens.TypeScale.callout.serif()) }
-                if (y < today.year || (today.monthValue == 12 && today.dayOfMonth == 31)) {
-                    Spacer(Modifier.height(Tokens.Space.sp2))
+                PanelHead(title, count, y > first.year, y < today.year, { onView(RecordView(y - 1, null)) }, { onView(RecordView(y + 1, null)) })
+                YearTiles(state, y, today, night) { mo -> onView(RecordView(y, mo)) }
+                TokenText(stringResource(R.string.record_yearHint), Tokens.TypeScale.caption1, Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.Center)
+                thanks.forEach { TokenText("“$it”", Tokens.TypeScale.callout.serif(), Modifier.padding(horizontal = Tokens.Space.sp2)) }
+                if (y < today.year || (today.monthValue == 12 && today.dayOfMonth == 31))
                     TokenText(stringResource(R.string.year_end), Tokens.TypeScale.callout.serif(), Modifier.fillMaxWidth(), align = TextAlign.Center)
-                }
                 GardenButton(stringResource(R.string.share_image), {
                     io.github.graviton94.carpediem.share.ShareCards.send(ctx, io.github.graviton94.carpediem.share.ShareCards.year(ctx, book, days, state.store.haruSeed, night, today, title, count, thanks), "year-$y")
                 }, filled = false, seed = 1181)
             }
-            GardenButton(stringResource(R.string.garden_close), onClose, filled = false, seed = 1182)
+        }
+    }
+}
+
+/** 판 위 한 줄: ‹ 이름 › 과 아래 작은 글. */
+@Composable
+private fun PanelHead(title: String, sub: String, canPrev: Boolean, canNext: Boolean, onPrev: () -> Unit, onNext: () -> Unit) {
+    val p = Theme.palette
+    val ctx = LocalContext.current
+    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+        TokenText("‹", Tokens.TypeScale.title3, Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable(enabled = canPrev, role = Role.Button, onClick = onPrev)
+            .padding(horizontal = Tokens.Space.sp3).semantics { contentDescription = ctx.getString(R.string.record_prev) }, color = if (canPrev) p.secondary else p.secondary.copy(alpha = 0.3f))
+        Column(Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
+            TokenText(title, Tokens.TypeScale.title3.serif(), align = TextAlign.Center)
+            TokenText(sub, Tokens.TypeScale.caption1, color = p.secondary, align = TextAlign.Center)
+        }
+        TokenText("›", Tokens.TypeScale.title3, Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable(enabled = canNext, role = Role.Button, onClick = onNext)
+            .padding(horizontal = Tokens.Space.sp3).semantics { contentDescription = ctx.getString(R.string.record_next) }, color = if (canNext) p.secondary else p.secondary.copy(alpha = 0.3f))
+    }
+}
+
+/** 한 해: 열두 달의 무늬를 4 × 3 칸에 (지나간 달만, 오지 않은 달은 빈 칸). 누르면 그 달. */
+@Composable
+internal fun YearTiles(state: AppState, y: Int, today: LocalDate, night: Boolean, onMonth: (Int) -> Unit) {
+    val ctx = LocalContext.current
+    val p = Theme.palette
+    Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
+        (0 until 3).forEach { row ->
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
+                (1..4).forEach { k ->
+                    val m = row * 4 + k
+                    val passed = LocalDate.of(y, m, 1) <= today
+                    Column(Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
+                        if (passed) {
+                            val days = remember(state.lines, y, m) { Constellations.monthDays(state.lines, y, m) }
+                            MonthGarden(state.store.constellations, days, state.store.haruSeed, night, today,
+                                Modifier.fillMaxWidth().crayonBox(null, G.Radius.chip, G.Stroke.chip, 1190 + m).clickable(role = Role.Button) { onMonth(m) },
+                                animate = false, sizes = TILE_SIZES)
+                        } else Spacer(Modifier.fillMaxWidth().aspectRatio(G.Year.monthAspect).crayonBox(null, G.Radius.chip, G.Stroke.chip * 0.5f, 1190 + m))
+                        TokenText(RecordText.month(ctx, m), Tokens.TypeScale.caption1, color = if (passed) p.foreground else p.secondary)
+                    }
+                }
+            }
         }
     }
 }
@@ -187,36 +206,18 @@ internal fun MonthCard(month: Int, onOpen: () -> Unit) {
     GardenCard(stringResource(if (Theme.gc.night) R.string.record_cardNight else R.string.record_card, RecordText.month(ctx, month)), 1176, onOpen)
 }
 
-/** 모은 것 아래: 지난 정원. 해마다 열두 달의 칸 (지나간 달만, 오지 않은 달은 빈 칸), 해 이름을 누르면 한 해. */
+/** 모은 것 아래: 지난 정원. 해마다 열두 달의 칸, 해 이름을 누르면 한 해 · 칸을 누르면 그 달. */
 @Composable
 internal fun PastGardens(state: AppState, today: LocalDate) {
     val years = remember(state.lines, today, state.keepLines) { state.gardenYears() }
     if (years.isEmpty()) return
-    val ctx = LocalContext.current
-    val p = Theme.palette
     val night = Theme.gc.night
     var open by remember { mutableStateOf<RecordView?>(null) }
     Column(Modifier.fillMaxWidth().padding(top = Tokens.Space.sp4), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
         TokenText(stringResource(R.string.year_list), Tokens.TypeScale.title3)
         years.forEach { y ->
             TokenText(stringResource(R.string.year_title, "$y"), Tokens.TypeScale.subhead, Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable(role = Role.Button) { open = RecordView(y, null) }.padding(vertical = Tokens.Space.sp2), weight = FontWeight.SemiBold)
-            (0 until 3).forEach { row ->
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
-                    (1..4).forEach { k ->
-                        val m = row * 4 + k
-                        val passed = LocalDate.of(y, m, 1) <= today
-                        Column(Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
-                            if (passed) {
-                                val days = remember(state.lines, y, m) { Constellations.monthDays(state.lines, y, m) }
-                                MonthGarden(state.store.constellations, days, state.store.haruSeed, night, today,
-                                    Modifier.fillMaxWidth().crayonBox(null, G.Radius.chip, G.Stroke.chip, 1190 + m).clickable(role = Role.Button) { open = RecordView(y, m) },
-                                    animate = false, sizes = TILE_SIZES)
-                            } else Spacer(Modifier.fillMaxWidth().aspectRatio(G.Year.monthAspect).crayonBox(null, G.Radius.chip, G.Stroke.chip * 0.5f, 1190 + m))
-                            TokenText(RecordText.month(ctx, m), Tokens.TypeScale.caption1, color = if (passed) p.foreground else p.secondary)
-                        }
-                    }
-                }
-            }
+            YearTiles(state, y, today, night) { m -> open = RecordView(y, m) }
         }
     }
     open?.let { RecordSheet(state, it, today) { open = null } }
