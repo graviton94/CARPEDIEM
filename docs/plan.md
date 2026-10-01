@@ -278,3 +278,6 @@ design/tokens.json, design/strings.json, data/*.csv   ← 유일한 원본
 | 추억: 마음의 기록 (테두리 안, 월 · 해) + 모은 것 전부. 해는 열두 달을 한 화면에 멈춰서 | 완료 | `MemoriesPage`, `RecordPanel`, `YearTiles`, `CollectionBody` |
 | 흐름: 흐르는 시간 · 인생 달력 · 특별한 날 (버튼 모양 ‘＋ 특별한 날 꽃 놓기’) | 완료 | `FlowPage`, `SpecialDaysRow` |
 | 돌 정리: ‘기억의 자리로 모시기’ · ‘정원에서 빼기’ + 설명 한 줄 | 완료 | `ActionNote` |
+
+### 출시 전 마지막 할 일
+- [ ] 테스트가 끝나면 개발자 모드 (버전 누르기 → 시험 알림 · 시험 기록) 를 디버그 빌드에서만 켜지게 막기 — `docs/release.md` 5번 체크리스트
