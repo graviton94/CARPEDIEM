@@ -13,6 +13,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.background
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -166,6 +167,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
     val moments = gardenMoments(state, profile, s, now)
     var open by remember { mutableStateOf<Moment?>(null) }
     var breathSheet by remember { mutableStateOf(false) }
+    val sleepy = !bare && isNight(now)
     var letterOpen by remember { mutableStateOf<io.github.graviton94.carpediem.core.Letter?>(null) }
     // 캡처용: 이번 달 편지를 바로 펼침 (그리기 중이 아니라 처음 한 번만)
     LaunchedEffect(Unit) { if (state.debugOpenLetter && !bare) { state.debugOpenLetter = false; state.letterDue(now.toLocalDate())?.let { state.openLetter(it.id); letterOpen = it } } }
@@ -243,7 +245,8 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                     }
                     TokenText(stringResource(R.string.timeLeft) + " · " + stringResource(R.string.path_age, "${s.age}", Labels.season(ctx, season)), Tokens.TypeScale.subhead, color = p.secondary)
                     TokenText(Labels.number(s.remaining(state.unit)), Tokens.TypeScale.display(Theme.deviceClass), maxLines = 1)
-                    Row(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
+                    // 잠들기 전 정원 (밤 10시 이후): 단위 고르기 · 영문 · 넘김 안내 같은 글자는 쉬게
+                    if (!sleepy) Row(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
                         LifeUnit.entries.forEachIndexed { i, unit -> GardenChip(Labels.unit(ctx, unit), unit == state.unit, seed = 800 + i) { state.changeUnit(unit) } }
                     }
                     val question = state.question
@@ -256,13 +259,16 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                             horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1),
                         ) {
                             QuoteText(if (state.quoteLanguage == QuoteLanguage.ENGLISH) q.english else q.korean)
-                            if (state.quoteLanguage == QuoteLanguage.BOTH) TokenText(q.english, Tokens.TypeScale.footnote.serif(), color = p.secondary, align = TextAlign.Center)
-                            TokenText(stringResource(R.string.words_next), Tokens.TypeScale.caption2, color = p.secondary, weight = FontWeight.Normal)
+                            if (state.quoteLanguage == QuoteLanguage.BOTH && !sleepy) TokenText(q.english, Tokens.TypeScale.footnote.serif(), color = p.secondary, align = TextAlign.Center)
+                            if (!sleepy) TokenText(stringResource(R.string.words_next), Tokens.TypeScale.caption2, color = p.secondary, weight = FontWeight.Normal)
                         }
                     }
-                    // 밤: 잠드는 숨 1분으로 가는 옅은 한 줄
+                    // 밤: 잠드는 숨 1분 · 아침 (오늘 아직 숨 쉬지 않았으면): 하루를 여는 숨 1분, 옅은 한 줄로
                     if (isNight(now)) TokenText(stringResource(R.string.breath_night), Tokens.TypeScale.footnote.serif(),
                         Modifier.clickable { onBreath(BreathKind.SLEEP, 1, state.sound) }.padding(Tokens.Space.sp2), color = p.secondary)
+                    else if (Labels.part(now) == io.github.graviton94.carpediem.core.DayPart.MORNING && state.breaths.none { it.first == now.toLocalDate() })
+                        TokenText(stringResource(R.string.breath_morning), Tokens.TypeScale.footnote.serif(),
+                            Modifier.clickable { onBreath(BreathKind.CALM, 1, state.sound) }.padding(Tokens.Space.sp2), color = p.secondary)
                 }
 
                 val x0 = u * G.Layout.pathStart; val x1 = u * G.Layout.pathEnd
@@ -333,6 +339,10 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                     TokenText(stringResource(R.string.garden_age0), Tokens.TypeScale.caption1, Modifier.centerAt(px.first, 0f, px.second), color = p.secondary)
                     TokenText(stringResource(R.string.expectancy_value, Labels.years(s.expectancy)), Tokens.TypeScale.caption1, Modifier.centerAt(px.second, px.first, with(density) { screenW.toPx() }), color = p.secondary)
                 }
+                // 잠들기 전 정원: 화면 전체를 조금 더 어둡게
+                if (sleepy) Box(Modifier.fillMaxSize().background(Color.Black.copy(alpha = G.SleepGarden.dim)))
+                // 마음의 날씨: 오늘 보낸 마음이 하늘에 잠깐 (무거운 마음 = 몇 방울 비, 기쁨 · 희망 · 고마움 = 햇살 한 줄기)
+                if (!bare) MoodWeather(state, now, gy - haruAbove)
                 // 정원 아래쪽은 종이로 번져 둘째 장과 이어진다
                 Box(Modifier.align(Alignment.BottomCenter).fillMaxWidth().height(screenH * G.Layout.fadeTail)
                     .background(Brush.verticalGradient(listOf(Theme.gc.base.copy(alpha = 0f), Theme.gc.base))))
@@ -406,6 +416,8 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 io.github.graviton94.carpediem.ui.Care.CALM_BREATH -> onBreath(BreathKind.CALM, 1, state.sound)
                 io.github.graviton94.carpediem.ui.Care.BOX_BREATH -> onBreath(BreathKind.BOX, 1, state.sound)
                 io.github.graviton94.carpediem.ui.Care.LOOK -> onLook()
+                io.github.graviton94.carpediem.ui.Care.SLEEP_BREATH -> onBreath(BreathKind.SLEEP, 1, state.sound)
+                io.github.graviton94.carpediem.ui.Care.MORNING_BREATH -> onBreath(BreathKind.CALM, 1, state.sound)
                 io.github.graviton94.carpediem.ui.Care.SEND_TO -> {}
             }
         }

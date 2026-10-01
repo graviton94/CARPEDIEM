@@ -9,7 +9,15 @@ enum class BreathKind { CALM, BOX, SLEEP }
 enum class BreathStep { IN, HOLD, OUT, REST }
 
 /** 앱의 소리: 없음 · 파도 · 바람 · 빗소리 · 잔잔한 파장. */
-enum class Sound { NONE, WAVES, WIND, RAIN, TONE }
+enum class Sound { NONE, WAVES, WIND, RAIN, TONE, SEASON }
+
+/** 하루의 때: 문장 · 숨 · 권하기가 때에 맞는 말을 고른다. 아침 5–11시, 낮 11–17시, 저녁 17–21시, 밤 21–5시. */
+enum class DayPart {
+    MORNING, DAY, EVENING, NIGHT;
+    companion object {
+        fun of(hour: Int): DayPart = when (hour) { in 5..10 -> MORNING; in 11..16 -> DAY; in 17..20 -> EVENING; else -> NIGHT }
+    }
+}
 
 object Breath {
     class Phase(val step: BreathStep, val startMs: Long, val lengthMs: Long)

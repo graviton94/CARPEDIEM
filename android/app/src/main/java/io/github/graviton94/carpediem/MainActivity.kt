@@ -77,11 +77,16 @@ private sealed interface Screen {
 }
 
 class MainActivity : ComponentActivity() {
+    companion object { const val EXTRA_MORNING_BREATH = "carpediem.morningBreath" }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         val state = AppState(applicationContext)
-        val start = if (BuildConfig.DEBUG) debugSetup(state) else Screen.Main
+        val start = (if (BuildConfig.DEBUG) debugSetup(state) else Screen.Main).let { s ->
+            // 아침 알림에서 왔으면 하루를 여는 숨 1분
+            if (intent?.getBooleanExtra(EXTRA_MORNING_BREATH, false) == true && state.profile != null) Screen.Breathe(BreathKind.CALM, 1, state.sound, Screen.Main) else s
+        }
         setContent {
             BoxWithConstraints {
                 val screenW = maxWidth
@@ -183,6 +188,7 @@ private fun MainActivity.debugSetup(state: AppState): Screen {
     if (x.getBooleanExtra("cd.letter", false)) state.addSampleLetter()
     if (x.getBooleanExtra("cd.moods", false)) state.addSampleMoods()
     if (x.getBooleanExtra("cd.memory", false)) state.addSampleMemory()
+    x.getStringExtra("cd.today")?.let { f -> runCatching { io.github.graviton94.carpediem.core.Feeling.valueOf(f) }.getOrNull()?.let { state.addSampleToday(it) } }
     // 캡처용: 한 줄을 보낸 뒤 한마디 창 + 돌봄 권하기 (예: cd.care CALM_BREATH)
     x.getStringExtra("cd.care")?.let { c -> state.toast = io.github.graviton94.carpediem.ui.Labels.letGoMessage(this, io.github.graviton94.carpediem.core.Feeling.SAD); state.care = runCatching { io.github.graviton94.carpediem.ui.Care.valueOf(c) }.getOrNull() }
     state.debugOpenLetter = x.getBooleanExtra("cd.openLetter", false)

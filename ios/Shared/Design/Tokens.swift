@@ -146,6 +146,7 @@ enum Tokens {
     enum Notify {
         static let hour: CGFloat = 8.0
         static let minute: CGFloat = 50.0
+        static let eveningHour: CGFloat = 21.0
     }
 
     enum Garden {
@@ -368,6 +369,8 @@ enum Tokens {
             static let ruleInset: CGFloat = 0.3
             static let nightFrom: CGFloat = 22.0
             static let line: CGFloat = 2.0
+            static let sleepFadeAfter: CGFloat = 4000.0
+            static let sleepFadeMs: CGFloat = 4000.0
         }
         enum Gaze {
             static let dimAfter: CGFloat = 300.0
@@ -447,6 +450,15 @@ enum Tokens {
             static let lookSeconds: CGFloat = 30.0
             static let lookSize: CGFloat = 120.0
             static let lookDown: CGFloat = 0.6
+        }
+        enum Weather {
+            static let seconds: CGFloat = 10.0
+            static let drops: CGFloat = 28.0
+            static let rainAlpha: CGFloat = 0.35
+            static let sunAlpha: CGFloat = 0.22
+        }
+        enum SleepGarden {
+            static let dim: CGFloat = 0.18
         }
     }
 }

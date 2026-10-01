@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
@@ -125,16 +126,22 @@ private fun MemoryStone(state: AppState, m: Person, today: LocalDate, seed: Int)
         val art = HaruArt.of(m.seed, false)
         val scale = u * (G.Layout.meetHaruWidth * 0.7f * (if (m.kind == Kind.PET) G.Family.petScale else 1f) / G.Layout.haruArtWidth)
         val a11y = stringResource(R.string.memory_a11y, m.name)
-        Box(Modifier.fillMaxWidth().height(scale * (G.Layout.haruGround - art.meta.bbox.top) + u * 10).semantics { contentDescription = a11y }, contentAlignment = Alignment.BottomCenter) {
+        // 돌이 보이는 높이만큼만 자리를 잡고, 그림 칸(200)은 그 위로 겹쳐 그린다 (부모 크기에 눌리지 않게 unbounded)
+        val mossH = u * 14
+        val showH = scale * (G.Layout.haruGround - art.meta.bbox.top) + mossH / 2
+        Box(Modifier.fillMaxWidth().height(showH).semantics { contentDescription = a11y }) {
             val moss = G.Colors.moss
             val ink = Theme.gc.ink
-            Canvas(Modifier.size(scale * art.meta.bbox.width * 1.5f, u * 14)) {
+            Canvas(Modifier.align(Alignment.BottomCenter).size(scale * art.meta.bbox.width * 1.5f, mossH)) {
                 drawOval(moss, size = size)
                 drawOval(ink.copy(alpha = 0.5f), size = size, style = androidx.compose.ui.graphics.drawscope.Stroke(u.toPx() * 1.2f))
             }
-            val cx = -(scale * (art.meta.bbox.center.x - art.meta.box / 2))
-            HaruFigure(art, scale, Modifier.offset(x = cx, y = -(u * 7) + scale * (art.meta.box - G.Layout.haruGround)), lid = 1f, tiltOn = false)
+            val dx = -(scale * (art.meta.bbox.center.x - art.meta.box / 2))
+            Box(Modifier.align(Alignment.TopCenter).wrapContentSize(Alignment.TopCenter, unbounded = true).offset(x = dx, y = -(scale * art.meta.bbox.top)).size(scale * art.meta.box)) {
+                HaruFigure(art, scale, Modifier, lid = 1f, tiltOn = false)
+            }
         }
+        Spacer(Modifier.height(Tokens.Space.sp2))
         TokenText(m.name, Tokens.TypeScale.title3.serif())
         rangeText(m)?.let { TokenText(it, Tokens.TypeScale.footnote, color = p.secondary) }
         CrayonRule(seed = seed + 1)

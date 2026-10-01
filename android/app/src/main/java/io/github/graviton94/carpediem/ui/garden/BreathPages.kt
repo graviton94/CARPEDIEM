@@ -82,9 +82,13 @@ internal fun rhythm(k: BreathKind): Breath.Rhythm {
         BreathKind.SLEEP -> Breath.Rhythm(b.sleepIn.toDouble(), b.sleepHold.toDouble(), b.sleepOut.toDouble(), 0.0)
     }
 }
+internal fun partTitle(p: io.github.graviton94.carpediem.core.DayPart) = when (p) {
+    io.github.graviton94.carpediem.core.DayPart.MORNING -> R.string.breath_part_morning; io.github.graviton94.carpediem.core.DayPart.DAY -> R.string.breath_part_day
+    io.github.graviton94.carpediem.core.DayPart.EVENING -> R.string.breath_part_evening; io.github.graviton94.carpediem.core.DayPart.NIGHT -> R.string.breath_part_night
+}
 internal fun kindName(k: BreathKind) = when (k) { BreathKind.CALM -> R.string.breath_kind_calm; BreathKind.BOX -> R.string.breath_kind_box; BreathKind.SLEEP -> R.string.breath_kind_sleep }
 private fun kindDesc(k: BreathKind) = when (k) { BreathKind.CALM -> R.string.breath_kindDesc_calm; BreathKind.BOX -> R.string.breath_kindDesc_box; BreathKind.SLEEP -> R.string.breath_kindDesc_sleep }
-private fun soundName(s: Sound) = when (s) { Sound.NONE -> R.string.sound_none; Sound.WAVES -> R.string.sound_waves; Sound.WIND -> R.string.sound_wind; Sound.RAIN -> R.string.sound_rain; Sound.TONE -> R.string.sound_tone }
+private fun soundName(s: Sound) = when (s) { Sound.NONE -> R.string.sound_none; Sound.WAVES -> R.string.sound_waves; Sound.WIND -> R.string.sound_wind; Sound.RAIN -> R.string.sound_rain; Sound.TONE -> R.string.sound_tone; Sound.SEASON -> R.string.sound_season }
 private fun stepName(s: BreathStep) = when (s) { BreathStep.IN -> R.string.breath_in; BreathStep.HOLD -> R.string.breath_hold; BreathStep.OUT -> R.string.breath_out; BreathStep.REST -> R.string.breath_rest }
 
 /** 밤(nightFrom ~ 새벽)에는 잠드는 숨을 먼저. */
@@ -104,6 +108,8 @@ fun BreathSheet(state: AppState, now: LocalDateTime, onStart: (BreathKind, Int, 
         Column(Modifier.fillMaxWidth().padding(horizontal = Theme.deviceClass.pageMargin).navigationBarsPadding().padding(bottom = Tokens.Space.sp6),
             verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
             TokenText(stringResource(R.string.breath), Tokens.TypeScale.title3.serif())
+            // 때에 맞는 숨의 이름 (하루를 여는 · 잠시 멈추는 · 내려놓는 · 마무리하는)
+            TokenText(stringResource(partTitle(io.github.graviton94.carpediem.ui.Labels.part(now))), Tokens.TypeScale.footnote.serif(), color = p.secondary)
             FlowRow(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
                 BreathKind.entries.forEachIndexed { i, k -> GardenChip(stringResource(kindName(k)), kind == k, 1000 + i) { kind = k } }
             }
@@ -147,7 +153,17 @@ fun BreathScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, kind
     var paused by remember { mutableStateOf(false) }
     var done by remember { mutableStateOf(false) }
     val animate = remember { !reducedMotion(ctx) }
-    val player = remember(sound) { Soundscape.Player(sound) }
+    val player = remember(sound) { Soundscape.Player(sound, io.github.graviton94.carpediem.core.Memories.seasonOf(now.toLocalDate())) }
+    val part = io.github.graviton94.carpediem.ui.Labels.part(now)
+    // 밤의 잠드는 숨: 끝나면 화면이 스르르 어두워지고 앱이 물러남 (화면은 폰이 스스로 끔)
+    val sleepAfter = kind == BreathKind.SLEEP && isNight(now)
+    val blackout = remember { Animatable(0f) }
+    LaunchedEffect(done) {
+        if (done && sleepAfter) {
+            delay(G.Breath.sleepFadeAfter.toLong()); blackout.animateTo(1f, tween(G.Breath.sleepFadeMs.toInt()))
+            (ctx as? android.app.Activity)?.moveTaskToBack(true); onDone()
+        }
+    }
     KeepScreenOn(!done)
     DisposableEffect(player) { player.start(); onDispose { player.stop() } }
     LaunchedEffect(Unit) { if (sound != Sound.NONE) Soundscape.chime(1) }
@@ -183,6 +199,10 @@ fun BreathScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, kind
         // 비움: 하늘 그림 · 땅 그림 없이 바탕 한 빛 위에 작은 하루와 선 하나
         Column(Modifier.fillMaxSize().statusBarsPadding().navigationBarsPadding().padding(horizontal = Theme.deviceClass.pageMargin),
             horizontalAlignment = Alignment.CenterHorizontally) {
+            // 위에 아주 옅게 숨의 이름 (첫 1분만)
+            Box(Modifier.padding(top = Tokens.Space.sp8).height(Tokens.Space.sp8), contentAlignment = Alignment.Center) {
+                if (!done && elapsed < b.cueSeconds * 1000) TokenText(stringResource(partTitle(part)), Tokens.TypeScale.footnote.serif(), color = p.secondary.copy(alpha = 0.7f))
+            }
             Spacer(Modifier.weight(1f))
             val art = HaruArt.of(state.store.haruSeed, false)
             val scale = u * (b.haruWidth / G.Layout.haruArtWidth)
@@ -202,8 +222,9 @@ fun BreathScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, kind
                 if (cue != null) TokenText(stringResource(stepName(cue)), Tokens.TypeScale.title2.serif(), color = p.secondary, align = TextAlign.Center)
             }
             if (done) {
-                val msg = remember { ctx.resources.getIdentifier("breath_done_${kind.name.lowercase()}_${(1..3).random()}", "string", ctx.packageName) }
-                TokenText(stringResource(msg), Tokens.TypeScale.headline.serif(), Modifier.fillMaxWidth().semantics { liveRegion = LiveRegionMode.Polite }, align = TextAlign.Center)
+                // 아침 · 저녁 · 밤은 때의 말, 낮은 숨마다의 말
+                val msg = remember { io.github.graviton94.carpediem.ui.Labels.timed(ctx, "breath_done", part) ?: ctx.getString(ctx.resources.getIdentifier("breath_done_${kind.name.lowercase()}_${(1..3).random()}", "string", ctx.packageName)) }
+                TokenText(msg, Tokens.TypeScale.headline.serif(), Modifier.fillMaxWidth().semantics { liveRegion = LiveRegionMode.Polite }, align = TextAlign.Center)
                 Spacer(Modifier.height(Tokens.Space.sp6))
                 GardenButton(stringResource(R.string.breath_home), onDone, filled = true, seed = 1021)
             } else TokenText(stringResource(R.string.breath_startA11y, stringResource(kindName(kind)), "$minutes"), Tokens.TypeScale.caption2,
@@ -215,6 +236,7 @@ fun BreathScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, kind
             }
             Spacer(Modifier.height(Tokens.Space.sp6))
         }
+        if (blackout.value > 0f) Box(Modifier.fillMaxSize().graphicsLayer { alpha = blackout.value }.background(Color.Black))
         if (paused && !done) PauseCard(onKeep = { paused = false }, onStop = { paused = false; done = true; player.stop(); onDone() })
     }
 }
@@ -254,7 +276,7 @@ fun GazeScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, onBack
     val z = G.Gaze
     val s = LifeSnapshot(profile.birthDate, profile.expectancy(state.store.table), now)
     var soundOn by remember { mutableStateOf(state.sound != Sound.NONE) }
-    val player = remember(soundOn) { Soundscape.Player(if (soundOn) state.sound else Sound.NONE) }
+    val player = remember(soundOn) { Soundscape.Player(if (soundOn) state.sound else Sound.NONE, io.github.graviton94.carpediem.core.Memories.seasonOf(now.toLocalDate())) }
     DisposableEffect(player) { player.start(); onDispose { player.stop() } }
     var screenOn by remember { mutableStateOf(true) }
     KeepScreenOn(screenOn)
@@ -311,7 +333,8 @@ fun LookScreen(onDone: () -> Unit) {
             with(Crayon) { textured(lineMask) { stroke(handCircle(ctr, r, 17), G.Mood.line * 2 * u, ink, 17, passes = 1) } }
         }
         Spacer(Modifier.height(Tokens.Space.sp8))
-        TokenText(stringResource(if (done) R.string.look_done else R.string.look_cue), Tokens.TypeScale.title3.serif(), color = p.secondary, align = TextAlign.Center,
+        val doneText = remember { io.github.graviton94.carpediem.ui.Labels.timed(ctx, "look_done", io.github.graviton94.carpediem.ui.Labels.part(java.time.LocalDateTime.now())) }
+        TokenText(if (done) doneText ?: stringResource(R.string.look_done) else stringResource(R.string.look_cue), Tokens.TypeScale.title3.serif(), color = p.secondary, align = TextAlign.Center,
             modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
         Spacer(Modifier.height(Tokens.Space.sp6))
         Box(Modifier.height(Tokens.Layout.tapTarget + Tokens.Space.sp2)) { if (done) GardenButton(stringResource(R.string.breath_home), onDone, filled = true, seed = 1210) }

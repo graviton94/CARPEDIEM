@@ -14,6 +14,7 @@ import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.customActions
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.foundation.gestures.waitForUpOrCancellation
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.awaitEachGesture
@@ -312,6 +313,11 @@ fun HaruFigure(art: HaruArt, scale: Dp, modifier: Modifier = Modifier, blinkKick
             }
             .semantics {
                 a11y?.let { contentDescription = it }
+                // 표정을 읽어 주기 (TalkBack): 쉬는 중 · 웃는 중 · 아래를 봄 · 생일 모자 · 조용히 앉아 있음
+                stateDescription = listOfNotNull(
+                    when { (lid ?: maxOf(blink.value, rest.value)) >= 0.9f && blink.value < 0.5f -> ctx.getString(io.github.graviton94.carpediem.R.string.haru_state_rest); smile.value > 0f -> ctx.getString(io.github.graviton94.carpediem.R.string.haru_state_smile); lookDown > 0f -> ctx.getString(io.github.graviton94.carpediem.R.string.haru_state_down); else -> ctx.getString(io.github.graviton94.carpediem.R.string.haru_state_calm) },
+                    if (hat) ctx.getString(io.github.graviton94.carpediem.R.string.haru_state_hat) else null,
+                ).joinToString(", ")
                 customActions = listOfNotNull(
                     androidx.compose.ui.semantics.CustomAccessibilityAction(ctx.getString(io.github.graviton94.carpediem.R.string.garden_pet)) { pet(); true },
                 )

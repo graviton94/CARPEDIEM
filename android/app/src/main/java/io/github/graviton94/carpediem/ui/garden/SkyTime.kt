@@ -1,6 +1,7 @@
 package io.github.graviton94.carpediem.ui.garden
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.fillMaxSize
 import kotlin.math.cos
 import kotlin.math.sin
 import androidx.compose.ui.unit.DpOffset
@@ -131,3 +132,38 @@ fun NightLights(now: LocalDateTime, groundY: Dp, stonesFrom: Dp, stonesTo: Dp, m
     }
 }
 
+/**
+ * 마음의 날씨: 오늘 한 줄을 보냈으면 그 마음이 홈 하늘에 잠깐 머문다 (열 때마다 한 번, seconds 초).
+ * 슬픔 · 걱정 · 실망 = 몇 방울 비, 기쁨 · 희망 · 고마움 = 비스듬한 햇살 한 줄기. 평온 · 고르지 않음은 그대로. 애니메이션을 끄면 없음.
+ */
+@Composable
+fun MoodWeather(state: io.github.graviton94.carpediem.ui.AppState, now: LocalDateTime, skyBottom: Dp) {
+    val f = state.lines.lastOrNull()?.takeIf { it.date == now.toLocalDate() }?.feeling ?: return
+    val rain = f in io.github.graviton94.carpediem.core.Letters.HEAVY
+    val sun = f == io.github.graviton94.carpediem.core.Feeling.JOY || f == io.github.graviton94.carpediem.core.Feeling.HOPE || f == io.github.graviton94.carpediem.core.Feeling.THANKS
+    if (!rain && !sun) return
+    val ctx = LocalContext.current
+    if (reducedMotion(ctx)) return
+    val w = G.Weather
+    val t = androidx.compose.runtime.remember(f) { androidx.compose.animation.core.Animatable(0f) }
+    androidx.compose.runtime.LaunchedEffect(f) { t.animateTo(1f, tween((w.seconds * 1000).toInt(), easing = LinearEasing)) }
+    if (t.value >= 1f) return
+    val ink = io.github.graviton94.carpediem.design.Theme.gc.ink
+    val warm = G.Night.Colors.lamp
+    Canvas(Modifier.fillMaxSize()) {
+        val env = sin(t.value * Math.PI.toFloat())   // 스며들었다 사라짐
+        val bottom = skyBottom.toPx().coerceIn(1f, size.height)
+        val u = size.width / G.unitWidth
+        if (rain) {
+            val r = Crayon.Rng(now.toLocalDate().toEpochDay().toInt())
+            repeat(w.drops.toInt()) {
+                val x = size.width * r.next(); val sp = 0.7f + 0.6f * r.next(); val off = r.next()
+                val y = ((t.value * 6f * sp + off) % 1f) * bottom
+                drawLine(ink.copy(alpha = w.rainAlpha * env), Offset(x, y), Offset(x - u * 2f, y + u * 9f), u * 1.1f, StrokeCap.Round)
+            }
+        } else {
+            val a = w.sunAlpha * env
+            drawRect(Brush.linearGradient(listOf(Color.Transparent, warm.copy(alpha = a), Color.Transparent), Offset(size.width * 0.95f, 0f), Offset(size.width * 0.35f, bottom)), size = androidx.compose.ui.geometry.Size(size.width, bottom))
+        }
+    }
+}

@@ -29,7 +29,7 @@ import java.time.LocalDate
 import java.util.Locale
 
 /** 한 줄을 보낸 뒤 한마디 창 아래 권하는 작은 한 가지 (docs: 1.4 돌봄). */
-enum class Care { CALM_BREATH, BOX_BREATH, LOOK, SEND_TO }
+enum class Care { CALM_BREATH, BOX_BREATH, LOOK, SEND_TO, SLEEP_BREATH, MORNING_BREATH }
 
 /** 화면이 보는 상태. 바뀌면 저장하고 위젯을 새로 그린다. */
 class AppState(private val context: Context) {
@@ -72,6 +72,17 @@ class AppState(private val context: Context) {
     fun changeDesign(v: Design) { store.design = v; design = v; Widgets.refresh(context) }
     fun changePreviewAll(v: Boolean) { store.previewAll = v; previewAll = v }
     fun opened() { store.markOpened(); checkRandomRecall() }
+    var eveningNotify by mutableStateOf(store.eveningNotify)
+        private set
+    var eveningHour by mutableStateOf(store.eveningHour)
+        private set
+    var morningBreath by mutableStateOf(store.morningBreath)
+        private set
+    fun changeEvening(on: Boolean, hour: Int = eveningHour) {
+        store.eveningNotify = on; store.eveningHour = hour; eveningNotify = on; eveningHour = hour
+        io.github.graviton94.carpediem.notify.Evening.schedule(context, on, hour)
+    }
+    fun changeMorningBreath(v: Boolean) { store.morningBreath = v; morningBreath = v }
     fun changeNotify(v: Boolean) { store.notify = v; notify = v; io.github.graviton94.carpediem.notify.Daily.schedule(context, v) }
     fun unlockDev() { store.devMode = true; devMode = true }
     fun nextQuote() { store.skipQuote(); quote = store.todaysQuote(); blinkKick++; Widgets.refresh(context) }
@@ -116,20 +127,23 @@ class AppState(private val context: Context) {
         val next = Lines.add(lines, line)
         store.lines = next; lines = next
         val s = Lines.streaks(next, streaks); if (s != streaks) { store.streaks = s; streaks = s }
-        toast = Labels.letGoMessage(context, feeling)
-        care = careFor(feeling, line.to, today)
+        val part = Labels.part(fixedNow ?: LocalDateTime.now())
+        toast = Labels.letGoMessage(context, feeling, part)
+        care = careFor(feeling, line.to, today, part)
     }
     /** 돌봄 권하기 (켜 두었을 때). 하루 한 줄이라 하루 한 번까지. 오늘 이미 숨 쉬었으면 숨은 권하지 않음. */
     var careOn by mutableStateOf(store.care)
         private set
     fun changeCare(v: Boolean) { store.care = v; careOn = v }
     var care by mutableStateOf<Care?>(null)
-    private fun careFor(f: Feeling?, to: String?, today: LocalDate): Care? {
+    private fun careFor(f: Feeling?, to: String?, today: LocalDate, part: io.github.graviton94.carpediem.core.DayPart): Care? {
+        val night = part == io.github.graviton94.carpediem.core.DayPart.NIGHT; val morning = part == io.github.graviton94.carpediem.core.DayPart.MORNING
         if (!careOn || design != Design.GARDEN) return null
         val breathed = breaths.any { it.first == today }
         return when (f) {
-            Feeling.SAD -> if (breathed) null else Care.CALM_BREATH
-            Feeling.WORRY -> if (breathed) null else Care.BOX_BREATH
+            // 밤에는 잠드는 숨, 아침의 슬픔엔 맑은 숨으로
+            Feeling.SAD -> if (breathed) null else if (night) Care.SLEEP_BREATH else if (morning) Care.MORNING_BREATH else Care.CALM_BREATH
+            Feeling.WORRY -> if (breathed) null else if (night) Care.SLEEP_BREATH else Care.BOX_BREATH
             Feeling.DISAPPOINT -> Care.LOOK
             Feeling.JOY, Feeling.THANKS -> if (people.isNotEmpty() && to == null && keepLines) Care.SEND_TO else null
             else -> null
@@ -207,6 +221,10 @@ class AppState(private val context: Context) {
         var next = lines
         fs.forEachIndexed { i, f -> next = Lines.add(next, DayLine(today.minusDays(1L + i * 29L / fs.size + (i % 3)), "", f)) }
         store.lines = next; lines = next
+    }
+    /** 캡처용: 오늘 한 줄을 이미 보낸 것으로 (마음의 날씨 · 하루의 표정 확인). */
+    fun addSampleToday(f: Feeling, today: LocalDate = nowDate()) {
+        val next = Lines.add(lines, DayLine(today, context.getString(R.string.recall_sample), f)); store.lines = next; lines = next
     }
     /** 캡처용: 홈을 열면 이번 달 편지를 바로 펼친다. */
     var debugOpenLetter = false
@@ -289,7 +307,7 @@ class AppState(private val context: Context) {
     fun eraseAll() {
         previewQ = false
         store.eraseAll(); store.ensureQuoteSeed(); unit = store.unit; grid = store.grid; defaultUnit = unit; defaultGrid = grid; lines = emptyList(); streaks = emptyMap(); keepLines = true; care = null; careOn = true; question = null; answering = null; lettersOpened = emptySet(); toast = null; randomLine = null; people = emptyList(); memories = emptyList(); memoryLines = emptyList(); breaths = emptyList(); breathKind = store.breathKind; breathMinutes = store.breathMinutes; sound = store.sound
-        profile = null; quoteLanguage = store.quoteLanguage; quote = store.todaysQuote(); design = store.design; meetPending = false; previewAll = false; notify = false; devMode = false; io.github.graviton94.carpediem.notify.Daily.schedule(context, false); Widgets.refresh(context)
+        profile = null; quoteLanguage = store.quoteLanguage; quote = store.todaysQuote(); design = store.design; meetPending = false; previewAll = false; notify = false; devMode = false; io.github.graviton94.carpediem.notify.Daily.schedule(context, false); io.github.graviton94.carpediem.notify.Evening.schedule(context, false, 21); eveningNotify = false; morningBreath = true; Widgets.refresh(context)
     }
 
     fun defaultProfile(): LifeProfile {
@@ -304,7 +322,17 @@ object Labels {
     fun stone(c: Context, id: String): String = c.resources.getIdentifier("stone_$id", "string", c.packageName).let { if (it == 0) id else c.getString(it) }
     fun feeling(c: Context, f: Feeling): String = c.getString(c.resources.getIdentifier("feeling_${f.name.lowercase()}", "string", c.packageName))
     /** 보낸 뒤의 한마디: 마음마다 몇 가지 가운데 하나 (strings.json letgo.msg.<마음>.<번호>). 마음을 안 골랐으면 none. */
-    fun letGoMessage(c: Context, f: Feeling?): String {
+    /** 때의 말: base_때_번호 가운데 하나 (없으면 null). 낮은 따로 두지 않고 원래 말을 쓴다. */
+    fun timed(c: Context, base: String, part: io.github.graviton94.carpediem.core.DayPart): String? {
+        if (part == io.github.graviton94.carpediem.core.DayPart.DAY) return null
+        val p = part.name.lowercase()
+        val single = c.resources.getIdentifier("${base}_$p", "string", c.packageName)
+        val ids = generateSequence(1) { it + 1 }.map { c.resources.getIdentifier("${base}_${p}_$it", "string", c.packageName) }.takeWhile { it != 0 }.toList()
+        return when { ids.isNotEmpty() -> c.getString(ids.random()); single != 0 -> c.getString(single); else -> null }
+    }
+    fun part(now: java.time.LocalDateTime) = io.github.graviton94.carpediem.core.DayPart.of(now.hour)
+    fun letGoMessage(c: Context, f: Feeling?, part: io.github.graviton94.carpediem.core.DayPart = io.github.graviton94.carpediem.core.DayPart.DAY): String {
+        if (f == null) timed(c, "letgo_msg_none", part)?.let { return it }
         val key = f?.name?.lowercase() ?: "none"
         val ids = generateSequence(1) { it + 1 }.map { c.resources.getIdentifier("letgo_msg_${key}_$it", "string", c.packageName) }.takeWhile { it != 0 }.toList()
         return if (ids.isEmpty()) c.getString(R.string.letgo_done) else c.getString(ids.random())

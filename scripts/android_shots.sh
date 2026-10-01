@@ -57,6 +57,11 @@ open --es cd.screen look --es cd.now $NOW;                                      
 # 1.4 기억의 돌: 기억의 자리 (모은 것 안) · 하늘의 별 (밤)
 open --ez cd.memory true --es cd.screen memory --es cd.now $NOW;                                      shot g38_memory 6
 open --ez cd.memory true --es cd.now 2026-09-30T22:40;                                                shot g39_memory_star 8
+# 1.5 감각: 마음의 날씨 (오늘 슬픔 → 비 · 다음 날 기쁨 → 햇살) · 아침의 숨 · 잠들기 전 정원
+open --es cd.today SAD --es cd.now 2026-10-01T15:00;                                                  shot g40_weather_rain 4
+open --es cd.today JOY --es cd.now 2026-10-02T15:00;                                                  shot g41_weather_sun 4
+open --es cd.screen breath --es cd.now 2026-10-03T07:30;                                              shot g42_breath_morning 4
+open --es cd.now 2026-10-03T23:20;                                                                     shot g43_sleepy 8
 # 인생의 계절 (다른 생년월일 · 다른 하루)
 open --el cd.seed 12345 --es cd.birth 2016-03-01 --es cd.now $NOW;                                     shot g12_spring 14
 open --el cd.seed 99 --es cd.birth 1968-08-20 --ez cd.preview true --es cd.now $NOW;                   shot g13_autumn 14

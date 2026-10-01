@@ -378,6 +378,29 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
                 FormRow(stringResource(R.string.notify_row), onClick = { toggleNotify(!state.notify) }) {
                     Switch(state.notify, { toggleNotify(it) }, colors = SwitchDefaults.colors(checkedTrackColor = p.olive))
                 }
+                if (Theme.garden && state.notify) {
+                    RowDivider()
+                    FormRow(stringResource(R.string.notify_morningBreath), onClick = { state.changeMorningBreath(!state.morningBreath) }) {
+                        Switch(state.morningBreath, { state.changeMorningBreath(it) }, colors = SwitchDefaults.colors(checkedTrackColor = p.olive))
+                    }
+                }
+            }
+            // 저녁 한 줄 알림 (선택, 기본 꺼짐): 오늘 한 줄을 아직 보내지 않은 날에만
+            val eveningPermission = androidx.activity.compose.rememberLauncherForActivityResult(androidx.activity.result.contract.ActivityResultContracts.RequestPermission()) { ok -> state.changeEvening(ok) }
+            fun toggleEvening(on: Boolean) {
+                if (on && android.os.Build.VERSION.SDK_INT >= 33 && !io.github.graviton94.carpediem.notify.Daily.allowed(ctx)) eveningPermission.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+                else state.changeEvening(on)
+            }
+            FormSection(footer = stringResource(R.string.notify_eveningFooter)) {
+                FormRow(stringResource(R.string.notify_eveningRow), onClick = { toggleEvening(!state.eveningNotify) }) {
+                    Switch(state.eveningNotify, { toggleEvening(it) }, colors = SwitchDefaults.colors(checkedTrackColor = p.olive))
+                }
+                if (state.eveningNotify) {
+                    RowDivider()
+                    FormRow(stringResource(R.string.notify_eveningRow)) {
+                        ChipPicker(listOf(20, 21, 22), state.eveningHour, { stringResource(R.string.notify_eveningHour, "$it") }) { h -> state.changeEvening(true, h) }
+                    }
+                }
             }
             run {
                 var confirmClear by remember { mutableStateOf(false) }

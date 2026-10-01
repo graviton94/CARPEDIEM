@@ -92,7 +92,10 @@ object Daily {
             val names = store.people.filter { io.github.graviton94.carpediem.core.Family.isBirthday(it.birth, LocalDate.now()) }.map { it.name }
             if (names.isNotEmpty()) { title = context.getString(R.string.notify_birthday, names.joinToString(", ")); body = text; letterId = null }
         }
-        val open = PendingIntent.getActivity(context, 0, Intent(context, MainActivity::class.java), PendingIntent.FLAG_IMMUTABLE)
+        // 아침 알림을 누르면 (정원 디자인 · 켜 두었을 때) 하루를 여는 숨 1분으로
+        val tap = Intent(context, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        if (store.design == Design.GARDEN && store.morningBreath) tap.putExtra(MainActivity.EXTRA_MORNING_BREATH, true)
+        val open = PendingIntent.getActivity(context, 0, tap, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
         val n = NotificationCompat.Builder(context, CHANNEL).setSmallIcon(R.mipmap.ic_launcher_monochrome).setContentTitle(title).setContentText(body)
             .setStyle(NotificationCompat.BigTextStyle().bigText(body)).setContentIntent(open).setAutoCancel(true).build()
         if (allowed(context)) {
@@ -105,4 +108,37 @@ object Daily {
 
 class DailyWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
     override suspend fun doWork(): Result { Daily.post(applicationContext); return Result.success() }
+}
+
+/** 저녁 한 줄 알림: 고른 시각에 하루 한 번, 그날 한 줄을 아직 보내지 않았을 때만. 기본 꺼짐. */
+object Evening {
+    private const val WORK = "evening-notify"
+    private const val ID = 2
+
+    fun schedule(context: Context, on: Boolean, hour: Int) {
+        val wm = WorkManager.getInstance(context)
+        if (!on) { wm.cancelUniqueWork(WORK); return }
+        val now = LocalDateTime.now()
+        var next = now.toLocalDate().atTime(LocalTime.of(hour.coerceIn(0, 23), 0))
+        if (!next.isAfter(now)) next = next.plusDays(1)
+        val work = PeriodicWorkRequestBuilder<EveningWorker>(1, TimeUnit.DAYS).setInitialDelay(Duration.between(now, next).toMinutes(), TimeUnit.MINUTES).build()
+        wm.enqueueUniquePeriodicWork(WORK, ExistingPeriodicWorkPolicy.UPDATE, work)
+    }
+
+    fun post(context: Context) {
+        val store = Store(context)
+        if (!store.eveningNotify || !Daily.allowed(context)) return
+        if (store.lines.any { it.date == LocalDate.now() }) return   // 오늘은 이미 보냄
+        val nm = context.getSystemService(NotificationManager::class.java)
+        nm.createNotificationChannel(NotificationChannel("daily", context.getString(R.string.notify_channel), NotificationManager.IMPORTANCE_LOW))
+        val open = PendingIntent.getActivity(context, 1, Intent(context, MainActivity::class.java), PendingIntent.FLAG_IMMUTABLE)
+        val n = NotificationCompat.Builder(context, "daily").setSmallIcon(R.mipmap.ic_launcher_monochrome)
+            .setContentTitle(context.getString(R.string.notify_evening)).setContentText(context.getString(R.string.notify_eveningText))
+            .setContentIntent(open).setAutoCancel(true).build()
+        NotificationManagerCompat.from(context).notify(ID, n)
+    }
+}
+
+class EveningWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
+    override suspend fun doWork(): Result { Evening.post(applicationContext); return Result.success() }
 }

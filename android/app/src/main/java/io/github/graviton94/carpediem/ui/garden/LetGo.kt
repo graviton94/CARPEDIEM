@@ -155,7 +155,9 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
 
     Column(modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
         TokenText(stringResource(R.string.letgo_title), Tokens.TypeScale.title3)
-        TokenText(stringResource(R.string.letgo_sub), lineType(Tokens.TypeScale.callout, Theme.garden), color = p.secondary)
+        // 때에 맞는 소개 (아침 · 저녁 · 밤), 낮은 원래 말
+        val sub = remember(today) { io.github.graviton94.carpediem.ui.Labels.timed(ctx, "letgo_sub", io.github.graviton94.carpediem.ui.Labels.part(state.fixedNow ?: java.time.LocalDateTime.now())) }
+        TokenText(sub ?: stringResource(R.string.letgo_sub), lineType(Tokens.TypeScale.callout, Theme.garden), color = p.secondary)
         // 몇 해 전 오늘 보낸 한 줄: 먼저 조용히 알리고, 누르면 펼친다
         val recalls = remember(state.lines, today) { Lines.yearsAgo(state.lines, today) }
         recalls.forEach { (years, l) -> RecallCard(stringResource(R.string.recall_title, "$years"), l, 990 + years) }
@@ -344,6 +346,6 @@ private fun CareLine(state: AppState, c: Care, onGo: () -> Unit) {
         }
         return
     }
-    val text = stringResource(when (c) { Care.CALM_BREATH -> R.string.care_calm; Care.BOX_BREATH -> R.string.care_box; else -> R.string.care_look })
+    val text = stringResource(when (c) { Care.CALM_BREATH -> R.string.care_calm; Care.BOX_BREATH -> R.string.care_box; Care.SLEEP_BREATH -> R.string.care_sleep; Care.MORNING_BREATH -> R.string.care_morning; else -> R.string.care_look })
     TokenText(text, Tokens.TypeScale.footnote, Modifier.clickable(onClick = onGo).padding(vertical = Tokens.Space.sp2), color = p.olive, weight = FontWeight.SemiBold, align = TextAlign.Center)
 }

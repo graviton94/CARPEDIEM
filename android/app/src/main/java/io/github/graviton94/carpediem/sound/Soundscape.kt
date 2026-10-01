@@ -3,6 +3,7 @@ package io.github.graviton94.carpediem.sound
 import android.media.AudioAttributes
 import android.media.AudioFormat
 import android.media.AudioTrack
+import io.github.graviton94.carpediem.core.Season
 import io.github.graviton94.carpediem.core.Sound
 import io.github.graviton94.carpediem.design.Tokens
 import kotlin.math.PI
@@ -13,7 +14,7 @@ import kotlin.math.sin
 /**
  * 숨 · 멍하니 보는 정원의 소리. 소리 파일 없이 앱이 그때그때 만든다:
  * 파도(갈색 잡음이 숨을 따라 밀려왔다 빠짐) · 바람(분홍 잡음이 천천히 불었다 잦아듦) · 빗소리(흰 잡음 + 드문 빗방울) ·
- * 잔잔한 파장(가까운 두 음이 천천히 어긋나며 울림). 시작 · 끝에는 작은 종소리.
+ * 잔잔한 파장(가까운 두 음이 천천히 어긋나며 울림) · 계절의 소리(봄 새소리, 여름 풀벌레, 가을 바람과 귀뚜라미, 겨울 장작 불). 시작 · 끝에는 작은 종소리.
  * 미디어 소리로 나가서 폰의 미디어 볼륨 · 무음 모드를 따른다.
  */
 object Soundscape {
@@ -23,7 +24,7 @@ object Soundscape {
     private fun format(sr: Int) = AudioFormat.Builder().setSampleRate(sr).setEncoding(AudioFormat.ENCODING_PCM_16BIT).setChannelMask(AudioFormat.CHANNEL_OUT_MONO).build()
 
     /** 바탕 소리 하나. start() 로 켜고 stop() 으로 스르르 끈다. breath (0 ~ 1) 를 주면 파도 · 파장이 숨을 따른다. */
-    class Player(private val sound: Sound) {
+    class Player(private val sound: Sound, private val season: Season = Season.SPRING) {
         @Volatile var breath: Float = -1f
         @Volatile private var stopping = false
         private var thread: Thread? = null
@@ -50,6 +51,54 @@ object Soundscape {
             var b0 = 0f; var b1 = 0f; var b2 = 0f; var brown = 0f; var lp = 0f; var hpPrev = 0f; var drop = 0f; var smooth = 0.5f
             var n = 0L
             val two = 2.0 * PI
+            // 계절의 소리: 새 한 마리의 짧은 지저귐 (음 몇 개), 풀벌레 울음, 장작 튀는 소리
+            var chirpLeft = 0; var chirpLen = 1; var chirpF0 = 3000.0; var chirpF1 = 4000.0; var chirpPh = 0.0; var notes = 0; var noteGap = 0
+            var cricketPh = 0.0; var crackle = 0f; var hpC = 0f
+            fun seasonal(t: Double, w: Float, pink: Float): Float {
+                lp += (pink - lp) * 0.03f
+                val air = lp
+                return when (season) {
+                    Season.SPRING -> {
+                        // 새: 가끔 2–4음 지저귐, 음마다 높이가 미끄러짐
+                        if (chirpLeft <= 0) {
+                            if (notes > 0) {
+                                if (noteGap > 0) noteGap-- else {
+                                    notes--; chirpLen = (sr * (0.06 + 0.04 * (white() + 1))).toInt(); chirpLeft = chirpLen
+                                    chirpF0 = 2600.0 + 700.0 * (white() + 1); chirpF1 = chirpF0 + 700.0 * white(); noteGap = (sr * 0.05).toInt()
+                                }
+                            } else if (white() > 0.99996f) { notes = 2 + ((white() + 1) * 1.5f).toInt(); noteGap = 0 }
+                        }
+                        var bird = 0f
+                        if (chirpLeft > 0) {
+                            val k = 1.0 - chirpLeft.toDouble() / chirpLen
+                            chirpPh += two * (chirpF0 + (chirpF1 - chirpF0) * k) / sr
+                            bird = (sin(chirpPh) * sin(PI * k)).toFloat() * 0.22f; chirpLeft--
+                        }
+                        air * 1.1f + bird
+                    }
+                    Season.SUMMER -> {
+                        // 풀벌레: 높은 음이 빠르게 떨며, 잠깐 울고 잠깐 쉼
+                        cricketPh += two * 4400 / sr
+                        val trill = if (sin(two * t * 28) > 0) 1f else 0f
+                        val bout = if (0.5 + 0.5 * sin(two * t * 0.55) > 0.35) 1f else 0f
+                        air * 0.6f + sin(cricketPh).toFloat() * trill * bout * 0.05f
+                    }
+                    Season.AUTUMN -> {
+                        // 가을 바람 + 드문 귀뚜라미
+                        val gust = 0.5f + 0.5f * sin(two * t * 0.05 + sin(two * t * 0.011) * 2).toFloat()
+                        cricketPh += two * 3900 / sr
+                        val chirp = if ((t % 2.6) < 0.36 && sin(two * t * 9) > 0.2) 1f else 0f
+                        air * 2.0f * gust + sin(cricketPh).toFloat() * chirp * 0.035f
+                    }
+                    Season.WINTER -> {
+                        // 장작 불: 낮게 웅웅 + 가끔 탁 튀는 소리
+                        if (white() > 0.9997f) crackle = 0.5f + 0.2f * (white() + 1)
+                        crackle *= 0.985f
+                        val hp = (w - hpC) * 0.5f; hpC = w
+                        brown * 2.2f + hp * crackle * 1.4f
+                    }
+                }
+            }
             while (true) {
                 for (i in buf.indices) {
                     val t = n.toDouble() / sr; n++
@@ -78,6 +127,7 @@ object Soundscape {
                             val tone = sin(two * T.toneLow * t) * 0.28 + sin(two * T.toneHigh * t) * 0.28 + sin(two * T.toneLow / 2 * t) * 0.18
                             (tone * swell * (0.85 + 0.15 * sin(two * t * 0.1))).toFloat()
                         }
+                        Sound.SEASON -> seasonal(t, w, pink)
                         Sound.NONE -> 0f
                     }
                     gain = if (stopping) (gain - fadeOut).coerceAtLeast(0f) else (gain + fadeIn).coerceAtMost(1f)

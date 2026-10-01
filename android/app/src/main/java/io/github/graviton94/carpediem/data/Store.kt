@@ -90,6 +90,18 @@ class Store(context: Context) {
         get() = prefs.getBoolean("notify", false)
         set(v) = prefs.edit().putBoolean("notify", v).apply()
 
+    /** 저녁 한 줄 알림 (그날 한 줄을 아직 보내지 않았을 때만, 고른 시각에). 기본 꺼짐. */
+    var eveningNotify: Boolean
+        get() = prefs.getBoolean("eveningNotify", false)
+        set(v) = prefs.edit().putBoolean("eveningNotify", v).apply()
+    var eveningHour: Int
+        get() = prefs.getInt("eveningHour", io.github.graviton94.carpediem.design.Tokens.Notify.eveningHour.toInt())
+        set(v) = prefs.edit().putInt("eveningHour", v).apply()
+    /** 아침 알림을 누르면 숨, 쉼 1분 (하루를 여는 숨). 기본 켬. */
+    var morningBreath: Boolean
+        get() = prefs.getBoolean("morningBreath", true)
+        set(v) = prefs.edit().putBoolean("morningBreath", v).apply()
+
     /** 설정의 버전 글자를 여러 번 누르면 켜지는 개발자 모드. 시험용 항목만 보인다. */
     var devMode: Boolean
         get() = prefs.getBoolean("devMode", false)

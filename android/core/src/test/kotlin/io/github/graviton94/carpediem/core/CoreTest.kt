@@ -339,4 +339,9 @@ class ReflectTest {
         assertEquals(LocalDate.of(2011, 4, 2), Memories.from(m))
         assertEquals(null, Memories.from(m.copy(kind = Kind.PERSON, species = null)))
     }
+
+    @Test fun dayParts() {
+        assertEquals(DayPart.NIGHT, DayPart.of(4)); assertEquals(DayPart.MORNING, DayPart.of(5)); assertEquals(DayPart.MORNING, DayPart.of(10))
+        assertEquals(DayPart.DAY, DayPart.of(11)); assertEquals(DayPart.EVENING, DayPart.of(17)); assertEquals(DayPart.NIGHT, DayPart.of(21)); assertEquals(DayPart.NIGHT, DayPart.of(0))
+    }
 }

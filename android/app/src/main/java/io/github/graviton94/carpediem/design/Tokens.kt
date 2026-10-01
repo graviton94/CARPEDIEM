@@ -141,6 +141,7 @@ object Tokens {
     object Notify {
         const val hour = 8.0f
         const val minute = 50.0f
+        const val eveningHour = 21.0f
     }
 
     object Garden {
@@ -363,6 +364,8 @@ object Tokens {
             const val ruleInset = 0.3f
             const val nightFrom = 22.0f
             const val line = 2.0f
+            const val sleepFadeAfter = 4000.0f
+            const val sleepFadeMs = 4000.0f
         }
         object Gaze {
             const val dimAfter = 300.0f
@@ -442,6 +445,15 @@ object Tokens {
             const val lookSeconds = 30.0f
             const val lookSize = 120.0f
             const val lookDown = 0.6f
+        }
+        object Weather {
+            const val seconds = 10.0f
+            const val drops = 28.0f
+            const val rainAlpha = 0.35f
+            const val sunAlpha = 0.22f
+        }
+        object SleepGarden {
+            const val dim = 0.18f
         }
     }
 }
