@@ -470,6 +470,9 @@ object Tokens {
             const val bowlAttackMs = 35.0f
             const val bowlBeat = 0.7f
             const val introMs = 6000.0f
+            const val layer = 0.4f
+            const val layerMin = 18.0f
+            const val layerMax = 40.0f
         }
         object Night {
             const val darkFrom = 20.0f

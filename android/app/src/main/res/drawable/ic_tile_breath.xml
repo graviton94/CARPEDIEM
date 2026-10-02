@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 빠른 설정 타일 ‘숨, 쉼’: 눈을 감은 둥근 돌 (하루) 한 개 -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24">
+    <path android:fillColor="#FFFFFFFF"
+        android:pathData="M12,4.5C16.7,4.5 20.5,8.4 20.5,13C20.5,17 17,19.5 12,19.5C7,19.5 3.5,17 3.5,13C3.5,8.4 7.3,4.5 12,4.5Z" />
+    <path android:strokeColor="#FF000000" android:strokeWidth="1.3" android:strokeLineCap="round" android:fillColor="#00000000"
+        android:pathData="M8.3,12.6Q9.4,13.7 10.5,12.6M13.5,12.6Q14.6,13.7 15.7,12.6" />
+</vector>

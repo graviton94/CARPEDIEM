@@ -88,7 +88,7 @@ internal fun ChanceLayer(chance: Chance, now: LocalDateTime, season: Season, gy:
             // 하루가 두세 번 나눠 붊: 방울마다 크기 · 처음 힘 · 떠오르는 빠르기 · 흔들림이 다름.
             // 처음엔 빨리 나가다 공기에 느려지고 (끌림 k), 천천히 떠오르며 (부력, kb 로 서서히) 바람에 밀리다 하나씩 톡 터짐
             val bubs = remember(chance) { bubbleSet(now.toLocalDate().toEpochDay().toInt()) }
-            Canvas(Modifier.fillMaxSize()) {
+            Canvas(Modifier.fillMaxSize().graphicsLayer()) {
                 val e = t.value * C.bubblesMs / 1000f; val s = u.toPx()
                 val ox = haruX.toPx() + bubs.side * s * 10f; val oy = (gy - u * 18f).toPx()
                 bubs.list.forEach { b ->
@@ -108,7 +108,7 @@ internal fun ChanceLayer(chance: Chance, now: LocalDateTime, season: Season, gy:
                 }
             }
         }
-        Chance.FIREFLIES -> Canvas(Modifier.fillMaxSize()) {
+        Chance.FIREFLIES -> Canvas(Modifier.fillMaxSize().graphicsLayer()) {
             // 다섯 마리가 천천히 떠다님. 불빛은 숨 쉬듯 켜졌다 꺼지고, 잠깐 어두운 쉼도 있음
             val e = t.value * C.firefliesMs / 1000f; val s = u.toPx(); val env = envelope(t.value, 0.12f, 0.15f); val col = Tokens.Garden.Night.Colors.firefly
             val r = Crayon.Rng(31)
@@ -127,7 +127,7 @@ internal fun ChanceLayer(chance: Chance, now: LocalDateTime, season: Season, gy:
             val gusts = remember(chance) { gustSet() }
             LaunchedEffect(chance) { androidx.compose.runtime.snapshotFlow { t.value }.collect { v -> windGust.floatValue = gustStrength(v * C.windMs / 1000f) } }
             androidx.compose.runtime.DisposableEffect(chance) { onDispose { windGust.floatValue = 0f } }
-            Canvas(Modifier.fillMaxSize()) {
+            Canvas(Modifier.fillMaxSize().graphicsLayer()) {
                 val e = t.value * C.windMs / 1000f; val s = u.toPx(); val sz = C.windSize * s
                 gusts.forEach { b ->
                     val a = e - b.t0; if (a < 0f || a > b.dur) return@forEach
@@ -144,7 +144,7 @@ internal fun ChanceLayer(chance: Chance, now: LocalDateTime, season: Season, gy:
         Chance.BUTTERFLIES -> {
             val wl = GardenArt.image(ctx, "fly_wing_l.webp"); val wr = GardenArt.image(ctx, "fly_wing_r.webp"); val body = GardenArt.image(ctx, "fly_body.webp")
             val heads = remember { floatArrayOf(Float.NaN, Float.NaN) }
-            Canvas(Modifier.fillMaxSize()) {
+            Canvas(Modifier.fillMaxSize().graphicsLayer()) {
                 val s = u.toPx(); val g = gy.toPx(); val total = C.butterfliesMs
                 // 앞 나비가 길을 냄: 나무 잎 옆 → 위로 떠올라 → 말뚝 위 (작게 굽이침). 뒤 나비는 조금 뒤에서 그 곁을 빙글 돌며 따라감
                 val p0 = Offset(treeX.toPx() + s * 40f, g - s * 84f); val p1 = Offset(treeX.toPx() + s * 90f, g - s * 160f)

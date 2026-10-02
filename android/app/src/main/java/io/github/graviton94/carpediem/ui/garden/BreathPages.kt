@@ -331,7 +331,7 @@ fun GazeScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, onBack
     val z = G.Gaze
     val s = LifeSnapshot(profile.birthDate, profile.expectancy(state.store.table), now)
     var soundOn by remember { mutableStateOf(state.sound != Sound.NONE) }
-    val player = remember(soundOn) { Soundscape.Player(if (soundOn) state.sound else Sound.NONE, io.github.graviton94.carpediem.core.Memories.seasonOf(now.toLocalDate())) }
+    val player = remember(soundOn) { Soundscape.Player(if (soundOn) state.sound else Sound.NONE, io.github.graviton94.carpediem.core.GardenDecor.realSeason(now.toLocalDate(), profile.countryCode), gaze = true) }
     DisposableEffect(player) { player.start(); onDispose { player.stop() } }
     var screenOn by remember { mutableStateOf(true) }
     KeepScreenOn(screenOn)

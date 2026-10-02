@@ -242,6 +242,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
     var askBreath by remember { mutableStateOf<Pair<BreathKind, Int>?>(null) }
     val sleepy = !bare && isNight(now)
     // 캡처용: 이번 달 편지를 바로 펼침. 고르기만 그리기 중에, ‘연 편지’로 남기기는 그 뒤에
+    var gardenYearOpen by remember { mutableStateOf<Int?>(null) }
     var letterOpen by remember { mutableStateOf(if (state.debugOpenLetter && !bare) state.letterDue(now.toLocalDate()) else null) }
     LaunchedEffect(letterOpen) { letterOpen?.let { state.openLetter(it.id) } }
 
@@ -477,7 +478,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                     }
                 } }
 
-                androidx.compose.foundation.Canvas(Modifier.fillMaxSize()) {
+                androidx.compose.foundation.Canvas(Modifier.fillMaxSize().graphicsLayer()) {
                     val e = song.value; if (e < 0f) return@Canvas
                     val ring = S.ringSize * u.toPx()
                     slots.indices.forEach { i ->
@@ -520,6 +521,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                     val today = now.toLocalDate()
                     // 계절의 편지는 말뚝에 꽂힌 봉투로 (누르면 펼침). 여기엔 지난 해 · 지난 달의 정원만
                     val year = if (bday == null) state.yearDue(today) else null; val month = if (bday == null && year == null) state.monthDue(today) else null
+                    val gardenYear = if (bday == null && year == null && month == null) state.gardenYearDue(today) else null
                     // 돌아온 한 줄 (몇 해 전 오늘 · 문득): 정원에서도 알 수 있게, 누르면 기록 페이지에서 펼쳐 봄
                     val recall = remember(state.lines, today, state.randomLine) {
                         io.github.graviton94.carpediem.core.Lines.yearsAgo(state.lines, today).firstOrNull()?.first?.let { ctx.getString(R.string.recall_notify, "$it") }
@@ -533,6 +535,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                         }
                         year != null -> YearCard(year) { state.openYear(year); toRecord(RecordView(year, null)) }
                         month != null -> MonthCard(month.second) { state.openMonth(month.first, month.second); toRecord(RecordView(month.first, month.second)) }
+                        gardenYear != null -> RecallNote(stringResource(R.string.gardenYear_ask)) { state.gardenYearSeen(gardenYear); gardenYearOpen = gardenYear }
                         recall != null -> RecallNote(recall) { turnTo(1) }
                     }
                     // 큰 글씨면 버튼을 두 줄로 (글자가 잘리지 않게)
@@ -569,6 +572,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
         ModalBottomSheet(onDismissRequest = { decorOpen = null }, containerColor = Theme.gc.paper) { DecorSheet(part, decor, state, now) }
     }
     letterOpen?.let { LetterSheet(it, state.wishFor(it)) { letterOpen = null } }
+    gardenYearOpen?.let { y -> GardenYearSheet(state, profile, now, y) { gardenYearOpen = null } }
     if (breathSheet) BreathSheet(state, now, { k, m, snd -> breathSheet = false; onBreath(k, m, snd) }) { breathSheet = false }
 }
 

@@ -1,5 +1,6 @@
 package io.github.graviton94.carpediem.ui.garden
 
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -82,7 +83,7 @@ internal fun GazeLife(season: Season, now: LocalDateTime, calm: Boolean = false,
     val logs = remember { if (!pond) GardenArt.image(ctx, "gaze_logs.webp") else null }
     val filter = nightFilter(dark)
     val ink = Tokens.Garden.Colors.ink
-    Canvas(Modifier.fillMaxSize()) {
+    Canvas(Modifier.fillMaxSize().graphicsLayer()) {
         val t = clock.floatValue
         val u = size.width / Tokens.Garden.unitWidth
         val gy = g.gy.toPx()

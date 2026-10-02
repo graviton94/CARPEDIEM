@@ -475,6 +475,9 @@ enum Tokens {
             static let bowlAttackMs: CGFloat = 35.0
             static let bowlBeat: CGFloat = 0.7
             static let introMs: CGFloat = 6000.0
+            static let layer: CGFloat = 0.4
+            static let layerMin: CGFloat = 18.0
+            static let layerMax: CGFloat = 40.0
         }
         enum Night {
             static let darkFrom: CGFloat = 20.0

@@ -1,5 +1,6 @@
 package io.github.graviton94.carpediem.ui.garden
 
+import androidx.compose.ui.graphics.graphicsLayer
 import io.github.graviton94.carpediem.ui.GardenAlert
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Canvas
@@ -222,7 +223,7 @@ internal fun MemoryStars(state: AppState, width: Dp, top: Dp, bottom: Dp, night:
         val r = Crayon.Rng(m.id.hashCode())
         val x = width * (0.14f + 0.72f * r.next()); val y = top + (bottom - top) * r.next()
         val a11y = stringResource(R.string.memory_starNote, m.name)
-        Canvas(Modifier.offset(x - size / 2, y - size / 2).size(size).semantics { contentDescription = a11y }.clickable { shown = m.id }) {
+        Canvas(Modifier.offset(x - size / 2, y - size / 2).size(size).semantics { contentDescription = a11y }.clickable { shown = m.id }.graphicsLayer()) {
             val c = Offset(this.size.width / 2, this.size.height / 2); val k = this.size.width / 22f
             val warm = G.Night.Colors.firefly
             // 그 주엔 빛이 넓고 밝게, 6초에 한 번 숨 쉬듯

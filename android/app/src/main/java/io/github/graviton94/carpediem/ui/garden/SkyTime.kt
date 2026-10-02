@@ -1,5 +1,6 @@
 package io.github.graviton94.carpediem.ui.garden
 
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.fillMaxSize
 import kotlin.math.cos
@@ -157,7 +158,7 @@ fun NightLights(now: LocalDateTime, groundY: Dp, stonesFrom: Dp, stonesTo: Dp, m
     val n = G.Night
     // 시계는 그리는 단계에서만 읽음 (정원이 매 프레임 다시 짜이지 않게). 끊김 없이 이어지는 초라서 한 바퀴 돌 때 튀지 않음
     val clock = rememberGardenClock(!reducedMotion(LocalContext.current))
-    Canvas(modifier) {
+    Canvas(modifier.graphicsLayer()) {   // 매 장면 그리는 것은 따로 한 겹 (T1: 정원의 멈춘 그림은 다시 그리지 않게)
         val u = size.width / G.unitWidth
         val gy = groundY.toPx()
         val clear = Color.Transparent
@@ -199,7 +200,7 @@ fun MoodWeather(state: io.github.graviton94.carpediem.ui.AppState, now: LocalDat
     if (t.value >= 1f) return
     val ink = io.github.graviton94.carpediem.design.Theme.gc.ink
     val warm = G.Night.Colors.lamp
-    Canvas(Modifier.fillMaxSize()) {
+    Canvas(Modifier.fillMaxSize().graphicsLayer()) {
         val env = sin(t.value * Math.PI.toFloat())   // 스며들었다 사라짐
         val bottom = skyBottom.toPx().coerceIn(1f, size.height)
         val u = size.width / G.unitWidth
@@ -242,7 +243,7 @@ fun ShootingStars(now: LocalDateTime, top: Dp, bottom: Dp, modifier: Modifier = 
         }
     }
     val c = G.Night.Colors.moonGlow
-    Canvas(modifier) {
+    Canvas(modifier.graphicsLayer()) {
         val t = p.value; if (t < 0f) return@Canvas
         val y0 = top.toPx(); val y1 = bottom.toPx(); if (y1 <= y0) return@Canvas
         val r = Crayon.Rng(seed.intValue)

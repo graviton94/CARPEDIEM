@@ -166,7 +166,7 @@ internal fun DecorBack(decor: Decor, now: LocalDateTime, gy: Dp, x0: Dp, x1: Dp,
         fun phase() = if (moving) clock.value * 1000f / D.kiteMs * 2f * Math.PI.toFloat() else 0f
         val tie = Offset(((x1 - pk * D.postAtX) + pk * D.tieX).value, ((gy - pk * D.postAtY) + pk * D.tieY).value)
         val ink = Tokens.Garden.Colors.ink
-        Canvas(Modifier.fillMaxSize()) {
+        Canvas(Modifier.fillMaxSize().graphicsLayer()) {
             val ph = phase()
             val from = Offset(tie.x * density, tie.y * density)
             val to = Offset(kx.toPx() + sin(ph) * D.kiteDrift * 0.8f * density, (ky + kk * 19f).toPx() + sin(2f * ph) * D.kiteDrift * 0.5f * density)

@@ -107,6 +107,10 @@ internal fun CollectionBody(state: AppState, profile: LifeProfile, now: LocalDat
             TokenText(stringResource(R.string.collection_sub), Tokens.TypeScale.callout.serif(), Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.Center)
             // 계절 앨범: 해마다 한 줄, 계절 네 장 (그 계절에 정원을 열면 나무가 남긴 한 장). 테두리 = 그 계절에 가장 많았던 마음
             SeasonAlbum(state, profile, now) { card = it }
+            // 정원의 한 해 (S2): 해마다 한 장으로 다시 보기
+            var yearSheet by remember { mutableStateOf<Int?>(null) }
+            GardenYearAlbum(state) { yearSheet = it }
+            yearSheet?.let { y -> GardenYearSheet(state, profile, now, y) { yearSheet = null } }
             // 만난 순간: 처음 만난 날과 함께 (순간마다 한 줄)
             val met = state.chancesMet.mapNotNull { r -> r.split(':', limit = 2).takeIf { it.size == 2 }?.let { (k, d) -> runCatching { k to java.time.LocalDate.parse(d) }.getOrNull() } }.sortedBy { it.second }
             if (met.isNotEmpty()) {

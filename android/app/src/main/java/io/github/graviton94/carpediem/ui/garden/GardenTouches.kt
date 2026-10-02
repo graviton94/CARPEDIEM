@@ -1,5 +1,6 @@
 package io.github.graviton94.carpediem.ui.garden
 
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.foundation.Canvas
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -40,7 +41,7 @@ internal fun TermTouches(touch: TermTouch, now: LocalDateTime, gy: Dp, skyTop: D
     val dark = SkyTime.isDark(now)
     val a0 = T.alpha * (if (dark) T.nightAlpha else 1f)
     val C = T.Colors
-    Canvas(modifier) {
+    Canvas(modifier.graphicsLayer()) {
         val u = size.width / Tokens.Garden.unitWidth
         val g = gy.toPx(); val y0 = skyTop.toPx(); val y1 = skyBottom.toPx().coerceAtLeast(y0 + 1f)
         val t = clock.value

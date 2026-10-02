@@ -24,7 +24,8 @@ object Soundscape {
     private fun format(sr: Int) = AudioFormat.Builder().setSampleRate(sr).setEncoding(AudioFormat.ENCODING_PCM_16BIT).setChannelMask(AudioFormat.CHANNEL_OUT_MONO).build()
 
     /** 바탕 소리 하나. start() 로 켜고 stop() 으로 스르르 끈다. breath (0 ~ 1) 를 주면 파도 · 파장이 숨을 따른다. */
-    class Player(private val sound: Sound, private val season: Season = Season.SPRING) {
+    /** gaze = 돌멍하기: 바탕 소리 위에 계절 한 겹 (가끔 새 · 풀벌레 · 마른 잎 · 눈 밟기, 늘 연못 물소리 또는 장작 소리) 을 아주 작게 (E2). */
+    class Player(private val sound: Sound, private val season: Season = Season.SPRING, private val gaze: Boolean = false) {
         @Volatile var breath: Float = -1f
         @Volatile private var stopping = false
         private var thread: Thread? = null
@@ -99,6 +100,47 @@ object Soundscape {
                     }
                 }
             }
+            // 돌멍하기의 계절 한 겹 (E2): 가끔 오는 계절 소리 하나 + 연못 (봄 · 여름) 또는 화톳불 (가을 · 겨울)
+            val pond = season == Season.SPRING || season == Season.SUMMER
+            fun r01() = (white() + 1f) / 2f
+            var evLeft = 0; var evLen = 1; var nextEv = (sr * 8).toLong(); var evPh = 0.0
+            var lp2 = 0f; var tr = 0f; var plop = 0; var plopLen = 1; var plopPh = 0.0; var nextPlop = (sr * 4).toLong(); var crack2 = 0f; var hpC2 = 0f
+            fun layer(t: Double, w: Float, pink: Float): Float {
+                var out = 0f
+                if (evLeft <= 0 && n >= nextEv) {
+                    evLen = (sr * when (season) { Season.SPRING -> 1.6; Season.SUMMER -> 3.2; Season.AUTUMN -> 1.8; Season.WINTER -> 2.2 }).toInt(); evLeft = evLen; evPh = 0.0
+                    nextEv = n + (sr * (T.layerMin + (T.layerMax - T.layerMin) * r01())).toLong()
+                }
+                if (evLeft > 0) {
+                    val k = 1.0 - evLeft.toDouble() / evLen; val env = sin(PI * k).toFloat()
+                    out += when (season) {
+                        // 봄: 먼 새가 세 음
+                        Season.SPRING -> { val note = (k * 3).toInt(); val kk = k * 3 - note
+                            evPh += two * (3000.0 + 500.0 * note + 600.0 * kk) / sr
+                            if (kk < 0.55) (sin(evPh) * sin(PI * kk / 0.55)).toFloat() * 0.12f else 0f }
+                        // 여름: 풀벌레 한 번 낮게 이어짐
+                        Season.SUMMER -> { evPh += two * 4600 / sr; val trill = if (sin(two * t * 30) > 0) 1f else 0f; sin(evPh).toFloat() * trill * env * 0.03f }
+                        // 가을: 바람이 지날 때 마른 잎 바스락
+                        Season.AUTUMN -> { lp2 += (w - lp2) * 0.25f; (w - lp2) * env * env * 0.16f * (0.6f + 0.4f * sin(two * t * 11).toFloat()) }
+                        // 겨울: 아주 멀리 천천히 눈 밟는 네 걸음
+                        Season.WINTER -> { val step = (k * 4) % 1.0; val e = if (step < 0.25) sin(PI * step / 0.25).toFloat() else 0f; lp2 += (w - lp2) * 0.12f; lp2 * e * 0.5f }
+                    }
+                    evLeft--
+                }
+                if (pond) {
+                    // 연못: 졸졸 흐르는 물빛 잡음 + 가끔 퐁
+                    tr += (pink - tr) * 0.2f; out += (pink - tr) * 0.18f * (0.6f + 0.4f * sin(two * t * 0.21).toFloat())
+                    if (plop <= 0 && n >= nextPlop) { plopLen = (sr * 0.09).toInt(); plop = plopLen; plopPh = 0.0; nextPlop = n + (sr * (4 + 7 * r01())).toLong() }
+                    if (plop > 0) { val k = 1.0 - plop.toDouble() / plopLen; plopPh += two * (900 - 450 * k) / sr; out += (sin(plopPh) * (1 - k) * (1 - k)).toFloat() * 0.09f; plop-- }
+                } else {
+                    // 화톳불: 낮게 웅웅 + 가끔 탁
+                    if (white() > 0.9996f) crack2 = 0.4f + 0.2f * r01()
+                    crack2 *= 0.982f
+                    val hp = (w - hpC2) * 0.5f; hpC2 = w
+                    out += brown * 1.0f + hp * crack2 * 0.9f
+                }
+                return out * T.layer
+            }
             while (true) {
                 for (i in buf.indices) {
                     val t = n.toDouble() / sr; n++
@@ -129,7 +171,7 @@ object Soundscape {
                         }
                         Sound.SEASON -> seasonal(t, w, pink)
                         Sound.NONE -> 0f
-                    }
+                    } + (if (gaze) layer(t, w, pink) else 0f)
                     gain = if (stopping) (gain - fadeOut).coerceAtLeast(0f) else (gain + fadeIn).coerceAtMost(1f)
                     buf[i] = (v * gain * T.volume * Short.MAX_VALUE).coerceIn(-32767f, 32767f).toInt().toShort()
                 }

@@ -208,6 +208,8 @@ private fun MainActivity.debugSetup(state: AppState): Screen {
     if (x.hasExtra("cd.meet")) { if (x.getBooleanExtra("cd.meet", false)) state.begin(state.profile ?: state.defaultProfile()) else state.finishMeet() }
     if (x.hasExtra("cd.preview")) state.changePreviewAll(x.getBooleanExtra("cd.preview", false))
     x.getStringExtra("cd.now")?.let { state.fixedNow = LocalDateTime.parse(it) }
+    // 시험용: 그날 절기 (S1) 를 정해 정원의 작은 변화를 봄 (예: sanggang · dongji)
+    x.getStringExtra("cd.term")?.let { k -> state.termOverride = io.github.graviton94.carpediem.core.SolarTerm.entries.firstOrNull { it.key == k } }
     // 캡처용: 우연한 순간 하나를 바로 (bubbles · fireflies · rainbow · butterflies · snail · aurora · wind)
     x.getStringExtra("cd.chance")?.let { k -> io.github.graviton94.carpediem.core.Chance.of(k)?.let { state.showChance(it, (state.fixedNow ?: LocalDateTime.now()).toLocalDate()) } }
     if (x.getBooleanExtra("cd.recall", false)) { state.addSampleYearAgo(); state.addSampleRandom() }
