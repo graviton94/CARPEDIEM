@@ -266,10 +266,9 @@ private fun RecallCard(title: String, line: DayLine, seed: Int) {
     }
 }
 
-private class Flake(val x: Float, val delay: Float, val span: Float, val size: Float, val phase: Float, val spin: Float)
 
 /**
- * 한 줄을 보낸 뒤: 깃털이 위에서 아래로 흩날리며 내려오고, 마음에 맞춘 한마디가 담긴 창이 뜬다. ‘확인’으로 닫는다.
+ * 한 줄을 보낸 뒤: 마음에 맞춘 한마디가 담긴 창이 조용히 떠오른다. ‘확인’으로 닫는다.
  * 창 밖을 눌러도 닫히지 않는다 (한마디를 읽을 틈). 뒤로 가기는 닫기.
  */
 @Composable
@@ -278,39 +277,17 @@ fun LetGoModal(state: AppState, modifier: Modifier = Modifier, onCare: (Care) ->
     val p = Theme.palette
     val ctx = LocalContext.current
     val u = Theme.unit
-    val px = with(LocalDensity.current) { u.toPx() }
-    val m = G.Motion
-    val fall = remember(msg) { Animatable(0f) }
-    // 창은 앱의 다른 떠오르는 것과 같은 나타남 (깃털이 먼저 내려오고 조금 뒤에)
-    val card = io.github.graviton94.carpediem.ui.rememberPop(msg, m.cardDelayMs.toLong())
-    LaunchedEffect(msg) { fall.animateTo(1f, tween(m.fallMs.toInt(), easing = LinearEasing)) }
+    // 창은 앱의 다른 떠오르는 것과 같은 나타남
+    val card = io.github.graviton94.carpediem.ui.rememberPop(msg)
     BackHandler { state.toast = null; state.care = null }
     val feather = GardenArt.obj(ctx, "feather")
     val scrim = Theme.gc.scrim
-    val flakes = remember(msg) {
-        val r = Crayon.Rng(msg.hashCode())
-        List(G.LetGo.feathers.toInt()) { Flake(0.06f + 0.88f * r.next(), r.next() * 0.35f, 0.5f + 0.25f * r.next(), 0.7f + 0.6f * r.next(), r.next() * 6.28f, (r.next() - 0.5f) * 60f) }
-    }
     BoxWithConstraints(
         modifier.fillMaxSize()
             .drawBehind { drawRect(scrim.copy(alpha = scrim.alpha * card.value)) }
             .clickable(interactionSource = remember { MutableInteractionSource() }, indication = null) {},
     ) {
-        val w = constraints.maxWidth.toFloat(); val h = constraints.maxHeight.toFloat()
-        flakes.forEach { f ->
-            val side = u * G.LetGo.feather * f.size
-            val sidePx = side.value * px / u.value
-            Image(feather, null, Modifier.size(side).graphicsLayer {
-                val t = ((fall.value - f.delay) / f.span).coerceIn(0f, 1f)
-                // 깃털처럼: 좌우로 흔들리는 끝에서 느려지고, 가운데를 지날 때 조금 빨라짐. 기울기는 흔들림을 따라감
-                val th = t * PI.toFloat() * 3f + f.phase
-                val down = t + 0.5f / (6f * PI.toFloat()) * (sin(2f * th) - sin(2f * f.phase))
-                translationX = f.x * w - sidePx / 2 + sin(th) * G.LetGo.sway * px
-                translationY = -sidePx + (h + sidePx) * down
-                rotationZ = f.spin * 0.5f * kotlin.math.cos(th)
-                alpha = if (t <= 0f || t >= 1f) 0f else minOf(1f, (1f - t) * 3f)
-            })
-        }
+        // 깃털 비는 쓰지 않음 (보내면 창만 조용히 떠오름)
         Column(
             Modifier.align(Alignment.Center).padding(horizontal = Theme.deviceClass.pageMargin)
                 .pop(card).modalBox().padding(Tokens.Space.sp6).semantics { liveRegion = LiveRegionMode.Polite },

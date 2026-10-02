@@ -354,7 +354,8 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                         LifeUnit.entries.forEachIndexed { i, unit -> GardenChip(Labels.unit(ctx, unit), unit == state.unit, seed = 800 + i) { state.changeUnit(unit) } }
                     }
                     val question = state.question
-                    if (question != null) QuestionBlock(state, question, sent = state.sentOn(now.toLocalDate())) {
+                    // 오늘의 질문은 답하기 전까지만: 오늘 한 줄을 남겼으면 (답했든 아니든) 다시 오늘의 문장으로
+                    if (question != null && !state.sentOn(now.toLocalDate())) QuestionBlock(state, question, sent = false) {
                         // 한 줄로 답하기: 기록 페이지의 오늘의 한 줄로
                         state.answer(); turnTo(1)
                     } else state.quote?.let { q ->
