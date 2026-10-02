@@ -32,7 +32,7 @@ data class Person(
 )
 
 object Family {
-    /** 돌이 많아 길(span)에 다 앉지 못하면 모두를 같은 비율로 줄인다 (1 = 그대로). gap = 돌 사이 최소 간격. */
+    /** 돌이 많아 길(span)에 다 앉지 못하면 모두를 같은 비율로 줄인다 (1 = 그대로). gap = 돌 사이 최소 간격 (음수면 그만큼 겹쳐 앉아도 됨). */
     fun fitScale(widths: List<Double>, span: Double, gap: Double): Double {
         val need = widths.sum() + gap * (widths.size - 1).coerceAtLeast(0)
         return if (need <= span || widths.isEmpty()) 1.0 else ((span - gap * (widths.size - 1)) / widths.sum()).coerceIn(0.3, 1.0)
@@ -42,6 +42,9 @@ object Family {
     const val MAX = 9
     const val NAME_MAX = 8
     const val REROLLS = 3
+
+    /** 길이 모자랄 때 허용하는 간격: 돌 폭 평균의 overlap 만큼 겹쳐 앉음 (음수 간격). */
+    fun overlapGap(widths: List<Double>, overlap: Double): Double = if (widths.isEmpty()) 0.0 else -overlap * widths.average()
 
     fun cleanName(s: String) = s.replace(Regex("[\\t\\r\\n]+"), " ").trim().let { if (it.codePointCount(0, it.length) <= NAME_MAX) it else it.substring(0, it.offsetByCodePoints(0, NAME_MAX)) }
 
@@ -104,9 +107,10 @@ object Family {
     /**
      * 돌 자리 정하기 (같은 입력이면 늘 같은 자리).
      * targets: 원래 자리 (null = 생일 모름 → me 곁), widths: 몸 폭, me: 내 돌 번호.
-     * 이웃한 두 돌이 (폭 합 / 2 + gap) 보다 가까우면 반씩 밀어낸다. 길 [lo, hi] 안에 가두고, 모자라면 gap 을 minGap 까지 줄인다.
+     * 이웃한 두 돌이 (폭 합 / 2 + gap) 보다 가까우면 반씩 밀어낸다. 길 [lo, hi] 안에 가두고, 모자라면 gap 을 minGap 까지 줄인다 (음수 = 겹침).
      */
     fun place(targets: List<Double?>, widths: List<Double>, me: Int, lo: Double, hi: Double, gap: Double, minGap: Double): List<Double> {
+        // minGap 이 음수면: 길이 모자랄 때 그만큼 살짝 겹쳐 앉음 (오른쪽 돌이 앞에 그려짐)
         val n = targets.size
         if (n == 0) return emptyList()
         val meX = targets[me] ?: ((lo + hi) / 2)

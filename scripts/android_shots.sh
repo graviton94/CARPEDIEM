@@ -39,6 +39,11 @@ open --es cd.chance bubbles --es cd.now $NOW; shot q13_chance_bubbles 4
 open --es cd.chance fireflies --es cd.now 2026-09-30T22:40; shot q14_chance_fireflies 5
 open --es cd.chance aurora --es cd.now 2027-01-12T22:40; shot q15_chance_aurora 5
 open --es cd.chance snail --es cd.now $NOW; shot q16_chance_snail 5
+open --es cd.screen gaze --es cd.now 2026-10-02T15:00; shot q17_gaze_autumn 8
+open --es cd.screen gaze --es cd.now 2026-10-02T22:40; shot q18_gaze_autumn_night 8
+open --es cd.screen gaze --es cd.now 2026-04-15T15:00; shot q19_gaze_spring 8
+open --es cd.screen gaze --es cd.now 2026-07-20T22:40; shot q20_gaze_summer_night 8
+open --es cd.screen breath --es cd.now 2026-10-03T07:30; shot q21_breath_intro 2
 # 위젯 미리보기 그림 (위젯 고르는 화면용): 가족 · 이번 달 기록이 있는 정원으로 실제 위젯을 그려 꺼냄
 open --ez cd.reset true --es cd.design garden --el cd.seed 2718281 --es cd.birth 2000-05-12 --es cd.sex female --ez cd.meet false --ez cd.family true --ez cd.months true --ez cd.widgetShots true
 W=/sdcard/Android/data/$P/files/widgets

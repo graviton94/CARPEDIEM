@@ -14,6 +14,10 @@
 "begin" = "Begin";
 "privacy" = "Everything stays here.";
 "timeLeft" = "Time left";
+"timeLeft.days" = "Days left";
+"timeLeft.weeks" = "Weeks left";
+"timeLeft.months" = "Months left";
+"timeLeft.years" = "Years left";
 "unit.days" = "days";
 "unit.weeks" = "weeks";
 "unit.months" = "months";
@@ -556,7 +560,7 @@
 "decor.hang.lantern" = "Paper lantern";
 "decor.post.none" = "A wind chime hangs on the day you first breathe.";
 "decor.post.line" = "%1$@ breathing days.";
-"decor.post.next" = "One more thing hangs at %1$@.";
+"decor.post.next" = "One more hangs at %1$@ breathing days.";
 "decor.post.help" = "As breathing days add up, a wind chime, a small bell and a paper lantern hang one by one. The lantern glows at night.";
 "decor.post.letter" = "A letter is tucked in";
 "decor.kite" = "Ray kite";
@@ -594,11 +598,13 @@
 "decor.new.bud" = "A bud opened on the moss.";
 "decor.new.card" = "This season's piece lies at the foot of your tree.";
 "decor.new.letter" = "A season letter is tucked into the post.";
+"decor.hint" = "Try a gentle tap on the tree or the post.";
 "album" = "Season album";
 "album.lines" = "%1$@ lines";
 "album.when" = "%2$@ %1$@ · %3$@";
+"album.cell" = "%2$@ %1$@";
 "album.first" = "First garden";
-"album.firstSub" = "Things you received before the paper garden. They stay here with their dates.";
+"album.firstSub" = "Things from your earlier garden. They stay here with the day you got them.";
 "chance.bubbles" = "Bubbles";
 "chance.fireflies" = "Fireflies";
 "chance.rainbow" = "Rainbow";

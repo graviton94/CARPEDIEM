@@ -302,9 +302,12 @@ fun LetGoModal(state: AppState, modifier: Modifier = Modifier, onCare: (Care) ->
             val sidePx = side.value * px / u.value
             Image(feather, null, Modifier.size(side).graphicsLayer {
                 val t = ((fall.value - f.delay) / f.span).coerceIn(0f, 1f)
-                translationX = f.x * w - sidePx / 2 + sin(t * PI.toFloat() * 3f + f.phase) * G.LetGo.sway * px
-                translationY = -sidePx + (h + sidePx) * t
-                rotationZ = f.spin * sin(t * PI.toFloat() * 2f + f.phase)
+                // 깃털처럼: 좌우로 흔들리는 끝에서 느려지고, 가운데를 지날 때 조금 빨라짐. 기울기는 흔들림을 따라감
+                val th = t * PI.toFloat() * 3f + f.phase
+                val down = t + 0.5f / (6f * PI.toFloat()) * (sin(2f * th) - sin(2f * f.phase))
+                translationX = f.x * w - sidePx / 2 + sin(th) * G.LetGo.sway * px
+                translationY = -sidePx + (h + sidePx) * down
+                rotationZ = f.spin * 0.5f * kotlin.math.cos(th)
                 alpha = if (t <= 0f || t >= 1f) 0f else minOf(1f, (1f - t) * 3f)
             })
         }

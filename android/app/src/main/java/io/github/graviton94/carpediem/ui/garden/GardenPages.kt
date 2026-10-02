@@ -1,5 +1,6 @@
 package io.github.graviton94.carpediem.ui.garden
 
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -165,7 +166,7 @@ internal fun CollectionBody(state: AppState, profile: LifeProfile, now: LocalDat
                 Image(GardenArt.card(ctx, c.key), null, Modifier.size(u * 160f * G.Decor.cardBoxW / G.Decor.cardBoxH, u * 160f))
                 TokenText(cardName(ctx, c.key), Tokens.TypeScale.title3.serif(), align = TextAlign.Center)
                 TokenText(stringResource(R.string.album_when, "${c.year}", io.github.graviton94.carpediem.ui.Labels.season(ctx, c.season), stringResource(treeName(c.tree))), Tokens.TypeScale.body, align = TextAlign.Center)
-                TokenText(stringResource(R.string.album_lines, "${l?.count ?: 0}"), Tokens.TypeScale.footnote, color = p.secondary, align = TextAlign.Center)
+                l?.count?.takeIf { it > 0 }?.let { n -> TokenText(stringResource(R.string.album_lines, "$n"), Tokens.TypeScale.footnote, color = p.secondary, align = TextAlign.Center) }
             }
         }
     }
@@ -193,13 +194,20 @@ private fun SeasonAlbum(state: AppState, profile: LifeProfile, now: LocalDateTim
             io.github.graviton94.carpediem.core.Season.entries.forEach { se ->
                 val c = list.firstOrNull { it.season == se }
                 val l = stats[year to se]
-                Column(Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
+                // 화면 읽기: 칸 하나를 한 번에 (“2026년 봄, 벚꽃, 12줄”)
+                val seName = io.github.graviton94.carpediem.ui.Labels.season(ctx, se)
+                val cellA11y = listOfNotNull(stringResource(R.string.album_cell, "$year", seName), c?.let { cardName(ctx, it.key) }, l?.count?.takeIf { it > 0 && c != null }?.let { stringResource(R.string.album_lines, "$it") }).joinToString(", ")
+                // 아직 오지 않은 계절은 더 옅게 (지나간 빈 칸과 구별)
+                val ahead = year == here.year && se.ordinal > here.season.ordinal
+                Column(Modifier.weight(1f).semantics(mergeDescendants = true) { contentDescription = cellA11y }.graphicsLayer { alpha = if (ahead) 0.45f else 1f },
+                    horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
                     if (c != null) {
-                        Image(GardenArt.card(ctx, c.key), cardName(ctx, c.key), Modifier.fillMaxWidth().aspectRatio(G.Decor.cardBoxW / G.Decor.cardBoxH).clickable { onOpen(c to l) })
+                        Image(GardenArt.card(ctx, c.key), null, Modifier.fillMaxWidth().aspectRatio(G.Decor.cardBoxW / G.Decor.cardBoxH).clickable { onOpen(c to l) })
                         // 그 계절의 한 줄 수, 앞의 작은 점 = 가장 많았던 마음
                         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
                             l?.feeling?.let { f -> Box(Modifier.size(Tokens.Space.sp1 + Tokens.Space.sp1 / 2).background(feelingColor(f), androidx.compose.foundation.shape.CircleShape)) }
-                            TokenText(stringResource(R.string.album_lines, "${l?.count ?: 0}"), Tokens.TypeScale.caption2, color = p.secondary, align = TextAlign.Center)
+                            // 0줄은 적지 않음
+                            l?.count?.takeIf { it > 0 }?.let { n -> TokenText(stringResource(R.string.album_lines, "$n"), Tokens.TypeScale.caption2, color = p.secondary, align = TextAlign.Center) }
                         }
                     } else {
                         Box(Modifier.fillMaxWidth().aspectRatio(G.Decor.cardBoxW / G.Decor.cardBoxH).crayonBox(null, G.Radius.box, G.Stroke.chip, seed = 1300 + year % 50 * 4 + se.ordinal))

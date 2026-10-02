@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -101,14 +102,21 @@ fun GardenAlert(
     }
 }
 
-/** 알림 한마디 (시스템 Toast 대신): 아래에 잠깐 떠올랐다가 사라짐. */
+/** 알림 한마디 (시스템 Toast 대신): 하늘 쪽 (손에 가리지 않는 곳) 에 떠올라, 글 길이만큼 머물다 아래로 살짝 내려가며 사라짐. */
 @Composable
 fun NoteHost(note: Pair<String, Long>?, onDone: () -> Unit) {
     val (text, id) = note ?: return
     val a = rememberPop(id)
-    LaunchedEffect(id) { delay(Tokens.Garden.Motion.noteMs.toLong()); a.animateTo(0f, tween(Tokens.Garden.Motion.modalFadeMs.toInt())); onDone() }
-    Box(Modifier.fillMaxSize().navigationBarsPadding().padding(bottom = Tokens.Space.sp10 * 2), contentAlignment = Alignment.BottomCenter) {
-        TokenText(text, Tokens.TypeScale.subhead, Modifier.padding(horizontal = Theme.deviceClass.pageMargin).semantics { liveRegion = LiveRegionMode.Polite }.pop(a).modalBox(998)
+    val M = Tokens.Garden.Motion
+    val leaving = remember(id) { androidx.compose.runtime.mutableStateOf(false) }
+    LaunchedEffect(id) {
+        delay((M.noteBaseMs + M.noteCharMs * text.length).coerceIn(M.noteMs, M.noteMaxMs).toLong())
+        leaving.value = true; a.animateTo(0f, tween(M.modalFadeMs.toInt())); onDone()
+    }
+    androidx.compose.foundation.layout.BoxWithConstraints(Modifier.fillMaxSize().statusBarsPadding(), contentAlignment = Alignment.TopCenter) {
+        val drop = 8.dp
+        TokenText(text, Tokens.TypeScale.subhead, Modifier.padding(top = maxHeight * M.noteAt).padding(horizontal = Theme.deviceClass.pageMargin).semantics { liveRegion = LiveRegionMode.Polite }
+            .graphicsLayer { if (leaving.value) translationY = (1f - a.value) * drop.toPx() }.pop(a).modalBox(998)
             .padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3), align = TextAlign.Center)
     }
 }

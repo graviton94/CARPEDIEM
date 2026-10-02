@@ -35,6 +35,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -189,14 +190,14 @@ fun BreathScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, kind
         while (!done) {
             val t = withFrameMillis { it }
             elapsed += t - last; last = t
+            player.breath = fullAt(plan, elapsed)
             if (elapsed >= total) { done = true; state.recordBreath(kind); if (sound != Sound.NONE) Soundscape.bowl(S.bowlOutHz.toDouble(), 2); player.stop() }
         }
     }
-    val at = Breath.at(plan, elapsed)
-    val full = at?.let { Breath.fullness(it.first.step, it.second) } ?: 0f
-    player.breath = full
+    // 매 프레임 바뀌는 값 (elapsed) 은 그리는 단계에서만 읽음: 화면은 단계가 바뀔 때만 다시 짜임
+    val step by remember(plan) { androidx.compose.runtime.derivedStateOf { Breath.at(plan, elapsed)?.first?.step } }
+    val cueOn by remember { androidx.compose.runtime.derivedStateOf { elapsed < b.cueSeconds * 1000 } }
     // 단계가 바뀌면 아주 짧게 (들이쉼 한 번, 내쉼 두 번)
-    val step = at?.first?.step
     LaunchedEffect(step, intro) {
         if (intro) return@LaunchedEffect
         // 숨마다 명상 종: 들이쉴 땐 맑은 종, 내쉴 땐 낮은 종 (머무는 숨에는 없음)
@@ -219,7 +220,7 @@ fun BreathScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, kind
             horizontalAlignment = Alignment.CenterHorizontally) {
             // 위에 아주 옅게 숨의 이름 (첫 1분만)
             Box(Modifier.padding(top = Tokens.Space.sp8).height(Tokens.Space.sp8), contentAlignment = Alignment.Center) {
-                if (!done && elapsed < b.cueSeconds * 1000) TokenText(stringResource(partTitle(part)), Tokens.TypeScale.footnote.serif(), color = p.secondary.copy(alpha = 0.7f))
+                if (!done && cueOn) TokenText(stringResource(partTitle(part)), Tokens.TypeScale.footnote.serif(), color = p.secondary.copy(alpha = 0.7f))
             }
             Spacer(Modifier.weight(1f))
             val art = HaruArt.of(state.store.haruSeed, false)
@@ -228,6 +229,7 @@ fun BreathScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, kind
             Box(Modifier.graphicsLayer {
                 if (animate) {
                     transformOrigin = androidx.compose.ui.graphics.TransformOrigin(0.5f, 1f)
+                    val full = fullAt(plan, elapsed)
                     val s = 1f + b.swell * full; scaleX = s; scaleY = s
                     translationY = -b.rise * k * full
                 }
@@ -235,8 +237,9 @@ fun BreathScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, kind
             CrayonRule(Modifier.padding(horizontal = screenW * b.ruleInset), seed = 1020)
             Spacer(Modifier.height(Tokens.Space.sp8))
             // 글자: 첫 1분만. 끝나면 한 줄 + 정원으로
-            val cue = if (done) null else step?.takeIf { elapsed < b.cueSeconds * 1000 }
-            Box(Modifier.height(Tokens.Space.sp10), contentAlignment = Alignment.Center) {
+            val cue = if (done) null else step?.takeIf { cueOn }
+            // 두 줄이 되어도 잘리지 않게 (높이는 최소만 정함)
+            Box(Modifier.heightIn(min = Tokens.Space.sp10 * 2), contentAlignment = Alignment.Center) {
                 // 고마움 명상: 내쉴 때 “고마운 것 하나”
                 if (intro) TokenText(stringResource(R.string.breath_bells), Tokens.TypeScale.headline.serif(), color = p.secondary, align = TextAlign.Center)
                 else if (cue != null) TokenText(stringResource(if (kind == BreathKind.THANKS && cue == BreathStep.OUT) R.string.breath_out_thanks else stepName(cue)), Tokens.TypeScale.title2.serif(), color = p.secondary, align = TextAlign.Center)
@@ -253,14 +256,22 @@ fun BreathScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, kind
                 Modifier.semantics { liveRegion = LiveRegionMode.Polite }.graphicsLayer { alpha = 0f })
             Spacer(Modifier.weight(1f))
             // 아주 옅은 가는 선 하나가 차오름 (남은 시간은 보이지 않음)
-            Box(Modifier.fillMaxWidth().height(u * b.line).background(Theme.gc.ink.copy(alpha = 0.08f))) {
-                Box(Modifier.fillMaxWidth((elapsed.toFloat() / total).coerceIn(0f, 1f)).height(u * b.line).background(Theme.gc.ink.copy(alpha = 0.28f)))
-            }
+            val lineC = Theme.gc.ink.copy(alpha = 0.28f)
+            Box(Modifier.fillMaxWidth().height(u * b.line).background(Theme.gc.ink.copy(alpha = 0.08f)).drawBehind {
+                drawRect(lineC, size = androidx.compose.ui.geometry.Size(size.width * (elapsed.toFloat() / total).coerceIn(0f, 1f), size.height))
+            })
             Spacer(Modifier.height(Tokens.Space.sp6))
         }
         if (blackout.value > 0f) Box(Modifier.fillMaxSize().graphicsLayer { alpha = blackout.value }.background(Color.Black))
         if (paused && !done) PauseCard(onKeep = { paused = false }, onStop = { paused = false; done = true; player.stop(); onDone() })
     }
+}
+
+/** 지금 숨이 얼마나 찼는지 (0 … 1). 머무는 숨에서도 멈춰 있지 않고 아주 조금 부풀었다 가라앉음. */
+private fun fullAt(plan: List<Breath.Phase>, ms: Long): Float {
+    val a = Breath.at(plan, ms) ?: return 0f
+    val f = Breath.fullness(a.first.step, a.second)
+    return if (a.first.step == BreathStep.HOLD) f + 0.03f * kotlin.math.sin(a.second * a.first.lengthMs / 2400f * 6.2832f) else f
 }
 
 /** 숨 쉬는 동안의 큰 하루 (땅선은 부르는 쪽이). lid = 눈꺼풀. */
@@ -319,6 +330,8 @@ fun GazeScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, onBack
     Box(Modifier.fillMaxSize()) {
         // 홈의 정원 그대로 (하늘 · 해와 달 · 땅 · 돌 · 놓인 것 · 밤빛), 글자만 없이
         GardenHome(state, profile, now, onSettings = {}, onCollection = {}, onSupport = {}, onStone = {}, onAddPerson = {}, bare = true)
+        // 움직이는 정원: 구름 · 빛의 숨 · 내려오는 잎 · 새 · 반딧불, 봄 · 여름엔 연못, 가을 · 겨울엔 화톳불
+        GazeLife(io.github.graviton94.carpediem.core.GardenDecor.realSeason(now.toLocalDate(), profile.countryCode), now) { dim.value }
         // 스르르 어두워짐
         Box(Modifier.fillMaxSize().graphicsLayer { alpha = dim.value }.background(Color.Black))
         // 소리 끄고 켜기 (아주 작게, 누름 막 위에), 나가는 법은 처음 3초만

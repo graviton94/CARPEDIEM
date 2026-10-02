@@ -19,18 +19,18 @@
     cherry_summer: function (ctx) { thread(ctx, bez([0, -16, -2, -10, -5, -2, -6, 8]), 0.8, "#6E8A50"); thread(ctx, bez([0, -16, 2, -10, 5, 0, 6, 10]), 0.8, "#6E8A50"); one(ctx, [blob(-6, 13, 5.6, 5.6, 5141, 0.04), blob(6.4, 15, 5.6, 5.6, 5142, 0.04)], "#B83A44", 5141); },
     zelkova_summer: function (ctx) { stem(ctx, [0, 24, 1, 16, -1, 8, 0, 2]); one(ctx, [0, 1, 2].map(function (k) { var ang = -Math.PI / 2 + k * Math.PI * 2 / 3; return heart(Math.cos(ang) * 6.4, 1 + Math.sin(ang) * 6.4, 5.6, ang - Math.PI / 2); }), "#7FAE5E", 5151, { rim: 0.45 }); one(ctx, blob(0, 1, 1.4, 1.4, 5152, 0.05), "#6A9550", 5152, { rim: 0, sh: 0 }); },
     ginkgo_summer: function (ctx) { one(ctx, rib([[0, 24], [0.4, 6]], 3, 2.2), "#8A6E54", 5161, { rim: 0.3 }); one(ctx, blob(0, -4, 13, 12, 5162, 0.08), "#6F9A58", 5162, { tone: 0.1 }); one(ctx, blob(-3.6, -7.4, 6.4, 4.6, 5163, 0.1), "#8FB672", 5163, { rim: 0.3, sh: 0.3 }); },
-    pine_summer: function (ctx) { var R0 = 16;
+    pine_summer: function (ctx) { var R0 = 13;
       function wedge(r) { var p = [[-r, 8]]; for (var i = 0; i <= 20; i++) { var a = i / 20 * Math.PI; p.push([-Math.cos(a) * r, 8 + Math.sin(a) * r]); } return p; }
-      one(ctx, wedge(R0), "#5E8A4E", 5171); one(ctx, wedge(R0 - 2.2), "#E8EEC8", 5172, { rim: 0, sh: 0.1 }); one(ctx, wedge(R0 - 3.6), "#E0605A", 5173, { rim: 0, sh: 0.1 });
-      [[-6, 13], [0, 16], [6, 13], [-2.6, 11], [3, 11]].forEach(function (q) { dot(ctx, q[0], q[1], 0.9, "#3A2A26"); }); },
+      one(ctx, wedge(R0), "#5E8A4E", 5171); one(ctx, wedge(R0 - 2.4), "#E0605A", 5173, { rim: 0, sh: 0.1 });   // 껍질 · 속 두 색
+      [[-4.6, 12], [0, 14.6], [4.6, 12]].forEach(function (q) { dot(ctx, q[0], q[1], 0.9, "#3A2A26"); }); },
     // 가을: 낙엽 · 가을 열매
     cherry_autumn: function (ctx) { one(ctx, maple(0, 4, 15, 0.12), "#D2563C", 5181); thread(ctx, [[0, 10], [1.4, 22]], 0.9, "#8A3E2A"); },
     zelkova_autumn: function (ctx) { one(ctx, blob(0, 10, 12.5, 11, 5191, 0.05), "#E8893A", 5191, { tone: 0.14 }); one(ctx, [0, 1, 2, 3].map(function (k) { return place(leafPts(6.4, 2.4), 0, -0.6, 1, -Math.PI / 4 + k * Math.PI / 2 - Math.PI / 2 * 0.0); }), "#6E7A40", 5192, { rim: 0.25 }); thread(ctx, [[0, -0.6], [0.6, -4.6]], 1, "#5A4A34"); },
-    ginkgo_autumn: function (ctx) { one(ctx, fanLeaf(0, 22, 24, 0), "#EFC447", 5201); },
+    ginkgo_autumn: function (ctx) { one(ctx, fanLeaf(0, 22, 18, 0), "#EFC447", 5201); },
     pine_autumn: function (ctx) { var p = []; for (var i = 0; i < 40; i++) { var t = i / 40 * Math.PI * 2, x = Math.sin(t) * 12, y = -Math.cos(t) * 13; if (y < 0) { x *= 0.86 + 0.14 * (1 + y / 13); y *= 0.9; } p.push([x, 9 + y]); } one(ctx, p, "#8A5636", 5211, { tone: 0.18 }); one(ctx, [[-11.6, 15], [11.6, 15]].concat(bez([11.6, 15, 9, 22.6, -9, 22.6, -11.6, 15], 10)), "#D9B98C", 5212, { rim: 0, sh: 0.1 }); one(ctx, [[-1.2, -2.4], [1.2, -2.4], [0.4, -5.6], [-0.4, -5.6]], "#5A3A24", 5213, { rim: 0, sh: 0.1 }); one(ctx, blob(-4.6, 4, 2.6, 4, 5214, 0.1, 0.4), "#A8704A", 5214, { rim: 0, sh: 0 }); },
     // 겨울: 눈사람
     cherry_winter: function (ctx) { snowman(ctx, 0, 0, 1, 5221); one(ctx, [[-7.4, -6.4]].concat(bez([-7.4, -6.4, -7, -14, 7, -14, 7.4, -6.4], 10)), "#C8553D", 5223, { rim: 0.3 }); one(ctx, blob(0, -13.6, 2.4, 2.4, 5224, 0.1), "#FBF6EC", 5224, { rim: 0.2 }); },
-    zelkova_winter: function (ctx) { snowman(ctx, 0, 0, 1, 5231); one(ctx, [rib([[-9, 10], [-17, 3], [-19, 0]], 1.2, 0.7), rib([[9, 10], [17, 4], [20, 1]], 1.2, 0.7)], "#7E5E48", 5233, { rim: 0.2 }); dot(ctx, 0, 9, 0.9, "#3A332C"); dot(ctx, 0, 14, 0.9, "#3A332C"); },
+    zelkova_winter: function (ctx) { snowman(ctx, 0, 0, 1, 5231); one(ctx, [rib([[-9, 10], [-13, 5], [-14, 3]], 1.2, 0.7), rib([[9, 10], [13, 6], [14, 4]], 1.2, 0.7)], "#7E5E48", 5233, { rim: 0.2 }); dot(ctx, 0, 9, 0.9, "#3A332C"); dot(ctx, 0, 14, 0.9, "#3A332C"); },
     ginkgo_winter: function (ctx) { snowman(ctx, 0, 0, 1, 5241); one(ctx, [[0.4, -1.2], [7, 0], [0.4, 0.8]], "#E9883A", 5243, { rim: 0, sh: 0.2 }); dot(ctx, 0, 9, 0.9, "#3A332C"); dot(ctx, 0, 14, 0.9, "#3A332C"); },
     pine_winter: function (ctx) { snowman(ctx, -6, 0, 1, 5251); snowman(ctx, 9, 8, 0.6, 5253); one(ctx, place(leafPts(9, 2.4), -6, -8.6, 1, -0.3), "#5E7E62", 5255, { rim: 0.2 }); }
   };
@@ -42,6 +42,6 @@
   function ginkgoCrown(ctx, cx, cy, lk, cols, seed) {
     var L = [[-30, 0, 30, 22], [30, -2, 30, 22], [0, -16, 40, 28], [-16, -34, 24, 16], [18, -32, 24, 16], [-46, 12, 16, 12], [46, 10, 16, 12], [0, 10, 34, 14]];
     crown(ctx, L, cols, seed, lk, cx, cy);
-    [[-58, 8, -1.1], [58, 4, 1.0], [-30, -44, -0.5], [34, -40, 0.6], [-6, -46, -0.1], [-50, 22, -1.6], [50, 22, 1.6]].forEach(function (q, i) { paper(ctx, fanLeaf(cx + q[0] * 1.06 * lk, cy + q[1] * 1.04 * lk, 8.5 * lk, q[2]), cols[i % 2 ? 2 : 1], seed + 60 + i, { rim: 0.45, sh: 0.7 }); });
+    [[-30, -44, -0.5], [34, -40, 0.6], [-6, -46, -0.1]].forEach(function (q, i) { paper(ctx, fanLeaf(cx + q[0] * 0.92 * lk, cy + q[1] * 0.92 * lk, 7 * lk, q[2]), cols[i % 2 ? 2 : 1], seed + 60 + i, { rim: 0.45, sh: 0.7 }); });
   }
 

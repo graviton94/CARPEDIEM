@@ -199,6 +199,8 @@ enum Tokens {
             static let itemFromHaru: CGFloat = 20.0
             static let itemGap: CGFloat = 6.0
             static let stripLineY: CGFloat = 110.0
+            static let hillTop: CGFloat = 108.0
+            static let bigFont: CGFloat = 1.3
             static let stripHeight: CGFloat = 300.0
             static let calendarGap: CGFloat = 1.3
             static let sparkle: CGFloat = 9.0
@@ -231,8 +233,9 @@ enum Tokens {
             static let cell: CGFloat = 1.6
         }
         enum Motion {
-            static let blinkMinMs: CGFloat = 2400.0
-            static let blinkMaxMs: CGFloat = 6200.0
+            static let blinkMinMs: CGFloat = 3000.0
+            static let blinkMaxMs: CGFloat = 7000.0
+            static let blinkTwice: CGFloat = 0.2
             static let blinkMs: CGFloat = 170.0
             static let pageMs: CGFloat = 520.0
             static let letGoMs: CGFloat = 2200.0
@@ -245,14 +248,18 @@ enum Tokens {
             static let sunrise: CGFloat = 6.0
             static let sunset: CGFloat = 19.0
             static let keyboardMs: CGFloat = 320.0
-            static let noteMs: CGFloat = 2400.0
+            static let noteMs: CGFloat = 4000.0
+            static let noteMaxMs: CGFloat = 6000.0
+            static let noteBaseMs: CGFloat = 2500.0
+            static let noteCharMs: CGFloat = 70.0
+            static let noteAt: CGFloat = 0.3
             static let turnTilt: CGFloat = 3.0
             static let turnLift: CGFloat = 8.0
             static let turnShade: CGFloat = 0.5
             static let turnEdge: CGFloat = 18.0
             static let turnSnap: CGFloat = 0.2
             static let breathDrift: CGFloat = 26.0
-            static let typeMs: CGFloat = 55.0
+            static let typeMs: CGFloat = 90.0
             static let typePause: CGFloat = 4.0
         }
         enum Crayon {
@@ -336,6 +343,7 @@ enum Tokens {
             static let oneRow: CGFloat = 5.0
             static let gap: CGFloat = 10.0
             static let minGap: CGFloat = 6.0
+            static let overlap: CGFloat = 0.22
             static let nameChars: CGFloat = 4.0
             static let petScale: CGFloat = 0.72
             static let dogYears: CGFloat = 13.0
@@ -350,7 +358,8 @@ enum Tokens {
             static let squash: CGFloat = 0.03
             static let blushMs: CGFloat = 1200.0
             static let hop: CGFloat = 12.0
-            static let hopMs: CGFloat = 420.0
+            static let hopMs: CGFloat = 560.0
+            static let touchPad: CGFloat = 8.0
             static let windowMs: CGFloat = 3000.0
             static let restAfter: CGFloat = 5.0
             static let restWindowMs: CGFloat = 10000.0
@@ -409,6 +418,23 @@ enum Tokens {
             static let dimMs: CGFloat = 30000.0
             static let dimAlpha: CGFloat = 0.72
             static let releaseAfter: CGFloat = 600.0
+            static let breathIn: CGFloat = 4.0
+            static let breathOut: CGFloat = 6.0
+            static let swell: CGFloat = 0.015
+            static let lightBase: CGFloat = 0.08
+            static let lightBreath: CGFloat = 0.12
+            static let dimSlow: CGFloat = 0.5
+            static let startAt: CGFloat = 6.0
+            static let cloudSpeed: CGFloat = 1.0
+            static let birdEvery: CGFloat = 80.0
+            static let pieceEvery: CGFloat = 10.0
+            static let pieceFall: CGFloat = 9.0
+            static let pieceRest: CGFloat = 3.0
+            static let pieceSize: CGFloat = 13.0
+            static let pondY: CGFloat = 72.0
+            static let pondScale: CGFloat = 1.0
+            static let fireY: CGFloat = 50.0
+            static let fireFromHaru: CGFloat = 70.0
         }
         enum Sound {
             static let sampleRate: CGFloat = 22050.0
@@ -561,19 +587,19 @@ enum Tokens {
             static let stageDays1: CGFloat = 100.0
             static let stageDays2: CGFloat = 365.0
             static let stageDays3: CGFloat = 1095.0
-            static let postBoxW: CGFloat = 80.0
+            static let postBoxW: CGFloat = 86.0
             static let postBoxH: CGFloat = 134.0
-            static let postAtX: CGFloat = 30.0
+            static let postAtX: CGFloat = 50.0
             static let postAtY: CGFloat = 125.0
             static let postScale: CGFloat = 0.9
             static let postPx: CGFloat = 2.0
-            static let chimeX: CGFloat = 55.0
+            static let chimeX: CGFloat = 25.0
             static let chimeY: CGFloat = 30.0
-            static let bellX: CGFloat = 24.0
+            static let bellX: CGFloat = 56.0
             static let bellY: CGFloat = 30.5
-            static let lanternX: CGFloat = 42.0
+            static let lanternX: CGFloat = 38.0
             static let lanternY: CGFloat = 30.5
-            static let tieX: CGFloat = 63.0
+            static let tieX: CGFloat = 17.0
             static let tieY: CGFloat = 28.5
             static let chimeBreaths: CGFloat = 1.0
             static let bellBreaths: CGFloat = 30.0
@@ -588,6 +614,10 @@ enum Tokens {
             static let mossPx: CGFloat = 3.0
             static let budGazes: CGFloat = 10.0
             static let budMax: CGFloat = 5.0
+            static let pondBoxW: CGFloat = 200.0
+            static let pondBoxH: CGFloat = 64.0
+            static let fireBoxW: CGFloat = 64.0
+            static let fireBoxH: CGFloat = 22.0
             static let kiteBoxW: CGFloat = 50.0
             static let kiteBoxH: CGFloat = 140.0
             static let kiteAtX: CGFloat = 25.0
@@ -598,7 +628,8 @@ enum Tokens {
             static let kiteHigh: CGFloat = 0.4
             static let kiteLines: CGFloat = 30.0
             static let ribbonLines: CGFloat = 30.0
-            static let ribbonMax: CGFloat = 8.0
+            static let ribbonMax: CGFloat = 4.0
+            static let ribbonMute: CGFloat = 0.45
             static let kiteMs: CGFloat = 12000.0
             static let kiteDrift: CGFloat = 2.0
             static let kiteTilt: CGFloat = 3.0
@@ -620,10 +651,11 @@ enum Tokens {
         enum Chance {
             static let bubblesMs: CGFloat = 8000.0
             static let firefliesMs: CGFloat = 10000.0
+            static let fireflies: CGFloat = 5.0
             static let rainbowMs: CGFloat = 8000.0
             static let butterfliesMs: CGFloat = 11000.0
             static let auroraMs: CGFloat = 10000.0
-            static let windMs: CGFloat = 5000.0
+            static let windMs: CGFloat = 7000.0
             static let flapHz: CGFloat = 3.5
             static let glideMs: CGFloat = 500.0
             static let glideEvery: CGFloat = 2600.0
@@ -633,8 +665,8 @@ enum Tokens {
             static let snailScale: CGFloat = 0.5
             static let rainbowScale: CGFloat = 1.0
             static let auroraScale: CGFloat = 1.3
-            static let windPieces: CGFloat = 12.0
-            static let windSize: CGFloat = 5.0
+            static let windPieces: CGFloat = 5.0
+            static let windSize: CGFloat = 9.0
         }
     }
 }

@@ -53,7 +53,7 @@
     if (depth > 0) { var n = depth > 2 ? 2 : 2 + (r() < 0.4 ? 1 : 0); for (var i = 0; i < n; i++) { var na = ang + (i - (n - 1) / 2) * (0.55 + r() * 0.25) * NARROW + (r() - 0.5) * 0.2; branchesOf(seed * 7 + i * 31 + 5, x1, y1, len * (0.66 + r() * 0.12), na, depth - 1, wid * 0.58, out); } } return out; }
   function treeShape(sp, stage) { // 줄기 높이 · 퍼짐
     var k = [0.32, 0.6, 1, 1.18][stage];
-    return { H: { cherry: 84, zelkova: 86, ginkgo: 92, pine: 88 }[sp] * k, wB: { cherry: 11, zelkova: 13, ginkgo: 10, pine: 11 }[sp] * Math.max(0.45, k), k: k };
+    return { H: { cherry: 84, zelkova: 86, ginkgo: 92, pine: 112 }[sp] * k, wB: { cherry: 11, zelkova: 13, ginkgo: 10, pine: 11 }[sp] * Math.max(0.45, k), k: k };
   }
   function trunk(ctx, x, y, sp, H, wB, seed) {
     var b = sp === "pine" ? [9, -9, 5] : [2, -2, 1], top = [x + b[2] * H / 100, y - H];
@@ -68,7 +68,7 @@
     var back = list.map(function (c, i) { return blob(cx + c[0] * lk, cy + c[1] * lk, c[2] * lk, c[3] * lk, seed + i * 7, 0.18); });
     paper(ctx, back, cols[0], seed, { sh: 1.2, tone: 0.1 });
     var bb = bbox([].concat.apply([], back)), r = R(seed + 5);
-    var mid = list.filter(function (c) { return c[1] <= 2; }).map(function (c, i) { var dx = c[0] * 0.78 - 6 - Math.max(0, c[0]) * 0.18, dy = c[1] * 0.8 - 7 + Math.max(0, c[0]) * 0.06; return blob(cx + dx * lk, cy + dy * lk, c[2] * (0.62 - Math.max(0, c[0]) * 0.004) * lk, c[3] * 0.56 * lk, seed + 100 + i * 7, 0.24); });
+    var mid = list.filter(function (c) { return c[1] <= 2; }).map(function (c, i) { var dx = c[0] * 0.78 - 6 - Math.max(0, c[0]) * 0.18, dy = c[1] * 0.8 - 7 + Math.max(0, c[0]) * 0.06; return blob(cx + dx * lk, cy + dy * lk, c[2] * (0.78 - Math.max(0, c[0]) * 0.004) * lk, c[3] * 0.7 * lk, seed + 100 + i * 7, 0.24); });
     paper(ctx, mid, cols[1], seed + 100, { sh: 0.8, rim: 0.7 });
     var top = list.slice().sort(function (a, b) { return (a[1] + a[0] * 0.3) - (b[1] + b[0] * 0.3); }).slice(0, 2);
     var lite = top.map(function (c, i) { return blob(cx + (c[0] * 0.8 - 8 - i * 6) * lk, cy + (c[1] * 0.8 - 9 + i * 5) * lk, c[2] * (0.38 - i * 0.1) * lk, c[3] * (0.3 - i * 0.06) * lk, seed + 200 + i * 7, 0.26, -0.15); });
@@ -80,13 +80,13 @@
     // 어린 나무: 지지대 + 끈, 겨울엔 짚 옷
     if (stage === 1) { paper(ctx, rib([[x - 9 * s, y + 1], [x - 7 * s, y - H * 0.78]], 2.4 * s, 2 * s), "#C9A77A", seed + 90, { rim: 0.5, sh: 0.6 }); }
     var tk = trunk(ctx, x, y, sp, H, wB, seed), top = tk.top;
-    if (stage === 1) { var ty = y - H * 0.55; paper(ctx, [[x - 9 * s, ty - 1.4 * s], [x + wB * 0.6, ty - 1.2 * s], [x + wB * 0.6, ty + 1 * s], [x - 9 * s, ty + 0.8 * s]], "#D9C092", seed + 91, { rim: 0.3, sh: 0.4 });
+    if (stage === 1) { var ty = y - H * 0.55; paper(ctx, [[x - 9 * s, ty - 1.4 * s], [x - wB * 0.4, ty - 1.2 * s], [x - wB * 0.4, ty + 1 * s], [x - 9 * s, ty + 0.8 * s]], "#D9C092", seed + 91, { rim: 0.3, sh: 0.4 });
       if (se === "winter") { for (var w = 0; w < 4; w++) { var yy = y - H * (0.08 + w * 0.1); paper(ctx, rib([[x - wB * 0.8, yy + 3 * s], [x + wB * 0.8, yy - 2 * s]], 4.2 * s, 4 * s), w % 2 ? "#D8BC7E" : "#CBA86A", seed + 92 + w, { rim: 0.4, sh: 0.5 }); } } }
     var spread = (stage === 3 ? 1.2 : 1) * s, kb = stage === 1 ? 0.55 : 1;
     // 가지 (맨가지 겨울 + 잎 아래로 비치는 큰 가지)
     var arms = { cherry: [-2.35, -1.95, -1.15, -0.75], zelkova: [-2.2, -1.85, -1.3, -0.95], ginkgo: [-1.95, -1.7, -1.4, -1.2], pine: [-2.7, -0.35, -2.4, -0.6] }[sp];
     var lens = { cherry: 46, zelkova: 52, ginkgo: 44, pine: 40 }[sp] * kb * spread;
-    if (sp !== "pine") { var segs = []; NARROW = sp === "ginkgo" ? 0.85 : 1; arms.forEach(function (a, i) { branchesOf(seed + i * 101, top[0], top[1] + (i % 2) * 8 * s, lens * (bare ? 1 : 0.5) * (i === 1 || i === 2 ? 1 : 0.85), a, bare ? (stage === 1 ? 2 : 3) : 1, wB * 0.5, segs); });
+    if (sp !== "pine") { var segs = []; NARROW = sp === "ginkgo" ? 0.85 : 1; arms.forEach(function (a, i) { branchesOf(seed + i * 101, top[0], top[1] + (i % 2) * 8 * s, lens * (bare ? 0.72 : 0.5) * (i === 1 || i === 2 ? 1 : 0.85), a, bare ? (stage === 3 ? 3 : 2) : 1, wB * 0.5, segs); });
       NARROW = 1; var ps = segs.map(function (b) { return rib(b.pts, Math.max(0.9 * s, b.w0), Math.max(0.6 * s, b.w1)); }); paper(ctx, ps, BARK[sp], seed + 50, { rim: 0.45, sh: 0.7, fiber: 0.5 });
       if (bare) { segs.filter(function (b) { return b.depth >= 2; }).forEach(function (b, i) { var m = b.pts[Math.floor(b.pts.length * 0.55)], e = b.end, ang = Math.atan2(e[1] - m[1], e[0] - m[0]); if (Math.abs(Math.sin(ang)) > 0.62) return; paper(ctx, blob((m[0] + e[0]) / 2, (m[1] + e[1]) / 2 - b.w0 * 0.6, Math.hypot(e[0] - m[0], e[1] - m[1]) * 0.4, 1.2 * s, seed + 300 + i, 0.25, ang), "#FFFFFF", seed + 300 + i, { rim: 0.5, sh: 0.5 }); });
         if (sp === "zelkova" && stage >= 2) magpie(ctx, top[0] + 26 * s, top[1] - 30 * s, s);
@@ -102,14 +102,14 @@
       else { if (stage === 3 && o.swing !== false) swing(ctx, top[0], top[1], s, sp, seed, y, false); pineTiers(ctx, tk, s * (stage === 1 ? 0.55 : stage === 3 ? 1.15 : 1), se, seed, H); }   // 소나무는 그네 가지가 잎 뒤로
       // 계절 덧칠
       var r = R(seed + 7), lkk = (stage === 1 ? 0.5 : 1) * spread;
-      if (sp === "cherry" && se === "spring") { for (var i = 0; i < 16; i++) { var px = cx + (r() - 0.5) * 80 * lkk, py = cy - 30 * lkk + r() * 40 * lkk; paper(ctx, blossom(px, py, 2.2 * s), i % 3 ? "#FFFFFF" : "#F6C3CF", seed + 500 + i, { rim: 0.2, sh: 0.3 }); } }
+      if (sp === "cherry" && se === "spring") { for (var i = 0; i < 7; i++) { var px = cx + (r() - 0.5) * 80 * lkk, py = cy - 30 * lkk + r() * 40 * lkk; paper(ctx, blossom(px, py, 2.2 * s), i % 3 ? "#FFFFFF" : "#F6C3CF", seed + 500 + i, { rim: 0.2, sh: 0.3 }); } }
       if (sp === "cherry" && se === "summer") { [[-20, 4], [12, 8], [30, -6], [-34, -4]].forEach(function (q, i) { var px = cx + q[0] * lkk, py = cy + q[1] * lkk; thread(ctx, [[px, py - 4 * s], [px - 1.6 * s, py], [px - 3 * s, py + 1.5 * s]], 0.5, "#4E6A3A"); thread(ctx, [[px, py - 4 * s], [px + 2 * s, py + 1.5 * s]], 0.5, "#4E6A3A"); paper(ctx, [blob(px - 3 * s, py + 2.5 * s, 2.2 * s, 2.2 * s, 520 + i, 0.04), blob(px + 2.4 * s, py + 2.6 * s, 2.2 * s, 2.2 * s, 530 + i, 0.04)], "#B8303A", seed + 520 + i, { rim: 0.35, sh: 0.5 }); }); }
       if (sp === "pine" && se === "spring") { /* 송홧가루 순은 pineTiers 에서 */ }
     }
     // 발치: 떨어진 것
     var fr = R(seed + 11);
     if (se === "autumn" && sp !== "pine") { for (var f = 0; f < (sp === "ginkgo" ? 9 : 5); f++) { var fx = x + (fr() - 0.5) * 70 * s, fy = y + 1 + fr() * 2; var lp = sp === "ginkgo" ? fanLeaf(fx, fy, 4 * s, fr() * 6) : sp === "zelkova" ? place(leafPts(7 * s, 2.6 * s), fx, fy, 1, fr() * 6) : place(leafPts(6 * s, 3 * s), fx, fy, 1, fr() * 6); paper(ctx, lp, cols[f % 3], seed + 600 + f, { rim: 0.3, sh: 0.4 }); } }
-    if (se === "spring" && sp === "cherry") { for (var f2 = 0; f2 < 6; f2++) paper(ctx, blossom(x + (fr() - 0.5) * 60 * s, y + 1.5 + fr() * 2, 1.8 * s), "#F8D3DC", seed + 620 + f2, { rim: 0.2, sh: 0.2 }); }
+    if (se === "spring" && sp === "cherry") { for (var f2 = 0; f2 < 3; f2++) paper(ctx, blossom(x + (fr() - 0.5) * 60 * s, y + 1.5 + fr() * 2, 1.8 * s), "#F8D3DC", seed + 620 + f2, { rim: 0.2, sh: 0.2 }); }
     if (se === "winter") paper(ctx, blob(x, y + 0.5, 24 * s * g.k + 8 * s, 3.2 * s, seed + 640, 0.25), "#FFFFFF", seed + 640, { rim: 0.6, sh: 0.5 });
     // 큰 나무: 오른쪽 가지에 그네
     if (stage === 3 && o.swing !== false && sp !== "pine") swing(ctx, top[0], top[1], s, sp, seed, y, bare);
@@ -126,21 +126,22 @@
       var tops = [-0.3, 0.2].map(function (u, k) { return blob(bx + u * rx, by - ry * 0.85, rx * 0.4, ry * 0.36, seed + 730 + i * 3 + k, 0.18); });
       paper(ctx, tops, cols[1], seed + 730 + i, { sh: 0.6, rim: 0.5 });
       if (se === "winter") paper(ctx, [-0.35, 0.25].map(function (u, k) { return blob(bx + u * rx, by - ry * 1.1, rx * 0.42, ry * 0.26, seed + 740 + i * 3 + k, 0.22); }), "#FFFFFF", seed + 740 + i, { sh: 0.5, rim: 0.6 });
-      if (se === "spring") for (var k = 0; k < 3; k++) paper(ctx, rib([[bx - rx * 0.4 + k * rx * 0.4, by - ry * 1.05], [bx - rx * 0.4 + k * rx * 0.4 + 0.5, by - ry * 1.05 - 4.5 * s]], 1.7 * s, 1.2 * s), "#E6CF66", seed + 750 + i * 3 + k, { rim: 0.25, sh: 0.3 });
-      if (se === "autumn" && i % 2 === 0) paper(ctx, blob(bx - rx * 0.3, by - ry * 0.4, rx * 0.2, ry * 0.25, seed + 760 + i, 0.1), "#9A7A48", seed + 760 + i, { rim: 0.3, sh: 0.3 });
+      if (se === "spring" && i >= 3) for (var k = 1; k < 2; k++) paper(ctx, rib([[bx - rx * 0.4 + k * rx * 0.4, by - ry * 1.05], [bx - rx * 0.4 + k * rx * 0.4 + 0.5, by - ry * 1.05 - 4.5 * s]], 1.7 * s, 1.2 * s), "#E6CF66", seed + 750 + i * 3 + k, { rim: 0.25, sh: 0.3 });
+      if (false) paper(ctx, blob(bx - rx * 0.3, by - ry * 0.4, rx * 0.2, ry * 0.25, seed + 760 + i, 0.1), "#9A7A48", seed + 760 + i, { rim: 0.3, sh: 0.3 });
     });
   }
   function swing(ctx, tx, ty, s, sp, seed, gy, bare) {
     var by = gy - 74 * s, bx0 = tx + 2 * s, bx1 = tx + 62 * s;
-    paper(ctx, rib(bz(0, 0, 1, [bx0, by + 6 * s, bx0 + 20 * s, by + 1 * s, bx0 + 42 * s, by - 2 * s, bx1, by - 4 * s]), 5 * s, 2.4 * s), BARK[sp], seed + 800, { rim: 0.5, sh: 0.8, tone: 0.1 });
+    // 줄기에서 자연스럽게 뻗어 살짝 올라가는 가지 (판자처럼 곧지 않게), 끝으로 가늘게
+    paper(ctx, rib(bz(0, 0, 1, [bx0 - 2 * s, by + 10 * s, bx0 + 18 * s, by + 4 * s, bx0 + 40 * s, by - 3 * s, bx1, by - 10 * s]), 4.4 * s, 1.6 * s), BARK[sp], seed + 800, { rim: 0.5, sh: 0.8, tone: 0.1 });
     if (bare) paper(ctx, blob(bx0 + 34 * s, by - 3.4 * s, 20 * s, 1.7 * s, seed + 805, 0.2, -0.08), "#FFFFFF", seed + 805, { rim: 0.4, sh: 0.4 });
-    var sy = gy - 20 * s; [bx0 + 34 * s, bx0 + 52 * s].forEach(function (rx, i) { var top = by - 1 * s - i * 1.2 * s; thread(ctx, [[rx, top], [rx + 0.4, sy]], 0.9 * s, NIGHT ? "rgba(220,210,190,.55)" : "#8A7356"); paper(ctx, blob(rx, top + 1, 1.8 * s, 1.4 * s, seed + 806 + i, 0.05), "#C9A77A", seed + 806 + i, { rim: 0.2, sh: 0.3 }); });
+    var sy = gy - 20 * s; [bx0 + 34 * s, bx0 + 52 * s].forEach(function (rx, i) { var top = by - 3.2 * s - i * 3.4 * s; thread(ctx, [[rx, top], [rx + 0.4, sy]], 0.9 * s, NIGHT ? "rgba(220,210,190,.55)" : "#8A7356"); paper(ctx, blob(rx, top + 1, 1.8 * s, 1.4 * s, seed + 806 + i, 0.05), "#C9A77A", seed + 806 + i, { rim: 0.2, sh: 0.3 }); });
     paper(ctx, [[bx0 + 30 * s, sy - 2 * s], [bx0 + 56 * s, sy - 2 * s], [bx0 + 57 * s, sy + 2.6 * s], [bx0 + 29 * s, sy + 2.6 * s]], "#B88A58", seed + 808, { rim: 0.6, sh: 1, tone: 0.12 });
     if (bare) paper(ctx, blob(bx0 + 43 * s, sy - 2.6 * s, 12 * s, 1.5 * s, seed + 809, 0.2), "#FFFFFF", seed + 809, { rim: 0.4, sh: 0.3 });
   }
   function magpie(ctx, x, y, s) { // 까치둥지 (겨울 느티)
-    var r = R(77); var sticks = []; for (var i = 0; i < 14; i++) { var a = (r() - 0.5) * 0.9, l = 9 + r() * 6, cx = x + (r() - 0.5) * 6 * s, cy = y + (r() - 0.5) * 6 * s; sticks.push(rib([[cx - Math.cos(a) * l * s / 2, cy - Math.sin(a) * l * s / 2], [cx + Math.cos(a) * l * s / 2, cy + Math.sin(a) * l * s / 2]], 1.1 * s, 0.9 * s)); }
-    paper(ctx, blob(x, y, 9 * s, 7 * s, 78, 0.2), "#6E5642", 78, { rim: 0.5, sh: 0.8 }); paper(ctx, sticks, "#7E6650", 79, { rim: 0.25, sh: 0.4 }); paper(ctx, blob(x - 1 * s, y - 6.5 * s, 8 * s, 1.8 * s, 80, 0.2), "#FFFFFF", 80, { rim: 0.4, sh: 0.3 });
+    var r = R(77); var sticks = []; for (var i = 0; i < 4; i++) { var a = (r() - 0.5) * 0.9, l = 9 + r() * 6, cx = x + (r() - 0.5) * 6 * s, cy = y + (r() - 0.5) * 6 * s; sticks.push(rib([[cx - Math.cos(a) * l * s / 2, cy - Math.sin(a) * l * s / 2], [cx + Math.cos(a) * l * s / 2, cy + Math.sin(a) * l * s / 2]], 1.1 * s, 0.9 * s)); }
+    paper(ctx, blob(x, y, 7 * s, 5 * s, 78, 0.2), "#8A7058", 78, { rim: 0.5, sh: 0.8 }); paper(ctx, sticks, "#7E6650", 79, { rim: 0.25, sh: 0.4 }); paper(ctx, blob(x - 1 * s, y - 6.5 * s, 8 * s, 1.8 * s, 80, 0.2), "#FFFFFF", 80, { rim: 0.4, sh: 0.3 });
   }
   function sprout(ctx, x, y, s, sp, se) {
     var leaf = { cherry: "#93B866", zelkova: "#9DBE6C", ginkgo: "#A9C46A", pine: "#5C8259" }[sp];
@@ -158,18 +159,18 @@
     o = o || {}; var H = 100 * s, se = o.season, wood = "#A07A54", bar = y - H + 4 * s;
     if (se === "summer") ivy(ctx, x, y, s, H, true);
     paper(ctx, [[x - 3.2 * s, y + 1], [x + 3.2 * s, y + 1], [x + 2.7 * s, y - H], [x, y - H - 2.4 * s], [x - 2.7 * s, y - H]], wood, 1600, { tone: 0.14 });
-    paper(ctx, rib([[x - 9 * s, bar], [x + 34 * s, bar - 1 * s]], 4 * s, 3.4 * s), wood, 1601, { tone: 0.12 });
+    paper(ctx, rib([[x + 9 * s, bar], [x - 34 * s, bar - 1 * s]], 4 * s, 3.4 * s), wood, 1601, { tone: 0.12 });
     for (var g = 0; g < 4; g++) paper(ctx, [[x - 2 * s, y - H * (0.2 + g * 0.18)], [x + 1.5 * s, y - H * (0.2 + g * 0.18) - 0.6 * s], [x + 1.4 * s, y - H * (0.2 + g * 0.18) + 0.3 * s]], mixHex(wood, "#000000", 0.18), 1602 + g, { rim: 0, sh: 0 });
     if (se === "summer") ivy(ctx, x, y, s, H, false);
-    if (se === "autumn") { var br = bz(x, y, s, [-12, 1, -11, -26, -8, -50, -3, -76]); paper(ctx, rib(br, 2.4 * s, 1 * s), "#7A5A40", 1610, { rim: 0.4, sh: 0.7 });
-      [[-24, -50, 0.3], [-13, -76, -0.4], [-1, -72, 0.6], [-20, -38, -0.2], [-15, -62, 0.1], [-5, -58, 0.9]].forEach(function (q, i) { var cx = x + q[0] * s, cy = y + q[1] * s; thread(ctx, [[cx + 3 * s, cy + 3 * s], [x + (q[0] + 7) * s, cy + 6 * s]], 0.5, "#7A5A40"); paper(ctx, maple(cx, cy, 5.4 * s, q[2]), ["#C0473A", "#D96A3E", "#E3913E", "#B8452F", "#D2783C", "#C95A34"][i], 1620 + i, { rim: 0.4, sh: 0.7 }); }); }
-    var hx = x + 25 * s;
-    if (o.lantern) lantern(ctx, x + 12 * s, bar + 1.5 * s, s, o.lit);
+    if (se === "autumn") { var br = bz(x, y, s, [9, 1, 10, -26, 7, -50, 3, -76]); paper(ctx, rib(br, 2.4 * s, 1 * s), "#7A5A40", 1610, { rim: 0.4, sh: 0.7 });
+      [[18, -50, 0.3], [11, -76, -0.4], [5, -58, 0.9]].forEach(function (q, i) { var cx = x + q[0] * s, cy = y + q[1] * s; thread(ctx, [[cx - 3 * s, cy + 3 * s], [x + (q[0] - 7) * s, cy + 6 * s]], 0.5, "#7A5A40"); paper(ctx, maple(cx, cy, 5.4 * s, q[2]), ["#C0473A", "#D96A3E", "#E3913E", "#B8452F", "#D2783C", "#C95A34"][i], 1620 + i, { rim: 0.4, sh: 0.7 }); }); }
+    var hx = x - 25 * s;
+    if (o.lantern) lantern(ctx, x - 12 * s, bar + 1.5 * s, s, o.lit);
     if (o.chime >= 1) chime(ctx, hx, bar + 1 * s, s, 1, o.sway || 0);
-    if (o.chime >= 2) chime(ctx, x - 6 * s, bar + 1.5 * s, s, 0.62, -(o.sway || 0));
-    if (o.letter) { var lx = x + 2 * s, ly = bar - 2 * s; var env = place([[-6, -4], [6, -4], [6, 4], [-6, 4]], lx + 2 * s, ly - 1 * s, s, -0.18); paper(ctx, env, "#F6EEDC", 1650, { rim: 0.4, sh: 0.9 }); paper(ctx, place([[-6, -4], [6, -4], [0, 0.6]], lx + 2 * s, ly - 1 * s, s, -0.18), "#EADFC6", 1651, { rim: 0.1, sh: 0.3 }); paper(ctx, blob(lx + 2.3 * s, ly - 1.4 * s, 1.5 * s, 1.5 * s, 1652, 0.05), "#C8553D", 1652, { rim: 0.15, sh: 0.3 }); }
-    if (se === "spring") bird(ctx, x + 10 * s, bar - 2.2 * s, s, o.birdLook || 0);
-    if (se === "winter") { paper(ctx, blob(x + 12 * s, bar - 3 * s, 23 * s, 2.6 * s, 1660, 0.25, -0.02), "#FFFFFF", 1660, { sh: 0.6 }); paper(ctx, blob(x, y - H - 2.6 * s, 4.6 * s, 2.6 * s, 1661, 0.2), "#FFFFFF", 1661, { sh: 0.6 }); paper(ctx, blob(x, y + 0.5, 14 * s, 3.4 * s, 1662, 0.3), "#FFFFFF", 1662, { sh: 0.5 }); }
+    if (o.chime >= 2 && !o.lantern) chime(ctx, x + 6 * s, bar + 1.5 * s, s, 0.62, -(o.sway || 0));
+    if (o.letter) { var lx = x - 6 * s, ly = bar - 2 * s; var env = place([[-6, -4], [6, -4], [6, 4], [-6, 4]], lx + 2 * s, ly - 1 * s, s, -0.18); paper(ctx, env, "#F6EEDC", 1650, { rim: 0.4, sh: 0.9 }); paper(ctx, place([[-6, -4], [6, -4], [0, 0.6]], lx + 2 * s, ly - 1 * s, s, -0.18), "#EADFC6", 1651, { rim: 0.1, sh: 0.3 }); paper(ctx, blob(lx + 2.3 * s, ly - 1.4 * s, 1.5 * s, 1.5 * s, 1652, 0.05), "#C8553D", 1652, { rim: 0.15, sh: 0.3 }); }
+    if (se === "spring") bird(ctx, x - 14 * s, bar - 2.2 * s, s, o.birdLook || 0);
+    if (se === "winter") { paper(ctx, blob(x - 12 * s, bar - 3 * s, 23 * s, 2.6 * s, 1660, 0.25, 0.02), "#FFFFFF", 1660, { sh: 0.6 }); paper(ctx, blob(x, y - H - 2.6 * s, 4.6 * s, 2.6 * s, 1661, 0.2), "#FFFFFF", 1661, { sh: 0.6 }); paper(ctx, blob(x, y + 0.5, 14 * s, 3.4 * s, 1662, 0.3), "#FFFFFF", 1662, { sh: 0.5 }); }
   }
   function ivy(ctx, x, y, s, H, back) { // 담쟁이 나선: 뒤로 가는 부분은 기둥 앞에 그리기 전에
     var pts = []; for (var t = 0; t <= 1.0001; t += 0.01) { var a = t * Math.PI * 2 * 3.2, yy = y - t * H * 0.9, xx = x + Math.sin(a) * 4.4 * s; pts.push([xx, yy, Math.cos(a) > 0]); }
@@ -241,7 +242,7 @@
     var spots = [-26, 22, -17, 29, 14].slice(0, buds || 0);
     spots.forEach(function (dx, i) { var bx = x + dx * s, by = y - 2.6 * s;
       if (se === "spring") { thread(ctx, [[bx, by + 1], [bx, by - 4 * s]], 0.7, "#6F8E4E"); paper(ctx, blossom(bx, by - 5 * s, 2.6 * s), i % 2 ? "#F4B6C4" : "#FBEAF0", 1920 + i, { rim: 0.35, sh: 0.6 }); paper(ctx, blob(bx, by - 5 * s, 0.9 * s, 0.9 * s, 1925 + i, 0.05), "#F2C04E", 1925 + i, { rim: 0, sh: 0 }); }
-      else if (se === "summer") { thread(ctx, [[bx, by + 1], [bx, by - 3 * s]], 0.7, "#5E7A44"); for (var k = 0; k < 3; k++) paper(ctx, heart(bx + Math.cos(-Math.PI / 2 + k * 2.09) * 1.8 * s, by - 4.4 * s + Math.sin(-Math.PI / 2 + k * 2.09) * 1.8 * s, 1.9 * s, k * 2.09 + Math.PI), "#7FAE5E", 1930 + i * 3 + k, { rim: 0.25, sh: 0.4 }); }
+      else if (se === "summer") { var bl = []; [-0.45, 0, 0.42].forEach(function (a, k) { var l = (4.6 - Math.abs(a) * 2) * s; bl.push(rib([[bx + (k - 1) * 0.6 * s, by + 1], [bx + Math.sin(a) * l * 0.5, by - l * 0.55], [bx + Math.sin(a) * l, by - l]], 1.2 * s, 0.3 * s)); }); paper(ctx, bl, "#8DB46A", 1930 + i, { rim: 0.25, sh: 0.4 }); }   // 풀 한 포기 (작은 나무처럼 보이지 않게)
       else if (se === "autumn") { paper(ctx, rib([[bx, by + 1], [bx + 0.2 * s, by - 3.6 * s]], 1.8 * s, 1.5 * s), "#F2E8D6", 1945 + i, { rim: 0.2, sh: 0.3 }); paper(ctx, [[bx - 3.6 * s, by - 3.2 * s]].concat(bez([bx - 3.6 * s, by - 3.2 * s, bx - 3 * s, by - 7.4 * s, bx + 3 * s, by - 7.4 * s, bx + 3.6 * s, by - 3.2 * s], 10)), i % 2 ? "#C2603E" : "#B8835A", 1950 + i, { rim: 0.3, sh: 0.6 }); }
       else { paper(ctx, blob(bx, by - 1.4 * s, 3.4 * s, 2.6 * s, 1955 + i, 0.15), "#FFFFFF", 1955 + i, { rim: 0.35, sh: 0.5 }); paper(ctx, blob(bx + 0.4 * s, by - 3.6 * s, 1.2 * s, 1 * s, 1960 + i, 0.05), "#C7787F", 1960 + i, { rim: 0, sh: 0.2 }); } });
   }
@@ -301,7 +302,7 @@
   function flySprite(ctx, side) { var x = 20, y = 21, c = "#F2C04E", c2 = "#E9A43A";
     if (side) { var d = side, fw = [[0, 0], [-4, -6], [-11, -9], [-14, -6], [-12, -1], [-6, 1]].map(function (q) { return [x + q[0] * d, y + q[1]]; }), hw = [[0, 1], [-6, 2], [-9, 6], [-7, 10], [-3, 9], [0, 4]].map(function (q) { return [x + q[0] * d, y + q[1]]; });
       paper(ctx, hw, c2, 2315 + (d > 0 ? 1 : 0), { tone: 0.12, rim: 0.6 }); paper(ctx, fw, c, 2310 + (d > 0 ? 1 : 0), { tone: 0.12, rim: 0.6 });
-      paper(ctx, blob(x + d * 9.5, y - 5.5, 1.6, 1.6, 2318, 0.05), "#8A5A2A", 2318, { rim: 0, sh: 0.1 }); paper(ctx, blob(x + d * 5.5, y + 6.5, 1.2, 1.2, 2320, 0.05), "#FBF3DC", 2320, { rim: 0, sh: 0.1 }); return; }
+      return; }
     paper(ctx, blob(x, y + 1.5, 1.1, 6, 2314, 0.05), "#4A3E34", 2314, { rim: 0, sh: 0.3 });
     [-1, 1].forEach(function (d) { var e = [x + d * 4, y - 9]; thread(ctx, bez([x, y - 4, x + d * 1, y - 7, x + d * 2.4, y - 8.6, e[0], e[1]], 8), 0.5, "#4A3E34"); ctx.fillStyle = "#4A3E34"; ctx.beginPath(); ctx.arc(e[0], e[1], 0.8, 0, 7); ctx.fill(); }); }
   // 계절 바람 한 조각 (상자 10 × 10, 가운데)
@@ -312,9 +313,13 @@
 
   /* ───────── 하늘 ───────── */
   function sun(ctx, x, y, s, col) { paper(ctx, blob(x, y, 22 * s, 22 * s, 2400, 0.03), mixHex(col, "#FFFFFF", 0.35), 2400, { sh: 0.6, rim: 1.4 }); paper(ctx, blob(x, y, 17 * s, 17 * s, 2401, 0.04), col, 2401, { sh: 0.4 }); }
-  function moon(ctx, x, y, s) { var outer = blob(x, y, 17 * s, 17 * s, 2410, 0.02), inner = blob(x + 8 * s, y - 4 * s, 14 * s, 14 * s, 2411, 0.02); var cres = outer.filter(function (p) { return Math.hypot(p[0] - x - 8 * s, p[1] - y + 4 * s) > 14 * s; }); var cut = inner.filter(function (p) { return Math.hypot(p[0] - x, p[1] - y) < 17 * s; }); cut.sort(function (a, b) { return Math.atan2(b[1] - y + 4 * s, b[0] - x - 8 * s) - Math.atan2(a[1] - y + 4 * s, a[0] - x - 8 * s); });
-    ctx.save(); var g = ctx.createRadialGradient(x, y, 10 * s, x, y, 46 * s); g.addColorStop(0, "rgba(241,228,190,.18)"); g.addColorStop(1, "rgba(241,228,190,0)"); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, 46 * s, 0, 7); ctx.fill(); ctx.restore();
-    ctx.save(); ctx.beginPath(); ctx.arc(x, y, 18 * s, 0, 7); ctx.moveTo(x + 22 * s, y - 4 * s); ctx.arc(x + 8 * s, y - 4 * s, 14 * s, 0, 7, true); ctx.clip(); paper(ctx, outer, "#F1E4BE", 2410, { sh: 0.3, glow: true }); ctx.restore(); }
+  // 달: 초승달 한 장 (두 원의 차를 다각형으로, 오려 낸 가장자리가 생기지 않게)
+  function moon(ctx, x, y, s) { var R1 = 17 * s, R2 = 14 * s, cx = x + 8 * s, cy = y - 4 * s, d = Math.hypot(cx - x, cy - y), al = Math.atan2(cy - y, cx - x);
+    var t1 = Math.acos((R1 * R1 + d * d - R2 * R2) / (2 * R1 * d)), t2 = Math.acos((R2 * R2 + d * d - R1 * R1) / (2 * R2 * d)), pts = [], i, n = 40;
+    for (i = 0; i <= n; i++) { var a1 = al + t1 + (2 * Math.PI - 2 * t1) * i / n; pts.push([x + Math.cos(a1) * R1, y + Math.sin(a1) * R1]); }
+    for (i = 1; i < n; i++) { var a2 = al + Math.PI - (Math.PI - t2) + (2 * (Math.PI - t2)) * i / n; pts.push([cx + Math.cos(a2) * R2, cy + Math.sin(a2) * R2]); }
+    var e = pts[n], q0 = pts[n + 1]; if (Math.hypot(q0[0] - e[0], q0[1] - e[1]) > Math.hypot(pts[pts.length - 1][0] - e[0], pts[pts.length - 1][1] - e[1])) pts = pts.slice(0, n + 1).concat(pts.slice(n + 1).reverse());
+    paper(ctx, pts, "#F1E4BE", 2410, { sh: 0.3, glow: true }); }
   function cloud(ctx, x, y, s, col, seed) { paper(ctx, [blob(x - 12 * s, y, 18 * s, 7 * s, seed, 0.2), blob(x + 8 * s, y - 4 * s, 16 * s, 8 * s, seed + 1, 0.2), blob(x + 22 * s, y + 1 * s, 12 * s, 5 * s, seed + 2, 0.2)], col, seed, { sh: 0.8 }); paper(ctx, blob(x + 2 * s, y + 3 * s, 26 * s, 3.4 * s, seed + 3, 0.15), mixHex(col, "#9AA4B4", 0.18), seed + 3, { rim: 0.5, sh: 0.3 }); }
   function stars(ctx, n, seed, w, h) { var r = R(seed); for (var i = 0; i < n; i++) { var x = r() * w, y = r() * h, big = r() < 0.18; if (big) paper(ctx, star4(x, y, 2.6), "#F6ECCB", seed + i, { rim: 0.2, sh: 0.2, glow: true }); else { ctx.fillStyle = "rgba(255,248,226," + (0.4 + r() * 0.5) + ")"; ctx.beginPath(); ctx.arc(x, y, 0.5 + r() * 0.7, 0, 7); ctx.fill(); } } }
 
@@ -338,7 +343,7 @@
     tree(ctx, 70, SGY + 2, 1, sp, se, o.stage == null ? 3 : o.stage, {});
     if (o.keep) KEEPH[sp + "_" + se](ctx, 112, SGY + 4, 0.7);
     post(ctx, POSTX, SGY + 2, 1, { season: se, chime: o.chime == null ? 1 : o.chime, lantern: o.lantern, lit: night && o.lantern, letter: o.letter });
-    if (o.kite && !night) kite(ctx, KX, KY, 1, o.kite, o.ribbons || 0, POSTX + 33, SGY - 96);
+    if (o.kite && !night) kite(ctx, KX, KY, 1, o.kite, o.ribbons || 0, POSTX - 33, SGY - 96);
     moss(ctx, 190, SGY + 2, 1, se, o.buds || 0);
     var so = { night: night }; stoneH(ctx, HV, 2718281, 190, SGY, 48, so); stoneH(ctx, HV, 12345, 250, SGY, 34, so); stoneH(ctx, HV, 31337, 297, SGY, 40, so);
     if (o.moment === "butterfly") MOMENT.butterfly(ctx, 226, SGY - 60, 1);

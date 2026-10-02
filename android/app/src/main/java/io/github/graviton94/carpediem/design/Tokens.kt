@@ -194,6 +194,8 @@ object Tokens {
             const val itemFromHaru = 20.0f
             const val itemGap = 6.0f
             const val stripLineY = 110.0f
+            const val hillTop = 108.0f
+            const val bigFont = 1.3f
             const val stripHeight = 300.0f
             const val calendarGap = 1.3f
             const val sparkle = 9.0f
@@ -226,8 +228,9 @@ object Tokens {
             const val cell = 1.6f
         }
         object Motion {
-            const val blinkMinMs = 2400.0f
-            const val blinkMaxMs = 6200.0f
+            const val blinkMinMs = 3000.0f
+            const val blinkMaxMs = 7000.0f
+            const val blinkTwice = 0.2f
             const val blinkMs = 170.0f
             const val pageMs = 520.0f
             const val letGoMs = 2200.0f
@@ -240,14 +243,18 @@ object Tokens {
             const val sunrise = 6.0f
             const val sunset = 19.0f
             const val keyboardMs = 320.0f
-            const val noteMs = 2400.0f
+            const val noteMs = 4000.0f
+            const val noteMaxMs = 6000.0f
+            const val noteBaseMs = 2500.0f
+            const val noteCharMs = 70.0f
+            const val noteAt = 0.3f
             const val turnTilt = 3.0f
             const val turnLift = 8.0f
             const val turnShade = 0.5f
             const val turnEdge = 18.0f
             const val turnSnap = 0.2f
             const val breathDrift = 26.0f
-            const val typeMs = 55.0f
+            const val typeMs = 90.0f
             const val typePause = 4.0f
         }
         object Crayon {
@@ -331,6 +338,7 @@ object Tokens {
             const val oneRow = 5.0f
             const val gap = 10.0f
             const val minGap = 6.0f
+            const val overlap = 0.22f
             const val nameChars = 4.0f
             const val petScale = 0.72f
             const val dogYears = 13.0f
@@ -345,7 +353,8 @@ object Tokens {
             const val squash = 0.03f
             const val blushMs = 1200.0f
             const val hop = 12.0f
-            const val hopMs = 420.0f
+            const val hopMs = 560.0f
+            const val touchPad = 8.0f
             const val windowMs = 3000.0f
             const val restAfter = 5.0f
             const val restWindowMs = 10000.0f
@@ -404,6 +413,23 @@ object Tokens {
             const val dimMs = 30000.0f
             const val dimAlpha = 0.72f
             const val releaseAfter = 600.0f
+            const val breathIn = 4.0f
+            const val breathOut = 6.0f
+            const val swell = 0.015f
+            const val lightBase = 0.08f
+            const val lightBreath = 0.12f
+            const val dimSlow = 0.5f
+            const val startAt = 6.0f
+            const val cloudSpeed = 1.0f
+            const val birdEvery = 80.0f
+            const val pieceEvery = 10.0f
+            const val pieceFall = 9.0f
+            const val pieceRest = 3.0f
+            const val pieceSize = 13.0f
+            const val pondY = 72.0f
+            const val pondScale = 1.0f
+            const val fireY = 50.0f
+            const val fireFromHaru = 70.0f
         }
         object Sound {
             const val sampleRate = 22050.0f
@@ -556,19 +582,19 @@ object Tokens {
             const val stageDays1 = 100.0f
             const val stageDays2 = 365.0f
             const val stageDays3 = 1095.0f
-            const val postBoxW = 80.0f
+            const val postBoxW = 86.0f
             const val postBoxH = 134.0f
-            const val postAtX = 30.0f
+            const val postAtX = 50.0f
             const val postAtY = 125.0f
             const val postScale = 0.9f
             const val postPx = 2.0f
-            const val chimeX = 55.0f
+            const val chimeX = 25.0f
             const val chimeY = 30.0f
-            const val bellX = 24.0f
+            const val bellX = 56.0f
             const val bellY = 30.5f
-            const val lanternX = 42.0f
+            const val lanternX = 38.0f
             const val lanternY = 30.5f
-            const val tieX = 63.0f
+            const val tieX = 17.0f
             const val tieY = 28.5f
             const val chimeBreaths = 1.0f
             const val bellBreaths = 30.0f
@@ -583,6 +609,10 @@ object Tokens {
             const val mossPx = 3.0f
             const val budGazes = 10.0f
             const val budMax = 5.0f
+            const val pondBoxW = 200.0f
+            const val pondBoxH = 64.0f
+            const val fireBoxW = 64.0f
+            const val fireBoxH = 22.0f
             const val kiteBoxW = 50.0f
             const val kiteBoxH = 140.0f
             const val kiteAtX = 25.0f
@@ -593,7 +623,8 @@ object Tokens {
             const val kiteHigh = 0.4f
             const val kiteLines = 30.0f
             const val ribbonLines = 30.0f
-            const val ribbonMax = 8.0f
+            const val ribbonMax = 4.0f
+            const val ribbonMute = 0.45f
             const val kiteMs = 12000.0f
             const val kiteDrift = 2.0f
             const val kiteTilt = 3.0f
@@ -615,10 +646,11 @@ object Tokens {
         object Chance {
             const val bubblesMs = 8000.0f
             const val firefliesMs = 10000.0f
+            const val fireflies = 5.0f
             const val rainbowMs = 8000.0f
             const val butterfliesMs = 11000.0f
             const val auroraMs = 10000.0f
-            const val windMs = 5000.0f
+            const val windMs = 7000.0f
             const val flapHz = 3.5f
             const val glideMs = 500.0f
             const val glideEvery = 2600.0f
@@ -628,8 +660,8 @@ object Tokens {
             const val snailScale = 0.5f
             const val rainbowScale = 1.0f
             const val auroraScale = 1.3f
-            const val windPieces = 12.0f
-            const val windSize = 5.0f
+            const val windPieces = 5.0f
+            const val windSize = 9.0f
         }
     }
 }

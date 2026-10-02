@@ -328,6 +328,20 @@ class ReflectTest {
         assertTrue(k < 1.0 && w.sum() * k + 6.0 * 8 <= 330.0 + 1e-6)
     }
 
+    @Test fun nineStonesOverlapBeforeShrinking() {
+        // 아홉 돌 (폭 46) 은 길 338 에 그냥은 안 앉지만, 22% 까지 겹치면 줄이지 않고 앉음
+        val w = List(9) { 46.0 }; val g = Family.overlapGap(w, 0.22)
+        assertEquals(1.0, Family.fitScale(w, 338.0, g))
+        val xs = Family.place(List(9) { 195.0 }, w, 0, 26.0, 364.0, 10.0, g).sorted()
+        for (k in 0 until 8) assertTrue(xs[k + 1] - xs[k] >= 46.0 + g - 1e-6, "너무 겹침 $xs")
+        xs.forEach { assertTrue(it - 23.0 >= 26.0 - 1e-6 && it + 23.0 <= 364.0 + 1e-6) }
+        // 여섯 돌은 겹치지 않음
+        val six = Family.place(List(6) { 50.0 + it * 55.0 }, List(6) { 46.0 }, 0, 26.0, 364.0, 10.0, g).sorted()
+        for (k in 0 until 5) assertTrue(six[k + 1] - six[k] >= 46.0 + 10.0 - 1e-6)
+        // 더 많으면 그때 줄임
+        assertTrue(Family.fitScale(List(12) { 46.0 }, 338.0, Family.overlapGap(List(12) { 46.0 }, 0.22)) < 1.0)
+    }
+
     @Test fun memoryStoneFields() {
         val m = Person("m1", "보리", Kind.PET, Species.DOG, LocalDate.of(2011, 4, 2), seed = 7, metOn = LocalDate.of(2026, 10, 1), until = LocalDate.of(2024, 12, 20), star = false)
         assertEquals(listOf(m), Family.decode(Family.encode(listOf(m))))
@@ -442,9 +456,9 @@ class GardenDecorTest {
         val none = (40 until 70).map { DayLine(d(2026, 1, 1).plusDays(it.toLong()), "글", null) }
         assertEquals(listOf(Feeling.JOY), GardenDecor.ribbons(joy + blank, r))
         assertEquals(listOf(Feeling.JOY, null), GardenDecor.ribbons(joy + none, r))
-        // 많아야 여덟, 최근 것
+        // 많아야 넷, 최근 것
         val many = (0 until 300).map { DayLine(d(2020, 1, 1).plusDays(it.toLong()), "글", if (it < 30) Feeling.SAD else Feeling.HOPE) }
-        assertEquals(8, GardenDecor.ribbons(many, r).size); assertEquals(Feeling.HOPE, GardenDecor.ribbons(many, r).first())
+        assertEquals(4, GardenDecor.ribbons(many, r).size); assertEquals(Feeling.HOPE, GardenDecor.ribbons(many, r).first())
     }
 
     @Test fun decorPutsTogetherTheSixSlots() {

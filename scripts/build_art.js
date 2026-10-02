@@ -18,7 +18,7 @@ const tokens = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "design/tok
 const D = Object.assign({}, tokens.decor, { stripLineY: tokens.layout.stripLineY, stripHeight: tokens.layout.stripHeight });
 const read = (f) => fs.readFileSync(path.join(root, "design/art/src", f), "utf8");
 const src = files.map(read).join("\n") + "\nvar HANJI = (function () {\n" + hanji.map(read).join("\n") +
-  "\nreturn { skyApp, stripApp, treeApp, postApp, mossApp, kiteApp, cardApp, sunApp, moonApp, fiberApp, rainbowApp, auroraApp, snailApp, flyApp, windApp, gardenH, setU, TREES, REAL, CARDS: Object.keys(PIECE) };\n})();";
+  "\nreturn { skyApp, stripApp, treeApp, postApp, mossApp, kiteApp, cardApp, sunApp, moonApp, fiberApp, rainbowApp, auroraApp, snailApp, flyApp, windApp, kiteFoldApp, pondApp, logsApp, cloudApp, gardenH, setU, TREES, REAL, CARDS: Object.keys(PIECE) };\n})();";
 const out = path.join(root, "design/art");
 const app = path.join(root, "android/app/src/main/assets/garden");
 
@@ -43,6 +43,10 @@ const app = path.join(root, "android/app/src/main/assets/garden");
     });
     ["chime", "bell", "lantern", "lantern_lit", "letter"].forEach((part) => webp("post_" + part, D.postBoxW, D.postBoxH, D.postPx, (c, w) => H.postApp(c, w, part, null, D)));
     webp("kite", D.kiteBoxW, D.kiteBoxH, D.kitePx, (c, w) => H.kiteApp(c, w, D));
+    webp("kite_folded", D.postBoxW, D.postBoxH, D.postPx, (c, w) => H.kiteFoldApp(c, w, D));
+    webp("gaze_pond", D.pondBoxW, D.pondBoxH, 3, (c, w) => H.pondApp(c, w, D));
+    H.REAL.concat(["night"]).forEach((k) => [0, 1].forEach((i) => webp("cloud_" + k + "_" + i, 120, 50, 3, (c, w) => H.cloudApp(c, w, k, i))));
+    webp("gaze_logs", D.fireBoxW, D.fireBoxH, 4, (c, w) => H.logsApp(c, w, D));
     H.CARDS.forEach((k) => webp("card_" + k, D.cardBoxW, D.cardBoxH, D.cardPx, (c, w) => H.cardApp(c, w, k, D)));
     make("app", "sun.png", 180, 180, "image/png", (cv) => H.sunApp(cv.getContext("2d"), 180));
     make("app", "moon.png", 180, 180, "image/png", (cv) => H.moonApp(cv.getContext("2d"), 180));

@@ -136,7 +136,11 @@ class AppState(private val context: Context) {
 
     /** 화면 아래 잠깐 떠오르는 짧은 알림 (모든 화면이 같은 움직임으로). 글과 때 (같은 글을 다시 띄울 때도 새로). */
     var note by mutableStateOf<Pair<String, Long>?>(null)
-    fun say(text: String) { note = text to System.nanoTime() }
+        private set
+    private val notes = ArrayDeque<String>()
+    /** 한 번에 하나만: 떠 있는 것이 있으면 차례를 기다림 (같은 글은 한 번만). */
+    fun say(text: String) { if (note == null) note = text to System.nanoTime() else if (note?.first != text && text !in notes) notes.addLast(text) }
+    fun noteDone() { note = notes.removeFirstOrNull()?.let { it to System.nanoTime() } }
 
     fun letGo(text: String, feeling: Feeling?, to: String? = null, today: LocalDate = (fixedNow ?: LocalDateTime.now()).toLocalDate()) {
         val t = Lines.clean(text, Tokens.Garden.LetGo.maxChars.toInt()); if (t.isEmpty()) return
@@ -318,11 +322,13 @@ class AppState(private val context: Context) {
     var chancesMet by mutableStateOf(store.chancesMet)
         private set
     fun showChance(c: Chance, today: LocalDate) {
-        chance = c
-        if (chancesMet.none { it.startsWith(c.key + ":") }) { val n = chancesMet + "${c.key}:$today"; store.chancesMet = n; chancesMet = n }
-        if (c == Chance.SNAIL) store.snailAt = System.currentTimeMillis()
+        chance = c; chanceDay = today
+        if (c == Chance.SNAIL) { store.snailAt = System.currentTimeMillis(); met(c, today) }
     }
-    fun chanceDone() { chance = null }
+    private var chanceDay: LocalDate? = null
+    /** 앨범의 ‘만난 순간’에는 끝까지 보인 것만 남김 (다른 페이지로 갔거나, 밤이라 무지개가 안 보였으면 남기지 않음). */
+    fun chanceDone(seen: Boolean = true) { val c = chance; chance = null; if (seen && c != null) met(c, chanceDay ?: LocalDate.now()) }
+    private fun met(c: Chance, today: LocalDate) { if (chancesMet.none { it.startsWith(c.key + ":") }) { val n = chancesMet + "${c.key}:$today"; store.chancesMet = n; chancesMet = n } }
     /** 정원을 열 때: 오랜만에 돌아온 날 달팽이, 그림을 보낸 날 비눗방울, 숨을 세 번 쉰 봄 · 여름 주에 나비 한 쌍 (한 번씩). */
     fun openChance(today: LocalDate, season: Season) {
         if (chance != null || previewAll) return
@@ -353,7 +359,9 @@ class AppState(private val context: Context) {
         if (d.card.id !in seasonCards) { val next = seasonCards + d.card.id; store.seasonCards = next; seasonCards = next }
         val now = listOf(d.stage, d.tree.ordinal, d.hang.ordinal, if (d.kite) 1 else 0, d.ribbons.size, d.buds).joinToString(",") + "," + d.card.id + "," + (if (d.letter) 1 else 0)
         val before = store.decorSeen; store.decorSeen = now
-        if (before == null || before == now) return
+        // 꾸밈을 처음 본 날 한 번만: 눌러 볼 수 있다는 것을 조용히 알려 줌
+        if (before == null) { say(context.getString(R.string.decor_hint)); return }
+        if (before == now) return
         val b = before.split(","); fun n(i: Int) = b.getOrNull(i)?.toIntOrNull() ?: 0
         val msg = when {
             d.tree.ordinal != n(1) -> R.string.decor_new_tree

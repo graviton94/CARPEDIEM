@@ -21,6 +21,9 @@ import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.foundation.layout.size
+import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -298,6 +301,14 @@ fun rememberTilt(enabled: Boolean): Offset {
     return if (enabled) tilt else Offset.Zero
 }
 
+/** 폴짝 한 번의 모양 (h = 0 … 1): (가로 배율, 세로 배율, 뜬 높이 0 … 1). */
+internal fun hopShape(h: Float): Triple<Float, Float, Float> = when {
+    h <= 0f || h >= 1f -> Triple(1f, 1f, 0f)
+    h < 0.15f -> { val s = kotlin.math.sin(h / 0.15f * Math.PI.toFloat() / 2f); Triple(1f + 0.08f * s, 1f - 0.1f * s, 0f) }
+    h < 0.75f -> { val q = (h - 0.15f) / 0.6f; val st = 1f - kotlin.math.abs(q - 0.5f) * 2f; Triple(1f - 0.04f * st, 1f + 0.06f * st, 4f * q * (1f - q)) }
+    else -> { val r = (h - 0.75f) / 0.25f; val d = kotlin.math.exp(-5f * r) * kotlin.math.cos(3f * Math.PI.toFloat() * r); Triple(1f + 0.1f * d, 1f - 0.12f * d, 0f) }
+}
+
 /**
  * 하루 한 명. 가끔 저절로 깜빡이고, 폰을 움직이면 눈동자가 따라 굴렀다 돌아온다. 위치는 부르는 쪽에서 정한다 (크기 = box × scale).
  * 한 번 누르면 쓰다듬기 (웃는 눈 + 살랑 · 3초 안에 또 누르면 볼 · 또 누르면 폴짝, 10초에 너무 많이 누르면 눈 감고 쉼),
@@ -321,7 +332,8 @@ fun HaruFigure(art: HaruArt, scale: Dp, modifier: Modifier = Modifier, blinkKick
     val taps = remember { ArrayList<Long>() }
     suspend fun blinkOnce() { blink.animateTo(1f, tween((m.blinkMs / 2).roundToInt())); blink.animateTo(0f, tween((m.blinkMs / 2).roundToInt())) }
     if (animate) {
-        LaunchedEffect(Unit) { while (true) { delay(Random.nextLong(m.blinkMinMs.toLong(), m.blinkMaxMs.toLong())); if (smile.value == 0f && rest.value == 0f) blinkOnce() } }
+        // 정해진 간격 대신 아무 때나, 가끔은 두 번
+        LaunchedEffect(Unit) { while (true) { delay(Random.nextLong(m.blinkMinMs.toLong(), m.blinkMaxMs.toLong())); if (smile.value == 0f && rest.value == 0f) { blinkOnce(); if (Random.nextFloat() < m.blinkTwice) { delay(140); blinkOnce() } } } }
         LaunchedEffect(blinkKick) { if (blinkKick > 0) blinkOnce() }
     }
     fun tick() { if (tc.haptic > 0f) view.performHapticFeedback(android.view.HapticFeedbackConstants.CLOCK_TICK) }
@@ -340,22 +352,32 @@ fun HaruFigure(art: HaruArt, scale: Dp, modifier: Modifier = Modifier, blinkKick
         scope.launch { smile.snapTo(1f); delay(tc.petMs.toLong()); smile.snapTo(0f) }
         if (animate) scope.launch { wiggle.snapTo(0f); wiggle.animateTo(1f, tween(tc.petMs.toInt())) }
         if (recent == 2) scope.launch { blush.snapTo(1f); blush.animateTo(0f, tween(tc.blushMs.toInt())) }
-        if (recent >= 3 && animate) scope.launch { hop.snapTo(0f); hop.animateTo(1f, tween(tc.hopMs.toInt())) }
+        if (recent >= 3 && animate) scope.launch { hop.snapTo(0f); hop.animateTo(1f, tween(tc.hopMs.toInt(), easing = androidx.compose.animation.core.LinearEasing)); hop.snapTo(0f) }
     }
     // 눈동자 굴림(기울기 센서)은 내 하루만: 돌마다 센서를 따로 들으면 돌이 많을 때 무거워진다
     val tilt = rememberTilt(animate && tiltOn)
     val open by androidx.compose.runtime.rememberUpdatedState(onOpen)
     val hold by androidx.compose.runtime.rememberUpdatedState(onLongPress)
+    // 그림 칸은 넉넉하지만 누르는 자리는 돌 둘레 + touchPad 까지만 (바로 아래 이끼 · 옆 돌을 누를 수 있게)
+    androidx.compose.foundation.layout.Box(modifier.size(scale * art.meta.box)) {
     Canvas(
-        modifier.size(scale * art.meta.box)
+        Modifier.fillMaxSize()
             .graphicsLayer {
                 transformOrigin = androidx.compose.ui.graphics.TransformOrigin(0.5f, art.meta.ground / art.meta.box)
+                // 갸웃: 바닥을 축으로 흔들리다 잦아듦
                 val w = wiggle.value
-                rotationZ = if (w in 0.001f..0.999f) kotlin.math.sin(w * Math.PI.toFloat() * 4f) * tc.wiggleDeg * (1f - w) else 0f
+                rotationZ = if (w in 0.001f..0.999f) kotlin.math.exp(-3.2f * w) * kotlin.math.sin(w * Math.PI.toFloat() * 4f) * tc.wiggleDeg * 1.4f else 0f
                 val sq = if (w in 0.001f..0.999f) kotlin.math.sin(w * Math.PI.toFloat()) * tc.squash else 0f
-                scaleX = 1f + sq; scaleY = 1f - sq
-                translationY = -kotlin.math.sin(hop.value * Math.PI.toFloat()) * tc.hop * size.width / art.meta.box   // hop = 칸 좌표
+                // 폴짝: 살짝 웅크렸다 → 늘어나며 뛰어 (무게 있는 포물선) → 납작하게 내려앉았다 돌아옴
+                val (hx, hy, lift) = hopShape(hop.value)
+                scaleX = (1f + sq) * hx; scaleY = (1f - sq) * hy
+                translationY = -lift * tc.hop * size.width / art.meta.box   // hop = 칸 좌표
             }
+    ) {
+        drawHaru(art, size.width / art.meta.box, lid ?: maxOf(blink.value, rest.value), if (lookDown > 0f) Offset(tilt.x, (tilt.y + lookDown).coerceAtMost(1f)) else tilt, smile = if (lid != null) 0f else smile.value, blush = blush.value, hat = hat, fiber = fiber)
+    }
+    val bb = art.meta.bbox; val pad = tc.touchPad.dp
+    androidx.compose.foundation.layout.Box(Modifier.offset(scale * bb.left - pad, scale * bb.top - pad).size(scale * bb.width + pad * 2, scale * bb.height + pad * 2)
             .semantics {
                 a11y?.let { contentDescription = it }
                 // 표정을 읽어 주기 (TalkBack): 쉬는 중 · 웃는 중 · 아래를 봄 · 생일 모자 · 조용히 앉아 있음
@@ -384,8 +406,6 @@ fun HaruFigure(art: HaruArt, scale: Dp, modifier: Modifier = Modifier, blinkKick
                     val second = withTimeoutOrNull(tc.doubleMs.toLong()) { awaitFirstDown(requireUnconsumed = false) }
                     if (second != null) { tick(); o() }
                 }
-            },
-    ) {
-        drawHaru(art, size.width / art.meta.box, lid ?: maxOf(blink.value, rest.value), if (lookDown > 0f) Offset(tilt.x, (tilt.y + lookDown).coerceAtMost(1f)) else tilt, smile = if (lid != null) 0f else smile.value, blush = blush.value, hat = hat, fiber = fiber)
+            })
     }
 }

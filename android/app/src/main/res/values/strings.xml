@@ -16,6 +16,10 @@
     <string name="begin">Begin</string>
     <string name="privacy">Everything stays here.</string>
     <string name="timeLeft">Time left</string>
+    <string name="timeLeft_days">Days left</string>
+    <string name="timeLeft_weeks">Weeks left</string>
+    <string name="timeLeft_months">Months left</string>
+    <string name="timeLeft_years">Years left</string>
     <string name="unit_days">days</string>
     <string name="unit_weeks">weeks</string>
     <string name="unit_months">months</string>
@@ -558,7 +562,7 @@
     <string name="decor_hang_lantern">Paper lantern</string>
     <string name="decor_post_none">A wind chime hangs on the day you first breathe.</string>
     <string name="decor_post_line">%1$s breathing days.</string>
-    <string name="decor_post_next">One more thing hangs at %1$s.</string>
+    <string name="decor_post_next">One more hangs at %1$s breathing days.</string>
     <string name="decor_post_help">As breathing days add up, a wind chime, a small bell and a paper lantern hang one by one. The lantern glows at night.</string>
     <string name="decor_post_letter">A letter is tucked in</string>
     <string name="decor_kite">Ray kite</string>
@@ -596,11 +600,13 @@
     <string name="decor_new_bud">A bud opened on the moss.</string>
     <string name="decor_new_card">This season\'s piece lies at the foot of your tree.</string>
     <string name="decor_new_letter">A season letter is tucked into the post.</string>
+    <string name="decor_hint">Try a gentle tap on the tree or the post.</string>
     <string name="album">Season album</string>
     <string name="album_lines">%1$s lines</string>
     <string name="album_when">%2$s %1$s · %3$s</string>
+    <string name="album_cell">%2$s %1$s</string>
     <string name="album_first">First garden</string>
-    <string name="album_firstSub">Things you received before the paper garden. They stay here with their dates.</string>
+    <string name="album_firstSub">Things from your earlier garden. They stay here with the day you got them.</string>
     <string name="chance_bubbles">Bubbles</string>
     <string name="chance_fireflies">Fireflies</string>
     <string name="chance_rainbow">Rainbow</string>

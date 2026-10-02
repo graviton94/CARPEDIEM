@@ -95,9 +95,8 @@ fun SkyTimeLayer(now: LocalDateTime, groundY: Dp, starTop: Dp, starBottom: Dp, m
 fun NightLights(now: LocalDateTime, groundY: Dp, stonesFrom: Dp, stonesTo: Dp, moon: DpOffset?, modifier: Modifier = Modifier) {
     if (!SkyTime.isDark(now)) return
     val n = G.Night
-    val inf = rememberInfiniteTransition(label = "night")
-    val tw by inf.animateFloat(0f, 1f, infiniteRepeatable(tween(n.twinkleMs.toInt(), easing = LinearEasing)), label = "twinkle")
-    val ff by inf.animateFloat(0f, 1f, infiniteRepeatable(tween((n.fireflyMs * 4).toInt(), easing = LinearEasing)), label = "firefly")
+    // 시계는 그리는 단계에서만 읽음 (정원이 매 프레임 다시 짜이지 않게). 끊김 없이 이어지는 초라서 한 바퀴 돌 때 튀지 않음
+    val clock = rememberGardenClock(!reducedMotion(LocalContext.current))
     Canvas(modifier) {
         val u = size.width / G.unitWidth
         val gy = groundY.toPx()
@@ -108,13 +107,14 @@ fun NightLights(now: LocalDateTime, groundY: Dp, stonesFrom: Dp, stonesTo: Dp, m
         // 돌들 발치의 따뜻한 빛 (땅 위에 납작한 둥근 빛)
         val a0 = stonesFrom.toPx(); val a1 = stonesTo.toPx(); val cx = (a0 + a1) / 2; val rx = (a1 - a0) / 2 + u * 46
         scale(1f, 0.32f, pivot = Offset(cx, gy)) { glow(G.Night.Colors.lamp, n.stoneGlow, Offset(cx, gy), rx) }
-        // 반딧불: 땅 위를 천천히 맴돌며 깜빡
+        // 반딧불: 땅 위를 천천히 떠다니며, 숨 쉬듯 켜졌다 꺼짐 (잠깐 어두운 쉼도)
+        val e = clock.value
         val r = Crayon.Rng(31)
         repeat(n.fireflies.toInt()) { i ->
             val bx = size.width * (0.08f + 0.84f * r.next()); val by = gy - u * (14f + 60f * r.next())
-            val ph = r.next() * 6.283f; val sp = 0.6f + 0.8f * r.next()
-            val p = Offset(bx + sin(ff * 6.283f * sp + ph) * u * 18, by + cos(ff * 6.283f * sp * 1.3f + ph) * u * 7)
-            val lit = (0.2f + 0.8f * maxOf(0f, sin(tw * 6.283f * (0.5f + i % 3 * 0.25f) + ph))).coerceIn(0f, 1f)
+            val t1 = 6f + r.next() * 4f; val t2 = 2.6f + r.next() * 1.6f; val p1 = r.next() * 6.283f; val p2 = r.next() * 6.283f; val cyc = 2.8f + r.next() * 1.8f + i * 0.3f
+            val p = Offset(bx + u * (18f * sin(6.283f * e / t1 + p1) + 4f * sin(6.283f * e / t2 + p2)), by + u * (7f * cos(6.283f * e / (t1 * 1.3f) + p2) + 2.5f * sin(6.283f * e / t2 + p1)))
+            val lit = 0.1f + 0.9f * glowPulse(((e + p1) % cyc) / cyc)
             glow(G.Night.Colors.firefly, 0.55f * lit, p, u * 7)
             drawCircle(G.Night.Colors.firefly.copy(alpha = lit), u * 1.1f, p)
         }
@@ -146,8 +146,10 @@ fun MoodWeather(state: io.github.graviton94.carpediem.ui.AppState, now: LocalDat
         if (rain) {
             val r = Crayon.Rng(now.toLocalDate().toEpochDay().toInt())
             repeat(w.drops.toInt()) {
-                val x = size.width * r.next(); val sp = 0.7f + 0.6f * r.next(); val off = r.next()
-                val y = ((t.value * 6f * sp + off) % 1f) * bottom
+                // 바람을 타듯: 빠르기가 조금씩 일렁이고, 옆으로 살짝 밀림
+                val x0 = size.width * r.next(); val sp = 0.7f + 0.6f * r.next(); val off = r.next(); val ph = r.next() * 6.283f
+                val y = ((t.value * 6f * sp + off + 0.025f * sin(t.value * 18f + ph)) % 1f) * bottom
+                val x = x0 + u * 4f * sin(t.value * 9f + ph)
                 drawLine(ink.copy(alpha = w.rainAlpha * env), Offset(x, y), Offset(x - u * 2f, y + u * 9f), u * 1.1f, StrokeCap.Round)
             }
         } else {

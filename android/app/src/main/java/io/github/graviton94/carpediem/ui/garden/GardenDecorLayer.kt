@@ -38,6 +38,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.github.graviton94.carpediem.R
@@ -70,6 +73,23 @@ internal fun nightFilter(dark: Boolean): ColorFilter? {
     return ColorFilter.colorMatrix(ColorMatrix(floatArrayOf(k, 0f, 0f, 0f, c.red * 255f * a, 0f, k, 0f, 0f, c.green * 255f * a, 0f, 0f, k, 0f, c.blue * 255f * a, 0f, 0f, 0f, 1f, 0f)))
 }
 
+/**
+ * 누르는 자리: 그림 상자 전체가 아니라 그림이 실제로 있는 범위만 (작아도 minTap 은 남김).
+ * 상자가 크면 (가지가 잘리지 않게 넉넉한 나무 상자) 하늘 · 빈 땅 · 위 글자까지 눌려 버리므로, 그림에는 누름을 두지 않고 이 자리를 따로 둔다.
+ */
+@Composable
+private fun HitArea(img: androidx.compose.ui.graphics.ImageBitmap, x: Dp, y: Dp, k: Dp, boxW: Float, boxH: Float, atX: Float, atY: Float, a11y: String, onTap: (() -> Unit)?) {
+    if (onTap == null) return
+    val b = GardenArt.opaque(img); val w = k * boxW; val h = k * boxH
+    val left = x - k * atX; val top = y - k * atY
+    val minTap = 40.dp
+    val ww = maxOf(w * b.width, minTap); val hh = maxOf(h * b.height, minTap)
+    val cx = left + w * (b.left + b.width / 2); val cy = top + h * (b.top + b.height / 2)
+    val quiet = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+    Box(Modifier.offset(cx - ww / 2, cy - hh / 2).size(ww, hh).clickable(interactionSource = quiet, indication = null, onClickLabel = a11y) { onTap() }
+        .semantics { contentDescription = a11y; role = androidx.compose.ui.semantics.Role.Button })
+}
+
 /** 그림 상자 하나를 (기준점 = 화면의 x, y) 에 두는 자리. k = 화면 단위 하나당 그림 단위 배율. */
 private fun Modifier.box(x: Dp, y: Dp, k: Dp, boxW: Float, boxH: Float, atX: Float, atY: Float) = offset(x - k * atX, y - k * atY).size(k * boxW, k * boxH)
 
@@ -84,12 +104,11 @@ internal fun DecorBack(decor: Decor, now: LocalDateTime, gy: Dp, x0: Dp, x1: Dp,
     val dark = SkyTime.isDark(now)
     val filter = nightFilter(dark)
     val moving = remember { !reducedMotion(ctx) }
-    val wave = rememberInfiniteTransition(label = "decor")
-    val sway by wave.animateFloat(-1f, 1f, infiniteRepeatable(tween(D.swayMs.toInt(), easing = FastOutSlowInEasing), RepeatMode.Reverse), label = "sway")
-    val drift by wave.animateFloat(0f, 1f, infiniteRepeatable(tween(D.kiteMs.toInt(), easing = LinearEasing)), label = "drift")
-    // 누를 때 회색 상자가 번지지 않게 (그림이 곧 자리)
-    val quiet = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
-    fun tap(p: DecorPart) = if (onTap == null) Modifier else Modifier.clickable(interactionSource = quiet, indication = null) { onTap(p) }
+    // 정원의 시계 (초): 그리는 단계에서만 읽어, 흔들릴 때 정원 전체가 다시 짜이지 않게. 걸린 것마다 박자 · 시작점이 다름
+    val clock = rememberGardenClock(moving)
+    val swLantern = remember { Sway(11) }; val swChime = remember { Sway(12) }; val swBell = remember { Sway(13) }; val swLetter = remember { Sway(14) }
+    // 누르는 자리는 그림이 있는 범위만 (HitArea), 회색 상자가 번지지 않게
+    fun tap(p: DecorPart): (() -> Unit)? = onTap?.let { f -> { f(p) } }
 
     // ① 나무: 길의 시작 (0세) 뒤. 인생의 계절이 막 바뀌었으면 옛 나무가 옅게 남았다가 천천히 바뀜
     val tk = u * D.treeScale
@@ -98,35 +117,42 @@ internal fun DecorBack(decor: Decor, now: LocalDateTime, gy: Dp, x0: Dp, x1: Dp,
     decor.prevTree?.let { prev ->
         Image(GardenArt.tree(ctx, prev, decor.season, decor.stage), null, Modifier.box(tx, gy, tk, D.treeBoxW, D.treeBoxH, D.treeAtX, D.treeAtY).graphicsLayer { alpha = 1f - decor.blend }, colorFilter = filter)
     }
-    Image(GardenArt.tree(ctx, decor.tree, decor.season, decor.stage), treeA11y,
-        Modifier.box(tx, gy, tk, D.treeBoxW, D.treeBoxH, D.treeAtX, D.treeAtY).graphicsLayer { alpha = decor.blend }.then(tap(DecorPart.TREE)), colorFilter = filter)
+    val treeImg = GardenArt.tree(ctx, decor.tree, decor.season, decor.stage)
+    Image(treeImg, null, Modifier.box(tx, gy, tk, D.treeBoxW, D.treeBoxH, D.treeAtX, D.treeAtY).graphicsLayer { alpha = decor.blend }, colorFilter = filter)
+    HitArea(treeImg, tx, gy, tk, D.treeBoxW, D.treeBoxH, D.treeAtX, D.treeAtY, treeA11y, tap(DecorPart.TREE))
 
     // ⑤ 나무 발치: 이번 계절의 한 장 (꽃 · 풀 · 열매 · 낙엽 · 눈사람 한 조각) 이 땅에 놓임
     val ck = u * D.cardMini
-    Image(GardenArt.card(ctx, decor.card.key), cardName(ctx, decor.card.key),
-        Modifier.box(u * (D.treeX + D.cardFromTree), gy + 1.dp, ck, D.cardBoxW, D.cardBoxH, D.cardBoxW / 2, D.cardAtY)
-            .graphicsLayer { transformOrigin = TransformOrigin(0.5f, D.cardAtY / D.cardBoxH); rotationZ = D.cardTilt }.then(tap(DecorPart.CARD)), colorFilter = filter)
+    val cardImg = GardenArt.card(ctx, decor.card.key)
+    Image(cardImg, null, Modifier.box(u * (D.treeX + D.cardFromTree), gy + 1.dp, ck, D.cardBoxW, D.cardBoxH, D.cardBoxW / 2, D.cardAtY)
+            .graphicsLayer { transformOrigin = TransformOrigin(0.5f, D.cardAtY / D.cardBoxH); rotationZ = D.cardTilt }, colorFilter = filter)
+    HitArea(cardImg, u * (D.treeX + D.cardFromTree), gy + 1.dp, ck, D.cardBoxW, D.cardBoxH, D.cardBoxW / 2, D.cardAtY, cardName(ctx, decor.card.key), tap(DecorPart.CARD))
 
     // ② 말뚝: 길의 끝 (기대수명). 걸린 것은 가로대에서 따로 흔들림, 등불은 밤에 켜짐, 편지가 오면 봉투
     val pk = u * D.postScale
     val lit = dark && decor.hang == Hang.LANTERN
     val postA11y = listOfNotNull(stringResource(R.string.decor_post), when (decor.hang) { Hang.CHIME -> stringResource(R.string.decor_hang_chime); Hang.BELL -> stringResource(R.string.decor_hang_bell); Hang.LANTERN -> stringResource(R.string.decor_hang_lantern); Hang.NONE -> null },
         if (decor.letter) stringResource(R.string.decor_post_letter) else null).joinToString(", ")
-    Box(Modifier.box(x1, gy, pk, D.postBoxW, D.postBoxH, D.postAtX, D.postAtY).then(tap(if (decor.letter) DecorPart.LETTER else DecorPart.POST))) {
+    Box(Modifier.box(x1, gy, pk, D.postBoxW, D.postBoxH, D.postAtX, D.postAtY)) {
         val glowC = Tokens.Garden.Decor.Colors.glow
         if (lit) Canvas(Modifier.fillMaxSize()) {
             val c = Offset(size.width * D.lanternX / D.postBoxW, size.height * (D.lanternY + 16f) / D.postBoxH)
             val r = size.width * D.glow / D.postBoxW
             drawCircle(Brush.radialGradient(listOf(glowC.copy(alpha = 0.55f), Color.Transparent), c, r), r, c)
         }
-        Image(GardenArt.post(ctx, decor.season), postA11y, Modifier.fillMaxSize(), colorFilter = filter)
-        @Composable fun swing(part: String, px: Float, py: Float, deg: Float, f: ColorFilter?) =
-            Image(GardenArt.postPart(ctx, part), null, Modifier.fillMaxSize().graphicsLayer { transformOrigin = TransformOrigin(px / D.postBoxW, py / D.postBoxH); rotationZ = if (moving) deg else 0f }, colorFilter = f)
-        if (decor.hang >= Hang.LANTERN) swing(if (lit) "lantern_lit" else "lantern", D.lanternX, D.lanternY, sway * 1f, if (lit) null else filter)
-        if (decor.hang >= Hang.CHIME) swing("chime", D.chimeX, D.chimeY, sway * D.swayDeg, filter)
-        if (decor.hang >= Hang.BELL) swing("bell", D.bellX, D.bellY, -sway * D.swayDeg * 0.7f, filter)
-        if (decor.letter) Image(GardenArt.postPart(ctx, "letter"), null, Modifier.fillMaxSize().graphicsLayer { rotationZ = if (moving) sway * 0.6f else 0f }, colorFilter = filter)
+        Image(GardenArt.post(ctx, decor.season), null, Modifier.fillMaxSize(), colorFilter = filter)
+        @Composable fun swing(part: String, px: Float, py: Float, sw: Sway, deg: Float, f: ColorFilter?) =
+            Image(GardenArt.postPart(ctx, part), null, Modifier.fillMaxSize().graphicsLayer { transformOrigin = TransformOrigin(px / D.postBoxW, py / D.postBoxH); rotationZ = if (moving) sw.at(clock.value) * deg * (1f + 1.6f * windGust.floatValue) else 0f }, colorFilter = f)
+        // 등이 걸리면 작은 종은 내려 둠 (가로대가 붐비지 않게)
+        if (decor.hang >= Hang.LANTERN) swing(if (lit) "lantern_lit" else "lantern", D.lanternX, D.lanternY, swLantern, 1f, if (lit) null else filter)
+        if (decor.hang >= Hang.CHIME) swing("chime", D.chimeX, D.chimeY, swChime, D.swayDeg, filter)
+        if (decor.hang == Hang.BELL) swing("bell", D.bellX, D.bellY, swBell, D.swayDeg * 0.7f, filter)
+        if (decor.letter) Image(GardenArt.postPart(ctx, "letter"), null, Modifier.fillMaxSize().graphicsLayer { rotationZ = if (moving) swLetter.at(clock.value) * 0.6f else 0f }, colorFilter = filter)
+        // 밤: 연은 반으로 접혀 말뚝에 기대 있음 (낮에 다시 날아요)
+        if (decor.kite && dark) Image(GardenArt.image(ctx, "kite_folded.webp"), null, Modifier.fillMaxSize(), colorFilter = filter)
     }
+    HitArea(GardenArt.post(ctx, decor.season), x1, gy, pk, D.postBoxW, D.postBoxH, D.postAtX, D.postAtY, postA11y, tap(if (decor.letter) DecorPart.LETTER else DecorPart.POST))
+    if (decor.kite && dark) HitArea(GardenArt.image(ctx, "kite_folded.webp"), x1, gy, pk, D.postBoxW, D.postBoxH, D.postAtX, D.postAtY, stringResource(R.string.decor_kite), tap(DecorPart.KITE))
 
     // ③ 연: 낮에만, 말뚝 가로대 끝에 실로 묶여 오른쪽 하늘에. 꼬리 리본 = 서른 줄마다 하나, 그 줄들의 마음 색
     if (decor.kite && !dark && kiteBottom > kiteTop) {
@@ -134,20 +160,25 @@ internal fun DecorBack(decor: Decor, now: LocalDateTime, gy: Dp, x0: Dp, x1: Dp,
         val kx = u * D.kiteX
         val ky = kiteTop + (kiteBottom - kiteTop) * D.kiteHigh
         val density = LocalDensity.current.density
-        val bob = if (moving) sin(drift * 2f * Math.PI.toFloat()) else 0f
+        // 연은 느린 8자를 그리며 떠 있음 (kiteMs 에 한 바퀴)
+        fun phase() = if (moving) clock.value * 1000f / D.kiteMs * 2f * Math.PI.toFloat() else 0f
         val tie = Offset(((x1 - pk * D.postAtX) + pk * D.tieX).value, ((gy - pk * D.postAtY) + pk * D.tieY).value)
         val ink = Tokens.Garden.Colors.ink
         Canvas(Modifier.fillMaxSize()) {
+            val ph = phase()
             val from = Offset(tie.x * density, tie.y * density)
-            val to = Offset(kx.toPx(), (ky + kk * 19f).toPx() + bob * D.kiteDrift * density)
+            val to = Offset(kx.toPx() + sin(ph) * D.kiteDrift * 0.8f * density, (ky + kk * 19f).toPx() + sin(2f * ph) * D.kiteDrift * 0.5f * density)
             val path = Path().apply { moveTo(from.x, from.y); quadraticTo((from.x + to.x) / 2 - 12f * density, (from.y + to.y) / 2 + 22f * density, to.x, to.y) }
             drawPath(path, ink.copy(alpha = 0.45f), style = Stroke(0.8f * density))
         }
-        val colors = decor.ribbons.map { feelingColor(it) }
+        // 리본 색은 한지에 물든 듯 옅게 (많아야 넷)
+        val colors = decor.ribbons.map { lerp(feelingColor(it), Tokens.Garden.Colors.paper, D.ribbonMute) }
+        HitArea(GardenArt.kite(ctx), kx, ky, kk, D.kiteBoxW, D.kiteBoxH, D.kiteAtX, D.kiteAtY, stringResource(R.string.decor_kite), tap(DecorPart.KITE))
         Box(Modifier.box(kx, ky, kk, D.kiteBoxW, D.kiteBoxH, D.kiteAtX, D.kiteAtY)
-            .graphicsLayer { transformOrigin = TransformOrigin(D.kiteAtX / D.kiteBoxW, D.kiteAtY / D.kiteBoxH); translationY = bob * D.kiteDrift * density; rotationZ = bob * D.kiteTilt }
-            .then(tap(DecorPart.KITE))) {
-            Image(GardenArt.kite(ctx), stringResource(R.string.decor_kite), Modifier.fillMaxSize())
+            .graphicsLayer { val ph = phase(); transformOrigin = TransformOrigin(D.kiteAtX / D.kiteBoxW, D.kiteAtY / D.kiteBoxH)
+                translationX = sin(ph) * D.kiteDrift * 0.8f * density; translationY = sin(2f * ph) * D.kiteDrift * 0.5f * density; rotationZ = sin(ph + 0.6f) * D.kiteTilt }
+            ) {
+            Image(GardenArt.kite(ctx), null, Modifier.fillMaxSize())
             Canvas(Modifier.fillMaxSize()) {
                 val f = size.width / D.kiteBoxW
                 val tail = kiteTail()
@@ -166,6 +197,28 @@ internal fun DecorBack(decor: Decor, now: LocalDateTime, gy: Dp, x0: Dp, x1: Dp,
         }
     }
 }
+
+/** 정원의 시계 (초, 움직임을 끈 기기면 0 에 멈춤). 값은 graphicsLayer · Canvas 안에서만 읽을 것. */
+@Composable
+internal fun rememberGardenClock(moving: Boolean): androidx.compose.runtime.State<Float> {
+    val clock = remember { androidx.compose.runtime.mutableFloatStateOf(0f) }
+    if (moving) androidx.compose.runtime.LaunchedEffect(Unit) {
+        val start = androidx.compose.runtime.withFrameNanos { it }
+        while (true) androidx.compose.runtime.withFrameNanos { clock.floatValue = (it - start) / 1_000_000_000f }
+    }
+    return clock
+}
+
+/** 따로따로 흔들림: 박자와 시작점이 서로 다른 느린 사인 둘 (대략 -1 … 1). 끝에서 멈칫하지 않고 이어짐. */
+internal class Sway(seed: Int) {
+    private val r = Crayon.Rng(seed * 7919 + 17)
+    private val t1 = 3.1f + r.next() * 1.3f; private val t2 = 1.3f + r.next() * 0.6f
+    private val p1 = r.next() * 6.2832f; private val p2 = r.next() * 6.2832f
+    fun at(t: Float): Float = 0.8f * sin(6.2832f * t / t1 + p1) + 0.25f * sin(6.2832f * t / t2 + p2)
+}
+
+/** 계절 바람이 부는 동안의 세기 (0 … 1): 걸린 것 · 이끼 풀이 그만큼 더 흔들림. */
+internal val windGust = androidx.compose.runtime.mutableFloatStateOf(0f)
 
 /** 연 꼬리의 점들 (연 몸 가운데 기준, 그림 단위): hanji_garden.js kite() 의 꼬리와 같은 곡선. */
 private fun kiteTail(): List<Offset> {
@@ -188,9 +241,9 @@ internal fun MossSeat(decor: Decor, now: LocalDateTime, x: Dp, width: Dp, gy: Dp
     val ctx = LocalContext.current
     // 이끼 그림 상자 90 단위 가운데 68 단위가 방석
     val k = width * D.mossWidth / 68f
-    Image(GardenArt.moss(ctx, decor.season, decor.buds), stringResource(R.string.obj_moss),
-        Modifier.box(x, gy + 1.dp, k, D.mossBoxW, D.mossBoxH, D.mossAtX, D.mossAtY).then(if (onTap == null) Modifier else Modifier.clickable(interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }, indication = null) { onTap(DecorPart.MOSS) }),
-        colorFilter = nightFilter(SkyTime.isDark(now)))
+    val img = GardenArt.moss(ctx, decor.season, decor.buds)
+    Image(img, null, Modifier.box(x, gy + 1.dp, k, D.mossBoxW, D.mossBoxH, D.mossAtX, D.mossAtY), colorFilter = nightFilter(SkyTime.isDark(now)))
+    HitArea(img, x, gy + 1.dp, k, D.mossBoxW, D.mossBoxH, D.mossAtX, D.mossAtY, stringResource(R.string.obj_moss), onTap?.let { f -> { f(DecorPart.MOSS) } })
 }
 
 /** 자리를 눌렀을 때의 한 장: 그림 · 이름 · 지금까지 쌓인 것 · 다음 · 이 자리의 규칙 한 줄. */

@@ -66,7 +66,7 @@ object GardenDecor {
     class Rules(
         val stageDays: List<Int> = listOf(100, 365, 1095),
         val hangBreaths: List<Int> = listOf(1, 30, 100),
-        val kiteLines: Int = 30, val ribbonLines: Int = 30, val ribbonMax: Int = 8,
+        val kiteLines: Int = 30, val ribbonLines: Int = 30, val ribbonMax: Int = 4,
         val budGazes: Int = 10, val budMax: Int = 5, val changeDays: Int = 7,
     )
 
