@@ -353,7 +353,7 @@ fun GazeScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, onBack
         // 홈의 정원 그대로 (하늘 · 해와 달 · 땅 · 돌 · 놓인 것 · 밤빛), 글자만 없이
         GardenHome(state, profile, now, onSettings = {}, onCollection = {}, onSupport = {}, onStone = {}, onAddPerson = {}, bare = true)
         // 움직이는 정원: 구름 · 빛의 숨 · 내려오는 잎 · 새 · 반딧불, 봄 · 여름엔 연못, 가을 · 겨울엔 화톳불
-        GazeLife(io.github.graviton94.carpediem.core.GardenDecor.realSeason(now.toLocalDate(), profile.countryCode), now) { dim.value }
+        GazeLife(io.github.graviton94.carpediem.core.GardenDecor.realSeason(now.toLocalDate(), profile.countryCode), now, calm = io.github.graviton94.carpediem.core.BreathKind.CALM in state.breathTrace(now.toLocalDate())) { dim.value }
         // 스르르 어두워짐
         Box(Modifier.fillMaxSize().graphicsLayer { alpha = dim.value }.background(Color.Black))
         // 소리 끄고 켜기 (아주 작게, 누름 막 위에), 나가는 법은 처음 3초만

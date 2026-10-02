@@ -129,6 +129,9 @@ class Store(context: Context) {
     val firstSkip: LocalDate? get() = if (prefs.contains("firstSkip")) LocalDate.ofEpochDay(prefs.getLong("firstSkip", 0)) else null
     val returned: LocalDate? get() = if (prefs.contains("returned")) LocalDate.ofEpochDay(prefs.getLong("returned", 0)) else null
 
+    /** 마지막으로 앱을 연 날 (알림이 오래 안 온 사람에게 늘지 않고 쉬게, core Nudges). */
+    val lastOpen: LocalDate? get() = if (prefs.contains("lastOpen")) LocalDate.ofEpochDay(prefs.getLong("lastOpen", 0)) else null
+
     /** 앱을 열 때마다 부른다. 마지막으로 연 날에서 오래 지났으면 ‘돌아온 날’로 남긴다. */
     fun markOpened(today: LocalDate = LocalDate.now()) {
         val last = if (prefs.contains("lastOpen")) prefs.getLong("lastOpen", 0) else null
@@ -292,6 +295,26 @@ class Store(context: Context) {
     var chancesMet: Set<String>
         get() = prefs.getStringSet("chancesMet", emptySet()) ?: emptySet()
         set(v) = prefs.edit().putStringSet("chancesMet", v).apply()
+    /** 절기 한 줄을 알린 날 (그날 정원을 처음 열 때 한 번, S1). */
+    var termNoted: String?
+        get() = prefs.getString("termNoted", null)
+        set(v) = prefs.edit().putString("termNoted", v).apply()
+    /** 돌에게 건넨 이번 계절의 조각 (core Offerings, R1). */
+    var offerings: List<io.github.graviton94.carpediem.core.Offering>
+        get() = io.github.graviton94.carpediem.core.Offerings.decode(prefs.getString("offerings", null))
+        set(v) = prefs.edit().putString("offerings", io.github.graviton94.carpediem.core.Offerings.encode(v)).apply()
+    /** 기억의 주에 한 줄 알림을 켠 기억의 돌 id (기본은 모두 꺼짐, R2). */
+    var memoryWeekOn: Set<String>
+        get() = prefs.getStringSet("memoryWeekOn", emptySet()) ?: emptySet()
+        set(v) = prefs.edit().putStringSet("memoryWeekOn", v).apply()
+    /** 기억의 주 알림을 보낸 것 ("id:2026-10-20", 해마다 한 번). */
+    var memoryWeekSent: Set<String>
+        get() = prefs.getStringSet("memoryWeekSent", emptySet()) ?: emptySet()
+        set(v) = prefs.edit().putStringSet("memoryWeekSent", v).apply()
+    /** ‘올해의 정원을 한 장으로’ 를 물은 해 (해마다 한 번, S2). */
+    var gardenYearAsked: Int
+        get() = prefs.getInt("gardenYearAsked", 0)
+        set(v) = prefs.edit().putInt("gardenYearAsked", v).apply()
     /** 달팽이 손님이 길에 나온 때 (ms). 한 시간쯤 머물며 천천히 건넘. */
     var snailAt: Long
         get() = prefs.getLong("snailAt", 0L)

@@ -44,10 +44,26 @@ object GardenWidgetArt {
     private fun asset(context: Context, name: String): Bitmap = context.assets.open("garden/$name").use { BitmapFactory.decodeStream(it) }
     private fun key(s: Season) = when (s) { Season.SPRING -> "spring"; Season.SUMMER -> "summer"; Season.AUTUMN -> "autumn"; Season.WINTER -> "winter" }
 
+    /** 달을 실제 모양으로 (앱의 MoonShape 와 같은 규칙): 어두운 쪽은 옅게, 밝은 쪽은 타원 경계로. */
+    private fun moon(c: Canvas, img: Bitmap, r: RectF, phase: Double, paint: Paint) {
+        val faint = Paint(paint).apply { alpha = (255 * Tokens.Garden.Night.moonDark).toInt() }
+        c.drawBitmap(img, null, r, faint)
+        val waxing = phase < 0.5
+        val k = kotlin.math.cos(2 * Math.PI * phase).toFloat()
+        val e = r.width() / 2f * kotlin.math.abs(k)
+        val circle = android.graphics.Path().apply { addOval(r, android.graphics.Path.Direction.CW) }
+        val half = android.graphics.Path().apply { addRect(if (waxing) RectF(r.centerX(), r.top, r.right, r.bottom) else RectF(r.left, r.top, r.centerX(), r.bottom), android.graphics.Path.Direction.CW) }
+        val lit = android.graphics.Path(); lit.op(circle, half, android.graphics.Path.Op.INTERSECT)
+        val ell = android.graphics.Path().apply { addOval(RectF(r.centerX() - e, r.top, r.centerX() + e, r.bottom), android.graphics.Path.Direction.CW) }
+        lit.op(ell, if (k > 0f) android.graphics.Path.Op.DIFFERENCE else android.graphics.Path.Op.UNION)
+        c.save(); c.clipPath(lit); c.drawBitmap(img, null, r, paint); c.restore()
+    }
+
     fun render(context: Context, kind: Kind, wPx: Int, hPx: Int, s: LifeSnapshot?, now: LocalDateTime): Bitmap {
         val w = max(1, wPx); val h = max(1, hPx)
         val bmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
         val c = Canvas(bmp)
+        SkyTime.useCountry(context, io.github.graviton94.carpediem.data.Store(context).profile?.countryCode)
         c.drawColor((if (SkyTime.isDark(now)) Tokens.Garden.Night.Colors.base else Tokens.Garden.Colors.paper).toArgb())
         // 하늘 · 땅 · 이끼는 앱 정원처럼 실제 계절 (나라의 반구를 따라)
         val season = io.github.graviton94.carpediem.core.GardenDecor.realSeason(now.toLocalDate(), io.github.graviton94.carpediem.data.Store(context).profile?.countryCode)
@@ -73,10 +89,7 @@ object GardenWidgetArt {
         }
         // 해 · 달: 폰 시각
         if (kind == Kind.TODAY || kind == Kind.LARGE || kind == Kind.FAMILY) {
-            val hour = now.hour + now.minute / 60f
-            val day = hour in Tokens.Garden.Motion.sunrise..Tokens.Garden.Motion.sunset
-            val t = if (day) (hour - Tokens.Garden.Motion.sunrise) / (Tokens.Garden.Motion.sunset - Tokens.Garden.Motion.sunrise)
-            else ((hour - Tokens.Garden.Motion.sunset + 24f) % 24f) / (24f - (Tokens.Garden.Motion.sunset - Tokens.Garden.Motion.sunrise))
+            val (day, t) = SkyTime.sunPath(now)   // 그날 실제 해 뜨고 지는 시각 (앱 정원과 같음)
             // 해 · 달은 늘 땅 위, 가장자리에서도 반쪽이 잘리지 않게 (가로 끝은 반지름만큼 안쪽)
             val r = W.sunRadius * u
             val base = minOf(h * W.sunArcBase, gy - r * 1.4f); val top = minOf(h * W.sunArcTop, base - r * 2f).coerceAtLeast(r * 1.2f)
@@ -87,7 +100,8 @@ object GardenWidgetArt {
                 val path = android.graphics.Path(); for (i in 0..40) { val tt = i / 40f; val px = x0 + span * tt; val py = base - (base - top) * sin(tt * Math.PI).toFloat(); if (i == 0) path.moveTo(px, py) else path.lineTo(px, py) }
                 c.drawPath(path, arc)
             }
-            c.drawBitmap(asset(context, if (day) "sun.png" else "moon.png"), null, RectF(x - r, y - r, x + r, y + r), paint)
+            if (day) c.drawBitmap(asset(context, "sun.png"), null, RectF(x - r, y - r, x + r, y + r), paint)
+            else moon(c, asset(context, "moon.png"), RectF(x - r, y - r, x + r, y + r), SkyTime.moonPhase(now), paint)
         }
 
         if (kind == Kind.CALENDAR && s != null) grid(context, c, RectF(w * W.gridLeft, W.gridInset * u, w - W.gridInset * u, h - W.gridInset * u), s, u)

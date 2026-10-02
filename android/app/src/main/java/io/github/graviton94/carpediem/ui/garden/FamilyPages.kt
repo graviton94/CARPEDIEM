@@ -181,6 +181,16 @@ fun StoneScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, id: S
                         }
                     }
                 }
+                // 이번 계절의 조각 놓기 (R1): 내 나무의 이번 계절 조각을 그 사람 돌 곁에, 계절마다 한 번
+                val nowCard = remember(today) { state.decor(profile, LifeSnapshot(profile.birthDate, profile.expectancy(state.store.table), now), today).card }
+                val given = state.offerings.firstOrNull { it.personId == id && it.card.year == nowCard.year && it.card.season == nowCard.season }
+                if (given == null) {
+                    val piece = cardName(ctx, nowCard.key)
+                    ActionNote(stringResource(R.string.offer_action, piece), stringResource(R.string.offer_ask), 881) {
+                        state.offer(id!!, nowCard, today); state.say(ctx.getString(R.string.offer_done, name))
+                    }
+                } else TokenText(stringResource(R.string.offer_label, Labels.season(ctx, given.card.season), name, cardName(ctx, given.card.key)), Tokens.TypeScale.footnote,
+                    Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.Center)
                 GardenButton(stringResource(R.string.stone_edit), { onEdit(id!!) }, filled = false, seed = 880)
             }
         }

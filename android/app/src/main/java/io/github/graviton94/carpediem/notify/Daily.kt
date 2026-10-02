@@ -1,6 +1,7 @@
 package io.github.graviton94.carpediem.notify
 
 import io.github.graviton94.carpediem.core.Lines
+import io.github.graviton94.carpediem.core.Nudges
 import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -73,16 +74,25 @@ object Daily {
         return if ((c - '가') % 28 != 0) "이" else "가"
     }
 
+    /** prefix_0 … prefix_n 가운데 오늘의 것 (core Nudges.pick: 날마다 다음 것). */
+    internal fun line(context: Context, prefix: String, day: LocalDate, salt: Int): String {
+        val ids = generateSequence(0) { it + 1 }.map { context.resources.getIdentifier("$prefix$it", "string", context.packageName) }.takeWhile { it != 0 }.toList()
+        return if (ids.isEmpty()) "" else context.getString(ids[Nudges.pick(day, ids.size, salt)])
+    }
+
     fun allowed(context: Context) = Build.VERSION.SDK_INT < 33 || ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
 
     fun post(context: Context, force: Boolean = false) {
         val store = Store(context)
         if ((!store.notify && !force) || !allowed(context)) return
+        // 사흘 넘게 오지 않았으면 아침 알림도 쉰다 (돌아오면 달팽이 손님이 맞음)
+        if (!force && Nudges.quiet(store.lastOpen, LocalDate.now())) return
         val nm = context.getSystemService(NotificationManager::class.java)
         nm.createNotificationChannel(NotificationChannel(CHANNEL, context.getString(R.string.notify_channel), NotificationManager.IMPORTANCE_LOW))
         val q = store.todaysQuote()
         val text = q?.let { if (store.quoteLanguage == QuoteLanguage.ENGLISH) it.english else it.korean } ?: return
-        var title = context.getString(R.string.words)
+        // 정원: 아침 인사 한 줄이 날마다 돌아가며 (매일 같은 말이 되지 않게), 아래에 오늘의 문장
+        var title = if (store.design == Design.GARDEN) line(context, "notify_morning_", LocalDate.now(), 0) else context.getString(R.string.words)
         var letterId: String? = null
         var openAt: String? = null   // 누르면 열 곳 (MainActivity.EXTRA_OPEN)
         store.profile?.takeIf { store.design == Design.GARDEN }?.let { p ->
@@ -160,14 +170,16 @@ object Evening {
 
     fun post(context: Context, force: Boolean = false) {
         val store = Store(context)
-        if (!force && (!store.eveningNotify || store.lines.any { it.date == LocalDate.now() })) return   // 꺼 두었거나 오늘은 이미 보냄
+        val today = LocalDate.now()
+        // 꺼 두었거나, 오늘 이미 한 줄을 남겼거나 숨을 쉬었거나, 사흘 넘게 오지 않았으면 쉰다 (core Nudges)
+        if (!force && (!store.eveningNotify || Nudges.eveningRests(today, store.lines, store.breaths) || Nudges.quiet(store.lastOpen, today))) return
         if (!Daily.allowed(context)) return
         val nm = context.getSystemService(NotificationManager::class.java)
         Daily.eveningChannel(context)
         val open = PendingIntent.getActivity(context, 1, Intent(context, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK).putExtra(MainActivity.EXTRA_OPEN, "write"),
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
         val n = NotificationCompat.Builder(context, "evening").setSmallIcon(R.mipmap.ic_launcher_monochrome)
-            .setContentTitle(context.getString(R.string.notify_evening)).setContentText(context.getString(R.string.notify_eveningText))
+            .setContentTitle(context.getString(R.string.notify_evening)).setContentText(Daily.line(context, "notify_evening_", today, 2).ifEmpty { context.getString(R.string.notify_eveningText) })
             .setContentIntent(open).setAutoCancel(true).build()
         NotificationManagerCompat.from(context).notify(ID, n)
     }
@@ -231,4 +243,40 @@ class TomorrowWorker(context: Context, params: WorkerParameters) : CoroutineWork
 
 class DayOfWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
     override suspend fun doWork(): Result { Tomorrow.post(applicationContext, 0); return Result.success() }
+}
+
+/**
+ * 기억의 주 (R2): 그 사람 페이지에서 켠 기억의 돌만, 적어 둔 떠난 날 앞뒤 사흘의 첫날 아침 (dayOfHour) 에 한 줄 (‘보리가 생각나는 주예요.’).
+ * 해마다 한 번, 잠금 화면에도 이름 한 줄뿐. 누르면 기억의 자리로. 켠 돌이 하나도 없으면 일을 두지 않는다.
+ */
+object MemoryWeekNote {
+    private const val WORK = "memory-week"
+    private const val ID = 6
+
+    fun schedule(context: Context, on: Boolean) {
+        val wm = WorkManager.getInstance(context)
+        if (!on) { wm.cancelUniqueWork(WORK); return }
+        wm.enqueueUniquePeriodicWork(WORK, ExistingPeriodicWorkPolicy.UPDATE,
+            PeriodicWorkRequestBuilder<MemoryWeekWorker>(1, TimeUnit.DAYS).setInitialDelay(Daily.delayTo(Tokens.Notify.dayOfHour.toInt(), 0), TimeUnit.MINUTES).build())
+    }
+
+    fun post(context: Context) {
+        val store = Store(context)
+        if (!Daily.allowed(context) || store.design != Design.GARDEN) return
+        val today = LocalDate.now()
+        val m = store.memories.firstOrNull { it.id in store.memoryWeekOn && io.github.graviton94.carpediem.core.MemoryWeek.startsToday(it, today) } ?: return
+        val key = "${m.id}:${io.github.graviton94.carpediem.core.MemoryWeek.of(m, today)}"
+        if (key in store.memoryWeekSent) return
+        Daily.daysChannel(context)
+        val open = PendingIntent.getActivity(context, 6, Intent(context, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK).putExtra(MainActivity.EXTRA_OPEN, "memory"),
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
+        val n = NotificationCompat.Builder(context, "days").setSmallIcon(R.mipmap.ic_launcher_monochrome)
+            .setContentTitle(context.getString(R.string.memory_weekNotify, m.name, Daily.subject(m.name, context))).setContentIntent(open).setAutoCancel(true).build()
+        NotificationManagerCompat.from(context).notify(ID, n)
+        store.memoryWeekSent = store.memoryWeekSent + key
+    }
+}
+
+class MemoryWeekWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
+    override suspend fun doWork(): Result { MemoryWeekNote.post(applicationContext); return Result.success() }
 }

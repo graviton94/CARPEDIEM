@@ -110,7 +110,7 @@ private class WidgetData(context: Context) {
     val dark = (context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
     val palette = Palette(dark)
     val now: LocalDateTime = LocalDateTime.now()
-    init { gardenNight = io.github.graviton94.carpediem.ui.garden.SkyTime.isDark(now) }
+    init { io.github.graviton94.carpediem.ui.garden.SkyTime.useCountry(context, profile?.countryCode); gardenNight = io.github.graviton94.carpediem.ui.garden.SkyTime.isDark(now) }
 }
 
 /** 정원 위젯 글자색: 밤 · 새벽이면 그림도 어두워지므로 밝은 글자 (앱과 같은 규칙). */

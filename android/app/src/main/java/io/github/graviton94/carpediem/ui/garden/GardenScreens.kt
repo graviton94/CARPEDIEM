@@ -114,13 +114,8 @@ import kotlin.math.sin
 
 private fun lerp(a: Float, b: Float, t: Float) = a + (b - a) * t
 
-/** 해(낮) · 달(밤)이 지금 하늘의 어디쯤인지 (0 = 왼쪽 끝, 1 = 오른쪽 끝). 폰 시스템 시각 기준. */
-private fun skyProgress(now: LocalDateTime): Pair<Boolean, Float> {
-    val h = now.hour + now.minute / 60f
-    val rise = G.Motion.sunrise; val set = G.Motion.sunset
-    return if (h in rise..set) true to ((h - rise) / (set - rise))
-    else false to (((h - set + 24f) % 24f) / (24f - (set - rise)))
-}
+/** 해(낮) · 달(밤)이 지금 하늘의 어디쯤인지 (0 = 왼쪽 끝, 1 = 오른쪽 끝). 그날 실제 해 뜨고 지는 시각 기준 (SkyTime.sunPath). */
+private fun skyProgress(now: LocalDateTime): Pair<Boolean, Float> = SkyTime.sunPath(now)
 
 /** 가운데를 x 에 두되 [min, max] 안에서 벗어나지 않게. */
 private fun Modifier.centerAt(xPx: Float, minPx: Float, maxPx: Float) = layout { measurable, constraints ->
@@ -259,6 +254,13 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
     if (!bare && onGarden) LaunchedEffect(decor.stage, decor.tree, decor.hang, decor.kite, decor.ribbons.size, decor.buds, decor.card.id, decor.letter) { state.noticeDecor(decor) }
     // 정원을 열 때의 우연한 순간 (달팽이 · 비눗방울 · 나비, 각각 한 번씩)
     if (!bare && onGarden) LaunchedEffect(day0) { state.openChance(day0, real) }
+    // 절기가 든 날 (S1): 처음 열 때 한 줄, 정원엔 그날 하루 작은 변화
+    val termToday = remember(day0, state.profile?.countryCode) { state.termToday(day0) }
+    if (!bare && onGarden) LaunchedEffect(day0) { state.noticeTerm(day0) }
+    // 오늘 마친 숨의 흔적 (E3)
+    val trace = remember(day0, state.breaths) { state.breathTrace(day0) }
+    // 돌에게 건넨 이번 계절의 조각 (R1): 사람 id → 조각
+    val offered = remember(state.offerings, decor.card) { io.github.graviton94.carpediem.core.Offerings.shown(state.offerings, decor.card) }
     val scope = rememberCoroutineScope()
     var recordView by remember { mutableStateOf(state.pendingRecord?.also { state.pendingRecord = null } ?: if (state.debugOpenYear) RecordView(state.yearDue(now.toLocalDate()) ?: now.year, null) else RecordView(now.year, now.monthValue)) }
     // 정원이 아닌 페이지에서 뒤로 가기: 앱을 닫지 않고 정원으로
@@ -320,7 +322,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                     // 위 글자 아래 ~ 돌 머리 위. 글자 높이를 아직 모르거나 띠가 없으면 하늘 위쪽의 작은 띠에
                     val starTop = if (topBottom > 0.dp) topBottom + u * G.Layout.minSkyGap else screenH * 0.14f
                     val starBottom = minOf(gy - haruAbove - u * G.Layout.minSkyGap * 2, gy - u * G.Layout.hillTop).let { if (it > starTop + u * 12) it else starTop + u * 28 }
-                    MemoryStars(state, screenW, starTop, starBottom, Theme.gc.night)
+                    MemoryStars(state, screenW, starTop, starBottom, Theme.gc.night, day0)
                 }
 
                 // 위: 남은 시간 · 단위 · 오늘의 문장
@@ -399,7 +401,8 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 val arc = min((u * G.Layout.sunArc).value, (base - topBottom - u * G.Layout.minSkyGap - r).value.coerceAtLeast(0f)).dp
                 val sx = lerp((u * G.Layout.sunStart).value, (u * G.Layout.sunEnd).value, t).dp
                 val sy = base - arc * sin(t * Math.PI).toFloat()
-                Image(if (day) GardenArt.sun(ctx) else GardenArt.moon(ctx), null, Modifier.offset(sx - r, sy - r).size(r * 2))
+                if (day) Image(GardenArt.sun(ctx), null, Modifier.offset(sx - r, sy - r).size(r * 2))
+                else MoonShape(GardenArt.moon(ctx), SkyTime.moonPhase(now), Modifier.offset(sx - r, sy - r).size(r * 2))
                 // 돌멍하기: 움직이는 정원 (GazeLife) 이 같은 자리를 쓰게
                 if (bare) androidx.compose.runtime.SideEffect { gazeGeom.value = GazeGeom(gy, xs[0], sx, sy, day, haruAbove) }
                 // 밤 · 새벽: 달빛 · 돌들 발치의 빛 · 가로등 · 반딧불
@@ -407,6 +410,9 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 NightLights(now, gy, spanL, spanR, if (day) null else androidx.compose.ui.unit.DpOffset(sx, sy), Modifier.fillMaxSize())
                 // 가끔 별똥별 (밤 · 새벽, 글자와 하루 머리 사이 하늘)
                 ShootingStars(now, topBottom, gy - haruAbove - u * G.Layout.minSkyGap, Modifier.fillMaxSize())
+                // 절기가 든 날의 작은 변화 (S1) · 오늘 마친 숨의 흔적 (E3): 그날만, 돌 · 꾸밈 뒤에
+                termToday?.let { tt -> TermTouches(tt.touch, now, gy, topBottom, gy - haruAbove - u * G.Layout.minSkyGap, with(androidx.compose.ui.platform.LocalDensity.current) { Offset(sx.toPx(), sy.toPx()) }, day, Modifier.fillMaxSize()) }
+                BreathTraces(trace, now, gy, xs[0], (widths[0].toFloat() / 2).dp, Modifier.fillMaxSize())
 
 
                 // 자리 여섯: 나무 (길의 시작) · 발치의 한 장 · 말뚝 (길의 끝) · 연 (하늘) — 돌들 뒤에. 하루 밑엔 이끼 방석.
@@ -417,7 +423,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 LaunchedEffect(decorNames) { if (!decorReady) { kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { decorNames.forEach { GardenArt.opaque(GardenArt.image(ctx, it)) } }; decorReady = true } }   // 누르는 자리 (그림 범위) 도 화면 스레드 밖에서
                 if (decorReady) {
                     DecorBack(decor, now, gy, x0, x1, topBottom + u * G.Layout.minSkyGap, gy - haruAbove - u * G.Layout.minSkyGap,
-                        if (bare) null else { part -> if (part == DecorPart.LETTER) state.letterDue(day0)?.let { l -> state.openLetter(l.id); letterOpen = l } else decorOpen = part })
+                        if (bare) null else { part -> if (part == DecorPart.LETTER) state.letterDue(day0)?.let { l -> state.openLetter(l.id); letterOpen = l } else decorOpen = part }, warm = BreathKind.SLEEP in trace)
                     MossSeat(decor, now, xs[0], widths[0].toFloat().dp, gy, if (bare) null else { part -> decorOpen = part })
                 }
 
@@ -461,6 +467,13 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                     if (sentTo != null && sentTo == sl.id) {
                         val fw = u * G.Family.feather
                         Image(GardenArt.obj(ctx, "feather"), null, Modifier.offset(xs[i] + u * widths[i].toFloat() / u.value / 2 - fw * 0.3f, gy - sl.scale * (sl.art.meta.ground - sl.art.meta.bbox.top) - fw * 0.4f).size(fw))
+                    }
+                    // 이번 계절에 건넨 조각 (R1): 그 돌 왼쪽 발치에 계절이 끝날 때까지. 누르면 ‘가을에 엄마에게 놓은 감’
+                    sl.id?.let { pid -> offered[pid] }?.let { o ->
+                        val ow = u * G.Family.offerSize
+                        val label = stringResource(R.string.offer_label, Labels.season(ctx, o.card.season), sl.name, cardName(ctx, o.card.key))
+                        Image(GardenArt.card(ctx, o.card.key), label, Modifier.offset(xs[i] - u * widths[i].toFloat() / u.value / 2 - ow * 0.45f, gy - ow * 0.9f).size(ow)
+                            .clickable(enabled = !bare) { state.say(label) }, colorFilter = nightFilter(SkyTime.isDark(now)))
                     }
                 } }
 

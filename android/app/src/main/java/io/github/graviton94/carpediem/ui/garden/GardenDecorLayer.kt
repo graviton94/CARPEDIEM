@@ -98,7 +98,7 @@ private fun Modifier.box(x: Dp, y: Dp, k: Dp, boxW: Float, boxH: Float, atX: Flo
  * 흔들림은 느리게 (주기 3초 이상), 움직임을 끈 기기면 멈춤. kiteTop · kiteBottom = 연이 뜰 하늘 띠 (글자 아래 ~ 돌 머리 위).
  */
 @Composable
-internal fun DecorBack(decor: Decor, now: LocalDateTime, gy: Dp, x0: Dp, x1: Dp, kiteTop: Dp, kiteBottom: Dp, onTap: ((DecorPart) -> Unit)?) {
+internal fun DecorBack(decor: Decor, now: LocalDateTime, gy: Dp, x0: Dp, x1: Dp, kiteTop: Dp, kiteBottom: Dp, onTap: ((DecorPart) -> Unit)?, warm: Boolean = false) {
     val ctx = LocalContext.current
     val u = Theme.unit
     val dark = SkyTime.isDark(now)
@@ -137,8 +137,10 @@ internal fun DecorBack(decor: Decor, now: LocalDateTime, gy: Dp, x0: Dp, x1: Dp,
         val glowC = Tokens.Garden.Decor.Colors.glow
         if (lit) Canvas(Modifier.fillMaxSize()) {
             val c = Offset(size.width * D.lanternX / D.postBoxW, size.height * (D.lanternY + 16f) / D.postBoxH)
-            val r = size.width * D.glow / D.postBoxW
-            drawCircle(Brush.radialGradient(listOf(glowC.copy(alpha = 0.55f), Color.Transparent), c, r), r, c)
+            // 마음 등불을 마친 밤 (E3): 등이 조금 더 따뜻하게
+            val w = if (warm) Tokens.Garden.Touch.warmLamp else 1f
+            val r = size.width * D.glow / D.postBoxW * w
+            drawCircle(Brush.radialGradient(listOf(glowC.copy(alpha = (0.55f * w).coerceAtMost(0.85f)), Color.Transparent), c, r), r, c)
         }
         Image(GardenArt.post(ctx, decor.season), null, Modifier.fillMaxSize(), colorFilter = filter)
         @Composable fun swing(part: String, px: Float, py: Float, sw: Sway, deg: Float, f: ColorFilter?) =

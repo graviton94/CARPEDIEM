@@ -69,15 +69,17 @@ class AppState(private val context: Context) {
     var draft by mutableStateOf<LifeProfile?>(null)
 
     init {
+        io.github.graviton94.carpediem.ui.garden.SkyTime.useCountry(context, store.profile?.countryCode)   // 해 · 달의 실제 시각
         store.ensureQuoteSeed(); quote = store.todaysQuote()
         // 알림 시각이 바뀌어도 켜 둔 알림은 새 시각으로 (예전에 맞춘 시각에 머물지 않게)
         if (store.notify) io.github.graviton94.carpediem.notify.Daily.schedule(context, true)
         if (store.eveningNotify) io.github.graviton94.carpediem.notify.Evening.schedule(context, true)
         if (store.tomorrowNotify) io.github.graviton94.carpediem.notify.Tomorrow.schedule(context, true)
+        if (store.memoryWeekOn.isNotEmpty()) io.github.graviton94.carpediem.notify.MemoryWeekNote.schedule(context, true)
     }
     // question 은 fixedNow 를 정한 뒤 (MainActivity) · 날이 바뀔 때 refreshQuestion 으로 채운다
 
-    fun save(p: LifeProfile) { store.profile = p; profile = p; Widgets.refresh(context) }
+    fun save(p: LifeProfile) { store.profile = p; profile = p; io.github.graviton94.carpediem.ui.garden.SkyTime.useCountry(context, p.countryCode); Widgets.refresh(context) }
     /** 온보딩을 마칠 때. 정원 디자인이면 하루를 만나는 화면을 먼저 보여 준다. */
     fun begin(p: LifeProfile) { save(p); if (design == Design.GARDEN) { store.meetPending = true; meetPending = true } }
     fun finishMeet() { store.meetPending = false; meetPending = false }
@@ -379,6 +381,46 @@ class AppState(private val context: Context) {
         msg?.let { say(context.getString(it)) }
     }
 
+    // ───── 스물넷 절기 (S1) ─────
+    /** 오늘 절기가 들면 그 절기 (북반구 나라만: 절기는 북반구의 달력). 시험용 cd.term 이 있으면 그것. */
+    var termOverride: io.github.graviton94.carpediem.core.SolarTerm? = null
+    fun termToday(today: LocalDate): io.github.graviton94.carpediem.core.SolarTerm? {
+        termOverride?.let { return it }
+        val p = profile ?: return null
+        if (p.countryCode.uppercase() in GardenDecor.SOUTH) return null
+        return io.github.graviton94.carpediem.core.Sky.termOn(today, java.time.ZoneId.systemDefault())
+    }
+    /** 절기가 든 날 정원을 처음 열 때 한 줄 (‘오늘은 상강, 첫서리가 내렸어요.’). */
+    fun noticeTerm(today: LocalDate) {
+        if (previewAll) return
+        val t = termToday(today) ?: return
+        if (store.termNoted == today.toString()) return
+        store.termNoted = today.toString()
+        val id = context.resources.getIdentifier("term_${t.key}", "string", context.packageName)
+        if (id != 0) say(context.getString(id))
+    }
+
+    // ───── 돌에게 건네는 한 조각 (R1) ─────
+    var offerings by mutableStateOf(store.offerings)
+        private set
+    /** 이번 계절의 내 조각을 그 사람 돌 곁에 (계절마다 한 번). */
+    fun offer(personId: String, card: io.github.graviton94.carpediem.core.SeasonCard, today: LocalDate) {
+        val next = io.github.graviton94.carpediem.core.Offerings.put(offerings, io.github.graviton94.carpediem.core.Offering(personId, card, today))
+        if (next == offerings) return
+        store.offerings = next; offerings = next; Widgets.refresh(context)
+    }
+
+    // ───── 기억의 주 (R2) ─────
+    var memoryWeekOn by mutableStateOf(store.memoryWeekOn)
+        private set
+    fun setMemoryWeek(id: String, on: Boolean) {
+        val next = if (on) memoryWeekOn + id else memoryWeekOn - id; store.memoryWeekOn = next; memoryWeekOn = next
+        io.github.graviton94.carpediem.notify.MemoryWeekNote.schedule(context, next.isNotEmpty())
+    }
+
+    // ───── 숨이 정원에 스미기 (E3): 오늘 마친 숨의 종류 ─────
+    fun breathTrace(today: LocalDate): Set<BreathKind> = if (previewAll) BreathKind.entries.toSet() else io.github.graviton94.carpediem.core.BreathTrace.today(breaths, today)
+
     // ───── 가족의 정원 ─────
     var people by mutableStateOf(store.people)
         private set
@@ -445,6 +487,7 @@ class AppState(private val context: Context) {
     fun removeMemory(id: String) {
         putMemories(memories.filterNot { it.id == id })
         val l = memoryLines.filterNot { it.to == id }; store.memoryLines = l; memoryLines = l
+        if (id in memoryWeekOn) setMemoryWeek(id, false)
     }
     /** 기억의 돌에게 한 줄 (그 돌마다 하루 한 번). 기록 남기기를 끄면 날짜만. */
     fun sendToMemory(id: String, text: String, today: LocalDate = (fixedNow ?: LocalDateTime.now()).toLocalDate()): Boolean {

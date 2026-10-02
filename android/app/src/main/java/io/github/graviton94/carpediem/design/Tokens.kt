@@ -345,24 +345,35 @@ object Tokens {
             const val catYears = 15.0f
             const val otherYears = 10.0f
             const val feather = 16.0f
+            const val offerSize = 20.0f
             const val pageStone = 0.45f
         }
         object Touch {
-            const val petMs = 900.0f
-            const val wiggleDeg = 3.0f
-            const val squash = 0.03f
-            const val blushMs = 1200.0f
-            const val hop = 12.0f
-            const val hopMs = 560.0f
-            const val touchPad = 8.0f
-            const val windowMs = 3000.0f
-            const val restAfter = 5.0f
-            const val restWindowMs = 10000.0f
-            const val restMs = 2000.0f
-            const val doubleMs = 280.0f
-            const val openMs = 420.0f
-            const val haptic = 1.0f
-            const val holdMs = 600.0f
+            object Colors {
+                val bud = Color(0xFFE59AA6)
+                val petal = Color(0xFFF2C4CC)
+                val grass = Color(0xFF7E9A5A)
+                val frost = Color(0xFFF4F7FA)
+                val drizzle = Color(0xFF8A9AA8)
+                val dew = Color(0xFFFFFFFF)
+                val star = Color(0xFFFFF4D6)
+                val heat = Color(0xFFF4C37A)
+                val ice = Color(0xFFDDE8F0)
+            }
+            const val alpha = 0.6f
+            const val nightAlpha = 0.7f
+            const val petals = 6.0f
+            const val drops = 26.0f
+            const val flakes = 14.0f
+            const val tufts = 7.0f
+            const val glints = 10.0f
+            const val speckles = 46.0f
+            const val steps = 7.0f
+            const val stepGap = 15.0f
+            const val traceFoot = 0.16f
+            const val traceFlowers = 2.0f
+            const val traceFlowerSize = 22.0f
+            const val warmLamp = 1.35f
         }
         object Party {
             const val hatWidth = 22.0f
@@ -486,6 +497,7 @@ object Tokens {
             const val fireflyMs = 5200.0f
             const val stoneGlow = 0.1f
             const val moonGlow = 0.16f
+            const val moonDark = 0.16f
         }
         object Question {
             const val perWeek = 2.0f

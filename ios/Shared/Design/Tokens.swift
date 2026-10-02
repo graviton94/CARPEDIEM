@@ -350,24 +350,35 @@ enum Tokens {
             static let catYears: CGFloat = 15.0
             static let otherYears: CGFloat = 10.0
             static let feather: CGFloat = 16.0
+            static let offerSize: CGFloat = 20.0
             static let pageStone: CGFloat = 0.45
         }
         enum Touch {
-            static let petMs: CGFloat = 900.0
-            static let wiggleDeg: CGFloat = 3.0
-            static let squash: CGFloat = 0.03
-            static let blushMs: CGFloat = 1200.0
-            static let hop: CGFloat = 12.0
-            static let hopMs: CGFloat = 560.0
-            static let touchPad: CGFloat = 8.0
-            static let windowMs: CGFloat = 3000.0
-            static let restAfter: CGFloat = 5.0
-            static let restWindowMs: CGFloat = 10000.0
-            static let restMs: CGFloat = 2000.0
-            static let doubleMs: CGFloat = 280.0
-            static let openMs: CGFloat = 420.0
-            static let haptic: CGFloat = 1.0
-            static let holdMs: CGFloat = 600.0
+            enum Colors {
+                static let bud: UInt32 = 0xE59AA6FF
+                static let petal: UInt32 = 0xF2C4CCFF
+                static let grass: UInt32 = 0x7E9A5AFF
+                static let frost: UInt32 = 0xF4F7FAFF
+                static let drizzle: UInt32 = 0x8A9AA8FF
+                static let dew: UInt32 = 0xFFFFFFFF
+                static let star: UInt32 = 0xFFF4D6FF
+                static let heat: UInt32 = 0xF4C37AFF
+                static let ice: UInt32 = 0xDDE8F0FF
+            }
+            static let alpha: CGFloat = 0.6
+            static let nightAlpha: CGFloat = 0.7
+            static let petals: CGFloat = 6.0
+            static let drops: CGFloat = 26.0
+            static let flakes: CGFloat = 14.0
+            static let tufts: CGFloat = 7.0
+            static let glints: CGFloat = 10.0
+            static let speckles: CGFloat = 46.0
+            static let steps: CGFloat = 7.0
+            static let stepGap: CGFloat = 15.0
+            static let traceFoot: CGFloat = 0.16
+            static let traceFlowers: CGFloat = 2.0
+            static let traceFlowerSize: CGFloat = 22.0
+            static let warmLamp: CGFloat = 1.35
         }
         enum Party {
             static let hatWidth: CGFloat = 22.0
@@ -491,6 +502,7 @@ enum Tokens {
             static let fireflyMs: CGFloat = 5200.0
             static let stoneGlow: CGFloat = 0.1
             static let moonGlow: CGFloat = 0.16
+            static let moonDark: CGFloat = 0.16
         }
         enum Question {
             static let perWeek: CGFloat = 2.0

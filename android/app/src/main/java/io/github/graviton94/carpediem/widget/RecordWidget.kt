@@ -56,6 +56,7 @@ class RecordWidget : GlanceAppWidget() {
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         val store = Store(context)
         val now = LocalDateTime.now(); val today = now.toLocalDate()
+        SkyTime.useCountry(context, store.profile?.countryCode)
         val night = SkyTime.isDark(now)
         val days = Constellations.monthDays(store.lines, today.year, today.monthValue)
         val locale = context.resources.configuration.locales[0]

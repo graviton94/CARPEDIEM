@@ -63,7 +63,7 @@ private fun nz(t: Float, k: Float) = 0.5f * sin(t * 1.13f + k * 1.7f) + 0.3f * s
  * dim (0 … dimAlpha) = 화면이 어두워진 만큼 움직임도 느려짐. 움직임을 끈 기기는 빛의 숨만.
  */
 @Composable
-internal fun GazeLife(season: Season, now: LocalDateTime, dim: () -> Float) {
+internal fun GazeLife(season: Season, now: LocalDateTime, calm: Boolean = false, dim: () -> Float) {
     val ctx = LocalContext.current
     val g = gazeGeom.value ?: return
     val moving = remember { !reducedMotion(ctx) }
@@ -127,6 +127,9 @@ internal fun GazeLife(season: Season, now: LocalDateTime, dim: () -> Float) {
             for (j in 0 until 7) { val len = u * (10f + 18f * hash(j, 5)); val span = pw * 0.7f - len
                 val lx = pc.x - pw * 0.35f + ((hash(j, 4) * span + t * u * (3f + 3f * hash(j, 6))) % span); val ly = pc.y - ph * 0.3f + ph * 0.6f * hash(j, 7)
                 drawLine((if (dark) Color(0xFFF1E4BE) else Color.White).copy(alpha = (if (dark) 0.18f else 0.5f) * (0.5f + 0.5f * sin(t * 0.6f + j))), Offset(lx, ly), Offset(lx + len, ly), u * 0.9f, StrokeCap.Round) }
+            // 마음 물결을 마친 날 (E3): 가끔 물결 하나가 더 (11초에 한 번, 자리는 그때마다)
+            if (calm) { val n = floor(t / 11f).toInt(); val a = t - n * 11f
+                if (a < 4.5f) ripple(Offset(pc.x + pw * 0.5f * (hash(n, 40) - 0.5f), pc.y - ph * 0.2f + ph * 0.4f * hash(n, 41)), a / 4.5f, u) }
         }
         // 화톳불 (가을 · 겨울): 돌들 왼쪽 앞
         val fire = Offset((g.haruX.toPx() - u * Z.fireFromHaru).coerceAtLeast(u * 44f), gy + u * Z.fireY)

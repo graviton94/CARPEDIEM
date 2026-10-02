@@ -179,6 +179,14 @@ private fun MemoryStone(state: AppState, m: Person, today: LocalDate, seed: Int)
             }
             Switch(m.star, { state.setStar(m.id, it) }, colors = SwitchDefaults.colors(checkedTrackColor = p.olive))
         }
+        // 기억의 주에 한 줄 알림 (R2, 기본 꺼짐): 적어 둔 떠난 날이 있을 때만
+        if (m.until != null) Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+            Column(Modifier.weight(1f)) {
+                TokenText(stringResource(R.string.memory_weekRow), Tokens.TypeScale.subhead)
+                TokenText(stringResource(R.string.memory_weekHelp), Tokens.TypeScale.caption1, color = p.secondary)
+            }
+            Switch(m.id in state.memoryWeekOn, { state.setMemoryWeek(m.id, it) }, colors = SwitchDefaults.colors(checkedTrackColor = p.olive))
+        }
         Row(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2), verticalAlignment = Alignment.CenterVertically) {
             TokenText(stringResource(R.string.memory_back), Tokens.TypeScale.footnote, Modifier.clickable { if (!state.backToGarden(m.id)) full = true }.padding(Tokens.Space.sp2), color = p.secondary)
             TokenText("·", Tokens.TypeScale.footnote, color = p.secondary)
@@ -199,10 +207,14 @@ private fun MemoryStone(state: AppState, m: Person, today: LocalDate, seed: Int)
  * 자리는 돌마다 정해져 있고 (id), 누르면 이름만 잠깐 조용히 보인다. top ~ bottom = 별이 앉을 하늘 띠.
  */
 @Composable
-internal fun MemoryStars(state: AppState, width: Dp, top: Dp, bottom: Dp, night: Boolean) {
+internal fun MemoryStars(state: AppState, width: Dp, top: Dp, bottom: Dp, night: Boolean, today: LocalDate = LocalDate.now()) {
     val stars = state.memories.filter { it.star }
     if (stars.isEmpty() || bottom <= top) return
     val u = Theme.unit
+    // 기억의 주 (R2): 적어 둔 날 앞뒤 사흘엔 그 별이 숨 쉬듯 조금 더 밝음 (날수 · 햇수는 쓰지 않음)
+    val week = remember(stars, today) { stars.filter { io.github.graviton94.carpediem.core.MemoryWeek.of(it, today) != null }.map { it.id }.toSet() }
+    val ctx = androidx.compose.ui.platform.LocalContext.current
+    val clock = rememberGardenClock(week.isNotEmpty() && remember { !reducedMotion(ctx) })
     var shown by remember { mutableStateOf<String?>(null) }
     LaunchedEffect(shown) { if (shown != null) { delay(3200); shown = null } }
     val size = u * 22
@@ -213,12 +225,16 @@ internal fun MemoryStars(state: AppState, width: Dp, top: Dp, bottom: Dp, night:
         Canvas(Modifier.offset(x - size / 2, y - size / 2).size(size).semantics { contentDescription = a11y }.clickable { shown = m.id }) {
             val c = Offset(this.size.width / 2, this.size.height / 2); val k = this.size.width / 22f
             val warm = G.Night.Colors.firefly
-            drawCircle(Brush.radialGradient(listOf(warm.copy(alpha = if (night) 0.35f else 0.22f), Color.Transparent), c, 10f * k), 10f * k, c)
+            // 그 주엔 빛이 넓고 밝게, 6초에 한 번 숨 쉬듯
+            val wk = if (m.id in week) 0.5f + 0.5f * kotlin.math.sin(clock.value * 6.2832f / 6f) else -1f
+            val halo = if (wk >= 0f) 10f * k * (1.25f + 0.25f * wk) else 10f * k
+            val ha = (if (night) 0.35f else 0.22f) * (if (wk >= 0f) 1.5f + 0.4f * wk else 1f)
+            drawCircle(Brush.radialGradient(listOf(warm.copy(alpha = ha.coerceAtMost(0.75f)), Color.Transparent), c, halo), halo, c)
             val s = Path().apply {
                 moveTo(c.x, c.y - 6f * k); lineTo(c.x + 1.6f * k, c.y - 1.6f * k); lineTo(c.x + 6f * k, c.y); lineTo(c.x + 1.6f * k, c.y + 1.6f * k)
                 lineTo(c.x, c.y + 6f * k); lineTo(c.x - 1.6f * k, c.y + 1.6f * k); lineTo(c.x - 6f * k, c.y); lineTo(c.x - 1.6f * k, c.y - 1.6f * k); close()
             }
-            drawPath(s, warm.copy(alpha = if (night) 0.95f else 0.75f))
+            drawPath(s, warm.copy(alpha = if (night || wk >= 0f) 0.95f else 0.75f))
         }
         if (shown == m.id) Box(Modifier.offset(y = y + size / 2).fillMaxWidth(), contentAlignment = Alignment.TopCenter) {
             TokenText(stringResource(R.string.memory_starNote, m.name), Tokens.TypeScale.caption1,

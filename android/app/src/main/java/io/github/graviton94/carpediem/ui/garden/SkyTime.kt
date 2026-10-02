@@ -6,6 +6,7 @@ import kotlin.math.cos
 import kotlin.math.sin
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.graphics.drawscope.scale
+import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.runtime.getValue
 import androidx.compose.animation.core.tween
@@ -34,8 +35,67 @@ import kotlin.math.roundToInt
 object SkyTime {
     class Tint(val color: Color, val alpha: Float, val night: Float, val groundKeep: Float = G.SkyTime.groundKeep)
 
-    /** 밤 · 새벽 (darkFrom 시 ~ 다음 날 darkUntil 시): 정원 전체가 어두운 한 벌로 (폰 테마와 상관없이). */
-    fun isDark(now: LocalDateTime): Boolean { val h = now.hour + now.minute / 60f; return h >= G.Night.darkFrom || h < G.Night.darkUntil }
+    // ───── 해 · 달의 실제 시각 (S3): 나라의 대표 도시로 그날 해 뜨고 지는 시각을 셈 (위치 권한 없이) ─────
+    @Volatile private var place: io.github.graviton94.carpediem.core.Place? = null
+    @Volatile private var placeCode: String? = null
+    private var table: io.github.graviton94.carpediem.core.PlaceTable? = null
+    private val sunCache = java.util.concurrent.ConcurrentHashMap<java.time.LocalDate, FloatArray>()
+
+    /** 설정의 나라를 하늘에 알려 줌 (앱 · 위젯이 그리기 전에). 같은 나라면 아무것도 안 함. */
+    fun useCountry(ctx: android.content.Context, code: String?) {
+        if (place != null && code == placeCode) return
+        val t = table ?: runCatching { io.github.graviton94.carpediem.core.PlaceTable(ctx.assets.open("places.csv").bufferedReader().use { it.readText() }) }.getOrNull()?.also { table = it } ?: return
+        place = t.of(code, java.time.ZoneId.systemDefault(), java.time.Instant.now()); placeCode = code; sunCache.clear()
+    }
+
+    /** 그날 해 뜨고 지는 시각 (시, 폰 시간대). 나라를 모르면 null. 백야면 [0, 24], 극야면 [12, 12]. */
+    fun sunHours(date: java.time.LocalDate): FloatArray? {
+        val p = place ?: return null
+        return sunCache.getOrPut(date) {
+            val z = java.time.ZoneId.systemDefault()
+            val s = io.github.graviton94.carpediem.core.Sky.sun(date, p, z)
+            fun hr(t: java.time.ZonedDateTime) = t.hour + t.minute / 60f + (t.toLocalDate().toEpochDay() - date.toEpochDay()) * 24f
+            when {
+                s != null -> floatArrayOf(hr(s.rise), hr(s.set))
+                io.github.graviton94.carpediem.core.Sky.polarDay(date, p) -> floatArrayOf(0f, 24f)
+                else -> floatArrayOf(12f, 12f)
+            }
+        }
+    }
+
+    /**
+     * 하늘이 쓰는 시각: 그날 실제 해 뜸 · 짐을 토큰의 기준 시각 (Motion.sunrise · sunset) 에 맞춰 늘이거나 줄인 시각.
+     * 그래서 새벽 · 노을 · 밤의 빛 (아래 토큰) 은 그대로, 12월엔 일찍 · 6월엔 늦게 어두워진다. 나라를 모르면 폰 시각 그대로.
+     */
+    fun hourOf(now: LocalDateTime): Float {
+        val h = now.hour + now.minute / 60f
+        val s = sunHours(now.toLocalDate()) ?: return h
+        val rise = s[0]; val set = s[1]
+        if (set - rise >= 24f) return 13f          // 해가 지지 않는 날
+        if (set <= rise) return 0f                 // 해가 뜨지 않는 날
+        val r0 = G.Motion.sunrise; val s0 = G.Motion.sunset
+        if (h in rise..set) return r0 + (h - rise) / (set - rise) * (s0 - r0)
+        val night = 24f - (set - rise)
+        val since = if (h > set) h - set else h + 24f - set
+        return (s0 + since / night * (24f - (s0 - r0))) % 24f
+    }
+
+    /** 해가 하늘에 있는지와 그 길의 어디쯤인지 (0 ~ 1). 밤이면 달이 해 짐부터 다음 해 뜸까지 같은 길을. */
+    fun sunPath(now: LocalDateTime): Pair<Boolean, Float> {
+        val h = now.hour + now.minute / 60f
+        val s = sunHours(now.toLocalDate())
+        val rise = s?.get(0) ?: G.Motion.sunrise; val set = s?.get(1) ?: G.Motion.sunset
+        if (set - rise >= 24f) return true to 0.5f
+        if (set <= rise) return false to 0.5f
+        return if (h in rise..set) true to ((h - rise) / (set - rise))
+        else false to (((h - set + 24f) % 24f) / (24f - (set - rise)))
+    }
+
+    /** 오늘 밤 달의 나이 (0 = 삭, 0.5 = 보름). */
+    fun moonPhase(now: LocalDateTime) = io.github.graviton94.carpediem.core.Sky.moonPhase(now.atZone(java.time.ZoneId.systemDefault()).toInstant())
+
+    /** 밤 · 새벽 (darkFrom 시 ~ 다음 날 darkUntil 시, 하늘 시각으로): 정원 전체가 어두운 한 벌로 (폰 테마와 상관없이). */
+    fun isDark(now: LocalDateTime): Boolean { val h = hourOf(now); return h >= G.Night.darkFrom || h < G.Night.darkUntil }
 
     /**
      * 새벽(어두움) → 아침(복숭아빛이 옅어짐) → 낮(빛 없음) → 해 질 녘(노을빛, 어두워질 때까지 머묾) → 밤(짙은 남색).
@@ -43,7 +103,7 @@ object SkyTime {
      */
     fun at(now: LocalDateTime): Tint {
         val k = G.SkyTime
-        val h = now.hour + now.minute / 60f
+        val h = hourOf(now)
         if (isDark(now)) return Tint(G.Night.Colors.sky, G.Night.skyAlpha, 1f, G.Night.groundAlpha / G.Night.skyAlpha)
         val dawn = Tint(G.SkyTime.Dawn.color, G.SkyTime.Dawn.alpha, 0f)
         val dusk = Tint(G.SkyTime.Dusk.color, G.SkyTime.Dusk.alpha, 0f)
@@ -194,5 +254,27 @@ fun ShootingStars(now: LocalDateTime, top: Dp, bottom: Dp, modifier: Modifier = 
         val from = Offset(hx - dx * tail, hy - dy * tail); val head = Offset(hx, hy)
         drawLine(Brush.linearGradient(listOf(Color.Transparent, c.copy(alpha = a)), from, head), from, head, strokeWidth = 1.6f * density, cap = StrokeCap.Round)
         drawCircle(c.copy(alpha = a), 1.5f * density, head)
+    }
+}
+
+/**
+ * 달을 실제 모양으로 (S3): 밝은 쪽만 또렷하게, 어두운 쪽은 아주 옅게 (지구빛, Night.moonDark).
+ * 경계는 타원: 초승 · 그믐은 가늘게 파이고, 반달은 곧게, 차가는 달은 볼록하게. 차오를 땐 오른쪽, 기울 땐 왼쪽이 밝다 (북반구).
+ */
+@Composable
+fun MoonShape(img: androidx.compose.ui.graphics.ImageBitmap, phase: Double, modifier: Modifier = Modifier) {
+    Canvas(modifier) {
+        val w = size.width; val h = size.height
+        val dst = IntSize(w.roundToInt(), h.roundToInt())
+        drawImage(img, dstSize = dst, alpha = G.Night.moonDark)
+        val waxing = phase < 0.5
+        val k = cos(2 * Math.PI * phase).toFloat()          // 1 = 삭, 0 = 반달, -1 = 보름
+        val e = w / 2f * kotlin.math.abs(k)
+        val circle = androidx.compose.ui.graphics.Path().apply { addOval(androidx.compose.ui.geometry.Rect(0f, 0f, w, h)) }
+        val half = androidx.compose.ui.graphics.Path().apply { addRect(if (waxing) androidx.compose.ui.geometry.Rect(w / 2f, 0f, w, h) else androidx.compose.ui.geometry.Rect(0f, 0f, w / 2f, h)) }
+        val side = androidx.compose.ui.graphics.Path.combine(androidx.compose.ui.graphics.PathOperation.Intersect, circle, half)
+        val ell = androidx.compose.ui.graphics.Path().apply { addOval(androidx.compose.ui.geometry.Rect(w / 2f - e, 0f, w / 2f + e, h)) }
+        val lit = androidx.compose.ui.graphics.Path.combine(if (k > 0f) androidx.compose.ui.graphics.PathOperation.Difference else androidx.compose.ui.graphics.PathOperation.Union, side, ell)
+        clipPath(lit) { drawImage(img, dstSize = dst) }
     }
 }

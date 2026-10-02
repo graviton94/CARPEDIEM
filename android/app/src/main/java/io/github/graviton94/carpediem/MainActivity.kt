@@ -81,7 +81,7 @@ private sealed interface Screen {
 class MainActivity : ComponentActivity() {
     companion object {
         const val EXTRA_MORNING_BREATH = "carpediem.morningBreath"
-        /** 알림을 누르면 열 곳: letter · write · flow · month:2026-9 · year:2026 · stone:<id> */
+        /** 알림을 누르면 열 곳: letter · write · flow · month:2026-9 · year:2026 · stone:<id> · memory · breath */
         const val EXTRA_OPEN = "carpediem.open"
     }
 
@@ -270,6 +270,9 @@ private fun openFrom(open: String?, state: AppState): Screen? {
             state.homePage = 2; state.pendingRecord = io.github.graviton94.carpediem.ui.garden.RecordView(y, m); if (kind == "month") state.openMonth(y, m)
         }
         "year" -> arg?.toIntOrNull()?.takeIf { it in 1900..java.time.LocalDate.now().year }?.let { y -> state.homePage = 2; state.pendingRecord = io.github.graviton94.carpediem.ui.garden.RecordView(y, null); state.openYear(y) }
+        "memory" -> return Screen.Memory(Screen.Main)
+        // 숨 바로가기 (위젯 · 빠른 설정 타일, C1): 고르는 창 없이 지금 때의 숨 1분 (밤엔 잠드는 명상)
+        "breath" -> return Screen.Breathe(if (io.github.graviton94.carpediem.ui.Labels.part(state.fixedNow ?: java.time.LocalDateTime.now()) == io.github.graviton94.carpediem.core.DayPart.NIGHT) BreathKind.SLEEP else BreathKind.CALM, 1, state.sound, Screen.Main)
         "stone" -> return if (arg.isNullOrEmpty()) Screen.Stone(null, Screen.Main) else arg.takeIf { id -> state.people.any { it.id == id } }?.let { Screen.Stone(it, Screen.Main) }   // 비면 내 돌
     }
     return null
