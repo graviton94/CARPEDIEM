@@ -1,27 +1,65 @@
-# Carpe Diem
+# 하루의 정원 (Carpe Diem)
 
-생년월일과 평균 기대수명으로 남은 시간을 보여주는 iOS 위젯 중심 앱.
+생년월일과 나라의 평균 기대수명으로 **남은 시간**을 조용히 보여 주는 앱이에요.
+화면에는 한지로 그린 정원이 있고, 내 돌 **하루**와 가족 · 반려동물의 돌이 인생의 길 위에 앉아 있어요.
+숫자로 다그치지 않고, 하루에 한 줄 · 숨 한 번 · 바라보기로 오늘을 살게 하는 것이 목표예요.
+
+> 지금은 **개발자 모드**예요. 배포와 버전 올림은 미뤄 두고, 안드로이드 시험용 APK 로 기능을 쌓고 있어요.
+> iOS 는 같은 계산 · 문구를 쓰지만 지금은 쉬고 있어요 (빌드는 직접 실행할 때만).
+
+## 정원에서 할 수 있는 것
+
+| 갈래 | 내용 |
+|---|---|
+| 남은 시간 | 남은 날 · 주 · 달 · 해, 인생 달력 (주 · 개월 · 년), 흐르는 시간 |
+| 오늘의 문장 | 하루에 한 문장 (한글 · 영어), 길게 누르면 소리 내어 한 번 |
+| 오늘의 한 줄 | 마음 하나와 한 줄을 떠나보냄, 몇 해 전 오늘 · 문득 돌아오는 한 줄, 계절의 편지 |
+| 숨, 쉼 | 마음 물결 · 마음 산책 · 마음 등불 · 마음 꽃밭, 마친 숨은 그날 정원에 흔적으로 남음 |
+| 돌멍하기 | 오래 바라보는 정원: 구름 · 새 · 반딧불, 봄 · 여름 연못 · 가을 · 겨울 화톳불, 계절의 소리 |
+| 가족의 정원 | 가족 · 반려동물 돌, 생일 카드, 이번 계절의 조각 건네기, 기억의 돌과 하늘의 별 · 기억의 주 |
+| 꾸밈 | 자리 여섯 (나무 · 발치의 한 장 · 말뚝 · 연 · 이끼 · 봉오리) 이 쌓이는 날만큼 자람, 우연한 순간 |
+| 하늘 | 나라 · 날짜로 실제 해 뜨고 지는 시각, 실제 달 모양, 스물넷 절기의 작은 변화 |
+| 추억 | 마음의 기록 (달 · 해의 별자리), 계절 앨범, 한 해를 한 장으로, 그림으로 보내기 |
+| 위젯 · 바로가기 | 남은 날 · 오늘 · 인생 달력 · 가족의 정원 · 마음의 기록 · 숨 바로가기 위젯, 빠른 설정 타일 ‘숨, 쉼’ |
+| 알림 | 아침 문장 · 하루 정리 · 생일과 특별한 날 · 기억의 주. 할 일을 한 날은 쉬고, 오래 오지 않으면 늘지 않고 쉼 |
+
+모든 기록은 폰 안에만 있어요. 서버가 없고, 밖으로 나가는 것은 직접 보낸 그림 한 장과 직접 고른 곳에 저장한 기록 파일뿐이에요 ([docs/privacy.md](docs/privacy.md)).
+
+## 구조
+
+| 폴더 | 내용 |
+|---|---|
+| `android/core/` | 계산만 하는 순수 Kotlin (기간 · 절기 · 해와 달 · 꾸밈 · 알림 규칙 …) 과 단위 시험 |
+| `android/app/` | Jetpack Compose 앱 + Glance 위젯 ([android/README.md](android/README.md)) |
+| `ios/` | SwiftUI 앱 · 위젯 (쉬는 중, [ios/README.md](ios/README.md)) |
+| `design/tokens.json` | 크기 · 색 · 시간 · 움직임의 유일한 원본 |
+| `design/strings.json` | 화면 문구 (한국어 · 영어, 해요체) |
+| `design/art/` | 한지 그림 엔진 (코드로 그린 그림을 `scripts/build_art.js` 가 webp 로 구움) |
+| `data/` | 문장 · 기대수명 (UN WPP 2024) · 질문 · 별자리 · 나라마다 대표 도시 (해 · 달 계산용) |
+| `docs/` | 계획 ([plan.md](docs/plan.md)) · 디자인 · 흐름 · 시험 · 설치 · 출시 안내 |
+| `scripts/` | 토큰 · 문구 코드 생성, 글꼴, 아이콘, 그림 굽기, 에뮬레이터 캡처 |
+
+토큰 · 문구 · 데이터를 바꾸면 `python3 scripts/generate.py` (문구를 바꿨으면 `python3 scripts/build_fonts.py` 도).
+생성 파일은 직접 고치지 않아요. CI 가 `generate.py --check` 로 확인해요.
+
+## 빌드와 시험
+
+| 워크플로 | 언제 | 하는 일 |
+|---|---|---|
+| `Android` | `main` 에 안드로이드 · 디자인 · 데이터가 바뀌어 푸시될 때 | core 시험 + APK 빌드 (`CarpeDiem-apk` 아티팩트) |
+| `Android screenshots` | 커밋 메시지에 `[quick-shots]` · `[full-shots]` 가 있을 때만 | 에뮬레이터 장면별 캡처 → `screenshots-android` 브랜치. `[only q26 q31]` 처럼 적으면 그 장면만 |
+| `iOS` · `TestFlight` · `Screenshots` | 직접 실행할 때만 | iOS 빌드 · 배포 · 캡처 |
+| `Android release` · `Life expectancy` | 직접 실행할 때만 | 스토어용 AAB (업로드 키가 Secrets 에 있을 때) · 기대수명 다시 받기 |
+
+- core 만 내 컴퓨터에서: `cd android && ./gradlew :core:test`
+- 서명 키 · 암호는 GitHub Secrets 에만 있어요. 저장소에는 넣지 않아요 ([android/keystore/README.md](android/keystore/README.md)).
+- APK 설치: [docs/android-install.md](docs/android-install.md) · 시험 순서: [docs/test-guide.md](docs/test-guide.md)
 
 ## 진행 상황
 
 | 단계 | 상태 |
 |---|---|
-| 디자인 | 확정 — 올리브 빛, 아이콘 엔소 · 궤도 |
-| 오늘의 명언 데이터 | 주제에 맞게 26개 유지, 74개 교체 — 검토 대기 |
-| iOS 앱 · 위젯 | 개발 중 — `ios/` |
-| Android 앱 · 위젯 | 개발 중 — `android/` (M1) |
-| 앱스토어 등록 | 개발 후 |
-
-## 폴더
-
-- `data/quotes.csv` — 오늘의 명언 100개 (번호, 한글, 영문)
-- `docs/quotes.md` — 명언을 고르고 보여주는 규칙
-- `docs/design.md` — 디자인 결정 사항
-- `docs/iphone-testing.md` — 내 아이폰에서 테스트하는 법 (TestFlight · Mac)
-- `docs/plan.md` — **프로젝트 계획서** (캐릭터 하루, 단계별 계획, 업적 · 꾸미기, 배포)
-- `design/tokens.json` — 디자인 토큰 (크기·글자·색·모서리의 유일한 원본)
-- `design/strings.json` — 화면 문구 (한국어·영어)
-- `design/mockup.html` — 화면 시안 (브라우저로 열기)
-- `ios/` — iOS 앱과 위젯 ([ios/README.md](ios/README.md))
-- `android/` — Android 앱과 위젯 ([android/README.md](android/README.md)), 설치: [docs/android-install.md](docs/android-install.md)
-- `scripts/` — 토큰·문구 코드 생성, 폰트, 아이콘
+| 한지 정원 · 가족 · 숨 · 돌멍하기 · 추억 | 안드로이드에서 시험 중 |
+| 절기 · 실제 해와 달 · 계절의 소리 · 숨의 흔적 · 조각 건네기 · 기억의 주 · 한 해 한 장 · 숨 바로가기 · 소리 내어 읽기 | 새로 넣음 (시험 중) |
+| Google Play 등록 | 기능이 다 쌓인 뒤 (개발자 계정 · 업로드 키 · PC 작업) |
+| iOS | 쉬는 중 |
