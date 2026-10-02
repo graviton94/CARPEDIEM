@@ -16,7 +16,7 @@ adb shell settings put global window_animation_scale 1; adb shell settings put g
 adb shell settings put global hide_error_dialogs 1
 sleep 45; adb shell am broadcast -a android.intent.action.CLOSE_SYSTEM_DIALOGS >/dev/null
 # 기본 언어는 한국어 (영어는 아래에서 따로)
-adb shell cmd locale set-app-locales $P --locales ko-KR 2>/dev/null
+adb shell cmd locale set-app-locales $P --locales ${LOCALES:-ko-KR} 2>/dev/null   # [locale ja-JP] 처럼 고르면 그 말로
 
 quick_scenes() {
 # 부팅 직후 느린 에뮬레이터: 한 번 열어 데워 둠 (첫 화면이 ‘응답 없음’으로 닫히지 않게)
