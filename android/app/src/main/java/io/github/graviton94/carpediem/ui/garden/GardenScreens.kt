@@ -414,7 +414,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 // 그림은 미리 (화면 스레드 밖에서) 읽어 두고, 다 읽은 뒤에 그림 (한꺼번에 읽으면 멈춘 듯 보임)
                 val decorNames = remember(decor) { GardenArt.decorNames(decor) }
                 var decorReady by remember(decorNames) { mutableStateOf(GardenArt.loaded(decorNames)) }
-                LaunchedEffect(decorNames) { if (!decorReady) { kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { decorNames.forEach { GardenArt.opaque(GardenArt.image(ctx, it)) } }   // 누르는 자리 (그림 범위) 도 화면 스레드 밖에서; decorReady = true } }
+                LaunchedEffect(decorNames) { if (!decorReady) { kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { decorNames.forEach { GardenArt.opaque(GardenArt.image(ctx, it)) } }; decorReady = true } }   // 누르는 자리 (그림 범위) 도 화면 스레드 밖에서
                 if (decorReady) {
                     DecorBack(decor, now, gy, x0, x1, topBottom + u * G.Layout.minSkyGap, gy - haruAbove - u * G.Layout.minSkyGap,
                         if (bare) null else { part -> if (part == DecorPart.LETTER) state.letterDue(day0)?.let { l -> state.openLetter(l.id); letterOpen = l } else decorOpen = part })
