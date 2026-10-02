@@ -27,6 +27,7 @@ object WidgetShots {
         Shot("today_glass", TodayWidget(), 160, 160), Shot("today_garden", TodayGardenWidget(), 160, 160),
         Shot("calendar_glass", LifeCalendarWidget(), 320, 160), Shot("calendar_garden", LifeCalendarGardenWidget(), 320, 160),
         Shot("family_garden", FamilyGardenWidget(), 320, 160), Shot("record_garden", RecordWidget(), 160, 160),
+        Shot("breath_garden", BreathWidget(), 160, 160),
     )
 
     @OptIn(androidx.glance.ExperimentalGlanceApi::class)

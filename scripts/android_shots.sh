@@ -58,6 +58,11 @@ open --es cd.now 2026-12-10T17:30; shot q30_sky_december_1730 5
 open --es cd.now 2026-10-14T21:00; shot q31_moon_crescent 5
 open --es cd.now 2026-10-26T22:00; shot q32_moon_full 5
 open --es cd.now 2026-12-27T15:00; shot q33_year_note 5
+# 돌에게 건넨 조각 (R1) · 기억의 주에 밝아진 별 (R2: 보리가 떠난 날 12월 20일 앞뒤 사흘)
+open --ez cd.family true --es cd.now 2026-10-05T15:00; sleep 5
+open --ez cd.offer true --es cd.now 2026-10-05T15:00; shot q34_offer 6
+open --es cd.screen stone --es cd.stoneId mom00001 --es cd.now 2026-10-05T15:00; sleep 3; swipe_up; shot q35_offer_stone 3
+open --ez cd.memory true --es cd.now 2026-12-20T21:30; shot q36_memory_week 6
 # 위젯 미리보기 그림 (위젯 고르는 화면용): 가족 · 이번 달 기록이 있는 정원으로 실제 위젯을 그려 꺼냄
 open --ez cd.reset true --es cd.design garden --el cd.seed 2718281 --es cd.birth 2000-05-12 --es cd.sex female --ez cd.meet false --ez cd.family true --ez cd.months true --ez cd.widgetShots true
 W=/sdcard/Android/data/$P/files/widgets

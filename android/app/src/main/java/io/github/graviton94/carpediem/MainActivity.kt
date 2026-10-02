@@ -209,6 +209,12 @@ private fun MainActivity.debugSetup(state: AppState): Screen {
     if (x.hasExtra("cd.preview")) state.changePreviewAll(x.getBooleanExtra("cd.preview", false))
     x.getStringExtra("cd.now")?.let { state.fixedNow = LocalDateTime.parse(it) }
     // 시험용: 그날 절기 (S1) 를 정해 정원의 작은 변화를 봄 (예: sanggang · dongji)
+    // 시험용: 가족 돌 둘에게 이번 계절의 조각을 놓아 둠 (R1)
+    if (x.getBooleanExtra("cd.offer", false)) state.profile?.let { p ->
+        val day = (state.fixedNow ?: LocalDateTime.now()).toLocalDate()
+        val card = state.decor(p, io.github.graviton94.carpediem.core.LifeSnapshot(p.birthDate, p.expectancy(state.store.table), day.atTime(12, 0)), day).card
+        state.people.filter { it.id == "mom00001" || it.id == "pet00001" }.forEach { state.offer(it.id, card, day) }
+    }
     x.getStringExtra("cd.term")?.let { k -> state.termOverride = io.github.graviton94.carpediem.core.SolarTerm.entries.firstOrNull { it.key == k } }
     // 캡처용: 우연한 순간 하나를 바로 (bubbles · fireflies · rainbow · butterflies · snail · aurora · wind)
     x.getStringExtra("cd.chance")?.let { k -> io.github.graviton94.carpediem.core.Chance.of(k)?.let { state.showChance(it, (state.fixedNow ?: LocalDateTime.now()).toLocalDate()) } }
