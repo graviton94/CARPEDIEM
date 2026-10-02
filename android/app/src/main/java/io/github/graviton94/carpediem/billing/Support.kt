@@ -14,6 +14,7 @@ import com.android.billingclient.api.PendingPurchasesParams
 import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.QueryProductDetailsParams
+import com.android.billingclient.api.QueryPurchasesParams
 
 /**
  * 응원하기 결제 (Google Play, 한 번 결제 · 소모성 상품이라 여러 번 응원할 수 있음). 보상 · 잠긴 기능 없음.
@@ -33,6 +34,7 @@ class Support(context: Context) {
     private var details: Map<String, ProductDetails> = emptyMap()
     private val client: BillingClient = BillingClient.newBuilder(context.applicationContext)
         .enablePendingPurchases(PendingPurchasesParams.newBuilder().enableOneTimeProducts().build())
+        .enableAutoServiceReconnection()
         .setListener { r, list -> if (r.responseCode == BillingClient.BillingResponseCode.OK) list?.forEach(::consume) }
         .build()
 
@@ -50,10 +52,14 @@ class Support(context: Context) {
         val q = QueryProductDetailsParams.newBuilder().setProductList(IDS.map {
             QueryProductDetailsParams.Product.newBuilder().setProductId(it).setProductType(BillingClient.ProductType.INAPP).build()
         }).build()
-        client.queryProductDetailsAsync(q) { r, list ->
+        client.queryProductDetailsAsync(q) { r, result ->
             if (r.responseCode != BillingClient.BillingResponseCode.OK) return@queryProductDetailsAsync
-            details = list.associateBy { it.productId }
+            details = result.productDetailsList.associateBy { it.productId }
             prices = details.mapValues { it.value.oneTimePurchaseOfferDetails?.formattedPrice.orEmpty() }
+        }
+        // 앱이 닫혀 있는 동안 끝난 응원 (기다리던 결제 등) 도 마저 받아 씀
+        client.queryPurchasesAsync(QueryPurchasesParams.newBuilder().setProductType(BillingClient.ProductType.INAPP).build()) { r, list ->
+            if (r.responseCode == BillingClient.BillingResponseCode.OK) list.forEach(::consume)
         }
     }
 
