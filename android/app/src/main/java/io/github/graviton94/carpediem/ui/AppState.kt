@@ -327,7 +327,7 @@ class AppState(private val context: Context) {
     }
     private var chanceDay: LocalDate? = null
     /** 앨범의 ‘만난 순간’에는 끝까지 보인 것만 남김 (다른 페이지로 갔거나, 밤이라 무지개가 안 보였으면 남기지 않음). */
-    fun chanceDone(seen: Boolean = true) { val c = chance; chance = null; if (seen && c != null) met(c, chanceDay ?: LocalDate.now()) }
+    fun chanceDone(seen: Boolean = true, which: Chance? = null) { val c = chance; if (which != null && which != c) return; chance = null; if (seen && c != null) met(c, chanceDay ?: LocalDate.now()) }   // 이미 다른 순간으로 바뀌었으면 건드리지 않음
     private fun met(c: Chance, today: LocalDate) { if (chancesMet.none { it.startsWith(c.key + ":") }) { val n = chancesMet + "${c.key}:$today"; store.chancesMet = n; chancesMet = n } }
     /** 정원을 열 때: 오랜만에 돌아온 날 달팽이, 그림을 보낸 날 비눗방울, 숨을 세 번 쉰 봄 · 여름 주에 나비 한 쌍 (한 번씩). */
     fun openChance(today: LocalDate, season: Season) {

@@ -297,7 +297,9 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 val slots0 = gardenSlots(state, profile, s, now, haruBase)
                 // 길이 모자라면 먼저 살짝 겹쳐 앉고 (돌 폭의 overlap 까지), 그래도 모자랄 때만 줄임
                 val w0 = slots0.map { (it.art.meta.bbox.width * it.scale.value).toDouble() }
-                val fit = Family.fitScale(w0, ((G.Layout.pathEnd - G.Layout.pathStart) * u.value).toDouble(), Family.overlapGap(w0, G.Family.overlap.toDouble())).toFloat()
+                // 줄일 때와 앉힐 때 같은 간격을 써야 길 밖으로 밀려나지 않음 (줄이기 전 폭으로 정한 겹침)
+                val og0 = Family.overlapGap(w0, G.Family.overlap.toDouble())
+                val fit = Family.fitScale(w0, ((G.Layout.pathEnd - G.Layout.pathStart) * u.value).toDouble(), og0).toFloat()
                 val slots = if (fit < 1f) gardenSlots(state, profile, s, now, haruBase * fit) else slots0
                 val headroom = slots.maxOf { sl -> sl.scale * (sl.art.meta.ground - sl.art.meta.bbox.top + if (sl.birthday) Tokens.Garden.Party.hatHeight else if (sl.art.sprout) Tokens.Garden.HaruDraw.sproutHeight else 0f) }
                 val haruAbove = headroom
@@ -309,7 +311,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 Image(GardenArt.sky(ctx, real), null, Modifier.fillMaxSize(), contentScale = ContentScale.FillWidth, alignment = Alignment.TopCenter)
                 // 땅 그림도 시간의 빛 아래에 (밤이면 땅까지 어두워짐)
                 // 하늘의 우연한 순간 (무지개 · 오로라): 먼 산 뒤
-                if (!bare) state.chance?.let { c -> ChanceLayer(c, now, real, gy, 0.dp, u * G.Decor.treeX, u * G.Layout.pathEnd, topBottom + u * G.Layout.minSkyGap, back = true) { seen -> state.chanceDone(seen) } }
+                if (!bare) state.chance?.let { c -> ChanceLayer(c, now, real, gy, 0.dp, u * G.Decor.treeX, u * G.Layout.pathEnd, topBottom + u * G.Layout.minSkyGap, back = true) { seen -> state.chanceDone(seen, c) } }
                 Image(GardenArt.strip(ctx, real), null, Modifier.offset(y = gy - u * G.Layout.stripLineY).fillMaxWidth().height(u * G.Layout.stripHeight), contentScale = ContentScale.FillBounds)
                 // 정원만 보기(bare)는 위 글자가 없어도 별이 상태바 · 소리 버튼에 닿지 않게
                 SkyTimeLayer(now, gy, if (bare) screenH * 0.14f else topBottom, gy - haruAbove - u * G.Layout.minSkyGap, Modifier.fillMaxSize())
@@ -388,7 +390,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 // 돌 자리: 각자 인생의 길 위 원래 자리, 겹치면 옆으로 비켜 앉음 (core Family.place)
                 val targets = slots.map { sl -> sl.progress?.let { lerp(G.Layout.pathStart + G.Layout.pathInset, G.Layout.pathEnd - G.Layout.pathInset, it.toFloat().coerceIn(0f, 1f)).toDouble() * u.value } }
                 val widths = slots.map { sl -> (sl.art.meta.bbox.width * sl.scale.value).toDouble() }
-                val xs = Family.place(targets, widths, 0, x0.value.toDouble(), x1.value.toDouble(), (G.Family.gap * u.value).toDouble(), Family.overlapGap(widths, G.Family.overlap.toDouble())).map { it.toFloat().dp }
+                val xs = Family.place(targets, widths, 0, x0.value.toDouble(), x1.value.toDouble(), (G.Family.gap * u.value).toDouble(), og0).map { it.toFloat().dp }
 
                 // 해 · 달: 폰 시각을 따라 하늘을 가로지름. 위쪽 글자에도, 하루 머리에도 닿지 않음.
                 val (day, t) = skyProgress(now)
@@ -412,7 +414,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 // 그림은 미리 (화면 스레드 밖에서) 읽어 두고, 다 읽은 뒤에 그림 (한꺼번에 읽으면 멈춘 듯 보임)
                 val decorNames = remember(decor) { GardenArt.decorNames(decor) }
                 var decorReady by remember(decorNames) { mutableStateOf(GardenArt.loaded(decorNames)) }
-                LaunchedEffect(decorNames) { if (!decorReady) { kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { decorNames.forEach { GardenArt.image(ctx, it) } }; decorReady = true } }
+                LaunchedEffect(decorNames) { if (!decorReady) { kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { decorNames.forEach { GardenArt.opaque(GardenArt.image(ctx, it)) } }   // 누르는 자리 (그림 범위) 도 화면 스레드 밖에서; decorReady = true } }
                 if (decorReady) {
                     DecorBack(decor, now, gy, x0, x1, topBottom + u * G.Layout.minSkyGap, gy - haruAbove - u * G.Layout.minSkyGap,
                         if (bare) null else { part -> if (part == DecorPart.LETTER) state.letterDue(day0)?.let { l -> state.openLetter(l.id); letterOpen = l } else decorOpen = part })
@@ -438,7 +440,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 val hopPx = with(density) { (u * S.hop).toPx() }
                 val gazeClock = rememberGardenClock(bare && remember { !reducedMotion(ctx) })
                 // 왼쪽부터 그려, 겹쳐 앉으면 오른쪽 돌이 앞 (누름도 앞 돌이 먼저 받음)
-                slots.indices.sortedBy { xs[it].value }.forEach { i -> val sl = slots[i]
+                slots.indices.sortedBy { xs[it].value }.forEach { i -> val sl = slots[i]; androidx.compose.runtime.key(sl.id ?: "me") {
                     val cx = xs[i] - sl.scale * (sl.art.meta.bbox.center.x - sl.art.meta.box / 2)
                     val left = cx - sl.scale * (sl.art.meta.box / 2); val top = gy - sl.scale * G.Layout.haruGround
                     HaruFigure(sl.art, sl.scale, Modifier.offset(left, top).graphicsLayer {
@@ -460,7 +462,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                         val fw = u * G.Family.feather
                         Image(GardenArt.obj(ctx, "feather"), null, Modifier.offset(xs[i] + u * widths[i].toFloat() / u.value / 2 - fw * 0.3f, gy - sl.scale * (sl.art.meta.ground - sl.art.meta.bbox.top) - fw * 0.4f).size(fw))
                     }
-                }
+                } }
 
                 androidx.compose.foundation.Canvas(Modifier.fillMaxSize()) {
                     val e = song.value; if (e < 0f) return@Canvas
@@ -476,7 +478,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 // 달팽이 손님: 오랜만에 돌아온 날, 한 시간쯤 돌들 앞 길을 천천히 건넘
                 if (!bare) SnailGuest(state.store.snailAt, now, gy, u * G.Decor.treeX)
                 // 우연한 순간 (한 번에 하나, 몇 초 뒤 사라짐)
-                if (!bare) state.chance?.let { c -> ChanceLayer(c, now, real, gy, xs[0], u * G.Decor.treeX, x1, topBottom + u * G.Layout.minSkyGap, back = false) { seen -> state.chanceDone(seen) } }
+                if (!bare) state.chance?.let { c -> ChanceLayer(c, now, real, gy, xs[0], u * G.Decor.treeX, x1, topBottom + u * G.Layout.minSkyGap, back = false) { seen -> state.chanceDone(seen, c) } }
                 // 이름표 (가족이 있을 때) · 0세 · 기대수명
                 val px = with(density) { Pair(x0.toPx(), x1.toPx()) }
                 // 돌이 oneRow 명보다 많으면 이름표를 두 줄로 번갈아 (서로 겹치지 않게)

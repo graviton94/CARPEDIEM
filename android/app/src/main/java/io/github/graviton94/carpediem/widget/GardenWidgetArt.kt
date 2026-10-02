@@ -139,7 +139,7 @@ object GardenWidgetArt {
                 p.birth?.let { LifeSnapshot(it, store.expectancy(p), now).progress }, Family.birthdaySoon(p.birth, now, Tokens.Notify.birthdayFrom.toInt())) }
         val lo = W.gridInset * u; val hi = w - W.gridInset * u
         // 돌이 많으면 모두 같은 비율로 작게 (앱과 같은 규칙)
-        val ws = slots.map { (it.art.meta.bbox.width * it.k).toDouble() }; val og = Family.overlapGap(ws, Tokens.Garden.Family.overlap.toDouble())
+        val ws = slots.map { (it.art.meta.bbox.width * it.k).toDouble() }; val og = Family.overlapGap(ws, Tokens.Garden.Family.overlap.toDouble()) / shrink   // 줄이기 전 폭으로 정한 겹침 (줄인 뒤에도 같은 간격)
         val fit = Family.fitScale(ws, (hi - lo).toDouble(), og).toFloat()
         if (fit < 1f && shrink == 1f) return family(context, c, w, gy, u, now, fit)
         val xs = Family.place(slots.map { sl -> sl.prog?.let { (lo + (hi - lo) * (0.06 + 0.88 * it.coerceIn(0.0, 1.0))) } }, slots.map { (it.art.meta.bbox.width * it.k).toDouble() }, 0,

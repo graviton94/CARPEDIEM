@@ -343,7 +343,7 @@ class Store(context: Context) {
         if (root.optString("app") != BACKUP_APP) return false
         val all = root.optJSONObject("prefs") ?: return false
         if (!all.has("birth")) return false   // 하루의 정보 (생년월일) 가 없는 파일로는 지금 기록을 지우지 않음
-        val ed = prefs.edit().clear()
+        val ed = prefs.edit().clear().putBoolean("gridMonths", true)   // 되살린 인생 달력 단위는 그대로
         for (k in all.keys()) {
             val e = all.optJSONObject(k) ?: continue
             when (e.optString("t")) {
