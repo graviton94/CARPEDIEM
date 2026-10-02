@@ -675,4 +675,13 @@
     <string name="gardenYear_empty">올해 정원에 놓인 것들이 여기 모여요.</string>
     <string name="question_on">오늘의 질문 받기</string>
     <string name="question_onFooter">끄면 질문 대신 늘 오늘의 문장이 보여요.</string>
+    <string name="letgo_today">오늘</string>
+    <string name="letgo_other">다른 날</string>
+    <string name="letgo_dayTitle">%1$s의 한 줄</string>
+    <string name="letgo_dayHint">그날을 한 줄로</string>
+    <string name="letgo_daySend">그날에 남기기</string>
+    <string name="letgo_backToday">오늘로 돌아가기</string>
+    <string name="letgo_dayDone">%1$s에 한 줄을 남겼어요.</string>
+    <string name="letgo_dayTaken">그날은 이미 한 줄이 있어요.</string>
+    <string name="record_writeDay">이날의 한 줄 남기기</string>
 </resources>

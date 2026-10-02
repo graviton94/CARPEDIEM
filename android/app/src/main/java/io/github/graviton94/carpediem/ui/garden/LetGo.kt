@@ -127,7 +127,7 @@ private fun lineType(t: io.github.graviton94.carpediem.design.TypeToken, garden:
  * 오늘의 한 줄: 기쁨도 슬픔도 한 줄에 실어 떠나보낸다. 하루에 한 번.
  * 보내면 글이 깃털에 실려 하늘로 올라가며 옅어지고, 그 뒤로는 오늘 쓴 글을 다시 보여 주지 않는다 (기기 안에만 남음).
  */
-@OptIn(ExperimentalLayoutApi::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalLayoutApi::class, ExperimentalFoundationApi::class, androidx.compose.material3.ExperimentalMaterial3Api::class)
 @Composable
 fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifier) {
     val p = Theme.palette
@@ -147,24 +147,35 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
         if (flying == null) return@LaunchedEffect
         fly.snapTo(0f); fly.animateTo(1f, tween(G.Motion.letGoMs.toInt(), easing = LinearOutSlowInEasing)); flying = null
     }
-    val sent = state.sentOn(today)
+    // 다른 날의 한 줄: 고른 지난 날 (null = 오늘). 그날엔 질문 · 돌아온 한 줄 없이 쓰기만
+    val day = state.writeDay
+    var picking by remember { mutableStateOf(false) }
+    val sent = if (day == null) state.sentOn(today) else false
     val formView = remember { BringIntoViewRequester() }
     val scope = rememberCoroutineScope()
     fun send() {
         if (text.isBlank()) return
-        flying = text.trim(); state.letGo(text, feeling, to?.takeIf { id -> state.people.any { it.id == id } }); text = ""; feeling = null; focus.clearFocus()
+        val who = to?.takeIf { id -> state.people.any { it.id == id } }
+        flying = text.trim()
+        if (day != null) state.letGoOn(day, text, feeling, who) else state.letGo(text, feeling, who)
+        text = ""; feeling = null; focus.clearFocus()
     }
 
     Column(modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
-        TokenText(stringResource(R.string.letgo_title), Tokens.TypeScale.title3)
+        TokenText(if (day == null) stringResource(R.string.letgo_title) else stringResource(R.string.letgo_dayTitle, RecordText.day(ctx, day)), Tokens.TypeScale.title3)
+        // 오늘 | 다른 날 (기본은 늘 오늘)
+        if (Theme.garden && state.profile != null) Row(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
+            Chip(stringResource(R.string.letgo_today), day == null, seed = 950) { state.writeDay = null }
+            Chip(day?.let { RecordText.day(ctx, it) } ?: stringResource(R.string.letgo_other), day != null, seed = 951) { picking = true }
+        }
         // 때에 맞는 소개 (아침 · 저녁 · 밤), 낮은 원래 말
         val sub = remember(today) { io.github.graviton94.carpediem.ui.Labels.timed(ctx, "letgo_sub", io.github.graviton94.carpediem.ui.Labels.part(state.fixedNow ?: java.time.LocalDateTime.now())) }
         TokenText(sub ?: stringResource(R.string.letgo_sub), lineType(Tokens.TypeScale.callout, Theme.garden), color = p.secondary)
         // 몇 해 전 오늘 보낸 한 줄: 먼저 조용히 알리고, 누르면 펼친다
-        val recalls = remember(state.lines, today) { Lines.yearsAgo(state.lines, today) }
+        val recalls = remember(state.lines, today, day) { if (day != null) emptyList() else Lines.yearsAgo(state.lines, today) }
         recalls.forEach { (years, l) -> RecallCard(stringResource(R.string.recall_title, "$years"), l, 990 + years) }
         // 정한 주기 없이 문득 찾아온 지난 한 줄
-        state.randomLine?.takeIf { r -> recalls.none { it.second.date == r.date } }?.let { r ->
+        state.randomLine?.takeIf { r -> day == null && recalls.none { it.second.date == r.date } }?.let { r ->
             RecallCard(stringResource(R.string.recall_random, r.date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM))), r, 996)
         }
         val line = flying
@@ -195,7 +206,7 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
             }
             else -> Column(Modifier.fillMaxWidth().bringIntoViewRequester(formView), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
                 // 질문에 답하는 중이면 입력칸 위에 질문 한 줄
-                state.answering?.let { q ->
+                state.answering?.takeIf { day == null }?.let { q ->
                     Column(verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
                         TokenText(stringResource(R.string.question_label), Tokens.TypeScale.caption1, color = p.secondary)
                         TokenText(if (state.quoteLanguage == io.github.graviton94.carpediem.data.QuoteLanguage.ENGLISH) q.english else q.korean, lineType(Tokens.TypeScale.headline, Theme.garden))
@@ -225,16 +236,43 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
                         .lineBox(964).padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3),
                     decorationBox = { inner ->
                         Box(contentAlignment = Alignment.CenterStart) {
-                            if (text.isEmpty()) TokenText(stringResource(R.string.letgo_hint), Tokens.TypeScale.callout, color = p.secondary)
+                            if (text.isEmpty()) TokenText(stringResource(if (day == null) R.string.letgo_hint else R.string.letgo_dayHint), Tokens.TypeScale.callout, color = p.secondary)
                             inner()
                         }
                     },
                 )
                 TokenText("${text.codePointCount(0, text.length)} / $max", Tokens.TypeScale.caption2, Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.End)
-                Action(stringResource(R.string.letgo_send), filled = text.isNotBlank(), seed = 968) { send() }
+                Action(stringResource(if (day == null) R.string.letgo_send else R.string.letgo_daySend), filled = text.isNotBlank(), seed = 968) { send() }
+                if (day != null) TokenText(stringResource(R.string.letgo_backToday), Tokens.TypeScale.footnote,
+                    Modifier.fillMaxWidth().clickable { state.writeDay = null }.padding(vertical = Tokens.Space.sp1), color = p.secondary, align = TextAlign.Center)
             }
         }
         TokenText(stringResource(R.string.letgo_privacy), Tokens.TypeScale.caption1, color = p.secondary)
+    }
+    // 날짜 고르기: 생일부터 어제까지, 이미 한 줄이 있는 날은 고를 수 없음 (하루에 한 줄)
+    if (picking) {
+        val zone = java.time.ZoneOffset.UTC
+        val birth = state.profile?.birthDate ?: today
+        val taken = remember(state.lines) { state.lines.map { it.date }.toSet() }
+        val dp = androidx.compose.material3.rememberDatePickerState(
+            initialSelectedDateMillis = (day ?: today.minusDays(1)).atStartOfDay().toInstant(zone).toEpochMilli(),
+            selectableDates = object : androidx.compose.material3.SelectableDates {
+                override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                    val d = java.time.Instant.ofEpochMilli(utcTimeMillis).atZone(zone).toLocalDate()
+                    return d.isBefore(today) && !d.isBefore(birth) && d !in taken
+                }
+                override fun isSelectableYear(year: Int): Boolean = year in birth.year..today.year
+            })
+        androidx.compose.material3.DatePickerDialog(
+            onDismissRequest = { picking = false },
+            confirmButton = {
+                androidx.compose.material3.TextButton(onClick = {
+                    dp.selectedDateMillis?.let { ms -> val d = java.time.Instant.ofEpochMilli(ms).atZone(zone).toLocalDate(); if (state.canWriteOn(d, today)) state.writeDay = d }
+                    picking = false
+                }) { androidx.compose.material3.Text(stringResource(R.string.done)) }
+            },
+            dismissButton = { androidx.compose.material3.TextButton(onClick = { picking = false }) { androidx.compose.material3.Text(stringResource(R.string.cancel)) } },
+        ) { androidx.compose.material3.DatePicker(state = dp) }
     }
 }
 

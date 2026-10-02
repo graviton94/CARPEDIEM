@@ -673,3 +673,12 @@
 "gardenYear.empty" = "What came to the garden this year gathers here.";
 "question.on" = "Today’s questions";
 "question.onFooter" = "Turn off to always see today’s words instead.";
+"letgo.today" = "Today";
+"letgo.other" = "Another day";
+"letgo.dayTitle" = "A line for %1$@";
+"letgo.dayHint" = "That day, in one line";
+"letgo.daySend" = "Keep it for that day";
+"letgo.backToday" = "Back to today";
+"letgo.dayDone" = "Kept a line for %1$@.";
+"letgo.dayTaken" = "That day already has a line.";
+"record.writeDay" = "Leave a line for this day";

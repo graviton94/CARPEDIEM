@@ -250,6 +250,8 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
     // bare = 돌멍하기: 정원 한 장, 글자 · 이름표 · 아래 버튼 없이
     val pager = rememberPagerState(initialPage = if (bare) 0 else state.homePage.coerceIn(0, 3)) { if (bare) 1 else 4 }
     if (!bare) LaunchedEffect(pager) { snapshotFlow { pager.currentPage }.collect { state.homePage = it } }
+    // 다른 날의 한 줄을 고르면 (마음의 기록에서도) 기록 페이지로
+    if (!bare) LaunchedEffect(state.writeDay) { if (state.writeDay != null && pager.currentPage != 1) pager.animateScrollToPage(1) }
     // 정원 페이지가 보일 때만: 이번 계절의 한 장을 받고, 새로 생긴 것이 있으면 한 줄 (같은 것은 한 번만). 다른 페이지에 있다 돌아오면 그때
     val onGarden = bare || pager.currentPage == 0
     if (!bare && onGarden) LaunchedEffect(decor.stage, decor.tree, decor.hang, decor.kite, decor.ribbons.size, decor.buds, decor.card.id, decor.letter) { state.noticeDecor(decor) }

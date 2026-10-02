@@ -161,11 +161,30 @@ class AppState(private val context: Context) {
         val next = Lines.add(lines, line)
         store.lines = next; lines = next
         showChance(moment, today)   // 정원에 돌아가면 계절 바람 (어제 무거웠으면 무지개)
-        val s = Lines.streaks(next, streaks); if (s != streaks) { store.streaks = s; streaks = s }
+        val s = Lines.streaks(onTime(next), streaks); if (s != streaks) { store.streaks = s; streaks = s }
         val part = Labels.part(fixedNow ?: LocalDateTime.now())
         toast = Labels.letGoMessage(context, feeling, part)
         care = careFor(feeling, line.to, today, part)
         Widgets.refresh(context)   // 마음의 기록 위젯에 오늘의 꽃 · 별
+    }
+    // ───── 다른 날의 한 줄 ─────
+    /** 기록 페이지에서 고른 지난 날 (null = 오늘의 한 줄). */
+    var writeDay by mutableStateOf<LocalDate?>(null)
+    /** 그날에 한 줄을 남길 수 있는지: 생일부터 어제까지, 아직 한 줄이 없는 날. */
+    fun canWriteOn(day: LocalDate, today: LocalDate = (fixedNow ?: LocalDateTime.now()).toLocalDate()): Boolean =
+        day.isBefore(today) && profile?.birthDate?.let { !day.isBefore(it) } == true && lines.none { it.date == day }
+    /** 이어 쓰기를 셀 때는 그날 쓴 줄만 (나중에 채운 날은 빼고). */
+    private fun onTime(list: List<DayLine>): List<DayLine> { val b = store.backfilled; return list.filter { it.date.toEpochDay().toString() !in b } }
+    /** 지난 날에 한 줄: 그날 기록 · 별자리 · 편지에 놓이고, 보낸 순간의 작은 일 (바람 · 돌봄 권하기) 은 없음. */
+    fun letGoOn(day: LocalDate, text: String, feeling: Feeling?, to: String? = null) {
+        val t = Lines.clean(text, Tokens.Garden.LetGo.maxChars.toInt()); if (t.isEmpty()) return
+        if (!canWriteOn(day)) { say(context.getString(R.string.letgo_dayTaken)); return }
+        val line = if (keepLines) DayLine(day, t, feeling, to) else DayLine(day, "", null, to)
+        store.backfilled = store.backfilled + day.toEpochDay().toString()
+        val next = Lines.add(lines, line); store.lines = next; lines = next
+        writeDay = null
+        say(context.getString(R.string.letgo_dayDone, io.github.graviton94.carpediem.ui.garden.RecordText.day(context, day)))
+        Widgets.refresh(context)
     }
     /** 돌봄 권하기 (켜 두었을 때). 하루 한 줄이라 하루 한 번까지. 오늘 이미 숨 쉬었으면 숨은 권하지 않음. */
     var careOn by mutableStateOf(store.care)

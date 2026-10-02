@@ -673,3 +673,12 @@
 "gardenYear.empty" = "올해 정원에 놓인 것들이 여기 모여요.";
 "question.on" = "오늘의 질문 받기";
 "question.onFooter" = "끄면 질문 대신 늘 오늘의 문장이 보여요.";
+"letgo.today" = "오늘";
+"letgo.other" = "다른 날";
+"letgo.dayTitle" = "%1$@의 한 줄";
+"letgo.dayHint" = "그날을 한 줄로";
+"letgo.daySend" = "그날에 남기기";
+"letgo.backToday" = "오늘로 돌아가기";
+"letgo.dayDone" = "%1$@에 한 줄을 남겼어요.";
+"letgo.dayTaken" = "그날은 이미 한 줄이 있어요.";
+"record.writeDay" = "이날의 한 줄 남기기";

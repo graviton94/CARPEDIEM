@@ -111,6 +111,9 @@ internal fun RecordPanel(state: AppState, view: RecordView, onView: (RecordView)
                         TokenText(RecordText.day(ctx, pickedLine.first), Tokens.TypeScale.caption1, color = p.secondary)
                         val l = pickedLine.second
                         TokenText(when { l == null -> stringResource(R.string.record_rest); l.text.isBlank() -> stringResource(R.string.record_noText); else -> l.text }, Tokens.TypeScale.callout.serif())
+                        // 빈 지난 날: 그날의 한 줄을 바로 (기록 페이지로)
+                        if (l == null && state.canWriteOn(pickedLine.first, today)) TokenText(stringResource(R.string.record_writeDay), Tokens.TypeScale.footnote,
+                            Modifier.clickable { state.writeDay = pickedLine.first }.padding(vertical = Tokens.Space.sp1), color = p.olive, weight = FontWeight.SemiBold)
                     }
                 } else TokenText(stringResource(R.string.record_hint), Tokens.TypeScale.caption1, Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.Center)
                 GardenButton(stringResource(R.string.share_image), {

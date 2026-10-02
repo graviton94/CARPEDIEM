@@ -673,7 +673,16 @@
     "gardenYear.met": "만난 순간",
     "gardenYear.empty": "올해 정원에 놓인 것들이 여기 모여요.",
     "question.on": "오늘의 질문 받기",
-    "question.onFooter": "끄면 질문 대신 늘 오늘의 문장이 보여요."
+    "question.onFooter": "끄면 질문 대신 늘 오늘의 문장이 보여요.",
+    "letgo.today": "오늘",
+    "letgo.other": "다른 날",
+    "letgo.dayTitle": "{date}의 한 줄",
+    "letgo.dayHint": "그날을 한 줄로",
+    "letgo.daySend": "그날에 남기기",
+    "letgo.backToday": "오늘로 돌아가기",
+    "letgo.dayDone": "{date}에 한 줄을 남겼어요.",
+    "letgo.dayTaken": "그날은 이미 한 줄이 있어요.",
+    "record.writeDay": "이날의 한 줄 남기기"
   },
   "en": {
     "tagline": "Cherish today.",
@@ -1349,6 +1358,15 @@
     "gardenYear.met": "Moments met",
     "gardenYear.empty": "What came to the garden this year gathers here.",
     "question.on": "Today’s questions",
-    "question.onFooter": "Turn off to always see today’s words instead."
+    "question.onFooter": "Turn off to always see today’s words instead.",
+    "letgo.today": "Today",
+    "letgo.other": "Another day",
+    "letgo.dayTitle": "A line for {date}",
+    "letgo.dayHint": "That day, in one line",
+    "letgo.daySend": "Keep it for that day",
+    "letgo.backToday": "Back to today",
+    "letgo.dayDone": "Kept a line for {date}.",
+    "letgo.dayTaken": "That day already has a line.",
+    "record.writeDay": "Leave a line for this day"
   }
 }

@@ -675,4 +675,13 @@
     <string name="gardenYear_empty">What came to the garden this year gathers here.</string>
     <string name="question_on">Today’s questions</string>
     <string name="question_onFooter">Turn off to always see today’s words instead.</string>
+    <string name="letgo_today">Today</string>
+    <string name="letgo_other">Another day</string>
+    <string name="letgo_dayTitle">A line for %1$s</string>
+    <string name="letgo_dayHint">That day, in one line</string>
+    <string name="letgo_daySend">Keep it for that day</string>
+    <string name="letgo_backToday">Back to today</string>
+    <string name="letgo_dayDone">Kept a line for %1$s.</string>
+    <string name="letgo_dayTaken">That day already has a line.</string>
+    <string name="record_writeDay">Leave a line for this day</string>
 </resources>

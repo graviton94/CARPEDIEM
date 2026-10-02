@@ -104,6 +104,10 @@ class Store(context: Context) {
     var tomorrowNotify: Boolean
         get() = prefs.getBoolean("tomorrowNotify", false)
         set(v) = prefs.edit().putBoolean("tomorrowNotify", v).apply()
+    /** 나중에 채운 날 (다른 날의 한 줄, epochDay): 이어 쓰기 흔적은 그날 쓴 줄로만 센다. */
+    var backfilled: Set<String>
+        get() = prefs.getStringSet("backfilled", emptySet()) ?: emptySet()
+        set(v) = prefs.edit().putStringSet("backfilled", v).apply()
     /** 오늘의 질문 받기 (기본 켬). 끄면 질문 날에도 오늘의 문장. */
     var questionsOn: Boolean
         get() = prefs.getBoolean("questionsOn", true)
