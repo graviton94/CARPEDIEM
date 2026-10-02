@@ -671,3 +671,6 @@
 "gardenYear.album" = "The year on one page";
 "gardenYear.met" = "Moments met";
 "gardenYear.empty" = "What came to the garden this year gathers here.";
+"words.read" = "Read aloud";
+"words.readOff" = "Turn sound on and I’ll read it to you.";
+"words.readNone" = "This phone can’t read it aloud.";

@@ -21,6 +21,7 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -222,7 +223,7 @@ internal fun shortName(n: String): String { val max = G.Family.nameChars.toInt()
 
 // ───────────────────────── 홈 = 정원 ─────────────────────────
 
-@OptIn(ExperimentalMaterial3Api::class, androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
+@OptIn(ExperimentalMaterial3Api::class, androidx.compose.foundation.layout.ExperimentalLayoutApi::class, androidx.compose.foundation.ExperimentalFoundationApi::class)
 @Composable
 fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSettings: () -> Unit, onCollection: () -> Unit, onSupport: () -> Unit, onStone: (String?) -> Unit, onAddPerson: () -> Unit,
                onBreath: (BreathKind, Int, Sound) -> Unit = { _, _, _ -> }, onGaze: () -> Unit = {}, bare: Boolean = false, onLook: () -> Unit = {}, onMemory: () -> Unit = {}) {
@@ -358,8 +359,21 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                         // 한 줄로 답하기: 기록 페이지의 오늘의 한 줄로
                         state.answer(); turnTo(1)
                     } else state.quote?.let { q ->
+                        // 길게 누르면 소리 내어 한 번 (E4): 읽는 동안 글자가 숨 쉬듯 옅게 밝아짐. 소리를 꺼 두었으면 읽지 않고 한 줄
+                        var reading by remember(q) { mutableStateOf(false) }
+                        androidx.compose.runtime.DisposableEffect(q) { onDispose { io.github.graviton94.carpediem.sound.Reader.stop() } }
+                        val glow = rememberGardenClock(reading)
+                        fun read() {
+                            if (state.sound == Sound.NONE) { state.say(ctx.getString(R.string.words_readOff)); return }
+                            val ko = java.util.Locale.KOREAN; val en = java.util.Locale.ENGLISH
+                            val parts = when (state.quoteLanguage) { QuoteLanguage.ENGLISH -> listOf(q.english to en); QuoteLanguage.BOTH -> listOf(q.korean to ko, q.english to en); else -> listOf(q.korean to ko) }
+                            reading = true
+                            io.github.graviton94.carpediem.sound.Reader.read(ctx, parts) { ok -> reading = false; if (!ok) state.say(ctx.getString(R.string.words_readNone)) }
+                        }
                         Column(
-                            Modifier.fillMaxWidth().padding(top = Tokens.Space.sp4).clickable { state.nextQuote() },
+                            Modifier.fillMaxWidth().padding(top = Tokens.Space.sp4)
+                                .combinedClickable(onClick = { state.nextQuote() }, onLongClick = { read() }, onLongClickLabel = stringResource(R.string.words_read))
+                                .graphicsLayer { alpha = if (reading) 0.82f + 0.18f * kotlin.math.sin(glow.value * 1.6f).let { it * it } else 1f },
                             horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1),
                         ) {
                             // 새 문장 (누르거나 날이 바뀌어) 은 옛 타자기처럼 한 글자씩. 자리는 처음부터 다 잡아 두어 줄이 흔들리지 않음

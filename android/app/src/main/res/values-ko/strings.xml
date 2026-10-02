@@ -673,4 +673,7 @@
     <string name="gardenYear_album">한 해를 한 장으로</string>
     <string name="gardenYear_met">만난 순간</string>
     <string name="gardenYear_empty">올해 정원에 놓인 것들이 여기 모여요.</string>
+    <string name="words_read">소리 내어 읽기</string>
+    <string name="words_readOff">소리를 켜면 읽어 드려요.</string>
+    <string name="words_readNone">이 폰에서는 읽어 드릴 수 없어요.</string>
 </resources>

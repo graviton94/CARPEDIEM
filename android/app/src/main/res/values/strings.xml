@@ -673,4 +673,7 @@
     <string name="gardenYear_album">The year on one page</string>
     <string name="gardenYear_met">Moments met</string>
     <string name="gardenYear_empty">What came to the garden this year gathers here.</string>
+    <string name="words_read">Read aloud</string>
+    <string name="words_readOff">Turn sound on and I’ll read it to you.</string>
+    <string name="words_readNone">This phone can’t read it aloud.</string>
 </resources>
