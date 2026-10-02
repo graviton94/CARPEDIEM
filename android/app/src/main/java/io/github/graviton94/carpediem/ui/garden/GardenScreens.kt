@@ -716,7 +716,7 @@ private fun rememberTyping(state: AppState, main: String, second: String?): Int 
 
 /** 친 만큼만 보이는 글 (안 친 글자는 투명하게 자리만). */
 @Composable
-private fun TypedText(text: String, shown: Int, token: io.github.graviton94.carpediem.design.TypeToken, color: Color, modifier: Modifier = Modifier,
+internal fun TypedText(text: String, shown: Int, token: io.github.graviton94.carpediem.design.TypeToken, color: Color, modifier: Modifier = Modifier,
                       maxLines: Int = Int.MAX_VALUE, onTextLayout: (androidx.compose.ui.text.TextLayoutResult) -> Unit = {}) {
     val k = shown.coerceIn(0, text.length)
     // 줄은 띄어쓰기에서만 바뀌게 (낱말 · 어절 가운데서 끊기지 않게, 모든 Android 버전에서), 마지막 줄에 한 낱말만 남지 않게 끝 두 낱말은 붙여 둠

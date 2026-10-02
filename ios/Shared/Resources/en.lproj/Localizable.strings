@@ -297,11 +297,11 @@
 "widget.family.garden" = "Family garden · Garden";
 "widget.family.desc" = "Your stone and your family's, together in the garden.";
 "breath" = "Breathe, rest";
-"breath.kind.calm" = "Calm breathing";
-"breath.kind.box" = "A walk for the mind";
-"breath.kind.sleep" = "Meditation for sleep";
+"breath.kind.calm" = "Ripple";
+"breath.kind.box" = "Mind walk";
+"breath.kind.sleep" = "Lantern";
 "breath.kindDesc.calm" = "In for 4, out for 6.";
-"breath.kindDesc.box" = "4 in, 4 hold, 4 out, 4 rest.";
+"breath.kindDesc.box" = "Breathe in for four steps, out for four steps.";
 "breath.kindDesc.sleep" = "In for 4, hold for 7, out for 8.";
 "breath.minutes" = "%1$@ min";
 "breath.sound" = "Sound";
@@ -315,6 +315,8 @@
 "breath.hold" = "Hold";
 "breath.out" = "Breathe out";
 "breath.rest" = "Rest";
+"breath.walk.in" = "Four steps in";
+"breath.walk.out" = "Four steps out";
 "breath.pause" = "Rest here for now?";
 "breath.keep" = "Keep going";
 "breath.stop" = "That’s enough for now";
@@ -455,7 +457,7 @@
 "haru.state.down" = "looking down a little";
 "haru.state.hat" = "wearing a birthday hat";
 "haru.state.calm" = "sitting quietly";
-"breath.kind.thanks" = "Gratitude meditation";
+"breath.kind.thanks" = "Flower bed";
 "breath.kindDesc.thanks" = "With each breath out, recall one thing you’re thankful for.";
 "breath.out.thanks" = "One thankful thing";
 "breath.done.thanks.1" = "Thankful things rose quietly.";

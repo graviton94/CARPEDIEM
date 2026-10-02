@@ -215,17 +215,20 @@ fun BreathScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, kind
     BoxWithConstraints(Modifier.fillMaxSize().paperBackground().clickable(interactionSource = remember { MutableInteractionSource() }, indication = null) { if (!done) paused = true }) {
         val u = Theme.unit
         val screenW = maxWidth
-        // 비움: 하늘 그림 · 땅 그림 없이 바탕 한 빛 위에 작은 하루와 선 하나
-        Column(Modifier.fillMaxSize().statusBarsPadding().navigationBarsPadding().padding(horizontal = Theme.deviceClass.pageMargin),
-            horizontalAlignment = Alignment.CenterHorizontally) {
-            // 위에 아주 옅게 숨의 이름 (첫 1분만)
-            Box(Modifier.padding(top = Tokens.Space.sp8).height(Tokens.Space.sp8), contentAlignment = Alignment.Center) {
-                if (!done && cueOn) TokenText(stringResource(partTitle(part)), Tokens.TypeScale.footnote.serif(), color = p.secondary.copy(alpha = 0.7f))
-            }
-            Spacer(Modifier.weight(1f))
-            val art = HaruArt.of(state.store.haruSeed, false)
-            val scale = u * (b.haruWidth / G.Layout.haruArtWidth)
-            val k = with(androidx.compose.ui.platform.LocalDensity.current) { scale.toPx() }
+        // 숨의 말은 화면 한가운데, 하루는 작게 화면 높이 haruAt 즈음에 (말이 먼저 눈에 들어오게)
+        val groundY = maxHeight * b.haruAt
+        val art = HaruArt.of(state.store.haruSeed, false)
+        val scale = u * (b.haruWidth / G.Layout.haruArtWidth)
+        val k = with(androidx.compose.ui.platform.LocalDensity.current) { scale.toPx() }
+        // 숨의 갈래마다의 그림: 마음 물결 · 마음 산책 · 마음 등불 · 마음 꽃밭
+        BreathScene(kind, art, scale, groundY, animate, plan, { elapsed }, { fullAt(plan, elapsed) })
+        // 위에 아주 옅게 때의 이름 (첫 1분만)
+        Box(Modifier.fillMaxWidth().statusBarsPadding().padding(top = Tokens.Space.sp8).height(Tokens.Space.sp8), contentAlignment = Alignment.Center) {
+            if (!done && cueOn) TokenText(stringResource(partTitle(part)), Tokens.TypeScale.footnote.serif(), color = p.secondary.copy(alpha = 0.7f))
+        }
+        // 하루와 땅선 (마음 물결은 웅덩이가 땅선)
+        val boxH = scale * (G.Layout.haruGround - art.meta.bbox.top + G.Layout.sparkle)
+        Column(Modifier.align(Alignment.TopCenter).offset(y = groundY - boxH).fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
             Box(Modifier.graphicsLayer {
                 if (animate) {
                     transformOrigin = androidx.compose.ui.graphics.TransformOrigin(0.5f, 1f)
@@ -234,16 +237,17 @@ fun BreathScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, kind
                     translationY = -b.rise * k * full
                 }
             }) { BigStoneOnly(art, scale, lid.value) }
-            CrayonRule(Modifier.padding(horizontal = screenW * b.ruleInset), seed = 1020)
-            Spacer(Modifier.height(Tokens.Space.sp8))
-            // 글자: 첫 1분만. 끝나면 한 줄 + 정원으로
+            if (kind != BreathKind.CALM) CrayonRule(Modifier.padding(horizontal = screenW * b.ruleInset), seed = 1020)
+        }
+        // 가운데: 숨의 말이 한 글자씩 (오늘의 문장 크기, 첫 1분만). 끝나면 한 줄 + 정원으로
+        Column(Modifier.align(Alignment.Center).fillMaxWidth().padding(horizontal = Theme.deviceClass.pageMargin), horizontalAlignment = Alignment.CenterHorizontally) {
             val cue = if (done) null else step?.takeIf { cueOn }
             // 두 줄이 되어도 잘리지 않게 (높이는 최소만 정함)
             Box(Modifier.heightIn(min = Tokens.Space.sp10 * 2), contentAlignment = Alignment.Center) {
-                // 고마움 명상: 내쉴 때 “고마운 것 하나”
-                if (intro) TokenText(stringResource(R.string.breath_bells), Tokens.TypeScale.headline.serif(), color = p.secondary, align = TextAlign.Center)
-                else if (cue != null) TokenText(stringResource(if (kind == BreathKind.THANKS && cue == BreathStep.OUT) R.string.breath_out_thanks else stepName(cue)), Tokens.TypeScale.title2.serif(), color = p.secondary, align = TextAlign.Center)
+                if (intro) BreathCue(stringResource(R.string.breath_bells), p.secondary)
+                else if (cue != null) BreathCue(stringResource(cueName(kind, cue)), p.secondary)
             }
+            if (kind == BreathKind.BOX && cue != null && animate) WalkCount(plan, { elapsed }, Modifier.size(u * 44f, u * 4f))
             if (done) {
                 // 아침 · 저녁 · 밤은 때의 말, 낮은 숨마다의 말
                 val msg = remember { io.github.graviton94.carpediem.ui.Labels.timed(ctx, "breath_done", part) ?: ctx.getString(ctx.resources.getIdentifier("breath_done_${kind.name.lowercase()}_${(1..3).random()}", "string", ctx.packageName)) }
@@ -254,17 +258,34 @@ fun BreathScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, kind
                 GardenButton(stringResource(R.string.breath_home), onDone, filled = true, seed = 1021)
             } else TokenText(stringResource(R.string.breath_startA11y, stringResource(kindName(kind)), "$minutes"), Tokens.TypeScale.caption2,
                 Modifier.semantics { liveRegion = LiveRegionMode.Polite }.graphicsLayer { alpha = 0f })
-            Spacer(Modifier.weight(1f))
-            // 아주 옅은 가는 선 하나가 차오름 (남은 시간은 보이지 않음)
-            val lineC = Theme.gc.ink.copy(alpha = 0.28f)
-            Box(Modifier.fillMaxWidth().height(u * b.line).background(Theme.gc.ink.copy(alpha = 0.08f)).drawBehind {
+        }
+        // 아주 옅은 가는 선 하나가 차오름 (남은 시간은 보이지 않음)
+        val lineC = Theme.gc.ink.copy(alpha = 0.28f)
+        Box(Modifier.align(Alignment.BottomCenter).navigationBarsPadding().padding(horizontal = Theme.deviceClass.pageMargin).padding(bottom = Tokens.Space.sp6)
+            .fillMaxWidth().height(u * b.line).background(Theme.gc.ink.copy(alpha = 0.08f)).drawBehind {
                 drawRect(lineC, size = androidx.compose.ui.geometry.Size(size.width * (elapsed.toFloat() / total).coerceIn(0f, 1f), size.height))
             })
-            Spacer(Modifier.height(Tokens.Space.sp6))
-        }
         if (blackout.value > 0f) Box(Modifier.fillMaxSize().graphicsLayer { alpha = blackout.value }.background(Color.Black))
         if (paused && !done) PauseCard(onKeep = { paused = false }, onStop = { paused = false; done = true; player.stop(); onDone() })
     }
+}
+
+/** 숨의 말: 단계가 바뀌면 한 글자씩 (오늘의 문장과 같은 빠르기 · 크기). 움직임을 끈 기기면 한 번에. */
+@Composable
+private fun BreathCue(text: String, color: Color) {
+    val ctx = LocalContext.current
+    val still = remember { reducedMotion(ctx) }
+    var n by remember(text) { androidx.compose.runtime.mutableIntStateOf(if (still) text.length else 0) }
+    LaunchedEffect(text) { while (n < text.length) { delay(G.Motion.typeMs.toLong()); n++ } }
+    TypedText(text, n, Tokens.TypeScale.headline.serif(), color, Modifier.fillMaxWidth())
+}
+
+/** 단계의 말. 마음 산책은 걸음으로 (네 걸음 들이쉬고 · 네 걸음 내쉬고), 마음 꽃밭은 내쉴 때 “고마운 것 하나”. */
+private fun cueName(kind: BreathKind, s: BreathStep): Int = when {
+    kind == BreathKind.BOX && s == BreathStep.IN -> R.string.breath_walk_in
+    kind == BreathKind.BOX && s == BreathStep.OUT -> R.string.breath_walk_out
+    kind == BreathKind.THANKS && s == BreathStep.OUT -> R.string.breath_out_thanks
+    else -> stepName(s)
 }
 
 /** 지금 숨이 얼마나 찼는지 (0 … 1). 머무는 숨에서도 멈춰 있지 않고 아주 조금 부풀었다 가라앉음. */

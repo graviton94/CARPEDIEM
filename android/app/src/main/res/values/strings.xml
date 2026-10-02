@@ -299,11 +299,11 @@
     <string name="widget_family_garden">Family garden · Garden</string>
     <string name="widget_family_desc">Your stone and your family\'s, together in the garden.</string>
     <string name="breath">Breathe, rest</string>
-    <string name="breath_kind_calm">Calm breathing</string>
-    <string name="breath_kind_box">A walk for the mind</string>
-    <string name="breath_kind_sleep">Meditation for sleep</string>
+    <string name="breath_kind_calm">Ripple</string>
+    <string name="breath_kind_box">Mind walk</string>
+    <string name="breath_kind_sleep">Lantern</string>
     <string name="breath_kindDesc_calm">In for 4, out for 6.</string>
-    <string name="breath_kindDesc_box">4 in, 4 hold, 4 out, 4 rest.</string>
+    <string name="breath_kindDesc_box">Breathe in for four steps, out for four steps.</string>
     <string name="breath_kindDesc_sleep">In for 4, hold for 7, out for 8.</string>
     <string name="breath_minutes">%1$s min</string>
     <string name="breath_sound">Sound</string>
@@ -317,6 +317,8 @@
     <string name="breath_hold">Hold</string>
     <string name="breath_out">Breathe out</string>
     <string name="breath_rest">Rest</string>
+    <string name="breath_walk_in">Four steps in</string>
+    <string name="breath_walk_out">Four steps out</string>
     <string name="breath_pause">Rest here for now?</string>
     <string name="breath_keep">Keep going</string>
     <string name="breath_stop">That’s enough for now</string>
@@ -457,7 +459,7 @@
     <string name="haru_state_down">looking down a little</string>
     <string name="haru_state_hat">wearing a birthday hat</string>
     <string name="haru_state_calm">sitting quietly</string>
-    <string name="breath_kind_thanks">Gratitude meditation</string>
+    <string name="breath_kind_thanks">Flower bed</string>
     <string name="breath_kindDesc_thanks">With each breath out, recall one thing you’re thankful for.</string>
     <string name="breath_out_thanks">One thankful thing</string>
     <string name="breath_done_thanks_1">Thankful things rose quietly.</string>

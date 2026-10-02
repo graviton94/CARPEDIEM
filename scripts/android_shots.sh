@@ -44,6 +44,10 @@ open --es cd.screen gaze --es cd.now 2026-10-02T22:40; shot q18_gaze_autumn_nigh
 open --es cd.screen gaze --es cd.now 2026-04-15T15:00; shot q19_gaze_spring 8
 open --es cd.screen gaze --es cd.now 2026-07-20T22:40; shot q20_gaze_summer_night 8
 open --es cd.screen breath --es cd.now 2026-10-03T07:30; shot q21_breath_intro 2
+open --es cd.screen ripple --es cd.now 2026-10-03T15:00; shot q22_breath_ripple 9
+open --es cd.screen walk --es cd.now 2026-10-03T15:00; shot q23_breath_walk 10
+open --es cd.screen lantern --es cd.now 2026-10-02T22:40; shot q24_breath_lantern 9
+open --es cd.screen thanks --es cd.now 2026-10-03T15:00; shot q25_breath_flowers 40
 # 위젯 미리보기 그림 (위젯 고르는 화면용): 가족 · 이번 달 기록이 있는 정원으로 실제 위젯을 그려 꺼냄
 open --ez cd.reset true --es cd.design garden --el cd.seed 2718281 --es cd.birth 2000-05-12 --es cd.sex female --ez cd.meet false --ez cd.family true --ez cd.months true --ez cd.widgetShots true
 W=/sdcard/Android/data/$P/files/widgets

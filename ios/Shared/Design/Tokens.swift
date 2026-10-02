@@ -396,9 +396,9 @@ enum Tokens {
             static let calmIn: CGFloat = 4.0
             static let calmOut: CGFloat = 6.0
             static let boxIn: CGFloat = 4.0
-            static let boxHold: CGFloat = 4.0
+            static let boxHold: CGFloat = 0.0
             static let boxOut: CGFloat = 4.0
-            static let boxRest: CGFloat = 4.0
+            static let boxRest: CGFloat = 0.0
             static let sleepIn: CGFloat = 4.0
             static let sleepHold: CGFloat = 7.0
             static let sleepOut: CGFloat = 8.0
@@ -406,8 +406,9 @@ enum Tokens {
             static let rise: CGFloat = 6.0
             static let eyesAfter: CGFloat = 3.0
             static let cueSeconds: CGFloat = 60.0
-            static let haruWidth: CGFloat = 52.0
+            static let haruWidth: CGFloat = 38.0
             static let ruleInset: CGFloat = 0.3
+            static let haruAt: CGFloat = 0.73
             static let nightFrom: CGFloat = 22.0
             static let line: CGFloat = 2.0
             static let sleepFadeAfter: CGFloat = 4000.0
@@ -435,6 +436,16 @@ enum Tokens {
             static let pondScale: CGFloat = 1.0
             static let fireY: CGFloat = 50.0
             static let fireFromHaru: CGFloat = 70.0
+        }
+        enum BreathScene {
+            static let halo: CGFloat = 0.2
+            static let reflect: CGFloat = 0.15
+            static let stride: CGFloat = 24.0
+            static let stepsFade: CGFloat = 12.0
+            static let foot: CGFloat = 0.6
+            static let lanternAt: CGFloat = 0.3
+            static let flowers: CGFloat = 10.0
+            static let flowerSize: CGFloat = 26.0
         }
         enum Sound {
             static let sampleRate: CGFloat = 22050.0

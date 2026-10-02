@@ -299,11 +299,11 @@
     <string name="widget_family_garden">가족의 정원 · 정원</string>
     <string name="widget_family_desc">나와 가족의 돌이 함께 있는 정원.</string>
     <string name="breath">숨, 쉼</string>
-    <string name="breath_kind_calm">고요한 호흡</string>
+    <string name="breath_kind_calm">마음 물결</string>
     <string name="breath_kind_box">마음 산책</string>
-    <string name="breath_kind_sleep">잠드는 명상</string>
+    <string name="breath_kind_sleep">마음 등불</string>
     <string name="breath_kindDesc_calm">4초 들이쉬고 6초 내쉬어요.</string>
-    <string name="breath_kindDesc_box">4초씩 들이쉬고, 머물고, 내쉬고, 쉬어요.</string>
+    <string name="breath_kindDesc_box">네 걸음에 들이쉬고, 네 걸음에 내쉬어요.</string>
     <string name="breath_kindDesc_sleep">4초 들이쉬고 7초 머물고 8초 내쉬어요.</string>
     <string name="breath_minutes">%1$s분</string>
     <string name="breath_sound">소리</string>
@@ -317,6 +317,8 @@
     <string name="breath_hold">머물고</string>
     <string name="breath_out">내쉬고</string>
     <string name="breath_rest">쉬고</string>
+    <string name="breath_walk_in">네 걸음 들이쉬고</string>
+    <string name="breath_walk_out">네 걸음 내쉬고</string>
     <string name="breath_pause">여기서 쉬어갈까요?</string>
     <string name="breath_keep">계속하기</string>
     <string name="breath_stop">여기까지</string>
@@ -457,7 +459,7 @@
     <string name="haru_state_down">살짝 아래를 보고 있어요</string>
     <string name="haru_state_hat">생일 모자를 쓰고 있어요</string>
     <string name="haru_state_calm">조용히 앉아 있어요</string>
-    <string name="breath_kind_thanks">고마움 명상</string>
+    <string name="breath_kind_thanks">마음 꽃밭</string>
     <string name="breath_kindDesc_thanks">내쉴 때마다 고마운 것 하나를 떠올려요.</string>
     <string name="breath_out_thanks">고마운 것 하나</string>
     <string name="breath_done_thanks_1">고마운 것들이 조용히 떠올랐어요.</string>

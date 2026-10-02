@@ -391,9 +391,9 @@ object Tokens {
             const val calmIn = 4.0f
             const val calmOut = 6.0f
             const val boxIn = 4.0f
-            const val boxHold = 4.0f
+            const val boxHold = 0.0f
             const val boxOut = 4.0f
-            const val boxRest = 4.0f
+            const val boxRest = 0.0f
             const val sleepIn = 4.0f
             const val sleepHold = 7.0f
             const val sleepOut = 8.0f
@@ -401,8 +401,9 @@ object Tokens {
             const val rise = 6.0f
             const val eyesAfter = 3.0f
             const val cueSeconds = 60.0f
-            const val haruWidth = 52.0f
+            const val haruWidth = 38.0f
             const val ruleInset = 0.3f
+            const val haruAt = 0.73f
             const val nightFrom = 22.0f
             const val line = 2.0f
             const val sleepFadeAfter = 4000.0f
@@ -430,6 +431,16 @@ object Tokens {
             const val pondScale = 1.0f
             const val fireY = 50.0f
             const val fireFromHaru = 70.0f
+        }
+        object BreathScene {
+            const val halo = 0.2f
+            const val reflect = 0.15f
+            const val stride = 24.0f
+            const val stepsFade = 12.0f
+            const val foot = 0.6f
+            const val lanternAt = 0.3f
+            const val flowers = 10.0f
+            const val flowerSize = 26.0f
         }
         object Sound {
             const val sampleRate = 22050.0f
