@@ -400,6 +400,7 @@ class Store(context: Context) {
         const val RETURN_AFTER_DAYS = 30
 
         val defaultQuoteLanguage: QuoteLanguage
-            get() = if (java.util.Locale.getDefault().language == "ko") QuoteLanguage.BOTH else QuoteLanguage.ENGLISH
+            // 폰의 말이 한국어 · 일본어 · 번체 중국어면 그 말 + 영어, 그 밖 (영어 포함) 은 영어
+            get() = java.util.Locale.getDefault().let { if (io.github.graviton94.carpediem.core.Langs.of(it.language, it.country, it.script) != "en") QuoteLanguage.BOTH else QuoteLanguage.ENGLISH }
     }
 }
