@@ -2,7 +2,7 @@ name: Android screenshots
 
 # 에뮬레이터에서 디버그 APK 를 실행해 장면별 화면을 캡처하고 screenshots-android 브랜치에 올린다.
 # 필요할 때만 돈다 (Actions 아끼기): 커밋 메시지에 [quick-shots] (빠른 장면들) · [full-shots] (전체) 가 있을 때, 또는 직접 실행.
-# [quick-shots] 와 함께 [only q26 q31] 처럼 적으면 그 장면만 찍는다.
+# [quick-shots] 와 함께 [only q26 q31] 처럼 적으면 그 장면만, [locale ja-JP] 처럼 적으면 그 말로 찍는다.
 on:
   workflow_dispatch:
   push:

@@ -90,7 +90,7 @@ object Daily {
         val nm = context.getSystemService(NotificationManager::class.java)
         nm.createNotificationChannel(NotificationChannel(CHANNEL, context.getString(R.string.notify_channel), NotificationManager.IMPORTANCE_LOW))
         val q = store.todaysQuote()
-        val text = q?.let { if (store.quoteLanguage == QuoteLanguage.ENGLISH) it.english else it.korean } ?: return
+        val text = q?.let { io.github.graviton94.carpediem.data.Words.main(it, store.quoteLanguage, io.github.graviton94.carpediem.data.Words.lang(context)) } ?: return
         // 정원: 아침 인사 한 줄이 날마다 돌아가며 (매일 같은 말이 되지 않게), 아래에 오늘의 문장
         var title = if (store.design == Design.GARDEN) line(context, "notify_morning_", LocalDate.now(), 0) else context.getString(R.string.words)
         var letterId: String? = null

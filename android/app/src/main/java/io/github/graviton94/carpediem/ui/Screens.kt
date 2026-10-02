@@ -290,11 +290,12 @@ fun HomeScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
 @Composable
 private fun QuoteCard(q: Quote, language: QuoteLanguage, onNext: () -> Unit) {
     val p = Theme.palette
-    val main = if (language == QuoteLanguage.ENGLISH) q.english else q.korean
+    val lang = io.github.graviton94.carpediem.data.Words.lang(androidx.compose.ui.platform.LocalContext.current)
+    val main = io.github.graviton94.carpediem.data.Words.main(q, language, lang)
     GlassCard(onClick = onNext) {
         TokenText(stringResource(R.string.words).uppercase(), Tokens.TypeScale.caption1, color = p.olive, weight = FontWeight.Bold)
         TokenText(main, Tokens.TypeScale.headline.serif())
-        if (language == QuoteLanguage.BOTH) TokenText(q.english, Tokens.TypeScale.footnote.serif(), color = p.secondary)
+        io.github.graviton94.carpediem.data.Words.second(q, language, lang)?.let { TokenText(it, Tokens.TypeScale.footnote.serif(), color = p.secondary) }
         TokenText(stringResource(R.string.words_next), Tokens.TypeScale.caption2, color = p.secondary, weight = FontWeight.Normal)
     }
 }
@@ -365,7 +366,7 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
             }
             FormSection(header = stringResource(R.string.words)) {
                 FormRow(stringResource(R.string.words_language)) {
-                    ChipPicker(QuoteLanguage.entries, state.quoteLanguage, { Labels.quoteLanguage(ctx, it) }) { state.changeQuoteLanguage(it) }
+                    if (io.github.graviton94.carpediem.data.Words.choosable(ctx)) ChipPicker(QuoteLanguage.entries, state.quoteLanguage, { Labels.quoteLanguage(ctx, it) }) { state.changeQuoteLanguage(it) }
                 }
             }
             val permission = androidx.activity.compose.rememberLauncherForActivityResult(androidx.activity.result.contract.ActivityResultContracts.RequestPermission()) { ok -> state.changeNotify(ok) }

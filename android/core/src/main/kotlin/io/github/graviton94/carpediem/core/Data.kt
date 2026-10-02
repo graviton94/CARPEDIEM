@@ -73,7 +73,10 @@ class LifeExpectancyTable(csv: String) {
     companion object { const val WORLD = "WLD" }
 }
 
-data class Quote(val number: Int, val korean: String, val english: String)
+data class Quote(val number: Int, val korean: String, val english: String, val more: Map<String, String> = emptyMap()) {
+    /** 그 말의 문장 (없으면 영어). */
+    fun text(lang: String) = Langs.pick(lang, korean, english, more)
+}
 
 /**
  * 오늘의 문장 고르기 (iOS QuoteBook 과 같은 규칙).
@@ -84,7 +87,7 @@ data class Quote(val number: Int, val korean: String, val english: String)
 class QuoteBook(csv: String) {
     val quotes: List<Quote> = Csv.records(csv).mapNotNull { r ->
         val n = r["No"]?.toIntOrNull() ?: return@mapNotNull null
-        Quote(n, r["한글"] ?: return@mapNotNull null, r["영문"] ?: return@mapNotNull null)
+        Quote(n, r["한글"] ?: return@mapNotNull null, r["영문"] ?: return@mapNotNull null, Langs.extra(r))
     }
 
     fun index(day: Int, seed: ULong): Int {

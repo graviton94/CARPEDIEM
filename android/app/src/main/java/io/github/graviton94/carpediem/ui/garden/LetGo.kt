@@ -209,7 +209,7 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
                 state.answering?.takeIf { day == null }?.let { q ->
                     Column(verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
                         TokenText(stringResource(R.string.question_label), Tokens.TypeScale.caption1, color = p.secondary)
-                        TokenText(if (state.quoteLanguage == io.github.graviton94.carpediem.data.QuoteLanguage.ENGLISH) q.english else q.korean, lineType(Tokens.TypeScale.headline, Theme.garden))
+                        TokenText(io.github.graviton94.carpediem.data.Words.main(q, state.quoteLanguage, io.github.graviton94.carpediem.data.Words.lang(ctx)), lineType(Tokens.TypeScale.headline, Theme.garden))
                     }
                 }
                 TokenText(stringResource(R.string.letgo_feeling), Tokens.TypeScale.caption1, color = p.secondary)

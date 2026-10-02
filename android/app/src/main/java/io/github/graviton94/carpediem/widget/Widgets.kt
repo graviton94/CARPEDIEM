@@ -107,6 +107,7 @@ private class WidgetData(context: Context) {
     val snapshot: LifeSnapshot? = profile?.let { LifeSnapshot(it.birthDate, it.expectancy(store.table), LocalDateTime.now()) }
     val quote: Quote? = store.todaysQuote()
     val language: QuoteLanguage = store.quoteLanguage
+    val lang: String = io.github.graviton94.carpediem.data.Words.lang(context)
     val unit: LifeUnit = store.unit
     val dark = (context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
     val palette = Palette(dark)
@@ -270,7 +271,7 @@ abstract class LifeCalendarBase(private val garden: Boolean) : GlanceAppWidget()
                             Text(Labels.number(s.remaining(LifeUnit.DAYS)), style = style(Tokens.TypeScale.largeTitle.size, gInk, FontWeight.Bold, serif = true), maxLines = 1)
                             Text(context.getString(R.string.widget_daysLeft), style = style(Tokens.TypeScale.caption1.size, gSub))
                             Spacer(GlanceModifier.defaultWeight())
-                            data.quote?.let { q -> Text(if (data.language == QuoteLanguage.ENGLISH) q.english else q.korean, style = style(Tokens.TypeScale.footnote.size, gInk), maxLines = 2) }
+                            data.quote?.let { q -> Text(io.github.graviton94.carpediem.data.Words.main(q, data.language, data.lang), style = style(Tokens.TypeScale.footnote.size, gInk), maxLines = 2) }
                         }
                         else -> Column(GlanceModifier.fillMaxHeight().width((gs.width - Tokens.Layout.widgetPadding * 2) * Tokens.Garden.Widget.gridLeft)) {
                             Text(context.getString(R.string.calendar), style = style(Tokens.TypeScale.footnote.size, gInk, FontWeight.Bold))
@@ -316,7 +317,7 @@ abstract class LifeCalendarBase(private val garden: Boolean) : GlanceAppWidget()
                             GlanceModifier.fillMaxWidth().height(gh))
                         data.quote?.let { q ->
                             Spacer(GlanceModifier.height(Tokens.Space.sp3))
-                            Text(if (data.language == QuoteLanguage.ENGLISH) q.english else q.korean, style = style(Tokens.TypeScale.footnote.size, fg), maxLines = 3)
+                            Text(io.github.graviton94.carpediem.data.Words.main(q, data.language, data.lang), style = style(Tokens.TypeScale.footnote.size, fg), maxLines = 3)
                         }
                     }
                 }

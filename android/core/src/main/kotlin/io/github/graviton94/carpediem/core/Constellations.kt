@@ -4,7 +4,9 @@ import java.time.LocalDate
 import kotlin.math.hypot
 
 /** 달마다 그 달 저녁 하늘에 잘 보이는 별자리 하나 (data/constellations.csv). 별은 0..1 좌표, 선은 걷는 순서. */
-data class Constellation(val month: Int, val korean: String, val english: String, val stars: List<Pair<Float, Float>>, val lines: List<Pair<Int, Int>>)
+data class Constellation(val month: Int, val korean: String, val english: String, val stars: List<Pair<Float, Float>>, val lines: List<Pair<Int, Int>>, val more: Map<String, String> = emptyMap()) {
+    fun name(lang: String) = Langs.pick(lang, korean, english, more)
+}
 
 /** 하루의 자리: 0..1 좌표와 크기 배율 (1 = 보통). */
 data class Spot(val x: Float, val y: Float, val size: Float)
@@ -20,7 +22,7 @@ class ConstellationBook(csv: String) {
         val stars = r["별(x:y)"].orEmpty().split(' ').filter { it.isNotBlank() }.mapNotNull { s -> s.split(':').let { p -> p.getOrNull(0)?.toFloatOrNull()?.let { x -> p.getOrNull(1)?.toFloatOrNull()?.let { y -> x to y } } } }
         val lines = r["선"].orEmpty().split(' ').filter { it.isNotBlank() }.mapNotNull { s -> s.split('-').let { p -> p.getOrNull(0)?.toIntOrNull()?.let { a -> p.getOrNull(1)?.toIntOrNull()?.let { b -> a to b } } } }
             .filter { (a, b) -> a in stars.indices && b in stars.indices }
-        if (stars.isEmpty()) null else Constellation(m, r["한글"].orEmpty(), r["영문"].orEmpty(), stars, lines)
+        if (stars.isEmpty()) null else Constellation(m, r["한글"].orEmpty(), r["영문"].orEmpty(), stars, lines, Langs.extra(r))
     }
 
     fun of(month: Int): Constellation? = all.firstOrNull { it.month == month }

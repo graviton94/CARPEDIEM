@@ -127,3 +127,21 @@ class RhythmTest {
         assertNull(YearCard.due(day(2026, 12, 24)))
     }
 }
+
+class LangsTest {
+    @Test fun phoneLanguage() {
+        assertEquals("ko", Langs.of("ko", "KR"))
+        assertEquals("ja", Langs.of("ja", "JP"))
+        assertEquals("zh-TW", Langs.of("zh", "TW"))
+        assertEquals("zh-TW", Langs.of("zh", "HK"))
+        assertEquals("zh-TW", Langs.of("zh", "", "Hant"))
+        assertEquals("en", Langs.of("zh", "CN"))
+        assertEquals("en", Langs.of("de", "DE"))
+    }
+
+    @Test fun pickWithFallback() {
+        val csv = "No,한글,영문,日本語,繁體中文\n1,가,A,あ,\n"
+        val q = QuoteBook(csv).quotes.single()
+        assertEquals("가", q.text("ko")); assertEquals("あ", q.text("ja")); assertEquals("A", q.text("zh-TW")); assertEquals("A", q.text("en"))
+    }
+}

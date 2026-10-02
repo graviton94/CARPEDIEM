@@ -71,8 +71,9 @@ internal fun QuestionBlock(state: AppState, q: Question, sent: Boolean, onAnswer
     val lang = state.quoteLanguage
     Column(Modifier.fillMaxWidth().padding(top = Tokens.Space.sp4), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
         TokenText(stringResource(R.string.question_label), Tokens.TypeScale.caption2, color = p.secondary, weight = FontWeight.Normal)
-        TokenText(if (lang == QuoteLanguage.ENGLISH) q.english else q.korean, Tokens.TypeScale.headline.serif(), Modifier.fillMaxWidth(), align = TextAlign.Center)
-        if (lang == QuoteLanguage.BOTH) TokenText(q.english, Tokens.TypeScale.footnote.serif(), Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.Center)
+        val phone = io.github.graviton94.carpediem.data.Words.lang(androidx.compose.ui.platform.LocalContext.current)
+        TokenText(io.github.graviton94.carpediem.data.Words.main(q, lang, phone), Tokens.TypeScale.headline.serif(), Modifier.fillMaxWidth(), align = TextAlign.Center)
+        io.github.graviton94.carpediem.data.Words.second(q, lang, phone)?.let { TokenText(it, Tokens.TypeScale.footnote.serif(), Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.Center) }
         if (!sent) Row(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2), verticalAlignment = Alignment.CenterVertically) {
             TokenText(stringResource(R.string.question_answer), Tokens.TypeScale.footnote, Modifier.clickable(onClick = onAnswer).padding(Tokens.Space.sp2), weight = FontWeight.SemiBold)
             TokenText("·", Tokens.TypeScale.footnote, color = p.secondary)

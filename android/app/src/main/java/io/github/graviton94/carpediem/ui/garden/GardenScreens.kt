@@ -366,8 +366,9 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                             horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1),
                         ) {
                             // 새 문장 (누르거나 날이 바뀌어) 은 옛 타자기처럼 한 글자씩. 자리는 처음부터 다 잡아 두어 줄이 흔들리지 않음
-                            val main = if (state.quoteLanguage == QuoteLanguage.ENGLISH) q.english else q.korean
-                            val second = if (state.quoteLanguage == QuoteLanguage.BOTH && !sleepy) q.english else null
+                            val phone = io.github.graviton94.carpediem.data.Words.lang(ctx)
+                            val main = io.github.graviton94.carpediem.data.Words.main(q, state.quoteLanguage, phone)
+                            val second = if (!sleepy) io.github.graviton94.carpediem.data.Words.second(q, state.quoteLanguage, phone) else null
                             val typed = rememberTyping(state, main, second)
                             QuoteText(main, typed)
                             if (second != null) TypedText(second, typed - main.length, Tokens.TypeScale.footnote.serif(), p.secondary, Modifier.fillMaxWidth())

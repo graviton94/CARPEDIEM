@@ -61,7 +61,7 @@ class RecordWidget : GlanceAppWidget() {
         val days = Constellations.monthDays(store.lines, today.year, today.monthValue)
         val locale = context.resources.configuration.locales[0]
         val month = today.month.getDisplayName(MonthStyle.FULL_STANDALONE, locale)
-        val cons = store.constellations.of(today.monthValue)?.let { if (locale.language == "ko") it.korean else it.english }.orEmpty()
+        val cons = store.constellations.of(today.monthValue)?.name(io.github.graviton94.carpediem.data.Words.lang(context)).orEmpty()
         val open = Intent(context, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
             .putExtra(MainActivity.EXTRA_OPEN, "record:${today.year}-${today.monthValue}")
         val ink = if (night) Tokens.Garden.Year.Colors.plain else Tokens.Garden.Colors.ink

@@ -157,6 +157,9 @@ GROUP_NAME = {"deviceClass": "deviceWidth"}  # DeviceClass 타입과 이름이 �
 
 
 PLACEHOLDER = re.compile(r"\{(\w+)\}")
+# 한국어 · 영어 말고 더 있는 말과 그 자리 (안드로이드 values 폴더 · iOS lproj). 번체 중국어는 대만 · 홍콩 둘 다
+EXTRA_LANGS = {"ja": ["values-ja"], "zh-TW": ["values-zh-rTW", "values-zh-rHK"]}
+LPROJ = {"zh-TW": "zh-Hant"}
 
 
 def strings_outputs(s: dict) -> dict:
@@ -170,13 +173,20 @@ def strings_outputs(s: dict) -> dict:
         if sorted(names) != sorted(PLACEHOLDER.findall(en[key])):
             raise SystemExit(f"strings.json: '{key}' 의 자리표시자가 언어마다 다릅니다")
         params[key] = names
+    # 더 있는 말 (ja · zh-TW): 아직 옮기지 않은 키는 비워 둬도 됨 (영어로). 없는 키 · 다른 자리표시자는 안 됨
+    for lang in EXTRA_LANGS:
+        for key, value in s.get(lang, {}).items():
+            if key not in ko:
+                raise SystemExit(f"strings.json: {lang} 에만 있는 키 '{key}'")
+            if sorted(PLACEHOLDER.findall(value)) != sorted(params[key]):
+                raise SystemExit(f"strings.json: {lang} '{key}' 의 자리표시자가 다릅니다")
     for lang, table in s.items():
         lines = [f"/* {HEADER.strip()[3:]} */"]
         for key, value in table.items():
             names = params[key]
             v = PLACEHOLDER.sub(lambda m: f"%{names.index(m.group(1)) + 1}$@", value).replace('"', '\\"').replace("\n", "\\n")
             lines.append(f'"{key}" = "{v}";')
-        files[f"ios/Shared/Resources/{lang}.lproj/Localizable.strings"] = "\n".join(lines) + "\n"
+        files[f"ios/Shared/Resources/{LPROJ.get(lang, lang)}.lproj/Localizable.strings"] = "\n".join(lines) + "\n"
     sw = [HEADER, "import Foundation\n", "enum L10n {"]
     for key, names in params.items():
         name = camel(key)
@@ -291,7 +301,8 @@ def xml_escape(v: str) -> str:
 def android_strings(s: dict) -> dict:
     files = {}
     params = {k: PLACEHOLDER.findall(v) for k, v in s["ko"].items()}
-    for lang, folder in (("en", "values"), ("ko", "values-ko")):
+    targets = [("en", "values"), ("ko", "values-ko")] + [(lang, f) for lang, fs in EXTRA_LANGS.items() if s.get(lang) for f in fs]
+    for lang, folder in targets:
         lines = ['<?xml version="1.0" encoding="utf-8"?>', "<!-- 자동 생성 파일 — 직접 고치지 말고 scripts/generate.py 를 실행하세요. -->", "<resources>"]
         for key, value in s[lang].items():
             names = params[key]

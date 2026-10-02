@@ -44,7 +44,7 @@ object ShareCards {
     private val ink = Tokens.Garden.Colors.ink.toArgb()
     private val inkSoft = Tokens.Garden.Colors.inkSoft.toArgb()
 
-    private fun serif(ctx: Context) = ResourcesCompat.getFont(ctx, R.font.notoserifkr_medium)
+    private fun serif(ctx: Context) = ResourcesCompat.getFont(ctx, when (io.github.graviton94.carpediem.data.Words.lang(ctx)) { "ja" -> R.font.notoserifjp_medium; "zh-TW" -> R.font.notoseriftc_medium; else -> R.font.notoserifkr_medium })
     private fun paint(ctx: Context, size: Float, color: Int) = TextPaint(Paint.ANTI_ALIAS_FLAG).apply { typeface = serif(ctx); textSize = size; this.color = color }
 
     private fun base(w: Int, h: Int): Pair<Bitmap, Canvas> {

@@ -55,7 +55,7 @@ internal object RecordText {
     fun korean(ctx: android.content.Context) = locale(ctx).language == "ko"
     /** “9월” · “September” */
     fun month(ctx: android.content.Context, m: Int): String = java.time.Month.of(m).getDisplayName(TextStyle.FULL_STANDALONE, locale(ctx))
-    fun constellation(ctx: android.content.Context, state: AppState, m: Int): String = state.store.constellations.of(m)?.let { if (korean(ctx)) it.korean else it.english }.orEmpty()
+    fun constellation(ctx: android.content.Context, state: AppState, m: Int): String = state.store.constellations.of(m)?.name(io.github.graviton94.carpediem.data.Words.lang(ctx)).orEmpty()
     fun day(ctx: android.content.Context, d: LocalDate): String = d.format(java.time.format.DateTimeFormatter.ofPattern(ctx.getString(R.string.record_dayPattern), locale(ctx)))
 }
 

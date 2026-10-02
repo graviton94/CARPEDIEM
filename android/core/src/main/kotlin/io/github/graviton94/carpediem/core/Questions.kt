@@ -5,7 +5,9 @@ import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
 /** 오늘의 질문 하나 (data/questions.csv). group = scene · mood · joy · now. */
-data class Question(val id: Int, val group: String, val korean: String, val english: String)
+data class Question(val id: Int, val group: String, val korean: String, val english: String, val more: Map<String, String> = emptyMap()) {
+    fun text(lang: String) = Langs.pick(lang, korean, english, more)
+}
 
 /**
  * 일주일에 두 번, 문장 자리에 가벼운 질문. 요일은 설치마다 정해진 두 요일 (매주 같음, 3 · 4일 간격).
@@ -14,7 +16,7 @@ data class Question(val id: Int, val group: String, val korean: String, val engl
 class QuestionBook(csv: String) {
     val all: List<Question> = Csv.records(csv).mapNotNull { r ->
         val id = r["No"]?.toIntOrNull() ?: return@mapNotNull null
-        Question(id, r["갈래"].orEmpty(), r["한글"].orEmpty(), r["영문"].orEmpty())
+        Question(id, r["갈래"].orEmpty(), r["한글"].orEmpty(), r["영문"].orEmpty(), Langs.extra(r))
     }
 
     fun byId(id: Int): Question? = all.firstOrNull { it.id == id }

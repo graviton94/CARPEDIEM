@@ -49,14 +49,19 @@ data class DynamicColor(val light: Color, val dark: Color) {
 data class TypeToken(val size: TextUnit, val family: Family, val weight: FontWeight, val tracking: Float) {
     enum class Family { Serif, Text }
 
-    /** 명조는 글에 한글이 있으면 Noto Serif KR, 아니면 Lora. (Compose 는 글자별 대체 서체를 지정할 수 없음) */
+    /**
+     * 명조: 글에 한글이 있으면 Noto Serif KR, 가나 · 한자가 있으면 폰의 말에 따라 Noto Serif JP (일본어) · TC (번체 중국어) · KR (그 밖), 아니면 Lora.
+     * (Compose 는 글자별 대체 서체를 지정할 수 없음)
+     */
     fun style(text: String? = null, scale: Float = 1f): TextStyle {
         val family = when (this.family) {
             Family.Text -> FontFamily.Default
             Family.Serif -> when {
-                text == null || text.none(::isHangul) -> Fonts.lora
+                text == null || text.none { isHangul(it) || isCjk(it) } -> Fonts.lora
                 // 앱에 넣은 명조에 없는 글자가 하나라도 있으면 문장 전체를 기본 글꼴로 (글자마다 글꼴이 섞이지 않게)
-                text.all { !isHangul(it) || it in Fonts.serifKrChars } -> Fonts.notoSerifKr
+                text.any(::isHangul) -> if (text.all { !isHangul(it) || it in Fonts.serifKrChars }) Fonts.notoSerifKr else FontFamily.Default
+                Fonts.lang == "ja" -> if (text.all { !isCjk(it) || it in Fonts.serifJpChars }) Fonts.notoSerifJp else FontFamily.Default
+                Fonts.lang == "zh-TW" -> if (text.all { !isCjk(it) || it in Fonts.serifTcChars }) Fonts.notoSerifTc else FontFamily.Default
                 else -> FontFamily.Default
             }
         }
@@ -67,11 +72,20 @@ data class TypeToken(val size: TextUnit, val family: Family, val weight: FontWei
 }
 
 private fun isHangul(c: Char) = c in '가'..'힣' || c in 'ㄱ'..'ㆎ'
+/** 가나 · 한자 · 전각 문장부호 (U+3000 ~ U+9FFF, 전각 영숫자). */
+private fun isCjk(c: Char) = c in '\u3000'..'\u9FFF' || c in '\uFF00'..'\uFFEF'
 
 object Fonts {
     val serifKrChars: Set<Char> by lazy { SERIF_KR_CHARS.toHashSet() }
     val lora = FontFamily(Font(R.font.lora_medium, FontWeight.Medium), Font(R.font.lora_semibold, FontWeight.SemiBold), Font(R.font.lora_semibold, FontWeight.Bold))
     val notoSerifKr = FontFamily(Font(R.font.notoserifkr_medium, FontWeight.Medium), Font(R.font.notoserifkr_semibold, FontWeight.SemiBold), Font(R.font.notoserifkr_semibold, FontWeight.Bold))
+    // 일본어 · 번체 중국어 명조는 한 굵기 (앱 크기를 아끼려고)
+    val serifJpChars: Set<Char> by lazy { SERIF_JP_CHARS.toHashSet() }
+    val serifTcChars: Set<Char> by lazy { SERIF_TC_CHARS.toHashSet() }
+    val notoSerifJp = FontFamily(Font(R.font.notoserifjp_medium, FontWeight.Medium), Font(R.font.notoserifjp_medium, FontWeight.SemiBold), Font(R.font.notoserifjp_medium, FontWeight.Bold))
+    val notoSerifTc = FontFamily(Font(R.font.notoseriftc_medium, FontWeight.Medium), Font(R.font.notoseriftc_medium, FontWeight.SemiBold), Font(R.font.notoseriftc_medium, FontWeight.Bold))
+    /** 앱의 말 (폰 언어를 따라, 바뀌면 앱이 다시 시작됨). */
+    val lang: String get() = java.util.Locale.getDefault().let { io.github.graviton94.carpediem.core.Langs.of(it.language, it.country, it.script) }
 }
 
 /**
