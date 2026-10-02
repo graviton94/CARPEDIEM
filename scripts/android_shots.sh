@@ -94,6 +94,8 @@ for loc in ko-KR en-US ja-JP zh-TW; do
   open --es cd.now $NOW; sleep 20
   open --ez cd.reset true --es cd.design garden --el cd.seed 2718281 --es cd.birth 2000-05-12 --es cd.sex female --ez cd.meet true --es cd.now $NOW; shot g02_meet 14
   open --ez cd.meet false --es cd.now $NOW;                                         shot g03_home 10
+  open --ez cd.preview true --es cd.now $NOW;                                      shot g04_home_all 10
+  open --ez cd.preview false --es cd.now $NOW; sleep 3
   open --es cd.screen breath --es cd.now $NOW;                                      shot g26_breath_in 3
   open --es cd.care CALM_BREATH --es cd.now $NOW;                                  shot g36_care 14
   open --ez cd.family true --es cd.now $NOW; sleep 4
