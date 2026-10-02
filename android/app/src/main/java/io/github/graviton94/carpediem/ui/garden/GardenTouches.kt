@@ -40,7 +40,7 @@ internal fun TermTouches(touch: TermTouch, now: LocalDateTime, gy: Dp, skyTop: D
     val clock = rememberGardenClock(moving && touch in setOf(TermTouch.BLOSSOM, TermTouch.DRIZZLE, TermTouch.SNOW, TermTouch.HEAT, TermTouch.DEW, TermTouch.THAW, TermTouch.LONG_NIGHT))
     val dark = SkyTime.isDark(now)
     val a0 = T.alpha * (if (dark) T.nightAlpha else 1f)
-    val C = T.Colors
+    val C = Tokens.Garden.TermTouch.Colors
     Canvas(modifier.graphicsLayer()) {
         val u = size.width / Tokens.Garden.unitWidth
         val g = gy.toPx(); val y0 = skyTop.toPx(); val y1 = skyBottom.toPx().coerceAtLeast(y0 + 1f)
