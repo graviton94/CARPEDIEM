@@ -671,10 +671,7 @@
     "gardenYear.title": "{year}년, 하루의 정원",
     "gardenYear.album": "한 해를 한 장으로",
     "gardenYear.met": "만난 순간",
-    "gardenYear.empty": "올해 정원에 놓인 것들이 여기 모여요.",
-    "words.read": "소리 내어 읽기",
-    "words.readOff": "소리를 켜면 읽어 드려요.",
-    "words.readNone": "이 폰에서는 읽어 드릴 수 없어요."
+    "gardenYear.empty": "올해 정원에 놓인 것들이 여기 모여요."
   },
   "en": {
     "tagline": "Cherish today.",
@@ -1348,9 +1345,6 @@
     "gardenYear.title": "{year} in the garden",
     "gardenYear.album": "The year on one page",
     "gardenYear.met": "Moments met",
-    "gardenYear.empty": "What came to the garden this year gathers here.",
-    "words.read": "Read aloud",
-    "words.readOff": "Turn sound on and I’ll read it to you.",
-    "words.readNone": "This phone can’t read it aloud."
+    "gardenYear.empty": "What came to the garden this year gathers here."
   }
 }
