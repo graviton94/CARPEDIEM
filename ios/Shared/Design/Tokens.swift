@@ -382,7 +382,7 @@ enum Tokens {
                 static let heat: UInt32 = 0xF4C37AFF
                 static let ice: UInt32 = 0xDDE8F0FF
             }
-            static let alpha: CGFloat = 0.6
+            static let alpha: CGFloat = 0.38
             static let nightAlpha: CGFloat = 0.7
             static let petals: CGFloat = 6.0
             static let drops: CGFloat = 26.0

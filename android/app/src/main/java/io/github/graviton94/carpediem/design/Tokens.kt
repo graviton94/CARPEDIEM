@@ -377,7 +377,7 @@ object Tokens {
                 val heat = Color(0xFFF4C37A)
                 val ice = Color(0xFFDDE8F0)
             }
-            const val alpha = 0.6f
+            const val alpha = 0.38f
             const val nightAlpha = 0.7f
             const val petals = 6.0f
             const val drops = 26.0f
