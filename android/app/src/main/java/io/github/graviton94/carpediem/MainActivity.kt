@@ -98,6 +98,8 @@ class MainActivity : ComponentActivity() {
             intent?.removeExtra(EXTRA_OPEN); intent?.removeExtra(EXTRA_MORNING_BREATH)
             openFrom(open, state) ?: s
         }
+        // 캡처 스크립트가 연 실행 (cd.* 표) 에서는 처음 알림 허락을 묻지 않음
+        val scripted = BuildConfig.DEBUG && intent?.extras?.keySet()?.any { it.startsWith("cd.") } == true
         setContent {
             BoxWithConstraints {
                 val screenW = maxWidth
@@ -118,6 +120,15 @@ class MainActivity : ComponentActivity() {
                         if (state.design == Design.GARDEN && night) enableEdgeToEdge(SystemBarStyle.dark(android.graphics.Color.TRANSPARENT), SystemBarStyle.dark(android.graphics.Color.TRANSPARENT))
                         else if (state.design == Design.GARDEN || !sysDark) enableEdgeToEdge(SystemBarStyle.light(android.graphics.Color.TRANSPARENT, paper), SystemBarStyle.light(android.graphics.Color.TRANSPARENT, paper))
                         else enableEdgeToEdge(SystemBarStyle.dark(android.graphics.Color.TRANSPARENT), SystemBarStyle.dark(android.graphics.Color.TRANSPARENT))
+                    }
+
+                    // 정원에 처음 들어온 날 한 번: 알림 허락을 묻고, 허락하면 아침 · 저녁 · 전날 알림을 켬 (캡처용 시각을 정한 실행에서는 묻지 않음)
+                    val askNotify = androidx.activity.compose.rememberLauncherForActivityResult(androidx.activity.result.contract.ActivityResultContracts.RequestPermission()) { ok -> state.notifyAsked(ok) }
+                    LaunchedEffect(screen == Screen.Main, state.profile != null, state.meetPending) {
+                        if (screen == Screen.Main && state.profile != null && !state.meetPending && !scripted && state.fixedNow == null && !state.store.notifyAsked) {
+                            if (android.os.Build.VERSION.SDK_INT >= 33 && !io.github.graviton94.carpediem.notify.Daily.allowed(this@MainActivity)) askNotify.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+                            else state.notifyAsked(true)
+                        }
                     }
 
                     // 돌의 페이지로는 돌이 다가오듯 부드럽게 (옅어지며 조금 커짐)

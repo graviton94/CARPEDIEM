@@ -94,6 +94,10 @@ class Store(context: Context) {
         set(v) = prefs.edit().putBoolean("notify", v).apply()
 
     /** 저녁 한 줄 알림 (그날 한 줄을 아직 보내지 않았을 때만, 고른 시각에). 기본 꺼짐. */
+    var notifyAsked: Boolean
+        get() = prefs.getBoolean("notifyAsked", false)
+        set(v) = prefs.edit().putBoolean("notifyAsked", v).apply()
+
     var eveningNotify: Boolean
         get() = prefs.getBoolean("eveningNotify", false)
         set(v) = prefs.edit().putBoolean("eveningNotify", v).apply()
