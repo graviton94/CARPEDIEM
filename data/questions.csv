@@ -1,61 +1,61 @@
-No,갈래,한글,영문
-1,scene,오늘 본 하늘은 어떤 색이었나요?,What color was the sky today?
-2,scene,오늘 먹은 것 중 가장 맛있던 건?,The tastiest thing you ate today?
-3,scene,오늘 가장 오래 머문 곳은?,Where did you spend most of today?
-4,scene,오늘 들은 노래가 있나요?,Did you hear a song today?
-5,scene,오늘 마신 음료는?,What did you drink today?
-6,scene,오늘 입은 옷은 무슨 색이었나요?,What color did you wear today?
-7,scene,오늘 길에서 본 것 하나는?,One thing you saw on the way today?
-8,scene,오늘 누구와 이야기했나요?,Who did you talk with today?
-9,scene,오늘 사진으로 남기고 싶은 장면은?,A scene from today worth a photo?
-10,scene,오늘 처음 본 것이 있나요?,Did you see anything new today?
-11,scene,오늘 걸어 본 길은?,A path you walked today?
-12,scene,오늘 가장 많이 한 말은?,What did you say most today?
-13,scene,오늘 들른 곳 하나는?,One place you stopped by today?
-14,scene,오늘 손에 가장 많이 쥔 것은?,What did you hold most today?
-15,scene,오늘 마주친 동물이 있나요?,Did you meet any animals today?
-16,mood,오늘 기분을 날씨로 말하면?,Today's mood as weather?
-17,mood,오늘 기분을 색으로 말하면?,Today's mood as a color?
-18,mood,오늘 기분을 한 단어로?,Today's mood in one word?
-19,mood,오늘 웃었던 순간은?,When did you smile today?
-20,mood,오늘 가장 편했던 때는?,When did you feel most at ease?
-21,mood,오늘 살짝 설렜던 순간은?,A moment that made you a little excited?
-22,mood,오늘 가장 좋았던 시간대는?,What time of day felt best?
-23,mood,오늘 뿌듯했던 작은 일은?,A small thing you're proud of today?
-24,mood,오늘 나를 편하게 해 준 것은?,What helped you relax today?
-25,mood,오늘 조금 신났던 일은?,Something that cheered you up today?
-26,mood,오늘 하루를 음식에 비유하면?,If today were a food?
-27,mood,오늘 하루를 계절로 말하면?,Today as a season?
-28,mood,오늘의 나에게 칭찬 한마디?,One compliment for yourself today?
-29,mood,오늘 기분을 노래 제목으로 한다면?,Today's mood as a song title?
-30,mood,오늘 나를 가볍게 해 준 것은?,What made today feel lighter?
-31,joy,오늘 고마웠던 작은 일은?,A small thing you were thankful for?
-32,joy,오늘 발견한 작은 기쁨은?,A small joy you found today?
-33,joy,오늘 귀여웠던 것은?,Something cute you saw today?
-34,joy,오늘 좋은 냄새가 났던 곳은?,Somewhere that smelled nice today?
-35,joy,오늘 들은 좋은 말은?,A kind word you heard today?
-36,joy,오늘 누군가에게 건넨 인사는?,A greeting you gave today?
-37,joy,오늘의 작은 행운은?,Today's little luck?
-38,joy,오늘 나를 위해 한 일은?,Something you did for yourself today?
-39,joy,오늘 좋아하는 것을 했나요?,Did you do something you love today?
-40,joy,오늘 예뻤던 것 하나는?,One pretty thing from today?
-41,joy,오늘 따뜻했던 순간은?,A warm moment today?
-42,joy,오늘 누군가를 웃게 했나요?,Did you make someone smile today?
-43,joy,오늘 좋았던 소리는?,A nice sound from today?
-44,joy,오늘 잠깐 쉬어 간 순간은?,A moment you paused today?
-45,joy,오늘 마음에 든 물건은?,Something you liked today?
-46,now,지금 들리는 소리는?,What do you hear right now?
-47,now,지금 곁에 있는 것 하나는?,One thing beside you now?
-48,now,지금 먹고 싶은 것은?,What would you like to eat now?
-49,now,지금 듣고 싶은 노래는?,A song you'd like to hear now?
-50,now,지금 있는 곳은 어디인가요?,Where are you right now?
-51,now,지금 창밖은 어떤가요?,What's outside the window now?
-52,now,지금 가 보고 싶은 곳은?,Where would you like to be now?
-53,now,지금 마시고 싶은 것은?,What would you like to drink now?
-54,now,지금 마음은 몇 도쯤일까요?,How warm does your heart feel now?
-55,now,지금 떠오르는 사람은?,Who comes to mind right now?
-56,now,지금 하고 싶은 것 하나는?,One thing you'd like to do now?
-57,now,지금 보이는 색 하나는?,One color you can see now?
-58,now,내일 기대되는 것 하나는?,One thing to look forward to tomorrow?
-59,now,잠들기 전 하고 싶은 일은?,Something to do before sleep?
-60,now,오늘에게 인사 한마디를 건넨다면?,Say goodnight to today in a line.
+No,갈래,한글,영문,日本語
+1,scene,오늘 본 하늘은 어떤 색이었나요?,What color was the sky today?,今日の空は、どんな色でしたか？
+2,scene,오늘 먹은 것 중 가장 맛있던 건?,The tastiest thing you ate today?,今日食べたもので、いちばんおいしかったのは？
+3,scene,오늘 가장 오래 머문 곳은?,Where did you spend most of today?,今日いちばん長くいた場所は？
+4,scene,오늘 들은 노래가 있나요?,Did you hear a song today?,今日、耳にした歌はありますか？
+5,scene,오늘 마신 음료는?,What did you drink today?,今日飲んだものは？
+6,scene,오늘 입은 옷은 무슨 색이었나요?,What color did you wear today?,今日の服は何色でしたか？
+7,scene,오늘 길에서 본 것 하나는?,One thing you saw on the way today?,今日、道で見かけたものをひとつ。
+8,scene,오늘 누구와 이야기했나요?,Who did you talk with today?,今日、だれと話しましたか？
+9,scene,오늘 사진으로 남기고 싶은 장면은?,A scene from today worth a photo?,今日、写真に残したい場面は？
+10,scene,오늘 처음 본 것이 있나요?,Did you see anything new today?,今日、はじめて見たものはありますか？
+11,scene,오늘 걸어 본 길은?,A path you walked today?,今日歩いた道は？
+12,scene,오늘 가장 많이 한 말은?,What did you say most today?,今日いちばんよく口にした言葉は？
+13,scene,오늘 들른 곳 하나는?,One place you stopped by today?,今日立ち寄った場所をひとつ。
+14,scene,오늘 손에 가장 많이 쥔 것은?,What did you hold most today?,今日いちばん手にしていたものは？
+15,scene,오늘 마주친 동물이 있나요?,Did you meet any animals today?,今日、出会った動物はいますか？
+16,mood,오늘 기분을 날씨로 말하면?,Today's mood as weather?,今日の気分を天気でいうと？
+17,mood,오늘 기분을 색으로 말하면?,Today's mood as a color?,今日の気分を色でいうと？
+18,mood,오늘 기분을 한 단어로?,Today's mood in one word?,今日の気分をひとことで？
+19,mood,오늘 웃었던 순간은?,When did you smile today?,今日、笑った瞬間は？
+20,mood,오늘 가장 편했던 때는?,When did you feel most at ease?,今日いちばんくつろげたのは、いつ？
+21,mood,오늘 살짝 설렜던 순간은?,A moment that made you a little excited?,今日、ちょっとときめいた瞬間は？
+22,mood,오늘 가장 좋았던 시간대는?,What time of day felt best?,今日いちばんよかった時間帯は？
+23,mood,오늘 뿌듯했던 작은 일은?,A small thing you're proud of today?,今日の小さな「できた」は？
+24,mood,오늘 나를 편하게 해 준 것은?,What helped you relax today?,今日、ほっとさせてくれたものは？
+25,mood,오늘 조금 신났던 일은?,Something that cheered you up today?,今日、ちょっと楽しかったことは？
+26,mood,오늘 하루를 음식에 비유하면?,If today were a food?,今日一日を、食べものにたとえると？
+27,mood,오늘 하루를 계절로 말하면?,Today as a season?,今日を季節でいうと？
+28,mood,오늘의 나에게 칭찬 한마디?,One compliment for yourself today?,今日の自分に、ほめ言葉をひとつ。
+29,mood,오늘 기분을 노래 제목으로 한다면?,Today's mood as a song title?,今日の気分を曲名にするなら？
+30,mood,오늘 나를 가볍게 해 준 것은?,What made today feel lighter?,今日、心を軽くしてくれたものは？
+31,joy,오늘 고마웠던 작은 일은?,A small thing you were thankful for?,今日、ありがたかった小さなことは？
+32,joy,오늘 발견한 작은 기쁨은?,A small joy you found today?,今日見つけた、小さなよろこびは？
+33,joy,오늘 귀여웠던 것은?,Something cute you saw today?,今日、かわいかったものは？
+34,joy,오늘 좋은 냄새가 났던 곳은?,Somewhere that smelled nice today?,今日、いい香りがした場所は？
+35,joy,오늘 들은 좋은 말은?,A kind word you heard today?,今日かけてもらった、うれしい言葉は？
+36,joy,오늘 누군가에게 건넨 인사는?,A greeting you gave today?,今日、だれかにかけたあいさつは？
+37,joy,오늘의 작은 행운은?,Today's little luck?,今日の小さな幸運は？
+38,joy,오늘 나를 위해 한 일은?,Something you did for yourself today?,今日、自分のためにしたことは？
+39,joy,오늘 좋아하는 것을 했나요?,Did you do something you love today?,今日、好きなことはできましたか？
+40,joy,오늘 예뻤던 것 하나는?,One pretty thing from today?,今日のきれいだったものをひとつ。
+41,joy,오늘 따뜻했던 순간은?,A warm moment today?,今日、あたたかかった瞬間は？
+42,joy,오늘 누군가를 웃게 했나요?,Did you make someone smile today?,今日、だれかを笑顔にできましたか？
+43,joy,오늘 좋았던 소리는?,A nice sound from today?,今日、心地よかった音は？
+44,joy,오늘 잠깐 쉬어 간 순간은?,A moment you paused today?,今日、ひと息ついた瞬間は？
+45,joy,오늘 마음에 든 물건은?,Something you liked today?,今日、気に入ったものは？
+46,now,지금 들리는 소리는?,What do you hear right now?,いま聞こえる音は？
+47,now,지금 곁에 있는 것 하나는?,One thing beside you now?,いまそばにあるものをひとつ。
+48,now,지금 먹고 싶은 것은?,What would you like to eat now?,いま食べたいものは？
+49,now,지금 듣고 싶은 노래는?,A song you'd like to hear now?,いま聴きたい歌は？
+50,now,지금 있는 곳은 어디인가요?,Where are you right now?,いまいる場所はどこですか？
+51,now,지금 창밖은 어떤가요?,What's outside the window now?,いま、窓の外はどんな感じ？
+52,now,지금 가 보고 싶은 곳은?,Where would you like to be now?,いま行ってみたい場所は？
+53,now,지금 마시고 싶은 것은?,What would you like to drink now?,いま飲みたいものは？
+54,now,지금 마음은 몇 도쯤일까요?,How warm does your heart feel now?,いまのこころは、何度くらい？
+55,now,지금 떠오르는 사람은?,Who comes to mind right now?,いま思い浮かぶ人は？
+56,now,지금 하고 싶은 것 하나는?,One thing you'd like to do now?,いましたいことをひとつ。
+57,now,지금 보이는 색 하나는?,One color you can see now?,いま見える色をひとつ。
+58,now,내일 기대되는 것 하나는?,One thing to look forward to tomorrow?,明日、楽しみなことをひとつ。
+59,now,잠들기 전 하고 싶은 일은?,Something to do before sleep?,眠る前にしたいことは？
+60,now,오늘에게 인사 한마디를 건넨다면?,Say goodnight to today in a line.,今日に、ひとことあいさつするなら？
