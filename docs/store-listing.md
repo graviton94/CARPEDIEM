@@ -36,8 +36,8 @@
 
 ## English
 
-- **App name:** Carpe Diem · Days Left & Today’s Line
-- **Short description:** Quietly count the days left, and let today’s feeling go in a single line. Everything stays right here.
+- **App name (30):** Carpe Diem · Days Left Garden
+- **Short description (80):** Count the days left, quietly. Let today go in a single line. All stays here.
 
 **Full description**
 

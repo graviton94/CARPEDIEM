@@ -718,7 +718,7 @@ private fun rememberTyping(state: AppState, main: String, second: String?): Int 
     val key = main + "\n" + second.orEmpty()
     val ctx = LocalContext.current
     val still = remember { android.provider.Settings.Global.getFloat(ctx.contentResolver, android.provider.Settings.Global.ANIMATOR_DURATION_SCALE, 1f) == 0f }
-    val done = still || state.typedQuote == key
+    val done = still || state.debugTyped || state.typedQuote == key
     var n by remember(key) { mutableStateOf(if (done) Int.MAX_VALUE else 0) }
     LaunchedEffect(key) {
         if (done) return@LaunchedEffect

@@ -237,6 +237,7 @@ private fun MainActivity.debugSetup(state: AppState): Screen {
     if (x.getBooleanExtra("cd.wish", false)) io.github.graviton94.carpediem.core.Letters.due((state.fixedNow ?: LocalDateTime.now()).toLocalDate())?.minusMonths(3)?.let { d -> state.saveWish("%04d-%02d".format(d.year, d.monthValue), getString(R.string.wish_sample)) }
     state.debugOpenYear = x.getBooleanExtra("cd.openYear", false)
     state.debugOpenMonth = x.getBooleanExtra("cd.openMonth", false)
+    state.debugTyped = x.getBooleanExtra("cd.typed", false)
     state.homePage = if (state.debugOpenYear || state.debugOpenMonth) 2 else x.getIntExtra("cd.page", 0)
     state.refreshQuestion()
     if (x.getBooleanExtra("cd.question", false)) state.previewQuestion()
