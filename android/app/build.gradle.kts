@@ -45,7 +45,8 @@ android {
             signingConfig = signingConfigs.findByName("upload") ?: signingConfigs.findByName("sideload") ?: signingConfigs.getByName("debug")   // 키가 없으면 (내 컴퓨터 · 키 없는 빌드) 시험용 debug 키
         }
         debug {
-            signingConfig = signingConfigs.getByName("sideload")
+            // 직접 설치용 키가 있으면 (Secrets) 그것으로, 없으면 기본 debug 키
+            signingConfig = signingConfigs.findByName("sideload") ?: signingConfigs.getByName("debug")
         }
     }
 
