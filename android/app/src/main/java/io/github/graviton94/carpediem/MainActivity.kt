@@ -244,18 +244,25 @@ private fun MainActivity.debugSetup(state: AppState): Screen {
     if (x.getBooleanExtra("cd.family", false)) {
         val today = (state.fixedNow ?: LocalDateTime.now()).toLocalDate()
         state.people.forEach { state.removePerson(it.id) }
+        // 시험용 이름도 그 나라 말로 (스토어 캡처에 한글 이름이 섞이지 않게)
+        val n = when (io.github.graviton94.carpediem.data.Words.lang(this)) {
+            "en" -> listOf("Sis", "Bean", "Mom", "Dad", "Grandma", "Bro", "Mittens", "Jamie")
+            "ja" -> listOf("妹", "まめ", "ママ", "パパ", "おばあちゃん", "兄", "ミケ", "ゆう")
+            "zh-TW" -> listOf("妹妹", "豆豆", "媽媽", "爸爸", "奶奶", "哥哥", "咪咪", "小宇")
+            else -> listOf("동생", "콩이", "엄마", "아빠", "할머니", "형", "나비", "지우")
+        }
         listOf(
-            Person("sib00001", "동생", Kind.PERSON, birth = LocalDate.of(1999, 4, 2), sex = Sex.FEMALE, country = "KR", seed = 12345, metOn = today),
-            Person("pet00001", "콩이", Kind.PET, Species.DOG, LocalDate.of(2018, 5, 5), seed = 99, metOn = today),
-            Person("mom00001", "엄마", Kind.PERSON, birth = today.withYear(1964), sex = Sex.FEMALE, country = "KR", seed = 4254103021, metOn = today),
-            Person("dad00001", "아빠", Kind.PERSON, birth = LocalDate.of(1961, 8, 20), sex = Sex.MALE, country = "KR", seed = 31337, metOn = today),
+            Person("sib00001", n[0], Kind.PERSON, birth = LocalDate.of(1999, 4, 2), sex = Sex.FEMALE, country = "KR", seed = 12345, metOn = today),
+            Person("pet00001", n[1], Kind.PET, Species.DOG, LocalDate.of(2018, 5, 5), seed = 99, metOn = today),
+            Person("mom00001", n[2], Kind.PERSON, birth = today.withYear(1964), sex = Sex.FEMALE, country = "KR", seed = 4254103021, metOn = today),
+            Person("dad00001", n[3], Kind.PERSON, birth = LocalDate.of(1961, 8, 20), sex = Sex.MALE, country = "KR", seed = 31337, metOn = today),
         ).forEach { state.savePerson(it) }
         // cd.full: 정원을 가득 (나 + 8)
         if (x.getBooleanExtra("cd.full", false)) listOf(
-            Person("gma00001", "할머니", Kind.PERSON, birth = LocalDate.of(1938, 2, 11), sex = Sex.FEMALE, country = "KR", seed = 777, metOn = today),
-            Person("bro00001", "형", Kind.PERSON, birth = LocalDate.of(1996, 11, 3), sex = Sex.MALE, country = "KR", seed = 2024, metOn = today),
-            Person("cat00001", "나비", Kind.PET, Species.CAT, LocalDate.of(2021, 3, 1), seed = 5150, metOn = today),
-            Person("frd00001", "지우", Kind.PERSON, birth = LocalDate.of(2001, 7, 9), sex = Sex.OTHER, country = "KR", seed = 8080, metOn = today),
+            Person("gma00001", n[4], Kind.PERSON, birth = LocalDate.of(1938, 2, 11), sex = Sex.FEMALE, country = "KR", seed = 777, metOn = today),
+            Person("bro00001", n[5], Kind.PERSON, birth = LocalDate.of(1996, 11, 3), sex = Sex.MALE, country = "KR", seed = 2024, metOn = today),
+            Person("cat00001", n[6], Kind.PET, Species.CAT, LocalDate.of(2021, 3, 1), seed = 5150, metOn = today),
+            Person("frd00001", n[7], Kind.PERSON, birth = LocalDate.of(2001, 7, 9), sex = Sex.OTHER, country = "KR", seed = 8080, metOn = today),
         ).forEach { state.savePerson(it) }
     }
     // 캡처용: 위젯 고르는 화면의 미리보기 그림 (실제 위젯을 그대로 그려 파일로)

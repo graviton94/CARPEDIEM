@@ -86,6 +86,25 @@ ls "$OUT/anr" 2>/dev/null | head
 ls -la "$OUT"
 }
 
+# STORE=1: 스토어 그림용 장면만, 네 말로 한 번에 → $OUT/store/<말>/ (scripts/build_store.py)
+store_scenes() {
+for loc in ko-KR en-US ja-JP zh-TW; do
+  adb shell cmd locale set-app-locales $P --locales $loc 2>/dev/null
+  local base=$OUT; OUT=$base/store/$loc; mkdir -p "$OUT"
+  open --es cd.now $NOW; sleep 20
+  open --ez cd.reset true --es cd.design garden --el cd.seed 2718281 --es cd.birth 2000-05-12 --es cd.sex female --ez cd.meet true --es cd.now $NOW; shot g02_meet 14
+  open --ez cd.meet false --es cd.now $NOW;                                         shot g03_home 10
+  open --es cd.screen breath --es cd.now $NOW;                                      shot g26_breath_in 3
+  open --es cd.care CALM_BREATH --es cd.now $NOW;                                  shot g36_care 14
+  open --ez cd.family true --es cd.now $NOW; sleep 4
+  open --es cd.now 2026-09-29T21:00;                                                shot g54_birthday_eve 8
+  open --ez cd.months true --ez cd.openMonth true --es cd.now 2026-09-28T15:00;  shot g49_record_month 6
+  open --ez cd.openMonth true --es cd.now 2026-09-28T22:30;                        shot g50_record_month_night 6
+  OUT=$base
+done
+}
+if [ -n "${STORE:-}" ]; then store_scenes; finish; exit 0; fi
+
 # QUICK=1 ([quick-shots] 커밋): 타자기 · 위젯 미리보기만 (5분 남짓)
 if [ -n "${QUICK:-}" ]; then quick_scenes; finish; exit 0; fi
 
