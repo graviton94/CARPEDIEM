@@ -136,18 +136,19 @@ No account, no ads, no server. Everything stays right here.
 安靜的 App
 沒有帳號，沒有廣告，也沒有伺服器。所有紀錄都只留在這裡。
 
-## 스크린샷 6장 (CI 캡처에서)
+## 스크린샷 6장 · 그래픽 이미지 (네 말)
 
-만든 그림: `docs/store/` (스크린샷 1080 × 1920 여섯 장, 그래픽 이미지 1024 × 500 한국어 · 영어). 다시 만들기: `python3 scripts/build_store.py <screenshots-android 클론>`
+만든 그림: `docs/store/<말>/` (ko · en · ja · zh-TW 마다 스크린샷 1080 × 1920 여섯 장 + 그래픽 이미지 `feature.png` 1024 × 500). 아이콘은 `docs/store/icon-512.png` 하나.
+다시 만들기: Actions › Android screenshots 를 **store** 켜고 실행 → `python3 scripts/build_store.py <screenshots-android 클론>`
 
-| # | 캡처 | 위에 얹을 한 줄 |
-|---|---|---|
-| 1 | g03_home | 남은 날을 조용히 세는 정원 |
-| 2 | g02_meet | 세상에 하나뿐인 돌, 하루 |
-| 3 | g36_care | 기쁨도 슬픔도 한 줄에 실어 보내요 |
-| 4 | g49_record_month | 그 달의 별자리를 따라 피는 마음 |
-| 5 | g26_breath_in | 하루를 여는 숨, 하루를 마무리하는 명상 |
-| 6 | g54_birthday_eve | 가족의 돌과 함께, 밤에는 별빛 아래 |
+| # | 캡처 | 한국어 | English | 日本語 | 繁體中文 |
+|---|---|---|---|---|---|
+| 1 | g03_home | 남은 날을 조용히 세는 정원 | A garden that quietly counts your days | 残りの日々を静かに数える庭 | 靜靜數著剩下日子的庭院 |
+| 2 | g02_meet | 세상에 하나뿐인 돌, 하루 | Haru, a stone like no other | 世界にひとつだけの石、ハル | 世上獨一無二的石頭，小日 |
+| 3 | g36_care | 기쁨도 슬픔도 한 줄에 실어 보내요 | Joy or sorrow, let it go in one line | うれしさも悲しみも、ひとことにのせて | 喜悅或悲傷，都寫進一句話裡放下 |
+| 4 | g49_record_month | 그 달의 별자리에서 피어나는 마음 | Feelings bloom along the month’s stars | その月の星座にそって咲く気持ち | 心情沿著當月的星座綻放 |
+| 5 | g26_breath_in | 하루를 여는 숨, 하루를 마무리하는 명상 | A breath to open the day, a calm to close it | 一日をひらく呼吸、一日をとじる瞑想 | 開啟一天的呼吸，結束一天的冥想 |
+| 6 | g54_birthday_eve | 가족의 돌과 함께, 밤에는 별빛 아래 | Beside your family’s stones, under the stars | 家族の石と一緒に、夜は星あかりの下で | 和家人的石頭一起，夜裡在星光下 |
 
 ## 데이터 보안 (Play Console 설문 답)
 

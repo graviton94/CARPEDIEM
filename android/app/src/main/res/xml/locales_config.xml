@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 설정 › 앱 › 언어 에서 고를 수 있는 말 (Android 13+). values 가 영어. -->
+<locale-config xmlns:android="http://schemas.android.com/apk/res/android">
+    <locale android:name="en" />
+    <locale android:name="ko" />
+    <locale android:name="ja" />
+    <locale android:name="zh-TW" />
+    <locale android:name="zh-HK" />
+</locale-config>

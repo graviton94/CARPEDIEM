@@ -58,6 +58,8 @@ android {
     }
     kotlinOptions { jvmTarget = "17" }
     buildFeatures { compose = true; buildConfig = true }
+    // 앱 안에서 · 설정에서 말을 바꿔도 글자가 빠지지 않게, 모든 말을 한 번에 받음
+    bundle { language { enableSplit = false } }
 }
 
 dependencies {

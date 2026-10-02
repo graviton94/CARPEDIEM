@@ -29,12 +29,13 @@ Play 앱 서명(Play App Signing)을 켜 두면 Google 이 배포용 키를 관�
 ## 5. Play Console 등록 순서 (체크리스트)
 
 - [ ] 개발자 계정 (개인, 새 Google 계정) · 본인 확인
-- [ ] 앱 만들기: 이름 ‘하루의 정원’ (한국어) / ‘Carpe Diem’ (영어), 무료, 앱
-- [ ] 스토어 등록정보: 문안 `docs/store-listing.md`, 아이콘 512 × 512, 그래픽 이미지 `docs/store/feature-*.png`, 스크린샷 `docs/store/screenshot-*.png`
+- [ ] 앱 만들기: 기본 언어 영어 (en-US) ‘Carpe Diem’, 무료, 앱. 번역: 한국어 ‘하루의 정원’ · 일본어 ‘ハルの庭’ · 중국어(번체) ‘小日的庭院’
+- [ ] 스토어 등록정보: 문안 `docs/store-listing.md`, 아이콘 512 × 512, 말마다 그래픽 이미지 · 스크린샷 `docs/store/<ko|en|ja|zh-TW>/` (영어는 기본 등록정보, 나머지는 ‘번역 추가’ 로 ko-KR · ja-JP · zh-TW, 홍콩용 zh-HK 는 zh-TW 그대로)
 - [x] 개인정보처리방침 URL: https://graviton94.github.io/privacy/ (공개 저장소 graviton94.github.io). 문의는 Play 의 개발자 연락처로
 - [ ] 데이터 보안: 수집 · 공유하는 데이터 없음, 기기 안에만 저장, 결제는 Google Play
 - [ ] 콘텐츠 등급 설문 (폭력 · 도박 없음), 대상 연령 13세 이상, 광고 없음
 - [ ] 인앱 상품 3개 (4번 표)
 - [ ] 내부 테스트 트랙에 AAB (3번) → 폰에서 받아 확인 → 비공개 테스트 (개인 계정은 테스터 12명 · 14일 이상) → 프로덕션
-- [ ] targetSdk 36 (빌드에 반영됨)
+- [x] targetSdk 36 (빌드에 반영됨)
+- [x] 말 네 가지: 설정 › 앱 › 언어 에서 고를 수 있고 (locales_config), AAB 는 말을 나누지 않아 바꿔도 글자가 빠지지 않음
 - [x] 개발자 모드: Play 업로드 키로 만든 빌드 (`BuildConfig.DEV_TOOLS = false`) 에서는 켜지지 않음. 직접 설치 APK 에서는 그대로
