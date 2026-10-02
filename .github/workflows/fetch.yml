@@ -1,0 +1,20 @@
+name: Fetch prototype images
+# 임시: 새 앱 시안용 공개 도메인 명화 내려받기 (proto-assets 가지에서만, 끝나면 가지째 지움)
+on:
+  push:
+    branches: [proto-assets]
+permissions:
+  contents: write
+jobs:
+  fetch:
+    if: "!contains(github.event.head_commit.message, '[images]')"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          mkdir -p img
+          UA="CarpeDiemPrototype/0.1 (https://github.com/graviton94)"
+          curl -sfL -A "$UA" -o img/proverbs.jpg "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Pieter_Brueghel_the_Elder_-_The_Dutch_Proverbs_-_Google_Art_Project.jpg/4000px-Pieter_Brueghel_the_Elder_-_The_Dutch_Proverbs_-_Google_Art_Project.jpg" || curl -sfL -A "$UA" -o img/proverbs.jpg "https://commons.wikimedia.org/wiki/Special:FilePath/Pieter_Brueghel_the_Elder_-_The_Dutch_Proverbs_-_Google_Art_Project.jpg?width=4000"
+          ls -la img; file img/*
+          git config user.name "github-actions[bot]"; git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add img && git commit -m "[images] prototype images" && git push
