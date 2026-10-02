@@ -146,12 +146,12 @@ fun StoneScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, id: S
             }
             // 그 사람의 인생 달력 (조약돌): 함께한 해는 호박빛 테두리, 남은 칸은 켜야만
             if (birth != null) {
-                var grid by remember { mutableStateOf(GridScale.YEARS) }
+                var grid by remember { mutableStateOf(GridScale.MONTHS) }
                 val exp = if (me) profile.expectancy(state.store.table) else state.store.expectancy(person!!)
                 val snap = LifeSnapshot(birth, exp, now)
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     TokenText(stringResource(R.string.stone_calendar, name), Tokens.TypeScale.headline, Modifier.weight(1f))
-                    listOf(GridScale.WEEKS, GridScale.MONTHS, GridScale.YEARS).forEachIndexed { i, g -> GardenChip(Labels.gridShort(ctx, g), g == grid, seed = 874 + i) { grid = g } }
+                    GridScale.entries.forEachIndexed { i, g -> GardenChip(Labels.gridShort(ctx, g), g == grid, seed = 874 + i) { grid = g } }
                 }
                 val cols = when (grid) { GridScale.WEEKS -> Tokens.Grid.weeksColumns; GridScale.MONTHS -> Tokens.Grid.monthsColumns; GridScale.YEARS -> Tokens.Grid.yearsColumns }
                 val shared = if (me) Int.MAX_VALUE else LifeSnapshot(birth, exp, Family.togetherSince(profile.birthDate, person!!).atStartOfDay()).lived(grid.unit)

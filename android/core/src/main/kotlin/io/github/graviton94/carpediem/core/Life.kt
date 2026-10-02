@@ -14,7 +14,8 @@ enum class Sex { OTHER, MALE, FEMALE }
 enum class LifeUnit { DAYS, WEEKS, MONTHS, YEARS }
 
 /** 인생 달력 한 칸의 크기. 열 수는 디자인 토큰에서 온다. */
-enum class GridScale(val unit: LifeUnit) { MONTHS(LifeUnit.MONTHS), YEARS(LifeUnit.YEARS), WEEKS(LifeUnit.WEEKS) }
+/** 작은 칸부터: 주 → 개월 → 년 (고르는 곳마다 이 순서). 저장은 이름으로 해서 순서를 바꿔도 안전. */
+enum class GridScale(val unit: LifeUnit) { WEEKS(LifeUnit.WEEKS), MONTHS(LifeUnit.MONTHS), YEARS(LifeUnit.YEARS) }
 
 enum class Season {
     SPRING, SUMMER, AUTUMN, WINTER;

@@ -63,8 +63,10 @@ class Store(context: Context) {
         get() = runCatching { LifeUnit.valueOf(prefs.getString("unit", null)!!) }.getOrDefault(LifeUnit.DAYS)
         set(v) = prefs.edit().putString("unit", v.name).apply()
 
+    // 인생 달력은 개월로 보기가 기본. 예전 기본값이 남아 있으면 한 번만 개월로 맞춤
     var grid: GridScale
-        get() = runCatching { GridScale.valueOf(prefs.getString("grid", null)!!) }.getOrDefault(GridScale.MONTHS)
+        get() { if (!prefs.getBoolean("gridMonths", false)) prefs.edit().putBoolean("gridMonths", true).putString("grid", GridScale.MONTHS.name).apply()
+            return runCatching { GridScale.valueOf(prefs.getString("grid", null)!!) }.getOrDefault(GridScale.MONTHS) }
         set(v) = prefs.edit().putString("grid", v.name).apply()
 
     var design: Design

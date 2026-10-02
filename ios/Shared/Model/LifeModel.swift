@@ -48,7 +48,7 @@ enum LifeUnit: String, CaseIterable, Codable, Identifiable {
 
 /// 인생 달력 한 칸의 크기.
 enum GridScale: String, CaseIterable, Codable, Identifiable {
-    case months, years, weeks
+    case weeks, months, years
 
     var id: String { rawValue }
 
