@@ -50,9 +50,11 @@
 | `Android screenshots` | 커밋 메시지에 `[quick-shots]` · `[full-shots]` 가 있을 때만 | 에뮬레이터 장면별 캡처 → `screenshots-android` 브랜치. `[only q26 q31]` 처럼 적으면 그 장면만 |
 | `iOS` · `TestFlight` · `Screenshots` | 직접 실행할 때만 | iOS 빌드 · 배포 · 캡처 |
 | `Android release` · `Life expectancy` | 직접 실행할 때만 | 스토어용 AAB (업로드 키가 Secrets 에 있을 때) · 기대수명 다시 받기 |
+| `Android` (직접 실행) | 릴리즈할 때만 | APK 를 `android-latest` 릴리즈에 올림 (직접 설치용 키가 있을 때만) |
+| `Android sideload key` | 한 번만 | 직접 설치용 새 서명 키를 만들어 잠근 채 저장소에 |
 
 - core 만 내 컴퓨터에서: `cd android && ./gradlew :core:test`
-- 서명 키 · 암호는 GitHub Secrets 에만 있어요. 저장소에는 넣지 않아요 ([android/keystore/README.md](android/keystore/README.md)).
+- 직접 설치용 서명 키는 암호로 잠근 파일만 저장소에, 그 암호는 GitHub Secrets 에만 있어요 ([android/keystore/README.md](android/keystore/README.md)).
 - APK 설치: [docs/android-install.md](docs/android-install.md) · 시험 순서: [docs/test-guide.md](docs/test-guide.md)
 
 ## 진행 상황

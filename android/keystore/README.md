@@ -1,13 +1,22 @@
 # 직접 설치(APK)용 서명 키
 
-직접 설치하는 APK 전용 키는 **GitHub Secrets 에만** 있습니다 (저장소에는 없음).
+직접 설치하는 APK 는 같은 키로 서명해야 테스터 폰에서 지우지 않고 덮어 설치(업데이트)됩니다.
 
-| Secret | 내용 |
+## 지금 방식 (2026-10)
+
+| 무엇 | 어디에 |
 |---|---|
-| `SIDELOAD_KEYSTORE_BASE64` | 키스토어(.jks) 파일을 base64 로 바꾼 글 |
-| `SIDELOAD_STORE_PASSWORD` | 키스토어 암호 |
-| `SIDELOAD_KEY_PASSWORD` | 키 암호 (별칭은 `sideload`) |
+| 잠긴 키 `sideload.jks.gpg` (AES-256) | 이 폴더 (저장소) |
+| 잠금 암호 `SIDELOAD_PASSPHRASE` (16자 이상, 키스토어 · 키 암호와 같음) | **GitHub Secrets 에만** |
 
-- `android.yml` 이 키를 임시 파일로 풀어 서명합니다. 같은 키로 서명해야 새 APK 로 덮어써 업데이트할 수 있습니다.
-- Secrets 가 없으면 debug 키로 서명된 시험용 APK 만 나오고, 릴리즈(android-latest)는 올리지 않습니다.
-- **Google Play 출시에는 쓰지 않습니다.** Play 는 `ANDROID_UPLOAD_*` (android-release.yml) 을 씁니다.
+- 키는 `Android sideload key (one time)` 워크플로가 GitHub 안에서 만들어, 암호로 잠근 파일만 저장소에 올립니다. 잠그지 않은 키 · 암호는 저장소 · 채팅 · 로그 어디에도 남지 않습니다.
+- `android.yml` 이 빌드할 때 Secrets 의 암호로 풀어 서명합니다. 키나 암호가 없으면 debug 키로 서명된 시험용 APK 만 나오고, 릴리즈(android-latest)는 하지 않습니다.
+- 암호를 잃어버리면 키를 다시 만들어야 하고 (`replace` 켜고 실행), 그때 테스터는 한 번 지웠다 다시 설치해야 합니다. 암호는 비밀번호 관리 앱 등에 따로 적어 두세요.
+
+## 예전 키
+
+예전 직접 설치용 키 (`sideload.jks`, 2026-10 전) 는 저장소 기록에 남아 있고 저장소가 공개였던 동안 드러났으므로 **더 쓰지 않습니다.**
+
+## Google Play
+
+Play 출시에는 이 키를 쓰지 않습니다. Play 는 따로 만드는 업로드 키 (`ANDROID_UPLOAD_*`, android-release.yml) 를 씁니다.
