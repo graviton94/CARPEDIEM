@@ -31,7 +31,7 @@ Play 앱 서명(Play App Signing)을 켜 두면 Google 이 배포용 키를 관�
 - [ ] 개발자 계정 (개인, 새 Google 계정) · 본인 확인
 - [ ] 앱 만들기: 이름 ‘하루의 정원’ (한국어) / ‘Carpe Diem’ (영어), 무료, 앱
 - [ ] 스토어 등록정보: 문안 `docs/store-listing.md`, 아이콘 512 × 512, 그래픽 이미지 `docs/store/feature-*.png`, 스크린샷 `docs/store/screenshot-*.png`
-- [ ] 개인정보처리방침 URL: `docs/privacy.md` 를 공개 주소로 (GitHub Pages 를 켜면 `https://graviton94.github.io/CARPEDIEM/privacy`), 문의 이메일 채우기
+- [x] 개인정보처리방침 URL: https://graviton94.github.io/privacy/ (공개 저장소 graviton94.github.io). 문의는 Play 의 개발자 연락처로
 - [ ] 데이터 보안: 수집 · 공유하는 데이터 없음, 기기 안에만 저장, 결제는 Google Play
 - [ ] 콘텐츠 등급 설문 (폭력 · 도박 없음), 대상 연령 13세 이상, 광고 없음
 - [ ] 인앱 상품 3개 (4번 표)
