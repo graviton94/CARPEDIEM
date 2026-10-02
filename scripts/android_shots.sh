@@ -48,6 +48,15 @@ open --es cd.screen ripple --es cd.now 2026-10-03T15:00; shot q22_breath_ripple 
 open --es cd.screen walk --es cd.now 2026-10-03T15:00; shot q23_breath_walk 10
 open --es cd.screen lantern --es cd.now 2026-10-02T22:40; shot q24_breath_lantern 9
 open --es cd.screen thanks --es cd.now 2026-10-03T15:00; shot q25_breath_flowers 40
+# 절기의 작은 변화 (S1, cd.term) · 실제 해 시각 (S3: 12월 오후 5시 반은 어스름) · 달 모양 · 한 해 한 장 (S2, 12월 마지막 주)
+open --ez cd.preview false --es cd.term sanggang --es cd.now 2026-10-23T15:00; shot q26_term_sanggang 6
+open --es cd.term dongji --es cd.now 2026-12-22T19:30; shot q27_term_dongji 6
+open --es cd.term chunbun --es cd.now 2026-04-15T15:00; shot q28_term_blossom 8
+open --es cd.term soseol --es cd.now 2027-01-12T14:00; shot q29_term_snow 8
+open --es cd.now 2026-12-10T17:30; shot q30_sky_december_1730 5
+open --es cd.now 2026-10-14T21:00; shot q31_moon_crescent 5
+open --es cd.now 2026-10-26T22:00; shot q32_moon_full 5
+open --es cd.now 2026-12-27T15:00; shot q33_year_note 5
 # 위젯 미리보기 그림 (위젯 고르는 화면용): 가족 · 이번 달 기록이 있는 정원으로 실제 위젯을 그려 꺼냄
 open --ez cd.reset true --es cd.design garden --el cd.seed 2718281 --es cd.birth 2000-05-12 --es cd.sex female --ez cd.meet false --ez cd.family true --ez cd.months true --ez cd.widgetShots true
 W=/sdcard/Android/data/$P/files/widgets
