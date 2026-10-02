@@ -22,6 +22,8 @@
   function cardApp(ctx, W, key, D) { hj(ctx, W / D.cardBoxW); piece(ctx, D.cardBoxW / 2, D.cardAtY - 24, 1, key); }
   function sunApp(ctx, W) { hj(ctx, W / 60); sun(ctx, 30, 30, 1.2, "#F6C979"); }
   function moonApp(ctx, W) { hj(ctx, W / 60); moon(ctx, 30, 30, 1.2); }
+  // 둥근 달 60 × 60, 가운데 (30, 30) 반지름 24 = 상자 반의 0.8 (Night.moonDisk)
+  function moonFullApp(ctx, W) { hj(ctx, W / 60); moonFull(ctx, 30, 30, 24); }
   function fiberApp(ctx) { ensureTex(); ctx.drawImage(TEX.fiber, 0, 0); }
   // 우연한 순간 (움직임은 앱이): 무지개 160 × 90 (아래 가운데 80, 84) · 오로라 260 × 60 (가운데 130, 40) · 달팽이 40 × 26 (발 20, 20) · 나비 40 × 40 · 바람 조각 10 × 10
   function rainbowApp(ctx, W) { hj(ctx, W / 160); MOMENT.rainbow(ctx, 80, 84, 1.1); }

@@ -320,6 +320,10 @@
     for (i = 1; i < n; i++) { var a2 = al + Math.PI - (Math.PI - t2) + (2 * (Math.PI - t2)) * i / n; pts.push([cx + Math.cos(a2) * R2, cy + Math.sin(a2) * R2]); }
     var e = pts[n], q0 = pts[n + 1]; if (Math.hypot(q0[0] - e[0], q0[1] - e[1]) > Math.hypot(pts[pts.length - 1][0] - e[0], pts[pts.length - 1][1] - e[1])) pts = pts.slice(0, n + 1).concat(pts.slice(n + 1).reverse());
     paper(ctx, pts, "#F1E4BE", 2410, { sh: 0.3, glow: true }); }
+  // 둥근 달 (앱이 실제 모양대로 오려 씀, S3): 한지 한 장에 아주 옅은 얼룩 둘
+  function moonFull(ctx, x, y, r) { paper(ctx, blob(x, y, r, r, 2412, 0.025), "#F1E4BE", 2412, { sh: 0.3, glow: true });
+    paper(ctx, blob(x - r * 0.28, y - r * 0.18, r * 0.24, r * 0.2, 2413, 0.2), "#E6D6AE", 2413, { rim: 0.2, sh: 0.1 });
+    paper(ctx, blob(x + r * 0.22, y + r * 0.3, r * 0.17, r * 0.14, 2414, 0.2), "#E6D6AE", 2414, { rim: 0.2, sh: 0.1 }); }
   function cloud(ctx, x, y, s, col, seed) { paper(ctx, [blob(x - 12 * s, y, 18 * s, 7 * s, seed, 0.2), blob(x + 8 * s, y - 4 * s, 16 * s, 8 * s, seed + 1, 0.2), blob(x + 22 * s, y + 1 * s, 12 * s, 5 * s, seed + 2, 0.2)], col, seed, { sh: 0.8 }); paper(ctx, blob(x + 2 * s, y + 3 * s, 26 * s, 3.4 * s, seed + 3, 0.15), mixHex(col, "#9AA4B4", 0.18), seed + 3, { rim: 0.5, sh: 0.3 }); }
   function stars(ctx, n, seed, w, h) { var r = R(seed); for (var i = 0; i < n; i++) { var x = r() * w, y = r() * h, big = r() < 0.18; if (big) paper(ctx, star4(x, y, 2.6), "#F6ECCB", seed + i, { rim: 0.2, sh: 0.2, glow: true }); else { ctx.fillStyle = "rgba(255,248,226," + (0.4 + r() * 0.5) + ")"; ctx.beginPath(); ctx.arc(x, y, 0.5 + r() * 0.7, 0, 7); ctx.fill(); } } }
 

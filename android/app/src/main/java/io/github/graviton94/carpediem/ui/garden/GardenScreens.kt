@@ -403,7 +403,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 val sx = lerp((u * G.Layout.sunStart).value, (u * G.Layout.sunEnd).value, t).dp
                 val sy = base - arc * sin(t * Math.PI).toFloat()
                 if (day) Image(GardenArt.sun(ctx), null, Modifier.offset(sx - r, sy - r).size(r * 2))
-                else MoonShape(GardenArt.moon(ctx), SkyTime.moonPhase(now), Modifier.offset(sx - r, sy - r).size(r * 2))
+                else MoonShape(GardenArt.moonFull(ctx), SkyTime.moonPhase(now), Modifier.offset(sx - r, sy - r).size(r * 2))
                 // 돌멍하기: 움직이는 정원 (GazeLife) 이 같은 자리를 쓰게
                 if (bare) androidx.compose.runtime.SideEffect { gazeGeom.value = GazeGeom(gy, xs[0], sx, sy, day, haruAbove) }
                 // 밤 · 새벽: 달빛 · 돌들 발치의 빛 · 가로등 · 반딧불

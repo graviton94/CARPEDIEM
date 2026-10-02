@@ -518,6 +518,7 @@ object Tokens {
             const val stoneGlow = 0.1f
             const val moonGlow = 0.16f
             const val moonDark = 0.16f
+            const val moonDisk = 0.8f
         }
         object Question {
             const val perWeek = 2.0f

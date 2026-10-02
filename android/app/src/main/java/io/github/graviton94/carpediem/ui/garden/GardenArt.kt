@@ -43,6 +43,8 @@ object GardenArt {
     fun obj(context: Context, id: String) = image(context, "obj_$id.png")
     fun sun(context: Context) = image(context, "sun.png")
     fun moon(context: Context) = image(context, "moon.png")
+    /** 둥근 달 (실제 모양대로 오려 씀): 가운데 원의 반지름 = 상자 반의 Night.moonDisk. */
+    fun moonFull(context: Context) = image(context, "moon_full.png")
     fun sparkle(context: Context) = image(context, "sparkle.png")
     fun toothLine(context: Context) = image(context, "tooth_line.png")
     fun toothFill(context: Context) = image(context, "tooth_fill.png")

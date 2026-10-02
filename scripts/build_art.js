@@ -18,7 +18,7 @@ const tokens = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "design/tok
 const D = Object.assign({}, tokens.decor, { stripLineY: tokens.layout.stripLineY, stripHeight: tokens.layout.stripHeight });
 const read = (f) => fs.readFileSync(path.join(root, "design/art/src", f), "utf8");
 const src = files.map(read).join("\n") + "\nvar HANJI = (function () {\n" + hanji.map(read).join("\n") +
-  "\nreturn { skyApp, stripApp, treeApp, postApp, mossApp, kiteApp, cardApp, sunApp, moonApp, fiberApp, rainbowApp, auroraApp, snailApp, flyApp, windApp, kiteFoldApp, pondApp, logsApp, cloudApp, gardenH, setU, TREES, REAL, CARDS: Object.keys(PIECE) };\n})();";
+  "\nreturn { skyApp, stripApp, treeApp, postApp, mossApp, kiteApp, cardApp, sunApp, moonApp, moonFullApp, fiberApp, rainbowApp, auroraApp, snailApp, flyApp, windApp, kiteFoldApp, pondApp, logsApp, cloudApp, gardenH, setU, TREES, REAL, CARDS: Object.keys(PIECE) };\n})();";
 const out = path.join(root, "design/art");
 const app = path.join(root, "android/app/src/main/assets/garden");
 
@@ -50,6 +50,7 @@ const app = path.join(root, "android/app/src/main/assets/garden");
     H.CARDS.forEach((k) => webp("card_" + k, D.cardBoxW, D.cardBoxH, D.cardPx, (c, w) => H.cardApp(c, w, k, D)));
     make("app", "sun.png", 180, 180, "image/png", (cv) => H.sunApp(cv.getContext("2d"), 180));
     make("app", "moon.png", 180, 180, "image/png", (cv) => H.moonApp(cv.getContext("2d"), 180));
+    make("app", "moon_full.png", 180, 180, "image/png", (cv) => H.moonFullApp(cv.getContext("2d"), 180));
     make("app", "fiber.png", 320, 320, "image/png", (cv) => H.fiberApp(cv.getContext("2d")));
     // 우연한 순간
     webp("moment_rainbow", 160, 90, 3, (c, w) => H.rainbowApp(c, w));

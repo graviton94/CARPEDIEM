@@ -50,7 +50,7 @@ object GardenWidgetArt {
         c.drawBitmap(img, null, r, faint)
         val waxing = (phase < 0.5) != SkyTime.south
         val k = kotlin.math.cos(2 * Math.PI * phase).toFloat()
-        val e = r.width() / 2f * kotlin.math.abs(k)
+        val e = r.width() / 2f * Tokens.Garden.Night.moonDisk * kotlin.math.abs(k)
         val circle = android.graphics.Path().apply { addOval(r, android.graphics.Path.Direction.CW) }
         val half = android.graphics.Path().apply { addRect(if (waxing) RectF(r.centerX(), r.top, r.right, r.bottom) else RectF(r.left, r.top, r.centerX(), r.bottom), android.graphics.Path.Direction.CW) }
         val lit = android.graphics.Path(); lit.op(circle, half, android.graphics.Path.Op.INTERSECT)
@@ -101,7 +101,7 @@ object GardenWidgetArt {
                 c.drawPath(path, arc)
             }
             if (day) c.drawBitmap(asset(context, "sun.png"), null, RectF(x - r, y - r, x + r, y + r), paint)
-            else moon(c, asset(context, "moon.png"), RectF(x - r, y - r, x + r, y + r), SkyTime.moonPhase(now), paint)
+            else moon(c, asset(context, "moon_full.png"), RectF(x - r, y - r, x + r, y + r), SkyTime.moonPhase(now), paint)
         }
 
         if (kind == Kind.CALENDAR && s != null) grid(context, c, RectF(w * W.gridLeft, W.gridInset * u, w - W.gridInset * u, h - W.gridInset * u), s, u)

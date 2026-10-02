@@ -523,6 +523,7 @@ enum Tokens {
             static let stoneGlow: CGFloat = 0.1
             static let moonGlow: CGFloat = 0.16
             static let moonDark: CGFloat = 0.16
+            static let moonDisk: CGFloat = 0.8
         }
         enum Question {
             static let perWeek: CGFloat = 2.0

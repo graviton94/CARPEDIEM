@@ -274,7 +274,7 @@ fun MoonShape(img: androidx.compose.ui.graphics.ImageBitmap, phase: Double, modi
         drawImage(img, dstSize = dst, alpha = G.Night.moonDark)
         val waxing = (phase < 0.5) != SkyTime.south          // 남반구는 거꾸로
         val k = cos(2 * Math.PI * phase).toFloat()          // 1 = 삭, 0 = 반달, -1 = 보름
-        val e = w / 2f * kotlin.math.abs(k)
+        val e = w / 2f * G.Night.moonDisk * kotlin.math.abs(k)   // 경계 타원은 달 원의 크기에 맞춤 (그림 상자보다 작음)
         val circle = androidx.compose.ui.graphics.Path().apply { addOval(androidx.compose.ui.geometry.Rect(0f, 0f, w, h)) }
         val half = androidx.compose.ui.graphics.Path().apply { addRect(if (waxing) androidx.compose.ui.geometry.Rect(w / 2f, 0f, w, h) else androidx.compose.ui.geometry.Rect(0f, 0f, w / 2f, h)) }
         val side = androidx.compose.ui.graphics.Path.combine(androidx.compose.ui.graphics.PathOperation.Intersect, circle, half)
