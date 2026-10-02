@@ -39,14 +39,18 @@ object SkyTime {
     // ───── 해 · 달의 실제 시각 (S3): 나라의 대표 도시로 그날 해 뜨고 지는 시각을 셈 (위치 권한 없이) ─────
     @Volatile private var place: io.github.graviton94.carpediem.core.Place? = null
     @Volatile private var placeCode: String? = null
+    @Volatile private var placeZone: java.time.ZoneId? = null
+    /** 남반구 (대표 도시의 위도 < 0): 달의 밝은 쪽이 거꾸로. */
+    val south: Boolean get() = (place?.lat ?: 0.0) < 0.0
     private var table: io.github.graviton94.carpediem.core.PlaceTable? = null
     private val sunCache = java.util.concurrent.ConcurrentHashMap<java.time.LocalDate, FloatArray>()
 
     /** 설정의 나라를 하늘에 알려 줌 (앱 · 위젯이 그리기 전에). 같은 나라면 아무것도 안 함. */
     fun useCountry(ctx: android.content.Context, code: String?) {
-        if (place != null && code == placeCode) return
+        val zone = java.time.ZoneId.systemDefault()
+        if (place != null && code == placeCode && zone == placeZone) return   // 나라 · 시간대가 그대로면 (여행으로 바뀌면 다시 셈)
         val t = table ?: runCatching { io.github.graviton94.carpediem.core.PlaceTable(ctx.assets.open("places.csv").bufferedReader().use { it.readText() }) }.getOrNull()?.also { table = it } ?: return
-        place = t.of(code, java.time.ZoneId.systemDefault(), java.time.Instant.now()); placeCode = code; sunCache.clear()
+        place = t.of(code, zone, java.time.Instant.now()); placeCode = code; placeZone = zone; sunCache.clear()
     }
 
     /** 그날 해 뜨고 지는 시각 (시, 폰 시간대). 나라를 모르면 null. 백야면 [0, 24], 극야면 [12, 12]. */
@@ -260,7 +264,7 @@ fun ShootingStars(now: LocalDateTime, top: Dp, bottom: Dp, modifier: Modifier = 
 
 /**
  * 달을 실제 모양으로 (S3): 밝은 쪽만 또렷하게, 어두운 쪽은 아주 옅게 (지구빛, Night.moonDark).
- * 경계는 타원: 초승 · 그믐은 가늘게 파이고, 반달은 곧게, 차가는 달은 볼록하게. 차오를 땐 오른쪽, 기울 땐 왼쪽이 밝다 (북반구).
+ * 경계는 타원: 초승 · 그믐은 가늘게 파이고, 반달은 곧게, 차가는 달은 볼록하게. 차오를 땐 오른쪽, 기울 땐 왼쪽이 밝다 (남반구는 거꾸로).
  */
 @Composable
 fun MoonShape(img: androidx.compose.ui.graphics.ImageBitmap, phase: Double, modifier: Modifier = Modifier) {
@@ -268,7 +272,7 @@ fun MoonShape(img: androidx.compose.ui.graphics.ImageBitmap, phase: Double, modi
         val w = size.width; val h = size.height
         val dst = IntSize(w.roundToInt(), h.roundToInt())
         drawImage(img, dstSize = dst, alpha = G.Night.moonDark)
-        val waxing = phase < 0.5
+        val waxing = (phase < 0.5) != SkyTime.south          // 남반구는 거꾸로
         val k = cos(2 * Math.PI * phase).toFloat()          // 1 = 삭, 0 = 반달, -1 = 보름
         val e = w / 2f * kotlin.math.abs(k)
         val circle = androidx.compose.ui.graphics.Path().apply { addOval(androidx.compose.ui.geometry.Rect(0f, 0f, w, h)) }

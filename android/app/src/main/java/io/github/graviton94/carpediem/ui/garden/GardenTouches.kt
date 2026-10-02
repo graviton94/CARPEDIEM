@@ -25,7 +25,7 @@ import java.time.LocalDateTime
 import kotlin.math.floor
 import kotlin.math.sin
 
-private val T = Tokens.Garden.Touch
+private val T = Tokens.Garden.TermTouch
 private const val TAU = 6.2832f
 private fun h(i: Int, k: Int): Float { val x = sin(i * 12.9898f + k * 78.233f) * 43758.547f; return x - floor(x) }
 

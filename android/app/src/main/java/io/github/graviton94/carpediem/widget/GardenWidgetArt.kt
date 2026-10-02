@@ -48,7 +48,7 @@ object GardenWidgetArt {
     private fun moon(c: Canvas, img: Bitmap, r: RectF, phase: Double, paint: Paint) {
         val faint = Paint(paint).apply { alpha = (255 * Tokens.Garden.Night.moonDark).toInt() }
         c.drawBitmap(img, null, r, faint)
-        val waxing = phase < 0.5
+        val waxing = (phase < 0.5) != SkyTime.south
         val k = kotlin.math.cos(2 * Math.PI * phase).toFloat()
         val e = r.width() / 2f * kotlin.math.abs(k)
         val circle = android.graphics.Path().apply { addOval(r, android.graphics.Path.Direction.CW) }

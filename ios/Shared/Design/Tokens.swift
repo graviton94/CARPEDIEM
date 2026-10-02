@@ -354,6 +354,23 @@ enum Tokens {
             static let pageStone: CGFloat = 0.45
         }
         enum Touch {
+            static let petMs: CGFloat = 900.0
+            static let wiggleDeg: CGFloat = 3.0
+            static let squash: CGFloat = 0.03
+            static let blushMs: CGFloat = 1200.0
+            static let hop: CGFloat = 12.0
+            static let hopMs: CGFloat = 560.0
+            static let touchPad: CGFloat = 8.0
+            static let windowMs: CGFloat = 3000.0
+            static let restAfter: CGFloat = 5.0
+            static let restWindowMs: CGFloat = 10000.0
+            static let restMs: CGFloat = 2000.0
+            static let doubleMs: CGFloat = 280.0
+            static let openMs: CGFloat = 420.0
+            static let haptic: CGFloat = 1.0
+            static let holdMs: CGFloat = 600.0
+        }
+        enum TermTouch {
             enum Colors {
                 static let bud: UInt32 = 0xE59AA6FF
                 static let petal: UInt32 = 0xF2C4CCFF

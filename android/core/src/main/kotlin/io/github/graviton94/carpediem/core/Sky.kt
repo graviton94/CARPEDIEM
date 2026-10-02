@@ -23,9 +23,15 @@ class PlaceTable(csv: String) {
         Place(code, lat, lon)
     }.associateBy { it.code }
 
-    /** 표에 없으면 시간대에서 짐작 (위도 35, 경도 = 표준시 × 15). */
-    fun of(code: String?, zone: ZoneId, at: Instant): Place =
-        places[code?.uppercase()] ?: Place(code ?: "", 35.0, zone.rules.getStandardOffset(at).totalSeconds / 240.0)
+    /**
+     * 표에 없거나 세계 평균이면 시간대에서 짐작 (위도 35, 경도 = 표준시 × 15).
+     * 대표 도시가 폰의 시간대와 두 시간 넘게 어긋나면 (미국 서부 · 러시아 동부처럼 넓은 나라) 위도만 쓰고 경도는 시간대에서.
+     */
+    fun of(code: String?, zone: ZoneId, at: Instant): Place {
+        val zoneLon = zone.rules.getStandardOffset(at).totalSeconds / 240.0
+        val p = places[code?.uppercase()]?.takeIf { it.code != LifeExpectancyTable.WORLD } ?: return Place(code ?: "", 35.0, zoneLon)
+        return if (kotlin.math.abs(p.lon - zoneLon) > 30.0) p.copy(lon = zoneLon) else p
+    }
 }
 
 /** 절기가 그날 정원에 놓는 아주 작은 변화 (그날 하루). */

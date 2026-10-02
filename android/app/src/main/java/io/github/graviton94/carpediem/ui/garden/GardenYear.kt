@@ -54,7 +54,9 @@ internal fun GardenYearSheet(state: AppState, profile: LifeProfile, now: LocalDa
         val decor = state.decor(profile, LifeSnapshot(profile.birthDate, profile.expectancy(state.store.table), now), now.toLocalDate())
         val cards = yearCards(state, year); val met = yearMet(state, year); val seed = state.store.haruSeed
         bmp = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Default) {
-            ShareCards.gardenYear(ctx, title, cards, decor.hang, decor.ribbons, met, decor.season, seed)
+            // 지난 해는 그때의 말뚝 · 연을 알 수 없어 조각 · 순간만 (올해만 지금 걸린 것 · 리본까지)
+            val thisYear = year == now.year
+            ShareCards.gardenYear(ctx, title, cards, if (thisYear) decor.hang else io.github.graviton94.carpediem.core.Hang.NONE, if (thisYear) decor.ribbons else emptyList(), met, decor.season, seed)
         }
     }
     GardenAlert(

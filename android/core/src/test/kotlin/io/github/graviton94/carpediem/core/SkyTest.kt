@@ -69,6 +69,11 @@ class SkyTest {
         assertEquals(emptyList(), life.countries.map { it.code }.filter { it !in places.places })
         // 표에 없으면 시간대로 짐작
         assertEquals(135.0, places.of("??", ZoneId.of("Asia/Tokyo"), Instant.EPOCH).lon)
+        // 세계 평균 · 넓은 나라는 폰의 시간대를 따름
+        assertEquals(135.0, places.of("WLD", ZoneId.of("Asia/Seoul"), Instant.EPOCH).lon)
+        assertEquals(-120.0, places.of("US", ZoneId.of("America/Los_Angeles"), Instant.EPOCH).lon)
+        assertEquals(-74.01, places.of("US", ZoneId.of("America/New_York"), Instant.EPOCH).lon)
+        assertEquals(126.98, places.of("KR", ZoneId.of("Asia/Seoul"), Instant.EPOCH).lon)
     }
 }
 

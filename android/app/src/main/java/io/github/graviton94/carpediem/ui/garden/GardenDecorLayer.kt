@@ -138,7 +138,7 @@ internal fun DecorBack(decor: Decor, now: LocalDateTime, gy: Dp, x0: Dp, x1: Dp,
         if (lit) Canvas(Modifier.fillMaxSize()) {
             val c = Offset(size.width * D.lanternX / D.postBoxW, size.height * (D.lanternY + 16f) / D.postBoxH)
             // 마음 등불을 마친 밤 (E3): 등이 조금 더 따뜻하게
-            val w = if (warm) Tokens.Garden.Touch.warmLamp else 1f
+            val w = if (warm) Tokens.Garden.TermTouch.warmLamp else 1f
             val r = size.width * D.glow / D.postBoxW * w
             drawCircle(Brush.radialGradient(listOf(glowC.copy(alpha = (0.55f * w).coerceAtMost(0.85f)), Color.Transparent), c, r), r, c)
         }

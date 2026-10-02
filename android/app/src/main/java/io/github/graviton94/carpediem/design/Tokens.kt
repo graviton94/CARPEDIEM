@@ -349,6 +349,23 @@ object Tokens {
             const val pageStone = 0.45f
         }
         object Touch {
+            const val petMs = 900.0f
+            const val wiggleDeg = 3.0f
+            const val squash = 0.03f
+            const val blushMs = 1200.0f
+            const val hop = 12.0f
+            const val hopMs = 560.0f
+            const val touchPad = 8.0f
+            const val windowMs = 3000.0f
+            const val restAfter = 5.0f
+            const val restWindowMs = 10000.0f
+            const val restMs = 2000.0f
+            const val doubleMs = 280.0f
+            const val openMs = 420.0f
+            const val haptic = 1.0f
+            const val holdMs = 600.0f
+        }
+        object TermTouch {
             object Colors {
                 val bud = Color(0xFFE59AA6)
                 val petal = Color(0xFFF2C4CC)

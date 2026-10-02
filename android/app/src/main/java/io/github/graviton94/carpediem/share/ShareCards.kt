@@ -238,7 +238,6 @@ object ShareCards {
         return b
     }
 
-    /** 그림을 캐시에 두고 폰의 ‘보내기’ 창을 연다. */
     private fun art(ctx: Context, name: String): Bitmap? = runCatching { ctx.assets.open("garden/$name").use { android.graphics.BitmapFactory.decodeStream(it) } }.getOrNull()
 
     /** 그림 하나를 (cx, bottom) 에 높이 hPx 로 (비율 그대로). */
@@ -306,6 +305,7 @@ object ShareCards {
         return b
     }
 
+    /** 그림을 캐시에 두고 폰의 ‘보내기’ 창을 연다. */
     fun send(ctx: Context, bmp: Bitmap, name: String) {
         runCatching {
             val dir = File(ctx.cacheDir, "share").apply { mkdirs() }
