@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 일본어 이름 (스토어 · 홈 화면). -->
+<resources>
+    <string name="app_name">ハルの庭</string>
+</resources>
