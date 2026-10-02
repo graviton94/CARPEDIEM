@@ -18,12 +18,14 @@ android {
     }
 
     signingConfigs {
-        // 직접 설치(APK) 전용 키. Google Play 출시에는 쓰지 않는다 (keystore/README.md)
-        create("sideload") {
-            storeFile = rootProject.file("keystore/sideload.jks")
-            storePassword = "carpediem-sideload"
-            keyAlias = "sideload"
-            keyPassword = "carpediem-sideload"
+        // 직접 설치(APK) 전용 키: GitHub Secrets 에서만 (android.yml 이 SIDELOAD_* 를 파일로 풀어 경로 · 암호를 환경 변수로 넘김, keystore/README.md)
+        System.getenv("CD_SIDELOAD_STORE")?.let { path ->
+            create("sideload") {
+                storeFile = file(path)
+                storePassword = System.getenv("CD_SIDELOAD_STORE_PASSWORD")
+                keyAlias = System.getenv("CD_SIDELOAD_KEY_ALIAS") ?: "sideload"
+                keyPassword = System.getenv("CD_SIDELOAD_KEY_PASSWORD")
+            }
         }
         // Google Play 업로드 키: GitHub Secrets 에서만 (android-release.yml 이 파일로 풀어 경로 · 암호를 환경 변수로 넘김)
         System.getenv("CD_UPLOAD_STORE")?.let { path ->
@@ -39,8 +41,8 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
-            // 업로드 키가 있으면 (스토어용 AAB) 그것으로, 없으면 직접 설치용 키로
-            signingConfig = signingConfigs.findByName("upload") ?: signingConfigs.getByName("sideload")
+            // 업로드 키가 있으면 (스토어용 AAB) 그것으로, 없으면 직접 설치용 키로 (둘 다 GitHub Secrets)
+            signingConfig = signingConfigs.findByName("upload") ?: signingConfigs.findByName("sideload") ?: signingConfigs.getByName("debug")   // 키가 없으면 (내 컴퓨터 · 키 없는 빌드) 시험용 debug 키
         }
         debug {
             signingConfig = signingConfigs.getByName("sideload")

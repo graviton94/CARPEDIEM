@@ -28,8 +28,18 @@ jobs:
           distribution: temurin
           java-version: "17"
       - uses: gradle/actions/setup-gradle@v4
+      # 직접 설치용 서명 키는 GitHub Secrets 에만 (SIDELOAD_KEYSTORE_BASE64 · SIDELOAD_STORE_PASSWORD · SIDELOAD_KEY_PASSWORD)
+      - name: Sideload signing key
+        env:
+          KS: ${{ secrets.SIDELOAD_KEYSTORE_BASE64 }}
+        run: |
+          if [ -n "$KS" ]; then echo "$KS" | base64 -d > "$RUNNER_TEMP/sideload.jks"; echo "CD_SIDELOAD_STORE=$RUNNER_TEMP/sideload.jks" >> "$GITHUB_ENV"
+          else echo "::warning::SIDELOAD_KEYSTORE_BASE64 이 없어 debug 키로 서명합니다 (테스터 폰에 덮어 설치할 수 없음)"; fi
       - name: Test and build APK
         working-directory: android
+        env:
+          CD_SIDELOAD_STORE_PASSWORD: ${{ secrets.SIDELOAD_STORE_PASSWORD }}
+          CD_SIDELOAD_KEY_PASSWORD: ${{ secrets.SIDELOAD_KEY_PASSWORD }}
         run: |
           set -o pipefail
           ./gradlew :core:test :app:assembleRelease 2>&1 | tee build.log
@@ -53,6 +63,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          # 직접 설치용 키로 서명한 것만 올림 (다른 키면 테스터 폰에 덮어 설치가 안 됨)
+          if [ -z "${CD_SIDELOAD_STORE:-}" ]; then echo "::error::SIDELOAD_* Secrets 가 없어 릴리즈하지 않습니다"; exit 1; fi
           gh release delete android-latest --yes --cleanup-tag || true
           gh release create android-latest out/*.apk --prerelease --target "${GITHUB_SHA}" \
             --title "Android 테스트 빌드 #${{ github.run_number }}" \
