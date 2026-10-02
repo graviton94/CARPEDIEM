@@ -1,11 +1,7 @@
 name: iOS
 
+# 지금은 안드로이드만 개발 중: iOS 빌드는 직접 실행할 때만 (macOS 러너는 사용량이 커서)
 on:
-  push:
-    branches: [main]
-    paths: ["ios/**", "design/**", "data/**", "scripts/**", ".github/workflows/ios.yml"]
-  pull_request:
-    paths: ["ios/**", "design/**", "data/**", "scripts/**", ".github/workflows/ios.yml"]
   workflow_dispatch:
 
 concurrency:

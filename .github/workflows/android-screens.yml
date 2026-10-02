@@ -1,6 +1,8 @@
 name: Android screenshots
 
 # 에뮬레이터에서 디버그 APK 를 실행해 장면별 화면을 캡처하고 screenshots-android 브랜치에 올린다.
+# 필요할 때만 돈다 (Actions 아끼기): 커밋 메시지에 [quick-shots] (빠른 장면들) · [full-shots] (전체) 가 있을 때, 또는 직접 실행.
+# [quick-shots] 와 함께 [only q26 q31] 처럼 적으면 그 장면만 찍는다.
 on:
   workflow_dispatch:
   push:
@@ -16,6 +18,7 @@ permissions:
 
 jobs:
   shots:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[quick-shots]') || contains(github.event.head_commit.message, '[full-shots]')
     runs-on: ubuntu-latest
     timeout-minutes: 70
     steps:
@@ -40,6 +43,8 @@ jobs:
           sudo udevadm control --reload-rules && sudo udevadm trigger --name-match=kvm
       - name: Run on emulator and capture
         uses: reactivecircus/android-emulator-runner@v2
+        env:
+          MSG: ${{ github.event.head_commit.message }}
         with:
           api-level: 34
           target: google_apis
@@ -51,7 +56,7 @@ jobs:
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           script: |
             adb install -r android/app/build/outputs/apk/debug/app-debug.apk
-            QUICK="${{ contains(github.event.head_commit.message, '[quick-shots]') && '1' || '' }}" bash scripts/android_shots.sh shots
+            QUICK="${{ contains(github.event.head_commit.message, '[quick-shots]') && '1' || '' }}" ONLY="$(echo "$MSG" | grep -o '\[only [^]]*\]' | head -1 | sed 's/^\[only //; s/\]$//')" bash scripts/android_shots.sh shots
       - name: Push to screenshots-android branch
         if: always()
         run: |

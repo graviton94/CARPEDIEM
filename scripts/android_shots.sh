@@ -6,7 +6,8 @@ P=io.github.graviton94.carpediem
 OUT=${1:-shots}
 mkdir -p "$OUT"
 NOW=2026-09-30T15:00
-shot() { sleep "$2"; adb shell am broadcast -a android.intent.action.CLOSE_SYSTEM_DIALOGS >/dev/null; adb exec-out screencap -p > "$OUT/$1.png"; echo "shot $1"; }
+# ONLY="q26 q31" 이면 그 장면만 찍음 (나머지는 상태만 맞추고 기다리지 않음)
+shot() { if [ -n "${ONLY:-}" ]; then case " $ONLY " in *" ${1%%_*} "*) ;; *) return 0;; esac; fi; sleep "$2"; adb shell am broadcast -a android.intent.action.CLOSE_SYSTEM_DIALOGS >/dev/null; adb exec-out screencap -p > "$OUT/$1.png"; echo "shot $1"; }
 open() { adb shell am force-stop $P; adb shell am start -W -n $P/.MainActivity "$@" >/dev/null; }
 swipe_up() { adb shell input swipe 540 1900 540 500 500; }
 
