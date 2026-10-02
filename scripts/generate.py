@@ -306,7 +306,7 @@ def android_strings(s: dict) -> dict:
 def android_outputs(tokens: dict, strings: dict) -> dict:
     files = {f"{KT_DIR}/Tokens.kt": tokens_kotlin(tokens)}
     files.update(android_strings(strings))
-    for name in ("quotes.csv", "life-expectancy.csv", "questions.csv", "constellations.csv"):
+    for name in ("quotes.csv", "life-expectancy.csv", "questions.csv", "constellations.csv", "places.csv"):
         files[f"android/app/src/main/assets/{name}"] = (ROOT / "data" / name).read_text(encoding="utf-8")
     return files
 
@@ -317,7 +317,7 @@ def main() -> None:
     strings = json.loads((ROOT / "design/strings.json").read_text(encoding="utf-8"))
     files = {"ios/Shared/Design/Tokens.swift": tokens_swift(tokens)}
     files.update(strings_outputs(strings))
-    for name in ("quotes.csv", "life-expectancy.csv", "questions.csv", "constellations.csv"):
+    for name in ("quotes.csv", "life-expectancy.csv", "questions.csv", "constellations.csv", "places.csv"):
         files[f"ios/Shared/Resources/{name}"] = (ROOT / "data" / name).read_text(encoding="utf-8")
     files.update(android_outputs(tokens, strings))
     stale = []
