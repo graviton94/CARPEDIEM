@@ -101,6 +101,9 @@ class AppState(private val context: Context) {
         io.github.graviton94.carpediem.notify.Tomorrow.schedule(context, on)
     }
     fun changeMorningBreath(v: Boolean) { store.morningBreath = v; morningBreath = v }
+    var questionsOn by mutableStateOf(store.questionsOn)
+        private set
+    fun changeQuestionsOn(v: Boolean) { store.questionsOn = v; questionsOn = v; previewQ = false; refreshQuestion() }
     /** 처음 한 번 알림 허락을 물은 뒤: 허락하면 세 알림을 모두 켬 (설정에서 하나씩 끌 수 있음). */
     fun notifyAsked(ok: Boolean) { store.notifyAsked = true; if (ok) { changeNotify(true); changeEvening(true); changeTomorrow(true) } }
     fun changeNotify(v: Boolean) { store.notify = v; notify = v; io.github.graviton94.carpediem.notify.Daily.schedule(context, v) }

@@ -673,4 +673,6 @@
     <string name="gardenYear_album">The year on one page</string>
     <string name="gardenYear_met">Moments met</string>
     <string name="gardenYear_empty">What came to the garden this year gathers here.</string>
+    <string name="question_on">Today’s questions</string>
+    <string name="question_onFooter">Turn off to always see today’s words instead.</string>
 </resources>

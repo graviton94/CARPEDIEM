@@ -104,6 +104,10 @@ class Store(context: Context) {
     var tomorrowNotify: Boolean
         get() = prefs.getBoolean("tomorrowNotify", false)
         set(v) = prefs.edit().putBoolean("tomorrowNotify", v).apply()
+    /** 오늘의 질문 받기 (기본 켬). 끄면 질문 날에도 오늘의 문장. */
+    var questionsOn: Boolean
+        get() = prefs.getBoolean("questionsOn", true)
+        set(v) = prefs.edit().putBoolean("questionsOn", v).apply()
     /** 아침 알림을 누르면 숨, 쉼 1분 (하루를 여는 숨). 기본 켬. */
     var morningBreath: Boolean
         get() = prefs.getBoolean("morningBreath", true)
@@ -166,7 +170,7 @@ class Store(context: Context) {
     // ───── 오늘의 질문 · 계절의 편지 ─────
     /** 오늘의 질문 (질문 날이 아니거나 ‘오늘은 문장으로’를 고른 날은 null). 순서는 문장과 같은 seed 로. */
     fun todaysQuestion(date: LocalDate = LocalDate.now()): Question? {
-        if (prefs.getLong("questionSkip", -1) == date.toEpochDay()) return null
+        if (!questionsOn || prefs.getLong("questionSkip", -1) == date.toEpochDay()) return null
         val seed = prefs.getString("quoteSeed", null)?.toULongOrNull()?.toLong() ?: 0x5EEDL
         return questions.of(seed, date)
     }
