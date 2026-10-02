@@ -15,6 +15,8 @@ android {
         // CI 실행 번호로 버전 코드를 올려, 새 APK 가 이전 것을 덮어쓸 수 있게 한다
         versionCode = (System.getenv("GITHUB_RUN_NUMBER") ?: "1").toInt()
         versionName = System.getenv("CD_VERSION_NAME") ?: "1.0.0"
+        // 개발자 도구 (설정의 버전을 여러 번 눌러 켜는 시험 기능): 직접 설치 · debug 빌드에만. Play 업로드 키로 만드는 빌드에서는 꺼짐
+        buildConfigField("boolean", "DEV_TOOLS", if (System.getenv("CD_UPLOAD_STORE") != null) "false" else "true")
     }
 
     signingConfigs {

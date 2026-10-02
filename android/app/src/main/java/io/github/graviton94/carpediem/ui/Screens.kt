@@ -517,7 +517,7 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
                 FormRow(stringResource(R.string.erase), onClick = { confirmErase = true }) {}
             }
             // 맨 아래: 웹사이트 바닥글처럼 소개 · 문의 · 고지사항, 그 아래 버전 (여러 번 누르면 개발자 모드)
-            SettingsFooter(onVersionTap = { if (!state.devMode) { state.unlockDev(); state.say(ctx.getString(R.string.dev_unlocked)) } })
+            SettingsFooter(onVersionTap = { if (io.github.graviton94.carpediem.BuildConfig.DEV_TOOLS && !state.devMode) { state.unlockDev(); state.say(ctx.getString(R.string.dev_unlocked)) } })
         }
     }
     if (confirmErase) {

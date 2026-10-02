@@ -54,11 +54,11 @@ class AppState(private val context: Context) {
         private set
     var meetPending by mutableStateOf(store.meetPending)
         private set
-    var previewAll by mutableStateOf(store.previewAll)
+    var previewAll by mutableStateOf(io.github.graviton94.carpediem.BuildConfig.DEV_TOOLS && store.previewAll)
         private set
     var notify by mutableStateOf(store.notify)
         private set
-    var devMode by mutableStateOf(store.devMode)
+    var devMode by mutableStateOf(io.github.graviton94.carpediem.BuildConfig.DEV_TOOLS && store.devMode)   // Play 빌드에서는 늘 꺼짐
         private set
     /** 디버그 빌드에서 화면 확인용으로 시각을 고정할 때만 쓴다. 평소에는 null (폰 시각). */
     var fixedNow by mutableStateOf<java.time.LocalDateTime?>(null)
@@ -104,7 +104,7 @@ class AppState(private val context: Context) {
     /** 처음 한 번 알림 허락을 물은 뒤: 허락하면 세 알림을 모두 켬 (설정에서 하나씩 끌 수 있음). */
     fun notifyAsked(ok: Boolean) { store.notifyAsked = true; if (ok) { changeNotify(true); changeEvening(true); changeTomorrow(true) } }
     fun changeNotify(v: Boolean) { store.notify = v; notify = v; io.github.graviton94.carpediem.notify.Daily.schedule(context, v) }
-    fun unlockDev() { store.devMode = true; devMode = true }
+    fun unlockDev() { if (!io.github.graviton94.carpediem.BuildConfig.DEV_TOOLS) return; store.devMode = true; devMode = true }
     fun nextQuote() { store.skipQuote(); quote = store.todaysQuote(); blinkKick++; Widgets.refresh(context) }
     fun refreshQuote() { quote = store.todaysQuote() }
     /** 타자기처럼 한 글자씩 다 쳐 본 문장 (같은 문장은 정원에 다시 와도 한 번에). */

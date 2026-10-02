@@ -1,30 +1,20 @@
 # Google Play 출시 준비
 
-## 1. 업로드 키 만들기 (한 번, 내 컴퓨터에서)
+## 1. 업로드 키 (PC 없이, 한 번)
 
-```
-keytool -genkeypair -v -keystore upload.jks -alias upload -keyalg RSA -keysize 2048 -validity 10000
-base64 -w0 upload.jks > upload.b64        # macOS: base64 -i upload.jks -o upload.b64
-```
+1. 저장소 → Settings → Secrets and variables → Actions 에 `ANDROID_UPLOAD_PASSPHRASE` (16자 이상, 직접 설치용 암호와 다르게) 를 넣는다. 암호는 채팅 · 이슈 · 커밋 어디에도 붙여 넣지 않고 따로 보관.
+2. Actions → **Android signing key (one time)** → kind = `upload` 로 실행. GitHub 안에서 키를 만들어 암호로 잠근 `android/keystore/upload.jks.gpg` 만 저장소에 올린다 (로그에는 인증서 지문만).
+3. 암호를 잃어버리면 Play Console 에서 업로드 키 재설정을 요청해야 한다.
 
-- 암호 · 별칭은 직접 정하고, 어디에도 붙여 넣지 말 것 (채팅 · 이슈 · 커밋 모두).
-- `upload.jks` 와 암호는 따로 안전한 곳에 보관. 잃어버리면 Play Console 에서 업로드 키 재설정을 요청해야 함.
+## 2. 서명된 AAB 받기
 
-## 2. GitHub Secrets 에 넣기
+Actions → **Android release (Play)** → Run workflow → 버전(예: 1.0.0) → 끝나면 Artifacts 의 `.aab` 를 받아 Play Console 에 올림.
+Play 앱 서명(Play App Signing)을 켜 두면 Google 이 배포용 키를 관리하고, 우리는 업로드 키만 씀. 이 빌드에서는 개발자 도구가 꺼진다.
 
-저장소 → Settings → Secrets and variables → Actions → New repository secret
+## 3. 버전 번호
 
-| 이름 | 값 |
-|---|---|
-| `ANDROID_UPLOAD_KEYSTORE_BASE64` | `upload.b64` 파일 내용 |
-| `ANDROID_UPLOAD_STORE_PASSWORD` | 키스토어 암호 |
-| `ANDROID_UPLOAD_KEY_ALIAS` | `upload` (위에서 정한 별칭) |
-| `ANDROID_UPLOAD_KEY_PASSWORD` | 키 암호 |
-
-## 3. 서명된 AAB 받기
-
-Actions → **Android release (Play)** → Run workflow → 버전(예: 1.0.0) → 끝나면 아래 Artifacts 의 `.aab` 를 받아 Play Console 에 올림.
-Play 앱 서명(Play App Signing)을 켜 두면 Google 이 배포용 키를 관리하고, 우리는 업로드 키만 씀.
+- versionCode = 그 워크플로의 실행 번호 (Play 용 AAB 는 `Android release` 실행 번호라 1, 2, 3 … 으로 늘어남)
+- versionName = 실행할 때 적는 버전 (1.0.0 …)
 
 ## 4. 응원하기 상품 (Play Console → 수익 창출 → 인앱 상품, 소모성)
 
@@ -47,4 +37,4 @@ Play 앱 서명(Play App Signing)을 켜 두면 Google 이 배포용 키를 관�
 - [ ] 인앱 상품 3개 (4번 표)
 - [ ] 내부 테스트 트랙에 AAB (3번) → 폰에서 받아 확인 → 비공개 테스트 (개인 계정은 테스터 12명 · 14일 이상) → 프로덕션
 - [ ] targetSdk 36 (빌드에 반영됨)
-- [ ] **테스트가 끝나면, 프로덕션 올리기 전에 개발자 모드 막기**: 지금은 설정 맨 아래 버전을 누르면 출시 빌드에서도 켜짐 (시험 알림 · 시험 기록 넣기가 실제 기록에 들어감). `Screens.kt` 의 `onVersionTap` 과 `if (state.devMode)` 를 `BuildConfig.DEBUG &&` 로 감싸기
+- [x] 개발자 모드: Play 업로드 키로 만든 빌드 (`BuildConfig.DEV_TOOLS = false`) 에서는 켜지지 않음. 직접 설치 APK 에서는 그대로
