@@ -252,7 +252,7 @@ enum Tokens {
             static let noteMaxMs: CGFloat = 6000.0
             static let noteBaseMs: CGFloat = 2500.0
             static let noteCharMs: CGFloat = 70.0
-            static let noteAt: CGFloat = 0.3
+            static let noteAt: CGFloat = 0.44
             static let turnTilt: CGFloat = 3.0
             static let turnLift: CGFloat = 8.0
             static let turnShade: CGFloat = 0.5

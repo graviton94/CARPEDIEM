@@ -74,7 +74,7 @@ internal fun GazeLife(season: Season, now: LocalDateTime, dim: () -> Float) {
     val clock = remember { mutableFloatStateOf(Z.startAt) }
     LaunchedEffect(Unit) {
         var last = withFrameNanos { it }
-        while (true) withFrameNanos { n -> val dt = (n - last) / 1e9f; last = n; clock.floatValue += dt * (1f - Z.dimSlow * (dim() / Z.dimAlpha).coerceIn(0f, 1f)) }
+        while (true) withFrameNanos { n -> if (n - last >= FRAME_NS) { val dt = (n - last) / 1e9f; last = n; clock.floatValue += dt * (1f - Z.dimSlow * (dim() / Z.dimAlpha).coerceIn(0f, 1f)) } }
     }
     val clouds = remember(key, dark) { listOf(0, 1).map { GardenArt.image(ctx, "cloud_${if (dark) "night" else key}_$it.webp") } }
     val piece = remember(key) { GardenArt.image(ctx, "wind_$key.webp") }
@@ -189,7 +189,7 @@ private fun DrawScope.flame(x: Float, y: Float, h: Float, w: Float, t: Float, k:
 
 /** 장작 · 불꽃 넷 · 불티 · (낮엔) 아지랑이 · 돌들 얼굴에 일렁이는 빛. */
 private fun DrawScope.fireFront(f: Offset, logs: ImageBitmap, t: Float, dark: Boolean, b: Float, u: Float, filter: androidx.compose.ui.graphics.ColorFilter?) {
-    val s = u * (if (dark) 1.35f else 0.9f)
+    val s = u * (if (dark) 1.2f else 0.7f)
     val lw = u * Tokens.Garden.Decor.fireBoxW; val lh = u * Tokens.Garden.Decor.fireBoxH
     drawImage(logs, IntOffset.Zero, IntSize(logs.width, logs.height), IntOffset((f.x - lw / 2).toInt(), (f.y + u * 9f - lh).toInt()), IntSize(lw.toInt(), lh.toInt()), colorFilter = filter)
     val by = f.y - u * 1f

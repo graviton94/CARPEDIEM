@@ -198,13 +198,16 @@ internal fun DecorBack(decor: Decor, now: LocalDateTime, gy: Dp, x0: Dp, x1: Dp,
     }
 }
 
+internal const val FRAME_NS = 33_000_000L
+
 /** 정원의 시계 (초, 움직임을 끈 기기면 0 에 멈춤). 값은 graphicsLayer · Canvas 안에서만 읽을 것. */
 @Composable
 internal fun rememberGardenClock(moving: Boolean): androidx.compose.runtime.State<Float> {
     val clock = remember { androidx.compose.runtime.mutableFloatStateOf(0f) }
     if (moving) androidx.compose.runtime.LaunchedEffect(Unit) {
-        val start = androidx.compose.runtime.withFrameNanos { it }
-        while (true) androidx.compose.runtime.withFrameNanos { clock.floatValue = (it - start) / 1_000_000_000f }
+        val start = androidx.compose.runtime.withFrameNanos { it }; var last = 0L
+        // 느린 움직임뿐이라 1초에 30번이면 충분 (그리는 일을 반으로)
+        while (true) androidx.compose.runtime.withFrameNanos { if (it - last >= FRAME_NS) { last = it; clock.floatValue = (it - start) / 1_000_000_000f } }
     }
     return clock
 }

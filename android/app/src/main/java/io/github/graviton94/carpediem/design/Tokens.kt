@@ -247,7 +247,7 @@ object Tokens {
             const val noteMaxMs = 6000.0f
             const val noteBaseMs = 2500.0f
             const val noteCharMs = 70.0f
-            const val noteAt = 0.3f
+            const val noteAt = 0.44f
             const val turnTilt = 3.0f
             const val turnLift = 8.0f
             const val turnShade = 0.5f

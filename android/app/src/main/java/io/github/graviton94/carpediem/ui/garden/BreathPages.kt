@@ -189,6 +189,7 @@ fun BreathScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, kind
         var last = withFrameMillis { it }
         while (!done) {
             val t = withFrameMillis { it }
+            if (t - last < 33) continue   // 1초에 30번이면 충분
             elapsed += t - last; last = t
             player.breath = fullAt(plan, elapsed)
             if (elapsed >= total) { done = true; state.recordBreath(kind); if (sound != Sound.NONE) Soundscape.bowl(S.bowlOutHz.toDouble(), 2); player.stop() }
