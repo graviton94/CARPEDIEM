@@ -203,5 +203,5 @@ private fun DrawScope.fireFront(f: Offset, logs: ImageBitmap, t: Float, dark: Bo
         val p = Path().apply { moveTo(f.x - u * 6f + j * u * 5f, y0); for (q in 1..6) lineTo(f.x - u * 6f + j * u * 5f + u * 3f * sin(q * 1.4f + t * 1.5f + j), y0 - q * u * 5f) }
         drawPath(p, Color.White.copy(alpha = 0.3f * sin(PI.toFloat() * a)), style = Stroke(u)) }
     val k2 = (if (dark) 1f else 0.3f) * (0.8f + 0.2f * nz(t * 1.9f, 7f)); val c = Offset(f.x + u * 40f, by - u * 20f)
-    drawCircle(Brush.radialGradient(listOf(Color(0xFFFFB46E).copy(alpha = 0.22f * k2), Color.Transparent), c, u * 130f), u * 130f, c, blendMode = BlendMode.SoftLight)
+    drawCircle(Brush.radialGradient(listOf(Color(0xFFFFB46E).copy(alpha = 0.22f * k2), Color.Transparent), c, u * 130f), u * 130f, c, blendMode = BlendMode.Softlight)
 }
