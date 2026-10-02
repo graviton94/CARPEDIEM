@@ -707,5 +707,9 @@ object Tokens {
             const val windPieces = 5.0f
             const val windSize = 9.0f
         }
+        object Note {
+            const val alpha = 0.62f
+            const val radius = 22.0f
+        }
     }
 }

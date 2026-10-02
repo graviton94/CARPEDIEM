@@ -712,5 +712,9 @@ enum Tokens {
             static let windPieces: CGFloat = 5.0
             static let windSize: CGFloat = 9.0
         }
+        enum Note {
+            static let alpha: CGFloat = 0.62
+            static let radius: CGFloat = 22.0
+        }
     }
 }
