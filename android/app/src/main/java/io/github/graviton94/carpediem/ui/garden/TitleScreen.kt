@@ -78,9 +78,7 @@ fun TitleScreen(state: AppState, now: LocalDateTime, onDone: () -> Unit) {
     val lid = remember { Animatable(1f) }
     val hop = remember { Animatable(0f) }
     val reveal = remember { Animatable(0f) }   // 0 = 첫 화면 그대로, 1 = 정원이 다 열림
-    val shown = remember { Animatable(0f) }
     var entering by remember { mutableStateOf(false) }
-    LaunchedEffect(Unit) { shown.animateTo(1f, tween(900)) }
     val breathe = rememberInfiniteTransition(label = "titleBreath")
     val b by breathe.animateFloat(0f, 1f, infiniteRepeatable(tween(TITLE_BREATH_MS, easing = LinearEasing), RepeatMode.Restart), label = "b")
     fun enter() {
@@ -106,14 +104,19 @@ fun TitleScreen(state: AppState, now: LocalDateTime, onDone: () -> Unit) {
         val center = Offset(w / 2, with(density) { haruY.toPx() } - k * 10f)
         val maxR = hypot(maxOf(center.x, w - center.x), maxOf(center.y, h - center.y))
         // 정원이 열리는 자리: 하루에서 동그랗게 (아래 정원이 비쳐 보임)
-        Box(Modifier.fillMaxSize().graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen; alpha = shown.value }.drawWithContent {
+        Box(Modifier.fillMaxSize().graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }.drawWithContent {
             drawContent()
             if (reveal.value > 0f) drawCircle(Color.Black, maxR * reveal.value, center, blendMode = BlendMode.Clear)
         }) {
+            // 바탕은 꼭 불투명하게 (아래 정원이 비치지 않게): 종이 → 하늘
+            Box(Modifier.fillMaxSize().background(Theme.gc.base))
             Image(GardenArt.sky(ctx, season), null, Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
             Box(Modifier.fillMaxSize().background(if (night) Color(0xCC0E1018) else Color(0x33FFFFFF)))
             // 땅 한 줄과 졸고 있는 하루
-            Image(GardenArt.strip(ctx, season), null, Modifier.fillMaxWidth().offset(y = haruY - u * G.Layout.stripLineY).height(u * G.Layout.stripHeight), contentScale = ContentScale.FillBounds)
+            // 땅은 화면 아래 끝까지 (띠 그림을 위에 맞춰 늘림)
+            val stripTop = haruY - u * G.Layout.stripLineY
+            Image(GardenArt.strip(ctx, season), null, Modifier.fillMaxWidth().offset(y = stripTop).height(maxOf(u * G.Layout.stripHeight, maxHeight - stripTop)),
+                contentScale = ContentScale.Crop, alignment = Alignment.TopCenter)
             val boxH = scale * (G.Layout.haruGround - art.meta.bbox.top + G.Layout.sparkle)
             Box(Modifier.align(Alignment.TopCenter).offset(y = haruY - boxH).graphicsLayer {
                 transformOrigin = androidx.compose.ui.graphics.TransformOrigin(0.5f, 1f)
