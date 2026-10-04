@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -111,13 +112,26 @@ fun TitleScreen(state: AppState, now: LocalDateTime, onDone: () -> Unit) {
         }) {
             // 바탕은 꼭 불투명하게 (아래 정원이 비치지 않게): 종이 → 하늘
             Box(Modifier.fillMaxSize().background(Theme.gc.base))
-            Image(GardenArt.sky(ctx, season), null, Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
-            Box(Modifier.fillMaxSize().background(if (night) Color(0xCC0E1018) else Color(0x33FFFFFF)))
+            // 낮은 그 계절 하늘, 밤은 깊은 남빛 하늘에 별 · 달
+            if (night) {
+                Box(Modifier.fillMaxSize().background(androidx.compose.ui.graphics.Brush.verticalGradient(listOf(Color(0xFF0E1222), Color(0xFF1B2134), Color(0xFF2B3046)))))
+                androidx.compose.foundation.Canvas(Modifier.fillMaxSize()) {
+                    val r = java.util.Random(7)
+                    repeat(70) { val x = r.nextFloat() * size.width; val y = r.nextFloat() * size.height * 0.6f; val a = 0.25f + r.nextFloat() * 0.6f
+                        drawCircle(Color(0xFFFFF4D6).copy(alpha = a * (0.7f + 0.3f * sin(b * 6.2832f + it))), 1.2f + r.nextFloat() * 1.8f, Offset(x, y)) }
+                }
+                Image(GardenArt.moonFull(ctx), null, Modifier.align(Alignment.TopEnd).statusBarsPadding().padding(top = u * 40f, end = u * 44f).size(u * 26f))
+            } else {
+                Image(GardenArt.sky(ctx, season), null, Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
+                Box(Modifier.fillMaxSize().background(Color(0x33FFFFFF)))
+            }
             // 땅 한 줄과 졸고 있는 하루
             // 땅은 화면 아래 끝까지 (띠 그림을 위에 맞춰 늘림)
             val stripTop = haruY - u * G.Layout.stripLineY
             Image(GardenArt.strip(ctx, season), null, Modifier.fillMaxWidth().offset(y = stripTop).height(maxOf(u * G.Layout.stripHeight, screenH - stripTop)),
                 contentScale = ContentScale.Crop, alignment = Alignment.TopCenter)
+            // 밤엔 땅도 어둡게 (달빛 아래)
+            if (night) Box(Modifier.fillMaxWidth().offset(y = stripTop).height(screenH - stripTop).background(Color(0xB30E1222)))
             val boxH = scale * (G.Layout.haruGround - art.meta.bbox.top + G.Layout.sparkle)
             Box(Modifier.align(Alignment.TopCenter).offset(y = haruY - boxH).graphicsLayer {
                 transformOrigin = androidx.compose.ui.graphics.TransformOrigin(0.5f, 1f)
@@ -140,8 +154,9 @@ fun TitleScreen(state: AppState, now: LocalDateTime, onDone: () -> Unit) {
             }
             // 아래: 눌러서 정원으로 (숨처럼 옅어졌다 짙어짐)
             val glow = if (still) 0.8f else 0.45f + 0.4f * (sin(b * 6.2832f) * 0.5f + 0.5f)
-            TokenText(enterLabel, Tokens.TypeScale.subhead.serif(),
-                Modifier.align(Alignment.BottomCenter).navigationBarsPadding().padding(bottom = u * 64f).graphicsLayer { alpha = if (entering) 0f else glow },
+            TokenText(enterLabel, Tokens.TypeScale.headline.serif(),
+                Modifier.align(Alignment.BottomCenter).navigationBarsPadding().padding(bottom = u * 64f).graphicsLayer { alpha = if (entering) 0f else glow }
+                    .background(Theme.gc.paper.copy(alpha = if (night) 0.12f else 0.55f), androidx.compose.foundation.shape.RoundedCornerShape(50)).padding(horizontal = Tokens.Space.sp5, vertical = Tokens.Space.sp2),
                 color = ink)
         }
     }

@@ -256,7 +256,7 @@ class MainActivity : ComponentActivity() {
                         title = false; state.titleSeen(clock().toLocalDate())
                     }
                     // 짧은 알림 한마디: 어느 화면에서든 같은 자리 · 같은 움직임
-                    io.github.graviton94.carpediem.ui.NoteHost(state.note.takeIf { !io.github.graviton94.carpediem.ui.garden.chanceOnScreen.value && !state.touring }) { state.noteDone() }   // 우연한 순간이 끝날 때까지 기다림
+                    io.github.graviton94.carpediem.ui.NoteHost(state.note.takeIf { !io.github.graviton94.carpediem.ui.garden.chanceOnScreen.value && !state.touring && !title }) { state.noteDone() }   // 우연한 순간이 끝날 때까지 기다림
                 }
             }
         }
