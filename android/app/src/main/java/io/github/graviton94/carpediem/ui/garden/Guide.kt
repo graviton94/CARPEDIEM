@@ -37,7 +37,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
@@ -164,10 +163,11 @@ val GardenGuideSteps = listOf(
  * 아무 데나 누르거나 ‘다음’으로 넘어가고, ‘건너뛰기’ · 뒤로 가기로 끝낸다. 마지막 장은 ‘한 줄 쓰러 가기’.
  */
 @Composable
-fun GuideTour(targets: GuideTargets, steps: List<GuideStep>, onWrite: () -> Unit, onDone: () -> Unit) {
+fun GuideTour(state: AppState, targets: GuideTargets, steps: List<GuideStep>, onWrite: () -> Unit, onDone: () -> Unit) {
     val p = Theme.palette
     val density = LocalDensity.current
-    var i by rememberSaveable { mutableStateOf(0) }
+    // 몇째 장인지는 state 에 (한마디 창이 잠깐 떠서 둘러보기가 가려졌다 돌아와도 이어서)
+    var i by state.guideStepState
     // 정원 그림이 자리를 잡을 때까지 조금 기다렸다가
     var ready by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) { delay(G.Motion.pageMs.toLong()) ; ready = true }
@@ -206,7 +206,11 @@ fun GuideTour(targets: GuideTargets, steps: List<GuideStep>, onWrite: () -> Unit
             hole == null -> (hPx - cardH) / 2f
             hole.center.y > hPx / 2f -> (hole.top - gap - cardH)
             else -> hole.bottom + gap
-        }.coerceIn(with(density) { Tokens.Space.sp10.toPx() }, (hPx - cardH - with(density) { Tokens.Space.sp6.toPx() }).coerceAtLeast(0f))
+        }.let { t ->
+            // 창이 화면보다 크면 (가로 화면 · 큰 글씨) 위에 붙임
+            val minTop = with(density) { Tokens.Space.sp10.toPx() }
+            t.coerceIn(minTop, maxOf(minTop, hPx - cardH - with(density) { Tokens.Space.sp6.toPx() }))
+        }
         Column(
             Modifier.offset(y = with(density) { top.toDp() }).fillMaxWidth().padding(horizontal = Theme.deviceClass.pageMargin)
                 .onSizeChanged { cardH = it.height.toFloat() }.pop(a).modalBox(1400 + i)

@@ -95,12 +95,14 @@ class AppState(private val context: Context) {
     /** 정원 둘러보기 (첫 정원에서 한 번, 설정의 ‘안내 다시 보기’로 다시). */
     var guideDone by mutableStateOf(store.guideDone)
         private set
-    fun finishGuide() { store.guideDone = true; guideDone = true }
+    fun finishGuide() { store.guideDone = true; guideDone = true; guideStepState.value = 0 }
+    /** 둘러보기에서 지금 몇째 장인지 (앱을 켜 둔 동안만). */
+    val guideStepState = mutableStateOf(0)
     var pageHints by mutableStateOf(store.pageHints)
         private set
     fun pageHintSeen(key: String) { val v = pageHints + key; store.pageHints = v; pageHints = v }
     /** 둘러보기 · 페이지마다의 첫 안내를 처음부터 다시. */
-    fun restartGuide() { store.guideDone = false; guideDone = false; store.pageHints = emptySet(); pageHints = emptySet(); homePage = 0 }
+    fun restartGuide() { store.guideDone = false; guideDone = false; guideStepState.value = 0; store.pageHints = emptySet(); pageHints = emptySet(); homePage = 0 }
     /** 캡처 스크립트용: 안내를 모두 본 것으로 (show = true 면 소개부터 처음 온 사람처럼). */
     fun debugGuides(show: Boolean) {
         if (show) { store.introSeen = false; introSeen = false; restartGuide() }

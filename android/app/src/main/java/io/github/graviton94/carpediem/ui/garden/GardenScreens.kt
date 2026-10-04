@@ -574,7 +574,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
             }
         }
         // 처음 온 사람: 정원을 하나씩 비추며 둘러보기 (정원 페이지에서, 한마디 창이 없을 때)
-        if (touring && pager.currentPage == 0 && state.toast == null) GuideTour(guide, GardenGuideSteps, onWrite = { turnTo(1) }) { state.finishGuide() }
+        if (touring && pager.currentPage == 0 && state.toast == null) GuideTour(state, guide, GardenGuideSteps, onWrite = { turnTo(1) }) { state.finishGuide() }
     }
 
     decorOpen?.let { part ->
