@@ -506,18 +506,21 @@ internal fun GreetingCard(guest: String, onDone: () -> Unit) {
     fun res(name: String) = ctx.resources.getIdentifier(name, "string", ctx.packageName).takeIf { it != 0 }?.let { ctx.getString(it) }.orEmpty()
     val name = remember(guest) { res("chance_guest_$guest") }
     val story = remember(guest) { res("guest_${guest}_story") }
-    Column(
+    // 한 줄 높이로 (그림 왼쪽, 이름 · 이야기 오른쪽): 정원 그림을 가리지 않게
+    Row(
         Modifier.fillMaxWidth().crayonBox(Theme.gc.paper, G.Radius.box, G.Stroke.chip, 1600).clickable(onClick = onDone)
-            .padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3).semantics { liveRegion = LiveRegionMode.Polite },
-        horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1),
+            .padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp2).semantics(mergeDescendants = true) { liveRegion = LiveRegionMode.Polite },
+        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp3),
     ) {
-        Image(GardenArt.image(ctx, "guest_$guest.webp"), null, Modifier.size(Theme.unit * 40f))
-        if (name.isNotEmpty()) TokenText(name, Tokens.TypeScale.headline.serif(), align = TextAlign.Center)
-        if (story.isNotEmpty()) TokenText(story, Tokens.TypeScale.footnote, Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.Center)
+        Image(GardenArt.image(ctx, "guest_$guest.webp"), null, Modifier.size(Theme.unit * 34f))
+        Column(Modifier.weight(1f)) {
+            if (name.isNotEmpty()) TokenText(name, Tokens.TypeScale.callout.serif())
+            if (story.isNotEmpty()) TokenText(story.replace('\n', ' '), Tokens.TypeScale.footnote, color = p.secondary)
+        }
     }
 }
 
-private const val GUEST_SIZE = 30f
+private const val GUEST_SIZE = 40f
 
 /** 손님 그림 (한지로 오린 그림, guest_*.webp 40 × 40 상자, 발 = 아래에서 3/40). x = 발 자리, gy = 땅. */
 @Composable

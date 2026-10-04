@@ -523,8 +523,12 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 }
                 // 달팽이 손님: 오랜만에 돌아온 날, 한 시간쯤 돌들 앞 길을 천천히 건넘
                 if (!bare) SnailGuest(state.store.snailAt, now, gy, u * G.Decor.treeX)
-                // 돌아온 날의 손님 (09): 그날 하루 말뚝 발치에 (돌들 앞)
-                if (!bare) state.guest?.let { g -> GuestFigure(g, x1 - u * 6f, gy + u * 3f) }
+                // 정원 손님 (우연히 놀러 온 날): 맨 오른쪽 돌 위에 올라앉음 (돌을 가리지 않게). 하루 혼자면 하루 곁 땅에.
+                if (!bare) state.guest?.let { g ->
+                    val i = slots.indices.maxBy { xs[it].value }; val sl = slots[i]; val m = sl.art.meta
+                    if (slots.size > 1) GuestFigure(g, xs[i], gy - sl.scale * (m.ground - m.bbox.top) + u * 2f)
+                    else GuestFigure(g, xs[i] + sl.scale * (m.bbox.width / 2f) + u * 24f, gy + u * 2f)
+                }
                 // 우연한 순간 (한 번에 하나, 몇 초 뒤 사라짐)
                 if (!bare) state.chance?.let { c -> ChanceLayer(c, now, real, gy, xs[0], u * G.Decor.treeX, x1, topBottom + u * G.Layout.minSkyGap, back = false) { seen -> state.chanceDone(seen, c) } }
                 // 이름표 (가족이 있을 때) · 0세 · 기대수명
