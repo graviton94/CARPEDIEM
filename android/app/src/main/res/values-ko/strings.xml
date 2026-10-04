@@ -506,7 +506,7 @@
     <string name="record_next">다음 달</string>
     <string name="record_rest">쉬어 간 날</string>
     <string name="record_noText">글 없이 남긴 날</string>
-    <string name="record_hint">날을 누르면 그날의 한 줄</string>
+    <string name="record_hint">날을 누르면 그날의 한 줄이 보여요.</string>
     <string name="record_card">%1$s의 정원이 피었어요</string>
     <string name="record_cardNight">%1$s의 정원에 별이 떴어요</string>
     <string name="record_dayPattern">M월 d일</string>
@@ -775,7 +775,7 @@
     <string name="edit_delete">지우기</string>
     <string name="edit_deleted">지웠어요. 그날은 다시 비어 있어요.</string>
     <string name="edit_deleteAsk">오늘의 한 줄을 지울까요?</string>
-    <string name="edit_deleteHelp">지운 한 줄은 되돌릴 수 없어요. 그날에는 다시 쓸 수 있어요.</string>
+    <string name="edit_deleteHelp">지운 뒤 바로 ‘되돌리기’로 되살릴 수 있어요. 앱을 닫으면 되돌릴 수 없어요.</string>
     <string name="edit_deleteDay">이날의 한 줄 지우기</string>
     <string name="edit_deleteDayAsk">%1$s의 한 줄을 지울까요?</string>
     <string name="feedback_row">의견 보내기</string>
@@ -801,7 +801,17 @@
     <string name="nudge_backup">기록이 쌓였어요. 설정에서 한 번 백업해 둘까요?</string>
     <string name="search_hint">한 줄 찾기 (낱말 · 마음 · 사람)</string>
     <string name="search_none">찾는 한 줄이 없어요.</string>
-    <string name="search_count">%1$s줄을 찾았어요. 누르면 그날로.</string>
+    <string name="search_count">%1$s줄을 찾았어요. 누르면 그날로 가요.</string>
     <string name="mood_weatherA11y">이 달의 마음: %1$s</string>
     <string name="garden_pathA11y">인생의 길. 하루는 만 %1$s세 자리에, 길 끝은 기대수명 %2$s세</string>
+    <string name="edit_late">날이 바뀌어서 고치지 못했어요. 오늘의 한 줄은 오늘 안에만 고칠 수 있어요.</string>
+    <string name="edit_restored">되돌렸어요.</string>
+    <string name="edit_undo">방금 지운 한 줄 되돌리기</string>
+    <string name="edit_until">오늘 자정까지 고칠 수 있어요.</string>
+    <string name="letgo_privacyOff">기록 남기기가 꺼져 있어 날짜만 남아요. 글은 남지 않아요.</string>
+    <string name="letgo_privacyPlain">남긴 줄은 이 폰에만 있어요.</string>
+    <string name="record_offHow">누르면 설정에서 켤 수 있어요.</string>
+    <string name="backup_last">마지막 %1$s</string>
+    <string name="widget_pin">홈 화면에 두기</string>
+    <string name="feedback_copied">메일 앱이 없어 주소와 내용을 복사해 두었어요. 원하는 곳에 붙여 넣어 보내 주세요.</string>
 </resources>

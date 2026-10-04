@@ -136,8 +136,9 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
     val px = with(LocalDensity.current) { u.toPx() }
     val focus = LocalFocusManager.current
     val max = G.LetGo.maxChars.toInt()
-    var text by rememberSaveable { mutableStateOf("") }
-    var feeling by rememberSaveable { mutableStateOf<Feeling?>(null) }
+    // 쓰던 글 · 고른 마음은 state 에 (알림 · 위젯으로 정원이 다시 그려져도 남게)
+    var text by state.draftText
+    var feeling by state.draftFeeling
     // 누구에게 (선택): 생일인 사람이 있으면 먼저 골라 둠
     val birthdayId = state.people.firstOrNull { io.github.graviton94.carpediem.core.Family.isBirthday(it.birth, today) }?.id
     var to by rememberSaveable(birthdayId) { mutableStateOf(birthdayId) }
@@ -154,13 +155,19 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
     // 오늘 보낸 한 줄 고치기 (그날 안에만) · 지우기
     var editing by rememberSaveable { mutableStateOf(false) }
     var confirmDelete by remember { mutableStateOf(false) }
-    if (editing && (!sent || day != null)) editing = false
+    // 고치는 중에 날이 바뀌었거나 다른 날로 가면 고치기를 그만두고 칸을 비움 (어제 글이 오늘 칸에 남지 않게)
+    if (editing && (!sent || day != null)) { editing = false; text = ""; feeling = null }
+    // 이미 보낸 날엔 ‘바로 쓰기’ 표시를 지움 (다음에 칸이 열릴 때 갑자기 키보드가 뜨지 않게)
+    if (sent && !editing && state.focusWrite) state.focusWrite = false
+    // 쓰는 칸에 커서가 있을 때 뒤로 가기: 먼저 키보드만 내림
+    var boxFocused by remember { mutableStateOf(false) }
+    BackHandler(enabled = boxFocused) { focus.clearFocus() }
     val formView = remember { BringIntoViewRequester() }
     val focusBox = remember { androidx.compose.ui.focus.FocusRequester() }
     val scope = rememberCoroutineScope()
     fun send() {
         if (text.isBlank()) return
-        if (editing) { state.editToday(text, feeling); editing = false; text = ""; feeling = null; focus.clearFocus(); return }
+        if (editing) { state.editToday(text, feeling, today); editing = false; text = ""; feeling = null; focus.clearFocus(); return }
         val who = to?.takeIf { id -> state.people.any { it.id == id } }
         flying = text.trim()
         if (day != null) state.letGoOn(day, text, feeling, who) else state.letGo(text, feeling, who)
@@ -218,6 +225,7 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
                     if (state.keepLines) TokenText(stringResource(R.string.letgo_seeBelow), Tokens.TypeScale.footnote, color = p.secondary)
                     // 그날 안에는 고치거나 지울 수 있음 (조용히, 작게)
                     val mine = state.lines.lastOrNull { it.date == today }
+                    if (mine != null && state.keepLines && mine.text.isNotBlank()) TokenText(stringResource(R.string.edit_until), Tokens.TypeScale.caption1, color = p.secondary)
                     if (mine != null) Row(verticalAlignment = Alignment.CenterVertically) {
                         if (state.keepLines && mine.text.isNotBlank()) {
                             TokenText(stringResource(R.string.edit_action), Tokens.TypeScale.footnote,
@@ -244,7 +252,7 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
                         Chip(stringResource(feelingName(f)), feeling == f, seed = 970 + i) { feeling = if (feeling == f) null else f }
                     }
                 }
-                if (Theme.garden && state.people.isNotEmpty()) {
+                if (Theme.garden && state.people.isNotEmpty() && !editing) {
                     TokenText(stringResource(R.string.letgo_to), Tokens.TypeScale.footnote, color = p.secondary)
                     FlowRow(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
                         state.people.forEachIndexed { i, person -> Chip(person.name, to == person.id, seed = 980 + i) { to = if (to == person.id) null else person.id } }
@@ -259,7 +267,7 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
                     singleLine = false, minLines = 2, maxLines = Lines.MAX_LINES, textStyle = style, cursorBrush = SolidColor(p.foreground),
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Default),
                     // 키보드가 올라온 뒤 입력칸 · 보내기 버튼이 보이게 끌어올린다
-                    modifier = Modifier.fillMaxWidth().guideTarget(guide, "write.box").focusRequester(focusBox).onFocusEvent { f -> if (f.isFocused) scope.launch { delay(G.Motion.keyboardMs.toLong()); formView.bringIntoView() } }
+                    modifier = Modifier.fillMaxWidth().guideTarget(guide, "write.box").focusRequester(focusBox).onFocusEvent { f -> boxFocused = f.isFocused; if (f.isFocused) scope.launch { delay(G.Motion.keyboardMs.toLong()); formView.bringIntoView() } }
                         .lineBox(964).padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3),
                     decorationBox = { inner ->
                         Box(contentAlignment = Alignment.TopStart) {
@@ -284,7 +292,12 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
         if (day == null && line == null && state.store.startDate.isBefore(today) && state.canWriteOn(yesterday, today) && state.lines.none { it.date == yesterday })
             TokenText(stringResource(R.string.letgo_yesterday), Tokens.TypeScale.footnote,
                 Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { state.writeDay = yesterday }.padding(vertical = Tokens.Space.sp3), color = p.olive, weight = FontWeight.SemiBold)
-        TokenText(stringResource(R.string.letgo_privacy), Tokens.TypeScale.footnote, color = p.secondary)
+        // 방금 지운 한 줄 되돌리기 (앱을 켜 둔 동안)
+        if (day == null && state.lastDeleted?.date == today && !sent)
+            TokenText(stringResource(R.string.edit_undo), Tokens.TypeScale.footnote,
+                Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { state.undoDelete() }.padding(vertical = Tokens.Space.sp3), color = p.olive, weight = FontWeight.SemiBold)
+        // 남긴 줄이 어디에 남는지: 정원은 아래 마음의 기록, 유리 디자인은 이 폰에, 기록 남기기를 끄면 날짜만
+        TokenText(stringResource(when { !state.keepLines -> R.string.letgo_privacyOff; !Theme.garden -> R.string.letgo_privacyPlain; else -> R.string.letgo_privacy }), Tokens.TypeScale.footnote, color = p.secondary)
     }
     if (confirmDelete) io.github.graviton94.carpediem.ui.GardenAlert(
         onDismissRequest = { confirmDelete = false },

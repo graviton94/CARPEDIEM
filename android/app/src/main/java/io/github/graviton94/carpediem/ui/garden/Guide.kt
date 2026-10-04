@@ -2,6 +2,7 @@ package io.github.graviton94.carpediem.ui.garden
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.relocation.BringIntoViewRequester
@@ -100,9 +101,10 @@ fun IntroScreen(state: AppState, onDone: () -> Unit) {
                 if (!last) TokenText(stringResource(R.string.guide_skip), Tokens.TypeScale.subhead,
                     Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable(onClick = onDone).padding(horizontal = Tokens.Space.sp3, vertical = Tokens.Space.sp3), color = p.secondary)
             }
-            Spacer(Modifier.weight(1f))
+            // 가운데 (그림 · 제목 · 설명): 큰 글씨 · 가로 화면이면 이 부분만 스크롤
             val a = rememberPop(page)
-            Column(Modifier.fillMaxWidth().pop(a), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp4)) {
+            Box(Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
+            Column(Modifier.fillMaxWidth().verticalScroll(androidx.compose.foundation.rememberScrollState()).pop(a), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp4)) {
                 // 장마다 그림 하나: 해 · 깃털 · 내 돌 (첫 만남처럼 반짝임)
                 Box(Modifier.height(u * 120), contentAlignment = Alignment.Center) {
                     when (page) {
@@ -114,7 +116,7 @@ fun IntroScreen(state: AppState, onDone: () -> Unit) {
                 TokenText(stringResource(pages[page].first), Tokens.TypeScale.title2.serif(), Modifier.fillMaxWidth(), align = TextAlign.Center)
                 TokenText(stringResource(pages[page].second), Tokens.TypeScale.callout, Modifier.fillMaxWidth().widthIn(max = 420.dp), color = p.secondary, align = TextAlign.Center)
             }
-            Spacer(Modifier.weight(1f))
+            }
             Dots(pages.size, page)
             Spacer(Modifier.height(Tokens.Space.sp4))
             GardenButton(stringResource(if (last) R.string.intro_start else R.string.guide_next), { if (last) onDone() else page++ }, filled = true, seed = 760 + page)
@@ -202,13 +204,15 @@ val PageGuideSteps = mapOf(
  * onWrite 가 있으면 (정원 둘러보기) 마지막 장은 ‘한 줄 쓰러 가기’ · ‘정원 더 둘러보기’, 없으면 ‘알겠어요’.
  */
 @Composable
-fun GuideTour(state: AppState, targets: GuideTargets, steps: List<GuideStep>, onWrite: (() -> Unit)? = null, onDone: () -> Unit) {
+fun GuideTour(state: AppState, key: String, targets: GuideTargets, steps: List<GuideStep>, onWrite: (() -> Unit)? = null, onDone: () -> Unit) {
     val p = Theme.palette
     val density = LocalDensity.current
     // 몇째 장인지는 state 에 (한마디 창이 잠깐 떠서 둘러보기가 가려졌다 돌아와도 이어서)
-    var i by state.guideStepState
-    // 둘러보는 동안 알림 한마디는 기다림 (설명 창과 겹치지 않게), 페이지도 넘어가지 않음
-    DisposableEffect(Unit) { state.touring = true; onDispose { state.touring = false } }
+    // 둘러보기마다 따로 (정원 · 기록 · … 이 서로의 장 번호를 쓰지 않게)
+    val i = state.guideSteps[key] ?: 0
+    fun setStep(v: Int) { state.guideSteps[key] = v }
+    // 둘러보는 동안 알림 한마디는 기다림 (설명 창과 겹치지 않게), 페이지도 넘어가지 않음. 겹쳐 그려지는 동안에도 맞게 수로 셈
+    DisposableEffect(Unit) { state.tourShown(true); onDispose { state.tourShown(false) } }
     // 그림이 자리를 잡을 때까지 조금 기다렸다가, 비출 자리가 있는 장만
     var shown by remember { mutableStateOf<List<GuideStep>?>(null) }
     LaunchedEffect(Unit) {
@@ -217,9 +221,10 @@ fun GuideTour(state: AppState, targets: GuideTargets, steps: List<GuideStep>, on
     }
     val list = shown ?: return
     if (list.isEmpty()) { LaunchedEffect(Unit) { onDone() }; return }
-    val step = list[i.coerceIn(0, list.lastIndex)]
-    val last = i >= list.lastIndex
-    fun next() { if (last) onDone() else i++ }
+    val at = i.coerceIn(0, list.lastIndex)
+    val step = list[at]
+    val last = at >= list.lastIndex
+    fun next() { if (last) onDone() else setStep(at + 1) }
     BackHandler { onDone() }
     // 스크롤 아래에 있는 자리는 화면 안으로
     LaunchedEffect(step) { step.target?.let { k -> targets.reveal.filterKeys { it == k || it.startsWith("$k.") }.values.firstOrNull()?.invoke() } }
@@ -260,12 +265,12 @@ fun GuideTour(state: AppState, targets: GuideTargets, steps: List<GuideStep>, on
         }
         Column(
             Modifier.offset(y = with(density) { top.toDp() }).fillMaxWidth().padding(horizontal = Theme.deviceClass.pageMargin)
-                .onSizeChanged { cardH = it.height.toFloat() }.pop(a).modalBox(1400 + i)
+                .onSizeChanged { cardH = it.height.toFloat() }.heightIn(max = with(density) { (hPx * 0.8f).toDp() }).pop(a).modalBox(1400 + at)
                 .clickable(interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }, indication = null) {}
-                .padding(Tokens.Space.sp5).semantics { liveRegion = LiveRegionMode.Polite },
+                .verticalScroll(androidx.compose.foundation.rememberScrollState()).padding(Tokens.Space.sp5).semantics { liveRegion = LiveRegionMode.Polite },
             verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp2),
         ) {
-            if (list.size > 1) TokenText("${i + 1} / ${list.size}", Tokens.TypeScale.caption1, color = p.secondary)
+            if (list.size > 1) TokenText("${at + 1} / ${list.size}", Tokens.TypeScale.caption1, color = p.secondary)
             TokenText(stringResource(step.title), Tokens.TypeScale.title3.serif())
             TokenText(stringResource(step.body), Tokens.TypeScale.callout, color = p.foreground.copy(alpha = 0.82f))
             Spacer(Modifier.height(Tokens.Space.sp1))
@@ -278,7 +283,7 @@ fun GuideTour(state: AppState, targets: GuideTargets, steps: List<GuideStep>, on
                     if (!last) TokenText(stringResource(R.string.guide_skip), Tokens.TypeScale.subhead,
                         Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable(onClick = onDone).padding(end = Tokens.Space.sp4, top = Tokens.Space.sp3, bottom = Tokens.Space.sp3), color = p.secondary)
                     Spacer(Modifier.weight(1f))
-                    GardenButton(stringResource(if (last) R.string.guide_ok else R.string.guide_next), { next() }, filled = true, seed = 1410 + i, modifier = Modifier.widthIn(max = 160.dp))
+                    GardenButton(stringResource(if (last) R.string.guide_ok else R.string.guide_next), { next() }, filled = true, seed = 1410 + at, modifier = Modifier.widthIn(max = 160.dp))
                 }
             }
         }

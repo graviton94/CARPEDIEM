@@ -506,7 +506,7 @@
     <string name="record_next">Next month</string>
     <string name="record_rest">A day of rest</string>
     <string name="record_noText">Kept without words</string>
-    <string name="record_hint">Tap a day for its line</string>
+    <string name="record_hint">Tap a day to see its line.</string>
     <string name="record_card">The garden of %1$s has bloomed</string>
     <string name="record_cardNight">Stars are out over the garden of %1$s</string>
     <string name="record_dayPattern">MMMM d</string>
@@ -775,7 +775,7 @@
     <string name="edit_delete">Delete</string>
     <string name="edit_deleted">Deleted. That day is empty again.</string>
     <string name="edit_deleteAsk">Delete today’s line?</string>
-    <string name="edit_deleteHelp">A deleted line can’t be brought back. You can write that day again.</string>
+    <string name="edit_deleteHelp">Right after deleting you can bring it back. Once the app is closed, it’s gone.</string>
     <string name="edit_deleteDay">Delete this day’s line</string>
     <string name="edit_deleteDayAsk">Delete the line from %1$s?</string>
     <string name="feedback_row">Send feedback</string>
@@ -801,7 +801,17 @@
     <string name="nudge_backup">Your records are growing. Back them up once in Settings?</string>
     <string name="search_hint">Find a line (word, feeling, person)</string>
     <string name="search_none">No lines found.</string>
-    <string name="search_count">%1$s found. Tap to go to that day.</string>
+    <string name="search_count">%1$s found. Tap one to go to that day.</string>
     <string name="mood_weatherA11y">This month’s mood: %1$s</string>
     <string name="garden_pathA11y">Life path. Haru sits at age %1$s; the path ends at %2$s</string>
+    <string name="edit_late">The day has changed, so it wasn’t edited. A line can only be edited on its own day.</string>
+    <string name="edit_restored">Restored.</string>
+    <string name="edit_undo">Bring back the line you just deleted</string>
+    <string name="edit_until">You can edit it until midnight.</string>
+    <string name="letgo_privacyOff">Keeping lines is off, so only the date is kept — not the words.</string>
+    <string name="letgo_privacyPlain">Your lines stay only on this phone.</string>
+    <string name="record_offHow">Tap to turn it on in Settings.</string>
+    <string name="backup_last">Last %1$s</string>
+    <string name="widget_pin">Add to home</string>
+    <string name="feedback_copied">No mail app found, so the address and details were copied. Paste them wherever you like.</string>
 </resources>

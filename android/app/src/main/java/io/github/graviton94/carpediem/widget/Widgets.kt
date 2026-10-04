@@ -73,6 +73,21 @@ import kotlin.math.sin
 
 object Widgets {
     /** 앱에서 정보가 바뀌면 모든 위젯을 새로 그린다. */
+    /**
+     * 홈 화면에 위젯 두기 (Android 8+, 런처가 지원할 때): 런처가 ‘추가할까요?’ 를 물음. 지원하지 않으면 false (안내 글로).
+     * kind: line · days · today · calendar · family · record · breath
+     */
+    fun pin(context: Context, kind: String): Boolean {
+        val cls = when (kind) {
+            "line" -> LineGardenReceiver::class.java; "days" -> DaysLeftGardenReceiver::class.java; "today" -> TodayGardenReceiver::class.java
+            "calendar" -> LifeCalendarGardenReceiver::class.java; "family" -> FamilyGardenReceiver::class.java; "record" -> RecordReceiver::class.java
+            else -> BreathReceiver::class.java
+        }
+        val mgr = android.appwidget.AppWidgetManager.getInstance(context)
+        if (!mgr.isRequestPinAppWidgetSupported) return false
+        return runCatching { mgr.requestPinAppWidget(android.content.ComponentName(context, cls), null, null) }.getOrDefault(false)
+    }
+
     fun refresh(context: Context) {
         CoroutineScope(Dispatchers.Default).launch { updateAll(context) }
     }
@@ -271,7 +286,8 @@ class LineGardenWidget : GlanceAppWidget() {
                 Image(ImageProvider(bmp), null, GlanceModifier.fillMaxSize(), contentScale = androidx.glance.layout.ContentScale.FillBounds)
                 Column(GlanceModifier.fillMaxSize().padding(Tokens.Layout.widgetPadding)) {
                     Text(context.getString(R.string.words), style = style(Tokens.TypeScale.caption1.size, gSub))
-                    Text(words, style = style(Tokens.TypeScale.subhead.size, gInk, FontWeight.Medium), maxLines = 3)
+                    // 낮은 위젯 · 큰 글씨에서도 아래 ‘남기기’ 가 잘리지 않게 문장은 두 줄까지
+                    Text(words, style = style(Tokens.TypeScale.subhead.size, gInk, FontWeight.Medium), maxLines = if (size.height < 150.dp) 2 else 3)
                     Spacer(GlanceModifier.defaultWeight())
                     Text(context.getString(if (sent) R.string.widget_lineDone else R.string.widget_lineWrite),
                         style = style(Tokens.TypeScale.footnote.size, if (sent) gSub else gInk, if (sent) FontWeight.Normal else FontWeight.Bold))

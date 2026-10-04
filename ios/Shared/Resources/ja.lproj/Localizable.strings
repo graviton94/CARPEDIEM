@@ -503,7 +503,7 @@
 "record.next" = "次の月";
 "record.rest" = "ひと休みした日";
 "record.noText" = "ことばなしで残した日";
-"record.hint" = "日付に触れると、その日のひとこと";
+"record.hint" = "日をタップすると、その日のひとことが見られます。";
 "record.card" = "%1$@の庭が咲きました";
 "record.cardNight" = "%1$@の庭に星が出ました";
 "record.dayPattern" = "M月d日";
@@ -772,7 +772,7 @@
 "edit.delete" = "消す";
 "edit.deleted" = "消しました。その日はまた空いています。";
 "edit.deleteAsk" = "今日のひとことを消しますか？";
-"edit.deleteHelp" = "消したひとことは戻せません。その日はまた書けます。";
+"edit.deleteHelp" = "消した直後なら「戻す」で戻せます。アプリを閉じると戻せません。";
 "edit.deleteDay" = "この日のひとことを消す";
 "edit.deleteDayAsk" = "%1$@のひとことを消しますか？";
 "feedback.row" = "ご意見を送る";
@@ -798,6 +798,16 @@
 "nudge.backup" = "記録がたまってきました。設定で一度バックアップしませんか？";
 "search.hint" = "ひとことを探す（ことば・気持ち・人）";
 "search.none" = "見つかりませんでした。";
-"search.count" = "%1$@件見つかりました。タップでその日へ。";
+"search.count" = "%1$@件見つかりました。タップするとその日へ。";
 "mood.weatherA11y" = "この月の気持ち：%1$@";
 "garden.pathA11y" = "人生の道。ハルは%1$@歳の場所に、道の終わりは平均寿命%2$@歳";
+"edit.late" = "日付が変わったため直せませんでした。ひとことはその日のうちだけ直せます。";
+"edit.restored" = "元に戻しました。";
+"edit.undo" = "いま消したひとことを戻す";
+"edit.until" = "今日の夜12時まで直せます。";
+"letgo.privacyOff" = "記録を残す設定がオフなので、日付だけが残ります。";
+"letgo.privacyPlain" = "残したひとことは、このスマホの中だけにあります。";
+"record.offHow" = "タップすると設定でオンにできます。";
+"backup.last" = "最後 %1$@";
+"widget.pin" = "ホームに置く";
+"feedback.copied" = "メールアプリがないため、宛先と内容をコピーしました。好きな場所に貼り付けて送ってください。";

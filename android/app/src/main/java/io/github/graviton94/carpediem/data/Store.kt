@@ -104,6 +104,13 @@ class Store(context: Context) {
     var nudgesSeen: Set<String>
         get() = prefs.getStringSet("nudgesSeen", emptySet()) ?: emptySet()
         set(v) = prefs.edit().putStringSet("nudgesSeen", v).apply()
+    var nudgeShown: Set<String>
+        get() = prefs.getStringSet("nudgeShown", emptySet()) ?: emptySet()
+        set(v) = prefs.edit().putStringSet("nudgeShown", v).apply()
+    /** 마지막으로 백업 파일을 저장한 날 (epochDay, 없으면 -1). */
+    var lastBackup: Long
+        get() = prefs.getLong("lastBackup", -1)
+        set(v) = prefs.edit().putLong("lastBackup", v).apply()
     var pageHints: Set<String>
         get() = prefs.getStringSet("pageHints", emptySet()) ?: emptySet()
         set(v) = prefs.edit().putStringSet("pageHints", v).apply()
@@ -414,6 +421,8 @@ class Store(context: Context) {
             }
         }
         // 기록을 들여온 사람은 처음 온 사람이 아님: 소개 · 둘러보기 · 페이지 안내 · 하루를 만나는 장면은 건너뜀
+        // 알림 허락은 폰마다 다르니 새 폰에서 다시 물음
+        ed.remove("notifyAsked")
         ed.putBoolean("introSeen", true).putBoolean("guideDone", true).putBoolean("meetPending", false)
             .putStringSet("pageHints", io.github.graviton94.carpediem.ui.PAGE_HINTS)
             .putStringSet("nudgesSeen", io.github.graviton94.carpediem.core.FirstWeek.STEPS.map { it.first }.toSet())

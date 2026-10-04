@@ -46,13 +46,22 @@ object Feedback {
         ).joinToString("\n")
     }
 
-    /** 메일 앱으로 의견 보내기: 제목 · 기기 정보 (· 멈춘 기록) 를 미리 채움. 받는 곳이 없으면 false. */
+    /**
+     * 메일 앱으로 의견 보내기: 제목 · 기기 정보 (· 멈춘 기록) 를 미리 채움 (mailto 주소 안에도 담아, 덧붙인 값을 버리는 메일 앱에서도).
+     * 메일 앱이 없으면 주소와 내용을 클립보드에 복사하고 false.
+     */
     fun send(context: Context, crash: String? = null): Boolean {
         val to = context.getString(R.string.contact_email).ifBlank { return false }
         val body = "\n\n\n---\n" + deviceInfo(context) + (crash?.let { "\n\n--- crash ---\n" + it.take(MAX) } ?: "")
         val subject = context.getString(if (crash != null) R.string.feedback_crashSubject else R.string.feedback_subject)
-        val intent = Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:")).putExtra(Intent.EXTRA_EMAIL, arrayOf(to))
+        val uri = Uri.parse("mailto:$to?subject=" + Uri.encode(subject) + "&body=" + Uri.encode(body))
+        val intent = Intent(Intent.ACTION_SENDTO, uri).putExtra(Intent.EXTRA_EMAIL, arrayOf(to))
             .putExtra(Intent.EXTRA_SUBJECT, subject).putExtra(Intent.EXTRA_TEXT, body).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        return runCatching { context.startActivity(intent) }.isSuccess
+        if (runCatching { context.startActivity(intent) }.isSuccess) return true
+        runCatching {
+            val cm = context.getSystemService(android.content.ClipboardManager::class.java)
+            cm?.setPrimaryClip(android.content.ClipData.newPlainText(subject, "$to\n$subject$body"))
+        }
+        return false
     }
 }

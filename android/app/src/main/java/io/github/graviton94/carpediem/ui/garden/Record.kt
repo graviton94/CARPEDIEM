@@ -126,6 +126,9 @@ internal fun RecordPanel(state: AppState, view: RecordView, onView: (RecordView)
                         // 빈 지난 날: 그날의 한 줄을 바로 (기록 페이지로)
                         if (l == null && state.canWriteOn(pickedLine.first, today)) TokenText(stringResource(R.string.record_writeDay), Tokens.TypeScale.footnote,
                             Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { state.writeDay = pickedLine.first }.padding(vertical = Tokens.Space.sp3), color = p.olive, weight = FontWeight.SemiBold)
+                        // 방금 지운 날이면 되돌리기 (앱을 켜 둔 동안)
+                        if (l == null && state.lastDeleted?.date == pickedLine.first) TokenText(stringResource(R.string.edit_undo), Tokens.TypeScale.footnote,
+                            Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { state.undoDelete() }.padding(vertical = Tokens.Space.sp3), color = p.olive, weight = FontWeight.SemiBold)
                         // 지난 날의 한 줄 지우기 (오늘 것은 위 쓰는 칸에서)
                         if (l != null && pickedLine.first != today) TokenText(stringResource(R.string.edit_deleteDay), Tokens.TypeScale.footnote,
                             Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { deleting = pickedLine.first }.padding(vertical = Tokens.Space.sp3), color = p.secondary)
@@ -236,6 +239,7 @@ internal fun MoodSky(f: Feeling) {
  * 기록 찾기: 마음의 기록 위의 작은 칸. 낱말 · 마음 이름 · 보낸 사람으로 찾고, 누르면 그 달 판의 그날로.
  * 오늘 보낸 글은 내일부터 찾아짐 (떠나보낸 그대로).
  */
+@OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
 @Composable
 internal fun RecordSearch(state: AppState, today: LocalDate, onOpen: (RecordView) -> Unit) {
     val p = Theme.palette
@@ -248,18 +252,24 @@ internal fun RecordSearch(state: AppState, today: LocalDate, onOpen: (RecordView
         decorationBox = { inner -> Box { if (q.isEmpty()) TokenText(stringResource(R.string.search_hint), Tokens.TypeScale.callout, color = p.secondary); inner() } },
     )
     if (q.isBlank()) return
+    fun open(v: RecordView) { q = ""; onOpen(v) }
     val found = remember(state.lines, q, today) {
         Lines.search(state.lines, q, today, { ctx.getString(feelingName(it)) }, { id -> state.people.firstOrNull { it.id == id }?.name ?: state.memories.firstOrNull { it.id == id }?.name })
     }
-    if (found.isEmpty()) TokenText(stringResource(R.string.search_none), Tokens.TypeScale.footnote, color = p.secondary)
-    else {
+    if (found.isEmpty()) {
+        TokenText(stringResource(R.string.search_none), Tokens.TypeScale.footnote, color = p.secondary)
+        // 마음으로 찾아보기: 누르면 그 마음 이름으로
+        androidx.compose.foundation.layout.FlowRow(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
+            Feeling.entries.forEachIndexed { i, f -> val n = stringResource(feelingName(f)); GardenChip(n, false, 1500 + i) { q = n } }
+        }
+    } else {
         TokenText(stringResource(R.string.search_count, "${found.size}"), Tokens.TypeScale.footnote, color = p.secondary)
         found.take(30).forEach { l ->
-            Column(Modifier.fillMaxWidth().heightIn(min = Tokens.Layout.tapTarget).clickable { onOpen(RecordView(l.date.year, l.date.monthValue, l.date)) }.padding(vertical = Tokens.Space.sp2),
+            Column(Modifier.fillMaxWidth().heightIn(min = Tokens.Layout.tapTarget).clickable { open(RecordView(l.date.year, l.date.monthValue, l.date)) }.padding(vertical = Tokens.Space.sp2),
                 verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
                 val meta = listOfNotNull(RecordText.day(ctx, l.date).let { if (l.date.year != today.year) "${l.date.year} · $it" else it }, l.feeling?.let { ctx.getString(feelingName(it)) }).joinToString(" · ")
                 TokenText(meta, Tokens.TypeScale.caption1, color = p.secondary)
-                TokenText(l.text, Tokens.TypeScale.callout.serif(), maxLines = 3)
+                TokenText(l.text.ifBlank { stringResource(R.string.record_noText) }, Tokens.TypeScale.callout.serif(), maxLines = 3, color = if (l.text.isBlank()) p.secondary else p.foreground)
             }
         }
     }

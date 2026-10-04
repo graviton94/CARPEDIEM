@@ -211,9 +211,9 @@ fun FormRow(title: String, onClick: (() -> Unit)? = null, trailing: @Composable 
 fun RowDivider() { if (Theme.garden) CrayonRule() else Box(Modifier.fillMaxWidth().height(Tokens.Stroke.hair).background(Theme.palette.dim)) }
 
 @Composable
-fun FormSection(header: String? = null, footer: String? = null, content: @Composable ColumnScope.() -> Unit) {
+fun FormSection(header: String? = null, footer: String? = null, modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit) {
     val p = Theme.palette
-    Column(verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
+    Column(modifier, verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
         header?.let { TokenText(it, Tokens.TypeScale.footnote, Modifier.padding(horizontal = Tokens.Space.sp4), color = p.secondary) }
         Column(
             Modifier.fillMaxWidth().let { if (Theme.garden) it.crayonBox(seed = (header ?: footer ?: "").length + 3) else it.clip(RoundedCornerShape(Tokens.Radius.md)).background(p.glass)

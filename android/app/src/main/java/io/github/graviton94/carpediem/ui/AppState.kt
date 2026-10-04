@@ -95,27 +95,40 @@ class AppState(private val context: Context) {
     /** 정원 둘러보기 (첫 정원에서 한 번, 설정의 ‘안내 다시 보기’로 다시). */
     var guideDone by mutableStateOf(store.guideDone)
         private set
-    fun finishGuide() { store.guideDone = true; guideDone = true; guideStepState.value = 0 }
+    fun finishGuide() { store.guideDone = true; guideDone = true; guideSteps.remove("garden") }
     /** 둘러보기에서 지금 몇째 장인지 (앱을 켜 둔 동안만). */
-    val guideStepState = mutableStateOf(0)
+    val guideSteps = androidx.compose.runtime.mutableStateMapOf<String, Int>()
     var pageHints by mutableStateOf(store.pageHints)
         private set
-    fun pageHintSeen(key: String) { val v = pageHints + key; store.pageHints = v; pageHints = v; guideStepState.value = 0 }
+    fun pageHintSeen(key: String) { val v = pageHints + key; store.pageHints = v; pageHints = v; guideSteps.remove(key) }
     var nudgesSeen by mutableStateOf(store.nudgesSeen)
         private set
     fun nudgeSeen(key: String) { val v = nudgesSeen + key; store.nudgesSeen = v; nudgesSeen = v }
+    /** 권유를 처음 보여 준 날: 하루 지나면 해 보지 않았어도 다음 권유로 (같은 권유가 매일 머물지 않게). */
+    fun nudgeShown(key: String, today: LocalDate) {
+        if (store.nudgeShown.any { it.startsWith("$key:") }) return
+        store.nudgeShown = store.nudgeShown + "$key:${today.toEpochDay()}"
+    }
     /** 첫 일주일 길잡이: 오늘 권할 것 (이미 해 본 것은 건너뜀). 없으면 null. */
     fun firstWeekNudge(today: LocalDate): String? {
-        val done = nudgesSeen + listOfNotNull("breath".takeIf { breaths.isNotEmpty() }, "stone".takeIf { people.isNotEmpty() },
+        val shownBefore = store.nudgeShown.mapNotNull { e -> e.split(':').takeIf { it.size == 2 && (it[1].toLongOrNull() ?: Long.MAX_VALUE) < today.toEpochDay() }?.get(0) }
+        val done = nudgesSeen + shownBefore + listOfNotNull("breath".takeIf { breaths.isNotEmpty() }, "stone".takeIf { people.isNotEmpty() },
             "gaze".takeIf { gazeDays.isNotEmpty() }, "special".takeIf { specialDays.isNotEmpty() })
         return io.github.graviton94.carpediem.core.FirstWeek.next(java.time.temporal.ChronoUnit.DAYS.between(store.startDate, today), done)
     }
+    /** 설정을 열 때 바로 보여 줄 묶음 (예: 백업 권유에서 온 경우 "backup"). */
+    var settingsFocus by mutableStateOf<String?>(null)
+    /** 오늘의 한 줄에 쓰던 글 · 고른 마음 (보내기 전까지, 앱을 켜 둔 동안). */
+    val draftText = mutableStateOf("")
+    val draftFeeling = mutableStateOf<Feeling?>(null)
     /** 위젯 · 둘러보기에서 ‘한 줄 쓰러’ 왔을 때: 기록 페이지의 쓰는 칸에 바로 커서 (한 번). */
     var focusWrite by mutableStateOf(false)
     /** 둘러보기가 화면에 떠 있는 동안 (알림 한마디는 기다리고, 페이지는 넘어가지 않음). */
-    var touring by mutableStateOf(false)
+    private var tourCount by mutableStateOf(0)
+    val touring: Boolean get() = tourCount > 0
+    fun tourShown(on: Boolean) { tourCount = (tourCount + if (on) 1 else -1).coerceAtLeast(0) }
     /** 둘러보기 · 페이지마다의 첫 안내를 처음부터 다시. */
-    fun restartGuide() { store.guideDone = false; guideDone = false; guideStepState.value = 0; store.pageHints = emptySet(); pageHints = emptySet(); homePage = 0 }
+    fun restartGuide() { store.guideDone = false; guideDone = false; guideSteps.clear(); store.pageHints = emptySet(); pageHints = emptySet(); homePage = 0 }
     /** 캡처 스크립트용: 안내를 모두 본 것으로 (show = true 면 소개부터 처음 온 사람처럼). */
     fun debugGuides(show: Boolean) {
         if (show) { store.introSeen = false; introSeen = false; restartGuide() }
@@ -223,14 +236,27 @@ class AppState(private val context: Context) {
     }
     // ───── 고치기 · 지우기 ─────
     /** 오늘의 한 줄 고치기 (그날 안에만): 글 · 마음만 바꿈. */
-    fun editToday(text: String, feeling: Feeling?, today: LocalDate = (fixedNow ?: LocalDateTime.now()).toLocalDate()) {
-        val t = Lines.clean(text, Tokens.Garden.LetGo.maxChars.toInt(), Lines.MAX_LINES); if (t.isEmpty()) return
+    /** 고친 날 (화면이 아는 오늘) 의 줄이 없으면 (자정이 지났으면) 고치지 않고 false. */
+    fun editToday(text: String, feeling: Feeling?, today: LocalDate): Boolean {
+        val t = Lines.clean(text, Tokens.Garden.LetGo.maxChars.toInt(), Lines.MAX_LINES); if (t.isEmpty()) return false
+        if (lines.none { it.date == today }) { say(context.getString(R.string.edit_late)); return false }
         val next = Lines.edit(lines, today, if (keepLines) t else "", if (keepLines) feeling else null); store.lines = next; lines = next
         Widgets.refresh(context); say(context.getString(R.string.edit_done))
+        return true
+    }
+    /** 방금 지운 한 줄 (앱을 켜 둔 동안 되돌리기). */
+    var lastDeleted by mutableStateOf<DayLine?>(null)
+        private set
+    fun undoDelete() {
+        val l = lastDeleted ?: return; lastDeleted = null
+        if (lines.any { it.date == l.date }) return
+        val next = Lines.add(lines, l); store.lines = next; lines = next; Widgets.refresh(context); say(context.getString(R.string.edit_restored))
     }
     /** 그날의 한 줄 지우기 (그날은 다시 빈 날). 이어 쓰기 흔적 (이미 받은 것) 은 그대로 둠. */
     fun deleteLine(day: LocalDate) {
+        lastDeleted = lines.firstOrNull { it.date == day }
         val next = Lines.remove(lines, day); store.lines = next; lines = next
+        if (randomLine?.date == day) randomLine = null
         store.backfilled = store.backfilled - day.toEpochDay().toString()
         Widgets.refresh(context); say(context.getString(R.string.edit_deleted))
     }

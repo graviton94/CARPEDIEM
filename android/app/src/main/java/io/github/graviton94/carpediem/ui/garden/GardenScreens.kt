@@ -50,6 +50,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import kotlinx.coroutines.delay
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -288,7 +289,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
           val incoming by remember(page) { derivedStateOf { (pager.currentPage - page) + pager.currentPageOffsetFraction < 0f } }
           Box(Modifier.fillMaxSize().zIndex(if (incoming) 1f else 0f).pageTurn(pager, page) { breath }) {
           when (page) {
-            1 -> WritePage(state, now, recordView, guide) { recordView = it }
+            1 -> WritePage(state, now, recordView, guide, onSettings) { recordView = it }
             2 -> MemoriesPage(state, profile, now, guide, onMemory)
             3 -> FlowPage(state, profile, now, guide)
             else -> BoxWithConstraints(Modifier.fillMaxSize()) {
@@ -549,14 +550,16 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                         else -> state.firstWeekNudge(today)?.takeIf { state.guideDone }?.let { k ->
                             val text = stringResource(when (k) { "breath" -> R.string.nudge_breath; "stone" -> R.string.nudge_stone; "gaze" -> R.string.nudge_gaze
                                 "special" -> R.string.nudge_special; "widget" -> R.string.nudge_widget; else -> R.string.nudge_backup })
+                            // 보여 준 날을 적어 둠: 하루 지나면 해 보지 않았어도 다음 권유로
+                            LaunchedEffect(k) { state.nudgeShown(k, today) }
                             RecallNote(text) {
                                 when (k) {
                                     "breath" -> { breathSheet = true }
                                     "stone" -> onAddPerson()
                                     "gaze" -> onGaze()
                                     "special" -> turnTo(3)
-                                    "widget" -> state.say(ctx.getString(R.string.nudge_widgetHow))
-                                    else -> onSettings()
+                                    "widget" -> { if (!io.github.graviton94.carpediem.widget.Widgets.pin(ctx, "line")) state.say(ctx.getString(R.string.nudge_widgetHow)) }
+                                    else -> { state.settingsFocus = "backup"; onSettings() }
                                 }
                                 state.nudgeSeen(k)
                             }
@@ -591,11 +594,11 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
             }
         }
         // 처음 온 사람: 정원을 하나씩 비추며 둘러보기 (정원 페이지에서, 한마디 창이 없을 때)
-        if (touring && pager.currentPage == 0 && state.toast == null) GuideTour(state, guide, GardenGuideSteps, onWrite = { state.focusWrite = true; turnTo(1) }) { state.finishGuide() }
+        if (touring && pager.currentPage == 0 && state.toast == null) GuideTour(state, "garden", guide, GardenGuideSteps, onWrite = { state.pageHintSeen("write"); state.focusWrite = true; turnTo(1) }) { state.finishGuide() }
         // 기록 · 추억 · 흐름: 처음 들어오면 그 페이지의 짧은 둘러보기 (정원 둘러보기를 마친 뒤, 넘기는 중이 아닐 때)
         val pageKey = listOf(null, "write", "memories", "flow").getOrNull(pager.currentPage)
         if (!bare && state.guideDone && pageKey != null && pageKey !in state.pageHints && state.toast == null && !pager.isScrollInProgress && !typing)
-            androidx.compose.runtime.key(pageKey) { GuideTour(state, guide, PageGuideSteps.getValue(pageKey)) { state.pageHintSeen(pageKey) } }
+            androidx.compose.runtime.key(pageKey) { GuideTour(state, pageKey, guide, PageGuideSteps.getValue(pageKey)) { state.pageHintSeen(pageKey) } }
     }
 
     decorOpen?.let { part ->
@@ -631,8 +634,9 @@ private fun PageTabs(current: Int, onPick: (Int) -> Unit) {
 }
 
 /** 기록: 계절 첫날의 바람 · 오늘의 한 줄, 그 아래 쌓인 한 줄들 (마음의 기록: 월 · 해). 보낸 뒤에도 이번 달 정원에 오늘이 피는 것을 본다. */
+@OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class)
 @Composable
-private fun WritePage(state: AppState, now: LocalDateTime, view: RecordView, guide: GuideTargets, onView: (RecordView) -> Unit) {
+private fun WritePage(state: AppState, now: LocalDateTime, view: RecordView, guide: GuideTargets, onSettings: () -> Unit, onView: (RecordView) -> Unit) {
     val today = now.toLocalDate()
     // 마음의 기록에서 빈 날을 고르면 위의 쓰는 칸으로 올라감
     val scroll = rememberScrollState()
@@ -647,10 +651,15 @@ private fun WritePage(state: AppState, now: LocalDateTime, view: RecordView, gui
         Spacer(Modifier.height(Tokens.Space.sp4))
         TokenText(stringResource(R.string.mood_title), Tokens.TypeScale.title3)
         if (state.keepLines) {
-            RecordSearch(state, today) { onView(it) }
-            Box(Modifier.guideTarget(guide, "write.record")) { RecordPanel(state, view, onView, today) }
+            // 찾은 줄을 누르면 그 달 판의 그날로, 판이 보이게 끌어옴
+            val panel = remember { androidx.compose.foundation.relocation.BringIntoViewRequester() }
+            val sc = rememberCoroutineScope()
+            RecordSearch(state, today) { v -> onView(v); sc.launch { delay(G.Motion.pageMs.toLong() / 2); panel.bringIntoView() } }
+            Box(Modifier.guideTarget(guide, "write.record").bringIntoViewRequester(panel)) { RecordPanel(state, view, onView, today) }
         }
-        else TokenText(stringResource(R.string.record_off), Tokens.TypeScale.footnote, color = Theme.palette.secondary)
+        // 기록 남기기를 꺼 두었으면: 어디서 켜는지 (누르면 설정으로)
+        else TokenText(stringResource(R.string.record_off) + " " + stringResource(R.string.record_offHow), Tokens.TypeScale.footnote,
+            Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable(onClick = onSettings).padding(vertical = Tokens.Space.sp3), color = Theme.palette.secondary)
     }
 }
 

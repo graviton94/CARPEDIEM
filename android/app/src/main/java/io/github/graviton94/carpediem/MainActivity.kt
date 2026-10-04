@@ -149,7 +149,9 @@ class MainActivity : ComponentActivity() {
                     // 허락하면 아침 · 저녁 · 전날 알림을 켬 (캡처용 시각을 정한 실행에서는 묻지 않음)
                     val askNotify = androidx.activity.compose.rememberLauncherForActivityResult(androidx.activity.result.contract.ActivityResultContracts.RequestPermission()) { ok -> state.notifyAsked(ok) }
                     var notifyNote by remember { mutableStateOf(false) }
-                    val guided = state.guideDone || state.design != Design.GARDEN
+                    // 둘러보기가 끝나고, 첫 한 줄을 남겼거나 하루가 지난 뒤에 (처음 온 날 묻는 것이 줄줄이 이어지지 않게)
+                    val guided = (state.guideDone || state.design != Design.GARDEN) && !state.touring &&
+                        (state.lines.isNotEmpty() || state.store.startDate.isBefore((state.fixedNow ?: LocalDateTime.now()).toLocalDate()))
                     LaunchedEffect(screen == Screen.Main, state.profile != null, state.meetPending, guided) {
                         if (screen == Screen.Main && state.profile != null && !state.meetPending && guided && !scripted && state.fixedNow == null && !state.store.notifyAsked) {
                             if (android.os.Build.VERSION.SDK_INT >= 33 && !io.github.graviton94.carpediem.notify.Daily.allowed(this@MainActivity)) { delay(Tokens.Garden.Motion.pageMs.toLong()); notifyNote = true }
@@ -163,7 +165,10 @@ class MainActivity : ComponentActivity() {
                         title = { androidx.compose.material3.Text(getString(R.string.feedback_crashTitle)) },
                         text = { androidx.compose.material3.Text(getString(R.string.feedback_crashBody)) },
                         confirmButton = { androidx.compose.material3.TextButton(onClick = {
-                            crash = null; io.github.graviton94.carpediem.data.Feedback.send(this@MainActivity, c); io.github.graviton94.carpediem.data.Feedback.clearCrash(this@MainActivity)
+                            crash = null
+                            // 메일 앱이 열렸을 때만 지움 (없으면 클립보드에 복사했다고 알림)
+                            if (io.github.graviton94.carpediem.data.Feedback.send(this@MainActivity, c)) io.github.graviton94.carpediem.data.Feedback.clearCrash(this@MainActivity)
+                            else state.say(getString(R.string.feedback_copied))
                         }) { androidx.compose.material3.Text(getString(R.string.feedback_crashSend)) } },
                         dismissButton = { androidx.compose.material3.TextButton(onClick = { crash = null; io.github.graviton94.carpediem.data.Feedback.clearCrash(this@MainActivity) }) { androidx.compose.material3.Text(getString(R.string.feedback_crashSkip), color = io.github.graviton94.carpediem.design.Theme.palette.secondary) } },
                     ) }
@@ -327,7 +332,7 @@ private fun openFrom(open: String?, state: AppState): Screen? {
     val (kind, arg) = open.split(':', limit = 2).let { it[0] to it.getOrNull(1) }
     when (kind) {
         "letter" -> { state.homePage = 0; state.debugOpenLetter = true }
-        "write" -> { state.homePage = 1; state.focusWrite = true }
+        "write" -> { state.homePage = 1; state.focusWrite = !state.sentOn((state.fixedNow ?: java.time.LocalDateTime.now()).toLocalDate()) }
         "flow" -> state.homePage = 3
         // month = 알림 (지난 달의 정원이 피었다는 소식, 펼친 것으로 남김) · record = 위젯 (이번 달을 보기만)
         "month", "record" -> arg?.split('-')?.mapNotNull { it.toIntOrNull() }?.takeIf { it.size == 2 && it[1] in 1..12 && it[0] in 1900..java.time.LocalDate.now().year }?.let { (y, m) ->

@@ -505,7 +505,7 @@
     <string name="record_next">下個月</string>
     <string name="record_rest">休息的日子</string>
     <string name="record_noText">沒寫下文字的日子</string>
-    <string name="record_hint">點一下日期，看那天的一句話</string>
+    <string name="record_hint">點一天，就能看到那天的話。</string>
     <string name="record_card">%1$s的庭院開花了</string>
     <string name="record_cardNight">%1$s的庭院，星星出來了</string>
     <string name="record_dayPattern">M月d日</string>
@@ -774,7 +774,7 @@
     <string name="edit_delete">刪除</string>
     <string name="edit_deleted">已刪除。那一天又空出來了。</string>
     <string name="edit_deleteAsk">要刪除今天的一句話嗎？</string>
-    <string name="edit_deleteHelp">刪除後無法復原，那一天可以重新寫。</string>
+    <string name="edit_deleteHelp">刪除後可以馬上復原。關閉 App 後就無法復原。</string>
     <string name="edit_deleteDay">刪除這天的話</string>
     <string name="edit_deleteDayAsk">要刪除 %1$s 的話嗎？</string>
     <string name="feedback_row">傳送意見</string>
@@ -803,4 +803,14 @@
     <string name="search_count">找到 %1$s 句，點一下就到那天。</string>
     <string name="mood_weatherA11y">這個月的心情：%1$s</string>
     <string name="garden_pathA11y">人生的路。小日在 %1$s 歲的位置，路的盡頭是平均壽命 %2$s 歲</string>
+    <string name="edit_late">日期已經換了，所以沒有修改。一句話只能在當天修改。</string>
+    <string name="edit_restored">已復原。</string>
+    <string name="edit_undo">復原剛刪除的話</string>
+    <string name="edit_until">今天午夜前都可以修改。</string>
+    <string name="letgo_privacyOff">已關閉保留紀錄，只會留下日期，不會留下文字。</string>
+    <string name="letgo_privacyPlain">留下的話只在這支手機裡。</string>
+    <string name="record_offHow">點一下，可以在設定裡開啟。</string>
+    <string name="backup_last">上次 %1$s</string>
+    <string name="widget_pin">放到主畫面</string>
+    <string name="feedback_copied">找不到郵件 App，已複製地址和內容，可以貼到任何地方傳送。</string>
 </resources>

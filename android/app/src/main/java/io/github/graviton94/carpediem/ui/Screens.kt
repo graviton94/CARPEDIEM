@@ -4,6 +4,7 @@ import io.github.graviton94.carpediem.ui.garden.LetGoModal
 import io.github.graviton94.carpediem.ui.garden.LetGoSection
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -330,6 +331,7 @@ private fun QuoteCard(q: Quote, language: QuoteLanguage, onNext: () -> Unit) {
 
 // ───────────────────────── 설정 ─────────────────────────
 
+@OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class)
 @Composable
 fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, onCountry: () -> Unit, onCollection: () -> Unit, onSupport: () -> Unit, onStone: (String?) -> Unit = {}, onAddPerson: () -> Unit = {}) {
     val p = Theme.palette
@@ -345,72 +347,27 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
     val saveFile = androidx.activity.compose.rememberLauncherForActivityResult(androidx.activity.result.contract.ActivityResultContracts.CreateDocument("application/json")) { uri ->
         if (uri != null) {
             val ok = runCatching { ctx.contentResolver.openOutputStream(uri)?.use { it.write(state.store.backup().toByteArray()) } != null }.getOrDefault(false)
+            if (ok) { state.store.lastBackup = java.time.LocalDate.now().toEpochDay(); lastBackup = state.store.lastBackup }
             state.say(ctx.getString(if (ok) R.string.backup_saved else R.string.backup_saveFail))
         }
     }
     // 백업 · 불러오기는 폰의 화면 잠금을 한 번 확인한 뒤에만
+    var lastBackup by remember { mutableStateOf(state.store.lastBackup) }
     val deviceCheck = rememberDeviceCheck()
     fun backupNow() = deviceCheck { saveFile.launch("haru-garden-" + java.time.LocalDate.now() + ".json") }
     SkyBackground {
         Page {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                TextButton(onClick = { state.draft = null; onClose() }) { TokenText(stringResource(R.string.cancel), Tokens.TypeScale.body, color = p.olive) }
+                IconButton(onClick = { if (draft != profile) askSave = true else { state.draft = null; onClose() } }, modifier = Modifier.semantics { contentDescription = ctx.getString(R.string.back) }) {
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, null, tint = p.olive)
+                }
                 Spacer(Modifier.weight(1f))
                 TokenText(stringResource(R.string.settings), Tokens.TypeScale.headline)
                 Spacer(Modifier.weight(1f))
                 TextButton(onClick = { state.save(draft); state.draft = null; onClose() }) { TokenText(stringResource(R.string.done), Tokens.TypeScale.headline, color = p.olive) }
             }
             ProfileFields(state, draft, { state.draft = it }, onCountry)
-            FormSection(header = stringResource(R.string.design)) {
-                FormRow(stringResource(R.string.design)) {
-                    ChipPicker(Design.entries, state.design, { Labels.design(ctx, it) }) { state.changeDesign(it) }
-                }
-                if (state.design == Design.GARDEN) {
-                    RowDivider()
-                    // 내 하루: ‘2026년 9월 30일에 만난 회색 화강암’ (누르면 돌의 페이지)
-                    FormRow(stringResource(R.string.garden_haru), onClick = { onStone(null) }) {
-                        TokenText(stringResource(R.string.garden_metOn, state.store.startDate.format(java.time.format.DateTimeFormatter.ofLocalizedDate(java.time.format.FormatStyle.MEDIUM)),
-                            Labels.stone(ctx, io.github.graviton94.carpediem.core.HaruShape.traits(state.store.haruSeed).stone.id)), Tokens.TypeScale.footnote, color = p.secondary, maxLines = 2)
-                    }
-                    RowDivider()
-                    FormRow(stringResource(R.string.collection), onClick = onCollection) {
-                        Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null, tint = p.secondary)
-                    }
-                    if (state.devMode) {
-                        RowDivider()
-                        FormRow(stringResource(R.string.garden_preview), onClick = { state.changePreviewAll(!state.previewAll) }) {
-                            Switch(state.previewAll, { state.changePreviewAll(it) }, colors = SwitchDefaults.colors(checkedTrackColor = p.olive))
-                        }
-                    }
-                }
-            }
-            // 가족의 정원 (정원 디자인에서만. 유리 디자인은 안내 한 줄)
-            if (state.design == Design.GARDEN) FormSection(header = stringResource(R.string.family)) {
-                state.people.forEachIndexed { i, person ->
-                    if (i > 0) RowDivider()
-                    FormRow(person.name, onClick = { onStone(person.id) }) { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null, tint = p.secondary) }
-                }
-                if (state.people.size < Tokens.Garden.Family.max.toInt() - 1) {
-                    if (state.people.isNotEmpty()) RowDivider()
-                    FormRow(stringResource(R.string.family_add), onClick = onAddPerson) { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null, tint = p.secondary) }
-                }
-            } else TokenText(stringResource(R.string.family_glassNote), Tokens.TypeScale.footnote, Modifier.padding(horizontal = Tokens.Space.sp4), color = p.secondary)
-            FormSection(header = stringResource(R.string.defaults), footer = stringResource(R.string.defaults_footer)) {
-                Column(Modifier.padding(vertical = Tokens.Space.sp2), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
-                    TokenText(stringResource(R.string.defaults_unit), Tokens.TypeScale.body)
-                    ChipPicker(LifeUnit.entries, state.defaultUnit, { Labels.unit(ctx, it) }) { state.changeDefaultUnit(it) }
-                }
-                RowDivider()
-                Column(Modifier.padding(vertical = Tokens.Space.sp2), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
-                    TokenText(stringResource(R.string.defaults_grid), Tokens.TypeScale.body)
-                    ChipPicker(GridScale.entries, state.defaultGrid, { Labels.gridShort(ctx, it) }) { state.changeDefaultGrid(it) }
-                }
-            }
-            FormSection(header = stringResource(R.string.words)) {
-                FormRow(stringResource(R.string.words_language)) {
-                    if (io.github.graviton94.carpediem.data.Words.choosable(ctx)) ChipPicker(QuoteLanguage.entries, state.quoteLanguage, { Labels.quoteLanguage(ctx, it) }) { state.changeQuoteLanguage(it) }
-                }
-            }
+            // 자주 바꾸는 것부터: 알림 · 기록 · 백업 → 꾸밈 · 가족 · 기본값 · 문장 → 위젯 · 의견 · 응원 → 안내 · 지우기
             val permission = androidx.activity.compose.rememberLauncherForActivityResult(androidx.activity.result.contract.ActivityResultContracts.RequestPermission()) { ok -> state.changeNotify(ok); if (!ok) blocked = true }
             fun toggleNotify(on: Boolean) {
                 if (on && android.os.Build.VERSION.SDK_INT >= 33 && !io.github.graviton94.carpediem.notify.Daily.allowed(ctx)) permission.launch(android.Manifest.permission.POST_NOTIFICATIONS)
@@ -521,10 +478,16 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
                 )
             }
             // 백업: 새 폰으로 옮기거나 지우기 전에 (모든 것을 파일 하나로)
-            FormSection(header = stringResource(R.string.backup_title), footer = stringResource(R.string.backup_footer)) {
+            // 백업 권유에서 왔으면 이 묶음이 보이게
+            val backupView = remember { androidx.compose.foundation.relocation.BringIntoViewRequester() }
+            androidx.compose.runtime.LaunchedEffect(state.settingsFocus) { if (state.settingsFocus == "backup") { kotlinx.coroutines.delay(300); backupView.bringIntoView(); state.settingsFocus = null } }
+            FormSection(header = stringResource(R.string.backup_title), footer = stringResource(R.string.backup_footer), modifier = Modifier.bringIntoViewRequester(backupView)) {
                 var restoreFrom by remember { mutableStateOf<android.net.Uri?>(null) }
                 val openFile = androidx.activity.compose.rememberLauncherForActivityResult(androidx.activity.result.contract.ActivityResultContracts.OpenDocument()) { uri -> restoreFrom = uri }
-                FormRow(stringResource(R.string.backup_export), onClick = { backupNow() }) {}
+                FormRow(stringResource(R.string.backup_export), onClick = { backupNow() }) {
+                    // 마지막으로 저장한 날 (조용한 안심 한 줄)
+                    if (lastBackup >= 0) TokenText(stringResource(R.string.backup_last, java.time.LocalDate.ofEpochDay(lastBackup).format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM))), Tokens.TypeScale.footnote, color = p.secondary)
+                }
                 RowDivider()
                 FormRow(stringResource(R.string.backup_import), onClick = { deviceCheck { openFile.launch(arrayOf("application/json", "text/plain", "application/octet-stream")) } }) {}
                 restoreFrom?.let { uri ->
@@ -546,10 +509,54 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
                     )
                 }
             }
-            // 처음 온 사람의 안내 다시 보기 (정원 둘러보기 · 페이지마다의 첫 안내)
-            if (state.design == Design.GARDEN) FormSection {
-                FormRow(stringResource(R.string.guide_again), onClick = { state.draft = null; state.restartGuide(); onClose() }) {
-                    Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null, tint = p.secondary)
+            FormSection(header = stringResource(R.string.design)) {
+                FormRow(stringResource(R.string.design)) {
+                    ChipPicker(Design.entries, state.design, { Labels.design(ctx, it) }) { state.changeDesign(it) }
+                }
+                if (state.design == Design.GARDEN) {
+                    RowDivider()
+                    // 내 하루: ‘2026년 9월 30일에 만난 회색 화강암’ (누르면 돌의 페이지)
+                    FormRow(stringResource(R.string.garden_haru), onClick = { onStone(null) }) {
+                        TokenText(stringResource(R.string.garden_metOn, state.store.startDate.format(java.time.format.DateTimeFormatter.ofLocalizedDate(java.time.format.FormatStyle.MEDIUM)),
+                            Labels.stone(ctx, io.github.graviton94.carpediem.core.HaruShape.traits(state.store.haruSeed).stone.id)), Tokens.TypeScale.footnote, color = p.secondary, maxLines = 2)
+                    }
+                    RowDivider()
+                    FormRow(stringResource(R.string.collection), onClick = onCollection) {
+                        Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null, tint = p.secondary)
+                    }
+                    if (state.devMode) {
+                        RowDivider()
+                        FormRow(stringResource(R.string.garden_preview), onClick = { state.changePreviewAll(!state.previewAll) }) {
+                            Switch(state.previewAll, { state.changePreviewAll(it) }, colors = SwitchDefaults.colors(checkedTrackColor = p.olive))
+                        }
+                    }
+                }
+            }
+            // 가족의 정원 (정원 디자인에서만. 유리 디자인은 안내 한 줄)
+            if (state.design == Design.GARDEN) FormSection(header = stringResource(R.string.family)) {
+                state.people.forEachIndexed { i, person ->
+                    if (i > 0) RowDivider()
+                    FormRow(person.name, onClick = { onStone(person.id) }) { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null, tint = p.secondary) }
+                }
+                if (state.people.size < Tokens.Garden.Family.max.toInt() - 1) {
+                    if (state.people.isNotEmpty()) RowDivider()
+                    FormRow(stringResource(R.string.family_add), onClick = onAddPerson) { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null, tint = p.secondary) }
+                }
+            } else TokenText(stringResource(R.string.family_glassNote), Tokens.TypeScale.footnote, Modifier.padding(horizontal = Tokens.Space.sp4), color = p.secondary)
+            FormSection(header = stringResource(R.string.defaults), footer = stringResource(R.string.defaults_footer)) {
+                Column(Modifier.padding(vertical = Tokens.Space.sp2), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
+                    TokenText(stringResource(R.string.defaults_unit), Tokens.TypeScale.body)
+                    ChipPicker(LifeUnit.entries, state.defaultUnit, { Labels.unit(ctx, it) }) { state.changeDefaultUnit(it) }
+                }
+                RowDivider()
+                Column(Modifier.padding(vertical = Tokens.Space.sp2), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
+                    TokenText(stringResource(R.string.defaults_grid), Tokens.TypeScale.body)
+                    ChipPicker(GridScale.entries, state.defaultGrid, { Labels.gridShort(ctx, it) }) { state.changeDefaultGrid(it) }
+                }
+            }
+            FormSection(header = stringResource(R.string.words)) {
+                FormRow(stringResource(R.string.words_language)) {
+                    if (io.github.graviton94.carpediem.data.Words.choosable(ctx)) ChipPicker(QuoteLanguage.entries, state.quoteLanguage, { Labels.quoteLanguage(ctx, it) }) { state.changeQuoteLanguage(it) }
                 }
             }
             FormSection(header = stringResource(R.string.widgets)) {
@@ -567,20 +574,33 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
                     R.string.widgets_name_calendar to R.string.widget_calendar_desc, R.string.widgets_name_family to R.string.widget_family_desc,
                     R.string.widgets_name_record to R.string.widget_record_desc, R.string.widgets_name_line to R.string.widget_line_desc).forEachIndexed { i, (name, desc) ->
                     if (i > 0) RowDivider()
-                    Column(Modifier.padding(vertical = Tokens.Space.sp3), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
-                        TokenText(stringResource(name), Tokens.TypeScale.subhead, weight = FontWeight.SemiBold)
-                        TokenText(stringResource(desc), Tokens.TypeScale.footnote, color = p.secondary)
+                    Row(Modifier.padding(vertical = Tokens.Space.sp3), verticalAlignment = Alignment.CenterVertically) {
+                        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
+                            TokenText(stringResource(name), Tokens.TypeScale.subhead, weight = FontWeight.SemiBold)
+                            TokenText(stringResource(desc), Tokens.TypeScale.footnote, color = p.secondary)
+                        }
+                        // 런처가 지원하면 바로 홈 화면에 두기
+                        val kind = listOf("days", "today", "calendar", "family", "record", "line")[i]
+                        TextButton(onClick = { if (!io.github.graviton94.carpediem.widget.Widgets.pin(ctx, kind)) state.say(ctx.getString(R.string.nudge_widgetHow)) }) {
+                            TokenText(stringResource(R.string.widget_pin), Tokens.TypeScale.footnote, color = p.olive, weight = FontWeight.SemiBold)
+                        }
                     }
                 }
             }
             // 의견 보내기: 메일에 기기 · 앱 정보만 미리 채움 (기록은 담지 않음)
             FormSection(footer = stringResource(R.string.feedback_footer)) {
-                FormRow(stringResource(R.string.feedback_row), onClick = { if (!io.github.graviton94.carpediem.data.Feedback.send(ctx)) state.say(ctx.getString(R.string.contact_soon)) }) {
+                FormRow(stringResource(R.string.feedback_row), onClick = { if (!io.github.graviton94.carpediem.data.Feedback.send(ctx)) state.say(ctx.getString(R.string.feedback_copied)) }) {
                     Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null, tint = p.secondary)
                 }
             }
             FormSection {
                 FormRow(stringResource(R.string.support), onClick = onSupport) {
+                    Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null, tint = p.secondary)
+                }
+            }
+            // 처음 온 사람의 안내 다시 보기 (정원 둘러보기 · 페이지마다의 첫 안내)
+            if (state.design == Design.GARDEN) FormSection {
+                FormRow(stringResource(R.string.guide_again), onClick = { state.draft = null; state.restartGuide(); onClose() }) {
                     Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null, tint = p.secondary)
                 }
             }

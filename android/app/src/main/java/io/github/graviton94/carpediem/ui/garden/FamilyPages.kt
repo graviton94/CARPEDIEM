@@ -196,7 +196,7 @@ fun StoneScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, id: S
                 GardenButton(stringResource(R.string.stone_edit), { onEdit(id!!) }, filled = false, seed = 880, modifier = Modifier.guideTarget(guide, "stone.action"))
             }
         }
-        if ("stone" !in state.pageHints && state.guideDone && !breathSheet) GuideTour(state, guide, PageGuideSteps.getValue("stone")) { state.pageHintSeen("stone") }
+        if ("stone" !in state.pageHints && state.guideDone && !breathSheet) GuideTour(state, "stone", guide, PageGuideSteps.getValue("stone")) { state.pageHintSeen("stone") }
     }
     if (breathSheet) BreathSheet(state, now, { k, m, snd -> breathSheet = false; onBreath(k, m, snd) }) { breathSheet = false }
 }
