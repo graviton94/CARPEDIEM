@@ -98,6 +98,7 @@ fun TitleScreen(state: AppState, now: LocalDateTime, onDone: () -> Unit) {
     BoxWithConstraints(Modifier.fillMaxSize().semantics { contentDescription = enterLabel }.pointerInput(Unit) { detectTapGestures { enter() } }) {
         val u = Theme.unit
         val w = with(density) { maxWidth.toPx() }; val h = with(density) { maxHeight.toPx() }
+        val screenH = maxHeight
         val haruY = maxHeight * TITLE_HARU_AT
         val scale = u * (TITLE_HARU_WIDTH / G.Layout.haruArtWidth)
         val k = with(density) { scale.toPx() }
@@ -115,7 +116,7 @@ fun TitleScreen(state: AppState, now: LocalDateTime, onDone: () -> Unit) {
             // 땅 한 줄과 졸고 있는 하루
             // 땅은 화면 아래 끝까지 (띠 그림을 위에 맞춰 늘림)
             val stripTop = haruY - u * G.Layout.stripLineY
-            Image(GardenArt.strip(ctx, season), null, Modifier.fillMaxWidth().offset(y = stripTop).height(maxOf(u * G.Layout.stripHeight, maxHeight - stripTop)),
+            Image(GardenArt.strip(ctx, season), null, Modifier.fillMaxWidth().offset(y = stripTop).height(maxOf(u * G.Layout.stripHeight, screenH - stripTop)),
                 contentScale = ContentScale.Crop, alignment = Alignment.TopCenter)
             val boxH = scale * (G.Layout.haruGround - art.meta.bbox.top + G.Layout.sparkle)
             Box(Modifier.align(Alignment.TopCenter).offset(y = haruY - boxH).graphicsLayer {
