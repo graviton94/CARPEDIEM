@@ -87,7 +87,7 @@ private val CREDIT_WARM = Color(0xFFF5B45C)
 @Composable
 fun CreditsScreen(state: AppState, profile: LifeProfile, year: Int, onDone: () -> Unit) {
     val events = remember(year) {
-        Credits.events(year, state.lines, profile.birthDate, state.people, state.specialDays, state.chancesMet, state.seeds, state.capsules, state.store.startDate)
+        Credits.events(year, state.lines, profile.birthDate, state.people, state.specialDays, state.chancesMet.toList(), state.seeds, state.capsules, state.store.startDate)
     }
     val plan = remember(events) { Credits.plan(events, year) }
     val total = Credits.total(plan)
