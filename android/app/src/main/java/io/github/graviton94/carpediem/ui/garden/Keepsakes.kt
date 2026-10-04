@@ -241,13 +241,23 @@ private fun RingArt(months: List<io.github.graviton94.carpediem.core.Feeling?>, 
 /** 추억: 미래의 나에게 · 열어 본 항아리 · 나이테. */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-internal fun KeepsakesSection(state: AppState, profile: LifeProfile, now: LocalDateTime) {
+internal fun KeepsakesSection(state: AppState, profile: LifeProfile, now: LocalDateTime, onCredits: (Int) -> Unit = {}) {
     val p = Theme.palette
     val ctx = LocalContext.current
     val today = now.toLocalDate()
     var writing by remember { mutableStateOf(false) }
     var reading by remember { mutableStateOf<Capsule?>(null) }
     var ringAge by remember { mutableStateOf<Int?>(null) }
+    // 한 해의 엔딩 크레딧 (08): 한 줄이 있는 해마다
+    val years = remember(state.lines) { state.gardenYears() }
+    if (years.isNotEmpty()) {
+        Spacer(Modifier.height(Tokens.Space.sp4))
+        TokenText(stringResource(R.string.credits_section), Tokens.TypeScale.title3)
+        TokenText(stringResource(R.string.credits_sectionSub), Tokens.TypeScale.footnote, color = p.secondary)
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
+            years.take(10).forEachIndexed { i, y -> GardenChip(stringResource(R.string.credits_chip, "$y"), false, 1570 + i) { onCredits(y) } }
+        }
+    }
     Spacer(Modifier.height(Tokens.Space.sp4))
     TokenText(stringResource(R.string.capsule_section), Tokens.TypeScale.title3)
     TokenText(stringResource(R.string.capsule_sectionSub), Tokens.TypeScale.footnote, color = p.secondary)

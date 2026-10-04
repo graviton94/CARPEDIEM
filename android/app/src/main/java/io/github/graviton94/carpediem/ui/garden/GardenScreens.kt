@@ -230,7 +230,7 @@ internal fun shortName(n: String): String { val max = G.Family.nameChars.toInt()
 @Composable
 fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSettings: () -> Unit, onCollection: () -> Unit, onSupport: () -> Unit, onStone: (String?) -> Unit, onAddPerson: () -> Unit,
                onBreath: (BreathKind, Int, Sound) -> Unit = { _, _, _ -> }, onGaze: () -> Unit = {}, bare: Boolean = false, onLook: () -> Unit = {}, onMemory: () -> Unit = {},
-               onCloseDay: () -> Unit = {}) {
+               onCloseDay: () -> Unit = {}, onCredits: (Int) -> Unit = {}) {
     val p = Theme.palette
     val ctx = LocalContext.current
     val density = LocalDensity.current
@@ -305,7 +305,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
           Box(Modifier.fillMaxSize().zIndex(if (incoming) 1f else 0f).pageTurn(pager, page) { breath }) {
           when (page) {
             1 -> WritePage(state, now, recordView, guide, onSettings) { recordView = it }
-            2 -> MemoriesPage(state, profile, now, guide, onMemory)
+            2 -> MemoriesPage(state, profile, now, guide, onMemory, onCredits)
             3 -> FlowPage(state, profile, now, guide)
             else -> BoxWithConstraints(Modifier.fillMaxSize()) {
         val u = Theme.unit
@@ -563,9 +563,12 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                     }
                     // 열린 항아리 (10) · 생일 아침의 나이테 (07): 생일 한 줄보다 먼저 (생일이면 같은 아침에 열림)
                     val capsule = state.capsuleDue(today)
+                    val creditsYear = state.creditsDue(today)
                     val ringNew = remember(state.lines, today) { io.github.graviton94.carpediem.core.Rings.newToday(profile.birthDate, today, state.lines) }
                     when {
                         capsule != null -> RecallNote(stringResource(R.string.capsule_opened)) { capsuleOpen = capsule }
+                        // 12월 마지막 열흘 (08): 올해의 엔딩 크레딧 (한 번 보면 다시 권하지 않음)
+                        creditsYear != null -> RecallNote(stringResource(R.string.credits_ready)) { state.creditsSeen(creditsYear); onCredits(creditsYear) }
                         ringNew != null && ringNew !in ringsSeen -> RecallNote(stringResource(R.string.ring_new, "$ringNew")) { ringsSeen = ringsSeen + ringNew; ringOpen = ringNew }
                         bday != null -> {
                             val line = if (bday.id == null) stringResource(if (bday.soon == 0) R.string.bday_mineToday else R.string.bday_mineTomorrow)
@@ -697,7 +700,7 @@ private fun WritePage(state: AppState, now: LocalDateTime, view: RecordView, gui
 
 /** 추억: 모은 것 (계절 앨범 · 한 해 한 장 · 만난 순간 · 편지 · 고마움 책 · 지난 정원 · 기억의 자리). */
 @Composable
-private fun MemoriesPage(state: AppState, profile: LifeProfile, now: LocalDateTime, guide: GuideTargets, onMemory: () -> Unit) {
+private fun MemoriesPage(state: AppState, profile: LifeProfile, now: LocalDateTime, guide: GuideTargets, onMemory: () -> Unit, onCredits: (Int) -> Unit) {
     Column(
         Modifier.fillMaxSize().verticalScroll(rememberScrollState()).statusBarsPadding()
             .padding(horizontal = Theme.deviceClass.pageMargin).padding(top = Tokens.Space.sp6, bottom = Tokens.Space.sp8),
@@ -708,7 +711,7 @@ private fun MemoriesPage(state: AppState, profile: LifeProfile, now: LocalDateTi
         // 아침 씨앗 가운데 핀 것만 (04): 쉰 씨앗은 남기지 않음
         BloomedSeeds(state)
         // 미래의 나에게 (10) · 나이테 (07)
-        KeepsakesSection(state, profile, now)
+        KeepsakesSection(state, profile, now, onCredits)
     }
 }
 

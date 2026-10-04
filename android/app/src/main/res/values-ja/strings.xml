@@ -932,4 +932,24 @@
     <string name="photo_addToday">今日の写真を一枚添える</string>
     <string name="photo_remove">外す</string>
     <string name="photo_fail">写真を読み込めませんでした。別の写真にしますか？</string>
+    <string name="credits_section">一年のエンドロール</string>
+    <string name="credits_sectionSub">映画の終わりのように、四季と残したひとことで1分ほど。</string>
+    <string name="credits_chip">▶ %1$s</string>
+    <string name="credits_ready">今年のエンドロールができました</string>
+    <string name="credits_skip">スキップ</string>
+    <string name="credits_paused">一時停止・タップで続き</string>
+    <string name="credits_garden">ハルの庭</string>
+    <string name="credits_intro">一年のあいだに咲いた物語</string>
+    <string name="credits_spring">3月 — 5月</string>
+    <string name="credits_summer">6月 — 8月</string>
+    <string name="credits_autumn">9月 — 11月</string>
+    <string name="credits_winter">12月・1月 — 2月</string>
+    <string name="credits_quiet">静かに過ぎた季節です。</string>
+    <string name="credits_starring">主演</string>
+    <string name="credits_stone">そばにいた石</string>
+    <string name="credits_haru">ハル</string>
+    <string name="credits_people">一緒にいた人たち</string>
+    <string name="credits_kept">残したもの</string>
+    <string name="credits_mood">いちばん多かった気持ち</string>
+    <string name="credits_next">%1$s年にまた会いましょう</string>
 </resources>

@@ -367,6 +367,11 @@ class AppState(private val context: Context) {
         store.capsules = v; capsules = v
         return opens
     }
+    // ───── 한 해의 엔딩 크레딧 (08) ─────
+    private var creditsShown by mutableStateOf(store.creditsShown)
+    /** 12월 21일부터: 올해 한 줄이 있고 아직 권하지 않았으면 그 해. */
+    fun creditsDue(today: LocalDate): Int? = today.year.takeIf { today.monthValue == 12 && today.dayOfMonth >= 21 && design == Design.GARDEN && keepLines && it !in creditsShown && lines.any { l -> l.date.year == it } }
+    fun creditsSeen(year: Int) { val v = creditsShown + year; store.creditsShown = v; creditsShown = v }
     fun capsuleDue(today: LocalDate = nowDate()) = io.github.graviton94.carpediem.core.Capsules.due(capsules, today)
     fun openCapsule(c: io.github.graviton94.carpediem.core.Capsule) { val v = io.github.graviton94.carpediem.core.Capsules.open(capsules, c); store.capsules = v; capsules = v }
     fun addSampleRingYear(today: LocalDate = nowDate()) {

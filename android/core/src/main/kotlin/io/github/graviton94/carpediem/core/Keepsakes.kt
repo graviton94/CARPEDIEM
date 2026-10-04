@@ -89,3 +89,55 @@ object Rings {
             end.isAfter(first) && lines.any { !it.date.isBefore(start) && it.date.isBefore(end) } }.sortedDescending()
     }
 }
+
+/**
+ * 한 해의 엔딩 크레딧 (08): 인트로 → 봄 → 여름 → 가을 → 겨울 → 아웃트로, 모두 60 ~ 80초.
+ * 계절마다 그 계절 정원 위로 그때의 한 줄이 날짜와 함께 올라간다. 한 줄이 적은 계절은 짧게 (10초), 많은 계절은 길게 (15초).
+ * 고르기: 고마움 · 기쁨 · 희망을 먼저, 나머지는 고르게. 무거운 마음도 넣되 연달아 나오지 않게. 계절마다 많아야 PER_SEASON 줄.
+ */
+enum class CreditPart { INTRO, SEASON, OUTRO }
+
+class CreditScene(val part: CreditPart, val season: Season?, val startMs: Long, val lengthMs: Long, val lines: List<DayLine>)
+
+object Credits {
+    const val INTRO_MS = 8_000L
+    const val OUTRO_MS = 12_000L
+    const val MIN_SEASON_MS = 10_000L
+    const val MAX_SEASON_MS = 15_000L
+    const val PER_SEASON = 6
+    val ORDER = listOf(Season.SPRING, Season.SUMMER, Season.AUTUMN, Season.WINTER)
+
+    /** 그 해의 계절 (달력의 해, 겨울은 1 · 2 · 12월). */
+    fun seasonLines(lines: List<DayLine>, year: Int, s: Season): List<DayLine> =
+        lines.filter { it.date.year == year && it.text.isNotBlank() && Memories.seasonOf(it.date) == s }.sortedBy { it.date }
+
+    fun pick(list: List<DayLine>, n: Int = PER_SEASON): List<DayLine> {
+        if (list.size <= n) return list
+        val warm = setOf(Feeling.THANKS, Feeling.JOY, Feeling.HOPE)
+        val first = list.filter { it.feeling in warm }.let { w -> if (w.size <= n / 2) w else (0 until n / 2).map { w[it * w.size / (n / 2)] } }
+        val rest = list.filterNot { it in first }
+        val need = n - first.size
+        val even = if (rest.isEmpty() || need <= 0) emptyList() else (0 until need).map { rest[it * rest.size / need] }.distinct()
+        val chosen = (first + even).distinct().sortedBy { it.date }.toMutableList()
+        // 무거운 마음이 연달아 나오면 뒤의 것을 뺌
+        var i = 1
+        while (i < chosen.size) { if (chosen[i].feeling in Letters.HEAVY && chosen[i - 1].feeling in Letters.HEAVY) chosen.removeAt(i) else i++ }
+        return chosen
+    }
+
+    fun plan(lines: List<DayLine>, year: Int): List<CreditScene> {
+        val out = ArrayList<CreditScene>()
+        out += CreditScene(CreditPart.INTRO, null, 0, INTRO_MS, emptyList())
+        var t = INTRO_MS
+        ORDER.forEach { s ->
+            val picked = pick(seasonLines(lines, year, s))
+            val len = (MIN_SEASON_MS + picked.size * 1_000L).coerceIn(MIN_SEASON_MS, MAX_SEASON_MS)
+            out += CreditScene(CreditPart.SEASON, s, t, len, picked); t += len
+        }
+        out += CreditScene(CreditPart.OUTRO, null, t, OUTRO_MS, emptyList())
+        return out
+    }
+
+    fun total(plan: List<CreditScene>): Long = plan.last().let { it.startMs + it.lengthMs }
+    fun at(plan: List<CreditScene>, ms: Long): CreditScene? = plan.lastOrNull { it.startMs <= ms }?.takeIf { ms < it.startMs + it.lengthMs }
+}

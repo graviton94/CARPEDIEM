@@ -932,4 +932,24 @@
     <string name="photo_addToday">為今天附上一張照片</string>
     <string name="photo_remove">移除</string>
     <string name="photo_fail">讀不到這張照片，換一張試試？</string>
+    <string name="credits_section">這一年的片尾名單</string>
+    <string name="credits_sectionSub">像電影結尾一樣，用四季和留下的話回顧一年，大約一分鐘。</string>
+    <string name="credits_chip">▶ %1$s</string>
+    <string name="credits_ready">今年的片尾名單準備好了</string>
+    <string name="credits_skip">跳過</string>
+    <string name="credits_paused">暫停・點一下繼續</string>
+    <string name="credits_garden">小日的庭院</string>
+    <string name="credits_intro">這一年綻放的故事</string>
+    <string name="credits_spring">3月 — 5月</string>
+    <string name="credits_summer">6月 — 8月</string>
+    <string name="credits_autumn">9月 — 11月</string>
+    <string name="credits_winter">12月・1月 — 2月</string>
+    <string name="credits_quiet">安靜走過的季節。</string>
+    <string name="credits_starring">主演</string>
+    <string name="credits_stone">陪在身旁的石頭</string>
+    <string name="credits_haru">小日</string>
+    <string name="credits_people">一起的人們</string>
+    <string name="credits_kept">留下的</string>
+    <string name="credits_mood">最常停留的心情</string>
+    <string name="credits_next">%1$s 年再見</string>
 </resources>

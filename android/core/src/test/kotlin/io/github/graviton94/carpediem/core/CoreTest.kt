@@ -636,4 +636,20 @@ class ChancesTest {
         assertTrue(Guests.of(20, day) in Guests.RARE)
         assertEquals(Guests.of(5, day), Guests.of(5, day))
     }
+
+    @Test fun creditsFitSixtyToEightySeconds() {
+        val empty = Credits.plan(emptyList(), 2026)
+        assertEquals(6, empty.size); assertTrue(Credits.total(empty) in 60_000L..80_000L)
+        val many = (0 until 365).map { DayLine(d(2026, 1, 1).plusDays(it.toLong()), "줄 $it", Feeling.entries[it % Feeling.entries.size]) }
+        val full = Credits.plan(many, 2026)
+        assertTrue(Credits.total(full) in 60_000L..80_000L)
+        full.filter { it.part == CreditPart.SEASON }.forEach { sc ->
+            assertTrue(sc.lines.size <= Credits.PER_SEASON); assertTrue(sc.lines.isNotEmpty())
+            assertTrue(sc.lines.all { Memories.seasonOf(it.date) == sc.season })
+            assertTrue(sc.lines.zipWithNext().none { (a, b) -> a.feeling in Letters.HEAVY && b.feeling in Letters.HEAVY })
+            assertEquals(sc.lines.sortedBy { it.date }, sc.lines)
+        }
+        assertEquals(CreditPart.INTRO, Credits.at(full, 0)?.part); assertEquals(CreditPart.OUTRO, Credits.at(full, Credits.total(full) - 1)?.part)
+        assertEquals(null, Credits.at(full, Credits.total(full)))
+    }
 }
