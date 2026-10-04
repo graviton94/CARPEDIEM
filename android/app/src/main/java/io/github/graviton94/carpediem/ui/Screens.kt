@@ -343,6 +343,7 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
     BackHandler { if (draft != profile) askSave = true else { state.draft = null; onClose() } }
     // 알림 허락이 막혀 있을 때: 폰 설정으로 안내
     var blocked by remember { mutableStateOf(false) }
+    var lastBackup by remember { mutableStateOf(state.store.lastBackup) }
     // 백업 파일 저장 (설정의 백업 · 모두 지우기 전에)
     val saveFile = androidx.activity.compose.rememberLauncherForActivityResult(androidx.activity.result.contract.ActivityResultContracts.CreateDocument("application/json")) { uri ->
         if (uri != null) {
@@ -352,7 +353,6 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
         }
     }
     // 백업 · 불러오기는 폰의 화면 잠금을 한 번 확인한 뒤에만
-    var lastBackup by remember { mutableStateOf(state.store.lastBackup) }
     val deviceCheck = rememberDeviceCheck()
     fun backupNow() = deviceCheck { saveFile.launch("haru-garden-" + java.time.LocalDate.now() + ".json") }
     SkyBackground {
