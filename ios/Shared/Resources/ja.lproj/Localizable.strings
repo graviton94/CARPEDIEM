@@ -971,3 +971,10 @@
 "credits.sLines" = "ひとこと %1$@件";
 "credits.sThanks" = "感謝 %1$@回";
 "credits.sBreaths" = "呼吸 %1$@回";
+"title.name" = "ハルの庭";
+"title.enter" = "タップして庭へ";
+"title.hello" = "今日も来てくれてうれしい。";
+"title.hello.morning" = "おはようございます。";
+"title.hello.evening" = "今日もおつかれさま。";
+"title.hello.night" = "ハルが待っていました。";
+"title.setting" = "一日の最初の画面";

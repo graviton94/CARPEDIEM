@@ -974,4 +974,11 @@
     <string name="credits_sLines">%1$s lines</string>
     <string name="credits_sThanks">%1$s thanks</string>
     <string name="credits_sBreaths">%1$s breaths</string>
+    <string name="title_name">Carpe Diem</string>
+    <string name="title_enter">Tap to enter the garden</string>
+    <string name="title_hello">Glad you came today.</string>
+    <string name="title_hello_morning">Good morning.</string>
+    <string name="title_hello_evening">You did well today.</string>
+    <string name="title_hello_night">Haru was waiting for you.</string>
+    <string name="title_setting">Daily title screen</string>
 </resources>

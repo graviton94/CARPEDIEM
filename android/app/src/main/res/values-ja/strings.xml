@@ -973,4 +973,11 @@
     <string name="credits_sLines">ひとこと %1$s件</string>
     <string name="credits_sThanks">感謝 %1$s回</string>
     <string name="credits_sBreaths">呼吸 %1$s回</string>
+    <string name="title_name">ハルの庭</string>
+    <string name="title_enter">タップして庭へ</string>
+    <string name="title_hello">今日も来てくれてうれしい。</string>
+    <string name="title_hello_morning">おはようございます。</string>
+    <string name="title_hello_evening">今日もおつかれさま。</string>
+    <string name="title_hello_night">ハルが待っていました。</string>
+    <string name="title_setting">一日の最初の画面</string>
 </resources>

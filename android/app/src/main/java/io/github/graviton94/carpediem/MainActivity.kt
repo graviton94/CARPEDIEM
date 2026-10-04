@@ -103,6 +103,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         val state = AppState(applicationContext)
+        // 알림 · 위젯 · 바로 가기로 왔는지 (그러면 첫 화면 없이 바로 그곳으로)
+        val linked = savedInstanceState == null && (intent?.hasExtra(EXTRA_OPEN) == true || intent?.getBooleanExtra(EXTRA_MORNING_BREATH, false) == true)
         val start = (if (BuildConfig.DEBUG) debugSetup(state) else Screen.Main).let { s ->
             // 아침 알림에서 왔으면 하루를 여는 숨 1분
             if (savedInstanceState == null && intent?.getBooleanExtra(EXTRA_MORNING_BREATH, false) == true && state.profile != null) Screen.Breathe(BreathKind.CALM, 1, state.sound, Screen.Main) else s
@@ -114,6 +116,9 @@ class MainActivity : ComponentActivity() {
         }
         // 캡처 스크립트가 연 실행 (cd.* 표) 에서는 처음 알림 허락을 묻지 않음
         val scripted = BuildConfig.DEBUG && intent?.extras?.keySet()?.any { it.startsWith("cd.") } == true
+        // 하루의 첫 화면: 그날 처음 아이콘으로 열 때만 (알림 · 위젯 · 바로 가기로 온 때는 바로 그곳으로)
+        val firstTitle = (start == Screen.Main && !linked && savedInstanceState == null && !scripted && state.titleDue((state.fixedNow ?: LocalDateTime.now()).toLocalDate())) ||
+            (BuildConfig.DEBUG && intent?.getBooleanExtra("cd.title", false) == true)
         setContent {
             BoxWithConstraints {
                 val screenW = maxWidth
@@ -126,6 +131,7 @@ class MainActivity : ComponentActivity() {
                     var screen by remember { mutableStateOf(start) }
                     // 정원을 처음부터 다시 그리는 번호 (알림에서 다른 페이지 · 판으로 갈 때)
                     var homeEpoch by remember { mutableStateOf(0) }
+                    var title by remember { mutableStateOf(firstTitle) }
                     LaunchedEffect(newOpen) {
                         val x = newOpen ?: return@LaunchedEffect
                         newOpen = null
@@ -133,12 +139,17 @@ class MainActivity : ComponentActivity() {
                         val open = x.getStringExtra(EXTRA_OPEN)
                         x.removeExtra(EXTRA_OPEN); x.removeExtra(EXTRA_MORNING_BREATH)
                         if (state.profile == null) return@LaunchedEffect
+                        title = false
                         screen = if (morning) Screen.Breathe(BreathKind.CALM, 1, state.sound, Screen.Main) else openFrom(open, state) ?: Screen.Main
                         homeEpoch++
                     }
                     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { now = clock(); state.refreshQuote(); state.opened(); state.refreshQuestion(); state.recheckNotify(); state.syncFromStore() }
                     // 앱을 다시 열 때(화면에 다시 나올 때) 남은 시간 · 인생 달력 단위를 기본값으로
-                    LifecycleEventEffect(Lifecycle.Event.ON_START) { state.resetViewIfAway() }
+                    LifecycleEventEffect(Lifecycle.Event.ON_START) {
+                        state.resetViewIfAway()
+                        // 켜 둔 채 날이 바뀌어 다시 열었을 때도 그날 첫 화면
+                        if (!title && screen == Screen.Main && state.fixedNow == null && state.titleDue(LocalDate.now())) title = true
+                    }
                     LifecycleEventEffect(Lifecycle.Event.ON_STOP) { state.stopped() }
                     // 정원은 늘 밝은 종이라 상태바 · 내비게이션 바 글자를 어둡게 둔다
                     val sysDark = isSystemInDarkTheme()
@@ -156,15 +167,15 @@ class MainActivity : ComponentActivity() {
                     // 둘러보기가 끝나고, 첫 한 줄을 남겼거나 하루가 지난 뒤에 (처음 온 날 묻는 것이 줄줄이 이어지지 않게)
                     val guided = (state.guideDone || state.design != Design.GARDEN) && !state.touring &&
                         (state.lines.isNotEmpty() || state.store.startDate.isBefore((state.fixedNow ?: LocalDateTime.now()).toLocalDate()))
-                    LaunchedEffect(screen == Screen.Main, state.profile != null, state.meetPending, guided) {
-                        if (screen == Screen.Main && state.profile != null && !state.meetPending && guided && !scripted && state.fixedNow == null && !state.store.notifyAsked) {
+                    LaunchedEffect(screen == Screen.Main, state.profile != null, state.meetPending, guided, title) {
+                        if (screen == Screen.Main && state.profile != null && !state.meetPending && guided && !title && !scripted && state.fixedNow == null && !state.store.notifyAsked) {
                             if (android.os.Build.VERSION.SDK_INT >= 33 && !io.github.graviton94.carpediem.notify.Daily.allowed(this@MainActivity)) { delay(Tokens.Garden.Motion.pageMs.toLong()); notifyNote = true }
                             else state.notifyAsked(true)
                         }
                     }
                     // 지난번에 앱이 멈췄으면 한 번만 조용히: 알려 줄지 (메일에 그 자리와 기기 정보만, 기록은 담지 않음)
                     var crash by remember { mutableStateOf(if (scripted) null else io.github.graviton94.carpediem.data.Feedback.lastCrash(this@MainActivity)) }
-                    crash?.let { c -> if (screen == Screen.Main && state.profile != null && !state.touring && !notifyNote) io.github.graviton94.carpediem.ui.GardenAlert(
+                    crash?.let { c -> if (screen == Screen.Main && state.profile != null && !state.touring && !notifyNote && !title) io.github.graviton94.carpediem.ui.GardenAlert(
                         onDismissRequest = { crash = null; io.github.graviton94.carpediem.data.Feedback.clearCrash(this@MainActivity) },
                         title = { androidx.compose.material3.Text(getString(R.string.feedback_crashTitle)) },
                         text = { androidx.compose.material3.Text(getString(R.string.feedback_crashBody)) },
@@ -239,6 +250,10 @@ class MainActivity : ComponentActivity() {
                             }
                         }
                     }
+                    }
+                    // 하루의 첫 화면 (정원 위에 덮어 두었다가, 누르면 하루 자리에서 동그랗게 열림)
+                    if (title && screen == Screen.Main && state.profile != null) io.github.graviton94.carpediem.ui.garden.TitleScreen(state, now) {
+                        title = false; state.titleSeen(clock().toLocalDate())
                     }
                     // 짧은 알림 한마디: 어느 화면에서든 같은 자리 · 같은 움직임
                     io.github.graviton94.carpediem.ui.NoteHost(state.note.takeIf { !io.github.graviton94.carpediem.ui.garden.chanceOnScreen.value && !state.touring }) { state.noteDone() }   // 우연한 순간이 끝날 때까지 기다림

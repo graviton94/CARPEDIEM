@@ -367,6 +367,13 @@ class AppState(private val context: Context) {
         store.capsules = v; capsules = v
         return opens
     }
+    // ───── 하루의 첫 화면 ─────
+    var titleOn by mutableStateOf(store.titleOn)
+        private set
+    fun changeTitleOn(v: Boolean) { store.titleOn = v; titleOn = v }
+    /** 정원 디자인 · 처음 온 사람의 안내를 마친 뒤 · 오늘 아직 보지 않았으면. */
+    fun titleDue(today: LocalDate): Boolean = titleOn && design == Design.GARDEN && profile != null && !meetPending && guideDone && store.titleDay != today
+    fun titleSeen(today: LocalDate) { store.titleDay = today }
     // ───── 한 해의 엔딩 크레딧 (08) ─────
     private var creditsShown by mutableStateOf(store.creditsShown)
     /** 12월 21일부터: 올해 한 줄이 있고 아직 권하지 않았으면 그 해. */

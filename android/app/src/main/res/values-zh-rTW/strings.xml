@@ -973,4 +973,11 @@
     <string name="credits_sLines">%1$s 句話</string>
     <string name="credits_sThanks">感謝 %1$s 次</string>
     <string name="credits_sBreaths">呼吸 %1$s 次</string>
+    <string name="title_name">小日的庭院</string>
+    <string name="title_enter">輕點進入花園</string>
+    <string name="title_hello">很高興你今天也來了。</string>
+    <string name="title_hello_morning">早安。</string>
+    <string name="title_hello_evening">今天也辛苦了。</string>
+    <string name="title_hello_night">小日一直在等你。</string>
+    <string name="title_setting">每天的第一個畫面</string>
 </resources>

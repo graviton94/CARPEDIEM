@@ -972,3 +972,10 @@
 "credits.sLines" = "한 줄 %1$@개";
 "credits.sThanks" = "고마움 %1$@번";
 "credits.sBreaths" = "숨 %1$@번";
+"title.name" = "하루의 정원";
+"title.enter" = "눌러서 정원으로";
+"title.hello" = "오늘도 와 줘서 반가워요.";
+"title.hello.morning" = "좋은 아침이에요.";
+"title.hello.evening" = "오늘 하루도 수고했어요.";
+"title.hello.night" = "하루가 기다리고 있었어요.";
+"title.setting" = "하루의 첫 화면";

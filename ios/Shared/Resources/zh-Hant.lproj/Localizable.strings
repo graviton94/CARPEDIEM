@@ -971,3 +971,10 @@
 "credits.sLines" = "%1$@ 句話";
 "credits.sThanks" = "感謝 %1$@ 次";
 "credits.sBreaths" = "呼吸 %1$@ 次";
+"title.name" = "小日的庭院";
+"title.enter" = "輕點進入花園";
+"title.hello" = "很高興你今天也來了。";
+"title.hello.morning" = "早安。";
+"title.hello.evening" = "今天也辛苦了。";
+"title.hello.night" = "小日一直在等你。";
+"title.setting" = "每天的第一個畫面";

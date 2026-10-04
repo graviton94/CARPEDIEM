@@ -974,4 +974,11 @@
     <string name="credits_sLines">한 줄 %1$s개</string>
     <string name="credits_sThanks">고마움 %1$s번</string>
     <string name="credits_sBreaths">숨 %1$s번</string>
+    <string name="title_name">하루의 정원</string>
+    <string name="title_enter">눌러서 정원으로</string>
+    <string name="title_hello">오늘도 와 줘서 반가워요.</string>
+    <string name="title_hello_morning">좋은 아침이에요.</string>
+    <string name="title_hello_evening">오늘 하루도 수고했어요.</string>
+    <string name="title_hello_night">하루가 기다리고 있었어요.</string>
+    <string name="title_setting">하루의 첫 화면</string>
 </resources>

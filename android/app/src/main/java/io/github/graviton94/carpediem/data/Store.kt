@@ -268,6 +268,13 @@ class Store(context: Context) {
     var creditsShown: Set<Int>
         get() = prefs.getStringSet("creditsShown", emptySet())?.mapNotNull { it.toIntOrNull() }?.toSet() ?: emptySet()
         set(v) = prefs.edit().putStringSet("creditsShown", v.map { "$it" }.toSet()).apply()
+    /** 하루의 첫 화면 (그날 처음 열 때 한 번): 켜고 끄기 · 마지막으로 보여 준 날. */
+    var titleOn: Boolean
+        get() = prefs.getBoolean("titleOn", true)
+        set(v) = prefs.edit().putBoolean("titleOn", v).apply()
+    var titleDay: LocalDate?
+        get() = prefs.getLong("titleDay", Long.MIN_VALUE).takeIf { it != Long.MIN_VALUE }?.let { LocalDate.ofEpochDay(it) }
+        set(v) = prefs.edit().apply { if (v == null) remove("titleDay") else putLong("titleDay", v.toEpochDay()) }.apply()
     /** 미래의 나에게 (10): 나무 밑 항아리들. */
     var capsules: List<io.github.graviton94.carpediem.core.Capsule>
         get() = io.github.graviton94.carpediem.core.Capsules.decode(prefs.getString("capsules", null))

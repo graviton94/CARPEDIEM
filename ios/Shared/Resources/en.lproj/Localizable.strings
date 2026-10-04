@@ -972,3 +972,10 @@
 "credits.sLines" = "%1$@ lines";
 "credits.sThanks" = "%1$@ thanks";
 "credits.sBreaths" = "%1$@ breaths";
+"title.name" = "Carpe Diem";
+"title.enter" = "Tap to enter the garden";
+"title.hello" = "Glad you came today.";
+"title.hello.morning" = "Good morning.";
+"title.hello.evening" = "You did well today.";
+"title.hello.night" = "Haru was waiting for you.";
+"title.setting" = "Daily title screen";

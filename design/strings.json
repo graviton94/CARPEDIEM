@@ -972,7 +972,14 @@
     "credits.madeBy": "오늘을 살아 낸 나",
     "credits.sLines": "한 줄 {n}개",
     "credits.sThanks": "고마움 {n}번",
-    "credits.sBreaths": "숨 {n}번"
+    "credits.sBreaths": "숨 {n}번",
+    "title.name": "하루의 정원",
+    "title.enter": "눌러서 정원으로",
+    "title.hello": "오늘도 와 줘서 반가워요.",
+    "title.hello.morning": "좋은 아침이에요.",
+    "title.hello.evening": "오늘 하루도 수고했어요.",
+    "title.hello.night": "하루가 기다리고 있었어요.",
+    "title.setting": "하루의 첫 화면"
   },
   "en": {
     "tagline": "Cherish today.",
@@ -1947,7 +1954,14 @@
     "credits.madeBy": "Me, who lived each day",
     "credits.sLines": "{n} lines",
     "credits.sThanks": "{n} thanks",
-    "credits.sBreaths": "{n} breaths"
+    "credits.sBreaths": "{n} breaths",
+    "title.name": "Carpe Diem",
+    "title.enter": "Tap to enter the garden",
+    "title.hello": "Glad you came today.",
+    "title.hello.morning": "Good morning.",
+    "title.hello.evening": "You did well today.",
+    "title.hello.night": "Haru was waiting for you.",
+    "title.setting": "Daily title screen"
   },
   "ja": {
     "tagline": "今日を大切に。",
@@ -2921,7 +2935,14 @@
     "credits.madeBy": "今日を生きた私",
     "credits.sLines": "ひとこと {n}件",
     "credits.sThanks": "感謝 {n}回",
-    "credits.sBreaths": "呼吸 {n}回"
+    "credits.sBreaths": "呼吸 {n}回",
+    "title.name": "ハルの庭",
+    "title.enter": "タップして庭へ",
+    "title.hello": "今日も来てくれてうれしい。",
+    "title.hello.morning": "おはようございます。",
+    "title.hello.evening": "今日もおつかれさま。",
+    "title.hello.night": "ハルが待っていました。",
+    "title.setting": "一日の最初の画面"
   },
   "zh-TW": {
     "tagline": "珍惜今天。",
@@ -3895,6 +3916,13 @@
     "credits.madeBy": "活過每一天的我",
     "credits.sLines": "{n} 句話",
     "credits.sThanks": "感謝 {n} 次",
-    "credits.sBreaths": "呼吸 {n} 次"
+    "credits.sBreaths": "呼吸 {n} 次",
+    "title.name": "小日的庭院",
+    "title.enter": "輕點進入花園",
+    "title.hello": "很高興你今天也來了。",
+    "title.hello.morning": "早安。",
+    "title.hello.evening": "今天也辛苦了。",
+    "title.hello.night": "小日一直在等你。",
+    "title.setting": "每天的第一個畫面"
   }
 }

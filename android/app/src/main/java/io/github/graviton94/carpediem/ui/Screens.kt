@@ -526,6 +526,11 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
                             Labels.stone(ctx, io.github.graviton94.carpediem.core.HaruShape.traits(state.store.haruSeed).stone.id)), Tokens.TypeScale.footnote, color = p.secondary, maxLines = 2)
                     }
                     RowDivider()
+                    // 하루의 첫 화면: 그날 처음 열 때 한 번
+                    FormRow(stringResource(R.string.title_setting), onClick = { state.changeTitleOn(!state.titleOn) }) {
+                        Switch(state.titleOn, { state.changeTitleOn(it) }, colors = SwitchDefaults.colors(checkedTrackColor = p.olive))
+                    }
+                    RowDivider()
                     FormRow(stringResource(R.string.collection), onClick = onCollection) {
                         Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null, tint = p.secondary)
                     }
