@@ -163,13 +163,12 @@ fun BreathScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, kind
     val animate = remember { !reducedMotion(ctx) }
     val player = remember(sound) { Soundscape.Player(sound, io.github.graviton94.carpediem.core.Memories.seasonOf(now.toLocalDate())) }
     val part = io.github.graviton94.carpediem.ui.Labels.part(now)
-    // 밤의 잠드는 명상: 끝나면 화면이 스르르 어두워지고 앱이 물러남 (화면은 폰이 스스로 끔)
+    // 밤의 잠드는 명상: 끝나면 화면이 스르르 어두워지고 그대로 머묾 (앱이 꺼진 듯 사라지지 않게, 화면은 폰이 스스로 끔). 누르면 정원으로
     val sleepAfter = kind == BreathKind.SLEEP && isNight(now)
     val blackout = remember { Animatable(0f) }
     LaunchedEffect(done) {
         if (done && sleepAfter) {
             delay(G.Breath.sleepFadeAfter.toLong()); blackout.animateTo(1f, tween(G.Breath.sleepFadeMs.toInt()))
-            (ctx as? android.app.Activity)?.moveTaskToBack(true); onDone()
         }
     }
     KeepScreenOn(!done)
@@ -266,7 +265,12 @@ fun BreathScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, kind
             .fillMaxWidth().height(u * b.line).background(Theme.gc.ink.copy(alpha = 0.08f)).drawBehind {
                 drawRect(lineC, size = androidx.compose.ui.geometry.Size(size.width * (elapsed.toFloat() / total).coerceIn(0f, 1f), size.height))
             })
-        if (blackout.value > 0f) Box(Modifier.fillMaxSize().graphicsLayer { alpha = blackout.value }.background(Color.Black))
+        if (blackout.value > 0f) Box(Modifier.fillMaxSize().graphicsLayer { alpha = blackout.value }.background(Color.Black)
+            .pointerInput(Unit) { detectTapGestures { onDone() } }, contentAlignment = Alignment.BottomCenter) {
+            // 어둠 속 아주 옅은 한 줄: 누르면 정원으로
+            if (blackout.value >= 1f) TokenText(stringResource(R.string.breath_sleepBack), Tokens.TypeScale.footnote,
+                Modifier.navigationBarsPadding().padding(bottom = Tokens.Space.sp10), color = Color.White.copy(alpha = 0.35f))
+        }
         if (paused && !done) PauseCard(onKeep = { paused = false }, onStop = { paused = false; done = true; player.stop(); onDone() })
     }
 }
@@ -337,7 +341,7 @@ fun GazeScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, onBack
     KeepScreenOn(screenOn)
     val dim = remember { Animatable(0f) }
     var hint by remember { mutableStateOf(true) }
-    LaunchedEffect(Unit) { delay(3000); hint = false }
+    LaunchedEffect(Unit) { delay(6000); hint = false }
     // 조금 머문 날만 돌멍하기 한 날로 (열 날마다 이끼에 봉오리 하나)
     LaunchedEffect(Unit) { delay(Tokens.Garden.Decor.gazeCountMs.toLong()); state.recordGaze() }
     // 누를 때마다 처음부터: 밝게 → 조금 뒤 스르르 어두워짐 → 더 지나면 화면을 놓아 줌
@@ -349,19 +353,23 @@ fun GazeScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, onBack
     }
     BackHandler(onBack = onBack)
 
-    Box(Modifier.fillMaxSize()) {
+    // 어디를 누르든 (돌을 쓰다듬어도) 다시 밝아짐. 누름은 그대로 정원에 닿음
+    Box(Modifier.fillMaxSize().pointerInput(Unit) {
+        awaitPointerEventScope { while (true) { val e = awaitPointerEvent(androidx.compose.ui.input.pointer.PointerEventPass.Initial); if (e.type == androidx.compose.ui.input.pointer.PointerEventType.Press) idleKick++ } }
+    }) {
         // 홈의 정원 그대로 (하늘 · 해와 달 · 땅 · 돌 · 놓인 것 · 밤빛), 글자만 없이
         GardenHome(state, profile, now, onSettings = {}, onCollection = {}, onSupport = {}, onStone = {}, onAddPerson = {}, bare = true)
         // 움직이는 정원: 구름 · 빛의 숨 · 내려오는 잎 · 새 · 반딧불, 봄 · 여름엔 연못, 가을 · 겨울엔 화톳불
         GazeLife(io.github.graviton94.carpediem.core.GardenDecor.realSeason(now.toLocalDate(), profile.countryCode), now, calm = io.github.graviton94.carpediem.core.BreathKind.CALM in state.breathTrace(now.toLocalDate())) { dim.value }
         // 스르르 어두워짐
         Box(Modifier.fillMaxSize().graphicsLayer { alpha = dim.value }.background(Color.Black))
-        // 소리 끄고 켜기 (아주 작게, 누름 막 위에), 나가는 법은 처음 3초만
-        // 화면을 누르면 (어두워졌으면 다시 밝아지며) 돌아갈지 조용히 묻는다
+        // 소리 끄고 켜기 · 정원으로 (아주 작게, 위 양끝). 돌은 누르면 쓰다듬기, 나가기는 ‘정원으로’ 또는 뒤로 가기
         var ask by remember { mutableStateOf(false) }
-        Box(Modifier.fillMaxSize().pointerInput(Unit) { detectTapGestures { idleKick++; ask = true } })
-        TokenText(stringResource(if (soundOn) R.string.gaze_soundOff else R.string.gaze_soundOn), Tokens.TypeScale.caption1,
-            Modifier.align(Alignment.TopEnd).statusBarsPadding().clickable { soundOn = !soundOn; if (soundOn && state.sound == Sound.NONE) state.changeSound(Sound.WAVES) }.padding(Tokens.Space.sp4),
+        TokenText(stringResource(R.string.breath_home), Tokens.TypeScale.footnote,
+            Modifier.align(Alignment.TopStart).statusBarsPadding().heightIn(min = Tokens.Layout.tapTarget).clickable { ask = true }.padding(Tokens.Space.sp4),
+            color = p.secondary.copy(alpha = 0.8f), weight = FontWeight.Normal)
+        TokenText(stringResource(if (soundOn) R.string.gaze_soundOff else R.string.gaze_soundOn), Tokens.TypeScale.footnote,
+            Modifier.align(Alignment.TopEnd).statusBarsPadding().heightIn(min = Tokens.Layout.tapTarget).clickable { soundOn = !soundOn; if (soundOn && state.sound == Sound.NONE) state.changeSound(Sound.WAVES) }.padding(Tokens.Space.sp4),
             color = p.secondary.copy(alpha = 0.7f), weight = FontWeight.Normal)
         if (hint) TokenText(stringResource(R.string.gaze_exit), Tokens.TypeScale.caption1, Modifier.align(Alignment.BottomCenter).navigationBarsPadding().padding(bottom = Tokens.Space.sp6), color = p.secondary)
         if (ask) GardenAlert(

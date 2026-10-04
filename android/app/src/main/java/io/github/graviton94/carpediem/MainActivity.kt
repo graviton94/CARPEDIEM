@@ -79,6 +79,14 @@ private sealed interface Screen {
 }
 
 class MainActivity : ComponentActivity() {
+    /** 앱이 떠 있을 때 알림 · 위젯을 누르면 (singleTop): 하던 일을 지우지 않고 그 자리로 옮겨 감. */
+    private var newOpen by mutableStateOf<android.content.Intent?>(null)
+
+    override fun onNewIntent(intent: android.content.Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent); newOpen = intent
+    }
+
     companion object {
         const val EXTRA_MORNING_BREATH = "carpediem.morningBreath"
         /** 알림을 누르면 열 곳: letter · write · flow · month:2026-9 · year:2026 · stone:<id> · memory · breath */
@@ -110,9 +118,22 @@ class MainActivity : ComponentActivity() {
                 val night = SkyTime.isDark(now)
                 CarpeDiemTheme(deviceClass = DeviceClass.of(screenW), design = state.design, screenWidth = screenW, night = night) {
                     var screen by remember { mutableStateOf(start) }
-                    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { now = clock(); state.refreshQuote(); state.opened(); state.refreshQuestion() }
+                    // 정원을 처음부터 다시 그리는 번호 (알림에서 다른 페이지 · 판으로 갈 때)
+                    var homeEpoch by remember { mutableStateOf(0) }
+                    LaunchedEffect(newOpen) {
+                        val x = newOpen ?: return@LaunchedEffect
+                        newOpen = null
+                        val morning = x.getBooleanExtra(EXTRA_MORNING_BREATH, false) && state.profile != null
+                        val open = x.getStringExtra(EXTRA_OPEN)
+                        x.removeExtra(EXTRA_OPEN); x.removeExtra(EXTRA_MORNING_BREATH)
+                        if (state.profile == null) return@LaunchedEffect
+                        screen = if (morning) Screen.Breathe(BreathKind.CALM, 1, state.sound, Screen.Main) else openFrom(open, state) ?: Screen.Main
+                        homeEpoch++
+                    }
+                    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { now = clock(); state.refreshQuote(); state.opened(); state.refreshQuestion(); state.recheckNotify() }
                     // 앱을 다시 열 때(화면에 다시 나올 때) 남은 시간 · 인생 달력 단위를 기본값으로
-                    LifecycleEventEffect(Lifecycle.Event.ON_START) { state.resetViewToDefaults() }
+                    LifecycleEventEffect(Lifecycle.Event.ON_START) { state.resetViewIfAway() }
+                    LifecycleEventEffect(Lifecycle.Event.ON_STOP) { state.stopped() }
                     // 정원은 늘 밝은 종이라 상태바 · 내비게이션 바 글자를 어둡게 둔다
                     val sysDark = isSystemInDarkTheme()
                     LaunchedEffect(state.design, sysDark, night) {
@@ -122,14 +143,24 @@ class MainActivity : ComponentActivity() {
                         else enableEdgeToEdge(SystemBarStyle.dark(android.graphics.Color.TRANSPARENT), SystemBarStyle.dark(android.graphics.Color.TRANSPARENT))
                     }
 
-                    // 정원에 처음 들어온 날 한 번: 알림 허락을 묻고, 허락하면 아침 · 저녁 · 전날 알림을 켬 (캡처용 시각을 정한 실행에서는 묻지 않음)
+                    // 정원에 처음 들어온 날 한 번 (둘러보기를 마친 뒤): 무엇을 받는지 먼저 말하고, ‘받을게요’면 알림 허락을 물음.
+                    // 허락하면 아침 · 저녁 · 전날 알림을 켬 (캡처용 시각을 정한 실행에서는 묻지 않음)
                     val askNotify = androidx.activity.compose.rememberLauncherForActivityResult(androidx.activity.result.contract.ActivityResultContracts.RequestPermission()) { ok -> state.notifyAsked(ok) }
-                    LaunchedEffect(screen == Screen.Main, state.profile != null, state.meetPending) {
-                        if (screen == Screen.Main && state.profile != null && !state.meetPending && !scripted && state.fixedNow == null && !state.store.notifyAsked) {
-                            if (android.os.Build.VERSION.SDK_INT >= 33 && !io.github.graviton94.carpediem.notify.Daily.allowed(this@MainActivity)) askNotify.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+                    var notifyNote by remember { mutableStateOf(false) }
+                    val guided = state.guideDone || state.design != Design.GARDEN
+                    LaunchedEffect(screen == Screen.Main, state.profile != null, state.meetPending, guided) {
+                        if (screen == Screen.Main && state.profile != null && !state.meetPending && guided && !scripted && state.fixedNow == null && !state.store.notifyAsked) {
+                            if (android.os.Build.VERSION.SDK_INT >= 33 && !io.github.graviton94.carpediem.notify.Daily.allowed(this@MainActivity)) { delay(Tokens.Garden.Motion.pageMs.toLong()); notifyNote = true }
                             else state.notifyAsked(true)
                         }
                     }
+                    if (notifyNote) io.github.graviton94.carpediem.ui.GardenAlert(
+                        onDismissRequest = { notifyNote = false; state.notifyAsked(false) },
+                        title = { androidx.compose.material3.Text(getString(R.string.notify_askTitle)) },
+                        text = { androidx.compose.material3.Text(getString(R.string.notify_askBody)) },
+                        confirmButton = { androidx.compose.material3.TextButton(onClick = { notifyNote = false; askNotify.launch(android.Manifest.permission.POST_NOTIFICATIONS) }) { androidx.compose.material3.Text(getString(R.string.notify_askYes)) } },
+                        dismissButton = { androidx.compose.material3.TextButton(onClick = { notifyNote = false; state.notifyAsked(false) }) { androidx.compose.material3.Text(getString(R.string.notify_askLater), color = io.github.graviton94.carpediem.design.Theme.palette.secondary) } },
+                    )
 
                     // 돌의 페이지로는 돌이 다가오듯 부드럽게 (옅어지며 조금 커짐)
                     androidx.compose.animation.AnimatedContent(
@@ -171,13 +202,15 @@ class MainActivity : ComponentActivity() {
                             val profile = state.profile
                             val garden = state.design == Design.GARDEN
                             when {
+                                // 처음 온 사람: 소개 석 장 (정원 디자인) → 생일 · 나라 → 하루를 만남 → 정원 둘러보기
+                                profile == null && garden && !state.introSeen -> io.github.graviton94.carpediem.ui.garden.IntroScreen(state) { state.finishIntro() }
                                 profile == null -> OnboardingScreen(state) { screen = Screen.Country(Screen.Main) }
                                 garden && state.meetPending -> MeetScreen(state) { state.finishMeet() }
-                                garden -> GardenHome(state, profile, now, onSettings = { screen = Screen.Settings },
+                                garden -> androidx.compose.runtime.key(homeEpoch) { GardenHome(state, profile, now, onSettings = { screen = Screen.Settings },
                                     onCollection = { screen = Screen.Collection(Screen.Main) }, onSupport = { screen = Screen.Support(Screen.Main) },
                                     onStone = { id -> screen = Screen.Stone(id, Screen.Main) }, onAddPerson = { screen = Screen.AddPerson(null, Screen.Main) },
                                     onBreath = { k, m, snd -> screen = Screen.Breathe(k, m, snd, Screen.Main) }, onGaze = { screen = Screen.Gaze(Screen.Main) },
-                                    onLook = { screen = Screen.Look(Screen.Main) }, onMemory = { screen = Screen.Memory(Screen.Main) })
+                                    onLook = { screen = Screen.Look(Screen.Main) }, onMemory = { screen = Screen.Memory(Screen.Main) }) }
                                 else -> HomeScreen(state, profile, now, onSettings = { screen = Screen.Settings }, onSupport = { screen = Screen.Support(Screen.Main) })
                             }
                         }
@@ -199,6 +232,8 @@ class MainActivity : ComponentActivity() {
 private fun MainActivity.debugSetup(state: AppState): Screen {
     val x = intent ?: return Screen.Main
     if (x.getBooleanExtra("cd.reset", false)) state.eraseAll()
+    // 캡처 스크립트의 실행: 처음 온 사람의 안내는 건너뜀 (cd.guide true 면 안내를 처음부터 보여 줌)
+    if (x.extras?.keySet()?.any { it.startsWith("cd.") } == true) state.debugGuides(x.getBooleanExtra("cd.guide", false))
     x.getStringExtra("cd.design")?.let { state.changeDesign(if (it == "glass") Design.GLASS else Design.GARDEN) }
     if (x.hasExtra("cd.seed")) state.store.overrideHaruSeed(x.getLongExtra("cd.seed", 0))
     x.getStringExtra("cd.birth")?.let { b ->
@@ -238,7 +273,7 @@ private fun MainActivity.debugSetup(state: AppState): Screen {
     state.debugOpenYear = x.getBooleanExtra("cd.openYear", false)
     state.debugOpenMonth = x.getBooleanExtra("cd.openMonth", false)
     state.debugTyped = x.getBooleanExtra("cd.typed", false)
-    state.homePage = if (state.debugOpenYear || state.debugOpenMonth) 2 else x.getIntExtra("cd.page", 0)
+    state.homePage = if (state.debugOpenYear || state.debugOpenMonth) 1 else x.getIntExtra("cd.page", 0)
     state.refreshQuestion()
     if (x.getBooleanExtra("cd.question", false)) state.previewQuestion()
     // 가족의 정원 시험: 동생 · 콩이(강아지) · 엄마(오늘 생일) · 아빠
@@ -283,9 +318,9 @@ private fun openFrom(open: String?, state: AppState): Screen? {
         "flow" -> state.homePage = 3
         // month = 알림 (지난 달의 정원이 피었다는 소식, 펼친 것으로 남김) · record = 위젯 (이번 달을 보기만)
         "month", "record" -> arg?.split('-')?.mapNotNull { it.toIntOrNull() }?.takeIf { it.size == 2 && it[1] in 1..12 && it[0] in 1900..java.time.LocalDate.now().year }?.let { (y, m) ->
-            state.homePage = 2; state.pendingRecord = io.github.graviton94.carpediem.ui.garden.RecordView(y, m); if (kind == "month") state.openMonth(y, m)
+            state.homePage = 1; state.pendingRecord = io.github.graviton94.carpediem.ui.garden.RecordView(y, m); if (kind == "month") state.openMonth(y, m)
         }
-        "year" -> arg?.toIntOrNull()?.takeIf { it in 1900..java.time.LocalDate.now().year }?.let { y -> state.homePage = 2; state.pendingRecord = io.github.graviton94.carpediem.ui.garden.RecordView(y, null); state.openYear(y) }
+        "year" -> arg?.toIntOrNull()?.takeIf { it in 1900..java.time.LocalDate.now().year }?.let { y -> state.homePage = 1; state.pendingRecord = io.github.graviton94.carpediem.ui.garden.RecordView(y, null); state.openYear(y) }
         "memory" -> return Screen.Memory(Screen.Main)
         // 숨 바로가기 (위젯 · 빠른 설정 타일, C1): 고르는 창 없이 지금 때의 숨 1분 (밤엔 잠드는 명상)
         "breath" -> return Screen.Breathe(if (io.github.graviton94.carpediem.ui.Labels.part(state.fixedNow ?: java.time.LocalDateTime.now()) == io.github.graviton94.carpediem.core.DayPart.NIGHT) BreathKind.SLEEP else BreathKind.CALM, 1, state.sound, Screen.Main)

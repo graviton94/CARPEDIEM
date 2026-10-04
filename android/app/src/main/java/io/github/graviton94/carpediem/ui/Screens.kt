@@ -87,12 +87,26 @@ private fun Page(content: @Composable () -> Unit) {
     ) { content() }
 }
 
+/** 날짜 고르기에서 고를 수 있는 날: from (없으면 끝없이) ~ until (기본 오늘). 그 밖의 날은 흐리게. */
+@ExperimentalMaterial3Api
+fun pastDates(from: LocalDate? = null, until: LocalDate = LocalDate.now()): androidx.compose.material3.SelectableDates = object : androidx.compose.material3.SelectableDates {
+    override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+        val d = Instant.ofEpochMilli(utcTimeMillis).atZone(ZoneOffset.UTC).toLocalDate()
+        return !d.isAfter(until) && (from == null || !d.isBefore(from))
+    }
+    override fun isSelectableYear(year: Int): Boolean = year <= until.year && (from == null || year >= from.year)
+}
+
 // ───────────────────────── 온보딩 ─────────────────────────
 
 @Composable
 fun OnboardingScreen(state: AppState, onCountry: () -> Unit) {
     val p = Theme.palette
+    val ctx = LocalContext.current
     val draft = state.draft ?: state.defaultProfile().also { state.draft = it }
+    // 생일은 꼭 직접 고르게 (기본값 그대로 시작하면 모든 숫자가 틀림)
+    val picked = state.birthPicked
+    fun start() { if (picked) { state.begin(draft); state.draft = null } else state.say(ctx.getString(R.string.onboard_needBirth)) }
     SkyBackground {
         Page {
             // 정원: 가운데 정렬, 한 줄 소개는 작게. 유리 버전은 그대로.
@@ -104,11 +118,11 @@ fun OnboardingScreen(state: AppState, onCountry: () -> Unit) {
                 TokenText("Carpe Diem", Tokens.TypeScale.display(Theme.deviceClass))
                 TokenText(stringResource(R.string.tagline), Tokens.TypeScale.title3, color = p.secondary)
             }
-            ProfileFields(state, draft, { state.draft = it }, onCountry)
-            if (Theme.garden) GardenButton(stringResource(R.string.begin), { state.begin(draft); state.draft = null }, filled = true, seed = 740, modifier = Modifier.padding(top = Tokens.Space.sp3))
+            ProfileFields(state, draft, { state.draft = it }, onCountry, birthUnset = !picked, onBirthPicked = { state.birthPicked = true })
+            if (Theme.garden) GardenButton(stringResource(R.string.begin), { start() }, filled = picked, seed = 740, modifier = Modifier.padding(top = Tokens.Space.sp3))
             else Box(
                 Modifier.fillMaxWidth().padding(top = Tokens.Space.sp3).heightIn(min = Tokens.Layout.tapTarget + Tokens.Space.sp2)
-                    .clip(RoundedCornerShape(Tokens.Radius.pill)).background(p.olive).clickable { state.begin(draft); state.draft = null },
+                    .clip(RoundedCornerShape(Tokens.Radius.pill)).background(if (picked) p.olive else p.dim).clickable { start() },
                 contentAlignment = Alignment.Center,
             ) { TokenText(stringResource(R.string.begin), Tokens.TypeScale.headline, color = p.onOlive) }
             TokenText(stringResource(R.string.privacy), Tokens.TypeScale.footnote, Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.Center)
@@ -120,18 +134,18 @@ fun OnboardingScreen(state: AppState, onCountry: () -> Unit) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileFields(state: AppState, draft: LifeProfile, onChange: (LifeProfile) -> Unit, onCountry: () -> Unit) {
+fun ProfileFields(state: AppState, draft: LifeProfile, onChange: (LifeProfile) -> Unit, onCountry: () -> Unit, birthUnset: Boolean = false, onBirthPicked: () -> Unit = {}) {
     val p = Theme.palette
     val ctx = LocalContext.current
     val table = state.store.table
     var picking by remember { mutableStateOf(false) }
     var sexMenu by remember { mutableStateOf(false) }
-    val dateText = draft.birthDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM))
+    val dateText = if (birthUnset) stringResource(R.string.onboard_pickBirth) else draft.birthDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM))
 
     FormSection(header = stringResource(R.string.you)) {
         FormRow(stringResource(R.string.birthday), onClick = { picking = true }) {
             Box(Modifier.clip(RoundedCornerShape(Tokens.Radius.sm)).background(p.dim).padding(horizontal = Tokens.Space.sp3, vertical = Tokens.Space.sp1)) {
-                TokenText(dateText, Tokens.TypeScale.callout)
+                TokenText(dateText, Tokens.TypeScale.callout, color = if (birthUnset) p.olive else p.foreground, weight = if (birthUnset) FontWeight.SemiBold else null)
             }
         }
         RowDivider()
@@ -174,14 +188,14 @@ fun ProfileFields(state: AppState, draft: LifeProfile, onChange: (LifeProfile) -
     }
 
     if (picking) {
-        val dp = rememberDatePickerState(initialSelectedDateMillis = draft.birthDate.atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli())
+        val dp = rememberDatePickerState(initialSelectedDateMillis = draft.birthDate.atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli(), selectableDates = pastDates())
         DatePickerDialog(
             onDismissRequest = { picking = false },
             confirmButton = {
                 TextButton(onClick = {
                     dp.selectedDateMillis?.let { ms ->
                         val d = Instant.ofEpochMilli(ms).atZone(ZoneOffset.UTC).toLocalDate()
-                        if (!d.isAfter(LocalDate.now())) onChange(draft.copy(birthDate = d))
+                        if (!d.isAfter(LocalDate.now())) { onChange(draft.copy(birthDate = d)); onBirthPicked() }
                     }
                     picking = false
                 }) { Text(stringResource(R.string.done)) }
@@ -308,7 +322,19 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
     val ctx = LocalContext.current
     val draft = state.draft ?: profile.also { state.draft = it }
     var confirmErase by remember { mutableStateOf(false) }
-    BackHandler { state.draft = null; onClose() }
+    // 생일 · 나라 · 성별 · 기대수명은 ‘완료’로 저장. 바꾼 채 뒤로 가면 저장할지 묻는다 (말없이 버리지 않게)
+    var askSave by remember { mutableStateOf(false) }
+    BackHandler { if (draft != profile) askSave = true else { state.draft = null; onClose() } }
+    // 알림 허락이 막혀 있을 때: 폰 설정으로 안내
+    var blocked by remember { mutableStateOf(false) }
+    // 백업 파일 저장 (설정의 백업 · 모두 지우기 전에)
+    val saveFile = androidx.activity.compose.rememberLauncherForActivityResult(androidx.activity.result.contract.ActivityResultContracts.CreateDocument("application/json")) { uri ->
+        if (uri != null) {
+            val ok = runCatching { ctx.contentResolver.openOutputStream(uri)?.use { it.write(state.store.backup().toByteArray()) } != null }.getOrDefault(false)
+            state.say(ctx.getString(if (ok) R.string.backup_saved else R.string.backup_saveFail))
+        }
+    }
+    fun backupNow() = saveFile.launch("haru-garden-" + java.time.LocalDate.now() + ".json")
     SkyBackground {
         Page {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
@@ -369,7 +395,7 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
                     if (io.github.graviton94.carpediem.data.Words.choosable(ctx)) ChipPicker(QuoteLanguage.entries, state.quoteLanguage, { Labels.quoteLanguage(ctx, it) }) { state.changeQuoteLanguage(it) }
                 }
             }
-            val permission = androidx.activity.compose.rememberLauncherForActivityResult(androidx.activity.result.contract.ActivityResultContracts.RequestPermission()) { ok -> state.changeNotify(ok) }
+            val permission = androidx.activity.compose.rememberLauncherForActivityResult(androidx.activity.result.contract.ActivityResultContracts.RequestPermission()) { ok -> state.changeNotify(ok); if (!ok) blocked = true }
             fun toggleNotify(on: Boolean) {
                 if (on && android.os.Build.VERSION.SDK_INT >= 33 && !io.github.graviton94.carpediem.notify.Daily.allowed(ctx)) permission.launch(android.Manifest.permission.POST_NOTIFICATIONS)
                 else state.changeNotify(on)
@@ -386,7 +412,7 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
                 }
             }
             // 하루 정리 알림 (선택, 기본 꺼짐): 밤에 한 번, 오늘 한 줄을 아직 보내지 않은 날에만
-            val eveningPermission = androidx.activity.compose.rememberLauncherForActivityResult(androidx.activity.result.contract.ActivityResultContracts.RequestPermission()) { ok -> state.changeEvening(ok) }
+            val eveningPermission = androidx.activity.compose.rememberLauncherForActivityResult(androidx.activity.result.contract.ActivityResultContracts.RequestPermission()) { ok -> state.changeEvening(ok); if (!ok) blocked = true }
             fun toggleEvening(on: Boolean) {
                 if (on && android.os.Build.VERSION.SDK_INT >= 33 && !io.github.graviton94.carpediem.notify.Daily.allowed(ctx)) eveningPermission.launch(android.Manifest.permission.POST_NOTIFICATIONS)
                 else state.changeEvening(on)
@@ -398,7 +424,7 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
             }
             // 내일 알림 (정원, 선택, 기본 꺼짐): 내일이 가족의 생일 · 특별한 날이면 전날 저녁에 한 번
             if (Theme.garden) {
-                val tomorrowPermission = androidx.activity.compose.rememberLauncherForActivityResult(androidx.activity.result.contract.ActivityResultContracts.RequestPermission()) { ok -> state.changeTomorrow(ok) }
+                val tomorrowPermission = androidx.activity.compose.rememberLauncherForActivityResult(androidx.activity.result.contract.ActivityResultContracts.RequestPermission()) { ok -> state.changeTomorrow(ok); if (!ok) blocked = true }
                 fun toggleTomorrow(on: Boolean) {
                     if (on && android.os.Build.VERSION.SDK_INT >= 33 && !io.github.graviton94.carpediem.notify.Daily.allowed(ctx)) tomorrowPermission.launch(android.Manifest.permission.POST_NOTIFICATIONS)
                     else state.changeTomorrow(on)
@@ -438,37 +464,6 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
                         TokenText(stringResource(R.string.lines_count, "${state.lines.count { it.text.isNotBlank() }}"), Tokens.TypeScale.subhead, color = p.secondary)
                     }
                     RowDivider()
-                    // 기록 옮기기 (새 폰으로): 모든 것을 파일 하나로 내보내고, 그 파일을 들여온다
-                    val saveFile = androidx.activity.compose.rememberLauncherForActivityResult(androidx.activity.result.contract.ActivityResultContracts.CreateDocument("application/json")) { uri ->
-                        if (uri != null) {
-                            val ok = runCatching { ctx.contentResolver.openOutputStream(uri)?.use { it.write(state.store.backup().toByteArray()) } != null }.getOrDefault(false)
-                            state.say(ctx.getString(if (ok) R.string.backup_saved else R.string.backup_fail))
-                        }
-                    }
-                    var restoreFrom by remember { mutableStateOf<android.net.Uri?>(null) }
-                    val openFile = androidx.activity.compose.rememberLauncherForActivityResult(androidx.activity.result.contract.ActivityResultContracts.OpenDocument()) { uri -> restoreFrom = uri }
-                    FormRow(stringResource(R.string.backup_export), onClick = { saveFile.launch("haru-garden-" + java.time.LocalDate.now() + ".json") }) {}
-                    RowDivider()
-                    FormRow(stringResource(R.string.backup_import), onClick = { openFile.launch(arrayOf("application/json", "text/plain", "application/octet-stream")) }) {}
-                    restoreFrom?.let { uri ->
-                        GardenAlert(
-                            onDismissRequest = { restoreFrom = null },
-                            title = { Text(stringResource(R.string.backup_importConfirm)) },
-                            confirmButton = { TextButton(onClick = {
-                                restoreFrom = null
-                                val text = runCatching { ctx.contentResolver.openInputStream(uri)?.use { it.readBytes().decodeToString() } }.getOrNull()
-                                if (text != null && state.store.restore(text)) {
-                                    state.say(ctx.getString(R.string.backup_done))
-                                    // 새로 들여온 기록으로 처음부터 (알림 · 위젯도 새로)
-                                    io.github.graviton94.carpediem.widget.Widgets.refresh(ctx)
-                                    // 한마디를 잠깐 보인 뒤에
-                                    android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({ (ctx as? android.app.Activity)?.takeIf { !it.isFinishing && !it.isDestroyed }?.recreate() }, (Tokens.Garden.Motion.noteMs / 2).toLong())
-                                } else state.say(ctx.getString(R.string.backup_fail))
-                            }) { Text(stringResource(R.string.backup_importAction), color = p.danger) } },
-                            dismissButton = { TextButton(onClick = { restoreFrom = null }) { Text(stringResource(R.string.cancel)) } },
-                        )
-                    }
-                    RowDivider()
                     FormRow(stringResource(R.string.lines_clear), onClick = { confirmClear = true }) {}
                     if (state.devMode) {
                         RowDivider()
@@ -491,9 +486,42 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
                 if (confirmClear) GardenAlert(
                     onDismissRequest = { confirmClear = false },
                     title = { Text(stringResource(R.string.lines_clearConfirm)) },
+                    text = { Text(stringResource(R.string.backup_before)) },
                     confirmButton = { TextButton(onClick = { confirmClear = false; state.clearLines() }) { Text(stringResource(R.string.lines_clearAction), color = p.danger) } },
-                    dismissButton = { TextButton(onClick = { confirmClear = false }) { Text(stringResource(R.string.cancel)) } },
+                    dismissButton = { TextButton(onClick = { confirmClear = false; backupNow() }) { Text(stringResource(R.string.backup_first)) } },
                 )
+            }
+            // 백업: 새 폰으로 옮기거나 지우기 전에 (모든 것을 파일 하나로)
+            FormSection(header = stringResource(R.string.backup_title), footer = stringResource(R.string.backup_footer)) {
+                var restoreFrom by remember { mutableStateOf<android.net.Uri?>(null) }
+                val openFile = androidx.activity.compose.rememberLauncherForActivityResult(androidx.activity.result.contract.ActivityResultContracts.OpenDocument()) { uri -> restoreFrom = uri }
+                FormRow(stringResource(R.string.backup_export), onClick = { backupNow() }) {}
+                RowDivider()
+                FormRow(stringResource(R.string.backup_import), onClick = { openFile.launch(arrayOf("application/json", "text/plain", "application/octet-stream")) }) {}
+                restoreFrom?.let { uri ->
+                    GardenAlert(
+                        onDismissRequest = { restoreFrom = null },
+                        title = { Text(stringResource(R.string.backup_importConfirm)) },
+                        confirmButton = { TextButton(onClick = {
+                            restoreFrom = null
+                            val text = runCatching { ctx.contentResolver.openInputStream(uri)?.use { it.readBytes().decodeToString() } }.getOrNull()
+                            if (text != null && state.store.restore(text)) {
+                                state.say(ctx.getString(R.string.backup_done))
+                                // 새로 들여온 기록으로 처음부터 (알림 · 위젯도 새로)
+                                io.github.graviton94.carpediem.widget.Widgets.refresh(ctx)
+                                // 한마디를 잠깐 보인 뒤에
+                                android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({ (ctx as? android.app.Activity)?.takeIf { !it.isFinishing && !it.isDestroyed }?.recreate() }, (Tokens.Garden.Motion.noteMs / 2).toLong())
+                            } else state.say(ctx.getString(R.string.backup_fail))
+                        }) { Text(stringResource(R.string.backup_importAction), color = p.danger) } },
+                        dismissButton = { TextButton(onClick = { restoreFrom = null }) { Text(stringResource(R.string.cancel)) } },
+                    )
+                }
+            }
+            // 처음 온 사람의 안내 다시 보기 (정원 둘러보기 · 페이지마다의 첫 안내)
+            if (state.design == Design.GARDEN) FormSection {
+                FormRow(stringResource(R.string.guide_again), onClick = { state.draft = null; state.restartGuide(); onClose() }) {
+                    Icon(Icons.Filled.KeyboardArrowRight, null, tint = p.secondary)
+                }
             }
             FormSection(header = stringResource(R.string.widgets)) {
                 listOf(Icons.Filled.Home to R.string.widgets_android1, Icons.Filled.Search to R.string.widgets_android2, Icons.Filled.Edit to R.string.widgets_android3).forEachIndexed { i, (icon, text) ->
@@ -532,10 +560,27 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
         GardenAlert(
             onDismissRequest = { confirmErase = false },
             title = { Text(stringResource(R.string.erase_confirm)) },
+            text = { Text(stringResource(R.string.backup_before)) },
             confirmButton = { TextButton(onClick = { confirmErase = false; state.eraseAll(); onClose() }) { Text(stringResource(R.string.erase_action), color = p.danger) } },
-            dismissButton = { TextButton(onClick = { confirmErase = false }) { Text(stringResource(R.string.cancel)) } },
+            dismissButton = { TextButton(onClick = { confirmErase = false; backupNow() }) { Text(stringResource(R.string.backup_first)) } },
         )
     }
+    if (askSave) GardenAlert(
+        onDismissRequest = { askSave = false },
+        title = { Text(stringResource(R.string.settings_saveAsk)) },
+        confirmButton = { TextButton(onClick = { askSave = false; state.save(draft); state.draft = null; onClose() }) { Text(stringResource(R.string.settings_save)) } },
+        dismissButton = { TextButton(onClick = { askSave = false; state.draft = null; onClose() }) { Text(stringResource(R.string.settings_discard), color = p.secondary) } },
+    )
+    if (blocked) GardenAlert(
+        onDismissRequest = { blocked = false },
+        title = { Text(stringResource(R.string.notify_blockedTitle)) },
+        text = { Text(stringResource(R.string.notify_blocked)) },
+        confirmButton = { TextButton(onClick = {
+            blocked = false
+            runCatching { ctx.startActivity(android.content.Intent(android.provider.Settings.ACTION_APP_NOTIFICATION_SETTINGS).putExtra(android.provider.Settings.EXTRA_APP_PACKAGE, ctx.packageName)) }
+        }) { Text(stringResource(R.string.notify_openSettings)) } },
+        dismissButton = { TextButton(onClick = { blocked = false }) { Text(stringResource(R.string.garden_close), color = p.secondary) } },
+    )
 }
 
 // ───────────────────────── 나라 선택 ─────────────────────────
@@ -595,7 +640,7 @@ private fun SettingsFooter(onVersionTap: () -> Unit) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             listOf(FooterPage.ABOUT to R.string.footer_about, FooterPage.CONTACT to R.string.footer_contact, FooterPage.NOTICES to R.string.footer_notices).forEachIndexed { i, (pg, label) ->
                 if (i > 0) TokenText("·", Tokens.TypeScale.footnote, color = p.secondary)
-                TokenText(stringResource(label), Tokens.TypeScale.footnote, Modifier.clickable { page = pg }.padding(horizontal = Tokens.Space.sp2, vertical = Tokens.Space.sp2), color = p.secondary)
+                TokenText(stringResource(label), Tokens.TypeScale.footnote, Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { page = pg }.padding(horizontal = Tokens.Space.sp3, vertical = Tokens.Space.sp3), color = p.secondary)
             }
         }
         TokenText(stringResource(R.string.privacy) + " · " + stringResource(R.string.app_name) + " " + ctx.packageManager.getPackageInfo(ctx.packageName, 0).versionName, Tokens.TypeScale.caption2,
