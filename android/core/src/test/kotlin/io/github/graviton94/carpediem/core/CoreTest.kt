@@ -656,7 +656,9 @@ class ChancesTest {
 
     @Test fun creditsFitSixtyToEightySeconds() {
         val empty = Credits.plan(emptyList(), 2026)
-        assertEquals(6, empty.size); assertTrue(Credits.total(empty) in 60_000L..80_000L)
+        assertEquals(7, empty.size); assertTrue(Credits.total(empty) in 60_000L..80_000L)
+        // 달 순서: 1–2월 겨울이 맨 앞, 12월 겨울이 맨 끝
+        assertEquals(listOf(1..2, 3..5, 6..8, 9..11, 12..12), empty.filter { it.part == CreditPart.SEASON }.map { it.months })
         val many = (0 until 365).map { DayLine(d(2026, 1, 1).plusDays(it.toLong()), "줄 $it", Feeling.entries[it % Feeling.entries.size]) }
         val mom = Person("m", "엄마", Kind.PERSON, birth = d(1964, 4, 2), seed = 1, metOn = d(2026, 1, 1))
         val pet = Person("p", "콩이", Kind.PET, Species.DOG, d(2023, 6, 1), seed = 2, metOn = d(2026, 1, 1))
@@ -672,7 +674,7 @@ class ChancesTest {
         assertTrue(Credits.total(full) in 60_000L..80_000L)
         full.filter { it.part == CreditPart.SEASON }.forEach { sc ->
             assertTrue(sc.items.size <= Credits.PER_SEASON); assertTrue(sc.items.isNotEmpty())
-            assertTrue(sc.items.all { Memories.seasonOf(it.date) == sc.season })
+            assertTrue(sc.items.all { it.date.monthValue in sc.months })
             assertEquals(sc.items.sortedBy { it.date }, sc.items)
             assertTrue(sc.items.any { it.kind == CreditKind.LINE })
             assertEquals(sc.items.first(), sc.itemAt(sc.startMs + Credits.HEADER_MS)?.first); assertEquals(null, sc.itemAt(sc.startMs))

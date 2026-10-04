@@ -11,6 +11,8 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.offset
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -66,18 +68,9 @@ import io.github.graviton94.carpediem.ui.TokenText
 import java.time.LocalDateTime
 import kotlin.math.sin
 
-/** 장면마다 비출 정원의 때: 인트로는 이른 봄 새벽, 계절은 그 계절 한낮, 아웃트로는 그해 마지막 밤. */
-private fun sceneTime(year: Int, sc: CreditScene): LocalDateTime = when (sc.part) {
-    CreditPart.INTRO -> LocalDateTime.of(year, 3, 1, 6, 30)
-    CreditPart.OUTRO -> LocalDateTime.of(year, 12, 31, 22, 30)
-    CreditPart.SEASON -> when (sc.season) {
-        Season.SPRING -> LocalDateTime.of(year, 4, 15, 15, 0); Season.SUMMER -> LocalDateTime.of(year, 7, 20, 15, 0)
-        Season.AUTUMN -> LocalDateTime.of(year, 10, 20, 15, 0); else -> LocalDateTime.of(year, 12, 20, 14, 0)
-    }
-}
-
 private val CREDIT_INK = Color(0xFFFBEFD9)
-private val CREDIT_WARM = Color(0xFFF5B45C)
+private val CREDIT_WARM = Color(0xFFF2C27A)
+private val CREDIT_BG = Color(0xFF16140F)
 
 /**
  * 한 해의 엔딩 크레딧 (08): 인트로 (숫자가 차오름) · 네 계절 (계절 이름과 그 계절의 일이 한 장씩 빠르게) · 아웃트로 (올라가는 엔딩 크레딧), 60 ~ 80초.
@@ -107,12 +100,9 @@ fun CreditsScreen(state: AppState, profile: LifeProfile, year: Int, onDone: () -
         val player = remember(season) { Soundscape.Player(Sound.SEASON, season) }
         DisposableEffect(player, paused) { if (!paused) player.start(); onDispose { player.stop() } }
     }
-    Box(Modifier.fillMaxSize().background(Color.Black).pointerInput(done) { detectTapGestures { if (!done) paused = !paused } }) {
-        Crossfade(sceneTime(year, scene), animationSpec = tween(1200), label = "creditGarden") { t ->
-            GardenHome(state, profile, t, onSettings = {}, onCollection = {}, onSupport = {}, onStone = {}, onAddPerson = {}, bare = true)
-        }
-        val shade = if (scene.part == CreditPart.SEASON) 0.5f else 0.75f
-        Box(Modifier.fillMaxSize().background(Brush.verticalGradient(listOf(Color.Black.copy(alpha = shade + 0.2f), Color.Black.copy(alpha = shade), Color.Black.copy(alpha = shade * 0.6f), Color.Black.copy(alpha = shade + 0.1f)))))
+    Box(Modifier.fillMaxSize().background(CREDIT_BG).pointerInput(done) { detectTapGestures { if (!done) paused = !paused } }) {
+        // 배경: 어두운 종이 위, 아래에 그 장 계절의 땅 한 줄만 (해 · 달 · 정원 글자 없이). 장이 바뀌면 천천히 바뀜
+        Crossfade(season, animationSpec = tween(1600), label = "creditGround") { se -> CreditGround(se) }
         val local = elapsed - scene.startMs
         val fade = if (done) 1f else ((minOf(local, scene.startMs + scene.lengthMs - elapsed)) / 600f).coerceIn(0f, 1f)
         Box(Modifier.fillMaxSize().graphicsLayer { alpha = fade }) {
@@ -136,84 +126,85 @@ fun CreditsScreen(state: AppState, profile: LifeProfile, year: Int, onDone: () -
     }
 }
 
-/** 인트로: 해 이름과 한 해의 숫자 셋이 0부터 차오름. */
+/** 아래 땅: 그 계절의 땅 그림을 어둡게, 위로 갈수록 바탕에 스며들게. */
+@Composable
+private fun CreditGround(season: Season) {
+    val ctx = LocalContext.current
+    BoxWithConstraints(Modifier.fillMaxSize()) {
+        val h = maxHeight * 0.34f
+        Box(Modifier.align(Alignment.BottomCenter).fillMaxWidth().height(h)) {
+            Image(GardenArt.strip(ctx, season), null, Modifier.fillMaxSize(), contentScale = ContentScale.Crop, alignment = Alignment.TopCenter,
+                colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(CREDIT_BG.copy(alpha = 0.55f), androidx.compose.ui.graphics.BlendMode.SrcAtop))
+            Box(Modifier.fillMaxSize().background(Brush.verticalGradient(listOf(CREDIT_BG, CREDIT_BG.copy(alpha = 0f), CREDIT_BG.copy(alpha = 0.35f)))))
+        }
+    }
+}
+
+/** 인트로: 작은 제목 · 해 숫자 · 한마디, 조금 뒤 한 해의 숫자 한 줄. */
 @Composable
 private fun Intro(state: AppState, year: Int, local: Long, length: Long) {
     val lines = remember(year) { state.lines.count { it.date.year == year } }
     val breaths = remember(year) { state.breaths.count { it.first.year == year } }
     val thanks = remember(year) { state.lines.count { it.date.year == year && it.feeling == Feeling.THANKS } }
-    val p = ((local - 1500f) / (length - 3000f)).coerceIn(0f, 1f)
-    val e = 1f - (1f - p) * (1f - p)
+    val sum = ((local - 2200f) / 1400f).coerceIn(0f, 1f)
     Column(Modifier.fillMaxSize().padding(horizontal = Theme.deviceClass.pageMargin), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
-        TokenText(stringResource(R.string.credits_garden), Tokens.TypeScale.footnote.serif(), color = CREDIT_INK.copy(alpha = 0.7f))
+        TokenText(stringResource(R.string.credits_garden), Tokens.TypeScale.footnote.serif(), color = CREDIT_INK.copy(alpha = 0.6f))
         Spacer(Modifier.height(Tokens.Space.sp3))
         TokenText("$year", Tokens.TypeScale.largeTitle.serif(), color = CREDIT_INK)
-        Spacer(Modifier.height(Tokens.Space.sp3))
-        TokenText(stringResource(R.string.credits_intro), Tokens.TypeScale.callout.serif(), color = CREDIT_INK.copy(alpha = 0.85f), align = TextAlign.Center)
+        Spacer(Modifier.height(Tokens.Space.sp4))
+        TokenText(stringResource(R.string.credits_intro), Tokens.TypeScale.callout.serif(), color = CREDIT_INK.copy(alpha = 0.8f), align = TextAlign.Center)
         Spacer(Modifier.height(Tokens.Space.sp8))
-        Row(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp6)) {
-            Counter((lines * e).toInt(), stringResource(R.string.credits_countLines))
-            Counter((thanks * e).toInt(), stringResource(R.string.credits_countThanks))
-            Counter((breaths * e).toInt(), stringResource(R.string.credits_countBreaths))
-        }
+        val counts = listOfNotNull(
+            lines.takeIf { it > 0 }?.let { stringResource(R.string.credits_sLines, Labels.number(it)) },
+            thanks.takeIf { it > 0 }?.let { stringResource(R.string.credits_sThanks, Labels.number(it)) },
+            breaths.takeIf { it > 0 }?.let { stringResource(R.string.credits_sBreaths, Labels.number(it)) },
+        )
+        if (counts.isNotEmpty()) TokenText(counts.joinToString("  ·  "), Tokens.TypeScale.footnote, Modifier.graphicsLayer { alpha = sum }, color = CREDIT_WARM.copy(alpha = 0.85f))
     }
 }
 
-@Composable
-private fun Counter(n: Int, label: String) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        TokenText(Labels.number(n), Tokens.TypeScale.title2.serif(), color = CREDIT_WARM)
-        TokenText(label, Tokens.TypeScale.caption1, color = CREDIT_INK.copy(alpha = 0.7f))
-    }
+/** 장의 달 (‘1월 – 2월’ · ‘12월’), 폰 언어로. */
+private fun monthsLabel(months: IntRange): String {
+    val loc = java.util.Locale.getDefault()
+    fun m(i: Int) = java.time.Month.of(i).getDisplayName(java.time.format.TextStyle.FULL, loc)
+    return if (months.first == months.last) m(months.first) else m(months.first) + " – " + m(months.last)
 }
 
-/** 계절: 위에 계절 이름 · 달 · 그 계절의 숫자, 가운데 그 계절의 일이 한 장씩 (떠오르며 나타났다 옅어짐), 아래 작은 점들. */
+/**
+ * 한 장 (계절): 처음 2초는 가운데에 계절 이름 · 달, 그다음 이름은 위로 작게 물러나고 그 장의 일이 한 줄씩 가운데에 (그림 · 상자 없이 글자만).
+ * 한 줄을 남긴 날이면 그날의 사진이 아래에 작게.
+ */
 @Composable
 private fun SeasonScene(state: AppState, year: Int, sc: CreditScene, elapsed: Long) {
     val ctx = LocalContext.current
     val season = sc.season ?: return
-    val months = stringResource(when (season) { Season.SPRING -> R.string.credits_spring; Season.SUMMER -> R.string.credits_summer; Season.AUTUMN -> R.string.credits_autumn; else -> R.string.credits_winter })
-    val inSeason = remember(sc) { state.lines.filter { it.date.year == year && io.github.graviton94.carpediem.core.Memories.seasonOf(it.date) == season } }
-    val breaths = remember(sc) { state.breaths.count { it.first.year == year && io.github.graviton94.carpediem.core.Memories.seasonOf(it.first) == season } }
     val now = (state.fixedNow ?: LocalDateTime.now()).toLocalDate()
-    Column(Modifier.fillMaxSize().statusBarsPadding().padding(top = Tokens.Space.sp10).padding(horizontal = Theme.deviceClass.pageMargin), horizontalAlignment = Alignment.CenterHorizontally) {
-        TokenText(Labels.season(ctx, season), Tokens.TypeScale.title2.serif(), color = CREDIT_INK)
-        TokenText(months, Tokens.TypeScale.caption1, color = CREDIT_INK.copy(alpha = 0.6f))
-        Spacer(Modifier.height(Tokens.Space.sp1))
-        // 그 계절의 숫자 (0 인 것은 빼고)
-        val counts = listOfNotNull(
-            inSeason.size.takeIf { it > 0 }?.let { stringResource(R.string.credits_sLines, "$it") },
-            inSeason.count { it.feeling == Feeling.THANKS }.takeIf { it > 0 }?.let { stringResource(R.string.credits_sThanks, "$it") },
-            breaths.takeIf { it > 0 }?.let { stringResource(R.string.credits_sBreaths, "$it") },
-        )
-        if (counts.isNotEmpty()) TokenText(counts.joinToString(" · "), Tokens.TypeScale.footnote, color = CREDIT_WARM.copy(alpha = 0.9f))
-        Spacer(Modifier.weight(0.6f))
-        val cur = sc.itemAt(elapsed)
-        Box(Modifier.fillMaxWidth().heightIn(min = Theme.unit * 200f), contentAlignment = Alignment.Center) {
-            if (sc.items.isEmpty()) TokenText(stringResource(R.string.credits_quiet), Tokens.TypeScale.callout.serif(), color = CREDIT_INK.copy(alpha = 0.8f), align = TextAlign.Center)
-            cur?.let { (item, f) ->
-                // 0 → 0.18 떠오르며 나타남, 0.82 → 1 옅어짐
-                val a = minOf(f / 0.18f, (1f - f) / 0.18f).coerceIn(0f, 1f)
-                val rise = (1f - (f / 0.18f).coerceAtMost(1f))
-                androidx.compose.runtime.key(item) {
-                    ItemCard(state, item, now, Modifier.graphicsLayer { alpha = a; translationY = rise * 40f; scaleX = 0.96f + 0.04f * a; scaleY = 0.96f + 0.04f * a })
-                }
-            }
+    val local = elapsed - sc.startMs
+    val settle = ((local - Credits.HEADER_MS + 500f) / 700f).coerceIn(0f, 1f)   // 이름이 위로 물러나는 정도
+    BoxWithConstraints(Modifier.fillMaxSize().statusBarsPadding().padding(horizontal = Theme.deviceClass.pageMargin)) {
+        val headY = maxHeight * (0.40f - 0.28f * settle)
+        Column(Modifier.fillMaxWidth().offset(y = headY).graphicsLayer { val k = 1f - 0.22f * settle; scaleX = k; scaleY = k },
+            horizontalAlignment = Alignment.CenterHorizontally) {
+            TokenText(Labels.season(ctx, season), Tokens.TypeScale.title2.serif(), color = CREDIT_INK)
+            Spacer(Modifier.height(Tokens.Space.sp1))
+            TokenText(monthsLabel(sc.months), Tokens.TypeScale.footnote, color = CREDIT_INK.copy(alpha = 0.55f))
         }
-        Spacer(Modifier.weight(1f))
-        // 이 계절의 몇 장 가운데 몇 번째
-        Row(Modifier.padding(bottom = Tokens.Space.sp10), horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
-            sc.items.forEach { it2 ->
-                val on = cur?.first == it2
-                Box(Modifier.size(Theme.unit * (if (on) 6f else 2.4f), Theme.unit * 2.4f).background(if (on) CREDIT_WARM else CREDIT_INK.copy(alpha = 0.35f), RoundedCornerShape(Theme.unit * 2f)))
+        val cur = sc.itemAt(elapsed)
+        if (sc.items.isEmpty() && settle >= 1f) TokenText(stringResource(R.string.credits_quiet), Tokens.TypeScale.callout.serif(),
+            Modifier.fillMaxWidth().offset(y = maxHeight * 0.42f), color = CREDIT_INK.copy(alpha = 0.7f), align = TextAlign.Center)
+        cur?.let { (item, f) ->
+            // 앞 0.2 동안 천천히 나타나고, 끝 0.18 동안 옅어짐
+            val a = minOf(f / 0.2f, (1f - f) / 0.18f).coerceIn(0f, 1f)
+            androidx.compose.runtime.key(item) {
+                CreditLine(state, item, now, Modifier.fillMaxWidth().offset(y = maxHeight * 0.34f).graphicsLayer { alpha = a; translationY = (1f - a) * 18f })
             }
         }
     }
 }
 
-/** 크레딧 한 장: 작은 그림 · 날짜 · 그날의 일. */
+/** 크레딧 한 줄: 날짜 (작게, 따뜻한 색) · 그날의 일 (명조). */
 @Composable
-private fun ItemCard(state: AppState, item: CreditItem, today: java.time.LocalDate, modifier: Modifier) {
+private fun CreditLine(state: AppState, item: CreditItem, today: java.time.LocalDate, modifier: Modifier) {
     val ctx = LocalContext.current
     val text = when (item.kind) {
         CreditKind.LINE -> item.line?.text.orEmpty()
@@ -227,39 +218,10 @@ private fun ItemCard(state: AppState, item: CreditItem, today: java.time.LocalDa
         CreditKind.CAPSULE -> stringResource(R.string.credits_capsule, item.a)
         CreditKind.FIRST -> stringResource(R.string.credits_first)
     }
-    Column(modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
-        CreditIcon(item.kind, Theme.unit * 64f)
-        TokenText(RecordText.day(ctx, item.date), Tokens.TypeScale.footnote, color = CREDIT_INK.copy(alpha = 0.7f))
-        TokenText(text, Tokens.TypeScale.title2.serif(), Modifier.fillMaxWidth(),
-            color = CREDIT_INK, align = TextAlign.Center, maxLines = 5)
-        if (item.kind == CreditKind.LINE) WeatheredPhoto(state, item.date, today, Theme.unit * 120f, modifier = Modifier.padding(top = Tokens.Space.sp2))
-    }
-}
-
-/** 장마다의 작은 그림 (따뜻한 빛 동그라미 위). */
-@Composable
-private fun CreditIcon(kind: CreditKind, size: Dp) {
-    val ctx = LocalContext.current
-    Box(Modifier.size(size), contentAlignment = Alignment.Center) {
-        Canvas(Modifier.size(size)) { drawCircle(Brush.radialGradient(listOf(CREDIT_WARM.copy(alpha = 0.35f), Color.Transparent)), this.size.minDimension / 2) }
-        when (kind) {
-            CreditKind.LINE -> Image(GardenArt.obj(ctx, "feather"), null, Modifier.size(size * 0.6f))
-            CreditKind.MY_BIRTHDAY, CreditKind.BIRTHDAY -> Canvas(Modifier.size(size * 0.62f)) { birthdayCake() }
-            CreditKind.CAPSULE -> Jar(size * 0.66f, open = true)
-            CreditKind.TOGETHER_DAYS, CreditKind.TOGETHER_YEARS -> Canvas(Modifier.size(size * 0.7f)) {
-                val k = this.size.width / 10f
-                drawOval(Color(0xFF8C8A74), Offset(0.8f * k, 4.4f * k), Size(4.8f * k, 3.6f * k))
-                drawOval(Color(0xFF7A8F6A), Offset(4.4f * k, 4.0f * k), Size(4.8f * k, 4f * k))
-                drawCircle(Color(0xFFF2B35A), 0.9f * k, Offset(5f * k, 2.4f * k))
-            }
-            CreditKind.MOMENT -> Image(GardenArt.obj(ctx, "dandelion"), null, Modifier.size(size * 0.6f))
-            CreditKind.SPECIAL, CreditKind.SEED -> Canvas(Modifier.size(size * 0.6f)) {
-                val r = this.size.width / 2
-                for (i in 0 until 5) { val a = i * 1.2566f; drawCircle(Color(0xFFF2B35A), r * 0.4f, Offset(r + r * 0.5f * kotlin.math.cos(a), r + r * 0.5f * sin(a))) }
-                drawCircle(Color(0xFFB5651D), r * 0.28f, Offset(r, r))
-            }
-            CreditKind.FIRST -> Image(GardenArt.obj(ctx, "moss"), null, Modifier.size(size * 0.6f))
-        }
+    Column(modifier, horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
+        TokenText(RecordText.day(ctx, item.date), Tokens.TypeScale.footnote, color = CREDIT_WARM.copy(alpha = 0.85f))
+        TokenText(text, Tokens.TypeScale.title3.serif(), Modifier.fillMaxWidth(), color = CREDIT_INK, align = TextAlign.Center, maxLines = 5)
+        if (item.kind == CreditKind.LINE) WeatheredPhoto(state, item.date, today, Theme.unit * 110f, modifier = Modifier.padding(top = Tokens.Space.sp2))
     }
 }
 

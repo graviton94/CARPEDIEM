@@ -103,7 +103,8 @@ enum class CreditKind { LINE, MY_BIRTHDAY, BIRTHDAY, TOGETHER_DAYS, TOGETHER_YEA
 /** 크레딧 한 장. a · b 는 이름 · 수 같은 글감 (말은 앱이 붙임). */
 data class CreditItem(val date: LocalDate, val kind: CreditKind, val a: String = "", val b: String = "", val line: DayLine? = null)
 
-class CreditScene(val part: CreditPart, val season: Season?, val startMs: Long, val lengthMs: Long, val items: List<CreditItem>) {
+/** months = 그 장의 달 (한 해를 달 순서로: 1–2월 겨울 · 봄 · 여름 · 가을 · 12월 겨울). */
+class CreditScene(val part: CreditPart, val season: Season?, val startMs: Long, val lengthMs: Long, val items: List<CreditItem>, val months: IntRange = 1..12) {
     /** 계절 이름 다음, 한 장씩 보이는 때. */
     fun itemAt(ms: Long): Pair<CreditItem, Float>? {
         if (items.isEmpty()) return null
@@ -115,14 +116,17 @@ class CreditScene(val part: CreditPart, val season: Season?, val startMs: Long, 
 }
 
 object Credits {
-    const val INTRO_MS = 7_000L
-    const val OUTRO_MS = 13_000L
+    const val INTRO_MS = 6_000L
+    const val OUTRO_MS = 12_000L
     const val HEADER_MS = 2_000L
-    const val ITEM_MS = 2_600L
-    const val MIN_SEASON_MS = 10_000L
-    const val MAX_SEASON_MS = 15_000L
-    const val PER_SEASON = 5
-    val ORDER = listOf(Season.SPRING, Season.SUMMER, Season.AUTUMN, Season.WINTER)
+    const val ITEM_MS = 2_400L
+    const val MIN_SEASON_MS = 8_500L
+    const val MAX_SEASON_MS = 12_000L
+    const val PER_SEASON = 4
+    /** 겨울 두 장 (1–2월 · 12월) 은 짧게. */
+    const val PER_WINTER = 3
+    /** 한 해 (1월 → 12월) 를 달 순서대로: 해의 첫 겨울 · 봄 · 여름 · 가을 · 해의 끝 겨울. */
+    val CHAPTERS = listOf(Season.WINTER to 1..2, Season.SPRING to 3..5, Season.SUMMER to 6..8, Season.AUTUMN to 9..11, Season.WINTER to 12..12)
     private val PEOPLE = setOf(CreditKind.MY_BIRTHDAY, CreditKind.BIRTHDAY, CreditKind.TOGETHER_DAYS, CreditKind.TOGETHER_YEARS, CreditKind.SPECIAL, CreditKind.FIRST)
 
     /** 인연의 날 수 가운데 크레딧에 올릴 것: 100 · 200 · 300 · 500 · 1000 · 그 뒤 1000마다. */
@@ -180,10 +184,10 @@ object Credits {
         val out = ArrayList<CreditScene>()
         out += CreditScene(CreditPart.INTRO, null, 0, INTRO_MS, emptyList())
         var t = INTRO_MS
-        ORDER.forEach { s ->
-            val picked = pick(events.filter { Memories.seasonOf(it.date) == s && it.date.year == year })
+        CHAPTERS.forEach { (s, months) ->
+            val picked = pick(events.filter { it.date.year == year && it.date.monthValue in months }, if (s == Season.WINTER) PER_WINTER else PER_SEASON)
             val len = (HEADER_MS + picked.size * ITEM_MS).coerceIn(MIN_SEASON_MS, MAX_SEASON_MS)
-            out += CreditScene(CreditPart.SEASON, s, t, len, picked); t += len
+            out += CreditScene(CreditPart.SEASON, s, t, len, picked, months); t += len
         }
         out += CreditScene(CreditPart.OUTRO, null, t, OUTRO_MS, emptyList())
         return out

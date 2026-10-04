@@ -194,7 +194,7 @@ open --ez cd.photos true --ei cd.page 1 --es cd.now 2026-10-06T21:00;           
 swipe_up; shot g68_photo_more 3
 # 한 해의 엔딩 크레딧 (08): 인트로 · 봄 · 끝 (아웃트로)
 open --ez cd.family true --ez cd.special true --es cd.now 2026-12-28T20:00; sleep 3
-open --ez cd.ringYear true --es cd.screen credits --ei cd.creditsYear 2026 --es cd.now 2026-12-28T20:00;  shot g69_credits_intro 5; shot g70_credits_spring 6; shot g70b_credits_spring 3; shot g70c_credits_summer 9; shot g71_credits_end 60
+open --ez cd.ringYear true --es cd.screen credits --ei cd.creditsYear 2026 --es cd.now 2026-12-28T20:00;  shot g69_credits_intro 4; shot g70_credits_winter 6; shot g70b_credits_spring 9; shot g70c_credits_summer 11; shot g71_credits_end 45
 # 하루의 첫 화면 (그날 처음 열 때): 아침 · 밤
 open --ez cd.title true --es cd.now 2026-10-03T07:40;                                                  shot g73a_title_sky 1; shot g73b_title_pan 2; shot g73_title_morning 6
 open --ez cd.title true --es cd.now 2026-10-03T22:30;                                                  shot g74_title_night 9
