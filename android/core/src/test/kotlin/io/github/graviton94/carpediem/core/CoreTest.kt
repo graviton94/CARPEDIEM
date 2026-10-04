@@ -168,8 +168,9 @@ class DataTest {
         assertEquals(null, FirstWeek.next(0, emptySet()))            // 만난 날은 둘러보기만
         assertEquals("breath", FirstWeek.next(1, emptySet()))
         assertEquals("breath", FirstWeek.next(3, emptySet()))        // 놓친 것은 다음 날로
-        assertEquals("gaze", FirstWeek.next(3, setOf("breath", "stone")))
-        assertEquals(null, FirstWeek.next(2, setOf("breath", "stone")))  // 아직 오지 않은 날의 것은 기다림
+        assertEquals("gaze", FirstWeek.next(5, setOf("breath", "stone")))
+        assertEquals(null, FirstWeek.next(4, setOf("breath", "stone")))  // 아직 오지 않은 날의 것은 기다림 (이틀에 하나)
+        assertEquals(null, FirstWeek.next(2, setOf("breath")))
         assertEquals(null, FirstWeek.next(14, emptySet()))           // 둘째 주가 끝나면 그만
     }
 
@@ -568,7 +569,8 @@ class ChancesTest {
         val heavy = listOf(DayLine(d(2026, 10, 4), "걱정", Feeling.WORRY))
         assertTrue(Comfort.due(heavy, today, null))
         assertEquals(false, Comfort.due(heavy, today, today))
-        assertTrue(Comfort.due(heavy, today, d(2026, 10, 4)))
+        assertEquals(false, Comfort.due(heavy, today, today.minusDays(1)))   // 사흘에 한 번까지
+        assertTrue(Comfort.due(heavy, today, today.minusDays(3)))
         assertEquals(false, Comfort.due(listOf(DayLine(d(2026, 10, 4), "좋아", Feeling.JOY)), today, null))
         assertEquals(false, Comfort.due(listOf(DayLine(d(2026, 10, 3), "걱정", Feeling.WORRY)), today, null))
     }
@@ -627,6 +629,18 @@ class ChancesTest {
         assertEquals(26, Rings.newToday(birth, d(2026, 5, 12), lines))
         assertEquals(null, Rings.newToday(birth, d(2026, 5, 13), lines))
         assertEquals(listOf(27, 26), Rings.done(birth, d(2027, 6, 1), lines))
+    }
+
+    @Test fun paceKeepsPromptsRare() {
+        val today = d(2026, 10, 10)
+        assertTrue(Pace.seed(today, null, false))
+        assertEquals(false, Pace.seed(today, today.minusDays(2), true))
+        assertTrue(Pace.seed(today, today.minusDays(3), true))
+        assertEquals(false, Pace.seed(today, today.minusDays(5), false))   // 심지 않고 지나갔으면 일주일 쉼
+        assertTrue(Pace.seed(today, today.minusDays(7), false))
+        val month = (0 until 30).count { Pace.morningBreath(today.plusDays(it.toLong())) }
+        assertEquals(10, month)
+        assertEquals(false, Pace.gap(today.minusDays(1), today, Pace.CARE_GAP))
     }
 
     @Test fun guestsComeOnRandomDaysNotForBeingAway() {

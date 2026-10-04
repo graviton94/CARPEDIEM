@@ -167,7 +167,8 @@ object SpecialDays {
  */
 object FirstWeek {
     /** 권하는 차례: 키와 처음 권하는 날 (만난 날 = 0). */
-    val STEPS = listOf("breath" to 1, "stone" to 2, "gaze" to 3, "special" to 4, "widget" to 5, "backup" to 6)
+    /** 이틀에 하나씩 (날마다 권하지 않게). */
+    val STEPS = listOf("breath" to 1, "stone" to 3, "gaze" to 5, "special" to 7, "backup" to 9)
     const val LAST_DAY = 13
 
     fun next(daysSinceMet: Long, done: Set<String>): String? =

@@ -82,7 +82,27 @@ object YearCard {
  */
 object Comfort {
     fun due(lines: List<DayLine>, today: LocalDate, shown: LocalDate?): Boolean =
-        shown != today && lines.any { it.date == today.minusDays(1) && it.feeling in Letters.HEAVY }
+        Pace.gap(shown, today, Pace.COMFORT_GAP) && lines.any { it.date == today.minusDays(1) && it.feeling in Letters.HEAVY }
+}
+
+/**
+ * 고요한 빈도: 정원이 먼저 건네는 말 (권유 · 한마디) 이 날마다 되풀이되거나 부담이 되지 않게.
+ * 기능은 그대로 두고, 얼마나 자주 말을 거는지만 여기서 정한다. 사람이 먼저 하는 일 (쓰기 · 숨 · 돌멍) 은 언제든.
+ */
+object Pace {
+    /** 걱정한 밤 다음 아침의 한마디: 사흘에 한 번까지. */
+    const val COMFORT_GAP = 3
+    /** 한 줄 뒤 권유 (숨 · 바라보기 · 보내기): 사흘에 한 번까지. */
+    const val CARE_GAP = 3
+    /** 아침 씨앗: 권한 날로부터 사흘 뒤에 다시, 그때 심지 않았으면 일주일 쉼. */
+    const val SEED_GAP = 3
+    const val SEED_REST = 7
+    /** 아침 숨 한 줄 권유: 사흘에 하루. */
+    const val BREATH_EVERY = 3
+
+    fun gap(last: LocalDate?, today: LocalDate, days: Int): Boolean = last == null || ChronoUnit.DAYS.between(last, today) >= days
+    fun seed(today: LocalDate, lastOffered: LocalDate?, plantedThen: Boolean): Boolean = gap(lastOffered, today, if (plantedThen) SEED_GAP else SEED_REST)
+    fun morningBreath(today: LocalDate): Boolean = Math.floorMod(today.toEpochDay(), BREATH_EVERY.toLong()) == 0L
 }
 
 /** 아침 씨앗 (04): 오늘 마음에 심는 작은 다짐 하나. 저녁에 ‘싹이 텄나요?’ — 텄으면 꽃, 아니면 흙 속에서 쉼 (실패로 남지 않음). */

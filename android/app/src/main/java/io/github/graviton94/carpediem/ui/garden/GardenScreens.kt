@@ -206,7 +206,8 @@ private fun Modifier.pageTurn(pager: androidx.compose.foundation.pager.PagerStat
 }
 
 /** 이 시각부터 정원 위쪽에 ‘하루 닫기’ (밤 nightFrom 전이라도). */
-private const val CLOSE_DAY_FROM = 19
+/** 하루 닫기 입구가 보이기 시작하는 시각 (잠들기 전에만, 저녁 내내 걸려 있지 않게). */
+private const val CLOSE_DAY_FROM = 21
 
 /** 정원 아래 작은 한 줄: 깃털과 함께 ‘돌아온 한 줄’을 알림. */
 @Composable
@@ -404,7 +405,9 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                     if (quiet != null) Unit
                     else if (isNight(now) || now.hour >= CLOSE_DAY_FROM) CloseDayEntry(state.sentOn(day0), onCloseDay)
                     // 아침 숨 권유는 씨앗 쪽지가 없을 때만 (아침 권유도 하나만)
-                    else if (Labels.part(now) == io.github.graviton94.carpediem.core.DayPart.MORNING && state.breaths.none { it.first == now.toLocalDate() } && !(state.seedDue(now) && !touring))
+                    // 사흘에 하루만 (날마다 같은 권유를 되풀이하지 않게)
+                    else if (Labels.part(now) == io.github.graviton94.carpediem.core.DayPart.MORNING && state.breaths.none { it.first == now.toLocalDate() } && !(state.seedDue(now) && !touring)
+                        && io.github.graviton94.carpediem.core.Pace.morningBreath(day0))
                         TokenText(stringResource(R.string.breath_morning), Tokens.TypeScale.footnote.serif(),
                             Modifier.clickable { askBreath = BreathKind.CALM to R.string.breath_morning }.padding(Tokens.Space.sp2), color = p.secondary)
                     askBreath?.let { (kind, name) ->
@@ -589,7 +592,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                         month != null -> MonthCard(month.second) { state.openMonth(month.first, month.second); toRecord(RecordView(month.first, month.second)) }
                         gardenYear != null -> RecallNote(stringResource(R.string.gardenYear_ask)) { state.gardenYearSeen(gardenYear); gardenYearOpen = gardenYear }
                         // 아침 씨앗 (04): 아침에 한 줄로, 누르면 고르는 장
-                        state.seedDue(now) && !touring -> RecallNote(stringResource(R.string.seed_note)) { seedOpen = true }
+                        state.seedDue(now) && !touring -> { LaunchedEffect(today) { state.seedShown(today) }; RecallNote(stringResource(R.string.seed_note)) { seedOpen = true } }
                         recall != null -> RecallNote(recall) { turnTo(1) }
                         // 첫 일주일 길잡이: 하루에 하나, 해 본 것은 건너뜀 (누르면 그 일로)
                         else -> state.firstWeekNudge(today)?.takeIf { state.guideDone }?.let { k ->

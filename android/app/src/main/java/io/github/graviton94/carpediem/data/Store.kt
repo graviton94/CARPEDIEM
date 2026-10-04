@@ -259,6 +259,13 @@ class Store(context: Context) {
     var seedSkipped: LocalDate?
         get() = prefs.getLong("seedSkip", Long.MIN_VALUE).takeIf { it != Long.MIN_VALUE }?.let { LocalDate.ofEpochDay(it) }
         set(v) = prefs.edit().apply { if (v == null) remove("seedSkip") else putLong("seedSkip", v.toEpochDay()) }.apply()
+    /** 아침 씨앗 쪽지를 마지막으로 보여 준 날 · 한 줄 뒤 권유를 마지막으로 건넨 날 (고요한 빈도, core Pace). */
+    var seedOffered: LocalDate?
+        get() = prefs.getLong("seedOffered", Long.MIN_VALUE).takeIf { it != Long.MIN_VALUE }?.let { LocalDate.ofEpochDay(it) }
+        set(v) = prefs.edit().apply { if (v == null) remove("seedOffered") else putLong("seedOffered", v.toEpochDay()) }.apply()
+    var careShown: LocalDate?
+        get() = prefs.getLong("careShown", Long.MIN_VALUE).takeIf { it != Long.MIN_VALUE }?.let { LocalDate.ofEpochDay(it) }
+        set(v) = prefs.edit().apply { if (v == null) remove("careShown") else putLong("careShown", v.toEpochDay()) }.apply()
     /** 걱정한 밤 다음 아침의 한마디 (06) 를 보여 준 날. */
     var comfortShown: LocalDate?
         get() = prefs.getLong("comfortShown", Long.MIN_VALUE).takeIf { it != Long.MIN_VALUE }?.let { LocalDate.ofEpochDay(it) }

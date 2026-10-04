@@ -247,14 +247,11 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
                         TokenText(stringResource(R.string.edit_delete), Tokens.TypeScale.footnote,
                             Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { confirmDelete = true }.padding(horizontal = Tokens.Space.sp3, vertical = Tokens.Space.sp3), color = p.secondary)
                     }
-                    val askNow = state.fixedNow ?: java.time.LocalDateTime.now()
-                    val seedAsking = state.profile != null && state.seedToAsk(today) != null && io.github.graviton94.carpediem.ui.Labels.part(askNow).let { it == io.github.graviton94.carpediem.core.DayPart.EVENING || it == io.github.graviton94.carpediem.core.DayPart.NIGHT }
-                    // 오늘의 사진 (11): 붙였으면 한지 액자로, 아니면 그날 안에 붙이기
+                    // 오늘의 사진 (11): 붙였으면 한지 액자로 (보낸 뒤에 붙이라고 권하지는 않음, 쓰는 칸 옆 ‘사진 한 장’으로)
                     if (Theme.garden && state.keepLines && mine != null && mine.text.isNotBlank()) {
                         val hasPhoto = remember(state.photoKick, today) { io.github.graviton94.carpediem.data.Photos.has(ctx, today) }
                         if (hasPhoto) WeatheredPhoto(state, today, today, u * 170f, modifier = Modifier.padding(vertical = Tokens.Space.sp2))
-                        // 권유는 하나만: 저녁에 씨앗을 묻는 날은 사진 권유를 쉼
-                        else if (!seedAsking) GardenChip(stringResource(R.string.photo_addToday), false, 967) { pickToday() }
+
                     }
                     // 아침에 심은 씨앗 (04): 저녁 · 밤이면 ‘싹이 텄나요?’
                     if (Theme.garden && state.profile != null) SeedAsk(state, today, state.fixedNow ?: java.time.LocalDateTime.now())

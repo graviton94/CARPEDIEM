@@ -248,6 +248,7 @@ class AppState(private val context: Context) {
         val part = Labels.part(fixedNow ?: LocalDateTime.now())
         toast = Labels.letGoMessage(context, feeling, part)
         care = careFor(feeling, line.to, today, part)
+        if (care != null) store.careShown = today
         Widgets.refresh(context)   // 마음의 기록 위젯에 오늘의 꽃 · 별
     }
     // ───── 고치기 · 지우기 ─────
@@ -305,6 +306,8 @@ class AppState(private val context: Context) {
     private fun careFor(f: Feeling?, to: String?, today: LocalDate, part: io.github.graviton94.carpediem.core.DayPart): Care? {
         val night = part == io.github.graviton94.carpediem.core.DayPart.NIGHT; val morning = part == io.github.graviton94.carpediem.core.DayPart.MORNING
         if (!careOn || design != Design.GARDEN) return null
+        // 한 줄마다 권하지 않게: 사흘에 한 번까지
+        if (!io.github.graviton94.carpediem.core.Pace.gap(store.careShown, today, io.github.graviton94.carpediem.core.Pace.CARE_GAP)) return null
         val breathed = breaths.any { it.first == today }
         return when (f) {
             // 밤에는 잠드는 명상, 아침의 슬픔엔 맑은 숨으로
@@ -333,11 +336,16 @@ class AppState(private val context: Context) {
         private set
     private var seedSkipped by mutableStateOf(store.seedSkipped)
     /** 아침 (5–11시) 정원에 씨앗 카드: 켜 두었고, 오늘 아직 심지도 ‘다음에’도 하지 않았을 때. */
+    private var seedOffered by mutableStateOf(store.seedOffered)
     fun seedDue(now: LocalDateTime): Boolean {
         val today = now.toLocalDate()
-        return seedsOn && design == Design.GARDEN && Labels.part(now) == io.github.graviton94.carpediem.core.DayPart.MORNING &&
-            io.github.graviton94.carpediem.core.Seeds.of(seeds, today) == null && seedSkipped != today
+        if (!(seedsOn && design == Design.GARDEN && Labels.part(now) == io.github.graviton94.carpediem.core.DayPart.MORNING &&
+            io.github.graviton94.carpediem.core.Seeds.of(seeds, today) == null && seedSkipped != today)) return false
+        // 날마다 묻지 않게: 사흘에 한 번, 지난번에 심지 않고 지나갔으면 일주일 쉼 (같은 아침에는 계속 보임)
+        val last = seedOffered
+        return last == today || io.github.graviton94.carpediem.core.Pace.seed(today, last, last != null && io.github.graviton94.carpediem.core.Seeds.of(seeds, last) != null)
     }
+    fun seedShown(today: LocalDate) { if (seedOffered != today) { store.seedOffered = today; seedOffered = today } }
     fun plantSeed(text: String, today: LocalDate = nowDate()) {
         val v = io.github.graviton94.carpediem.core.Seeds.plant(seeds, today, text); if (v == seeds) return
         store.seeds = v; seeds = v
