@@ -978,4 +978,5 @@
 "title.hello.morning" = "좋은 아침이에요.";
 "title.hello.evening" = "오늘 하루도 수고했어요.";
 "title.hello.night" = "하루가 기다리고 있었어요.";
-"title.setting" = "하루의 첫 화면";
+"title.setting" = "앱 첫 화면";
+"title.helloFirst" = "처음 만나는 날이에요. 반가워요.";

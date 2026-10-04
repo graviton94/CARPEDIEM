@@ -980,5 +980,6 @@
     <string name="title_hello_morning">Good morning.</string>
     <string name="title_hello_evening">You did well today.</string>
     <string name="title_hello_night">Haru was waiting for you.</string>
-    <string name="title_setting">Daily title screen</string>
+    <string name="title_setting">Title screen</string>
+    <string name="title_helloFirst">Nice to meet you.</string>
 </resources>

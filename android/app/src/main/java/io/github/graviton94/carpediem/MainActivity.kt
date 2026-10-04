@@ -116,8 +116,8 @@ class MainActivity : ComponentActivity() {
         }
         // 캡처 스크립트가 연 실행 (cd.* 표) 에서는 처음 알림 허락을 묻지 않음
         val scripted = BuildConfig.DEBUG && intent?.extras?.keySet()?.any { it.startsWith("cd.") } == true
-        // 하루의 첫 화면: 그날 처음 아이콘으로 열 때만 (알림 · 위젯 · 바로 가기로 온 때는 바로 그곳으로)
-        val firstTitle = (start == Screen.Main && !linked && savedInstanceState == null && !scripted && state.titleDue((state.fixedNow ?: LocalDateTime.now()).toLocalDate())) ||
+        // 앱 첫 화면 (타이틀): 아이콘으로 켤 때마다 (알림 · 위젯 · 바로 가기로 온 때는 바로 그곳으로)
+        val firstTitle = (start == Screen.Main && !linked && savedInstanceState == null && !scripted && state.titleDue()) ||
             (BuildConfig.DEBUG && intent?.getBooleanExtra("cd.title", false) == true)
         setContent {
             BoxWithConstraints {
@@ -146,9 +146,9 @@ class MainActivity : ComponentActivity() {
                     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { now = clock(); state.refreshQuote(); state.opened(); state.refreshQuestion(); state.recheckNotify(); state.syncFromStore() }
                     // 앱을 다시 열 때(화면에 다시 나올 때) 남은 시간 · 인생 달력 단위를 기본값으로
                     LifecycleEventEffect(Lifecycle.Event.ON_START) {
+                        // 30분 넘게 떠났다 돌아오면 다시 첫 화면부터 (resetViewIfAway 보다 먼저 물어야 함)
+                        if (!title && screen == Screen.Main && state.fixedNow == null && state.awayLong() && state.titleDue()) title = true
                         state.resetViewIfAway()
-                        // 켜 둔 채 날이 바뀌어 다시 열었을 때도 그날 첫 화면
-                        if (!title && screen == Screen.Main && state.fixedNow == null && state.titleDue(LocalDate.now())) title = true
                     }
                     LifecycleEventEffect(Lifecycle.Event.ON_STOP) { state.stopped() }
                     // 정원은 늘 밝은 종이라 상태바 · 내비게이션 바 글자를 어둡게 둔다
@@ -252,7 +252,7 @@ class MainActivity : ComponentActivity() {
                     }
                     }
                     // 하루의 첫 화면 (정원 위에 덮어 두었다가, 누르면 하루 자리에서 동그랗게 열림)
-                    if (title && screen == Screen.Main && state.profile != null) io.github.graviton94.carpediem.ui.garden.TitleScreen(state, now) {
+                    if (title && screen == Screen.Main) io.github.graviton94.carpediem.ui.garden.TitleScreen(state, now) {
                         title = false; state.titleSeen(clock().toLocalDate())
                     }
                     // 짧은 알림 한마디: 어느 화면에서든 같은 자리 · 같은 움직임

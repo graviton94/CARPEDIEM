@@ -977,4 +977,5 @@
 "title.hello.morning" = "早安。";
 "title.hello.evening" = "今天也辛苦了。";
 "title.hello.night" = "小日一直在等你。";
-"title.setting" = "每天的第一個畫面";
+"title.setting" = "App 開場畫面";
+"title.helloFirst" = "初次見面，很高興認識你。";

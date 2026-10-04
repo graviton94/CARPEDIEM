@@ -979,7 +979,8 @@
     "title.hello.morning": "좋은 아침이에요.",
     "title.hello.evening": "오늘 하루도 수고했어요.",
     "title.hello.night": "하루가 기다리고 있었어요.",
-    "title.setting": "하루의 첫 화면"
+    "title.setting": "앱 첫 화면",
+    "title.helloFirst": "처음 만나는 날이에요. 반가워요."
   },
   "en": {
     "tagline": "Cherish today.",
@@ -1961,7 +1962,8 @@
     "title.hello.morning": "Good morning.",
     "title.hello.evening": "You did well today.",
     "title.hello.night": "Haru was waiting for you.",
-    "title.setting": "Daily title screen"
+    "title.setting": "Title screen",
+    "title.helloFirst": "Nice to meet you."
   },
   "ja": {
     "tagline": "今日を大切に。",
@@ -2942,7 +2944,8 @@
     "title.hello.morning": "おはようございます。",
     "title.hello.evening": "今日もおつかれさま。",
     "title.hello.night": "ハルが待っていました。",
-    "title.setting": "一日の最初の画面"
+    "title.setting": "アプリの最初の画面",
+    "title.helloFirst": "はじめまして。うれしいです。"
   },
   "zh-TW": {
     "tagline": "珍惜今天。",
@@ -3923,6 +3926,7 @@
     "title.hello.morning": "早安。",
     "title.hello.evening": "今天也辛苦了。",
     "title.hello.night": "小日一直在等你。",
-    "title.setting": "每天的第一個畫面"
+    "title.setting": "App 開場畫面",
+    "title.helloFirst": "初次見面，很高興認識你。"
   }
 }

@@ -979,5 +979,6 @@
     <string name="title_hello_morning">おはようございます。</string>
     <string name="title_hello_evening">今日もおつかれさま。</string>
     <string name="title_hello_night">ハルが待っていました。</string>
-    <string name="title_setting">一日の最初の画面</string>
+    <string name="title_setting">アプリの最初の画面</string>
+    <string name="title_helloFirst">はじめまして。うれしいです。</string>
 </resources>

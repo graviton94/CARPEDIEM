@@ -62,7 +62,7 @@ import kotlin.math.hypot
 import kotlin.math.sin
 
 /**
- * 하루의 첫 화면: 그날 처음 열 때 한 번. 지금 때의 하늘 아래 하루가 눈을 감고 졸고 있고, 위에 ‘하루의 정원’과 오늘의 인사.
+ * 앱 첫 화면 (타이틀): 아이콘으로 켤 때마다 · 30분 넘게 떠났다 돌아올 때. 지금 때의 하늘 아래 하루가 눈을 감고 졸고 있고, 위에 ‘하루의 정원’과 오늘의 인사.
  * 어디든 누르면 하루가 눈을 뜨며 살짝 뛰어오르고, 하루 자리에서 동그랗게 정원이 열린다 (아래에 이미 그려 둔 정원이 드러남).
  * 뒤로 가기 · 움직임을 끈 기기에서는 바로 정원으로.
  */
@@ -135,7 +135,7 @@ fun TitleScreen(state: AppState, now: LocalDateTime, onDone: () -> Unit) {
                 Spacer(Modifier.height(Tokens.Space.sp4))
                 TokenText(now.toLocalDate().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL)), Tokens.TypeScale.footnote, color = ink.copy(alpha = 0.7f))
                 Spacer(Modifier.height(Tokens.Space.sp1))
-                val hello = remember(now.hour) { Labels.timed(ctx, "title_hello", Labels.part(now)) ?: ctx.getString(R.string.title_hello) }
+                val hello = remember(now.hour) { if (state.profile == null) ctx.getString(R.string.title_helloFirst) else Labels.timed(ctx, "title_hello", Labels.part(now)) ?: ctx.getString(R.string.title_hello) }
                 TokenText(hello, Tokens.TypeScale.callout.serif(), color = ink.copy(alpha = 0.85f), align = TextAlign.Center)
             }
             // 아래: 눌러서 정원으로 (숨처럼 옅어졌다 짙어짐)

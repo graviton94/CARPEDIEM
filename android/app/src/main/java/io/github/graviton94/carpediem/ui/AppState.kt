@@ -201,6 +201,8 @@ class AppState(private val context: Context) {
     /** 앱을 잠깐 떠났다 오면 (공유 창 · 파일 고르기) 고른 단위를 두고, 오래 (30분 넘게) 떠났다 오면 기본 단위로. */
     private var stoppedAt = 0L
     fun stopped() { stoppedAt = System.currentTimeMillis() }
+    /** 화면을 떠났다가 30분 넘게 지나 돌아왔는지 (처음 켤 때는 아님). */
+    fun awayLong(): Boolean = stoppedAt != 0L && System.currentTimeMillis() - stoppedAt > 30 * 60_000L
     fun resetViewIfAway() { if (stoppedAt == 0L || System.currentTimeMillis() - stoppedAt > 30 * 60_000L) resetViewToDefaults() }
     // ───── 오늘의 한 줄 ─────
     /** 보낸 한 줄들 (기기 안에만). 화면에는 ‘몇 해 전 오늘’로만 드물게 돌아온다. */
@@ -371,8 +373,8 @@ class AppState(private val context: Context) {
     var titleOn by mutableStateOf(store.titleOn)
         private set
     fun changeTitleOn(v: Boolean) { store.titleOn = v; titleOn = v }
-    /** 정원 디자인 · 처음 온 사람의 안내를 마친 뒤 · 오늘 아직 보지 않았으면. */
-    fun titleDue(today: LocalDate): Boolean = titleOn && design == Design.GARDEN && profile != null && !meetPending && guideDone && store.titleDay != today
+    /** 앱 첫 화면 (타이틀): 정원 디자인에서, 앱을 켤 때마다 (꺼 둘 수 있음). */
+    fun titleDue(): Boolean = titleOn && design == Design.GARDEN
     fun titleSeen(today: LocalDate) { store.titleDay = today }
     // ───── 한 해의 엔딩 크레딧 (08) ─────
     private var creditsShown by mutableStateOf(store.creditsShown)

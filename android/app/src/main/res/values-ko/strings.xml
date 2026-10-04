@@ -980,5 +980,6 @@
     <string name="title_hello_morning">좋은 아침이에요.</string>
     <string name="title_hello_evening">오늘 하루도 수고했어요.</string>
     <string name="title_hello_night">하루가 기다리고 있었어요.</string>
-    <string name="title_setting">하루의 첫 화면</string>
+    <string name="title_setting">앱 첫 화면</string>
+    <string name="title_helloFirst">처음 만나는 날이에요. 반가워요.</string>
 </resources>

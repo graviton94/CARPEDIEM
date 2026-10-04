@@ -977,4 +977,5 @@
 "title.hello.morning" = "おはようございます。";
 "title.hello.evening" = "今日もおつかれさま。";
 "title.hello.night" = "ハルが待っていました。";
-"title.setting" = "一日の最初の画面";
+"title.setting" = "アプリの最初の画面";
+"title.helloFirst" = "はじめまして。うれしいです。";

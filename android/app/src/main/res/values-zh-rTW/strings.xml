@@ -979,5 +979,6 @@
     <string name="title_hello_morning">早安。</string>
     <string name="title_hello_evening">今天也辛苦了。</string>
     <string name="title_hello_night">小日一直在等你。</string>
-    <string name="title_setting">每天的第一個畫面</string>
+    <string name="title_setting">App 開場畫面</string>
+    <string name="title_helloFirst">初次見面，很高興認識你。</string>
 </resources>
