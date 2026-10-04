@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -38,6 +39,7 @@ import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
@@ -104,7 +106,7 @@ fun TitleScreen(state: AppState, now: LocalDateTime, onDone: () -> Unit) {
     }
     BackHandler { onDone() }
     val enterLabel = stringResource(R.string.title_enter)
-    BoxWithConstraints(Modifier.fillMaxSize().semantics { contentDescription = enterLabel }.pointerInput(Unit) { detectTapGestures { enter() } }
+    BoxWithConstraints(Modifier.fillMaxSize().clipToBounds().semantics { contentDescription = enterLabel }.pointerInput(Unit) { detectTapGestures { enter() } }
         .graphicsLayer { alpha = fade.value }) {
         val u = Theme.unit
         val screenH = maxHeight
@@ -112,7 +114,8 @@ fun TitleScreen(state: AppState, now: LocalDateTime, onDone: () -> Unit) {
         val worldH = screenH * TITLE_WORLD
         val travel = with(density) { (worldH - screenH).toPx() }
         // 하늘 꼭대기부터 땅까지 이어진 한 장 (카메라가 위에서 아래로)
-        Box(Modifier.fillMaxWidth().height(worldH).graphicsLayer { translationY = -travel * pan.value }) {
+        // 부모(화면 높이)보다 큰 한 장이라 높이 제한을 풀어 둔다 (안 그러면 화면 높이로 잘려 아래 정원이 비친다)
+        Box(Modifier.fillMaxWidth().wrapContentHeight(Alignment.Top, unbounded = true).height(worldH).graphicsLayer { translationY = -travel * pan.value }) {
             Box(Modifier.fillMaxSize().background(Theme.gc.base))
             if (night) {
                 Box(Modifier.fillMaxSize().background(androidx.compose.ui.graphics.Brush.verticalGradient(listOf(Color(0xFF070A16), Color(0xFF0E1222), Color(0xFF1B2134), Color(0xFF2B3046)))))
