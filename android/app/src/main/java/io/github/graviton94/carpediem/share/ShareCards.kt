@@ -66,7 +66,7 @@ object ShareCards {
     private fun measure(s: String, tp: TextPaint, width: Int): Float =
         StaticLayout.Builder.obtain(s, 0, s.length, tp, width).setLineSpacing(0f, 1.25f).build().height.toFloat()
 
-    private fun haru(c: Canvas, seed: Long, cx: Float, groundY: Float, widthPx: Float) {
+    private fun haru(c: Canvas, seed: Long, cx: Float, groundY: Float, widthPx: Float, line: Boolean = true) {
         val art = HaruArt.of(seed, false)
         val k = widthPx / art.meta.bbox.width
         c.save(); c.translate(cx - art.meta.bbox.center.x * k, groundY - art.meta.ground * k)
@@ -75,6 +75,7 @@ object ShareCards {
             androidx.compose.ui.geometry.Size(art.meta.box * k, art.meta.box * k),
         ) { drawHaru(art, k, smile = 1f) }
         c.restore()
+        if (!line) return
         val p = Paint(Paint.ANTI_ALIAS_FLAG).apply { strokeWidth = 5f; color = ink; strokeCap = Paint.Cap.ROUND }
         c.drawLine(cx - widthPx * 1.4f, groundY, cx + widthPx * 1.4f, groundY, p)
     }
@@ -268,24 +269,30 @@ object ShareCards {
         val clip = android.graphics.Path().apply { addRoundRect(scene, r, r, android.graphics.Path.Direction.CW) }
         c.clipPath(clip)
         art(ctx, "sky_$key.jpg")?.let { sky -> val sh = scene.width() * sky.height / sky.width; c.drawBitmap(sky, null, RectF(scene.left, scene.top, scene.right, scene.top + maxOf(sh, scene.height())), Paint(Paint.FILTER_BITMAP_FLAG)) }
-        val gy = scene.bottom - sceneH * 0.2f   // 땅선
-        art(ctx, "strip_$key.webp")?.let { st -> val sh = scene.width() * st.height / st.width; c.drawBitmap(st, null, RectF(scene.left, gy - sh * 0.18f, scene.right, gy - sh * 0.18f + sh), Paint(Paint.FILTER_BITMAP_FLAG)) }
+        val gy = scene.bottom - sceneH * 0.22f   // 땅선
+        // 땅 띠: 앱의 정원과 같은 비율 (폭 unitWidth 에 높이 stripHeight, 그 가운데 stripLineY 가 땅선)
+        art(ctx, "strip_$key.webp")?.let { st ->
+            val L = Tokens.Garden.Layout; val sh = scene.width() * L.stripHeight / Tokens.Garden.unitWidth; val top = gy - sh * L.stripLineY / L.stripHeight
+            c.drawBitmap(st, null, RectF(scene.left, top, scene.right, top + sh), Paint(Paint.FILTER_BITMAP_FLAG))
+        }
         // 나무 (왼쪽) · 말뚝과 걸린 것 (오른쪽) · 연과 리본 (하늘)
-        tree?.let { t -> put(c, art(ctx, "tree_${t.key}_${key}_${stage.coerceIn(0, 3)}.webp"), scene.left + scene.width() * 0.2f, gy + sceneH * 0.02f, sceneH * 0.78f) }
+        // 나무 · 말뚝: 앱에서처럼 땅선에 발을 딛게 (그림 아래 끝의 여백만큼 살짝 내려서)
+        tree?.let { t -> put(c, art(ctx, "tree_${t.key}_${key}_${stage.coerceIn(0, 3)}.webp"), scene.left + scene.width() * 0.2f, gy + sceneH * 0.03f, sceneH * 0.78f) }
         val postX = scene.left + scene.width() * 0.84f; val postH = sceneH * 0.5f
-        put(c, art(ctx, "post_$key.webp"), postX, gy + sceneH * 0.02f, postH)
+        put(c, art(ctx, "post_$key.webp"), postX, gy + sceneH * 0.03f, postH)
         val hangName = when (hang) { io.github.graviton94.carpediem.core.Hang.CHIME -> "post_chime.webp"; io.github.graviton94.carpediem.core.Hang.BELL -> "post_bell.webp"; io.github.graviton94.carpediem.core.Hang.LANTERN -> "post_lantern.webp"; else -> null }
-        hangName?.let { put(c, art(ctx, it), postX, gy + sceneH * 0.02f, postH) }
+        hangName?.let { put(c, art(ctx, it), postX, gy + sceneH * 0.03f, postH) }
         if (kite || ribbons.isNotEmpty()) {
             val kx = scene.left + scene.width() * 0.6f; val ky = scene.top + sceneH * 0.36f; val kh = sceneH * 0.22f
             val string = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = inkSoft; alpha = 140; strokeWidth = 2f; style = Paint.Style.STROKE }
             c.drawPath(android.graphics.Path().apply { moveTo(kx, ky); quadTo(kx + kh * 0.6f, ky + kh * 1.6f, postX - pad * 0.1f, gy - postH * 0.85f) }, string)
             put(c, art(ctx, "kite.webp"), kx, ky, kh)
-            val rp = Paint(Paint.ANTI_ALIAS_FLAG).apply { strokeWidth = 7f; strokeCap = Paint.Cap.ROUND }
-            ribbons.forEachIndexed { i, f ->
+            // 리본: 연 꼬리에서 바람에 날리듯 짧게 (앱의 연과 같은 마음 색)
+            val rp = Paint(Paint.ANTI_ALIAS_FLAG).apply { strokeWidth = 6f; strokeCap = Paint.Cap.ROUND; style = Paint.Style.STROKE }
+            ribbons.take(8).forEachIndexed { i, f ->
                 rp.color = io.github.graviton94.carpediem.ui.garden.feelingColor(f).toArgb()
-                val x = kx + (i - (ribbons.size - 1) / 2f) * 16f
-                c.drawLine(x, ky, x + 5f, ky + kh * 0.7f, rp)
+                val sx = kx + (i - (ribbons.size.coerceAtMost(8) - 1) / 2f) * 6f; val len = kh * (0.55f + 0.08f * (i % 3))
+                c.drawPath(android.graphics.Path().apply { moveTo(sx, ky - kh * 0.05f); quadTo(sx - len * 0.35f, ky + len * 0.45f, sx - len * 0.15f + (i % 2) * 8f, ky + len) }, rp)
             }
         }
         // 만난 순간들: 하늘 위쪽에 작게 (그림이 있으면 그림, 아니면 작은 빛)
@@ -303,7 +310,7 @@ object ShareCards {
             }
         }
         // 하루: 길 가운데, 땅 위
-        haru(c, seed, scene.centerX(), gy + sceneH * 0.01f, scene.width() * 0.17f)
+        haru(c, seed, scene.centerX(), gy, scene.width() * 0.17f, line = false)
         c.restore()
         c.drawRoundRect(scene, r, r, Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE; strokeWidth = 3f; color = ink })
         y = scene.bottom + pad * 0.7f
