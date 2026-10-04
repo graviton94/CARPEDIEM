@@ -952,4 +952,5 @@
     <string name="credits_kept">残したもの</string>
     <string name="credits_mood">いちばん多かった気持ち</string>
     <string name="credits_next">%1$s年にまた会いましょう</string>
+    <string name="seed_note">今日、心に種をひとつまきますか？</string>
 </resources>

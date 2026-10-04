@@ -250,6 +250,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
     var gardenYearOpen by remember { mutableStateOf<Int?>(null) }
     var capsuleOpen by remember { mutableStateOf<io.github.graviton94.carpediem.core.Capsule?>(null) }
     var ringOpen by remember { mutableStateOf<Int?>(null) }
+    var seedOpen by remember { mutableStateOf(false) }
     // 오늘 펼쳐 본 나이테 (같은 날 아래 한 줄로 다시 권하지 않음)
     var ringsSeen by remember { mutableStateOf(emptySet<Int>()) }
     var letterOpen by remember { mutableStateOf(if (state.debugOpenLetter && !bare) state.letterDue(now.toLocalDate()) else null) }
@@ -401,7 +402,6 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                     // 저녁 7시 이후 · 밤: 하루 닫기 (한 줄 → 고마움 → 등불) · 아침: 씨앗 하나 (04), 심었거나 넘겼으면 하루를 여는 숨 1분
                     // 숨은 누르면 바로 가지 않고 “… 하러 갈까요?” 한 번 묻기
                     if (isNight(now) || now.hour >= CLOSE_DAY_FROM) CloseDayEntry(state.sentOn(day0), onCloseDay)
-                    else if (comfort == null && !greet && !touring && state.seedDue(now)) SeedCard(state, day0)
                     else if (Labels.part(now) == io.github.graviton94.carpediem.core.DayPart.MORNING && state.breaths.none { it.first == now.toLocalDate() })
                         TokenText(stringResource(R.string.breath_morning), Tokens.TypeScale.footnote.serif(),
                             Modifier.clickable { askBreath = BreathKind.CALM to R.string.breath_morning }.padding(Tokens.Space.sp2), color = p.secondary)
@@ -446,7 +446,6 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 // 나무 밑에 묻은 항아리 (10): 열리는 날까지 작은 흙더미
                 if (!bare) JarMound(state, day0, u * G.Decor.treeX + u * 14f, gy)
                 // 돌아온 날의 손님 (09): 그날 하루 말뚝 곁에
-                state.guest?.let { g -> GuestFigure(g, x1 - u * 9f, gy) }
 
 
                 // 자리 여섯: 나무 (길의 시작) · 발치의 한 장 · 말뚝 (길의 끝) · 연 (하늘) — 돌들 뒤에. 하루 밑엔 이끼 방석.
@@ -524,6 +523,8 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 }
                 // 달팽이 손님: 오랜만에 돌아온 날, 한 시간쯤 돌들 앞 길을 천천히 건넘
                 if (!bare) SnailGuest(state.store.snailAt, now, gy, u * G.Decor.treeX)
+                // 돌아온 날의 손님 (09): 그날 하루 말뚝 발치에 (돌들 앞)
+                if (!bare) state.guest?.let { g -> GuestFigure(g, x1 + u * 4f, gy + u * 2f) }
                 // 우연한 순간 (한 번에 하나, 몇 초 뒤 사라짐)
                 if (!bare) state.chance?.let { c -> ChanceLayer(c, now, real, gy, xs[0], u * G.Decor.treeX, x1, topBottom + u * G.Layout.minSkyGap, back = false) { seen -> state.chanceDone(seen, c) } }
                 // 이름표 (가족이 있을 때) · 0세 · 기대수명
@@ -578,6 +579,8 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                         year != null -> YearCard(year) { state.openYear(year); toRecord(RecordView(year, null)) }
                         month != null -> MonthCard(month.second) { state.openMonth(month.first, month.second); toRecord(RecordView(month.first, month.second)) }
                         gardenYear != null -> RecallNote(stringResource(R.string.gardenYear_ask)) { state.gardenYearSeen(gardenYear); gardenYearOpen = gardenYear }
+                        // 아침 씨앗 (04): 아침에 한 줄로, 누르면 고르는 장
+                        state.seedDue(now) && !touring -> RecallNote(stringResource(R.string.seed_note)) { seedOpen = true }
                         recall != null -> RecallNote(recall) { turnTo(1) }
                         // 첫 일주일 길잡이: 하루에 하나, 해 본 것은 건너뜀 (누르면 그 일로)
                         else -> state.firstWeekNudge(today)?.takeIf { state.guideDone }?.let { k ->
@@ -641,6 +644,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
     gardenYearOpen?.let { y -> GardenYearSheet(state, profile, now, y) { gardenYearOpen = null } }
     capsuleOpen?.let { c -> CapsuleSheet(c) { state.openCapsule(c); capsuleOpen = null } }
     ringOpen?.let { a -> RingSheet(state, profile, a, now) { ringOpen = null } }
+    if (seedOpen) SeedSheet(state, now.toLocalDate()) { seedOpen = false }
     if (breathSheet) BreathSheet(state, now, { k, m, snd -> breathSheet = false; onBreath(k, m, snd) }) { breathSheet = false }
 }
 

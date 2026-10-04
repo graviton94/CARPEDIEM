@@ -109,9 +109,9 @@ internal fun dayLine(ctx: Context, prefix: String, day: LocalDate, salt: Int = 0
 
 // ───────────────────────── 아침 씨앗 ─────────────────────────
 
-@OptIn(ExperimentalLayoutApi::class)
+@OptIn(ExperimentalLayoutApi::class, androidx.compose.material3.ExperimentalMaterial3Api::class)
 @Composable
-internal fun SeedCard(state: AppState, today: LocalDate) {
+internal fun SeedSheet(state: AppState, today: LocalDate, onDismiss: () -> Unit) {
     val p = Theme.palette
     val ctx = LocalContext.current
     val all = remember { seedChoices(ctx) }
@@ -120,11 +120,12 @@ internal fun SeedCard(state: AppState, today: LocalDate) {
     var own by remember(today) { mutableStateOf(false) }
     var text by remember(today) { mutableStateOf("") }
     val chosen = if (own) text.takeIf { it.isNotBlank() } else pick
-    Column(
-        Modifier.fillMaxWidth().crayonBox(Theme.gc.paper, G.Radius.box, G.Stroke.chip, 1400).padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3),
-        verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp2),
+    androidx.compose.material3.ModalBottomSheet(onDismissRequest = onDismiss, containerColor = Theme.gc.paper) { Column(
+        Modifier.fillMaxWidth().padding(horizontal = Theme.deviceClass.pageMargin).navigationBarsPadding().padding(bottom = Tokens.Space.sp6),
+        verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3),
     ) {
-        TokenText(stringResource(R.string.seed_title), Tokens.TypeScale.headline.serif())
+        TokenText(stringResource(R.string.seed_title), Tokens.TypeScale.title3.serif())
+        TokenText(stringResource(R.string.seed_settingFooter), Tokens.TypeScale.footnote, color = p.secondary)
         FlowRow(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
             picks.forEachIndexed { i, c -> GardenChip(c, !own && pick == c, 1401 + i) { own = false; pick = if (pick == c) null else c } }
             GardenChip(stringResource(R.string.seed_own), own, 1405) { own = !own; pick = null }
@@ -136,12 +137,12 @@ internal fun SeedCard(state: AppState, today: LocalDate) {
             decorationBox = { inner -> Box { if (text.isEmpty()) TokenText(stringResource(R.string.seed_hint), Tokens.TypeScale.callout, color = p.secondary); inner() } },
         )
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
-            GardenButton(stringResource(R.string.seed_plant), { chosen?.let { state.plantSeed(it, today); state.say(ctx.getString(R.string.seed_planted)) } },
+            GardenButton(stringResource(R.string.seed_plant), { chosen?.let { state.plantSeed(it, today); state.say(ctx.getString(R.string.seed_planted)); onDismiss() } },
                 filled = chosen != null, seed = 1407, modifier = Modifier.weight(1f))
             TokenText(stringResource(R.string.seed_later), Tokens.TypeScale.footnote,
-                Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { state.skipSeed(today) }.padding(Tokens.Space.sp3), color = p.secondary)
+                Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { state.skipSeed(today); onDismiss() }.padding(Tokens.Space.sp3), color = p.secondary)
         }
-    }
+    } }
 }
 
 /** 저녁 (한 줄을 보낸 뒤 · 하루 닫기): ‘아침에 심은 ○○, 싹이 텄나요?’ 아니라고 답할 칸은 없음. */

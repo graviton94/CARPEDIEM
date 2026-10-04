@@ -185,7 +185,7 @@ open --ez cd.touch false --es cd.now $NOW; sleep 2
 # 미래의 나에게 (10): 오늘 열린 항아리 · 생일 아침의 나이테 (07, 2000-05-12 생 → 2026-05-12 아침) · 추억의 항아리 · 나이테
 open --ez cd.capsule true --es cd.now 2026-10-04T09:00;                                                shot g62_capsule_open 5
 open --ez cd.ringYear true --es cd.now 2026-05-12T09:00;                                               shot g63_ring_note 6
-open --ei cd.page 2 --es cd.now 2026-05-20T15:00; swipe_up; swipe_up; swipe_up; swipe_up;               shot g64_keepsakes 3
+open --ei cd.page 2 --es cd.now 2026-05-20T15:00; for i in 1 2 3 4 5 6 7 8 9; do swipe_up; done;           shot g64_keepsakes 3
 # 돌아온 날의 손님 (09): 닷새 · 스무 날 만에
 open --ei cd.away 5 --es cd.now 2026-10-04T10:00;                                                      shot g65_return_guest 5
 open --ei cd.away 20 --es cd.now 2026-10-05T10:00;                                                     shot g66_return_rare 5

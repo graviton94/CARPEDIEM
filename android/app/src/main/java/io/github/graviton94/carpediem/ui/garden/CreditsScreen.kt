@@ -157,7 +157,7 @@ private fun SeasonRoll(state: AppState, sc: CreditScene, local: Long) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     TokenText(RecordText.day(ctx, l.date), Tokens.TypeScale.caption1, color = CREDIT_INK.copy(alpha = 0.6f))
                     TokenText(l.text, Tokens.TypeScale.callout.serif(), color = CREDIT_INK, align = TextAlign.Center)
-                    WeatheredPhoto(state, l.date, (state.fixedNow ?: LocalDateTime.now()).toLocalDate(), Theme.unit * 44f, modifier = Modifier.padding(top = Tokens.Space.sp2))
+                    WeatheredPhoto(state, l.date, (state.fixedNow ?: LocalDateTime.now()).toLocalDate(), Theme.unit * 110f, modifier = Modifier.padding(top = Tokens.Space.sp2))
                 }
             }
         }

@@ -953,4 +953,5 @@
     <string name="credits_kept">What you kept</string>
     <string name="credits_mood">Most frequent feeling</string>
     <string name="credits_next">See you in %1$s</string>
+    <string name="seed_note">Plant a little seed in your heart today?</string>
 </resources>

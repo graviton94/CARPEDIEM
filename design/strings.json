@@ -951,7 +951,8 @@
     "credits.people": "함께한 사람들",
     "credits.kept": "남긴 것",
     "credits.mood": "가장 자주 머문 마음",
-    "credits.next": "{year}년에 다시 만나요"
+    "credits.next": "{year}년에 다시 만나요",
+    "seed.note": "오늘 마음에 씨앗 하나 심을까요?"
   },
   "en": {
     "tagline": "Cherish today.",
@@ -1905,7 +1906,8 @@
     "credits.people": "With",
     "credits.kept": "What you kept",
     "credits.mood": "Most frequent feeling",
-    "credits.next": "See you in {year}"
+    "credits.next": "See you in {year}",
+    "seed.note": "Plant a little seed in your heart today?"
   },
   "ja": {
     "tagline": "今日を大切に。",
@@ -2858,7 +2860,8 @@
     "credits.people": "一緒にいた人たち",
     "credits.kept": "残したもの",
     "credits.mood": "いちばん多かった気持ち",
-    "credits.next": "{year}年にまた会いましょう"
+    "credits.next": "{year}年にまた会いましょう",
+    "seed.note": "今日、心に種をひとつまきますか？"
   },
   "zh-TW": {
     "tagline": "珍惜今天。",
@@ -3811,6 +3814,7 @@
     "credits.people": "一起的人們",
     "credits.kept": "留下的",
     "credits.mood": "最常停留的心情",
-    "credits.next": "{year} 年再見"
+    "credits.next": "{year} 年再見",
+    "seed.note": "今天要在心裡種下一顆種子嗎？"
   }
 }
