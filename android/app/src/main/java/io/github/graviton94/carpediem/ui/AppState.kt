@@ -150,6 +150,8 @@ class AppState(private val context: Context) {
         val g = guest ?: return
         if (chancesMet.none { it.startsWith("guest_$g:") }) { val n = chancesMet + "guest_$g:$today"; store.chancesMet = n; chancesMet = n }
     }
+    /** 정원의 땅 높이 (첫 화면이 같은 자리에 빈 땅을 깔고 정원으로 이어지게). 정원이 그릴 때 적어 둠. */
+    var gardenGround by mutableStateOf<androidx.compose.ui.unit.Dp?>(null)
     fun pretendGuest(g: String) { store.pretendGuest(nowDate(), g); guest = store.guestToday(nowDate()) }
     var eveningNotify by mutableStateOf(store.eveningNotify)
         private set

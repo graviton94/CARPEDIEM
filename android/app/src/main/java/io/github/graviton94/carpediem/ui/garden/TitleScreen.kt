@@ -2,7 +2,7 @@ package io.github.graviton94.carpediem.ui.garden
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -66,115 +66,91 @@ import kotlin.math.sin
 
 /**
  * 앱 첫 화면 (타이틀): 아이콘으로 켤 때마다 · 30분 넘게 떠났다 돌아올 때.
- * 하늘만 보이는 데서 시작해 카메라가 천천히 내려와 땅과 졸고 있는 하루에 닿고, 그다음 ‘하루의 정원’ · 오늘 · 인사가 떠오른다.
- * 누르면 (내려오는 중이면 끝 장면으로 먼저) 화면 전체가 옅어지며 아래에 그려 둔 정원이 나타난다.
- * 뒤로 가기는 바로 정원으로, 움직임을 끈 기기는 내려오기 없이 끝 장면부터.
+ * 정원과 같은 하늘에서 시작해, 빈 땅이 아래에서 천천히 올라와 정원의 땅 자리에 멈춘다 (돌 · 꾸밈 · 글자 없는 빈 정원).
+ * 그다음 ‘하루의 정원’ · 오늘 · 인사가 천천히 떠오르고, 누르면 글자가 먼저 옅어진 뒤 화면 전체가 천천히 옅어져
+ * 아래에 그려 둔 정원 (같은 하늘 · 같은 땅) 에 돌들과 글자가 생겨나는 것처럼 이어진다.
+ * 올라오는 중에 누르면 끝 장면으로, 뒤로 가기는 바로 정원으로, 움직임을 끈 기기는 끝 장면부터.
  */
 @Composable
 fun TitleScreen(state: AppState, now: LocalDateTime, onDone: () -> Unit) {
     val ctx = LocalContext.current
-    val density = LocalDensity.current
     val scope = rememberCoroutineScope()
     val still = remember { reducedMotion(ctx) }
     val season = io.github.graviton94.carpediem.core.GardenDecor.realSeason(now.toLocalDate(), state.profile?.countryCode ?: "KR")
     val night = SkyTime.isDark(now)
-    val art = remember { HaruArt.of(state.store.haruSeed, false) }
-    val pan = remember { Animatable(if (still) 1f else 0f) }      // 0 = 하늘 꼭대기, 1 = 땅과 하루
-    val words = remember { Animatable(if (still) 1f else 0f) }    // 이름 · 인사
-    val tap = remember { Animatable(if (still) 1f else 0f) }      // 눌러서 정원으로
-    val fade = remember { Animatable(1f) }                         // 첫 화면 전체 (0 이면 정원)
-    val lid = remember { Animatable(1f) }
+    val sky = remember { Animatable(if (still) 1f else 0f) }       // 하늘이 밝아짐
+    val rise = remember { Animatable(if (still) 1f else 0f) }      // 0 = 땅이 화면 아래, 1 = 정원의 땅 자리
+    val words = remember { Animatable(if (still) 1f else 0f) }     // 이름 · 오늘 · 인사
+    val tap = remember { Animatable(if (still) 1f else 0f) }       // 눌러서 정원으로
+    val fade = remember { Animatable(1f) }                          // 첫 화면 전체 (0 이면 정원)
     var entering by remember { mutableStateOf(false) }
     val breathe = rememberInfiniteTransition(label = "titleBreath")
     val b by breathe.animateFloat(0f, 1f, infiniteRepeatable(tween(TITLE_BREATH_MS, easing = LinearEasing), RepeatMode.Restart), label = "b")
     LaunchedEffect(Unit) {
-        if (!still) pan.animateTo(1f, tween(TITLE_PAN_MS, easing = FastOutSlowInEasing))
-        words.animateTo(1f, tween(TITLE_WORDS_MS))
-        tap.animateTo(1f, tween(TITLE_WORDS_MS))
+        if (!still) {
+            sky.animateTo(1f, tween(TITLE_SKY_MS, easing = LinearEasing))
+            rise.animateTo(1f, tween(TITLE_RISE_MS, easing = CALM))
+        }
+        words.animateTo(1f, tween(TITLE_WORDS_MS, easing = LinearEasing))
+        delay(TITLE_TAP_DELAY_MS)
+        tap.animateTo(1f, tween(TITLE_WORDS_MS, easing = LinearEasing))
     }
     fun enter() {
         if (entering) return
-        // 내려오는 중이면 먼저 끝 장면으로
-        if (pan.value < 1f || words.value < 1f) { scope.launch { pan.snapTo(1f); words.snapTo(1f); tap.snapTo(1f) }; return }
+        // 아직 오르는 중이면 먼저 끝 장면으로
+        if (sky.value < 1f || rise.value < 1f || words.value < 1f) { scope.launch { sky.snapTo(1f); rise.snapTo(1f); words.snapTo(1f); tap.snapTo(1f) }; return }
         entering = true
         if (still) { onDone(); return }
         scope.launch {
-            lid.animateTo(0f, tween(240))
+            launch { tap.animateTo(0f, tween(TITLE_WORDS_OUT_MS)) }
+            words.animateTo(0f, tween(TITLE_WORDS_OUT_MS, easing = LinearEasing))
             fade.animateTo(0f, tween(TITLE_FADE_MS, easing = LinearEasing))
             onDone()
         }
     }
     BackHandler { onDone() }
     val enterLabel = stringResource(R.string.title_enter)
-    BoxWithConstraints(Modifier.fillMaxSize().clipToBounds().semantics { contentDescription = enterLabel }.pointerInput(Unit) { detectTapGestures { enter() } }
-        .graphicsLayer { alpha = fade.value }) {
+    BoxWithConstraints(Modifier.fillMaxSize().clipToBounds().paperBackground().semantics { contentDescription = enterLabel }
+        .pointerInput(Unit) { detectTapGestures { enter() } }.graphicsLayer { alpha = fade.value }) {
         val u = Theme.unit
         val screenH = maxHeight
-        val screenW = maxWidth
-        val worldH = screenH * TITLE_WORLD
-        val travel = with(density) { (worldH - screenH).toPx() }
-        // 하늘 꼭대기부터 땅까지 이어진 한 장 (카메라가 위에서 아래로)
-        // 부모(화면 높이)보다 큰 한 장이라 높이 제한을 풀어 둔다 (안 그러면 화면 높이로 잘려 아래 정원이 비친다)
-        Box(Modifier.fillMaxWidth().wrapContentHeight(Alignment.Top, unbounded = true).height(worldH).graphicsLayer { translationY = -travel * pan.value }) {
-            Box(Modifier.fillMaxSize().background(Theme.gc.base))
-            if (night) {
-                Box(Modifier.fillMaxSize().background(androidx.compose.ui.graphics.Brush.verticalGradient(listOf(Color(0xFF070A16), Color(0xFF0E1222), Color(0xFF1B2134), Color(0xFF2B3046)))))
-                androidx.compose.foundation.Canvas(Modifier.fillMaxSize()) {
-                    val r = java.util.Random(7)
-                    repeat(160) { val x = r.nextFloat() * size.width; val y = r.nextFloat() * size.height * 0.8f; val a = 0.25f + r.nextFloat() * 0.6f
-                        drawCircle(Color(0xFFFFF4D6).copy(alpha = a * (0.7f + 0.3f * sin(b * 6.2832f + it))), 1.2f + r.nextFloat() * 1.8f, Offset(x, y)) }
-                }
-                Image(GardenArt.moonFull(ctx), null, Modifier.align(Alignment.TopEnd).padding(top = screenH * 0.55f, end = u * 50f).size(u * 34f))
-            } else {
-                Image(GardenArt.sky(ctx, season), null, Modifier.fillMaxSize(), contentScale = ContentScale.Crop, alignment = Alignment.BottomCenter)
-                Box(Modifier.fillMaxSize().background(androidx.compose.ui.graphics.Brush.verticalGradient(listOf(Color(0x55FFFFFF), Color(0x00FFFFFF)))))
-                // 내려오며 스치는 구름 몇 장
-                listOf(0.18f to 0.12f, 0.42f to 0.6f, 0.7f to 0.25f).forEachIndexed { i, (yf, xf) ->
-                    Image(GardenArt.image(ctx, "cloud_${season.name.lowercase()}_${i % 2}.webp"), null, Modifier.offset(x = screenW * xf, y = worldH * yf).size(u * (70f + 20f * i), u * (28f + 8f * i)), contentScale = ContentScale.Fit)
-                }
-            }
-            // 땅 (월드 아래쪽) 과 졸고 있는 하루
-            val haruY = worldH - screenH * (1f - TITLE_HARU_AT)
-            val stripTop = haruY - u * G.Layout.stripLineY
-            Image(GardenArt.strip(ctx, season), null, Modifier.fillMaxWidth().offset(y = stripTop).height(maxOf(u * G.Layout.stripHeight, worldH - stripTop)),
-                contentScale = ContentScale.Crop, alignment = Alignment.TopCenter,
-                colorFilter = if (night) androidx.compose.ui.graphics.ColorFilter.tint(Color(0xB30E1222), BlendMode.SrcAtop) else null)
-            val scale = u * (TITLE_HARU_WIDTH / G.Layout.haruArtWidth)
-            val boxH = scale * (G.Layout.haruGround - art.meta.bbox.top + G.Layout.sparkle)
-            Box(Modifier.align(Alignment.TopCenter).offset(y = haruY - boxH).graphicsLayer {
-                transformOrigin = androidx.compose.ui.graphics.TransformOrigin(0.5f, 1f)
-                val s = if (still) 0f else sin(b * 6.2832f) * 0.5f + 0.5f
-                scaleY = 1f + 0.018f * s; scaleX = 1f + 0.008f * s
-            }) { BigStoneOnly(art, scale, lid.value) }
+        // 정원과 같은 자리 (정원이 적어 둔 땅 높이, 아직 없으면 정원의 기본 비율)
+        val gy = state.gardenGround ?: (screenH * G.Layout.groundRatio)
+        val groundY = gy + (screenH - gy + u * G.Layout.stripLineY) * (1f - rise.value)
+        // 하늘: 정원과 같은 그림 · 같은 시간의 빛. 처음엔 종이 바탕에서 천천히 밝아짐
+        Box(Modifier.fillMaxSize().graphicsLayer { alpha = sky.value }) {
+            Image(GardenArt.sky(ctx, season), null, Modifier.fillMaxSize(), contentScale = ContentScale.FillWidth, alignment = Alignment.TopCenter)
+            Image(GardenArt.strip(ctx, season), null, Modifier.offset(y = groundY - u * G.Layout.stripLineY).fillMaxWidth().height(u * G.Layout.stripHeight), contentScale = ContentScale.FillBounds)
+            SkyTimeLayer(now, groundY, screenH * 0.14f, maxOf(screenH * 0.2f, groundY - u * 40f), Modifier.fillMaxSize())
         }
-        // 위: 이름 · 오늘 · 인사 (내려온 뒤 떠오름)
+        // 위: 이름 · 오늘 · 인사 (땅이 자리 잡은 뒤 천천히)
         val ink = if (night) Color(0xFFEEEBDD) else Theme.gc.ink
-        Column(Modifier.fillMaxWidth().statusBarsPadding().padding(top = u * 70f).padding(horizontal = Theme.deviceClass.pageMargin)
-            .graphicsLayer { alpha = words.value; translationY = (1f - words.value) * 24f },
+        Column(Modifier.fillMaxWidth().statusBarsPadding().padding(top = screenH * 0.16f).padding(horizontal = Theme.deviceClass.pageMargin)
+            .graphicsLayer { alpha = words.value; translationY = (1f - words.value) * 14f },
             horizontalAlignment = Alignment.CenterHorizontally) {
-            TokenText("Carpe Diem", Tokens.TypeScale.footnote.serif(), color = ink.copy(alpha = 0.65f))
+            TokenText("Carpe Diem", Tokens.TypeScale.footnote.serif(), color = ink.copy(alpha = 0.6f))
             Spacer(Modifier.height(Tokens.Space.sp2))
             TokenText(stringResource(R.string.title_name), Tokens.TypeScale.largeTitle.serif(), color = ink, align = TextAlign.Center)
             Spacer(Modifier.height(Tokens.Space.sp4))
-            TokenText(now.toLocalDate().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL)), Tokens.TypeScale.footnote, color = ink.copy(alpha = 0.7f))
+            TokenText(now.toLocalDate().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL)), Tokens.TypeScale.footnote, color = ink.copy(alpha = 0.65f))
             Spacer(Modifier.height(Tokens.Space.sp1))
             val hello = remember(now.hour) { if (state.profile == null) ctx.getString(R.string.title_helloFirst) else Labels.timed(ctx, "title_hello", Labels.part(now)) ?: ctx.getString(R.string.title_hello) }
-            TokenText(hello, Tokens.TypeScale.callout.serif(), color = ink.copy(alpha = 0.85f), align = TextAlign.Center)
+            TokenText(hello, Tokens.TypeScale.callout.serif(), color = ink.copy(alpha = 0.8f), align = TextAlign.Center)
         }
-        // 아래: 눌러서 정원으로 (숨처럼 옅어졌다 짙어짐)
-        val glow = if (still) 0.85f else 0.5f + 0.4f * (sin(b * 6.2832f) * 0.5f + 0.5f)
-        TokenText(enterLabel, Tokens.TypeScale.headline.serif(),
-            Modifier.align(Alignment.BottomCenter).navigationBarsPadding().padding(bottom = u * 64f).graphicsLayer { alpha = tap.value * (if (entering) 0f else glow) }
-                .background(Theme.gc.paper.copy(alpha = if (night) 0.12f else 0.55f), androidx.compose.foundation.shape.RoundedCornerShape(50)).padding(horizontal = Tokens.Space.sp5, vertical = Tokens.Space.sp2),
+        // 아래: 눌러서 정원으로 (숨처럼 아주 천천히 옅어졌다 짙어짐, 상자 없이)
+        val glow = if (still) 0.8f else 0.45f + 0.35f * (sin(b * 6.2832f) * 0.5f + 0.5f)
+        TokenText(enterLabel, Tokens.TypeScale.callout.serif(),
+            Modifier.align(Alignment.BottomCenter).navigationBarsPadding().padding(bottom = u * 56f).graphicsLayer { alpha = tap.value * glow },
             color = ink)
     }
 }
 
-private const val TITLE_BREATH_MS = 5200
-private const val TITLE_PAN_MS = 2800
-private const val TITLE_WORDS_MS = 700
-private const val TITLE_FADE_MS = 700
-/** 하늘부터 땅까지 한 장의 높이 (화면의 몇 배). */
-private const val TITLE_WORLD = 2.4f
-private const val TITLE_HARU_AT = 0.66f
-private const val TITLE_HARU_WIDTH = 64f
+/** 천천히 출발해 아주 천천히 멈춤. */
+private val CALM = CubicBezierEasing(0.33f, 0f, 0.15f, 1f)
+private const val TITLE_BREATH_MS = 6400
+private const val TITLE_SKY_MS = 1200
+private const val TITLE_RISE_MS = 4200
+private const val TITLE_WORDS_MS = 1600
+private const val TITLE_TAP_DELAY_MS = 500L
+private const val TITLE_WORDS_OUT_MS = 600
+private const val TITLE_FADE_MS = 1400

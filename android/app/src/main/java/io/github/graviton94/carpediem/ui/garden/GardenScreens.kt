@@ -335,6 +335,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 val labels = u * (G.Layout.labelGap + G.Layout.labelRow * 4)
                 val gy = maxOf(screenH * G.Layout.groundRatio, topBottom + u * G.Layout.minSkyGap + haruAbove).coerceAtMost(screenH - labels - blockH)
 
+                if (!bare) androidx.compose.runtime.SideEffect { if (state.gardenGround != gy) state.gardenGround = gy }
                 Image(GardenArt.sky(ctx, real), null, Modifier.fillMaxSize(), contentScale = ContentScale.FillWidth, alignment = Alignment.TopCenter)
                 // 땅 그림도 시간의 빛 아래에 (밤이면 땅까지 어두워짐)
                 // 하늘의 우연한 순간 (무지개 · 오로라): 먼 산 뒤
@@ -543,7 +544,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                         if (x1 + u * 8f - edgeR(order.last()) >= gw * 0.9f) add(edgeR(order.last()) + gw * 0.55f to gy + u * 2f)
                     }.ifEmpty { listOf(edgeR(order.last()) + gw * 0.55f to gy + u * 2f) }
                     val (gx, gyy) = spots[Math.floorMod(day0.toEpochDay() * 31 + g.hashCode(), spots.size.toLong()).toInt()]
-                    GuestFigure(g, gx, gyy) { comfort = guestLine(ctx, g) }
+                    GuestFigure(g, gx, gyy, screenW)
                 }
 
                 // 우연한 순간 (한 번에 하나, 몇 초 뒤 사라짐)

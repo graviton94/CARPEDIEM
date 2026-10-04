@@ -33,6 +33,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicTextField
@@ -85,6 +86,7 @@ import io.github.graviton94.carpediem.ui.AppState
 import io.github.graviton94.carpediem.ui.Labels
 import io.github.graviton94.carpediem.ui.TokenText
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -207,7 +209,7 @@ internal fun ComfortWords(text: String, onDone: () -> Unit) {
     }
 }
 
-private const val COMFORT_MS = 25_000L
+private const val COMFORT_MS = 12_000L
 
 // ───────────────────────── 하루 닫기 ─────────────────────────
 
@@ -497,17 +499,34 @@ private const val BLOOMED_SHOWN = 60
 
 // ───────────────────────── 정원 손님 ─────────────────────────
 
-/** 손님을 눌렀을 때의 한마디 (정원 위 글자 자리에, 다른 말 대신 잠깐). */
-internal fun guestLine(ctx: android.content.Context, guest: String): String =
-    ctx.resources.getIdentifier("guest_${guest}_story", "string", ctx.packageName).takeIf { it != 0 }?.let { ctx.getString(it).replace('\n', ' ') }.orEmpty()
-
 private const val GUEST_SIZE = 40f
+private const val GUEST_NAME_MS = 1800L
 
-/** 손님 그림 (한지로 오린 그림, guest_*.webp 40 × 40 상자, 발 = 아래에서 3/40). x = 발 자리, gy = 땅. */
+/** 손님 그림 (하루와 같은 그림체, guest_*.webp 40 × 40 상자, 발 = 아래에서 3/40). x = 발 자리, gy = 땅.
+ *  누르면 살짝 뛰고, 머리 위에 이름만 잠깐 (상자 · 다른 말 없이, 2초 남짓 뒤 사라짐). */
 @Composable
-internal fun GuestFigure(guest: String, x: Dp, gy: Dp, onTap: () -> Unit) {
+internal fun GuestFigure(guest: String, x: Dp, gy: Dp, screenW: Dp) {
     val ctx = LocalContext.current
-    val w = Theme.unit * GUEST_SIZE
+    val u = Theme.unit
+    val w = u * GUEST_SIZE
     val label = remember(guest) { ctx.resources.getIdentifier("chance_guest_$guest", "string", ctx.packageName).takeIf { it != 0 }?.let { ctx.getString(it) }.orEmpty() }
-    Image(GardenArt.image(ctx, "guest_$guest.webp"), label, Modifier.offset(x - w / 2, gy - w * (37f / 40f)).size(w).clickable(onClick = onTap))
+    var kick by remember { mutableStateOf(0) }
+    val hop = remember { androidx.compose.animation.core.Animatable(0f) }
+    val name = remember { androidx.compose.animation.core.Animatable(0f) }
+    LaunchedEffect(kick) {
+        if (kick == 0) return@LaunchedEffect
+        kotlinx.coroutines.coroutineScope {
+            launch { hop.animateTo(1f, androidx.compose.animation.core.tween(180)); hop.animateTo(0f, androidx.compose.animation.core.tween(260)) }
+            launch { name.animateTo(1f, androidx.compose.animation.core.tween(400)); delay(GUEST_NAME_MS); name.animateTo(0f, androidx.compose.animation.core.tween(700)) }
+        }
+    }
+    val top = gy - w * (37f / 40f)
+    Image(GardenArt.image(ctx, "guest_$guest.webp"), label, Modifier.offset(x - w / 2, top).size(w)
+        .graphicsLayer { translationY = -hop.value * w.toPx() * 0.18f }
+        .clickable(interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }, indication = null) { kick++ })
+    if (name.value > 0f) {
+        val tw = u * 120f
+        val left = (x - tw / 2).coerceIn(u * 8f, screenW - tw - u * 8f)
+        TokenText(label, Tokens.TypeScale.caption1.serif(), Modifier.offset(left, top - u * 16f).width(tw).graphicsLayer { alpha = name.value }, color = Theme.gc.ink, align = TextAlign.Center)
+    }
 }
