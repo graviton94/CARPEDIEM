@@ -248,6 +248,10 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
     val sleepy = !bare && isNight(now)
     // 캡처용: 이번 달 편지를 바로 펼침. 고르기만 그리기 중에, ‘연 편지’로 남기기는 그 뒤에
     var gardenYearOpen by remember { mutableStateOf<Int?>(null) }
+    var capsuleOpen by remember { mutableStateOf<io.github.graviton94.carpediem.core.Capsule?>(null) }
+    var ringOpen by remember { mutableStateOf<Int?>(null) }
+    // 오늘 펼쳐 본 나이테 (같은 날 아래 한 줄로 다시 권하지 않음)
+    var ringsSeen by remember { mutableStateOf(emptySet<Int>()) }
     var letterOpen by remember { mutableStateOf(if (state.debugOpenLetter && !bare) state.letterDue(now.toLocalDate()) else null) }
     LaunchedEffect(letterOpen) { letterOpen?.let { state.openLetter(it.id) } }
 
@@ -435,6 +439,8 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 BreathTraces(trace, now, gy, xs[0], (widths[0].toFloat() / 2).dp, Modifier.fillMaxSize())
                 // 오늘 심은 아침 씨앗 (04): 하루 왼쪽 발치에 새싹 (저녁에 텄다고 하면 작은 꽃)
                 if (!bare) SeedSprout(state, day0, xs[0] - (widths[0].toFloat() / 2).dp - u * 3f, gy)
+                // 나무 밑에 묻은 항아리 (10): 열리는 날까지 작은 흙더미
+                if (!bare) JarMound(state, day0, u * G.Decor.treeX + u * 14f, gy)
 
 
                 // 자리 여섯: 나무 (길의 시작) · 발치의 한 장 · 말뚝 (길의 끝) · 연 (하늘) — 돌들 뒤에. 하루 밑엔 이끼 방석.
@@ -549,7 +555,12 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                         io.github.graviton94.carpediem.core.Lines.yearsAgo(state.lines, today).firstOrNull()?.first?.let { ctx.getString(R.string.recall_notify, "$it") }
                             ?: state.randomLine?.let { ctx.getString(R.string.recall_randomNotify) }
                     }
+                    // 열린 항아리 (10) · 생일 아침의 나이테 (07): 생일 한 줄보다 먼저 (생일이면 같은 아침에 열림)
+                    val capsule = state.capsuleDue(today)
+                    val ringNew = remember(state.lines, today) { io.github.graviton94.carpediem.core.Rings.newToday(profile.birthDate, today, state.lines) }
                     when {
+                        capsule != null -> RecallNote(stringResource(R.string.capsule_opened)) { capsuleOpen = capsule }
+                        ringNew != null && ringNew !in ringsSeen -> RecallNote(stringResource(R.string.ring_new, "$ringNew")) { ringsSeen = ringsSeen + ringNew; ringOpen = ringNew }
                         bday != null -> {
                             val line = if (bday.id == null) stringResource(if (bday.soon == 0) R.string.bday_mineToday else R.string.bday_mineTomorrow)
                                 else stringResource(if (bday.soon == 0) R.string.bday_today else R.string.bday_tomorrow, bday.name)
@@ -619,6 +630,8 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
     }
     letterOpen?.let { LetterSheet(it, state.wishFor(it)) { letterOpen = null } }
     gardenYearOpen?.let { y -> GardenYearSheet(state, profile, now, y) { gardenYearOpen = null } }
+    capsuleOpen?.let { c -> CapsuleSheet(c) { state.openCapsule(c); capsuleOpen = null } }
+    ringOpen?.let { a -> RingSheet(state, profile, a, now) { ringOpen = null } }
     if (breathSheet) BreathSheet(state, now, { k, m, snd -> breathSheet = false; onBreath(k, m, snd) }) { breathSheet = false }
 }
 
@@ -688,6 +701,8 @@ private fun MemoriesPage(state: AppState, profile: LifeProfile, now: LocalDateTi
         CollectionBody(state, profile, now, onMemory, guide)
         // 아침 씨앗 가운데 핀 것만 (04): 쉰 씨앗은 남기지 않음
         BloomedSeeds(state)
+        // 미래의 나에게 (10) · 나이테 (07)
+        KeepsakesSection(state, profile, now)
     }
 }
 

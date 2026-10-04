@@ -137,6 +137,10 @@ object Daily {
                     }
             }
         }
+        // 나무 밑 항아리가 열리는 날 (10): 무엇보다 먼저, 잠금 화면엔 글 없이
+        if (store.design == Design.GARDEN && io.github.graviton94.carpediem.core.Capsules.due(store.capsules, LocalDate.now()) != null) {
+            title = context.getString(R.string.capsule_opened); body = context.getString(R.string.capsule_notifyText); openAt = "garden"
+        }
         // 아침 알림을 누르면 (정원 디자인 · 켜 두었을 때) 하루를 여는 숨 1분으로
         val tap = Intent(context, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
         // 편지 · 정원 소식이면 그곳으로, 아니면 (켜 두었을 때) 아침의 숨

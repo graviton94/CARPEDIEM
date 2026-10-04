@@ -179,6 +179,10 @@ open --es cd.screen close --es cd.now 2026-10-03T21:10;                         
 open --ez cd.morningSeed true --es cd.today CALM --ei cd.page 1 --es cd.now 2026-10-03T20:30;           shot g60_seed_ask 5
 open --ez cd.touch true --es cd.screen breath --es cd.now 2026-10-03T15:00;                            shot g61_breath_touch 4
 open --ez cd.touch false --es cd.now $NOW; sleep 2
+# 미래의 나에게 (10): 오늘 열린 항아리 · 생일 아침의 나이테 (07, 2000-05-12 생 → 2026-05-12 아침) · 추억의 항아리 · 나이테
+open --ez cd.capsule true --es cd.now 2026-10-04T09:00;                                                shot g62_capsule_open 5
+open --ez cd.ringYear true --es cd.now 2026-05-12T09:00;                                               shot g63_ring_note 6
+open --ei cd.page 2 --es cd.now 2026-05-20T15:00; swipe_up; swipe_up; swipe_up; swipe_up;               shot g64_keepsakes 3
 # 별자리 정원: 마음의 기록 (이번 달 · 낮/밤) · 지난 달의 정원 카드 · 한 해의 띠 (밤) · 지난 정원
 open --ez cd.months true --ez cd.openMonth true --es cd.now 2026-09-28T15:00;                       shot g49_record_month 6
 open --ez cd.openMonth true --es cd.now 2026-09-28T22:30;                                             shot g50_record_month_night 6

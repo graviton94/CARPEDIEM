@@ -360,6 +360,7 @@ private fun ShortBreath(state: AppState, kind: BreathKind, cycles: Int, title: I
     BoxWithConstraints(Modifier.fillMaxSize()) {
         val u = Theme.unit
         val b = G.Breath
+        val screenW = maxWidth
         val groundY = maxHeight * b.haruAt
         val art = remember { HaruArt.of(state.store.haruSeed, false) }
         val scale = u * (b.haruWidth / G.Layout.haruArtWidth)
@@ -370,7 +371,7 @@ private fun ShortBreath(state: AppState, kind: BreathKind, cycles: Int, title: I
             Box(Modifier.graphicsLayer {
                 if (animate) { transformOrigin = androidx.compose.ui.graphics.TransformOrigin(0.5f, 1f); val f = fullAt(plan, elapsed); val s = 1f + b.swell * f; scaleX = s; scaleY = s; translationY = -b.rise * k * f }
             }) { BigStoneOnly(art, scale, if (elapsed > 2500) 1f else 0f) }
-            if (kind != BreathKind.CALM) CrayonRule(Modifier.padding(horizontal = maxWidth * b.ruleInset), seed = 1470)
+            if (kind != BreathKind.CALM) CrayonRule(Modifier.padding(horizontal = screenW * b.ruleInset), seed = 1470)
         }
         Column(Modifier.align(Alignment.Center).fillMaxWidth().padding(horizontal = Theme.deviceClass.pageMargin), horizontalAlignment = Alignment.CenterHorizontally) {
             TokenText(stringResource(title), Tokens.TypeScale.footnote.serif(), color = p.secondary, align = TextAlign.Center)

@@ -289,10 +289,12 @@ internal fun WishCard(state: AppState, id: String, today: LocalDate) {
     val ctx = LocalContext.current
     val focus = LocalFocusManager.current
     var text by rememberSaveable(id) { mutableStateOf("") }
-    var kept by remember(id) { mutableStateOf(false) }
+    var kept by remember(id) { mutableStateOf<String?>(null) }
+    // 언제 열까요 (10): 석 달 뒤 (계절 편지와 함께, 원래대로) · 다음 생일 · 1년 뒤 (나무 밑 항아리)
+    var opensWhen by rememberSaveable(id) { mutableStateOf(io.github.graviton94.carpediem.core.CapsuleWhen.SEASON) }
     val season = io.github.graviton94.carpediem.core.Memories.seasonOf(today)
     Column(Modifier.fillMaxWidth().crayonBox(Theme.gc.paper, G.Radius.box, G.Stroke.chip, 1170).padding(Tokens.Space.sp4), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
-        if (kept) { TokenText(stringResource(R.string.wish_kept), Tokens.TypeScale.subhead.serif()); return@Column }
+        kept?.let { k -> TokenText(k, Tokens.TypeScale.subhead.serif()); return@Column }
         TokenText(stringResource(R.string.wish_title, Labels.season(ctx, season)), Tokens.TypeScale.headline.serif())
         TokenText(stringResource(R.string.wish_sub), Tokens.TypeScale.caption1, color = p.secondary)
         androidx.compose.foundation.text.BasicTextField(
@@ -301,8 +303,16 @@ internal fun WishCard(state: AppState, id: String, today: LocalDate) {
             modifier = Modifier.fillMaxWidth().crayonBox(null, G.Radius.box, G.Stroke.chip, 1171).padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3),
             decorationBox = { inner -> Box { if (text.isEmpty()) TokenText(stringResource(R.string.wish_hint), Tokens.TypeScale.callout, color = p.secondary); inner() } },
         )
+        WhenChips(opensWhen) { opensWhen = it }
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
-            GardenButton(stringResource(R.string.wish_keep), { if (text.isNotBlank()) { state.saveWish(id, text); kept = true; focus.clearFocus() } }, filled = text.isNotBlank(), seed = 1172, modifier = Modifier.weight(1f))
+            GardenButton(stringResource(if (opensWhen == io.github.graviton94.carpediem.core.CapsuleWhen.SEASON) R.string.wish_keep else R.string.capsule_bury), {
+                if (text.isNotBlank()) {
+                    if (opensWhen == io.github.graviton94.carpediem.core.CapsuleWhen.SEASON) { state.saveWish(id, text); kept = ctx.getString(R.string.wish_kept) }
+                    // 길게 보내면 이번 계절의 바람은 건너뛴 것으로 (같은 카드가 다시 뜨지 않게)
+                    else state.bury(text, opensWhen, today)?.let { d -> state.say(ctx.getString(R.string.capsule_buried, RecordText.day(ctx, d))); state.skipWish(id) }
+                    focus.clearFocus()
+                }
+            }, filled = text.isNotBlank(), seed = 1172, modifier = Modifier.weight(1f))
             TokenText(stringResource(R.string.wish_later), Tokens.TypeScale.footnote, Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { state.skipWish(id) }.padding(Tokens.Space.sp3), color = p.secondary)
         }
     }

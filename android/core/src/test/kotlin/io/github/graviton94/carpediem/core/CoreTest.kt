@@ -601,4 +601,31 @@ class ChancesTest {
         // 중간부터: 남은 길이만큼
         assertEquals(38_000L - 20_000L, Breath.touchWave(plan, 20_000).first.sum())
     }
+
+    @Test fun capsulesBuryOpenOnTheDay() {
+        val today = d(2026, 10, 4); val birth = d(2000, 5, 12)
+        assertEquals(d(2027, 5, 12), Capsules.opensOn(CapsuleWhen.BIRTHDAY, today, birth))
+        assertEquals(d(2027, 5, 12), Capsules.opensOn(CapsuleWhen.BIRTHDAY, d(2026, 5, 12), birth))   // 생일 당일이면 내년
+        assertEquals(d(2027, 10, 4), Capsules.opensOn(CapsuleWhen.YEAR, today, birth))
+        var l = Capsules.bury(emptyList(), today, d(2027, 5, 12), "1년 뒤의 너에게\n잘 지내?")
+        assertEquals(l, Capsules.bury(l, today, today, "오늘 열림은 안 됨"))
+        assertEquals(1, Capsules.sealed(l, today).size); assertEquals(null, Capsules.due(l, d(2027, 5, 11)))
+        val c = Capsules.due(l, d(2027, 5, 12))!!
+        assertEquals("1년 뒤의 너에게\n잘 지내?", c.text)
+        l = Capsules.open(l, c)
+        assertEquals(null, Capsules.due(l, d(2027, 6, 1))); assertEquals(1, Capsules.openedOnes(l).size)
+        assertEquals(l, Capsules.decode(Capsules.encode(l)))
+    }
+    @Test fun ringsTwelveMonthsOfMood() {
+        val birth = d(2000, 5, 12)
+        val lines = listOf(DayLine(d(2025, 5, 20), "a", Feeling.JOY), DayLine(d(2025, 5, 21), "b", Feeling.JOY), DayLine(d(2025, 6, 1), "c", Feeling.SAD),
+            DayLine(d(2026, 5, 11), "d", Feeling.THANKS), DayLine(d(2026, 5, 12), "e", Feeling.CALM))
+        val r = Rings.of(birth, 26, lines)
+        assertEquals(d(2025, 5, 12), r.start); assertEquals(d(2026, 5, 11), r.end)
+        assertEquals(12, r.months.size); assertEquals(Feeling.JOY, r.months[0]); assertEquals(Feeling.THANKS, r.months[11])
+        assertEquals(4, r.lines); assertEquals(1, r.thanks); assertEquals(Feeling.JOY, r.top); assertTrue(r.pick?.feeling != Feeling.SAD)
+        assertEquals(26, Rings.newToday(birth, d(2026, 5, 12), lines))
+        assertEquals(null, Rings.newToday(birth, d(2026, 5, 13), lines))
+        assertEquals(listOf(27, 26), Rings.done(birth, d(2027, 6, 1), lines))
+    }
 }

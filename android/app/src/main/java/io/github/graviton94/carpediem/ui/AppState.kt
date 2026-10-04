@@ -344,6 +344,29 @@ class AppState(private val context: Context) {
     var breathTouch by mutableStateOf(store.breathTouch)
         private set
     fun changeBreathTouch(v: Boolean) { store.breathTouch = v; breathTouch = v }
+    // ───── 미래의 나에게 (10) ─────
+    var capsules by mutableStateOf(store.capsules)
+        private set
+    /** 항아리에 담아 묻기. 열리는 날을 돌려줌 (묻지 못했으면 null). */
+    fun bury(text: String, w: io.github.graviton94.carpediem.core.CapsuleWhen, today: LocalDate = nowDate()): LocalDate? {
+        val opens = io.github.graviton94.carpediem.core.Capsules.opensOn(w, today, profile?.birthDate)
+        val v = io.github.graviton94.carpediem.core.Capsules.bury(capsules, today, opens, text); if (v == capsules) return null
+        store.capsules = v; capsules = v
+        return opens
+    }
+    fun capsuleDue(today: LocalDate = nowDate()) = io.github.graviton94.carpediem.core.Capsules.due(capsules, today)
+    fun openCapsule(c: io.github.graviton94.carpediem.core.Capsule) { val v = io.github.graviton94.carpediem.core.Capsules.open(capsules, c); store.capsules = v; capsules = v }
+    fun addSampleRingYear(today: LocalDate = nowDate()) {
+        val f = listOf(Feeling.CALM, Feeling.JOY, Feeling.THANKS, Feeling.HOPE, Feeling.CALM, Feeling.WORRY, Feeling.JOY)
+        val texts = (0 until 12).map { context.getString(context.resources.getIdentifier("seed_choice_$it", "string", context.packageName)) }
+        var next = lines
+        for (i in 1..360 step 4) { val d = today.minusDays(i.toLong()); if (next.none { it.date == d }) next = Lines.add(next, DayLine(d, texts[(i / 4) % texts.size], f[(i / 4 + d.monthValue) % f.size])) }
+        store.lines = next; lines = next
+    }
+    fun addSampleCapsule(today: LocalDate = nowDate()) {
+        val v = capsules + io.github.graviton94.carpediem.core.Capsule(today.minusYears(1), today, context.getString(R.string.capsule_sample)); store.capsules = v; capsules = v
+    }
+
     /** 캡처용: 어제 ‘걱정’ 한 줄 (다음 아침 한마디를 보려고) · 오늘 심은 씨앗. */
     fun addSampleWorryYesterday(today: LocalDate = nowDate()) {
         val y = today.minusDays(1)

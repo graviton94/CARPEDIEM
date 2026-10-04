@@ -279,6 +279,9 @@ private fun MainActivity.debugSetup(state: AppState): Screen {
     if (x.getBooleanExtra("cd.comfort", false)) state.addSampleWorryYesterday()
     if (x.getBooleanExtra("cd.morningSeed", false)) state.addSampleSeed()
     if (x.hasExtra("cd.touch")) state.changeBreathTouch(x.getBooleanExtra("cd.touch", false))
+    // 캡처용: 오늘 열리는 항아리 (10) · 지난 한 해의 한 줄들 (07 나이테, 생일 아침에)
+    if (x.getBooleanExtra("cd.capsule", false)) state.addSampleCapsule()
+    if (x.getBooleanExtra("cd.ringYear", false)) state.addSampleRingYear()
     if (x.getBooleanExtra("cd.letter", false)) state.addSampleLetter()
     if (x.getBooleanExtra("cd.moods", false)) state.addSampleMoods()
     if (x.getBooleanExtra("cd.memory", false)) state.addSampleMemory()
@@ -341,6 +344,7 @@ private fun openFrom(open: String?, state: AppState): Screen? {
         "letter" -> { state.homePage = 0; state.debugOpenLetter = true }
         "write" -> { state.homePage = 1; state.focusWrite = !state.sentOn((state.fixedNow ?: java.time.LocalDateTime.now()).toLocalDate()) }
         "flow" -> state.homePage = 3
+        "garden" -> state.homePage = 0
         // month = 알림 (지난 달의 정원이 피었다는 소식, 펼친 것으로 남김) · record = 위젯 (이번 달을 보기만)
         "month", "record" -> arg?.split('-')?.mapNotNull { it.toIntOrNull() }?.takeIf { it.size == 2 && it[1] in 1..12 && it[0] in 1900..java.time.LocalDate.now().year }?.let { (y, m) ->
             state.homePage = 1; state.pendingRecord = io.github.graviton94.carpediem.ui.garden.RecordView(y, m); if (kind == "month") state.openMonth(y, m)

@@ -252,6 +252,10 @@ class Store(context: Context) {
     var comfortShown: LocalDate?
         get() = prefs.getLong("comfortShown", Long.MIN_VALUE).takeIf { it != Long.MIN_VALUE }?.let { LocalDate.ofEpochDay(it) }
         set(v) = prefs.edit().apply { if (v == null) remove("comfortShown") else putLong("comfortShown", v.toEpochDay()) }.apply()
+    /** 미래의 나에게 (10): 나무 밑 항아리들. */
+    var capsules: List<io.github.graviton94.carpediem.core.Capsule>
+        get() = io.github.graviton94.carpediem.core.Capsules.decode(prefs.getString("capsules", null))
+        set(v) = prefs.edit().putString("capsules", io.github.graviton94.carpediem.core.Capsules.encode(v)).apply()
     /** 하루의 숨결을 손끝으로 (05): 숨 쉬는 동안 떨림으로. */
     var breathTouch: Boolean
         get() = prefs.getBoolean("breathTouch", false)
