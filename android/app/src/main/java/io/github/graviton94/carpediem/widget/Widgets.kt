@@ -84,6 +84,7 @@ object Widgets {
         FamilyGardenWidget().updateAll(context)
         RecordWidget().updateAll(context)
         BreathWidget().updateAll(context)
+        LineGardenWidget().updateAll(context)
     }
 
     /** ‘오늘’ 위젯이 한 시간마다, 문장이 자정 무렵 바뀌도록 한 시간마다 새로 그린다. */
@@ -246,6 +247,40 @@ abstract class TodayBase(private val garden: Boolean) : GlanceAppWidget() {
         }
     }
 }
+
+/**
+ * 오늘의 한 줄 위젯: 정원 그림 위에 오늘의 문장 한 줄과 ‘오늘의 한 줄 남기기’. 누르면 기록 페이지의 쓰는 칸으로.
+ * 남긴 날은 ‘남겼어요’ 한 줄만 (보낸 글은 위젯에 보이지 않음).
+ */
+class LineGardenWidget : GlanceAppWidget() {
+    override val sizeMode = SizeMode.Exact
+
+    override suspend fun provideGlance(context: Context, id: GlanceId) {
+        val data = WidgetData(context)
+        val store = Store(context)
+        val today = java.time.LocalDate.now()
+        val words = store.todaysQuote(today)?.let { io.github.graviton94.carpediem.data.Words.main(it, store.quoteLanguage, io.github.graviton94.carpediem.data.Words.lang(context)) }.orEmpty()
+        val sent = store.lines.any { it.date == today }
+        val open = android.content.Intent(context, MainActivity::class.java)
+            .addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK or android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP or android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            .putExtra(MainActivity.EXTRA_OPEN, "write")
+        provideContent {
+            val size = LocalSize.current
+            val bmp = GardenWidgetArt.render(context, GardenWidgetArt.Kind.TODAY, px(context, size.width), px(context, size.height), data.snapshot, data.now)
+            Box(GlanceModifier.fillMaxSize().clickable(androidx.glance.appwidget.action.actionStartActivity(open))) {
+                Image(ImageProvider(bmp), null, GlanceModifier.fillMaxSize(), contentScale = androidx.glance.layout.ContentScale.FillBounds)
+                Column(GlanceModifier.fillMaxSize().padding(Tokens.Layout.widgetPadding)) {
+                    Text(context.getString(R.string.words), style = style(Tokens.TypeScale.caption1.size, gSub))
+                    Text(words, style = style(Tokens.TypeScale.subhead.size, gInk, FontWeight.Medium), maxLines = 3)
+                    Spacer(GlanceModifier.defaultWeight())
+                    Text(context.getString(if (sent) R.string.widget_lineDone else R.string.widget_lineWrite),
+                        style = style(Tokens.TypeScale.footnote.size, if (sent) gSub else gInk, if (sent) FontWeight.Normal else FontWeight.Bold))
+                }
+            }
+        }
+    }
+}
+class LineGardenReceiver : GlanceAppWidgetReceiver() { override val glanceAppWidget: GlanceAppWidget = LineGardenWidget() }
 
 class TodayWidget : TodayBase(garden = false)
 class TodayGardenWidget : TodayBase(garden = true)

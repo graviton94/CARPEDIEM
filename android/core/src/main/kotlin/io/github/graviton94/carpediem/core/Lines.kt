@@ -115,6 +115,27 @@ object Lines {
     fun wishDue(today: LocalDate): String? =
         if (today.monthValue in listOf(3, 6, 9, 12) && today.dayOfMonth <= 14) "%04d-%02d".format(today.year, today.monthValue) else null
 
+    /** 마음의 날씨: 그 달에 가장 많이 고른 마음 (같으면 나중에 고른 것). 고른 마음이 없으면 null. */
+    fun monthMood(list: List<DayLine>, year: Int, month: Int): Feeling? =
+        list.filter { it.date.year == year && it.date.monthValue == month && it.feeling != null }
+            .groupBy { it.feeling!! }.maxWithOrNull(compareBy<Map.Entry<Feeling, List<DayLine>>> { it.value.size }.thenBy { e -> e.value.maxOf { it.date } })?.key
+
+    /** 기록 찾기: 글 · 마음 이름 · 받는 사람 이름에 낱말이 든 줄 (최근 것부터, 오늘 것은 빼고). */
+    fun search(list: List<DayLine>, query: String, today: LocalDate, feelingName: (Feeling) -> String, personName: (String) -> String?): List<DayLine> {
+        val q = query.trim(); if (q.isEmpty()) return emptyList()
+        return list.filter { l ->
+            l.date != today && (l.text.contains(q, ignoreCase = true) || l.feeling?.let { feelingName(it).contains(q, ignoreCase = true) } == true ||
+                l.to?.let(personName)?.contains(q, ignoreCase = true) == true)
+        }.sortedByDescending { it.date }
+    }
+
+    /** 그날의 한 줄을 고침: 글 · 마음만 바꾸고 받는 돌 · 질문은 그대로. 그날 줄이 없으면 그대로. */
+    fun edit(list: List<DayLine>, day: LocalDate, text: String, feeling: Feeling?): List<DayLine> =
+        list.map { if (it.date == day) it.copy(text = text, feeling = feeling) else it }
+
+    /** 그날의 한 줄을 지움 (그날은 다시 쓸 수 있는 빈 날이 됨). */
+    fun remove(list: List<DayLine>, day: LocalDate): List<DayLine> = list.filterNot { it.date == day }
+
     /** 같은 날에 이미 보냈으면 그대로 (하루에 한 줄). 날짜순. */
     fun add(list: List<DayLine>, line: DayLine): List<DayLine> =
         if (list.any { it.date == line.date }) list else (list + line).sortedBy { it.date }
@@ -138,4 +159,17 @@ object SpecialDays {
     /** 같은 날은 하나만 (이름을 바꿈), 날짜순, 최대 MAX. */
     /** 같은 날에도 여럿 (같은 날 · 같은 이름은 한 번만). 날짜순, 최대 MAX. */
     fun put(list: List<SpecialDay>, day: SpecialDay): List<SpecialDay> = (list.filterNot { it == day } + day).sortedBy { it.date }.takeLast(MAX)
+}
+
+/**
+ * 첫 일주일 길잡이: 둘러보기 다음 날부터 하루에 하나씩, 정원 아래 조용한 권유 한 줄.
+ * 이미 해 본 것 (done) 은 건너뛰고, 놓친 것은 다음 날로 넘어감. 둘째 주가 끝나면 더 권하지 않음. 점수 · 체크 표시는 없음.
+ */
+object FirstWeek {
+    /** 권하는 차례: 키와 처음 권하는 날 (만난 날 = 0). */
+    val STEPS = listOf("breath" to 1, "stone" to 2, "gaze" to 3, "special" to 4, "widget" to 5, "backup" to 6)
+    const val LAST_DAY = 13
+
+    fun next(daysSinceMet: Long, done: Set<String>): String? =
+        if (daysSinceMet !in 1..LAST_DAY) null else STEPS.firstOrNull { (k, d) -> d <= daysSinceMet && k !in done }?.first
 }

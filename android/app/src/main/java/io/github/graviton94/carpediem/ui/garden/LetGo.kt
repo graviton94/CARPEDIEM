@@ -150,10 +150,15 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
     val day = state.writeDay
     var picking by remember { mutableStateOf(false) }
     val sent = if (day == null) state.sentOn(today) else false
+    // 오늘 보낸 한 줄 고치기 (그날 안에만) · 지우기
+    var editing by rememberSaveable { mutableStateOf(false) }
+    var confirmDelete by remember { mutableStateOf(false) }
+    if (editing && (!sent || day != null)) editing = false
     val formView = remember { BringIntoViewRequester() }
     val scope = rememberCoroutineScope()
     fun send() {
         if (text.isBlank()) return
+        if (editing) { state.editToday(text, feeling); editing = false; text = ""; feeling = null; focus.clearFocus(); return }
         val who = to?.takeIf { id -> state.people.any { it.id == id } }
         flying = text.trim()
         if (day != null) state.letGoOn(day, text, feeling, who) else state.letGo(text, feeling, who)
@@ -194,8 +199,8 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
                     TokenText(line, lineType(Tokens.TypeScale.callout, Theme.garden), maxLines = 2)
                 }
             }
-            // 오늘은 이미 보냄
-            sent -> {
+            // 오늘은 이미 보냄 (고치는 중이 아니면)
+            sent && !editing -> {
                 val shown = remember { Animatable(0f) }
                 LaunchedEffect(Unit) { shown.animateTo(1f, tween(G.Motion.pageMs.toInt())) }
                 Column(Modifier.fillMaxWidth().graphicsLayer { alpha = shown.value }, verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
@@ -209,6 +214,18 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
                         }
                     }
                     if (state.keepLines) TokenText(stringResource(R.string.letgo_seeBelow), Tokens.TypeScale.footnote, color = p.secondary)
+                    // 그날 안에는 고치거나 지울 수 있음 (조용히, 작게)
+                    val mine = state.lines.lastOrNull { it.date == today }
+                    if (mine != null) Row(verticalAlignment = Alignment.CenterVertically) {
+                        if (state.keepLines && mine.text.isNotBlank()) {
+                            TokenText(stringResource(R.string.edit_action), Tokens.TypeScale.footnote,
+                                Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { text = mine.text; feeling = mine.feeling; editing = true }.padding(end = Tokens.Space.sp3, top = Tokens.Space.sp3, bottom = Tokens.Space.sp3),
+                                color = p.olive, weight = FontWeight.SemiBold)
+                            TokenText("·", Tokens.TypeScale.footnote, color = p.secondary)
+                        }
+                        TokenText(stringResource(R.string.edit_delete), Tokens.TypeScale.footnote,
+                            Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { confirmDelete = true }.padding(horizontal = Tokens.Space.sp3, vertical = Tokens.Space.sp3), color = p.secondary)
+                    }
                 }
             }
             else -> Column(Modifier.fillMaxWidth().bringIntoViewRequester(formView), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
@@ -250,7 +267,9 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
                     },
                 )
                 TokenText("${text.codePointCount(0, text.length)} / $max", Tokens.TypeScale.caption1, Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.End)
-                Action(stringResource(if (day == null) R.string.letgo_send else R.string.letgo_daySend), filled = text.isNotBlank(), seed = 968) { send() }
+                Action(stringResource(when { editing -> R.string.edit_save; day == null -> R.string.letgo_send; else -> R.string.letgo_daySend }), filled = text.isNotBlank(), seed = 968) { send() }
+                if (editing) TokenText(stringResource(R.string.cancel), Tokens.TypeScale.footnote,
+                    Modifier.fillMaxWidth().heightIn(min = Tokens.Layout.tapTarget).clickable { editing = false; text = ""; feeling = null; focus.clearFocus() }.padding(vertical = Tokens.Space.sp3), color = p.secondary, align = TextAlign.Center)
                 if (day != null) TokenText(stringResource(R.string.letgo_backToday), Tokens.TypeScale.footnote,
                     Modifier.fillMaxWidth().heightIn(min = Tokens.Layout.tapTarget).clickable { state.writeDay = null }.padding(vertical = Tokens.Space.sp3), color = p.secondary, align = TextAlign.Center)
             }
@@ -261,6 +280,13 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
                 Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { state.writeDay = yesterday }.padding(vertical = Tokens.Space.sp3), color = p.olive, weight = FontWeight.SemiBold)
         TokenText(stringResource(R.string.letgo_privacy), Tokens.TypeScale.footnote, color = p.secondary)
     }
+    if (confirmDelete) io.github.graviton94.carpediem.ui.GardenAlert(
+        onDismissRequest = { confirmDelete = false },
+        title = { androidx.compose.material3.Text(stringResource(R.string.edit_deleteAsk)) },
+        text = { androidx.compose.material3.Text(stringResource(R.string.edit_deleteHelp)) },
+        confirmButton = { androidx.compose.material3.TextButton(onClick = { confirmDelete = false; state.deleteLine(today) }) { androidx.compose.material3.Text(stringResource(R.string.edit_delete), color = p.danger) } },
+        dismissButton = { androidx.compose.material3.TextButton(onClick = { confirmDelete = false }) { androidx.compose.material3.Text(stringResource(R.string.cancel)) } },
+    )
     // 날짜 고르기: 생일부터 어제까지, 이미 한 줄이 있는 날은 고를 수 없음 (하루에 한 줄)
     if (picking) {
         val zone = java.time.ZoneOffset.UTC

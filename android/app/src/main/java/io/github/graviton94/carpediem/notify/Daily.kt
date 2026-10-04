@@ -46,7 +46,8 @@ object Daily {
         val wm = WorkManager.getInstance(context)
         if (!on) { wm.cancelUniqueWork(WORK); return }
         val now = LocalDateTime.now()
-        val work = PeriodicWorkRequestBuilder<DailyWorker>(1, TimeUnit.DAYS).setInitialDelay(delayTo(Tokens.Notify.hour.toInt(), Tokens.Notify.minute.toInt()), TimeUnit.MINUTES).build()
+        val at = Store(context).morningMinute
+        val work = PeriodicWorkRequestBuilder<DailyWorker>(1, TimeUnit.DAYS).setInitialDelay(delayTo(at / 60, at % 60), TimeUnit.MINUTES).build()
         wm.enqueueUniquePeriodicWork(WORK, ExistingPeriodicWorkPolicy.UPDATE, work)
     }
 
@@ -164,7 +165,8 @@ object Evening {
     fun schedule(context: Context, on: Boolean) {
         val wm = WorkManager.getInstance(context)
         if (!on) { wm.cancelUniqueWork(WORK); return }
-        val work = PeriodicWorkRequestBuilder<EveningWorker>(1, TimeUnit.DAYS).setInitialDelay(Daily.delayTo(Tokens.Notify.eveningHour.toInt(), 0), TimeUnit.MINUTES).build()
+        val at = Store(context).eveningMinute
+        val work = PeriodicWorkRequestBuilder<EveningWorker>(1, TimeUnit.DAYS).setInitialDelay(Daily.delayTo(at / 60, at % 60), TimeUnit.MINUTES).build()
         wm.enqueueUniquePeriodicWork(WORK, ExistingPeriodicWorkPolicy.UPDATE, work)
     }
 

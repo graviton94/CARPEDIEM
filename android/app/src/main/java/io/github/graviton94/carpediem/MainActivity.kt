@@ -55,6 +55,8 @@ import java.time.LocalDateTime
 class CarpeDiemApplication : Application() {
     override fun onCreate() {
         super.onCreate()
+        // 앱이 멈추면 그 자리를 폰 안에만 적어 둠 (다음에 열 때 보낼지 물음)
+        io.github.graviton94.carpediem.data.Feedback.install(this)
         Widgets.scheduleHourly(this)
     }
 }
@@ -154,6 +156,17 @@ class MainActivity : ComponentActivity() {
                             else state.notifyAsked(true)
                         }
                     }
+                    // 지난번에 앱이 멈췄으면 한 번만 조용히: 알려 줄지 (메일에 그 자리와 기기 정보만, 기록은 담지 않음)
+                    var crash by remember { mutableStateOf(if (scripted) null else io.github.graviton94.carpediem.data.Feedback.lastCrash(this@MainActivity)) }
+                    crash?.let { c -> if (screen == Screen.Main && state.profile != null && !state.touring && !notifyNote) io.github.graviton94.carpediem.ui.GardenAlert(
+                        onDismissRequest = { crash = null; io.github.graviton94.carpediem.data.Feedback.clearCrash(this@MainActivity) },
+                        title = { androidx.compose.material3.Text(getString(R.string.feedback_crashTitle)) },
+                        text = { androidx.compose.material3.Text(getString(R.string.feedback_crashBody)) },
+                        confirmButton = { androidx.compose.material3.TextButton(onClick = {
+                            crash = null; io.github.graviton94.carpediem.data.Feedback.send(this@MainActivity, c); io.github.graviton94.carpediem.data.Feedback.clearCrash(this@MainActivity)
+                        }) { androidx.compose.material3.Text(getString(R.string.feedback_crashSend)) } },
+                        dismissButton = { androidx.compose.material3.TextButton(onClick = { crash = null; io.github.graviton94.carpediem.data.Feedback.clearCrash(this@MainActivity) }) { androidx.compose.material3.Text(getString(R.string.feedback_crashSkip), color = io.github.graviton94.carpediem.design.Theme.palette.secondary) } },
+                    ) }
                     if (notifyNote) io.github.graviton94.carpediem.ui.GardenAlert(
                         onDismissRequest = { notifyNote = false; state.notifyAsked(false) },
                         title = { androidx.compose.material3.Text(getString(R.string.notify_askTitle)) },

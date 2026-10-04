@@ -509,7 +509,8 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 if (family && !bare) Box(Modifier.offset(y = gy + u * G.Layout.labelGap).fillMaxWidth()) {
                     slots.forEachIndexed { i, sl -> TokenText(shortName(sl.name), Tokens.TypeScale.caption1, Modifier.offset(y = u * G.Layout.labelRow * ((rank[i] ?: i) % labelRows)).centerAt(with(density) { xs[i].toPx() }, 0f, with(density) { screenW.toPx() }), weight = FontWeight.Medium, maxLines = 1) }
                 }
-                if (!bare) Box(Modifier.offset(y = gy + u * (G.Layout.labelGap + if (family) G.Layout.labelRow * labelRows else 0f)).fillMaxWidth().guideTarget(guide, "path")) {
+                if (!bare) Box(Modifier.offset(y = gy + u * (G.Layout.labelGap + if (family) G.Layout.labelRow * labelRows else 0f)).fillMaxWidth().guideTarget(guide, "path")
+                    .semantics(mergeDescendants = true) { contentDescription = ctx.getString(R.string.garden_pathA11y, "${s.age}", Labels.years(s.expectancy)) }) {
                     TokenText(stringResource(R.string.garden_age0), Tokens.TypeScale.caption1, Modifier.centerAt(px.first, 0f, px.second), color = p.secondary)
                     TokenText(stringResource(R.string.expectancy_value, Labels.years(s.expectancy)), Tokens.TypeScale.caption1, Modifier.centerAt(px.second, px.first, with(density) { screenW.toPx() }), color = p.secondary)
                 }
@@ -544,6 +545,22 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                         month != null -> MonthCard(month.second) { state.openMonth(month.first, month.second); toRecord(RecordView(month.first, month.second)) }
                         gardenYear != null -> RecallNote(stringResource(R.string.gardenYear_ask)) { state.gardenYearSeen(gardenYear); gardenYearOpen = gardenYear }
                         recall != null -> RecallNote(recall) { turnTo(1) }
+                        // 첫 일주일 길잡이: 하루에 하나, 해 본 것은 건너뜀 (누르면 그 일로)
+                        else -> state.firstWeekNudge(today)?.takeIf { state.guideDone }?.let { k ->
+                            val text = stringResource(when (k) { "breath" -> R.string.nudge_breath; "stone" -> R.string.nudge_stone; "gaze" -> R.string.nudge_gaze
+                                "special" -> R.string.nudge_special; "widget" -> R.string.nudge_widget; else -> R.string.nudge_backup })
+                            RecallNote(text) {
+                                when (k) {
+                                    "breath" -> { breathSheet = true }
+                                    "stone" -> onAddPerson()
+                                    "gaze" -> onGaze()
+                                    "special" -> turnTo(3)
+                                    "widget" -> state.say(ctx.getString(R.string.nudge_widgetHow))
+                                    else -> onSettings()
+                                }
+                                state.nudgeSeen(k)
+                            }
+                        }
                     }
                     // 큰 글씨면 버튼을 두 줄로 (글자가 잘리지 않게)
                     val addOn = state.people.size < G.Family.max.toInt() - 1
@@ -629,7 +646,10 @@ private fun WritePage(state: AppState, now: LocalDateTime, view: RecordView, gui
         LetGoSection(state, today, guide = guide)
         Spacer(Modifier.height(Tokens.Space.sp4))
         TokenText(stringResource(R.string.mood_title), Tokens.TypeScale.title3)
-        if (state.keepLines) Box(Modifier.guideTarget(guide, "write.record")) { RecordPanel(state, view, onView, today) }
+        if (state.keepLines) {
+            RecordSearch(state, today) { onView(it) }
+            Box(Modifier.guideTarget(guide, "write.record")) { RecordPanel(state, view, onView, today) }
+        }
         else TokenText(stringResource(R.string.record_off), Tokens.TypeScale.footnote, color = Theme.palette.secondary)
     }
 }

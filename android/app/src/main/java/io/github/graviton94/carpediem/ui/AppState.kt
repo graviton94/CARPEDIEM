@@ -101,6 +101,15 @@ class AppState(private val context: Context) {
     var pageHints by mutableStateOf(store.pageHints)
         private set
     fun pageHintSeen(key: String) { val v = pageHints + key; store.pageHints = v; pageHints = v; guideStepState.value = 0 }
+    var nudgesSeen by mutableStateOf(store.nudgesSeen)
+        private set
+    fun nudgeSeen(key: String) { val v = nudgesSeen + key; store.nudgesSeen = v; nudgesSeen = v }
+    /** 첫 일주일 길잡이: 오늘 권할 것 (이미 해 본 것은 건너뜀). 없으면 null. */
+    fun firstWeekNudge(today: LocalDate): String? {
+        val done = nudgesSeen + listOfNotNull("breath".takeIf { breaths.isNotEmpty() }, "stone".takeIf { people.isNotEmpty() },
+            "gaze".takeIf { gazeDays.isNotEmpty() }, "special".takeIf { specialDays.isNotEmpty() })
+        return io.github.graviton94.carpediem.core.FirstWeek.next(java.time.temporal.ChronoUnit.DAYS.between(store.startDate, today), done)
+    }
     /** 둘러보기가 화면에 떠 있는 동안 (알림 한마디는 기다리고, 페이지는 넘어가지 않음). */
     var touring by mutableStateOf(false)
     /** 둘러보기 · 페이지마다의 첫 안내를 처음부터 다시. */
@@ -108,7 +117,7 @@ class AppState(private val context: Context) {
     /** 캡처 스크립트용: 안내를 모두 본 것으로 (show = true 면 소개부터 처음 온 사람처럼). */
     fun debugGuides(show: Boolean) {
         if (show) { store.introSeen = false; introSeen = false; restartGuide() }
-        else { finishIntro(); finishGuide(); store.pageHints = PAGE_HINTS; pageHints = PAGE_HINTS }
+        else { finishIntro(); finishGuide(); store.pageHints = PAGE_HINTS; pageHints = PAGE_HINTS; io.github.graviton94.carpediem.core.FirstWeek.STEPS.forEach { nudgeSeen(it.first) } }
     }
     fun changeDesign(v: Design) { store.design = v; design = v; Widgets.refresh(context) }
     fun changePreviewAll(v: Boolean) { store.previewAll = v; previewAll = v }
@@ -138,6 +147,13 @@ class AppState(private val context: Context) {
         if (io.github.graviton94.carpediem.notify.Daily.allowed(context)) return
         if (notify) changeNotify(false); if (eveningNotify) changeEvening(false); if (tomorrowNotify) changeTomorrow(false)
     }
+    var morningMinute by mutableStateOf(store.morningMinute)
+        private set
+    var eveningMinute by mutableStateOf(store.eveningMinute)
+        private set
+    /** 알림 시각을 바꾸면 켜 둔 알림은 새 시각으로 다시 맞춤. */
+    fun changeMorningMinute(v: Int) { store.morningMinute = v; morningMinute = store.morningMinute; if (notify) io.github.graviton94.carpediem.notify.Daily.schedule(context, true) }
+    fun changeEveningMinute(v: Int) { store.eveningMinute = v; eveningMinute = store.eveningMinute; if (eveningNotify) io.github.graviton94.carpediem.notify.Evening.schedule(context, true) }
     fun changeNotify(v: Boolean) { store.notify = v; notify = v; io.github.graviton94.carpediem.notify.Daily.schedule(context, v) }
     fun unlockDev() { if (!io.github.graviton94.carpediem.BuildConfig.DEV_TOOLS) return; store.devMode = true; devMode = true }
     fun nextQuote() { store.skipQuote(); quote = store.todaysQuote(); blinkKick++; Widgets.refresh(context) }
@@ -202,6 +218,19 @@ class AppState(private val context: Context) {
         toast = Labels.letGoMessage(context, feeling, part)
         care = careFor(feeling, line.to, today, part)
         Widgets.refresh(context)   // 마음의 기록 위젯에 오늘의 꽃 · 별
+    }
+    // ───── 고치기 · 지우기 ─────
+    /** 오늘의 한 줄 고치기 (그날 안에만): 글 · 마음만 바꿈. */
+    fun editToday(text: String, feeling: Feeling?, today: LocalDate = (fixedNow ?: LocalDateTime.now()).toLocalDate()) {
+        val t = Lines.clean(text, Tokens.Garden.LetGo.maxChars.toInt(), Lines.MAX_LINES); if (t.isEmpty()) return
+        val next = Lines.edit(lines, today, if (keepLines) t else "", if (keepLines) feeling else null); store.lines = next; lines = next
+        Widgets.refresh(context); say(context.getString(R.string.edit_done))
+    }
+    /** 그날의 한 줄 지우기 (그날은 다시 빈 날). 이어 쓰기 흔적 (이미 받은 것) 은 그대로 둠. */
+    fun deleteLine(day: LocalDate) {
+        val next = Lines.remove(lines, day); store.lines = next; lines = next
+        store.backfilled = store.backfilled - day.toEpochDay().toString()
+        Widgets.refresh(context); say(context.getString(R.string.edit_deleted))
     }
     // ───── 다른 날의 한 줄 ─────
     /** 기록 페이지에서 고른 지난 날 (null = 오늘의 한 줄). */
@@ -573,7 +602,7 @@ class AppState(private val context: Context) {
 
     fun eraseAll() {
         previewQ = false
-        store.eraseAll(); store.ensureQuoteSeed(); unit = store.unit; grid = store.grid; defaultUnit = unit; defaultGrid = grid; lines = emptyList(); streaks = emptyMap(); keepLines = true; care = null; careOn = true; question = null; answering = null; lettersOpened = emptySet(); toast = null; randomLine = null; people = emptyList(); memories = emptyList(); memoryLines = emptyList(); wishes = emptyMap(); wishSkipped = emptySet(); specialDays = emptyList(); yearsOpened = emptySet(); introSeen = store.introSeen; guideDone = store.guideDone; pageHints = store.pageHints; birthPicked = false; breaths = emptyList(); gazeDays = emptySet(); seasonCards = emptySet(); chancesMet = emptySet(); chance = null; breathKind = store.breathKind; breathMinutes = store.breathMinutes; sound = store.sound
+        store.eraseAll(); store.ensureQuoteSeed(); unit = store.unit; grid = store.grid; defaultUnit = unit; defaultGrid = grid; lines = emptyList(); streaks = emptyMap(); keepLines = true; care = null; careOn = true; question = null; answering = null; lettersOpened = emptySet(); toast = null; randomLine = null; people = emptyList(); memories = emptyList(); memoryLines = emptyList(); wishes = emptyMap(); wishSkipped = emptySet(); specialDays = emptyList(); yearsOpened = emptySet(); introSeen = store.introSeen; guideDone = store.guideDone; pageHints = store.pageHints; nudgesSeen = store.nudgesSeen; birthPicked = false; breaths = emptyList(); gazeDays = emptySet(); seasonCards = emptySet(); chancesMet = emptySet(); chance = null; breathKind = store.breathKind; breathMinutes = store.breathMinutes; sound = store.sound
         profile = null; quoteLanguage = store.quoteLanguage; quote = store.todaysQuote(); design = store.design; meetPending = false; previewAll = false; notify = false; devMode = false; io.github.graviton94.carpediem.notify.Daily.schedule(context, false); io.github.graviton94.carpediem.notify.Evening.schedule(context, false); eveningNotify = false; io.github.graviton94.carpediem.notify.Tomorrow.schedule(context, false); tomorrowNotify = false; morningBreath = true; Widgets.refresh(context)
     }
 

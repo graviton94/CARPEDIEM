@@ -85,6 +85,14 @@ class Store(context: Context) {
         get() = prefs.getBoolean("meetPending", false)
         set(v) = prefs.edit().putBoolean("meetPending", v).apply()
 
+    /** 아침 문장 · 하루 정리 알림 시각 (하루의 몇째 분). 고르지 않았으면 기본 (토큰: 7시 · 22시). */
+    var morningMinute: Int
+        get() = prefs.getInt("morningMinute", (io.github.graviton94.carpediem.design.Tokens.Notify.hour * 60 + io.github.graviton94.carpediem.design.Tokens.Notify.minute).toInt())
+        set(v) = prefs.edit().putInt("morningMinute", v.coerceIn(0, 24 * 60 - 1)).apply()
+    var eveningMinute: Int
+        get() = prefs.getInt("eveningMinute", (io.github.graviton94.carpediem.design.Tokens.Notify.eveningHour * 60).toInt())
+        set(v) = prefs.edit().putInt("eveningMinute", v.coerceIn(0, 24 * 60 - 1)).apply()
+
     /** 처음 온 사람의 안내: 첫 화면 앞 소개 몇 장을 봤는지 · 정원 둘러보기를 마쳤는지 · 처음 들어가 본 페이지 (기록 · 추억 · 흐름). */
     var introSeen: Boolean
         get() = prefs.getBoolean("introSeen", false)
@@ -92,6 +100,10 @@ class Store(context: Context) {
     var guideDone: Boolean
         get() = prefs.getBoolean("guideDone", false)
         set(v) = prefs.edit().putBoolean("guideDone", v).apply()
+    /** 첫 일주일 길잡이에서 이미 눌러 본 권유 (core FirstWeek 의 키). */
+    var nudgesSeen: Set<String>
+        get() = prefs.getStringSet("nudgesSeen", emptySet()) ?: emptySet()
+        set(v) = prefs.edit().putStringSet("nudgesSeen", v).apply()
     var pageHints: Set<String>
         get() = prefs.getStringSet("pageHints", emptySet()) ?: emptySet()
         set(v) = prefs.edit().putStringSet("pageHints", v).apply()
@@ -404,6 +416,7 @@ class Store(context: Context) {
         // 기록을 들여온 사람은 처음 온 사람이 아님: 소개 · 둘러보기 · 페이지 안내 · 하루를 만나는 장면은 건너뜀
         ed.putBoolean("introSeen", true).putBoolean("guideDone", true).putBoolean("meetPending", false)
             .putStringSet("pageHints", io.github.graviton94.carpediem.ui.PAGE_HINTS)
+            .putStringSet("nudgesSeen", io.github.graviton94.carpediem.core.FirstWeek.STEPS.map { it.first }.toSet())
         return ed.commit()
     }
 

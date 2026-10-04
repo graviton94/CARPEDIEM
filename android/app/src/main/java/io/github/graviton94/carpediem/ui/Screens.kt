@@ -136,8 +136,9 @@ fun OnboardingScreen(state: AppState, onCountry: () -> Unit) {
                     android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({ (ctx as? android.app.Activity)?.takeIf { !it.isFinishing && !it.isDestroyed }?.recreate() }, (Tokens.Garden.Motion.noteMs / 2).toLong())
                 } else state.say(ctx.getString(R.string.backup_fail))
             }
+            val deviceCheck = rememberDeviceCheck()
             TokenText(stringResource(R.string.onboard_restore), Tokens.TypeScale.footnote,
-                Modifier.fillMaxWidth().heightIn(min = Tokens.Layout.tapTarget).clickable { openFile.launch(arrayOf("application/json", "text/plain", "application/octet-stream")) }.padding(vertical = Tokens.Space.sp3),
+                Modifier.fillMaxWidth().heightIn(min = Tokens.Layout.tapTarget).clickable { deviceCheck { openFile.launch(arrayOf("application/json", "text/plain", "application/octet-stream")) } }.padding(vertical = Tokens.Space.sp3),
                 color = p.olive, weight = FontWeight.SemiBold, align = TextAlign.Center)
         }
     }
@@ -347,7 +348,9 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
             state.say(ctx.getString(if (ok) R.string.backup_saved else R.string.backup_saveFail))
         }
     }
-    fun backupNow() = saveFile.launch("haru-garden-" + java.time.LocalDate.now() + ".json")
+    // 백업 · 불러오기는 폰의 화면 잠금을 한 번 확인한 뒤에만
+    val deviceCheck = rememberDeviceCheck()
+    fun backupNow() = deviceCheck { saveFile.launch("haru-garden-" + java.time.LocalDate.now() + ".json") }
     SkyBackground {
         Page {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
@@ -417,6 +420,13 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
                 FormRow(stringResource(R.string.notify_row), onClick = { toggleNotify(!state.notify) }) {
                     Switch(state.notify, { toggleNotify(it) }, colors = SwitchDefaults.colors(checkedTrackColor = p.olive))
                 }
+                // 알림 시각 (켜 두었을 때): 누르면 시각 고르기
+                if (state.notify) {
+                    RowDivider()
+                    FormRow(stringResource(R.string.notify_time), onClick = { pickTime(ctx, state.morningMinute) { state.changeMorningMinute(it) } }) {
+                        TokenText(clockText(ctx, state.morningMinute), Tokens.TypeScale.body, color = p.olive)
+                    }
+                }
                 if (Theme.garden && state.notify) {
                     RowDivider()
                     FormRow(stringResource(R.string.notify_morningBreath), onClick = { state.changeMorningBreath(!state.morningBreath) }) {
@@ -433,6 +443,12 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
             FormSection(footer = stringResource(R.string.notify_eveningFooter)) {
                 FormRow(stringResource(R.string.notify_eveningRow), onClick = { toggleEvening(!state.eveningNotify) }) {
                     Switch(state.eveningNotify, { toggleEvening(it) }, colors = SwitchDefaults.colors(checkedTrackColor = p.olive))
+                }
+                if (state.eveningNotify) {
+                    RowDivider()
+                    FormRow(stringResource(R.string.notify_time), onClick = { pickTime(ctx, state.eveningMinute) { state.changeEveningMinute(it) } }) {
+                        TokenText(clockText(ctx, state.eveningMinute), Tokens.TypeScale.body, color = p.olive)
+                    }
                 }
             }
             // 내일 알림 (정원, 선택, 기본 꺼짐): 내일이 가족의 생일 · 특별한 날이면 전날 저녁에 한 번
@@ -510,7 +526,7 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
                 val openFile = androidx.activity.compose.rememberLauncherForActivityResult(androidx.activity.result.contract.ActivityResultContracts.OpenDocument()) { uri -> restoreFrom = uri }
                 FormRow(stringResource(R.string.backup_export), onClick = { backupNow() }) {}
                 RowDivider()
-                FormRow(stringResource(R.string.backup_import), onClick = { openFile.launch(arrayOf("application/json", "text/plain", "application/octet-stream")) }) {}
+                FormRow(stringResource(R.string.backup_import), onClick = { deviceCheck { openFile.launch(arrayOf("application/json", "text/plain", "application/octet-stream")) } }) {}
                 restoreFrom?.let { uri ->
                     GardenAlert(
                         onDismissRequest = { restoreFrom = null },
@@ -549,12 +565,18 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
             if (state.design == Design.GARDEN) FormSection(header = stringResource(R.string.widgets_list)) {
                 listOf(R.string.widgets_name_daysLeft to R.string.widget_daysLeft_desc, R.string.widgets_name_today to R.string.widget_today_desc,
                     R.string.widgets_name_calendar to R.string.widget_calendar_desc, R.string.widgets_name_family to R.string.widget_family_desc,
-                    R.string.widgets_name_record to R.string.widget_record_desc).forEachIndexed { i, (name, desc) ->
+                    R.string.widgets_name_record to R.string.widget_record_desc, R.string.widgets_name_line to R.string.widget_line_desc).forEachIndexed { i, (name, desc) ->
                     if (i > 0) RowDivider()
                     Column(Modifier.padding(vertical = Tokens.Space.sp3), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
                         TokenText(stringResource(name), Tokens.TypeScale.subhead, weight = FontWeight.SemiBold)
                         TokenText(stringResource(desc), Tokens.TypeScale.footnote, color = p.secondary)
                     }
+                }
+            }
+            // 의견 보내기: 메일에 기기 · 앱 정보만 미리 채움 (기록은 담지 않음)
+            FormSection(footer = stringResource(R.string.feedback_footer)) {
+                FormRow(stringResource(R.string.feedback_row), onClick = { if (!io.github.graviton94.carpediem.data.Feedback.send(ctx)) state.say(ctx.getString(R.string.contact_soon)) }) {
+                    Icon(Icons.Filled.KeyboardArrowRight, null, tint = p.secondary)
                 }
             }
             FormSection {
@@ -594,6 +616,15 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
         }) { Text(stringResource(R.string.notify_openSettings)) } },
         dismissButton = { TextButton(onClick = { blocked = false }) { Text(stringResource(R.string.garden_close), color = p.secondary) } },
     )
+}
+
+/** 하루의 몇째 분 → 폰의 시각 표기 (오전 7:00 · 7:00 AM · 19:00). */
+private fun clockText(ctx: android.content.Context, minute: Int): String =
+    java.time.LocalTime.of(minute / 60, minute % 60).format(java.time.format.DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).withLocale(ctx.resources.configuration.locales[0]))
+
+/** 시각 고르기 (폰의 시계 모양 그대로). */
+private fun pickTime(ctx: android.content.Context, minute: Int, onPick: (Int) -> Unit) {
+    android.app.TimePickerDialog(ctx, { _, h, m -> onPick(h * 60 + m) }, minute / 60, minute % 60, android.text.format.DateFormat.is24HourFormat(ctx)).show()
 }
 
 // ───────────────────────── 나라 선택 ─────────────────────────
@@ -673,7 +704,7 @@ private fun SettingsFooter(onVersionTap: () -> Unit) {
             },
             confirmButton = {
                 if (pg == FooterPage.CONTACT && email.isNotBlank()) TextButton(onClick = {
-                    page = null; runCatching { ctx.startActivity(android.content.Intent(android.content.Intent.ACTION_SENDTO, android.net.Uri.parse("mailto:$email"))) }
+                    page = null; io.github.graviton94.carpediem.data.Feedback.send(ctx)
                 }) { Text(stringResource(R.string.contact_send)) }
                 else TextButton(onClick = { page = null }) { Text(stringResource(R.string.garden_close)) }
             },

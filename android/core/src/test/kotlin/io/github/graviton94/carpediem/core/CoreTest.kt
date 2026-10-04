@@ -149,6 +149,41 @@ class DataTest {
         assertEquals(emptyList(), Lines.decode(null))
     }
 
+    @Test fun linesMoodAndSearch() {
+        val list = listOf(DayLine(d(2026, 9, 1), "산책", Feeling.CALM), DayLine(d(2026, 9, 2), "비", Feeling.SAD), DayLine(d(2026, 9, 3), "또 산책", Feeling.CALM),
+            DayLine(d(2026, 9, 4), "그냥", null, "mom"), DayLine(d(2026, 10, 1), "새 달", Feeling.JOY), DayLine(d(2026, 10, 4), "오늘 산책", Feeling.JOY))
+        assertEquals(Feeling.CALM, Lines.monthMood(list, 2026, 9))
+        assertEquals(null, Lines.monthMood(list, 2026, 8))
+        // 같은 수면 나중에 고른 마음
+        assertEquals(Feeling.SAD, Lines.monthMood(list.take(2), 2026, 9))
+        val names = mapOf(Feeling.CALM to "고요", Feeling.SAD to "슬픔", Feeling.JOY to "기쁨")
+        val find = { q: String -> Lines.search(list, q, d(2026, 10, 4), { names[it] ?: "" }, { if (it == "mom") "엄마" else null }).map { it.date.dayOfMonth } }
+        assertEquals(listOf(3, 1), find("산책"))     // 최근 것부터, 오늘 것은 빼고
+        assertEquals(listOf(2), find("슬픔"))
+        assertEquals(listOf(4), find("엄마"))
+        assertEquals(emptyList(), find("  "))
+    }
+
+    @Test fun firstWeekNudges() {
+        assertEquals(null, FirstWeek.next(0, emptySet()))            // 만난 날은 둘러보기만
+        assertEquals("breath", FirstWeek.next(1, emptySet()))
+        assertEquals("breath", FirstWeek.next(3, emptySet()))        // 놓친 것은 다음 날로
+        assertEquals("gaze", FirstWeek.next(3, setOf("breath", "stone")))
+        assertEquals(null, FirstWeek.next(2, setOf("breath", "stone")))  // 아직 오지 않은 날의 것은 기다림
+        assertEquals(null, FirstWeek.next(14, emptySet()))           // 둘째 주가 끝나면 그만
+    }
+
+    @Test fun linesEditAndRemove() {
+        val a = DayLine(d(2026, 10, 3), "어제", Feeling.CALM, "k3f9a2qz", 4); val b = DayLine(d(2026, 10, 4), "오늘", null)
+        val list = listOf(a, b)
+        // 고치면 글 · 마음만 바뀌고 받는 돌 · 질문은 그대로
+        assertEquals(listOf(a.copy(text = "어제는\n비", feeling = Feeling.SAD), b), Lines.edit(list, a.date, "어제는\n비", Feeling.SAD))
+        assertEquals(list, Lines.edit(list, d(2026, 10, 5), "없는 날", null))
+        // 지우면 그날은 빈 날 → 다시 쓸 수 있음
+        assertEquals(listOf(b), Lines.remove(list, a.date))
+        assertEquals(2, Lines.add(Lines.remove(list, a.date), a.copy(text = "다시")).size)
+    }
+
     @Test fun linesKeepLineBreaks() {
         // 여러 줄: 빈 줄 여럿은 하나로, 줄 끝 빈칸 없이, 최대 MAX_LINES 줄
         assertEquals("첫 줄\n\n둘째 줄", Lines.clean("  첫 줄   \r\n\n\n\n둘째 줄\n\n", 60, Lines.MAX_LINES))
