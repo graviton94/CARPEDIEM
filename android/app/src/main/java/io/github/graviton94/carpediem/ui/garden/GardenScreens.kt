@@ -591,7 +591,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
             }
         }
         // 처음 온 사람: 정원을 하나씩 비추며 둘러보기 (정원 페이지에서, 한마디 창이 없을 때)
-        if (touring && pager.currentPage == 0 && state.toast == null) GuideTour(state, guide, GardenGuideSteps, onWrite = { turnTo(1) }) { state.finishGuide() }
+        if (touring && pager.currentPage == 0 && state.toast == null) GuideTour(state, guide, GardenGuideSteps, onWrite = { state.focusWrite = true; turnTo(1) }) { state.finishGuide() }
         // 기록 · 추억 · 흐름: 처음 들어오면 그 페이지의 짧은 둘러보기 (정원 둘러보기를 마친 뒤, 넘기는 중이 아닐 때)
         val pageKey = listOf(null, "write", "memories", "flow").getOrNull(pager.currentPage)
         if (!bare && state.guideDone && pageKey != null && pageKey !in state.pageHints && state.toast == null && !pager.isScrollInProgress && !typing)

@@ -32,6 +32,8 @@ import io.github.graviton94.carpediem.ui.AppState
 import io.github.graviton94.carpediem.ui.GardenAlert
 import io.github.graviton94.carpediem.ui.TokenText
 import java.time.LocalDateTime
+import androidx.compose.foundation.layout.size
+import io.github.graviton94.carpediem.design.Theme
 
 /** 그해에 받은 계절 조각 (앨범과 같은 것). */
 internal fun yearCards(state: AppState, year: Int): List<SeasonCard> = state.seasonCards.mapNotNull { SeasonCard.parse(it) }.filter { it.year == year }
@@ -65,7 +67,10 @@ internal fun GardenYearSheet(state: AppState, profile: LifeProfile, now: LocalDa
         dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.done)) } },
         text = {
             val ratio = Tokens.Garden.Share.lineW / Tokens.Garden.Share.lineH
-            bmp?.let { Image(it.asImageBitmap(), title, Modifier.fillMaxWidth().aspectRatio(ratio)) } ?: Box(Modifier.fillMaxWidth().aspectRatio(ratio))
+            // 그리는 동안은 빈 상자 대신 가운데에 작은 기다림 표시
+            bmp?.let { Image(it.asImageBitmap(), title, Modifier.fillMaxWidth().aspectRatio(ratio)) } ?: Box(Modifier.fillMaxWidth().aspectRatio(ratio), contentAlignment = androidx.compose.ui.Alignment.Center) {
+                androidx.compose.material3.CircularProgressIndicator(Modifier.size(Theme.unit * 28), color = Theme.palette.olive, strokeWidth = Theme.unit * 2)
+            }
         },
     )
 }

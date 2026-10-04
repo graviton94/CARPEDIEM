@@ -327,7 +327,7 @@ private fun openFrom(open: String?, state: AppState): Screen? {
     val (kind, arg) = open.split(':', limit = 2).let { it[0] to it.getOrNull(1) }
     when (kind) {
         "letter" -> { state.homePage = 0; state.debugOpenLetter = true }
-        "write" -> state.homePage = 1
+        "write" -> { state.homePage = 1; state.focusWrite = true }
         "flow" -> state.homePage = 3
         // month = 알림 (지난 달의 정원이 피었다는 소식, 펼친 것으로 남김) · record = 위젯 (이번 달을 보기만)
         "month", "record" -> arg?.split('-')?.mapNotNull { it.toIntOrNull() }?.takeIf { it.size == 2 && it[1] in 1..12 && it[0] in 1900..java.time.LocalDate.now().year }?.let { (y, m) ->

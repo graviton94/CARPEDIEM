@@ -28,7 +28,7 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.DatePicker
@@ -165,7 +165,7 @@ fun ProfileFields(state: AppState, draft: LifeProfile, onChange: (LifeProfile) -
         RowDivider()
         FormRow(stringResource(R.string.country), onClick = onCountry) {
             TokenText(Labels.country(ctx, table.country(draft.countryCode), draft.countryCode), Tokens.TypeScale.body, color = p.secondary)
-            Icon(Icons.Filled.KeyboardArrowRight, null, tint = p.secondary)
+            Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null, tint = p.secondary)
         }
         RowDivider()
         FormRow(stringResource(R.string.sex), onClick = { sexMenu = true }) {
@@ -306,7 +306,7 @@ fun HomeScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                         TokenText(stringResource(R.string.support), Tokens.TypeScale.title3)
                         TokenText(stringResource(R.string.support_once), Tokens.TypeScale.caption1, color = p.secondary)
                     }
-                    Icon(Icons.Filled.KeyboardArrowRight, null, tint = p.secondary)
+                    Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null, tint = p.secondary)
                 }
             }
         }
@@ -374,7 +374,7 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
                     }
                     RowDivider()
                     FormRow(stringResource(R.string.collection), onClick = onCollection) {
-                        Icon(Icons.Filled.KeyboardArrowRight, null, tint = p.secondary)
+                        Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null, tint = p.secondary)
                     }
                     if (state.devMode) {
                         RowDivider()
@@ -388,11 +388,11 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
             if (state.design == Design.GARDEN) FormSection(header = stringResource(R.string.family)) {
                 state.people.forEachIndexed { i, person ->
                     if (i > 0) RowDivider()
-                    FormRow(person.name, onClick = { onStone(person.id) }) { Icon(Icons.Filled.KeyboardArrowRight, null, tint = p.secondary) }
+                    FormRow(person.name, onClick = { onStone(person.id) }) { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null, tint = p.secondary) }
                 }
                 if (state.people.size < Tokens.Garden.Family.max.toInt() - 1) {
                     if (state.people.isNotEmpty()) RowDivider()
-                    FormRow(stringResource(R.string.family_add), onClick = onAddPerson) { Icon(Icons.Filled.KeyboardArrowRight, null, tint = p.secondary) }
+                    FormRow(stringResource(R.string.family_add), onClick = onAddPerson) { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null, tint = p.secondary) }
                 }
             } else TokenText(stringResource(R.string.family_glassNote), Tokens.TypeScale.footnote, Modifier.padding(horizontal = Tokens.Space.sp4), color = p.secondary)
             FormSection(header = stringResource(R.string.defaults), footer = stringResource(R.string.defaults_footer)) {
@@ -549,7 +549,7 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
             // 처음 온 사람의 안내 다시 보기 (정원 둘러보기 · 페이지마다의 첫 안내)
             if (state.design == Design.GARDEN) FormSection {
                 FormRow(stringResource(R.string.guide_again), onClick = { state.draft = null; state.restartGuide(); onClose() }) {
-                    Icon(Icons.Filled.KeyboardArrowRight, null, tint = p.secondary)
+                    Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null, tint = p.secondary)
                 }
             }
             FormSection(header = stringResource(R.string.widgets)) {
@@ -576,12 +576,12 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
             // 의견 보내기: 메일에 기기 · 앱 정보만 미리 채움 (기록은 담지 않음)
             FormSection(footer = stringResource(R.string.feedback_footer)) {
                 FormRow(stringResource(R.string.feedback_row), onClick = { if (!io.github.graviton94.carpediem.data.Feedback.send(ctx)) state.say(ctx.getString(R.string.contact_soon)) }) {
-                    Icon(Icons.Filled.KeyboardArrowRight, null, tint = p.secondary)
+                    Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null, tint = p.secondary)
                 }
             }
             FormSection {
                 FormRow(stringResource(R.string.support), onClick = onSupport) {
-                    Icon(Icons.Filled.KeyboardArrowRight, null, tint = p.secondary)
+                    Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null, tint = p.secondary)
                 }
             }
             FormSection {

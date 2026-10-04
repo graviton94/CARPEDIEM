@@ -110,6 +110,8 @@ class AppState(private val context: Context) {
             "gaze".takeIf { gazeDays.isNotEmpty() }, "special".takeIf { specialDays.isNotEmpty() })
         return io.github.graviton94.carpediem.core.FirstWeek.next(java.time.temporal.ChronoUnit.DAYS.between(store.startDate, today), done)
     }
+    /** 위젯 · 둘러보기에서 ‘한 줄 쓰러’ 왔을 때: 기록 페이지의 쓰는 칸에 바로 커서 (한 번). */
+    var focusWrite by mutableStateOf(false)
     /** 둘러보기가 화면에 떠 있는 동안 (알림 한마디는 기다리고, 페이지는 넘어가지 않음). */
     var touring by mutableStateOf(false)
     /** 둘러보기 · 페이지마다의 첫 안내를 처음부터 다시. */

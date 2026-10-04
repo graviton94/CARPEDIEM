@@ -8,6 +8,7 @@ import kotlinx.coroutines.launch
 import io.github.graviton94.carpediem.ui.pop
 import io.github.graviton94.carpediem.ui.modalBox
 import androidx.compose.ui.focus.onFocusEvent
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.foundation.relocation.bringIntoViewRequester
@@ -155,6 +156,7 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
     var confirmDelete by remember { mutableStateOf(false) }
     if (editing && (!sent || day != null)) editing = false
     val formView = remember { BringIntoViewRequester() }
+    val focusBox = remember { androidx.compose.ui.focus.FocusRequester() }
     val scope = rememberCoroutineScope()
     fun send() {
         if (text.isBlank()) return
@@ -257,7 +259,7 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
                     singleLine = false, minLines = 2, maxLines = Lines.MAX_LINES, textStyle = style, cursorBrush = SolidColor(p.foreground),
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Default),
                     // 키보드가 올라온 뒤 입력칸 · 보내기 버튼이 보이게 끌어올린다
-                    modifier = Modifier.fillMaxWidth().guideTarget(guide, "write.box").onFocusEvent { f -> if (f.isFocused) scope.launch { delay(G.Motion.keyboardMs.toLong()); formView.bringIntoView() } }
+                    modifier = Modifier.fillMaxWidth().guideTarget(guide, "write.box").focusRequester(focusBox).onFocusEvent { f -> if (f.isFocused) scope.launch { delay(G.Motion.keyboardMs.toLong()); formView.bringIntoView() } }
                         .lineBox(964).padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3),
                     decorationBox = { inner ->
                         Box(contentAlignment = Alignment.TopStart) {
@@ -266,6 +268,10 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
                         }
                     },
                 )
+                // 위젯 · 둘러보기에서 ‘한 줄 쓰러’ 왔으면 쓰는 칸에 바로 (페이지 둘러보기가 끝난 뒤)
+                LaunchedEffect(state.focusWrite, state.touring) {
+                    if (state.focusWrite && !state.touring) { delay(G.Motion.pageMs.toLong()); runCatching { focusBox.requestFocus() }; state.focusWrite = false }
+                }
                 TokenText("${text.codePointCount(0, text.length)} / $max", Tokens.TypeScale.caption1, Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.End)
                 Action(stringResource(when { editing -> R.string.edit_save; day == null -> R.string.letgo_send; else -> R.string.letgo_daySend }), filled = text.isNotBlank(), seed = 968) { send() }
                 if (editing) TokenText(stringResource(R.string.cancel), Tokens.TypeScale.footnote,
