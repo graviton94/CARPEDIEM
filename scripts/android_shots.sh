@@ -196,8 +196,8 @@ swipe_up; shot g68_photo_more 3
 open --ez cd.family true --ez cd.special true --es cd.now 2026-12-28T20:00; sleep 3
 open --ez cd.ringYear true --es cd.screen credits --ei cd.creditsYear 2026 --es cd.now 2026-12-28T20:00;  shot g69_credits_intro 5; shot g70_credits_spring 6; shot g70b_credits_spring 3; shot g70c_credits_summer 9; shot g71_credits_end 60
 # 하루의 첫 화면 (그날 처음 열 때): 아침 · 밤
-open --ez cd.title true --es cd.now 2026-10-03T07:40;                                                  shot g73_title_morning 4
-open --ez cd.title true --es cd.now 2026-10-03T22:30;                                                  shot g74_title_night 4
+open --ez cd.title true --es cd.now 2026-10-03T07:40;                                                  shot g73a_title_sky 1; shot g73b_title_pan 1; shot g73_title_morning 4
+open --ez cd.title true --es cd.now 2026-10-03T22:30;                                                  shot g74_title_night 6
 # 정원의 한 해 한 장 (S2): 나무 · 말뚝 · 연이 있는 작은 정원
 open --ez cd.gardenYear true --es cd.now 2026-10-20T15:00;                                             shot g72_garden_year 8
 # 별자리 정원: 마음의 기록 (이번 달 · 낮/밤) · 지난 달의 정원 카드 · 한 해의 띠 (밤) · 지난 정원
