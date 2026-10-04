@@ -340,7 +340,7 @@
 "gaze" = "石ながめ";
 "gaze.soundOn" = "音をオン";
 "gaze.soundOff" = "音をオフ";
-"gaze.exit" = "左上の「庭へ」か、戻るボタンで戻ります";
+"gaze.exit" = "空いている所をタップするか、戻るボタンで戻ります";
 "obj.windchime" = "小さな風鈴";
 "obj.windchime.when" = "はじめて、いっしょにひと息ついた日";
 "obj.windchime.line" = "風が通るたび、ひと呼吸。";
@@ -979,3 +979,4 @@
 "title.hello.night" = "ハルが待っていました。";
 "title.setting" = "アプリの最初の画面";
 "title.helloFirst" = "はじめまして。うれしいです。";
+"mood.readSub" = "これまでのひとことを探して、月や年でふり返ります。";

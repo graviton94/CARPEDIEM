@@ -341,7 +341,7 @@
     "gaze": "돌멍하기",
     "gaze.soundOn": "소리 켜기",
     "gaze.soundOff": "소리 끄기",
-    "gaze.exit": "왼쪽 위 ‘정원으로’나 뒤로 가기로 돌아가요",
+    "gaze.exit": "빈 곳을 누르거나 뒤로 가기로 돌아가요",
     "obj.windchime": "작은 풍경",
     "obj.windchime.when": "처음 숨, 쉼을 함께한 날",
     "obj.windchime.line": "바람이 지날 때마다, 숨 한 번.",
@@ -980,7 +980,8 @@
     "title.hello.evening": "오늘 하루도 수고했어요.",
     "title.hello.night": "하루가 기다리고 있었어요.",
     "title.setting": "앱 첫 화면",
-    "title.helloFirst": "처음 만나는 날이에요. 반가워요."
+    "title.helloFirst": "처음 만나는 날이에요. 반가워요.",
+    "mood.readSub": "지금까지 남긴 한 줄을 찾고, 달과 해로 돌아봐요."
   },
   "en": {
     "tagline": "Cherish today.",
@@ -1324,7 +1325,7 @@
     "gaze": "Stone gazing",
     "gaze.soundOn": "Sound on",
     "gaze.soundOff": "Sound off",
-    "gaze.exit": "Tap ‘Back to the garden’ at the top left, or go back",
+    "gaze.exit": "Tap an empty spot or go back to return",
     "obj.windchime": "Wind chime",
     "obj.windchime.when": "The first time you breathed and rested together",
     "obj.windchime.line": "Each time the wind passes, one breath.",
@@ -1963,7 +1964,8 @@
     "title.hello.evening": "You did well today.",
     "title.hello.night": "Haru was waiting for you.",
     "title.setting": "Title screen",
-    "title.helloFirst": "Nice to meet you."
+    "title.helloFirst": "Nice to meet you.",
+    "mood.readSub": "Find the lines you've kept and look back by month and year."
   },
   "ja": {
     "tagline": "今日を大切に。",
@@ -2307,7 +2309,7 @@
     "gaze": "石ながめ",
     "gaze.soundOn": "音をオン",
     "gaze.soundOff": "音をオフ",
-    "gaze.exit": "左上の「庭へ」か、戻るボタンで戻ります",
+    "gaze.exit": "空いている所をタップするか、戻るボタンで戻ります",
     "obj.windchime": "小さな風鈴",
     "obj.windchime.when": "はじめて、いっしょにひと息ついた日",
     "obj.windchime.line": "風が通るたび、ひと呼吸。",
@@ -2945,7 +2947,8 @@
     "title.hello.evening": "今日もおつかれさま。",
     "title.hello.night": "ハルが待っていました。",
     "title.setting": "アプリの最初の画面",
-    "title.helloFirst": "はじめまして。うれしいです。"
+    "title.helloFirst": "はじめまして。うれしいです。",
+    "mood.readSub": "これまでのひとことを探して、月や年でふり返ります。"
   },
   "zh-TW": {
     "tagline": "珍惜今天。",
@@ -3289,7 +3292,7 @@
     "gaze": "看石發呆",
     "gaze.soundOn": "開啟聲音",
     "gaze.soundOff": "關閉聲音",
-    "gaze.exit": "點左上角的「回庭院」或返回鍵，就能回去",
+    "gaze.exit": "點空白處或按返回鍵就能回去",
     "obj.windchime": "小風鈴",
     "obj.windchime.when": "第一次一起喘口氣的那天",
     "obj.windchime.line": "每當風吹過，就呼吸一次。",
@@ -3927,6 +3930,7 @@
     "title.hello.evening": "今天也辛苦了。",
     "title.hello.night": "小日一直在等你。",
     "title.setting": "App 開場畫面",
-    "title.helloFirst": "初次見面，很高興認識你。"
+    "title.helloFirst": "初次見面，很高興認識你。",
+    "mood.readSub": "搜尋留下的話，按月、按年回顧。"
   }
 }

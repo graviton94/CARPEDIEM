@@ -342,7 +342,7 @@
     <string name="gaze">Stone gazing</string>
     <string name="gaze_soundOn">Sound on</string>
     <string name="gaze_soundOff">Sound off</string>
-    <string name="gaze_exit">Tap ‘Back to the garden’ at the top left, or go back</string>
+    <string name="gaze_exit">Tap an empty spot or go back to return</string>
     <string name="obj_windchime">Wind chime</string>
     <string name="obj_windchime_when">The first time you breathed and rested together</string>
     <string name="obj_windchime_line">Each time the wind passes, one breath.</string>
@@ -982,4 +982,5 @@
     <string name="title_hello_night">Haru was waiting for you.</string>
     <string name="title_setting">Title screen</string>
     <string name="title_helloFirst">Nice to meet you.</string>
+    <string name="mood_readSub">Find the lines you\'ve kept and look back by month and year.</string>
 </resources>

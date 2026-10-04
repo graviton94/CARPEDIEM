@@ -340,7 +340,7 @@
 "gaze" = "看石發呆";
 "gaze.soundOn" = "開啟聲音";
 "gaze.soundOff" = "關閉聲音";
-"gaze.exit" = "點左上角的「回庭院」或返回鍵，就能回去";
+"gaze.exit" = "點空白處或按返回鍵就能回去";
 "obj.windchime" = "小風鈴";
 "obj.windchime.when" = "第一次一起喘口氣的那天";
 "obj.windchime.line" = "每當風吹過，就呼吸一次。";
@@ -979,3 +979,4 @@
 "title.hello.night" = "小日一直在等你。";
 "title.setting" = "App 開場畫面";
 "title.helloFirst" = "初次見面，很高興認識你。";
+"mood.readSub" = "搜尋留下的話，按月、按年回顧。";

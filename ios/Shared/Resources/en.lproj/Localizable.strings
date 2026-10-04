@@ -340,7 +340,7 @@
 "gaze" = "Stone gazing";
 "gaze.soundOn" = "Sound on";
 "gaze.soundOff" = "Sound off";
-"gaze.exit" = "Tap ‘Back to the garden’ at the top left, or go back";
+"gaze.exit" = "Tap an empty spot or go back to return";
 "obj.windchime" = "Wind chime";
 "obj.windchime.when" = "The first time you breathed and rested together";
 "obj.windchime.line" = "Each time the wind passes, one breath.";
@@ -980,3 +980,4 @@
 "title.hello.night" = "Haru was waiting for you.";
 "title.setting" = "Title screen";
 "title.helloFirst" = "Nice to meet you.";
+"mood.readSub" = "Find the lines you've kept and look back by month and year.";

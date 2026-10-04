@@ -385,20 +385,20 @@ fun GazeScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, onBack
         delay((z.dimAfter * 1000).toLong()); dim.animateTo(z.dimAlpha, tween(z.dimMs.toInt(), easing = LinearEasing))
         delay(((z.releaseAfter - z.dimAfter) * 1000).toLong() - z.dimMs.toLong()); screenOn = false
     }
-    BackHandler(onBack = onBack)
-
     // 어디를 누르든 (돌을 쓰다듬어도) 다시 밝아짐. 누름은 그대로 정원에 닿음
+    // 돌이 아닌 빈 곳을 누르면 ‘정원으로 돌아갈까요?’
+    var ask by remember { mutableStateOf(false) }
+    BackHandler { if (ask) onBack() else ask = true }
     Box(Modifier.fillMaxSize().pointerInput(Unit) {
         awaitPointerEventScope { while (true) { val e = awaitPointerEvent(androidx.compose.ui.input.pointer.PointerEventPass.Initial); if (e.type == androidx.compose.ui.input.pointer.PointerEventType.Press) idleKick++ } }
-    }) {
+    }.pointerInput(Unit) { detectTapGestures { ask = true } }) {
         // 홈의 정원 그대로 (하늘 · 해와 달 · 땅 · 돌 · 놓인 것 · 밤빛), 글자만 없이
         GardenHome(state, profile, now, onSettings = {}, onCollection = {}, onSupport = {}, onStone = {}, onAddPerson = {}, bare = true)
         // 움직이는 정원: 구름 · 빛의 숨 · 내려오는 잎 · 새 · 반딧불, 봄 · 여름엔 연못, 가을 · 겨울엔 화톳불
         GazeLife(io.github.graviton94.carpediem.core.GardenDecor.realSeason(now.toLocalDate(), profile.countryCode), now, calm = io.github.graviton94.carpediem.core.BreathKind.CALM in state.breathTrace(now.toLocalDate())) { dim.value }
         // 스르르 어두워짐
         Box(Modifier.fillMaxSize().graphicsLayer { alpha = dim.value }.background(Color.Black))
-        // 소리 끄고 켜기 · 정원으로 (아주 작게, 위 양끝). 돌은 누르면 쓰다듬기, 나가기는 ‘정원으로’ 또는 뒤로 가기
-        var ask by remember { mutableStateOf(false) }
+        // 소리 끄고 켜기 · 정원으로 (아주 작게, 위 양끝). 돌은 누르면 쓰다듬기, 나가기는 ‘정원으로’ · 빈 곳 누르기 · 뒤로 가기
         TokenText(stringResource(R.string.breath_home), Tokens.TypeScale.footnote,
             Modifier.align(Alignment.TopStart).statusBarsPadding().heightIn(min = Tokens.Layout.tapTarget).clickable { ask = true }.padding(Tokens.Space.sp4),
             color = p.secondary.copy(alpha = 0.8f), weight = FontWeight.Normal)

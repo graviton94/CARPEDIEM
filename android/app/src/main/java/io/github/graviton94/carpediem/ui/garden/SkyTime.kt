@@ -196,6 +196,7 @@ fun MoodWeather(state: io.github.graviton94.carpediem.ui.AppState, now: LocalDat
     val rain = f in io.github.graviton94.carpediem.core.Letters.HEAVY
     val sun = f == io.github.graviton94.carpediem.core.Feeling.JOY || f == io.github.graviton94.carpediem.core.Feeling.HOPE || f == io.github.graviton94.carpediem.core.Feeling.THANKS
     if (!rain && !sun) return
+    if (sun && SkyTime.isDark(now)) return
     val ctx = LocalContext.current
     if (reducedMotion(ctx)) return
     val w = G.Weather
@@ -204,7 +205,7 @@ fun MoodWeather(state: io.github.graviton94.carpediem.ui.AppState, now: LocalDat
     if (t.value >= 1f) return
     val ink = io.github.graviton94.carpediem.design.Theme.gc.ink
     val warm = G.Night.Colors.lamp
-    Canvas(Modifier.fillMaxSize().graphicsLayer()) {
+    Canvas(Modifier.fillMaxSize().graphicsLayer { compositingStrategy = androidx.compose.ui.graphics.CompositingStrategy.Offscreen }) {
         val env = sin(t.value * Math.PI.toFloat())   // 스며들었다 사라짐
         val bottom = skyBottom.toPx().coerceIn(1f, size.height)
         val u = size.width / G.unitWidth
@@ -218,8 +219,10 @@ fun MoodWeather(state: io.github.graviton94.carpediem.ui.AppState, now: LocalDat
                 drawLine(ink.copy(alpha = w.rainAlpha * env), Offset(x, y), Offset(x - u * 2f, y + u * 9f), u * 1.1f, StrokeCap.Round)
             }
         } else {
+            // 햇살 한 줄기: 낮에만 (밤엔 하늘 전체가 흐리게 덮여 보이므로 그리지 않음), 아래 끝은 땅에 닿기 전에 스르르 사라짐
             val a = w.sunAlpha * env
             drawRect(Brush.linearGradient(listOf(Color.Transparent, warm.copy(alpha = a), Color.Transparent), Offset(size.width * 0.95f, 0f), Offset(size.width * 0.35f, bottom)), size = androidx.compose.ui.geometry.Size(size.width, bottom))
+            drawRect(Brush.verticalGradient(0f to Color.Black, 0.7f to Color.Black, 1f to Color.Transparent, endY = bottom), size = androidx.compose.ui.geometry.Size(size.width, bottom), blendMode = androidx.compose.ui.graphics.BlendMode.DstIn)
         }
     }
 }

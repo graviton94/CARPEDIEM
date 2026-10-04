@@ -687,14 +687,21 @@ private fun WritePage(state: AppState, now: LocalDateTime, view: RecordView, gui
     ) {
         state.wishDue(today)?.let { id -> WishCard(state, id, today) }
         LetGoSection(state, today, guide = guide)
-        Spacer(Modifier.height(Tokens.Space.sp4))
+        // 쓰는 곳과 읽는 곳을 또렷이 나눔: 한 줄 긋고, 아래는 지난 기록 (찾기 · 달 · 해) 을 한 판에
+        Spacer(Modifier.height(Tokens.Space.sp6))
+        CrayonRule(seed = 1720)
+        Spacer(Modifier.height(Tokens.Space.sp2))
         TokenText(stringResource(R.string.mood_title), Tokens.TypeScale.title3)
+        TokenText(stringResource(R.string.mood_readSub), Tokens.TypeScale.footnote, color = Theme.palette.secondary)
         if (state.keepLines) {
             // 찾은 줄을 누르면 그 달 판의 그날로, 판이 보이게 끌어옴
             val panel = remember { androidx.compose.foundation.relocation.BringIntoViewRequester() }
             val sc = rememberCoroutineScope()
-            RecordSearch(state, today) { v -> onView(v); sc.launch { delay(G.Motion.pageMs.toLong() / 2); panel.bringIntoView() } }
-            Box(Modifier.guideTarget(guide, "write.record").bringIntoViewRequester(panel)) { RecordPanel(state, view, onView, today) }
+            Column(Modifier.fillMaxWidth().crayonBox(Theme.gc.chip.copy(alpha = 0.28f), G.Radius.box, G.Stroke.chip, 1721).padding(Tokens.Space.sp3),
+                verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
+                RecordSearch(state, today) { v -> onView(v); sc.launch { delay(G.Motion.pageMs.toLong() / 2); panel.bringIntoView() } }
+                Box(Modifier.guideTarget(guide, "write.record").bringIntoViewRequester(panel)) { RecordPanel(state, view, onView, today) }
+            }
         }
         // 기록 남기기를 꺼 두었으면: 어디서 켜는지 (누르면 설정으로)
         else TokenText(stringResource(R.string.record_off) + " " + stringResource(R.string.record_offHow), Tokens.TypeScale.footnote,

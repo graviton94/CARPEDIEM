@@ -342,7 +342,7 @@
     <string name="gaze">돌멍하기</string>
     <string name="gaze_soundOn">소리 켜기</string>
     <string name="gaze_soundOff">소리 끄기</string>
-    <string name="gaze_exit">왼쪽 위 ‘정원으로’나 뒤로 가기로 돌아가요</string>
+    <string name="gaze_exit">빈 곳을 누르거나 뒤로 가기로 돌아가요</string>
     <string name="obj_windchime">작은 풍경</string>
     <string name="obj_windchime_when">처음 숨, 쉼을 함께한 날</string>
     <string name="obj_windchime_line">바람이 지날 때마다, 숨 한 번.</string>
@@ -982,4 +982,5 @@
     <string name="title_hello_night">하루가 기다리고 있었어요.</string>
     <string name="title_setting">앱 첫 화면</string>
     <string name="title_helloFirst">처음 만나는 날이에요. 반가워요.</string>
+    <string name="mood_readSub">지금까지 남긴 한 줄을 찾고, 달과 해로 돌아봐요.</string>
 </resources>

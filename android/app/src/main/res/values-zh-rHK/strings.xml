@@ -342,7 +342,7 @@
     <string name="gaze">看石發呆</string>
     <string name="gaze_soundOn">開啟聲音</string>
     <string name="gaze_soundOff">關閉聲音</string>
-    <string name="gaze_exit">點左上角的「回庭院」或返回鍵，就能回去</string>
+    <string name="gaze_exit">點空白處或按返回鍵就能回去</string>
     <string name="obj_windchime">小風鈴</string>
     <string name="obj_windchime_when">第一次一起喘口氣的那天</string>
     <string name="obj_windchime_line">每當風吹過，就呼吸一次。</string>
@@ -981,4 +981,5 @@
     <string name="title_hello_night">小日一直在等你。</string>
     <string name="title_setting">App 開場畫面</string>
     <string name="title_helloFirst">初次見面，很高興認識你。</string>
+    <string name="mood_readSub">搜尋留下的話，按月、按年回顧。</string>
 </resources>

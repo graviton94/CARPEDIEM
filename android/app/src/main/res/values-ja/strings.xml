@@ -342,7 +342,7 @@
     <string name="gaze">石ながめ</string>
     <string name="gaze_soundOn">音をオン</string>
     <string name="gaze_soundOff">音をオフ</string>
-    <string name="gaze_exit">左上の「庭へ」か、戻るボタンで戻ります</string>
+    <string name="gaze_exit">空いている所をタップするか、戻るボタンで戻ります</string>
     <string name="obj_windchime">小さな風鈴</string>
     <string name="obj_windchime_when">はじめて、いっしょにひと息ついた日</string>
     <string name="obj_windchime_line">風が通るたび、ひと呼吸。</string>
@@ -981,4 +981,5 @@
     <string name="title_hello_night">ハルが待っていました。</string>
     <string name="title_setting">アプリの最初の画面</string>
     <string name="title_helloFirst">はじめまして。うれしいです。</string>
+    <string name="mood_readSub">これまでのひとことを探して、月や年でふり返ります。</string>
 </resources>
