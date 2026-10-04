@@ -129,9 +129,9 @@ fun TitleScreen(state: AppState, now: LocalDateTime, onDone: () -> Unit) {
             // 땅은 화면 아래 끝까지 (띠 그림을 위에 맞춰 늘림)
             val stripTop = haruY - u * G.Layout.stripLineY
             Image(GardenArt.strip(ctx, season), null, Modifier.fillMaxWidth().offset(y = stripTop).height(maxOf(u * G.Layout.stripHeight, screenH - stripTop)),
-                contentScale = ContentScale.Crop, alignment = Alignment.TopCenter)
-            // 밤엔 땅도 어둡게 (달빛 아래)
-            if (night) Box(Modifier.fillMaxWidth().offset(y = stripTop).height(screenH - stripTop).background(Color(0xB30E1222)))
+                contentScale = ContentScale.Crop, alignment = Alignment.TopCenter,
+                // 밤엔 땅도 어둡게 (달빛 아래, 그림이 있는 곳만)
+                colorFilter = if (night) androidx.compose.ui.graphics.ColorFilter.tint(Color(0xB30E1222), BlendMode.SrcAtop) else null)
             val boxH = scale * (G.Layout.haruGround - art.meta.bbox.top + G.Layout.sparkle)
             Box(Modifier.align(Alignment.TopCenter).offset(y = haruY - boxH).graphicsLayer {
                 transformOrigin = androidx.compose.ui.graphics.TransformOrigin(0.5f, 1f)
