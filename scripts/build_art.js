@@ -18,7 +18,7 @@ const tokens = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "design/tok
 const D = Object.assign({}, tokens.decor, { stripLineY: tokens.layout.stripLineY, stripHeight: tokens.layout.stripHeight });
 const read = (f) => fs.readFileSync(path.join(root, "design/art/src", f), "utf8");
 const src = files.map(read).join("\n") + "\nvar HANJI = (function () {\n" + hanji.map(read).join("\n") +
-  "\nreturn { skyApp, stripApp, treeApp, postApp, mossApp, kiteApp, cardApp, sunApp, moonApp, moonFullApp, fiberApp, rainbowApp, auroraApp, snailApp, flyApp, windApp, kiteFoldApp, pondApp, logsApp, cloudApp, gardenH, setU, TREES, REAL, CARDS: Object.keys(PIECE) };\n})();";
+  "\nreturn { skyApp, stripApp, treeApp, postApp, mossApp, kiteApp, cardApp, sunApp, moonApp, moonFullApp, fiberApp, rainbowApp, auroraApp, snailApp, flyApp, guestApp, windApp, kiteFoldApp, pondApp, logsApp, cloudApp, gardenH, setU, TREES, REAL, CARDS: Object.keys(PIECE) };\n})();";
 const out = path.join(root, "design/art");
 const app = path.join(root, "android/app/src/main/assets/garden");
 
@@ -56,6 +56,7 @@ const app = path.join(root, "android/app/src/main/assets/garden");
     webp("moment_rainbow", 160, 90, 3, (c, w) => H.rainbowApp(c, w));
     webp("moment_aurora", 260, 60, 3, (c, w) => H.auroraApp(c, w));
     webp("moment_snail", 40, 26, 4, (c, w) => H.snailApp(c, w));
+    ["tit", "squirrel", "hedgehog", "rabbit", "owl"].forEach((k) => webp("guest_" + k, 40, 40, 4, (c, w) => H.guestApp(c, w, k)));
     [["wing_l", -1], ["wing_r", 1], ["body", 0]].forEach(([n, side]) => webp("fly_" + n, 40, 40, 3, (c, w) => H.flyApp(c, w, side)));
     H.REAL.forEach((se) => webp("wind_" + se, 10, 10, 6, (c, w) => H.windApp(c, w, se)));
     // 보기용: 사계절 · 밤 정원 한 장

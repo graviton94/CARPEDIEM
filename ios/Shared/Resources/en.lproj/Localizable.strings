@@ -917,11 +917,11 @@
 "recall.continue" = "Continue in today's line";
 "recall.continueLabel" = "Continuing from %1$@";
 "return.title" = "So glad you're back";
-"guest.tit.story" = "A little tit came by\nand kept watch on the post.";
-"guest.squirrel.story" = "A squirrel came by\nand looked after the tree.";
-"guest.hedgehog.story" = "A hedgehog came by\nand sat beside Haru.";
-"guest.rabbit.story" = "It's been a while. A rabbit came\nand quietly tended the garden.";
-"guest.owl.story" = "It's been a while. An owl came\nand watched the garden every night.";
+"guest.tit.story" = "A little tit dropped by today\nand is sitting on the post.";
+"guest.squirrel.story" = "A squirrel dropped by today\nand is looking under the tree.";
+"guest.hedgehog.story" = "A hedgehog dropped by today\nand is sitting beside Haru.";
+"guest.rabbit.story" = "A rare visitor: a rabbit\nis quietly looking around the garden.";
+"guest.owl.story" = "A rare visitor: an owl\nis dozing by the post.";
 "chance.guest_tit" = "Tit guest";
 "chance.guest_squirrel" = "Squirrel guest";
 "chance.guest_hedgehog" = "Hedgehog guest";

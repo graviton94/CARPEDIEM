@@ -12,6 +12,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -494,67 +495,34 @@ internal fun BloomedSeeds(state: AppState) {
 
 private const val BLOOMED_SHOWN = 60
 
-// ───────────────────────── 돌아온 날의 손님 ─────────────────────────
+// ───────────────────────── 정원 손님 ─────────────────────────
 
-/** 다시 와 줘서 반가워요 (09): 빠진 날 대신 손님 이야기. 누르거나 조금 지나면 사라짐. */
+/** 오늘 놀러 온 손님 이야기 (그날 처음 열 때 한 번). 누르거나 조금 지나면 사라짐. */
 @Composable
 internal fun GreetingCard(guest: String, onDone: () -> Unit) {
     val p = Theme.palette
     val ctx = LocalContext.current
     LaunchedEffect(guest) { delay(COMFORT_MS); onDone() }
-    val story = remember(guest) { ctx.resources.getIdentifier("guest_${guest}_story", "string", ctx.packageName).takeIf { it != 0 }?.let { ctx.getString(it) }.orEmpty() }
+    fun res(name: String) = ctx.resources.getIdentifier(name, "string", ctx.packageName).takeIf { it != 0 }?.let { ctx.getString(it) }.orEmpty()
+    val name = remember(guest) { res("chance_guest_$guest") }
+    val story = remember(guest) { res("guest_${guest}_story") }
     Column(
         Modifier.fillMaxWidth().crayonBox(Theme.gc.paper, G.Radius.box, G.Stroke.chip, 1600).clickable(onClick = onDone)
             .padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3).semantics { liveRegion = LiveRegionMode.Polite },
         horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1),
     ) {
-        TokenText(stringResource(R.string.return_title), Tokens.TypeScale.headline.serif(), align = TextAlign.Center)
+        Image(GardenArt.image(ctx, "guest_$guest.webp"), null, Modifier.size(Theme.unit * 40f))
+        if (name.isNotEmpty()) TokenText(name, Tokens.TypeScale.headline.serif(), align = TextAlign.Center)
         if (story.isNotEmpty()) TokenText(story, Tokens.TypeScale.footnote, Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.Center)
     }
 }
 
-private const val GUEST_SIZE = 26f
+private const val GUEST_SIZE = 30f
 
-/** 손님 그림 (손그림 느낌의 단순한 꼴, 오늘 하루 정원에). x = 발 자리, gy = 땅. */
+/** 손님 그림 (한지로 오린 그림, guest_*.webp 40 × 40 상자, 발 = 아래에서 3/40). x = 발 자리, gy = 땅. */
 @Composable
 internal fun GuestFigure(guest: String, x: Dp, gy: Dp) {
-    val u = Theme.unit
-    val w = u * GUEST_SIZE
-    val ink = Theme.gc.ink
-    Canvas(Modifier.offset(x - w / 2, gy - w).size(w)) {
-        val k = size.width / 10f
-        fun eye(cx: Float, cy: Float) { drawCircle(Color.White, 0.55f * k, Offset(cx, cy)); drawCircle(ink, 0.3f * k, Offset(cx + 0.1f * k, cy)) }
-        when (guest) {
-            "tit" -> {   // 곤줄박이: 주황 배, 검은 머리
-                drawOval(Color(0xFFB5651D), Offset(2.4f * k, 5.2f * k), Size(5f * k, 3.6f * k))
-                drawCircle(Color(0xFF2E2A22), 1.6f * k, Offset(7f * k, 5f * k)); eye(7.5f * k, 4.8f * k)
-                drawPath(androidx.compose.ui.graphics.Path().apply { moveTo(8.5f * k, 5f * k); lineTo(9.6f * k, 5.3f * k); lineTo(8.5f * k, 5.6f * k); close() }, Color(0xFFE89A32))
-                drawPath(androidx.compose.ui.graphics.Path().apply { moveTo(2.6f * k, 6.6f * k); lineTo(0.6f * k, 5.8f * k); lineTo(1.2f * k, 7.4f * k); close() }, Color(0xFF6B6456))
-                drawLine(ink, Offset(4.6f * k, 8.7f * k), Offset(4.4f * k, 9.8f * k), 0.3f * k); drawLine(ink, Offset(5.6f * k, 8.7f * k), Offset(5.8f * k, 9.8f * k), 0.3f * k)
-            }
-            "squirrel" -> {   // 다람쥐: 큰 꼬리
-                drawOval(Color(0xFFA0683A), Offset(0.4f * k, 2f * k), Size(3.4f * k, 6.6f * k))
-                drawOval(Color(0xFFB97A45), Offset(3f * k, 5f * k), Size(4f * k, 4.6f * k))
-                drawCircle(Color(0xFFB97A45), 1.7f * k, Offset(6.8f * k, 4.6f * k)); drawCircle(Color(0xFFB97A45), 0.6f * k, Offset(6.4f * k, 2.9f * k)); eye(7.4f * k, 4.3f * k)
-            }
-            "hedgehog" -> {   // 고슴도치: 가시 등
-                drawOval(Color(0xFF6B5236), Offset(1f * k, 5f * k), Size(7f * k, 4.6f * k))
-                for (i in 0 until 7) { val a = 3.4f + i * 0.33f; drawLine(Color(0xFF4A3826), Offset(4.5f * k, 7.3f * k), Offset(4.5f * k + 4f * k * kotlin.math.cos(a), 7.3f * k + 3.4f * k * kotlin.math.sin(a)), 0.4f * k) }
-                drawOval(Color(0xFFE3C9A0), Offset(6.4f * k, 6.4f * k), Size(2.8f * k, 2.6f * k)); eye(7.8f * k, 7.2f * k); drawCircle(ink, 0.3f * k, Offset(9.1f * k, 7.8f * k))
-            }
-            "rabbit" -> {   // 토끼: 긴 귀
-                drawOval(Color(0xFFF4EEE2), Offset(1.6f * k, 5.4f * k), Size(5.4f * k, 4.2f * k))
-                drawCircle(Color(0xFFF4EEE2), 1.8f * k, Offset(6.8f * k, 5.4f * k))
-                drawOval(Color(0xFFF4EEE2), Offset(5.6f * k, 0.6f * k), Size(1.2f * k, 3.8f * k)); drawOval(Color(0xFFF4EEE2), Offset(7f * k, 0.8f * k), Size(1.2f * k, 3.6f * k))
-                drawOval(ink.copy(alpha = 0.3f), Offset(1.6f * k, 5.4f * k), Size(5.4f * k, 4.2f * k), style = Stroke(0.25f * k)); eye(7.4f * k, 5.2f * k)
-            }
-            else -> {   // owl 부엉이
-                drawOval(Color(0xFF8C6A44), Offset(2.4f * k, 2.4f * k), Size(5.2f * k, 7.2f * k))
-                drawOval(Color(0xFFE3C9A0), Offset(3.4f * k, 5.4f * k), Size(3.2f * k, 3.6f * k))
-                drawCircle(Color.White, 1.1f * k, Offset(4f * k, 4f * k)); drawCircle(Color.White, 1.1f * k, Offset(6f * k, 4f * k))
-                drawCircle(ink, 0.5f * k, Offset(4f * k, 4f * k)); drawCircle(ink, 0.5f * k, Offset(6f * k, 4f * k))
-                drawPath(androidx.compose.ui.graphics.Path().apply { moveTo(4.6f * k, 4.8f * k); lineTo(5.4f * k, 4.8f * k); lineTo(5f * k, 5.6f * k); close() }, Color(0xFFE89A32))
-            }
-        }
-    }
+    val ctx = LocalContext.current
+    val w = Theme.unit * GUEST_SIZE
+    Image(GardenArt.image(ctx, "guest_$guest.webp"), null, Modifier.offset(x - w / 2, gy - w * (37f / 40f)).size(w))
 }

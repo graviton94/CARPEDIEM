@@ -917,11 +917,11 @@
 "recall.continue" = "오늘 한 줄에 이어 쓰기";
 "recall.continueLabel" = "%1$@의 한 줄에 이어서";
 "return.title" = "다시 와 줘서 반가워요";
-"guest.tit.story" = "그동안 곤줄박이가 와서\n말뚝을 지켜 줬어요.";
-"guest.squirrel.story" = "그동안 다람쥐가 와서\n나무 밑을 살펴 줬어요.";
-"guest.hedgehog.story" = "그동안 고슴도치가 와서\n하루 곁에 앉아 있었어요.";
-"guest.rabbit.story" = "오랜만이에요. 그동안 토끼가 와서\n정원을 조용히 돌봐 줬어요.";
-"guest.owl.story" = "오랜만이에요. 그동안 부엉이가 와서\n밤마다 정원을 지켜 줬어요.";
+"guest.tit.story" = "오늘은 곤줄박이가 놀러 와서\n말뚝에 앉아 있어요.";
+"guest.squirrel.story" = "오늘은 다람쥐가 놀러 와서\n나무 밑을 살피고 있어요.";
+"guest.hedgehog.story" = "오늘은 고슴도치가 놀러 와서\n하루 곁에 앉아 있어요.";
+"guest.rabbit.story" = "드물게 토끼가 놀러 왔어요.\n정원을 조용히 둘러보고 있어요.";
+"guest.owl.story" = "드물게 부엉이가 놀러 왔어요.\n말뚝 옆에서 꾸벅꾸벅 졸고 있어요.";
 "chance.guest_tit" = "곤줄박이 손님";
 "chance.guest_squirrel" = "다람쥐 손님";
 "chance.guest_hedgehog" = "고슴도치 손님";

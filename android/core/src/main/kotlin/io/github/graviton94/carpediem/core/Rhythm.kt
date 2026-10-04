@@ -124,18 +124,27 @@ object Seeds {
 }
 
 /**
- * 돌아온 날의 손님 (09): 사흘 넘게 쉬었다 돌아오면 빠진 날 대신 손님 이야기. 오래 쉴수록 조금 더 특별한 손님.
- * 몇 날 빠졌는지는 말하지 않는다.
+ * 정원 손님: 앱을 열든 안 열든 날마다 정해지는 우연 (평균 일주일에 한 번, 사람마다 다른 날).
+ * 쉬었다고 더 오거나 매일 열었다고 덜 오지 않는다. 다섯 중 하나쯤은 드문 손님 (토끼 · 부엉이).
  */
 object Guests {
-    const val AWAY = 3
-    /** 흔한 손님 · 오래 쉬었을 때 (14일 넘게) 의 손님. */
     val COMMON = listOf("tit", "squirrel", "hedgehog")
     val RARE = listOf("rabbit", "owl")
+    /** 평균 며칠에 한 번. */
+    const val EVERY = 7
 
-    fun of(away: Int, today: LocalDate): String? {
-        if (away < AWAY) return null
-        val pool = if (away >= 14) RARE else COMMON
-        return pool[Math.floorMod(today.toEpochDay() + away, pool.size.toLong()).toInt()]
+    /** 오늘 손님 (없으면 null). seed = 사람마다 다른 수 (하루 번호). */
+    fun on(today: LocalDate, seed: Long): String? {
+        val h = mix(seed * 1_000_003L + today.toEpochDay())
+        if (Math.floorMod(h, EVERY.toLong()) != 0L) return null
+        val k = Math.floorMod(h ushr 16, 10L).toInt()
+        return if (k < RARE.size) RARE[k] else COMMON[k % COMMON.size]
+    }
+
+    private fun mix(x: Long): Long {
+        var z = x + -0x61c8864680b583ebL
+        z = (z xor (z ushr 30)) * -0x40a7b892e31b1a47L
+        z = (z xor (z ushr 27)) * -0x6b2fb644ecceee15L
+        return z xor (z ushr 31)
     }
 }

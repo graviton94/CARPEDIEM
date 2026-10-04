@@ -629,12 +629,15 @@ class ChancesTest {
         assertEquals(listOf(27, 26), Rings.done(birth, d(2027, 6, 1), lines))
     }
 
-    @Test fun guestsOnlyAfterAwayDays() {
-        val day = d(2026, 10, 4)
-        assertEquals(null, Guests.of(2, day))
-        assertTrue(Guests.of(3, day) in Guests.COMMON)
-        assertTrue(Guests.of(20, day) in Guests.RARE)
-        assertEquals(Guests.of(5, day), Guests.of(5, day))
+    @Test fun guestsComeOnRandomDaysNotForBeingAway() {
+        val start = d(2026, 1, 1)
+        val year = (0 until 365).map { Guests.on(start.plusDays(it.toLong()), 42L) }
+        val visits = year.filterNotNull()
+        assertTrue(visits.size in 35..70)                                // 평균 일주일에 한 번쯤
+        assertTrue(visits.all { it in Guests.COMMON || it in Guests.RARE })
+        assertTrue(visits.count { it in Guests.RARE } in 1 until visits.size / 2)
+        assertEquals(year, (0 until 365).map { Guests.on(start.plusDays(it.toLong()), 42L) })   // 같은 날은 늘 같은 손님
+        assertTrue(year != (0 until 365).map { Guests.on(start.plusDays(it.toLong()), 7L) })   // 사람마다 다른 날
     }
 
     @Test fun creditsFitSixtyToEightySeconds() {

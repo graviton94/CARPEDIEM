@@ -147,7 +147,7 @@ class AppState(private val context: Context) {
         val g = guest ?: return
         if (chancesMet.none { it.startsWith("guest_$g:") }) { val n = chancesMet + "guest_$g:$today"; store.chancesMet = n; chancesMet = n }
     }
-    fun pretendBack(away: Int) { store.pretendBack(nowDate(), away); guest = store.guestToday(nowDate()) }
+    fun pretendGuest(g: String) { store.pretendGuest(nowDate(), g); guest = store.guestToday(nowDate()) }
     var eveningNotify by mutableStateOf(store.eveningNotify)
         private set
     var tomorrowNotify by mutableStateOf(store.tomorrowNotify)

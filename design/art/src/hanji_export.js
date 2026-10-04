@@ -52,3 +52,48 @@
       paper(ctx, blob(cx + c * 20, cy + s * 20, 2.6, 3.2, q[2] + 10, 0.05), "#C9A57E", q[2] + 10, { rim: 0.2, sh: 0.2 }); }); }
   // 돌멍하기 하늘에 천천히 흘러가는 구름 (계절 넷 + 밤), 120 × 50 상자
   function cloudApp(ctx, W, key, i) { hj(ctx, W / 120); if (key === "night") NIGHT = true; var P = WPAL[key]; cloud(ctx, 48, 26, [1, 0.72][i], P.cloud, 2530 + i * 7); NIGHT = false; }
+  // 정원 손님 (우연히 놀러 오는 날): 40 × 40 상자, 발 = (20, 37), 오른쪽을 봄. 곤줄박이 · 다람쥐 · 고슴도치 · 토끼 · 부엉이
+  function guestEye(ctx, x, y, r) { ctx.save(); ctx.fillStyle = "#2E2620"; ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fill(); ctx.fillStyle = "rgba(255,255,255,.85)"; ctx.beginPath(); ctx.arc(x + r * 0.35, y - r * 0.35, r * 0.32, 0, 7); ctx.fill(); ctx.restore(); }
+  function guestSprite(ctx, kind) { var x = 20, y = 37;
+    if (kind === "tit") {   // 곤줄박이: 밤색 배, 검은 머리 · 흰 뺨, 회청 날개, 짧은 꼬리
+      thread(ctx, [[x - 1.6, y - 6], [x - 2.2, y]], 0.7, "#6B5A48"); thread(ctx, [[x + 1.8, y - 6], [x + 2.4, y]], 0.7, "#6B5A48");
+      paper(ctx, place([[0, -1.6], [-9, -3.4], [-9.6, 0.6], [0, 1.6]], x - 6, y - 11, 1, 0.32), "#6E7682", 6001, { rim: 0.4, sh: 0.6 });
+      paper(ctx, blob(x, y - 12, 8.6, 6.6, 6002, 0.06), "#C0763E", 6002, { tone: 0.12, rim: 0.5, sh: 0.8 });
+      paper(ctx, blob(x - 2.6, y - 13.6, 6, 3.8, 6003, 0.08, -0.2), "#7D8590", 6003, { rim: 0.3, sh: 0.4 });
+      paper(ctx, blob(x + 6.4, y - 19.4, 5.2, 4.8, 6004, 0.05), "#2F2B28", 6004, { rim: 0.3, sh: 0.6 });
+      paper(ctx, blob(x + 7.2, y - 18.4, 3, 2.2, 6005, 0.08), "#F1E6CF", 6005, { rim: 0.2, sh: 0.2 });
+      paper(ctx, [[x + 11, y - 20], [x + 14.4, y - 19.2], [x + 11, y - 18.2]], "#4A3E34", 6006, { rim: 0, sh: 0.2 });
+      guestEye(ctx, x + 8.6, y - 20.4, 0.95); }
+    else if (kind === "squirrel") {   // 다람쥐: 등 뒤로 말린 큰 꼬리, 도토리를 든 앞발
+      var tail = []; for (var t = 0; t <= 1.0001; t += 0.05) { var a = Math.PI * (0.55 + t * 1.25), r = 6 + t * 5; tail.push([x - 4.4 + Math.cos(a) * r * 0.8, y - 13 - t * 6 + Math.sin(a) * r]); }
+      paper(ctx, rib(tail, 5, 9), "#B5743F", 6011, { tone: 0.12, rim: 0.5, sh: 0.7, fiber: 0.8 });
+      paper(ctx, blob(x + 1, y - 8, 6.6, 8, 6012, 0.06), "#C4834C", 6012, { tone: 0.12, rim: 0.5, sh: 0.8 });
+      paper(ctx, blob(x + 3, y - 7, 3.4, 5.4, 6013, 0.06), "#EBD3AE", 6013, { rim: 0.2, sh: 0.3 });
+      paper(ctx, blob(x + 5.6, y - 19, 5, 4.4, 6014, 0.05), "#C4834C", 6014, { tone: 0.1, rim: 0.4, sh: 0.6 });
+      paper(ctx, [[x + 2.8, y - 21.6], [x + 3.6, y - 27], [x + 6, y - 22.6]], "#B5743F", 6015, { rim: 0.3, sh: 0.4 });
+      paper(ctx, blob(x + 7, y - 9, 2.2, 2.4, 6016, 0.05), "#8A5A32", 6016, { rim: 0.2, sh: 0.4 });
+      paper(ctx, blob(x + 7, y - 10.6, 2.4, 1.2, 6017, 0.05), "#5E4129", 6017, { rim: 0, sh: 0.2 });
+      guestEye(ctx, x + 7.2, y - 19.8, 1); ctx.fillStyle = "#4A3E34"; ctx.beginPath(); ctx.arc(x + 10.4, y - 18.4, 0.6, 0, 7); ctx.fill(); }
+    else if (kind === "hedgehog") {   // 고슴도치: 가시 등 (오린 톱니), 연한 얼굴, 까만 코
+      var sp = []; for (var i = 0; i <= 22; i++) { var a = Math.PI * (1.02 + i / 22 * 0.98), r = i % 2 ? 9.4 : 12.6; sp.push([x - 1 + Math.cos(a) * r * 1.15, y - 2 + Math.sin(a) * r]); }
+      sp.push([x + 10, y - 1]); sp.push([x - 13, y - 1]);
+      paper(ctx, sp, "#6E5539", 6021, { tone: 0.12, rim: 0.5, sh: 0.8, fiber: 0.8 });
+      paper(ctx, blob(x + 9, y - 6, 5.6, 4.6, 6022, 0.06, -0.15), "#E4CBA4", 6022, { rim: 0.4, sh: 0.6 });
+      paper(ctx, blob(x + 6.6, y - 10.6, 1.6, 1.4, 6023, 0.05), "#CDAE84", 6023, { rim: 0.2, sh: 0.2 });
+      ctx.fillStyle = "#2E2620"; ctx.beginPath(); ctx.arc(x + 14.6, y - 5.4, 1.1, 0, 7); ctx.fill(); guestEye(ctx, x + 10.4, y - 8, 0.95);
+      thread(ctx, [[x - 4, y - 1.6], [x - 4.4, y]], 1, "#4A3826"); thread(ctx, [[x + 4, y - 1.6], [x + 4.4, y]], 1, "#4A3826"); }
+    else if (kind === "rabbit") {   // 토끼: 흰 몸, 긴 귀 (안쪽 분홍), 동그란 꼬리
+      paper(ctx, blob(x - 9, y - 8, 2.8, 2.6, 6031, 0.06), "#FBF7EF", 6031, { rim: 0.4, sh: 0.6 });
+      paper(ctx, blob(x - 1.5, y - 7.4, 8.4, 7, 6032, 0.05), "#F4EEE2", 6032, { tone: 0.08, rim: 0.6, sh: 0.9 });
+      paper(ctx, blob(x + 7, y - 14.6, 5, 4.6, 6033, 0.05), "#F4EEE2", 6033, { tone: 0.08, rim: 0.5, sh: 0.8 });
+      [[4.2, -0.2, 6034], [7.6, 0.22, 6036]].forEach(function (e) { var ex = x + e[0], ey = y - 25.4; paper(ctx, place([[0, -7], [1.9, -4], [1.7, 3.8], [0, 5], [-1.7, 3.8], [-1.9, -4]], ex, ey, 1, e[1]), "#F1EADC", e[2], { rim: 0.5, sh: 0.7 }); paper(ctx, place([[0, -5], [0.8, -2], [0.6, 3], [-0.6, 3], [-0.8, -2]], ex, ey, 1, e[1]), "#EDB9B4", e[2] + 1, { rim: 0, sh: 0.2 }); });
+      guestEye(ctx, x + 9, y - 15.4, 1); ctx.fillStyle = "#D9908A"; ctx.beginPath(); ctx.arc(x + 11.8, y - 13.6, 0.6, 0, 7); ctx.fill(); }
+    else {   // 부엉이: 갈색 몸, 연한 배 무늬, 큰 눈 (주황 테), 귀깃
+      paper(ctx, [[x - 8, y - 22], [x - 6.6, y - 29], [x - 3, y - 23]], "#6E5236", 6041, { rim: 0.3, sh: 0.4 }); paper(ctx, [[x + 8, y - 22], [x + 6.6, y - 29], [x + 3, y - 23]], "#6E5236", 6042, { rim: 0.3, sh: 0.4 });
+      paper(ctx, blob(x, y - 14, 9, 13.4, 6043, 0.05), "#8C6A44", 6043, { tone: 0.12, rim: 0.6, sh: 0.9, fiber: 0.8 });
+      paper(ctx, blob(x, y - 9, 5.6, 7.4, 6044, 0.06), "#E3C9A0", 6044, { rim: 0.2, sh: 0.3 });
+      for (var k = 0; k < 3; k++) for (var m = 0; m < 2 + (k % 2); m++) thread(ctx, bez([x - 3 + m * 2.6 + (k % 2 ? -1.3 : 0), y - 12 + k * 3, x - 2.4 + m * 2.6 + (k % 2 ? -1.3 : 0), y - 11 + k * 3, x - 1.8 + m * 2.6 + (k % 2 ? -1.3 : 0), y - 11 + k * 3, x - 1.2 + m * 2.6 + (k % 2 ? -1.3 : 0), y - 12 + k * 3], 6), 0.5, "rgba(120,90,60,.6)");
+      [-1, 1].forEach(function (d) { paper(ctx, blob(x + d * 3.6, y - 20.4, 3.6, 3.6, 6045 + d, 0.04), "#F2E4C6", 6046 + d, { rim: 0.3, sh: 0.4 }); ctx.save(); ctx.strokeStyle = "#D98B3A"; ctx.lineWidth = 0.7; ctx.beginPath(); ctx.arc(x + d * 3.6, y - 20.4, 2.3, 0, 7); ctx.stroke(); ctx.restore(); guestEye(ctx, x + d * 3.6, y - 20.4, 1.3); });
+      paper(ctx, [[x - 1.2, y - 18.4], [x + 1.2, y - 18.4], [x, y - 15.8]], "#D98B3A", 6049, { rim: 0, sh: 0.2 });
+      thread(ctx, [[x - 3, y - 1], [x - 3, y + 0.4]], 1.2, "#D98B3A"); thread(ctx, [[x + 3, y - 1], [x + 3, y + 0.4]], 1.2, "#D98B3A"); } }
+  function guestApp(ctx, W, kind) { hj(ctx, W / 40); guestSprite(ctx, kind); }

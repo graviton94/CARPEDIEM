@@ -187,8 +187,8 @@ open --ez cd.capsule true --es cd.now 2026-10-04T09:00;                         
 open --ez cd.ringYear true --es cd.now 2026-05-12T09:00;                                               shot g63_ring_note 6
 open --ei cd.page 2 --es cd.now 2026-05-20T15:00; for i in 1 2 3 4 5 6 7 8 9; do swipe_up; done;           shot g64_keepsakes 3
 # 돌아온 날의 손님 (09): 닷새 · 스무 날 만에
-open --ei cd.away 5 --es cd.now 2026-10-04T10:00;                                                      shot g65_return_guest 5
-open --ei cd.away 20 --es cd.now 2026-10-05T10:00;                                                     shot g66_return_rare 5
+open --es cd.guest tit --es cd.now 2026-10-04T10:00;                                                    shot g65_guest 5
+open --es cd.guest owl --es cd.now 2026-10-05T10:00;                                                    shot g66_guest_rare 5
 # 한 줄에 사진 한 장 (11): 오늘 · 1년 전 오늘 (돌아온 한 줄, 그만큼 바랜 사진) · 지난 날 기록
 open --ez cd.photos true --ei cd.page 1 --es cd.now 2026-10-06T21:00;                                  shot g67_photo_today 5
 swipe_up; shot g68_photo_more 3

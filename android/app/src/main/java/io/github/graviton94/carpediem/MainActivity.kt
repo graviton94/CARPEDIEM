@@ -301,7 +301,7 @@ private fun MainActivity.debugSetup(state: AppState): Screen {
     if (x.getBooleanExtra("cd.capsule", false)) state.addSampleCapsule()
     if (x.getBooleanExtra("cd.ringYear", false)) state.addSampleRingYear()
     // 캡처용: 며칠 만에 돌아온 날 (09, 손님 · 인사)
-    if (x.hasExtra("cd.away")) state.pretendBack(x.getIntExtra("cd.away", 5))
+    x.getStringExtra("cd.guest")?.let { state.pretendGuest(it) }
     if (x.getBooleanExtra("cd.photos", false)) state.addSamplePhotos()
     state.debugGardenYear = x.getBooleanExtra("cd.gardenYear", false)
     if (x.getBooleanExtra("cd.letter", false)) state.addSampleLetter()
