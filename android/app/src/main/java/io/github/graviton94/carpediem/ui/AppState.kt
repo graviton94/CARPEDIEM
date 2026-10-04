@@ -136,7 +136,18 @@ class AppState(private val context: Context) {
     }
     fun changeDesign(v: Design) { store.design = v; design = v; Widgets.refresh(context) }
     fun changePreviewAll(v: Boolean) { store.previewAll = v; previewAll = v }
-    fun opened() { store.markOpened(); checkRandomRecall() }
+    fun opened() { store.markOpened(); checkRandomRecall(); guest = store.guestToday(nowDate()) }
+    /** 돌아온 날의 손님 (09): 오늘 하루 정원에 머묾. */
+    var guest by mutableStateOf(store.guestToday(nowDate()))
+        private set
+    fun greetingDue(today: LocalDate): Boolean = guest != null && store.greetedOn != today && design == Design.GARDEN
+    /** 인사를 건넸으면: 다시 건네지 않고, 손님은 ‘만난 순간’에 (처음 만난 날로). */
+    fun greeted(today: LocalDate) {
+        store.greetedOn = today
+        val g = guest ?: return
+        if (chancesMet.none { it.startsWith("guest_$g:") }) { val n = chancesMet + "guest_$g:$today"; store.chancesMet = n; chancesMet = n }
+    }
+    fun pretendBack(away: Int) { store.pretendBack(nowDate(), away); guest = store.guestToday(nowDate()) }
     var eveningNotify by mutableStateOf(store.eveningNotify)
         private set
     var tomorrowNotify by mutableStateOf(store.tomorrowNotify)
@@ -219,7 +230,7 @@ class AppState(private val context: Context) {
     fun letGo(text: String, feeling: Feeling?, to: String? = null, today: LocalDate = (fixedNow ?: LocalDateTime.now()).toLocalDate()) {
         val t = Lines.clean(text, Tokens.Garden.LetGo.maxChars.toInt(), Lines.MAX_LINES); if (t.isEmpty()) return
         // 질문에 답한 한 줄이면 질문 번호도 함께
-        val q = answering?.id; answering = null
+        val q = answering?.id; answering = null; recallReply = null
         // 기록 남기지 않기: 날짜만 (이어 쓰기 흔적은 이어 간다)
         val line = if (keepLines) DayLine(today, t, feeling, to, q) else DayLine(today, "", null, to)
         val person = people.firstOrNull { it.id == to }
@@ -405,6 +416,8 @@ class AppState(private val context: Context) {
     private var previewQ = false
     /** ‘한 줄로 답하기’를 눌러 지금 답하는 질문 (보내면 null). */
     var answering by mutableStateOf<io.github.graviton94.carpediem.core.Question?>(null)
+    /** 돌아온 한 줄에 이어 쓰는 중 (12): 쓰는 칸 위에 그날의 한 줄. 보내면 비움. */
+    var recallReply by mutableStateOf<DayLine?>(null)
     fun answer() { answering = question }
     /** 시험용 (캡처): 질문 날이 아니어도 오늘 질문 하나를 띄운다. */
     fun previewQuestion() { previewQ = true; question = store.questions.order(store.haruSeed).first() }

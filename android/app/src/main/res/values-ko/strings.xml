@@ -915,4 +915,18 @@
     <string name="ring_section">나이테</string>
     <string name="ring_sectionSub">생일부터 다음 생일 전날까지, 열두 달의 마음이 고리 하나가 돼요.</string>
     <string name="ring_chip">%1$s번째 해</string>
+    <string name="recall_keepCard">카드로 간직</string>
+    <string name="recall_continue">오늘 한 줄에 이어 쓰기</string>
+    <string name="recall_continueLabel">%1$s의 한 줄에 이어서</string>
+    <string name="return_title">다시 와 줘서 반가워요</string>
+    <string name="guest_tit_story">그동안 곤줄박이가 와서\n말뚝을 지켜 줬어요.</string>
+    <string name="guest_squirrel_story">그동안 다람쥐가 와서\n나무 밑을 살펴 줬어요.</string>
+    <string name="guest_hedgehog_story">그동안 고슴도치가 와서\n하루 곁에 앉아 있었어요.</string>
+    <string name="guest_rabbit_story">오랜만이에요. 그동안 토끼가 와서\n정원을 조용히 돌봐 줬어요.</string>
+    <string name="guest_owl_story">오랜만이에요. 그동안 부엉이가 와서\n밤마다 정원을 지켜 줬어요.</string>
+    <string name="chance_guest_tit">곤줄박이 손님</string>
+    <string name="chance_guest_squirrel">다람쥐 손님</string>
+    <string name="chance_guest_hedgehog">고슴도치 손님</string>
+    <string name="chance_guest_rabbit">토끼 손님</string>
+    <string name="chance_guest_owl">부엉이 손님</string>
 </resources>

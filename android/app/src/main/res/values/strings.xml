@@ -915,4 +915,18 @@
     <string name="ring_section">Tree rings</string>
     <string name="ring_sectionSub">From one birthday to the day before the next, twelve months of feelings become one ring.</string>
     <string name="ring_chip">Year %1$s</string>
+    <string name="recall_keepCard">Keep as a card</string>
+    <string name="recall_continue">Continue in today\'s line</string>
+    <string name="recall_continueLabel">Continuing from %1$s</string>
+    <string name="return_title">So glad you\'re back</string>
+    <string name="guest_tit_story">A little tit came by\nand kept watch on the post.</string>
+    <string name="guest_squirrel_story">A squirrel came by\nand looked after the tree.</string>
+    <string name="guest_hedgehog_story">A hedgehog came by\nand sat beside Haru.</string>
+    <string name="guest_rabbit_story">It\'s been a while. A rabbit came\nand quietly tended the garden.</string>
+    <string name="guest_owl_story">It\'s been a while. An owl came\nand watched the garden every night.</string>
+    <string name="chance_guest_tit">Tit guest</string>
+    <string name="chance_guest_squirrel">Squirrel guest</string>
+    <string name="chance_guest_hedgehog">Hedgehog guest</string>
+    <string name="chance_guest_rabbit">Rabbit guest</string>
+    <string name="chance_guest_owl">Owl guest</string>
 </resources>

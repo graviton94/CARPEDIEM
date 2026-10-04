@@ -912,3 +912,17 @@
 "ring.section" = "年輪";
 "ring.sectionSub" = "誕生日から次の誕生日の前日まで、12か月の気持ちがひとつの輪になります。";
 "ring.chip" = "%1$@年目";
+"recall.keepCard" = "カードにして残す";
+"recall.continue" = "今日のひとことに続ける";
+"recall.continueLabel" = "%1$@のひとことに続けて";
+"return.title" = "また来てくれてうれしい";
+"guest.tit.story" = "その間、ヤマガラが来て\n杭を見守ってくれました。";
+"guest.squirrel.story" = "その間、リスが来て\n木の下を見てくれました。";
+"guest.hedgehog.story" = "その間、ハリネズミが来て\nハルのそばに座っていました。";
+"guest.rabbit.story" = "お久しぶり。その間ウサギが来て\n庭をそっと手入れしてくれました。";
+"guest.owl.story" = "お久しぶり。その間フクロウが来て\n毎晩庭を見守ってくれました。";
+"chance.guest_tit" = "ヤマガラのお客さん";
+"chance.guest_squirrel" = "リスのお客さん";
+"chance.guest_hedgehog" = "ハリネズミのお客さん";
+"chance.guest_rabbit" = "ウサギのお客さん";
+"chance.guest_owl" = "フクロウのお客さん";

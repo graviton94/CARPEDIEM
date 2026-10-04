@@ -914,4 +914,18 @@
     <string name="ring_section">年輪</string>
     <string name="ring_sectionSub">從生日到下次生日前一天，十二個月的心情成為一圈年輪。</string>
     <string name="ring_chip">第 %1$s 年</string>
+    <string name="recall_keepCard">存成卡片</string>
+    <string name="recall_continue">接著寫今天的一句話</string>
+    <string name="recall_continueLabel">接著 %1$s 的一句話</string>
+    <string name="return_title">很高興你回來了</string>
+    <string name="guest_tit_story">這段時間有隻山雀來\n幫忙守著木樁。</string>
+    <string name="guest_squirrel_story">這段時間有隻松鼠來\n幫忙看著樹下。</string>
+    <string name="guest_hedgehog_story">這段時間有隻刺蝟來\n坐在小日身邊。</string>
+    <string name="guest_rabbit_story">好久不見。這段時間有隻兔子來\n靜靜照顧花園。</string>
+    <string name="guest_owl_story">好久不見。這段時間有隻貓頭鷹來\n每晚守護花園。</string>
+    <string name="chance_guest_tit">山雀客人</string>
+    <string name="chance_guest_squirrel">松鼠客人</string>
+    <string name="chance_guest_hedgehog">刺蝟客人</string>
+    <string name="chance_guest_rabbit">兔子客人</string>
+    <string name="chance_guest_owl">貓頭鷹客人</string>
 </resources>

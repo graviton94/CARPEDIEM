@@ -186,10 +186,10 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
         TokenText(sub ?: stringResource(R.string.letgo_sub), lineType(Tokens.TypeScale.callout, Theme.garden), color = p.secondary)
         // 몇 해 전 오늘 보낸 한 줄: 먼저 조용히 알리고, 누르면 펼친다
         val recalls = remember(state.lines, today, day) { if (day != null) emptyList() else Lines.yearsAgo(state.lines, today) }
-        recalls.forEach { (years, l) -> RecallCard(stringResource(R.string.recall_title, "$years"), l, 990 + years) }
+        recalls.forEach { (years, l) -> RecallCard(state, today, stringResource(R.string.recall_title, "$years"), l, 990 + years) }
         // 정한 주기 없이 문득 찾아온 지난 한 줄
         state.randomLine?.takeIf { r -> day == null && recalls.none { it.second.date == r.date } }?.let { r ->
-            RecallCard(stringResource(R.string.recall_random, r.date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM))), r, 996)
+            RecallCard(state, today, stringResource(R.string.recall_random, r.date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM))), r, 996)
         }
         val line = flying
         when {
@@ -241,6 +241,13 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
                 }
             }
             else -> Column(Modifier.fillMaxWidth().bringIntoViewRequester(formView), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
+                // 돌아온 한 줄에 이어 쓰는 중이면 (12): 입력칸 위에 그날의 한 줄
+                state.recallReply?.takeIf { day == null && state.answering == null }?.let { r ->
+                    Column(verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
+                        TokenText(stringResource(R.string.recall_continueLabel, r.date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM))), Tokens.TypeScale.caption1, color = p.secondary)
+                        TokenText("“${r.text.replace('\n', ' ')}”", lineType(Tokens.TypeScale.subhead, Theme.garden), maxLines = 3)
+                    }
+                }
                 // 질문에 답하는 중이면 입력칸 위에 질문 한 줄
                 state.answering?.takeIf { day == null }?.let { q ->
                     Column(verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
@@ -337,7 +344,8 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
 
 /** 돌아온 한 줄 (몇 해 전 오늘 · 문득). 처음엔 접혀 있고, 펼쳐 읽은 뒤 ‘다시 보내기’로 오늘은 접어 둔다. */
 @Composable
-private fun RecallCard(title: String, line: DayLine, seed: Int) {
+@OptIn(ExperimentalLayoutApi::class)
+private fun RecallCard(state: AppState, today: LocalDate, title: String, line: DayLine, seed: Int) {
     val p = Theme.palette
     val ctx = LocalContext.current
     val u = Theme.unit
@@ -358,6 +366,13 @@ private fun RecallCard(title: String, line: DayLine, seed: Int) {
             val meta = listOfNotNull(line.date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)), line.feeling?.let { stringResource(feelingName(it)) }).joinToString(" · ")
             TokenText(meta, Tokens.TypeScale.caption1, color = p.secondary)
             TokenText(line.text, lineType(Tokens.TypeScale.headline, Theme.garden))
+            // 돌아온 한 줄로 할 수 있는 것 (12): 카드로 간직 · 오늘 한 줄에 이어 쓰기 (오늘 아직 쓰지 않았을 때)
+            androidx.compose.foundation.layout.FlowRow(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
+                if (Theme.garden) GardenChip(stringResource(R.string.recall_keepCard), false, seed + 40) {
+                    io.github.graviton94.carpediem.share.ShareCards.send(ctx, io.github.graviton94.carpediem.share.ShareCards.line(ctx, line, io.github.graviton94.carpediem.share.ShareCards.feelingName(ctx, line.feeling), state.store.haruSeed), "line-${line.date}")
+                }
+                if (!state.sentOn(today)) GardenChip(stringResource(R.string.recall_continue), false, seed + 41) { state.recallReply = line; state.focusWrite = true }
+            }
             TokenText(stringResource(R.string.recall_close), Tokens.TypeScale.footnote, Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { gone = true }.padding(vertical = Tokens.Space.sp3), color = p.olive, weight = FontWeight.SemiBold)
         }
     }

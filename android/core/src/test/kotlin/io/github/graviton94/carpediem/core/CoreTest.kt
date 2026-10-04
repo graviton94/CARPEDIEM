@@ -628,4 +628,12 @@ class ChancesTest {
         assertEquals(null, Rings.newToday(birth, d(2026, 5, 13), lines))
         assertEquals(listOf(27, 26), Rings.done(birth, d(2027, 6, 1), lines))
     }
+
+    @Test fun guestsOnlyAfterAwayDays() {
+        val day = d(2026, 10, 4)
+        assertEquals(null, Guests.of(2, day))
+        assertTrue(Guests.of(3, day) in Guests.COMMON)
+        assertTrue(Guests.of(20, day) in Guests.RARE)
+        assertEquals(Guests.of(5, day), Guests.of(5, day))
+    }
 }

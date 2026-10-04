@@ -914,4 +914,18 @@
     <string name="ring_section">年輪</string>
     <string name="ring_sectionSub">誕生日から次の誕生日の前日まで、12か月の気持ちがひとつの輪になります。</string>
     <string name="ring_chip">%1$s年目</string>
+    <string name="recall_keepCard">カードにして残す</string>
+    <string name="recall_continue">今日のひとことに続ける</string>
+    <string name="recall_continueLabel">%1$sのひとことに続けて</string>
+    <string name="return_title">また来てくれてうれしい</string>
+    <string name="guest_tit_story">その間、ヤマガラが来て\n杭を見守ってくれました。</string>
+    <string name="guest_squirrel_story">その間、リスが来て\n木の下を見てくれました。</string>
+    <string name="guest_hedgehog_story">その間、ハリネズミが来て\nハルのそばに座っていました。</string>
+    <string name="guest_rabbit_story">お久しぶり。その間ウサギが来て\n庭をそっと手入れしてくれました。</string>
+    <string name="guest_owl_story">お久しぶり。その間フクロウが来て\n毎晩庭を見守ってくれました。</string>
+    <string name="chance_guest_tit">ヤマガラのお客さん</string>
+    <string name="chance_guest_squirrel">リスのお客さん</string>
+    <string name="chance_guest_hedgehog">ハリネズミのお客さん</string>
+    <string name="chance_guest_rabbit">ウサギのお客さん</string>
+    <string name="chance_guest_owl">フクロウのお客さん</string>
 </resources>

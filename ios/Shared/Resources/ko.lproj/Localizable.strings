@@ -913,3 +913,17 @@
 "ring.section" = "나이테";
 "ring.sectionSub" = "생일부터 다음 생일 전날까지, 열두 달의 마음이 고리 하나가 돼요.";
 "ring.chip" = "%1$@번째 해";
+"recall.keepCard" = "카드로 간직";
+"recall.continue" = "오늘 한 줄에 이어 쓰기";
+"recall.continueLabel" = "%1$@의 한 줄에 이어서";
+"return.title" = "다시 와 줘서 반가워요";
+"guest.tit.story" = "그동안 곤줄박이가 와서\n말뚝을 지켜 줬어요.";
+"guest.squirrel.story" = "그동안 다람쥐가 와서\n나무 밑을 살펴 줬어요.";
+"guest.hedgehog.story" = "그동안 고슴도치가 와서\n하루 곁에 앉아 있었어요.";
+"guest.rabbit.story" = "오랜만이에요. 그동안 토끼가 와서\n정원을 조용히 돌봐 줬어요.";
+"guest.owl.story" = "오랜만이에요. 그동안 부엉이가 와서\n밤마다 정원을 지켜 줬어요.";
+"chance.guest_tit" = "곤줄박이 손님";
+"chance.guest_squirrel" = "다람쥐 손님";
+"chance.guest_hedgehog" = "고슴도치 손님";
+"chance.guest_rabbit" = "토끼 손님";
+"chance.guest_owl" = "부엉이 손님";

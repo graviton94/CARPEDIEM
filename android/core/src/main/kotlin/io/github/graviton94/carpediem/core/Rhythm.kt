@@ -122,3 +122,20 @@ object Seeds {
     /** 오늘 보여 줄 고르기 몇 개 (n 개 중 날마다 돌아가며 k 개). */
     fun choices(n: Int, today: LocalDate, k: Int): List<Int> = if (n <= 0) emptyList() else (0 until minOf(k, n)).map { Math.floorMod(today.toEpochDay() * k + it, n.toLong()).toInt() }.distinct()
 }
+
+/**
+ * 돌아온 날의 손님 (09): 사흘 넘게 쉬었다 돌아오면 빠진 날 대신 손님 이야기. 오래 쉴수록 조금 더 특별한 손님.
+ * 몇 날 빠졌는지는 말하지 않는다.
+ */
+object Guests {
+    const val AWAY = 3
+    /** 흔한 손님 · 오래 쉬었을 때 (14일 넘게) 의 손님. */
+    val COMMON = listOf("tit", "squirrel", "hedgehog")
+    val RARE = listOf("rabbit", "owl")
+
+    fun of(away: Int, today: LocalDate): String? {
+        if (away < AWAY) return null
+        val pool = if (away >= 14) RARE else COMMON
+        return pool[Math.floorMod(today.toEpochDay() + away, pool.size.toLong()).toInt()]
+    }
+}

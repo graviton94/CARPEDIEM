@@ -175,8 +175,19 @@ class Store(context: Context) {
         val last = if (prefs.contains("lastOpen")) prefs.getLong("lastOpen", 0) else null
         val e = prefs.edit().putLong("lastOpen", today.toEpochDay())
         if (last != null && today.toEpochDay() - last >= RETURN_AFTER_DAYS && !prefs.contains("returned")) e.putLong("returned", today.toEpochDay())
+        // 돌아온 날의 손님 (09): 사흘 넘게 쉬었다 오면 그날과 쉰 날 수를 적어 둠 (그날 하루 손님이 머묾)
+        if (last != null && today.toEpochDay() - last >= io.github.graviton94.carpediem.core.Guests.AWAY) e.putLong("backDay", today.toEpochDay()).putInt("backAway", (today.toEpochDay() - last).toInt())
         e.apply()
     }
+
+    /** 돌아온 날 (09) 의 손님: 오늘 돌아왔으면 손님 이름, 아니면 null. */
+    fun guestToday(today: LocalDate = LocalDate.now()): String? =
+        if (prefs.getLong("backDay", Long.MIN_VALUE) == today.toEpochDay()) io.github.graviton94.carpediem.core.Guests.of(prefs.getInt("backAway", 0), today) else null
+    var greetedOn: LocalDate?
+        get() = prefs.getLong("greetedOn", Long.MIN_VALUE).takeIf { it != Long.MIN_VALUE }?.let { LocalDate.ofEpochDay(it) }
+        set(v) = prefs.edit().apply { if (v == null) remove("greetedOn") else putLong("greetedOn", v.toEpochDay()) }.apply()
+    /** 캡처용: 오늘 며칠 만에 돌아온 것으로. */
+    fun pretendBack(today: LocalDate, away: Int) = prefs.edit().putLong("backDay", today.toEpochDay()).putInt("backAway", away).remove("greetedOn").apply()
 
     /** 처음 부를 때 무작위 seed 와 시작일을 만든다. */
     fun ensureQuoteSeed(today: LocalDate = LocalDate.now()) {

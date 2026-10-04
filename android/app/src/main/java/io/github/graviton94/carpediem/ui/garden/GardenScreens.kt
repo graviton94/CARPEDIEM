@@ -288,7 +288,9 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
     val touring = !bare && !state.guideDone
     // 걱정한 밤 다음 아침의 한마디 (06): 오늘 처음 정원을 열 때 한 번 (보여 준 날을 바로 적어 둠)
     var comfort by remember { mutableStateOf<String?>(null) }
-    if (!bare) LaunchedEffect(day0, state.guideDone) {
+    var greet by remember { mutableStateOf(false) }
+    if (!bare) LaunchedEffect(day0, state.guideDone, state.guest) {
+        if (state.guideDone && state.greetingDue(day0)) { greet = true; state.greeted(day0) }
         if (state.guideDone && state.comfortDue(day0)) { comfort = dayLine(ctx, "comfort_", day0); state.comfortSeen(day0) }
     }
 
@@ -393,11 +395,13 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                         }
                     }
                     // 걱정한 밤 다음 아침 (06): 하루의 한마디만 (묻지 않음, 누르거나 조금 지나면 사라짐)
-                    comfort?.let { c -> ComfortWords(c) { comfort = null } }
+                    // 돌아온 날 (09): 빠진 날 대신 손님 이야기 (한마디보다 먼저)
+                    if (greet) state.guest?.let { g -> GreetingCard(g) { greet = false } }
+                    else comfort?.let { c -> ComfortWords(c) { comfort = null } }
                     // 저녁 7시 이후 · 밤: 하루 닫기 (한 줄 → 고마움 → 등불) · 아침: 씨앗 하나 (04), 심었거나 넘겼으면 하루를 여는 숨 1분
                     // 숨은 누르면 바로 가지 않고 “… 하러 갈까요?” 한 번 묻기
                     if (isNight(now) || now.hour >= CLOSE_DAY_FROM) CloseDayEntry(state.sentOn(day0), onCloseDay)
-                    else if (comfort == null && !touring && state.seedDue(now)) SeedCard(state, day0)
+                    else if (comfort == null && !greet && !touring && state.seedDue(now)) SeedCard(state, day0)
                     else if (Labels.part(now) == io.github.graviton94.carpediem.core.DayPart.MORNING && state.breaths.none { it.first == now.toLocalDate() })
                         TokenText(stringResource(R.string.breath_morning), Tokens.TypeScale.footnote.serif(),
                             Modifier.clickable { askBreath = BreathKind.CALM to R.string.breath_morning }.padding(Tokens.Space.sp2), color = p.secondary)
@@ -441,6 +445,8 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 if (!bare) SeedSprout(state, day0, xs[0] - (widths[0].toFloat() / 2).dp - u * 3f, gy)
                 // 나무 밑에 묻은 항아리 (10): 열리는 날까지 작은 흙더미
                 if (!bare) JarMound(state, day0, u * G.Decor.treeX + u * 14f, gy)
+                // 돌아온 날의 손님 (09): 그날 하루 말뚝 곁에
+                state.guest?.let { g -> GuestFigure(g, x1 - u * 9f, gy) }
 
 
                 // 자리 여섯: 나무 (길의 시작) · 발치의 한 장 · 말뚝 (길의 끝) · 연 (하늘) — 돌들 뒤에. 하루 밑엔 이끼 방석.

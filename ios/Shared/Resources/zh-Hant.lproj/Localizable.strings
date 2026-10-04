@@ -912,3 +912,17 @@
 "ring.section" = "年輪";
 "ring.sectionSub" = "從生日到下次生日前一天，十二個月的心情成為一圈年輪。";
 "ring.chip" = "第 %1$@ 年";
+"recall.keepCard" = "存成卡片";
+"recall.continue" = "接著寫今天的一句話";
+"recall.continueLabel" = "接著 %1$@ 的一句話";
+"return.title" = "很高興你回來了";
+"guest.tit.story" = "這段時間有隻山雀來\n幫忙守著木樁。";
+"guest.squirrel.story" = "這段時間有隻松鼠來\n幫忙看著樹下。";
+"guest.hedgehog.story" = "這段時間有隻刺蝟來\n坐在小日身邊。";
+"guest.rabbit.story" = "好久不見。這段時間有隻兔子來\n靜靜照顧花園。";
+"guest.owl.story" = "好久不見。這段時間有隻貓頭鷹來\n每晚守護花園。";
+"chance.guest_tit" = "山雀客人";
+"chance.guest_squirrel" = "松鼠客人";
+"chance.guest_hedgehog" = "刺蝟客人";
+"chance.guest_rabbit" = "兔子客人";
+"chance.guest_owl" = "貓頭鷹客人";
