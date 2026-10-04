@@ -524,7 +524,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 // 달팽이 손님: 오랜만에 돌아온 날, 한 시간쯤 돌들 앞 길을 천천히 건넘
                 if (!bare) SnailGuest(state.store.snailAt, now, gy, u * G.Decor.treeX)
                 // 돌아온 날의 손님 (09): 그날 하루 말뚝 발치에 (돌들 앞)
-                if (!bare) state.guest?.let { g -> GuestFigure(g, x1 + u * 4f, gy + u * 2f) }
+                if (!bare) state.guest?.let { g -> GuestFigure(g, x1 - u * 6f, gy + u * 3f) }
                 // 우연한 순간 (한 번에 하나, 몇 초 뒤 사라짐)
                 if (!bare) state.chance?.let { c -> ChanceLayer(c, now, real, gy, xs[0], u * G.Decor.treeX, x1, topBottom + u * G.Layout.minSkyGap, back = false) { seen -> state.chanceDone(seen, c) } }
                 // 이름표 (가족이 있을 때) · 0세 · 기대수명

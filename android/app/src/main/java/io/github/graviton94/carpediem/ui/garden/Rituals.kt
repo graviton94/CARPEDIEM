@@ -513,11 +513,13 @@ internal fun GreetingCard(guest: String, onDone: () -> Unit) {
     }
 }
 
+private const val GUEST_SIZE = 26f
+
 /** 손님 그림 (손그림 느낌의 단순한 꼴, 오늘 하루 정원에). x = 발 자리, gy = 땅. */
 @Composable
 internal fun GuestFigure(guest: String, x: Dp, gy: Dp) {
     val u = Theme.unit
-    val w = u * 11f
+    val w = u * GUEST_SIZE
     val ink = Theme.gc.ink
     Canvas(Modifier.offset(x - w / 2, gy - w).size(w)) {
         val k = size.width / 10f
