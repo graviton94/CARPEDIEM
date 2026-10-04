@@ -916,11 +916,11 @@
 "recall.continue" = "接著寫今天的一句話";
 "recall.continueLabel" = "接著 %1$@ 的一句話";
 "return.title" = "很高興你回來了";
-"guest.tit.story" = "今天有隻山雀來玩\n停在木樁上。";
-"guest.squirrel.story" = "今天有隻松鼠來玩\n在樹下東看西看。";
-"guest.hedgehog.story" = "今天有隻刺蝟來玩\n坐在小日身邊。";
-"guest.rabbit.story" = "難得有隻兔子來玩\n靜靜地逛著花園。";
-"guest.owl.story" = "難得有隻貓頭鷹來玩\n在木樁旁打瞌睡。";
+"guest.tit.story" = "山雀來玩，停下來歇一會兒。";
+"guest.squirrel.story" = "松鼠來玩，東張西望。";
+"guest.hedgehog.story" = "刺蝟來玩，正在曬太陽。";
+"guest.rabbit.story" = "難得有隻兔子來玩。";
+"guest.owl.story" = "難得有隻貓頭鷹來，打著瞌睡。";
 "chance.guest_tit" = "山雀客人";
 "chance.guest_squirrel" = "松鼠客人";
 "chance.guest_hedgehog" = "刺蝟客人";

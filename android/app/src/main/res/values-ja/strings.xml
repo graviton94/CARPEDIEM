@@ -918,11 +918,11 @@
     <string name="recall_continue">今日のひとことに続ける</string>
     <string name="recall_continueLabel">%1$sのひとことに続けて</string>
     <string name="return_title">また来てくれてうれしい</string>
-    <string name="guest_tit_story">今日はヤマガラが遊びに来て\n杭にとまっています。</string>
-    <string name="guest_squirrel_story">今日はリスが遊びに来て\n木の下をのぞいています。</string>
-    <string name="guest_hedgehog_story">今日はハリネズミが遊びに来て\nハルのそばに座っています。</string>
-    <string name="guest_rabbit_story">めずらしくウサギが遊びに来ました。\n庭をそっと見て回っています。</string>
-    <string name="guest_owl_story">めずらしくフクロウが遊びに来ました。\n杭のそばでうとうとしています。</string>
+    <string name="guest_tit_story">ヤマガラが遊びに来て、ひと休みしています。</string>
+    <string name="guest_squirrel_story">リスが遊びに来て、きょろきょろしています。</string>
+    <string name="guest_hedgehog_story">ハリネズミが遊びに来て、ひなたぼっこ中。</string>
+    <string name="guest_rabbit_story">めずらしくウサギが遊びに来ました。</string>
+    <string name="guest_owl_story">めずらしくフクロウが来て、うとうとしています。</string>
     <string name="chance_guest_tit">ヤマガラのお客さん</string>
     <string name="chance_guest_squirrel">リスのお客さん</string>
     <string name="chance_guest_hedgehog">ハリネズミのお客さん</string>

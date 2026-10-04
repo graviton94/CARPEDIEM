@@ -918,11 +918,11 @@
     <string name="recall_continue">接著寫今天的一句話</string>
     <string name="recall_continueLabel">接著 %1$s 的一句話</string>
     <string name="return_title">很高興你回來了</string>
-    <string name="guest_tit_story">今天有隻山雀來玩\n停在木樁上。</string>
-    <string name="guest_squirrel_story">今天有隻松鼠來玩\n在樹下東看西看。</string>
-    <string name="guest_hedgehog_story">今天有隻刺蝟來玩\n坐在小日身邊。</string>
-    <string name="guest_rabbit_story">難得有隻兔子來玩\n靜靜地逛著花園。</string>
-    <string name="guest_owl_story">難得有隻貓頭鷹來玩\n在木樁旁打瞌睡。</string>
+    <string name="guest_tit_story">山雀來玩，停下來歇一會兒。</string>
+    <string name="guest_squirrel_story">松鼠來玩，東張西望。</string>
+    <string name="guest_hedgehog_story">刺蝟來玩，正在曬太陽。</string>
+    <string name="guest_rabbit_story">難得有隻兔子來玩。</string>
+    <string name="guest_owl_story">難得有隻貓頭鷹來，打著瞌睡。</string>
     <string name="chance_guest_tit">山雀客人</string>
     <string name="chance_guest_squirrel">松鼠客人</string>
     <string name="chance_guest_hedgehog">刺蝟客人</string>

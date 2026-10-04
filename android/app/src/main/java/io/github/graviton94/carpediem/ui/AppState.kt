@@ -41,6 +41,9 @@ enum class Care { CALM_BREATH, BOX_BREATH, LOOK, SEND_TO, SLEEP_BREATH, MORNING_
 val PAGE_HINTS = setOf("write", "memories", "flow", "stone")
 
 /** 화면이 보는 상태. 바뀌면 저장하고 위젯을 새로 그린다. */
+/** 정원이 저절로 말을 거는 알약 (꾸밈 · 절기 소식). 고요한 정원: 끔. */
+private const val DECOR_SAYS = false
+
 class AppState(private val context: Context) {
     val store = Store(context)
     var profile by mutableStateOf(store.profile)
@@ -607,9 +610,8 @@ class AppState(private val context: Context) {
         if (d.card.id !in seasonCards) { val next = seasonCards + d.card.id; store.seasonCards = next; seasonCards = next }
         val now = listOf(d.stage, d.tree.ordinal, d.hang.ordinal, if (d.kite) 1 else 0, d.ribbons.size, d.buds).joinToString(",") + "," + d.card.id + "," + (if (d.letter) 1 else 0)
         val before = store.decorSeen; store.decorSeen = now
-        // 꾸밈을 처음 본 날 한 번만: 눌러 볼 수 있다는 것을 조용히 알려 줌
-        if (before == null) { say(context.getString(R.string.decor_hint)); return }
-        if (before == now) return
+        // 상태 알림 (위 알약) 은 내가 한 일의 대답에만. 정원에 새로 생긴 것은 그림이 스스로 말하게 (자리만 기억)
+        if (before == null || before == now || !DECOR_SAYS) return
         val b = before.split(","); fun n(i: Int) = b.getOrNull(i)?.toIntOrNull() ?: 0
         val msg = when {
             d.tree.ordinal != n(1) -> R.string.decor_new_tree
@@ -640,6 +642,8 @@ class AppState(private val context: Context) {
         val t = termToday(today) ?: return
         if (store.termNoted == today.toString()) return
         store.termNoted = today.toString()
+        // 절기는 정원의 작은 변화 (TermTouches) 로만. 알약은 띄우지 않음
+        if (!DECOR_SAYS) return
         val id = context.resources.getIdentifier("term_${t.key}", "string", context.packageName)
         if (id != 0) say(context.getString(id))
     }

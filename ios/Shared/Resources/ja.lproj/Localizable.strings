@@ -916,11 +916,11 @@
 "recall.continue" = "今日のひとことに続ける";
 "recall.continueLabel" = "%1$@のひとことに続けて";
 "return.title" = "また来てくれてうれしい";
-"guest.tit.story" = "今日はヤマガラが遊びに来て\n杭にとまっています。";
-"guest.squirrel.story" = "今日はリスが遊びに来て\n木の下をのぞいています。";
-"guest.hedgehog.story" = "今日はハリネズミが遊びに来て\nハルのそばに座っています。";
-"guest.rabbit.story" = "めずらしくウサギが遊びに来ました。\n庭をそっと見て回っています。";
-"guest.owl.story" = "めずらしくフクロウが遊びに来ました。\n杭のそばでうとうとしています。";
+"guest.tit.story" = "ヤマガラが遊びに来て、ひと休みしています。";
+"guest.squirrel.story" = "リスが遊びに来て、きょろきょろしています。";
+"guest.hedgehog.story" = "ハリネズミが遊びに来て、ひなたぼっこ中。";
+"guest.rabbit.story" = "めずらしくウサギが遊びに来ました。";
+"guest.owl.story" = "めずらしくフクロウが来て、うとうとしています。";
 "chance.guest_tit" = "ヤマガラのお客さん";
 "chance.guest_squirrel" = "リスのお客さん";
 "chance.guest_hedgehog" = "ハリネズミのお客さん";

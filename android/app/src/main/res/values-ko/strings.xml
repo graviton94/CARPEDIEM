@@ -919,11 +919,11 @@
     <string name="recall_continue">오늘 한 줄에 이어 쓰기</string>
     <string name="recall_continueLabel">%1$s의 한 줄에 이어서</string>
     <string name="return_title">다시 와 줘서 반가워요</string>
-    <string name="guest_tit_story">오늘은 곤줄박이가 놀러 와서\n말뚝에 앉아 있어요.</string>
-    <string name="guest_squirrel_story">오늘은 다람쥐가 놀러 와서\n나무 밑을 살피고 있어요.</string>
-    <string name="guest_hedgehog_story">오늘은 고슴도치가 놀러 와서\n하루 곁에 앉아 있어요.</string>
-    <string name="guest_rabbit_story">드물게 토끼가 놀러 왔어요.\n정원을 조용히 둘러보고 있어요.</string>
-    <string name="guest_owl_story">드물게 부엉이가 놀러 왔어요.\n말뚝 옆에서 꾸벅꾸벅 졸고 있어요.</string>
+    <string name="guest_tit_story">곤줄박이가 놀러 와서 잠깐 쉬어 가요.</string>
+    <string name="guest_squirrel_story">다람쥐가 놀러 와서 두리번거려요.</string>
+    <string name="guest_hedgehog_story">고슴도치가 놀러 와서 볕을 쬐고 있어요.</string>
+    <string name="guest_rabbit_story">드물게 토끼가 놀러 왔어요.</string>
+    <string name="guest_owl_story">드물게 부엉이가 놀러 와서 꾸벅꾸벅 졸아요.</string>
     <string name="chance_guest_tit">곤줄박이 손님</string>
     <string name="chance_guest_squirrel">다람쥐 손님</string>
     <string name="chance_guest_hedgehog">고슴도치 손님</string>

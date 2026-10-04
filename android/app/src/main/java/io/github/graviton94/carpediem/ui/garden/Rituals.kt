@@ -497,35 +497,17 @@ private const val BLOOMED_SHOWN = 60
 
 // ───────────────────────── 정원 손님 ─────────────────────────
 
-/** 오늘 놀러 온 손님 이야기 (그날 처음 열 때 한 번). 누르거나 조금 지나면 사라짐. */
-@Composable
-internal fun GreetingCard(guest: String, onDone: () -> Unit) {
-    val p = Theme.palette
-    val ctx = LocalContext.current
-    LaunchedEffect(guest) { delay(COMFORT_MS); onDone() }
-    fun res(name: String) = ctx.resources.getIdentifier(name, "string", ctx.packageName).takeIf { it != 0 }?.let { ctx.getString(it) }.orEmpty()
-    val name = remember(guest) { res("chance_guest_$guest") }
-    val story = remember(guest) { res("guest_${guest}_story") }
-    // 한 줄 높이로 (그림 왼쪽, 이름 · 이야기 오른쪽): 정원 그림을 가리지 않게
-    Row(
-        Modifier.fillMaxWidth().crayonBox(Theme.gc.paper, G.Radius.box, G.Stroke.chip, 1600).clickable(onClick = onDone)
-            .padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp2).semantics(mergeDescendants = true) { liveRegion = LiveRegionMode.Polite },
-        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp3),
-    ) {
-        Image(GardenArt.image(ctx, "guest_$guest.webp"), null, Modifier.size(Theme.unit * 34f))
-        Column(Modifier.weight(1f)) {
-            if (name.isNotEmpty()) TokenText(name, Tokens.TypeScale.callout.serif())
-            if (story.isNotEmpty()) TokenText(story.replace('\n', ' '), Tokens.TypeScale.footnote, color = p.secondary)
-        }
-    }
-}
+/** 손님을 눌렀을 때의 한마디 (정원 위 글자 자리에, 다른 말 대신 잠깐). */
+internal fun guestLine(ctx: android.content.Context, guest: String): String =
+    ctx.resources.getIdentifier("guest_${guest}_story", "string", ctx.packageName).takeIf { it != 0 }?.let { ctx.getString(it).replace('\n', ' ') }.orEmpty()
 
 private const val GUEST_SIZE = 40f
 
 /** 손님 그림 (한지로 오린 그림, guest_*.webp 40 × 40 상자, 발 = 아래에서 3/40). x = 발 자리, gy = 땅. */
 @Composable
-internal fun GuestFigure(guest: String, x: Dp, gy: Dp) {
+internal fun GuestFigure(guest: String, x: Dp, gy: Dp, onTap: () -> Unit) {
     val ctx = LocalContext.current
     val w = Theme.unit * GUEST_SIZE
-    Image(GardenArt.image(ctx, "guest_$guest.webp"), null, Modifier.offset(x - w / 2, gy - w * (37f / 40f)).size(w))
+    val label = remember(guest) { ctx.resources.getIdentifier("chance_guest_$guest", "string", ctx.packageName).takeIf { it != 0 }?.let { ctx.getString(it) }.orEmpty() }
+    Image(GardenArt.image(ctx, "guest_$guest.webp"), label, Modifier.offset(x - w / 2, gy - w * (37f / 40f)).size(w).clickable(onClick = onTap))
 }

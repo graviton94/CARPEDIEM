@@ -288,10 +288,11 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
     val guide = remember { GuideTargets() }
     val touring = !bare && !state.guideDone
     // 걱정한 밤 다음 아침의 한마디 (06): 오늘 처음 정원을 열 때 한 번 (보여 준 날을 바로 적어 둠)
+    // 고요한 정원: 정원 위 글자는 한 번에 하나 (한마디가 있으면 오늘의 문장 · 질문 · 숨 권유 · 아래 쪽지가 쉼)
     var comfort by remember { mutableStateOf<String?>(null) }
-    var greet by remember { mutableStateOf(false) }
     if (!bare) LaunchedEffect(day0, state.guideDone, state.guest) {
-        if (state.guideDone && state.greetingDue(day0)) { greet = true; state.greeted(day0) }
+        // 손님은 말없이 와 있을 뿐 (만난 것만 적어 둠). 누르면 그때 한마디
+        if (state.guideDone && state.greetingDue(day0)) state.greeted(day0)
         if (state.guideDone && state.comfortDue(day0)) { comfort = dayLine(ctx, "comfort_", day0); state.comfortSeen(day0) }
     }
 
@@ -350,7 +351,8 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
 
                 // 위: 남은 시간 · 단위 · 오늘의 문장
                 if (!bare) Column(
-                    Modifier.fillMaxWidth().statusBarsPadding().padding(horizontal = margin).onGloballyPositioned { c -> topBottom = with(density) { (c.boundsInParent().bottom).toDp() } },
+                    // 글자는 늘 그림 (해 · 달 · 연 · 우연한 순간) 위에
+                    Modifier.fillMaxWidth().zIndex(3f).statusBarsPadding().padding(horizontal = margin).onGloballyPositioned { c -> topBottom = with(density) { (c.boundsInParent().bottom).toDp() } },
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp2),
                 ) {
@@ -377,7 +379,9 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                     }
                     val question = state.question
                     // 오늘의 질문은 답하기 전까지만: 오늘 한 줄을 남겼으면 (답했든 아니든) 다시 오늘의 문장으로
-                    if (question != null && !state.sentOn(now.toLocalDate())) Box(Modifier.guideTarget(guide, "words")) { QuestionBlock(state, question, sent = false) {
+                    val quiet = comfort
+                    if (quiet != null) ComfortWords(quiet) { comfort = null }
+                    else if (question != null && !state.sentOn(now.toLocalDate())) Box(Modifier.guideTarget(guide, "words")) { QuestionBlock(state, question, sent = false) {
                         // 한 줄로 답하기: 기록 페이지의 오늘의 한 줄로
                         state.answer(); turnTo(1)
                     } } else state.quote?.let { q ->
@@ -395,14 +399,12 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                             if (!sleepy) TokenText(stringResource(R.string.words_next), Tokens.TypeScale.caption1, color = p.secondary, weight = FontWeight.Normal)
                         }
                     }
-                    // 걱정한 밤 다음 아침 (06): 하루의 한마디만 (묻지 않음, 누르거나 조금 지나면 사라짐)
-                    // 돌아온 날 (09): 빠진 날 대신 손님 이야기 (한마디보다 먼저)
-                    if (greet) state.guest?.let { g -> GreetingCard(g) { greet = false } }
-                    else comfort?.let { c -> ComfortWords(c) { comfort = null } }
                     // 저녁 7시 이후 · 밤: 하루 닫기 (한 줄 → 고마움 → 등불) · 아침: 씨앗 하나 (04), 심었거나 넘겼으면 하루를 여는 숨 1분
                     // 숨은 누르면 바로 가지 않고 “… 하러 갈까요?” 한 번 묻기
-                    if (isNight(now) || now.hour >= CLOSE_DAY_FROM) CloseDayEntry(state.sentOn(day0), onCloseDay)
-                    else if (Labels.part(now) == io.github.graviton94.carpediem.core.DayPart.MORNING && state.breaths.none { it.first == now.toLocalDate() })
+                    if (quiet != null) Unit
+                    else if (isNight(now) || now.hour >= CLOSE_DAY_FROM) CloseDayEntry(state.sentOn(day0), onCloseDay)
+                    // 아침 숨 권유는 씨앗 쪽지가 없을 때만 (아침 권유도 하나만)
+                    else if (Labels.part(now) == io.github.graviton94.carpediem.core.DayPart.MORNING && state.breaths.none { it.first == now.toLocalDate() } && !(state.seedDue(now) && !touring))
                         TokenText(stringResource(R.string.breath_morning), Tokens.TypeScale.footnote.serif(),
                             Modifier.clickable { askBreath = BreathKind.CALM to R.string.breath_morning }.padding(Tokens.Space.sp2), color = p.secondary)
                     askBreath?.let { (kind, name) ->
@@ -526,8 +528,9 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 // 정원 손님 (우연히 놀러 온 날): 맨 오른쪽 돌 위에 올라앉음 (돌을 가리지 않게). 하루 혼자면 하루 곁 땅에.
                 if (!bare) state.guest?.let { g ->
                     val i = slots.indices.maxBy { xs[it].value }; val sl = slots[i]; val m = sl.art.meta
-                    if (slots.size > 1) GuestFigure(g, xs[i], gy - sl.scale * (m.ground - m.bbox.top) + u * 2f)
-                    else GuestFigure(g, xs[i] + sl.scale * (m.bbox.width / 2f) + u * 24f, gy + u * 2f)
+                    val say = { comfort = guestLine(ctx, g) }
+                    if (slots.size > 1) GuestFigure(g, xs[i], gy - sl.scale * (m.ground - m.bbox.top) + u * 2f, say)
+                    else GuestFigure(g, xs[i] + sl.scale * (m.bbox.width / 2f) + u * 24f, gy + u * 2f, say)
                 }
                 // 우연한 순간 (한 번에 하나, 몇 초 뒤 사라짐)
                 if (!bare) state.chance?.let { c -> ChanceLayer(c, now, real, gy, xs[0], u * G.Decor.treeX, x1, topBottom + u * G.Layout.minSkyGap, back = false) { seen -> state.chanceDone(seen, c) } }
@@ -551,7 +554,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 if (!bare && state.chance == null) MoodWeather(state, now, gy - haruAbove)   // 한 번에 하나만
                 // 아래, 엄지가 닿는 곳: 생일 한 줄 · 도착한 것 한 장 · 정원에서 하는 일 (숨, 쉼 · 돌멍하기 · 돌 더하기)
                 if (!bare) Column(
-                    Modifier.align(Alignment.BottomCenter).fillMaxWidth().padding(horizontal = margin).padding(bottom = Tokens.Space.sp3)
+                    Modifier.align(Alignment.BottomCenter).fillMaxWidth().zIndex(3f).padding(horizontal = margin).padding(bottom = Tokens.Space.sp3)
                         .onGloballyPositioned { c -> blockH = with(density) { c.size.height.toDp() } },
                     verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp2),
                 ) {
@@ -571,6 +574,8 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                     val creditsYear = state.creditsDue(today)
                     val ringNew = remember(state.lines, today) { io.github.graviton94.carpediem.core.Rings.newToday(profile.birthDate, today, state.lines) }
                     when {
+                        // 위에 한마디가 떠 있는 동안은 아래 쪽지도 쉼 (화면에 말 거는 것은 하나만)
+                        comfort != null -> Unit
                         capsule != null -> RecallNote(stringResource(R.string.capsule_opened)) { capsuleOpen = capsule }
                         // 12월 마지막 열흘 (08): 올해의 엔딩 크레딧 (한 번 보면 다시 권하지 않음)
                         creditsYear != null -> RecallNote(stringResource(R.string.credits_ready)) { state.creditsSeen(creditsYear); onCredits(creditsYear) }

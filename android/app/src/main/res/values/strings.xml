@@ -919,11 +919,11 @@
     <string name="recall_continue">Continue in today\'s line</string>
     <string name="recall_continueLabel">Continuing from %1$s</string>
     <string name="return_title">So glad you\'re back</string>
-    <string name="guest_tit_story">A little tit dropped by today\nand is sitting on the post.</string>
-    <string name="guest_squirrel_story">A squirrel dropped by today\nand is looking under the tree.</string>
-    <string name="guest_hedgehog_story">A hedgehog dropped by today\nand is sitting beside Haru.</string>
-    <string name="guest_rabbit_story">A rare visitor: a rabbit\nis quietly looking around the garden.</string>
-    <string name="guest_owl_story">A rare visitor: an owl\nis dozing by the post.</string>
+    <string name="guest_tit_story">A little tit dropped by for a rest.</string>
+    <string name="guest_squirrel_story">A squirrel dropped by and is looking around.</string>
+    <string name="guest_hedgehog_story">A hedgehog dropped by to sit in the sun.</string>
+    <string name="guest_rabbit_story">A rare visitor: a rabbit dropped by.</string>
+    <string name="guest_owl_story">A rare visitor: an owl dropped by for a nap.</string>
     <string name="chance_guest_tit">Tit guest</string>
     <string name="chance_guest_squirrel">Squirrel guest</string>
     <string name="chance_guest_hedgehog">Hedgehog guest</string>
