@@ -92,46 +92,97 @@ object Rings {
 
 /**
  * 한 해의 엔딩 크레딧 (08): 인트로 → 봄 → 여름 → 가을 → 겨울 → 아웃트로, 모두 60 ~ 80초.
- * 계절마다 그 계절 정원 위로 그때의 한 줄이 날짜와 함께 올라간다. 한 줄이 적은 계절은 짧게 (10초), 많은 계절은 길게 (15초).
- * 고르기: 고마움 · 기쁨 · 희망을 먼저, 나머지는 고르게. 무거운 마음도 넣되 연달아 나오지 않게. 계절마다 많아야 PER_SEASON 줄.
+ * 계절마다 그 계절의 일들이 한 장씩 빠르게 지나간다 (한 장 ITEM_MS): 내가 남긴 한 줄만이 아니라 가족의 생일, ‘함께한 지 n일 · n년’,
+ * 특별한 날, 만난 순간 · 손님, 핀 씨앗, 열린 항아리, 하루를 처음 만난 날.
+ * 고르기: 사람의 일 (생일 · 인연 · 특별한 날) 먼저, 그다음 순간 · 씨앗 · 항아리, 남은 자리는 한 줄 (고마움 · 기쁨 · 희망 먼저, 무거운 마음은 연달아 두지 않음).
  */
 enum class CreditPart { INTRO, SEASON, OUTRO }
 
-class CreditScene(val part: CreditPart, val season: Season?, val startMs: Long, val lengthMs: Long, val lines: List<DayLine>)
+enum class CreditKind { LINE, MY_BIRTHDAY, BIRTHDAY, TOGETHER_DAYS, TOGETHER_YEARS, SPECIAL, MOMENT, SEED, CAPSULE, FIRST }
+
+/** 크레딧 한 장. a · b 는 이름 · 수 같은 글감 (말은 앱이 붙임). */
+data class CreditItem(val date: LocalDate, val kind: CreditKind, val a: String = "", val b: String = "", val line: DayLine? = null)
+
+class CreditScene(val part: CreditPart, val season: Season?, val startMs: Long, val lengthMs: Long, val items: List<CreditItem>) {
+    /** 계절 이름 다음, 한 장씩 보이는 때. */
+    fun itemAt(ms: Long): Pair<CreditItem, Float>? {
+        if (items.isEmpty()) return null
+        val t = ms - startMs - Credits.HEADER_MS; if (t < 0) return null
+        val each = (lengthMs - Credits.HEADER_MS) / items.size
+        val i = (t / each).toInt().coerceAtMost(items.size - 1)
+        return items[i] to ((t - i * each).toFloat() / each).coerceIn(0f, 1f)
+    }
+}
 
 object Credits {
-    const val INTRO_MS = 8_000L
-    const val OUTRO_MS = 12_000L
+    const val INTRO_MS = 7_000L
+    const val OUTRO_MS = 13_000L
+    const val HEADER_MS = 2_000L
+    const val ITEM_MS = 2_600L
     const val MIN_SEASON_MS = 10_000L
     const val MAX_SEASON_MS = 15_000L
-    const val PER_SEASON = 6
+    const val PER_SEASON = 5
     val ORDER = listOf(Season.SPRING, Season.SUMMER, Season.AUTUMN, Season.WINTER)
+    private val PEOPLE = setOf(CreditKind.MY_BIRTHDAY, CreditKind.BIRTHDAY, CreditKind.TOGETHER_DAYS, CreditKind.TOGETHER_YEARS, CreditKind.SPECIAL, CreditKind.FIRST)
 
-    /** 그 해의 계절 (달력의 해, 겨울은 1 · 2 · 12월). */
-    fun seasonLines(lines: List<DayLine>, year: Int, s: Season): List<DayLine> =
-        lines.filter { it.date.year == year && it.text.isNotBlank() && Memories.seasonOf(it.date) == s }.sortedBy { it.date }
+    /** 인연의 날 수 가운데 크레딧에 올릴 것: 100 · 200 · 300 · 500 · 1000 · 그 뒤 1000마다. */
+    fun milestone(days: Long): Boolean = days in setOf(100L, 200L, 300L, 500L) || (days >= 1000 && days % 1000 == 0L)
 
-    fun pick(list: List<DayLine>, n: Int = PER_SEASON): List<DayLine> {
-        if (list.size <= n) return list
-        val warm = setOf(Feeling.THANKS, Feeling.JOY, Feeling.HOPE)
-        val first = list.filter { it.feeling in warm }.let { w -> if (w.size <= n / 2) w else (0 until n / 2).map { w[it * w.size / (n / 2)] } }
-        val rest = list.filterNot { it in first }
-        val need = n - first.size
-        val even = if (rest.isEmpty() || need <= 0) emptyList() else (0 until need).map { rest[it * rest.size / need] }.distinct()
-        val chosen = (first + even).distinct().sortedBy { it.date }.toMutableList()
-        // 무거운 마음이 연달아 나오면 뒤의 것을 뺌
-        var i = 1
-        while (i < chosen.size) { if (chosen[i].feeling in Letters.HEAVY && chosen[i - 1].feeling in Letters.HEAVY) chosen.removeAt(i) else i++ }
+    /**
+     * 그 해의 일들 (계절 순서와 상관없이 날짜순). met = "key:yyyy-mm-dd" (만난 순간 · 손님), start = 하루를 처음 만난 날.
+     */
+    fun events(year: Int, lines: List<DayLine>, birth: LocalDate?, people: List<Person>, special: List<SpecialDay>, met: List<String>,
+               seeds: List<Seed>, capsules: List<Capsule>, start: LocalDate?): List<CreditItem> {
+        val out = ArrayList<CreditItem>()
+        lines.filter { it.date.year == year && it.text.isNotBlank() }.forEach { out += CreditItem(it.date, CreditKind.LINE, line = it) }
+        birth?.let { b -> if (year > b.year) out += CreditItem(Family.birthdayIn(b, year), CreditKind.MY_BIRTHDAY, b = "${year - b.year}") }
+        people.forEach { p ->
+            p.birth?.let { b -> if (year >= b.year) out += CreditItem(Family.birthdayIn(b, year), CreditKind.BIRTHDAY, p.name) }
+            Memories.from(p)?.let { t ->
+                (1..120).forEach { n -> val d = Family.birthdayIn(t, t.year + n); if (d.year == year) out += CreditItem(d, CreditKind.TOGETHER_YEARS, p.name, "$n") }
+                val from = ChronoUnit.DAYS.between(t, LocalDate.of(year, 1, 1)); val to = ChronoUnit.DAYS.between(t, LocalDate.of(year, 12, 31))
+                for (n in maxOf(1L, from)..to) if (milestone(n)) out += CreditItem(t.plusDays(n), CreditKind.TOGETHER_DAYS, p.name, "$n")
+            }
+        }
+        special.filter { it.date.year < year }.forEach { s -> out += CreditItem(Family.birthdayIn(s.date, year), CreditKind.SPECIAL, s.name, "${year - s.date.year}") }
+        met.mapNotNull { r -> r.split(':', limit = 2).takeIf { it.size == 2 }?.let { (k, d) -> runCatching { LocalDate.parse(d) }.getOrNull()?.let { k to it } } }
+            .filter { it.second.year == year }.forEach { (k, d) -> out += CreditItem(d, CreditKind.MOMENT, k) }
+        seeds.filter { it.date.year == year && it.state == SeedState.BLOOMED }.forEach { out += CreditItem(it.date, CreditKind.SEED, it.text) }
+        capsules.filter { it.opened && it.opens.year == year }.forEach { out += CreditItem(it.opens, CreditKind.CAPSULE, it.written.year.toString()) }
+        start?.takeIf { it.year == year }?.let { out += CreditItem(it, CreditKind.FIRST) }
+        return out.sortedBy { it.date }
+    }
+
+    fun pick(items: List<CreditItem>, n: Int = PER_SEASON): List<CreditItem> {
+        val people = items.filter { it.kind in PEOPLE }.let { even(it, minOf(it.size, (n + 1) / 2)) }
+        val others = items.filter { it.kind != CreditKind.LINE && it.kind !in PEOPLE }.let { even(it, minOf(it.size, maxOf(1, (n - people.size) / 2))) }
+        val room = n - people.size - others.size
+        val lines = pickLines(items.filter { it.kind == CreditKind.LINE }, room)
+        val chosen = (people + others + lines).sortedBy { it.date }.toMutableList()
+        // 남은 자리가 있으면 사람의 일 · 순간을 더 (한 줄이 적은 계절)
+        if (chosen.size < n) items.filter { it !in chosen && it.kind != CreditKind.LINE }.take(n - chosen.size).let { chosen += it; chosen.sortBy { it.date } }
         return chosen
     }
 
-    fun plan(lines: List<DayLine>, year: Int): List<CreditScene> {
+    private fun <T> even(l: List<T>, k: Int): List<T> = if (k <= 0) emptyList() else if (l.size <= k) l else (0 until k).map { l[it * l.size / k] }
+
+    private fun pickLines(list: List<CreditItem>, n: Int): List<CreditItem> {
+        if (n <= 0) return emptyList()
+        val warm = setOf(Feeling.THANKS, Feeling.JOY, Feeling.HOPE)
+        val first = even(list.filter { it.line?.feeling in warm }, n / 2 + n % 2)
+        val chosen = (first + even(list.filterNot { it in first }, n - first.size)).distinct().sortedBy { it.date }.toMutableList()
+        var i = 1
+        while (i < chosen.size) { if (chosen[i].line?.feeling in Letters.HEAVY && chosen[i - 1].line?.feeling in Letters.HEAVY) chosen.removeAt(i) else i++ }
+        return chosen
+    }
+
+    fun plan(events: List<CreditItem>, year: Int): List<CreditScene> {
         val out = ArrayList<CreditScene>()
         out += CreditScene(CreditPart.INTRO, null, 0, INTRO_MS, emptyList())
         var t = INTRO_MS
         ORDER.forEach { s ->
-            val picked = pick(seasonLines(lines, year, s))
-            val len = (MIN_SEASON_MS + picked.size * 1_000L).coerceIn(MIN_SEASON_MS, MAX_SEASON_MS)
+            val picked = pick(events.filter { Memories.seasonOf(it.date) == s && it.date.year == year })
+            val len = (HEADER_MS + picked.size * ITEM_MS).coerceIn(MIN_SEASON_MS, MAX_SEASON_MS)
             out += CreditScene(CreditPart.SEASON, s, t, len, picked); t += len
         }
         out += CreditScene(CreditPart.OUTRO, null, t, OUTRO_MS, emptyList())

@@ -953,4 +953,23 @@
     <string name="credits_mood">最常停留的心情</string>
     <string name="credits_next">%1$s 年再見</string>
     <string name="seed_note">今天要在心裡種下一顆種子嗎？</string>
+    <string name="credits_countLines">句話</string>
+    <string name="credits_countThanks">感謝</string>
+    <string name="credits_countBreaths">呼吸</string>
+    <string name="credits_seasonCount">%1$s 句・感謝 %2$s・呼吸 %3$s</string>
+    <string name="credits_myBirthday">第 %1$s 個生日</string>
+    <string name="credits_birthday">%1$s 的生日</string>
+    <string name="credits_togetherDays">%1$s・一起 %2$s 天</string>
+    <string name="credits_togetherYears">%1$s・一起 %2$s 年</string>
+    <string name="credits_special">「%1$s」滿 %2$s 年</string>
+    <string name="credits_moment">相遇的瞬間・%1$s</string>
+    <string name="credits_seed">開花的種子・%1$s</string>
+    <string name="credits_capsule">%1$s 年的我寄來的罐子打開了</string>
+    <string name="credits_first">第一次遇見小日的日子</string>
+    <string name="credits_personDays">%1$s・一起 %2$s 天</string>
+    <string name="credits_guests">特別演出</string>
+    <string name="credits_keptLine">%1$s 句話・感謝 %2$s 次・呼吸 %3$s 次</string>
+    <string name="credits_bloomed">%1$s 朵</string>
+    <string name="credits_made">創作者</string>
+    <string name="credits_madeBy">活過每一天的我</string>
 </resources>

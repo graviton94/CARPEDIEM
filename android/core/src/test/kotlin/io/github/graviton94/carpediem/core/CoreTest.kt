@@ -641,15 +641,27 @@ class ChancesTest {
         val empty = Credits.plan(emptyList(), 2026)
         assertEquals(6, empty.size); assertTrue(Credits.total(empty) in 60_000L..80_000L)
         val many = (0 until 365).map { DayLine(d(2026, 1, 1).plusDays(it.toLong()), "줄 $it", Feeling.entries[it % Feeling.entries.size]) }
-        val full = Credits.plan(many, 2026)
+        val mom = Person("m", "엄마", Kind.PERSON, birth = d(1964, 4, 2), seed = 1, metOn = d(2026, 1, 1))
+        val pet = Person("p", "콩이", Kind.PET, Species.DOG, d(2023, 6, 1), seed = 2, metOn = d(2026, 1, 1))
+        val ev = Credits.events(2026, many, d(2000, 5, 12), listOf(mom, pet), listOf(SpecialDay(d(2020, 9, 9), "첫 출근")), listOf("rainbow:2026-07-03", "guest_owl:2026-11-20", "snail:2025-01-01"),
+            listOf(Seed(d(2026, 3, 3), "웃기", SeedState.BLOOMED)), emptyList(), d(2026, 2, 1))
+        assertTrue(ev.any { it.kind == CreditKind.BIRTHDAY && it.a == "엄마" && it.date == d(2026, 4, 2) })
+        assertTrue(ev.any { it.kind == CreditKind.MY_BIRTHDAY && it.b == "26" })
+        assertTrue(ev.any { it.kind == CreditKind.TOGETHER_YEARS && it.a == "콩이" && it.b == "3" && it.date == d(2026, 6, 1) })
+        assertTrue(ev.any { it.kind == CreditKind.TOGETHER_DAYS && it.a == "콩이" && it.b == "1000" })
+        assertTrue(ev.any { it.kind == CreditKind.SPECIAL && it.b == "6" })
+        assertEquals(2, ev.count { it.kind == CreditKind.MOMENT }); assertTrue(ev.any { it.kind == CreditKind.FIRST })
+        val full = Credits.plan(ev, 2026)
         assertTrue(Credits.total(full) in 60_000L..80_000L)
         full.filter { it.part == CreditPart.SEASON }.forEach { sc ->
-            assertTrue(sc.lines.size <= Credits.PER_SEASON); assertTrue(sc.lines.isNotEmpty())
-            assertTrue(sc.lines.all { Memories.seasonOf(it.date) == sc.season })
-            assertTrue(sc.lines.zipWithNext().none { (a, b) -> a.feeling in Letters.HEAVY && b.feeling in Letters.HEAVY })
-            assertEquals(sc.lines.sortedBy { it.date }, sc.lines)
+            assertTrue(sc.items.size <= Credits.PER_SEASON); assertTrue(sc.items.isNotEmpty())
+            assertTrue(sc.items.all { Memories.seasonOf(it.date) == sc.season })
+            assertEquals(sc.items.sortedBy { it.date }, sc.items)
+            assertTrue(sc.items.any { it.kind == CreditKind.LINE })
+            assertEquals(sc.items.first(), sc.itemAt(sc.startMs + Credits.HEADER_MS)?.first); assertEquals(null, sc.itemAt(sc.startMs))
         }
-        assertEquals(CreditPart.INTRO, Credits.at(full, 0)?.part); assertEquals(CreditPart.OUTRO, Credits.at(full, Credits.total(full) - 1)?.part)
-        assertEquals(null, Credits.at(full, Credits.total(full)))
+        assertTrue(full.first { it.season == Season.SPRING }.items.any { it.kind == CreditKind.BIRTHDAY })
+        assertEquals(CreditPart.INTRO, Credits.at(full, 0)?.part); assertEquals(null, Credits.at(full, Credits.total(full)))
+        assertTrue(Credits.milestone(1000)); assertTrue(Credits.milestone(100)); assertEquals(false, Credits.milestone(400))
     }
 }

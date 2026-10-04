@@ -247,7 +247,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
     var askBreath by remember { mutableStateOf<Pair<BreathKind, Int>?>(null) }
     val sleepy = !bare && isNight(now)
     // 캡처용: 이번 달 편지를 바로 펼침. 고르기만 그리기 중에, ‘연 편지’로 남기기는 그 뒤에
-    var gardenYearOpen by remember { mutableStateOf<Int?>(null) }
+    var gardenYearOpen by remember { mutableStateOf<Int?>(if (state.debugGardenYear && !bare) now.year else null) }
     var capsuleOpen by remember { mutableStateOf<io.github.graviton94.carpediem.core.Capsule?>(null) }
     var ringOpen by remember { mutableStateOf<Int?>(null) }
     var seedOpen by remember { mutableStateOf(false) }

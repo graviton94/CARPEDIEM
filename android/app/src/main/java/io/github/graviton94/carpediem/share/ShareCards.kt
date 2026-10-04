@@ -248,59 +248,77 @@ object ShareCards {
     }
 
     /**
-     * 정원의 한 해 (S2): 그해의 계절 조각 넷 (받지 못한 계절은 빈 자리) · 말뚝에 걸린 것 · 연 리본 · 만난 순간들 · 작은 하루.
-     * 숫자는 쓰지 않고 그림으로만. cards = 그해에 받은 조각, met = 그해에 처음 만난 순간의 키.
+     * 정원의 한 해 (S2): 위는 그해의 작은 정원 한 장 (하늘 · 땅 · 나무 · 말뚝과 걸린 것 · 연과 리본 · 하루 · 만난 순간들),
+     * 아래는 계절 조각 넷 (받지 못한 계절은 빈 자리와 계절 이름). 숫자는 쓰지 않고 그림으로만.
      */
     fun gardenYear(ctx: Context, title: String, cards: List<io.github.graviton94.carpediem.core.SeasonCard>, hang: io.github.graviton94.carpediem.core.Hang,
-                   ribbons: List<Feeling?>, met: List<String>, season: io.github.graviton94.carpediem.core.Season, seed: Long): Bitmap {
+                   ribbons: List<Feeling?>, met: List<String>, season: io.github.graviton94.carpediem.core.Season, seed: Long,
+                   tree: io.github.graviton94.carpediem.core.Tree? = null, stage: Int = 2, kite: Boolean = false): Bitmap {
         val w = S.lineW.toInt(); val h = S.lineH.toInt(); val pad = S.pad
         val (b, c) = base(w, h)
         val tw = (w - pad * 2).toInt()
-        var y = pad * 1.3f
-        y += text(c, title, paint(ctx, S.text * 0.9f, ink), pad, y, tw) + pad * 0.7f
-        // 계절 조각 넷: 봄 · 여름 · 가을 · 겨울 순서로 한 줄
-        val cell = (w - pad * 2) / 4f; val ch = cell * 0.8f
+        var y = pad * 1.2f
+        y += text(c, title, paint(ctx, S.text * 0.9f, ink), pad, y, tw) + pad * 0.5f
+        val key = when (season) { io.github.graviton94.carpediem.core.Season.SPRING -> "spring"; io.github.graviton94.carpediem.core.Season.SUMMER -> "summer"; io.github.graviton94.carpediem.core.Season.AUTUMN -> "autumn"; io.github.graviton94.carpediem.core.Season.WINTER -> "winter" }
+        // ── 작은 정원 한 장: 둥근 틀 안에 하늘과 땅
+        val sceneH = h * 0.5f
+        val scene = RectF(pad, y, w - pad, y + sceneH)
+        val r = pad * 0.6f
+        c.save()
+        val clip = android.graphics.Path().apply { addRoundRect(scene, r, r, android.graphics.Path.Direction.CW) }
+        c.clipPath(clip)
+        art(ctx, "sky_$key.jpg")?.let { sky -> val sh = scene.width() * sky.height / sky.width; c.drawBitmap(sky, null, RectF(scene.left, scene.top, scene.right, scene.top + maxOf(sh, scene.height())), Paint(Paint.FILTER_BITMAP_FLAG)) }
+        val gy = scene.bottom - sceneH * 0.2f   // 땅선
+        art(ctx, "strip_$key.webp")?.let { st -> val sh = scene.width() * st.height / st.width; c.drawBitmap(st, null, RectF(scene.left, gy - sh * 0.18f, scene.right, gy - sh * 0.18f + sh), Paint(Paint.FILTER_BITMAP_FLAG)) }
+        // 나무 (왼쪽) · 말뚝과 걸린 것 (오른쪽) · 연과 리본 (하늘)
+        tree?.let { t -> put(c, art(ctx, "tree_${t.key}_${key}_${stage.coerceIn(0, 3)}.webp"), scene.left + scene.width() * 0.2f, gy + sceneH * 0.02f, sceneH * 0.78f) }
+        val postX = scene.left + scene.width() * 0.84f; val postH = sceneH * 0.5f
+        put(c, art(ctx, "post_$key.webp"), postX, gy + sceneH * 0.02f, postH)
+        val hangName = when (hang) { io.github.graviton94.carpediem.core.Hang.CHIME -> "post_chime.webp"; io.github.graviton94.carpediem.core.Hang.BELL -> "post_bell.webp"; io.github.graviton94.carpediem.core.Hang.LANTERN -> "post_lantern.webp"; else -> null }
+        hangName?.let { put(c, art(ctx, it), postX, gy + sceneH * 0.02f, postH) }
+        if (kite || ribbons.isNotEmpty()) {
+            val kx = scene.left + scene.width() * 0.6f; val ky = scene.top + sceneH * 0.36f; val kh = sceneH * 0.22f
+            val string = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = inkSoft; alpha = 140; strokeWidth = 2f; style = Paint.Style.STROKE }
+            c.drawPath(android.graphics.Path().apply { moveTo(kx, ky); quadTo(kx + kh * 0.6f, ky + kh * 1.6f, postX - pad * 0.1f, gy - postH * 0.85f) }, string)
+            put(c, art(ctx, "kite.webp"), kx, ky, kh)
+            val rp = Paint(Paint.ANTI_ALIAS_FLAG).apply { strokeWidth = 7f; strokeCap = Paint.Cap.ROUND }
+            ribbons.forEachIndexed { i, f ->
+                rp.color = io.github.graviton94.carpediem.ui.garden.feelingColor(f).toArgb()
+                val x = kx + (i - (ribbons.size - 1) / 2f) * 16f
+                c.drawLine(x, ky, x + 5f, ky + kh * 0.7f, rp)
+            }
+        }
+        // 만난 순간들: 하늘 위쪽에 작게 (그림이 있으면 그림, 아니면 작은 빛)
+        if (met.isNotEmpty()) {
+            val mh = sceneH * 0.13f; val step = minOf(scene.width() * 0.8f / met.size, mh * 1.5f); val x0 = scene.centerX() - step * (met.size - 1) / 2f; val my = scene.top + sceneH * 0.08f
+            met.forEachIndexed { i, k ->
+                val cx = x0 + step * i
+                val img = when (k) { "rainbow" -> art(ctx, "moment_rainbow.webp"); "aurora" -> art(ctx, "moment_aurora.webp"); "snail" -> art(ctx, "moment_snail.webp"); "wind" -> art(ctx, "wind_$key.webp"); "butterflies" -> art(ctx, "fly_body.webp"); else -> null }
+                if (img != null) put(c, img, cx, my + mh, mh * (if (k == "butterflies") 0.6f else 0.9f))
+                else {
+                    val col = if (k == "fireflies") Tokens.Garden.Night.Colors.firefly else androidx.compose.ui.graphics.Color.White
+                    val gp = Paint(Paint.ANTI_ALIAS_FLAG).apply { this.color = col.toArgb(); alpha = 200; style = if (k == "bubbles") Paint.Style.STROKE else Paint.Style.FILL; strokeWidth = 3f }
+                    c.drawCircle(cx - mh * 0.15f, my + mh * 0.55f, mh * 0.13f, gp); c.drawCircle(cx + mh * 0.18f, my + mh * 0.4f, mh * 0.09f, gp)
+                }
+            }
+        }
+        // 하루: 길 가운데, 땅 위
+        haru(c, seed, scene.centerX(), gy + sceneH * 0.01f, scene.width() * 0.17f)
+        c.restore()
+        c.drawRoundRect(scene, r, r, Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE; strokeWidth = 3f; color = ink })
+        y = scene.bottom + pad * 0.7f
+        // ── 계절 조각 넷: 봄 · 여름 · 가을 · 겨울
+        val cell = (w - pad * 2) / 4f; val ch = cell * 0.78f
         val dash = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE; strokeWidth = 3f; color = inkSoft; pathEffect = android.graphics.DashPathEffect(floatArrayOf(10f, 10f), 0f) }
+        val label = paint(ctx, S.small * 0.8f, inkSoft)
         io.github.graviton94.carpediem.core.Season.entries.forEachIndexed { i, s ->
             val cx = pad + cell * (i + 0.5f); val bottom = y + ch
             val card = cards.firstOrNull { it.season == s }
             if (card != null) put(c, art(ctx, "card_${card.key}.webp"), cx, bottom, ch * 0.92f)
-            else c.drawCircle(cx, bottom - ch / 2, ch * 0.28f, dash)
+            else c.drawRoundRect(RectF(cx - ch * 0.36f, bottom - ch * 0.85f, cx + ch * 0.36f, bottom - ch * 0.05f), 18f, 18f, dash)
+            val name = ctx.getString(when (s) { io.github.graviton94.carpediem.core.Season.SPRING -> R.string.season_spring; io.github.graviton94.carpediem.core.Season.SUMMER -> R.string.season_summer; io.github.graviton94.carpediem.core.Season.AUTUMN -> R.string.season_autumn; io.github.graviton94.carpediem.core.Season.WINTER -> R.string.season_winter })
+            text(c, name, label, cx - cell / 2, bottom + pad * 0.15f, cell.toInt())
         }
-        y += ch + pad * 0.6f
-        // 말뚝에 걸린 것 · 연 리본 (가운데 한 줄)
-        val midH = (h - y - pad * 4.2f).coerceAtLeast(pad) * 0.42f
-        val hangName = when (hang) { io.github.graviton94.carpediem.core.Hang.CHIME -> "post_chime.webp"; io.github.graviton94.carpediem.core.Hang.BELL -> "post_bell.webp"; io.github.graviton94.carpediem.core.Hang.LANTERN -> "post_lantern.webp"; else -> null }
-        val key = when (season) { io.github.graviton94.carpediem.core.Season.SPRING -> "spring"; io.github.graviton94.carpediem.core.Season.SUMMER -> "summer"; io.github.graviton94.carpediem.core.Season.AUTUMN -> "autumn"; io.github.graviton94.carpediem.core.Season.WINTER -> "winter" }
-        put(c, art(ctx, "post_$key.webp"), w * 0.3f, y + midH, midH)
-        hangName?.let { put(c, art(ctx, it), w * 0.3f, y + midH, midH) }
-        if (ribbons.isNotEmpty()) {
-            val rp = Paint(Paint.ANTI_ALIAS_FLAG).apply { strokeWidth = 9f; strokeCap = Paint.Cap.ROUND }
-            put(c, art(ctx, "kite.webp"), w * 0.68f, y + midH * 0.55f, midH * 0.55f)
-            ribbons.forEachIndexed { i, f ->
-                rp.color = io.github.graviton94.carpediem.ui.garden.feelingColor(f).toArgb()
-                val x = w * 0.68f + (i - (ribbons.size - 1) / 2f) * 22f; val top = y + midH * 0.58f
-                c.drawLine(x, top, x + 6f, top + midH * 0.36f, rp)
-            }
-        }
-        y += midH + pad * 0.5f
-        // 만난 순간들: 그림이 있는 것은 그림으로, 나머지는 작은 빛으로
-        if (met.isNotEmpty()) {
-            val mh = pad * 1.1f; val step = minOf((w - pad * 2) / met.size, mh * 1.4f); val x0 = w / 2f - step * (met.size - 1) / 2f
-            met.forEachIndexed { i, k ->
-                val cx = x0 + step * i
-                val img = when (k) { "rainbow" -> art(ctx, "moment_rainbow.webp"); "aurora" -> art(ctx, "moment_aurora.webp"); "snail" -> art(ctx, "moment_snail.webp"); "wind" -> art(ctx, "wind_$key.webp"); "butterflies" -> art(ctx, "fly_body.webp"); else -> null }
-                if (img != null) put(c, img, cx, y + mh, mh * (if (k == "butterflies") 0.6f else 0.9f))
-                else {
-                    val col = if (k == "fireflies") Tokens.Garden.Night.Colors.firefly else Tokens.Garden.Colors.inkSoft
-                    val gp = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = col.toArgb(); alpha = if (k == "fireflies") 230 else 120; style = if (k == "bubbles") Paint.Style.STROKE else Paint.Style.FILL; strokeWidth = 3f }
-                    c.drawCircle(cx - mh * 0.15f, y + mh * 0.55f, mh * 0.13f, gp); c.drawCircle(cx + mh * 0.18f, y + mh * 0.4f, mh * 0.09f, gp)
-                }
-            }
-            y += mh + pad * 0.4f
-        }
-        // 작은 하루
-        haru(c, seed, w / 2f, h - pad * 2.3f, w * 0.14f)
         text(c, ctx.getString(R.string.share_footer), paint(ctx, S.small * 0.8f, inkSoft), pad, h - pad * 1.25f, tw)
         return b
     }

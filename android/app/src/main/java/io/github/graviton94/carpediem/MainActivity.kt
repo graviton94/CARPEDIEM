@@ -288,6 +288,7 @@ private fun MainActivity.debugSetup(state: AppState): Screen {
     // 캡처용: 며칠 만에 돌아온 날 (09, 손님 · 인사)
     if (x.hasExtra("cd.away")) state.pretendBack(x.getIntExtra("cd.away", 5))
     if (x.getBooleanExtra("cd.photos", false)) state.addSamplePhotos()
+    state.debugGardenYear = x.getBooleanExtra("cd.gardenYear", false)
     if (x.getBooleanExtra("cd.letter", false)) state.addSampleLetter()
     if (x.getBooleanExtra("cd.moods", false)) state.addSampleMoods()
     if (x.getBooleanExtra("cd.memory", false)) state.addSampleMemory()

@@ -446,6 +446,8 @@ class AppState(private val context: Context) {
         }
         photoKick++
     }
+    /** 캡처용: 정원의 한 해 (한 장) 를 바로 펼침. */
+    var debugGardenYear = false
     /** 돌아온 한 줄에 이어 쓰는 중 (12): 쓰는 칸 위에 그날의 한 줄. 보내면 비움. */
     var recallReply by mutableStateOf<DayLine?>(null)
     fun answer() { answering = question }

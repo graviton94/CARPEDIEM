@@ -193,7 +193,10 @@ open --ei cd.away 20 --es cd.now 2026-10-05T10:00;                              
 open --ez cd.photos true --ei cd.page 1 --es cd.now 2026-10-06T21:00;                                  shot g67_photo_today 5
 swipe_up; shot g68_photo_more 3
 # 한 해의 엔딩 크레딧 (08): 인트로 · 봄 · 끝 (아웃트로)
-open --ez cd.ringYear true --es cd.screen credits --ei cd.creditsYear 2026 --es cd.now 2026-12-28T20:00;  shot g69_credits_intro 4; shot g70_credits_spring 12; shot g71_credits_end 70
+open --ez cd.family true --ez cd.special true --es cd.now 2026-12-28T20:00; sleep 3
+open --ez cd.ringYear true --es cd.screen credits --ei cd.creditsYear 2026 --es cd.now 2026-12-28T20:00;  shot g69_credits_intro 5; shot g70_credits_spring 6; shot g70b_credits_spring 3; shot g70c_credits_summer 9; shot g71_credits_end 60
+# 정원의 한 해 한 장 (S2): 나무 · 말뚝 · 연이 있는 작은 정원
+open --ez cd.gardenYear true --es cd.now 2026-10-20T15:00;                                             shot g72_garden_year 8
 # 별자리 정원: 마음의 기록 (이번 달 · 낮/밤) · 지난 달의 정원 카드 · 한 해의 띠 (밤) · 지난 정원
 open --ez cd.months true --ez cd.openMonth true --es cd.now 2026-09-28T15:00;                       shot g49_record_month 6
 open --ez cd.openMonth true --es cd.now 2026-09-28T22:30;                                             shot g50_record_month_night 6
