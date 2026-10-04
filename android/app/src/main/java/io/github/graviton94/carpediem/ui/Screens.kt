@@ -126,6 +126,19 @@ fun OnboardingScreen(state: AppState, onCountry: () -> Unit) {
                 contentAlignment = Alignment.Center,
             ) { TokenText(stringResource(R.string.begin), Tokens.TypeScale.headline, color = p.onOlive) }
             TokenText(stringResource(R.string.privacy), Tokens.TypeScale.footnote, Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.Center)
+            // 다른 폰에서 쓰던 사람: 백업 파일로 바로 (소개 · 둘러보기 없이 예전 정원으로)
+            val openFile = androidx.activity.compose.rememberLauncherForActivityResult(androidx.activity.result.contract.ActivityResultContracts.OpenDocument()) { uri ->
+                if (uri == null) return@rememberLauncherForActivityResult
+                val text = runCatching { ctx.contentResolver.openInputStream(uri)?.use { it.readBytes().decodeToString() } }.getOrNull()
+                if (text != null && state.store.restore(text)) {
+                    state.say(ctx.getString(R.string.backup_done))
+                    io.github.graviton94.carpediem.widget.Widgets.refresh(ctx)
+                    android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({ (ctx as? android.app.Activity)?.takeIf { !it.isFinishing && !it.isDestroyed }?.recreate() }, (Tokens.Garden.Motion.noteMs / 2).toLong())
+                } else state.say(ctx.getString(R.string.backup_fail))
+            }
+            TokenText(stringResource(R.string.onboard_restore), Tokens.TypeScale.footnote,
+                Modifier.fillMaxWidth().heightIn(min = Tokens.Layout.tapTarget).clickable { openFile.launch(arrayOf("application/json", "text/plain", "application/octet-stream")) }.padding(vertical = Tokens.Space.sp3),
+                color = p.olive, weight = FontWeight.SemiBold, align = TextAlign.Center)
         }
     }
 }

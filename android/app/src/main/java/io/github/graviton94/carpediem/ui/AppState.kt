@@ -100,7 +100,9 @@ class AppState(private val context: Context) {
     val guideStepState = mutableStateOf(0)
     var pageHints by mutableStateOf(store.pageHints)
         private set
-    fun pageHintSeen(key: String) { val v = pageHints + key; store.pageHints = v; pageHints = v }
+    fun pageHintSeen(key: String) { val v = pageHints + key; store.pageHints = v; pageHints = v; guideStepState.value = 0 }
+    /** 둘러보기가 화면에 떠 있는 동안 (알림 한마디는 기다리고, 페이지는 넘어가지 않음). */
+    var touring by mutableStateOf(false)
     /** 둘러보기 · 페이지마다의 첫 안내를 처음부터 다시. */
     fun restartGuide() { store.guideDone = false; guideDone = false; guideStepState.value = 0; store.pageHints = emptySet(); pageHints = emptySet(); homePage = 0 }
     /** 캡처 스크립트용: 안내를 모두 본 것으로 (show = true 면 소개부터 처음 온 사람처럼). */

@@ -401,6 +401,9 @@ class Store(context: Context) {
                 "ss" -> ed.putStringSet(k, e.optJSONArray("v")?.let { a -> (0 until a.length()).map { a.optString(it) }.toSet() } ?: emptySet())
             }
         }
+        // 기록을 들여온 사람은 처음 온 사람이 아님: 소개 · 둘러보기 · 페이지 안내 · 하루를 만나는 장면은 건너뜀
+        ed.putBoolean("introSeen", true).putBoolean("guideDone", true).putBoolean("meetPending", false)
+            .putStringSet("pageHints", io.github.graviton94.carpediem.ui.PAGE_HINTS)
         return ed.commit()
     }
 

@@ -95,7 +95,7 @@ fun CollectionScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, 
 /** 모은 것의 내용 (모은 것 화면 · 추억 페이지): 놓인 것 · 받은 편지 · 고마움 책 · 지난 정원 · 기억의 자리. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun CollectionBody(state: AppState, profile: LifeProfile, now: LocalDateTime, onMemory: () -> Unit) {
+internal fun CollectionBody(state: AppState, profile: LifeProfile, now: LocalDateTime, onMemory: () -> Unit, guide: GuideTargets? = null) {
     val p = Theme.palette
     val ctx = LocalContext.current
     val u = Theme.unit
@@ -106,10 +106,10 @@ internal fun CollectionBody(state: AppState, profile: LifeProfile, now: LocalDat
     Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp4)) {
             TokenText(stringResource(R.string.collection_sub), Tokens.TypeScale.callout.serif(), Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.Center)
             // 계절 앨범: 해마다 한 줄, 계절 네 장 (그 계절에 정원을 열면 나무가 남긴 한 장). 테두리 = 그 계절에 가장 많았던 마음
-            SeasonAlbum(state, profile, now) { card = it }
+            Column(Modifier.fillMaxWidth().guideTarget(guide, "mem.album"), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp4)) { SeasonAlbum(state, profile, now) { card = it } }
             // 정원의 한 해 (S2): 해마다 한 장으로 다시 보기
             var yearSheet by remember { mutableStateOf<Int?>(null) }
-            GardenYearAlbum(state) { yearSheet = it }
+            Box(Modifier.guideTarget(guide, "mem.year")) { GardenYearAlbum(state) { yearSheet = it } }
             yearSheet?.let { y -> GardenYearSheet(state, profile, now, y) { yearSheet = null } }
             // 만난 순간: 처음 만난 날과 함께 (순간마다 한 줄)
             val met = state.chancesMet.mapNotNull { r -> r.split(':', limit = 2).takeIf { it.size == 2 }?.let { (k, d) -> runCatching { k to java.time.LocalDate.parse(d) }.getOrNull() } }.sortedBy { it.second }

@@ -128,7 +128,7 @@ private fun lineType(t: io.github.graviton94.carpediem.design.TypeToken, garden:
  */
 @OptIn(ExperimentalLayoutApi::class, ExperimentalFoundationApi::class, androidx.compose.material3.ExperimentalMaterial3Api::class)
 @Composable
-fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifier) {
+fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifier, guide: GuideTargets? = null) {
     val p = Theme.palette
     val ctx = LocalContext.current
     val u = Theme.unit
@@ -163,7 +163,7 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
     Column(modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
         TokenText(if (day == null) stringResource(R.string.letgo_title) else stringResource(R.string.letgo_dayTitle, RecordText.day(ctx, day)), Tokens.TypeScale.title3)
         // 오늘 | 다른 날 (기본은 늘 오늘)
-        if (Theme.garden && state.profile != null) Row(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
+        if (Theme.garden && state.profile != null) Row(Modifier.guideTarget(guide, "write.days"), horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
             Chip(stringResource(R.string.letgo_today), day == null, seed = 950) { state.writeDay = null }
             Chip(day?.let { RecordText.day(ctx, it) } ?: stringResource(R.string.letgo_other), day != null, seed = 951) { picking = true }
         }
@@ -220,7 +220,7 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
                     }
                 }
                 TokenText(stringResource(R.string.letgo_feeling), Tokens.TypeScale.footnote, color = p.secondary)
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
+                FlowRow(Modifier.guideTarget(guide, "write.feeling"), horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
                     Feeling.entries.forEachIndexed { i, f ->
                         Chip(stringResource(feelingName(f)), feeling == f, seed = 970 + i) { feeling = if (feeling == f) null else f }
                     }
@@ -240,7 +240,7 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
                     singleLine = false, minLines = 2, maxLines = Lines.MAX_LINES, textStyle = style, cursorBrush = SolidColor(p.foreground),
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Default),
                     // 키보드가 올라온 뒤 입력칸 · 보내기 버튼이 보이게 끌어올린다
-                    modifier = Modifier.fillMaxWidth().onFocusEvent { f -> if (f.isFocused) scope.launch { delay(G.Motion.keyboardMs.toLong()); formView.bringIntoView() } }
+                    modifier = Modifier.fillMaxWidth().guideTarget(guide, "write.box").onFocusEvent { f -> if (f.isFocused) scope.launch { delay(G.Motion.keyboardMs.toLong()); formView.bringIntoView() } }
                         .lineBox(964).padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3),
                     decorationBox = { inner ->
                         Box(contentAlignment = Alignment.TopStart) {

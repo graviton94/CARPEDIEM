@@ -2,6 +2,10 @@ package io.github.graviton94.carpediem.ui.garden
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Canvas
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.foundation.relocation.bringIntoViewRequester
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -69,7 +73,7 @@ import kotlinx.coroutines.delay
 
 // ───────────────────────── 처음 온 사람의 안내 ─────────────────────────
 // 세 겹: ① 첫 화면 앞 소개 석 장 (IntroScreen) ② 첫 정원에서 둘러보기 (GuideTour, 하나씩 비춰 줌)
-// ③ 기록 · 추억 · 흐름 · 돌의 페이지에 처음 들어가면 맨 위에 한 번 (PageHint). 설정의 ‘안내 다시 보기’로 ②③ 을 다시.
+// ③ 기록 · 추억 · 흐름 · 돌의 페이지에 처음 들어가면 그 페이지의 짧은 둘러보기 (같은 비춤). 설정의 ‘안내 다시 보기’로 ②③ 을 다시.
 
 /** 첫 화면 앞 소개 석 장: 무엇을 하는 앱인지 · 하루에 할 일 · 내 돌과 기록이 머무는 곳. 건너뛸 수 있음. */
 @Composable
@@ -131,16 +135,24 @@ private fun Dots(count: Int, current: Int) {
     }
 }
 
-// ───── 둘러보기: 정원에서 하나씩 비춰 줌 ─────
+// ───── 둘러보기: 한 곳씩 비춰 줌 (정원 · 기록 · 추억 · 흐름 · 돌의 페이지) ─────
 
-/** 둘러보기가 비출 자리들 (화면 기준 사각형). 정원의 각 부분이 guideTarget 으로 자기 자리를 알린다. */
+/** 둘러보기가 비출 자리들 (화면 기준 사각형) 과, 스크롤 안에 있으면 그 자리를 화면으로 끌어오는 일. */
 @Stable
 class GuideTargets {
     val rects = mutableStateMapOf<String, Rect>()
+    val reveal = mutableMapOf<String, suspend () -> Unit>()
 }
 
-fun Modifier.guideTarget(targets: GuideTargets?, key: String): Modifier =
-    if (targets == null) this else onGloballyPositioned { c -> targets.rects[key] = c.boundsInRoot() }
+/** 이 자리를 둘러보기에 알림. 스크롤 안이면 그 장을 보여 줄 때 화면 안으로 끌어온다. */
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun Modifier.guideTarget(targets: GuideTargets?, key: String): Modifier {
+    if (targets == null) return this
+    val bring = remember { BringIntoViewRequester() }
+    DisposableEffect(targets, key) { targets.reveal[key] = { bring.bringIntoView() }; onDispose { targets.reveal.remove(key); targets.rects.remove(key) } }
+    return bringIntoViewRequester(bring).onGloballyPositioned { c -> targets.rects[key] = c.boundsInRoot() }
+}
 
 /** 둘러보기의 한 걸음: 비출 자리 (없으면 가운데 창만) · 제목 · 설명. */
 class GuideStep(val target: String?, val title: Int, val body: Int)
@@ -158,36 +170,71 @@ val GardenGuideSteps = listOf(
     GuideStep(null, R.string.guide_endTitle, R.string.guide_end),
 )
 
+/** 페이지마다 처음 들어왔을 때의 짧은 둘러보기 (key = PAGE_HINTS). 비출 자리가 없는 장은 건너뜀. */
+val PageGuideSteps = mapOf(
+    "write" to listOf(
+        GuideStep("write.box", R.string.tour_writeBoxTitle, R.string.tour_writeBox),
+        GuideStep("write.feeling", R.string.tour_writeFeelingTitle, R.string.tour_writeFeeling),
+        GuideStep("write.days", R.string.tour_writeDaysTitle, R.string.tour_writeDays),
+        GuideStep("write.record", R.string.tour_writeRecordTitle, R.string.tour_writeRecord),
+    ),
+    "memories" to listOf(
+        GuideStep("mem.album", R.string.tour_memAlbumTitle, R.string.tour_memAlbum),
+        GuideStep("mem.year", R.string.tour_memYearTitle, R.string.tour_memYear),
+        GuideStep(null, R.string.tour_memMoreTitle, R.string.tour_memMore),
+    ),
+    "flow" to listOf(
+        GuideStep("flow.bars", R.string.tour_flowBarsTitle, R.string.tour_flowBars),
+        GuideStep("flow.calendar", R.string.tour_flowCalendarTitle, R.string.tour_flowCalendar),
+        GuideStep("flow.special", R.string.tour_flowSpecialTitle, R.string.tour_flowSpecial),
+    ),
+    "stone" to listOf(
+        GuideStep("stone.big", R.string.tour_stoneTitle, R.string.tour_stone),
+        GuideStep("stone.info", R.string.tour_stoneInfoTitle, R.string.tour_stoneInfo),
+        GuideStep("stone.calendar", R.string.tour_stoneCalendarTitle, R.string.tour_stoneCalendar),
+        GuideStep("stone.action", R.string.tour_stoneActionTitle, R.string.tour_stoneAction),
+    ),
+)
+
 /**
- * 정원 둘러보기: 화면을 옅게 덮고 한 곳만 밝게 비춘 뒤, 그 옆에 짧은 설명 한 장.
- * 아무 데나 누르거나 ‘다음’으로 넘어가고, ‘건너뛰기’ · 뒤로 가기로 끝낸다. 마지막 장은 ‘한 줄 쓰러 가기’.
+ * 둘러보기: 화면을 옅게 덮고 한 곳만 밝게 비춘 뒤, 그 옆에 짧은 설명 한 장.
+ * 아무 데나 누르거나 ‘다음’으로 넘어가고, ‘건너뛰기’ · 뒤로 가기로 끝낸다.
+ * onWrite 가 있으면 (정원 둘러보기) 마지막 장은 ‘한 줄 쓰러 가기’ · ‘정원 더 둘러보기’, 없으면 ‘알겠어요’.
  */
 @Composable
-fun GuideTour(state: AppState, targets: GuideTargets, steps: List<GuideStep>, onWrite: () -> Unit, onDone: () -> Unit) {
+fun GuideTour(state: AppState, targets: GuideTargets, steps: List<GuideStep>, onWrite: (() -> Unit)? = null, onDone: () -> Unit) {
     val p = Theme.palette
     val density = LocalDensity.current
     // 몇째 장인지는 state 에 (한마디 창이 잠깐 떠서 둘러보기가 가려졌다 돌아와도 이어서)
     var i by state.guideStepState
-    // 정원 그림이 자리를 잡을 때까지 조금 기다렸다가
-    var ready by remember { mutableStateOf(false) }
-    LaunchedEffect(Unit) { delay(G.Motion.pageMs.toLong()) ; ready = true }
-    if (!ready) return
-    val step = steps[i.coerceIn(0, steps.lastIndex)]
-    val last = i >= steps.lastIndex
+    // 둘러보는 동안 알림 한마디는 기다림 (설명 창과 겹치지 않게), 페이지도 넘어가지 않음
+    DisposableEffect(Unit) { state.touring = true; onDispose { state.touring = false } }
+    // 그림이 자리를 잡을 때까지 조금 기다렸다가, 비출 자리가 있는 장만
+    var shown by remember { mutableStateOf<List<GuideStep>?>(null) }
+    LaunchedEffect(Unit) {
+        delay(G.Motion.pageMs.toLong())
+        shown = steps.filter { s -> s.target == null || targets.rects.any { (k, r) -> (k == s.target || k.startsWith(s.target + ".")) && r.width > 0f && r.height > 0f } }
+    }
+    val list = shown ?: return
+    if (list.isEmpty()) { LaunchedEffect(Unit) { onDone() }; return }
+    val step = list[i.coerceIn(0, list.lastIndex)]
+    val last = i >= list.lastIndex
     fun next() { if (last) onDone() else i++ }
     BackHandler { onDone() }
+    // 스크롤 아래에 있는 자리는 화면 안으로
+    LaunchedEffect(step) { step.target?.let { k -> targets.reveal.filterKeys { it == k || it.startsWith("$k.") }.values.firstOrNull()?.invoke() } }
     var origin by remember { mutableStateOf(Offset.Zero) }
     // 한 자리가 여러 조각이면 (예: 숫자 + 단위 칩) 모두 감싸는 사각형
     val hole = step.target?.let { k ->
         targets.rects.filterKeys { it == k || it.startsWith("$k.") }.values.filter { it.width > 0f && it.height > 0f }
             .reduceOrNull { x, y -> Rect(minOf(x.left, y.left), minOf(x.top, y.top), maxOf(x.right, y.right), maxOf(x.bottom, y.bottom)) }
     }?.translate(-origin)?.inflate(with(density) { Tokens.Space.sp2.toPx() })
-    val a = rememberPop(i)
+    val a = rememberPop(step)
     val scrim = Theme.gc.scrim.copy(alpha = 0.62f)
     val ring = p.olive
     BoxWithConstraints(
         Modifier.fillMaxSize().onGloballyPositioned { origin = it.boundsInRoot().topLeft }
-            .pointerInput(i) { detectTapGestures { next() } },
+            .pointerInput(step) { detectTapGestures { next() } },
     ) {
         val hPx = with(density) { maxHeight.toPx() }
         // 덮개와 비추는 구멍 (구멍은 지움으로 뚫는다)
@@ -218,39 +265,22 @@ fun GuideTour(state: AppState, targets: GuideTargets, steps: List<GuideStep>, on
                 .padding(Tokens.Space.sp5).semantics { liveRegion = LiveRegionMode.Polite },
             verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp2),
         ) {
-            TokenText("${i + 1} / ${steps.size}", Tokens.TypeScale.caption1, color = p.secondary)
+            if (list.size > 1) TokenText("${i + 1} / ${list.size}", Tokens.TypeScale.caption1, color = p.secondary)
             TokenText(stringResource(step.title), Tokens.TypeScale.title3.serif())
-            TokenText(stringResource(step.body), Tokens.TypeScale.callout, color = p.secondary)
+            TokenText(stringResource(step.body), Tokens.TypeScale.callout, color = p.foreground.copy(alpha = 0.82f))
             Spacer(Modifier.height(Tokens.Space.sp1))
-            if (last) {
-                GardenButton(stringResource(R.string.guide_write), { onDone(); onWrite() }, filled = true, seed = 1420)
-                GardenButton(stringResource(R.string.guide_look), onDone, filled = false, seed = 1421)
-            } else Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                TokenText(stringResource(R.string.guide_skip), Tokens.TypeScale.subhead,
-                    Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable(onClick = onDone).padding(end = Tokens.Space.sp4, top = Tokens.Space.sp3, bottom = Tokens.Space.sp3), color = p.secondary)
-                Spacer(Modifier.weight(1f))
-                GardenButton(stringResource(R.string.guide_next), { next() }, filled = true, seed = 1410 + i, modifier = Modifier.widthIn(max = 160.dp))
+            when {
+                last && onWrite != null -> {
+                    GardenButton(stringResource(R.string.guide_write), { onDone(); onWrite() }, filled = true, seed = 1420)
+                    GardenButton(stringResource(R.string.guide_look), onDone, filled = false, seed = 1421)
+                }
+                else -> Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                    if (!last) TokenText(stringResource(R.string.guide_skip), Tokens.TypeScale.subhead,
+                        Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable(onClick = onDone).padding(end = Tokens.Space.sp4, top = Tokens.Space.sp3, bottom = Tokens.Space.sp3), color = p.secondary)
+                    Spacer(Modifier.weight(1f))
+                    GardenButton(stringResource(if (last) R.string.guide_ok else R.string.guide_next), { next() }, filled = true, seed = 1410 + i, modifier = Modifier.widthIn(max = 160.dp))
+                }
             }
         }
-    }
-}
-
-// ───── 페이지마다 처음 한 번 ─────
-
-/** 처음 들어온 페이지의 맨 위에 한 장: 이 페이지에서 무엇을 하는지. ‘알겠어요’로 다시 나오지 않음. */
-@Composable
-fun PageHint(state: AppState, key: String, title: Int, body: Int, modifier: Modifier = Modifier) {
-    if (key in state.pageHints) return
-    val p = Theme.palette
-    val a = rememberPop(key)
-    Column(
-        modifier.fillMaxWidth().pop(a).crayonBox(Theme.gc.chip, G.Radius.box, G.Stroke.chip, 1450 + key.length).padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3),
-        verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1),
-    ) {
-        TokenText(stringResource(title), Tokens.TypeScale.subhead, weight = FontWeight.SemiBold)
-        TokenText(stringResource(body), Tokens.TypeScale.footnote, color = p.foreground)
-        TokenText(stringResource(R.string.guide_ok), Tokens.TypeScale.footnote,
-            Modifier.align(Alignment.End).heightIn(min = Tokens.Layout.tapTarget).clickable { state.pageHintSeen(key) }.padding(horizontal = Tokens.Space.sp2, vertical = Tokens.Space.sp3),
-            color = p.olive, weight = FontWeight.SemiBold)
     }
 }

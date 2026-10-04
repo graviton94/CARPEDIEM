@@ -281,16 +281,16 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
     Box(Modifier.fillMaxSize().paperBackground()) {
       Column(Modifier.fillMaxSize()) {
         // 보이지 않는 페이지는 그리지 않는다 (반짝임 · 살랑임이 화면 밖에서 돌지 않게). 쓰던 글은 rememberSaveable 로 남음
-        HorizontalPager(pager, Modifier.weight(1f).fillMaxWidth(), beyondViewportPageCount = 0, userScrollEnabled = !bare && !typing,
+        HorizontalPager(pager, Modifier.weight(1f).fillMaxWidth(), beyondViewportPageCount = 0, userScrollEnabled = !bare && !typing && !state.touring,
             // 조금만 밀어도 넘어가게 (기본은 반 장)
             flingBehavior = androidx.compose.foundation.pager.PagerDefaults.flingBehavior(pager, snapPositionalThreshold = G.Motion.turnSnap)) { page ->
           // 손으로 넘길 땐 들어오는 장 (아직 오른쪽) 이 위에
           val incoming by remember(page) { derivedStateOf { (pager.currentPage - page) + pager.currentPageOffsetFraction < 0f } }
           Box(Modifier.fillMaxSize().zIndex(if (incoming) 1f else 0f).pageTurn(pager, page) { breath }) {
           when (page) {
-            1 -> WritePage(state, now, recordView) { recordView = it }
-            2 -> MemoriesPage(state, profile, now, onMemory)
-            3 -> FlowPage(state, profile, now)
+            1 -> WritePage(state, now, recordView, guide) { recordView = it }
+            2 -> MemoriesPage(state, profile, now, guide, onMemory)
+            3 -> FlowPage(state, profile, now, guide)
             else -> BoxWithConstraints(Modifier.fillMaxSize()) {
         val u = Theme.unit
         val screenH = maxHeight
@@ -575,6 +575,10 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
         }
         // 처음 온 사람: 정원을 하나씩 비추며 둘러보기 (정원 페이지에서, 한마디 창이 없을 때)
         if (touring && pager.currentPage == 0 && state.toast == null) GuideTour(state, guide, GardenGuideSteps, onWrite = { turnTo(1) }) { state.finishGuide() }
+        // 기록 · 추억 · 흐름: 처음 들어오면 그 페이지의 짧은 둘러보기 (정원 둘러보기를 마친 뒤, 넘기는 중이 아닐 때)
+        val pageKey = listOf(null, "write", "memories", "flow").getOrNull(pager.currentPage)
+        if (!bare && state.guideDone && pageKey != null && pageKey !in state.pageHints && state.toast == null && !pager.isScrollInProgress && !typing)
+            androidx.compose.runtime.key(pageKey) { GuideTour(state, guide, PageGuideSteps.getValue(pageKey)) { state.pageHintSeen(pageKey) } }
     }
 
     decorOpen?.let { part ->
@@ -611,7 +615,7 @@ private fun PageTabs(current: Int, onPick: (Int) -> Unit) {
 
 /** 기록: 계절 첫날의 바람 · 오늘의 한 줄, 그 아래 쌓인 한 줄들 (마음의 기록: 월 · 해). 보낸 뒤에도 이번 달 정원에 오늘이 피는 것을 본다. */
 @Composable
-private fun WritePage(state: AppState, now: LocalDateTime, view: RecordView, onView: (RecordView) -> Unit) {
+private fun WritePage(state: AppState, now: LocalDateTime, view: RecordView, guide: GuideTargets, onView: (RecordView) -> Unit) {
     val today = now.toLocalDate()
     // 마음의 기록에서 빈 날을 고르면 위의 쓰는 칸으로 올라감
     val scroll = rememberScrollState()
@@ -621,33 +625,31 @@ private fun WritePage(state: AppState, now: LocalDateTime, view: RecordView, onV
             .padding(horizontal = Theme.deviceClass.pageMargin).padding(top = Tokens.Space.sp6, bottom = Tokens.Space.sp8),
         verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3),
     ) {
-        PageHint(state, "write", R.string.hint_writeTitle, R.string.hint_write)
         state.wishDue(today)?.let { id -> WishCard(state, id, today) }
-        LetGoSection(state, today)
+        LetGoSection(state, today, guide = guide)
         Spacer(Modifier.height(Tokens.Space.sp4))
         TokenText(stringResource(R.string.mood_title), Tokens.TypeScale.title3)
-        if (state.keepLines) RecordPanel(state, view, onView, today)
+        if (state.keepLines) Box(Modifier.guideTarget(guide, "write.record")) { RecordPanel(state, view, onView, today) }
         else TokenText(stringResource(R.string.record_off), Tokens.TypeScale.footnote, color = Theme.palette.secondary)
     }
 }
 
 /** 추억: 모은 것 (계절 앨범 · 한 해 한 장 · 만난 순간 · 편지 · 고마움 책 · 지난 정원 · 기억의 자리). */
 @Composable
-private fun MemoriesPage(state: AppState, profile: LifeProfile, now: LocalDateTime, onMemory: () -> Unit) {
+private fun MemoriesPage(state: AppState, profile: LifeProfile, now: LocalDateTime, guide: GuideTargets, onMemory: () -> Unit) {
     Column(
         Modifier.fillMaxSize().verticalScroll(rememberScrollState()).statusBarsPadding()
             .padding(horizontal = Theme.deviceClass.pageMargin).padding(top = Tokens.Space.sp6, bottom = Tokens.Space.sp8),
         verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3),
     ) {
-        PageHint(state, "memories", R.string.hint_memoriesTitle, R.string.hint_memories)
         TokenText(stringResource(R.string.collection), Tokens.TypeScale.title3)
-        CollectionBody(state, profile, now, onMemory)
+        CollectionBody(state, profile, now, onMemory, guide)
     }
 }
 
 /** 흐름: 흐르는 시간 · 인생 달력 · 특별한 날. */
 @Composable
-private fun FlowPage(state: AppState, profile: LifeProfile, now: LocalDateTime) {
+private fun FlowPage(state: AppState, profile: LifeProfile, now: LocalDateTime, guide: GuideTargets) {
     val p = Theme.palette
     val ctx = LocalContext.current
     val s = LifeSnapshot(profile.birthDate, profile.expectancy(state.store.table), now)
@@ -657,8 +659,7 @@ private fun FlowPage(state: AppState, profile: LifeProfile, now: LocalDateTime) 
             .padding(horizontal = Theme.deviceClass.pageMargin).padding(top = Tokens.Space.sp6, bottom = Tokens.Space.sp8),
         verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3),
     ) {
-                PageHint(state, "flow", R.string.hint_flowTitle, R.string.hint_flow)
-                TokenText(stringResource(R.string.flow), Tokens.TypeScale.title3)
+                TokenText(stringResource(R.string.flow), Tokens.TypeScale.title3, Modifier.guideTarget(guide, "flow.bars"))
                 LifePeriod.entries.forEachIndexed { i, period ->
                     val pp = s.period(period)
                     Row {
@@ -666,7 +667,7 @@ private fun FlowPage(state: AppState, profile: LifeProfile, now: LocalDateTime) 
                         Spacer(Modifier.weight(1f))
                         TokenText("${Labels.percent(pp.progress, 0)} · ${Labels.remaining(ctx, pp)}", Tokens.TypeScale.caption1, color = p.secondary)
                     }
-                    CrayonBar(pp.progress.toFloat(), G.Colors.bars[i], seed = 830 + i * 3)
+                    CrayonBar(pp.progress.toFloat(), G.Colors.bars[i], Modifier.guideTarget(guide, "flow.bars.$i"), seed = 830 + i * 3)
                 }
                 Spacer(Modifier.height(Tokens.Space.sp4))
                 var menu by remember { mutableStateOf(false) }
@@ -692,7 +693,7 @@ private fun FlowPage(state: AppState, profile: LifeProfile, now: LocalDateTime) 
                 // 꽃이 있는 칸을 누르면 그 칸 위에 작은 말풍선 (이름 · 날짜), 다시 누르거나 다른 칸을 누르면 닫힘
                 var bubble by remember(state.grid) { mutableStateOf<Pair<Int, Offset>?>(null) }
                 val density = LocalDensity.current
-                Box(Modifier.fillMaxWidth()) {
+                Box(Modifier.fillMaxWidth().guideTarget(guide, "flow.calendar")) {
                     CrayonCalendar(s.total(state.grid.unit), s.lived(state.grid.unit), cols, Modifier.graphicsLayer(), flowers = byCell.keys) { i, at ->
                         bubble = if (bubble?.first == i || i !in byCell) null else i to at
                     }
@@ -713,7 +714,7 @@ private fun FlowPage(state: AppState, profile: LifeProfile, now: LocalDateTime) 
                     }
                 }
                 TokenText(stringResource(R.string.calendar_legend, Labels.season(ctx, season)), Tokens.TypeScale.caption1, color = p.secondary)
-                SpecialDaysRow(state, profile.birthDate)
+                Box(Modifier.guideTarget(guide, "flow.special")) { SpecialDaysRow(state, profile.birthDate) }
     }
 }
 

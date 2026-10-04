@@ -112,6 +112,8 @@ fun StoneScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, id: S
     val soon = Family.birthdaySoon(birth, now, Tokens.Notify.birthdayFrom.toInt())
     val birthday = soon != null
     var breathSheet by remember { mutableStateOf(false) }
+    // 돌의 페이지를 처음 열면 짧은 둘러보기
+    val guide = remember { GuideTargets() }
     BackHandler(onBack = onBack)
     SkyBackground {
         Column(
@@ -120,9 +122,8 @@ fun StoneScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, id: S
             verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp4),
         ) {
             PageBar(name, onBack)
-            PageHint(state, "stone", R.string.hint_stoneTitle, R.string.hint_stone)
-            BigStone(art, person?.kind == Kind.PET, birthday, size = G.Family.pageStone)
-            Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
+            Box(Modifier.fillMaxWidth().guideTarget(guide, "stone.big"), contentAlignment = Alignment.Center) { BigStone(art, person?.kind == Kind.PET, birthday, size = G.Family.pageStone) }
+            Column(Modifier.fillMaxWidth().guideTarget(guide, "stone.big.name"), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
                 TokenText(name, Tokens.TypeScale.title3.serif(), align = TextAlign.Center)
                 TokenText(stringResource(R.string.garden_metOn, dateText(metOn), Labels.stone(ctx, art.meta.stone)), Tokens.TypeScale.footnote, color = p.secondary, align = TextAlign.Center)
                 if (birth != null) {
@@ -137,7 +138,7 @@ fun StoneScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, id: S
                 io.github.graviton94.carpediem.share.ShareCards.send(ctx, io.github.graviton94.carpediem.share.ShareCards.birthday(ctx, name, person!!.seed, person.kind == Kind.PET, state.store.haruSeed, SkyTime.isDark(now)), "birthday-${person.id}-$today")
             }, filled = true, seed = 873)
             // 함께한 날 · 다음 생일
-            Row(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
+            Row(Modifier.guideTarget(guide, "stone.info"), horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
                 val since = metOn
                 Info(stringResource(if (me) R.string.stone_sinceMet else R.string.stone_together), stringResource(R.string.stone_days, Labels.number(Family.daysUntil(today, since).toInt().coerceAtLeast(0))), 870, Modifier.weight(1f))
                 if (birth != null) {
@@ -156,7 +157,7 @@ fun StoneScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, id: S
                 }
                 val cols = when (grid) { GridScale.WEEKS -> Tokens.Grid.weeksColumns; GridScale.MONTHS -> Tokens.Grid.monthsColumns; GridScale.YEARS -> Tokens.Grid.yearsColumns }
                 val shared = if (me) Int.MAX_VALUE else LifeSnapshot(birth, exp, Family.togetherSince(profile.birthDate, person!!).atStartOfDay()).lived(grid.unit)
-                CrayonCalendar(snap.total(grid.unit), snap.lived(grid.unit), cols, androidx.compose.ui.Modifier.fillMaxWidth(), sharedFrom = shared, showAhead = me || person!!.showAhead)
+                CrayonCalendar(snap.total(grid.unit), snap.lived(grid.unit), cols, androidx.compose.ui.Modifier.fillMaxWidth().guideTarget(guide, "stone.calendar"), sharedFrom = shared, showAhead = me || person!!.showAhead)
                 if (!me) {
                     TokenText(stringResource(R.string.stone_calendarLegend), Tokens.TypeScale.caption1, color = p.secondary)
                     Row(Modifier.fillMaxWidth().clickable { state.savePerson(person!!.copy(showAhead = !person.showAhead)) }, verticalAlignment = Alignment.CenterVertically) {
@@ -166,7 +167,7 @@ fun StoneScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, id: S
                 }
             }
             // 내 돌: 하루와 숨 쉬기
-            if (me) GardenButton(stringResource(R.string.breath), { breathSheet = true }, filled = false, seed = 879)
+            if (me) GardenButton(stringResource(R.string.breath), { breathSheet = true }, filled = false, seed = 879, modifier = Modifier.guideTarget(guide, "stone.action"))
             // 이 돌에게 보낸 마음
             if (!me) {
                 val sent = state.lines.filter { it.to == id && it.text.isNotBlank() }
@@ -192,9 +193,10 @@ fun StoneScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, id: S
                     }
                 } else TokenText(stringResource(R.string.offer_label, Labels.season(ctx, given.card.season), name, cardName(ctx, given.card.key)), Tokens.TypeScale.footnote,
                     Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.Center)
-                GardenButton(stringResource(R.string.stone_edit), { onEdit(id!!) }, filled = false, seed = 880)
+                GardenButton(stringResource(R.string.stone_edit), { onEdit(id!!) }, filled = false, seed = 880, modifier = Modifier.guideTarget(guide, "stone.action"))
             }
         }
+        if ("stone" !in state.pageHints && state.guideDone && !breathSheet) GuideTour(state, guide, PageGuideSteps.getValue("stone")) { state.pageHintSeen("stone") }
     }
     if (breathSheet) BreathSheet(state, now, { k, m, snd -> breathSheet = false; onBreath(k, m, snd) }) { breathSheet = false }
 }
