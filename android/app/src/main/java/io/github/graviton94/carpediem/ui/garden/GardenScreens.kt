@@ -528,13 +528,24 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 }
                 // 달팽이 손님: 오랜만에 돌아온 날, 한 시간쯤 돌들 앞 길을 천천히 건넘
                 if (!bare) SnailGuest(state.store.snailAt, now, gy, u * G.Decor.treeX)
-                // 정원 손님 (우연히 놀러 온 날): 맨 오른쪽 돌 위에 올라앉음 (돌을 가리지 않게). 하루 혼자면 하루 곁 땅에.
+                // 정원 손님 (우연히 놀러 온 날): 그날마다 다른 자리. 어느 돌 위 · 돌 사이 빈 땅 · 줄의 양 끝 가운데 하나 (날마다 정해져, 하루 안에선 그대로).
+                // 돌 얼굴을 가리지 않게 땅은 빈 틈이 넉넉할 때만, 고깔 쓴 돌 · 새싹 난 하루 위는 피함.
                 if (!bare) state.guest?.let { g ->
-                    val i = slots.indices.maxBy { xs[it].value }; val sl = slots[i]; val m = sl.art.meta
-                    val say = { comfort = guestLine(ctx, g) }
-                    if (slots.size > 1) GuestFigure(g, xs[i], gy - sl.scale * (m.ground - m.bbox.top) + u * 2f, say)
-                    else GuestFigure(g, xs[i] + sl.scale * (m.bbox.width / 2f) + u * 24f, gy + u * 2f, say)
+                    val gw = u * 40f
+                    val order = slots.indices.sortedBy { xs[it].value }
+                    fun edgeL(i: Int) = xs[i] - (widths[i].toFloat() / 2).dp
+                    fun edgeR(i: Int) = xs[i] + (widths[i].toFloat() / 2).dp
+                    val spots = buildList {
+                        order.forEach { i -> val sl = slots[i]; val m = sl.art.meta
+                            if (!sl.birthday && !(sl.id == null && sl.art.sprout)) add(xs[i] to gy - sl.scale * (m.ground - m.bbox.top) + u * 2f) }
+                        order.zipWithNext().forEach { (a, b) -> if (edgeL(b) - edgeR(a) >= gw * 0.8f) add((edgeR(a) + edgeL(b)) / 2 to gy + u * 2f) }
+                        if (edgeL(order.first()) - x0 >= gw * 1.4f) add(edgeL(order.first()) - gw * 0.6f to gy + u * 2f)
+                        if (x1 + u * 8f - edgeR(order.last()) >= gw * 0.9f) add(edgeR(order.last()) + gw * 0.55f to gy + u * 2f)
+                    }.ifEmpty { listOf(edgeR(order.last()) + gw * 0.55f to gy + u * 2f) }
+                    val (gx, gyy) = spots[Math.floorMod(day0.toEpochDay() * 31 + g.hashCode(), spots.size.toLong()).toInt()]
+                    GuestFigure(g, gx, gyy) { comfort = guestLine(ctx, g) }
                 }
+
                 // 우연한 순간 (한 번에 하나, 몇 초 뒤 사라짐)
                 if (!bare) state.chance?.let { c -> ChanceLayer(c, now, real, gy, xs[0], u * G.Decor.treeX, x1, topBottom + u * G.Layout.minSkyGap, back = false) { seen -> state.chanceDone(seen, c) } }
                 // 이름표 (가족이 있을 때) · 0세 · 기대수명
