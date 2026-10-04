@@ -46,7 +46,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -199,9 +198,17 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
             sent -> {
                 val shown = remember { Animatable(0f) }
                 LaunchedEffect(Unit) { shown.animateTo(1f, tween(G.Motion.pageMs.toInt())) }
-                Row(Modifier.fillMaxWidth().graphicsLayer { alpha = shown.value }, verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
-                    Feather(u * G.LetGo.feather)
-                    TokenText(stringResource(R.string.letgo_done), Tokens.TypeScale.subhead, Modifier.weight(1f))
+                Column(Modifier.fillMaxWidth().graphicsLayer { alpha = shown.value }, verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
+                    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
+                        Feather(u * G.LetGo.feather)
+                        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
+                            TokenText(stringResource(R.string.letgo_done), Tokens.TypeScale.subhead)
+                            // 지금까지 몇 번 (이어 쓴 날 수처럼 다그치는 숫자는 두지 않음)
+                            val count = state.lines.size
+                            if (count > 1) TokenText(stringResource(R.string.letgo_total, "$count"), Tokens.TypeScale.footnote, color = p.secondary)
+                        }
+                    }
+                    if (state.keepLines) TokenText(stringResource(R.string.letgo_seeBelow), Tokens.TypeScale.footnote, color = p.secondary)
                 }
             }
             else -> Column(Modifier.fillMaxWidth().bringIntoViewRequester(formView), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
@@ -212,42 +219,47 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
                         TokenText(io.github.graviton94.carpediem.data.Words.main(q, state.quoteLanguage, io.github.graviton94.carpediem.data.Words.lang(ctx)), lineType(Tokens.TypeScale.headline, Theme.garden))
                     }
                 }
-                TokenText(stringResource(R.string.letgo_feeling), Tokens.TypeScale.caption1, color = p.secondary)
+                TokenText(stringResource(R.string.letgo_feeling), Tokens.TypeScale.footnote, color = p.secondary)
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
                     Feeling.entries.forEachIndexed { i, f ->
                         Chip(stringResource(feelingName(f)), feeling == f, seed = 970 + i) { feeling = if (feeling == f) null else f }
                     }
                 }
                 if (Theme.garden && state.people.isNotEmpty()) {
-                    TokenText(stringResource(R.string.letgo_to), Tokens.TypeScale.caption1, color = p.secondary)
+                    TokenText(stringResource(R.string.letgo_to), Tokens.TypeScale.footnote, color = p.secondary)
                     FlowRow(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
                         state.people.forEachIndexed { i, person -> Chip(person.name, to == person.id, seed = 980 + i) { to = if (to == person.id) null else person.id } }
                     }
                 }
                 // 쓰는 중에는 기본 글꼴 (글자를 칠 때마다 글꼴이 바뀌지 않게)
                 val style = Tokens.TypeScale.callout.style().copy(color = p.foreground)
+                // 이름은 ‘한 줄’이지만 Enter 로 줄을 나눌 수 있음 (최대 Lines.MAX_LINES 줄). 보내기는 아래 버튼으로
                 BasicTextField(
                     value = text,
-                    onValueChange = { v -> val one = v.replace('\n', ' '); if (one.codePointCount(0, one.length) <= max) text = one },
-                    singleLine = true, textStyle = style, cursorBrush = SolidColor(p.foreground),
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send), keyboardActions = KeyboardActions(onSend = { send() }),
+                    onValueChange = { v -> if (v.codePointCount(0, v.length) <= max && v.count { it == '\n' } < Lines.MAX_LINES) text = v },
+                    singleLine = false, minLines = 2, maxLines = Lines.MAX_LINES, textStyle = style, cursorBrush = SolidColor(p.foreground),
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Default),
                     // 키보드가 올라온 뒤 입력칸 · 보내기 버튼이 보이게 끌어올린다
                     modifier = Modifier.fillMaxWidth().onFocusEvent { f -> if (f.isFocused) scope.launch { delay(G.Motion.keyboardMs.toLong()); formView.bringIntoView() } }
                         .lineBox(964).padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3),
                     decorationBox = { inner ->
-                        Box(contentAlignment = Alignment.CenterStart) {
+                        Box(contentAlignment = Alignment.TopStart) {
                             if (text.isEmpty()) TokenText(stringResource(if (day == null) R.string.letgo_hint else R.string.letgo_dayHint), Tokens.TypeScale.callout, color = p.secondary)
                             inner()
                         }
                     },
                 )
-                TokenText("${text.codePointCount(0, text.length)} / $max", Tokens.TypeScale.caption2, Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.End)
+                TokenText("${text.codePointCount(0, text.length)} / $max", Tokens.TypeScale.caption1, Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.End)
                 Action(stringResource(if (day == null) R.string.letgo_send else R.string.letgo_daySend), filled = text.isNotBlank(), seed = 968) { send() }
                 if (day != null) TokenText(stringResource(R.string.letgo_backToday), Tokens.TypeScale.footnote,
-                    Modifier.fillMaxWidth().clickable { state.writeDay = null }.padding(vertical = Tokens.Space.sp1), color = p.secondary, align = TextAlign.Center)
+                    Modifier.fillMaxWidth().heightIn(min = Tokens.Layout.tapTarget).clickable { state.writeDay = null }.padding(vertical = Tokens.Space.sp3), color = p.secondary, align = TextAlign.Center)
             }
         }
-        TokenText(stringResource(R.string.letgo_privacy), Tokens.TypeScale.caption1, color = p.secondary)
+        val yesterday = today.minusDays(1)
+        if (day == null && line == null && state.store.startDate.isBefore(today) && state.canWriteOn(yesterday, today) && state.lines.none { it.date == yesterday })
+            TokenText(stringResource(R.string.letgo_yesterday), Tokens.TypeScale.footnote,
+                Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { state.writeDay = yesterday }.padding(vertical = Tokens.Space.sp3), color = p.olive, weight = FontWeight.SemiBold)
+        TokenText(stringResource(R.string.letgo_privacy), Tokens.TypeScale.footnote, color = p.secondary)
     }
     // 날짜 고르기: 생일부터 어제까지, 이미 한 줄이 있는 날은 고를 수 없음 (하루에 한 줄)
     if (picking) {
@@ -299,7 +311,7 @@ private fun RecallCard(title: String, line: DayLine, seed: Int) {
             val meta = listOfNotNull(line.date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)), line.feeling?.let { stringResource(feelingName(it)) }).joinToString(" · ")
             TokenText(meta, Tokens.TypeScale.caption1, color = p.secondary)
             TokenText(line.text, lineType(Tokens.TypeScale.headline, Theme.garden))
-            TokenText(stringResource(R.string.recall_close), Tokens.TypeScale.footnote, Modifier.clickable { gone = true }.padding(vertical = Tokens.Space.sp1), color = p.olive, weight = FontWeight.SemiBold)
+            TokenText(stringResource(R.string.recall_close), Tokens.TypeScale.footnote, Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { gone = true }.padding(vertical = Tokens.Space.sp3), color = p.olive, weight = FontWeight.SemiBold)
         }
     }
 }

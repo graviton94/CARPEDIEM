@@ -110,12 +110,14 @@ internal fun RecordPanel(state: AppState, view: RecordView, onView: (RecordView)
                     Column(Modifier.fillMaxWidth().padding(horizontal = Tokens.Space.sp2), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
                         TokenText(RecordText.day(ctx, pickedLine.first), Tokens.TypeScale.caption1, color = p.secondary)
                         val l = pickedLine.second
-                        TokenText(when { l == null -> stringResource(R.string.record_rest); l.text.isBlank() -> stringResource(R.string.record_noText); else -> l.text }, Tokens.TypeScale.callout.serif())
+                        // 오늘 보낸 한 줄은 떠나보낸 그대로 두고, 내일부터 여기서 다시 볼 수 있음
+                        TokenText(when { l == null -> stringResource(R.string.record_rest); pickedLine.first == today -> stringResource(R.string.record_todayHidden); l.text.isBlank() -> stringResource(R.string.record_noText); else -> l.text },
+                            Tokens.TypeScale.callout.serif(), color = if (l != null && pickedLine.first == today) p.secondary else p.foreground)
                         // 빈 지난 날: 그날의 한 줄을 바로 (기록 페이지로)
                         if (l == null && state.canWriteOn(pickedLine.first, today)) TokenText(stringResource(R.string.record_writeDay), Tokens.TypeScale.footnote,
-                            Modifier.clickable { state.writeDay = pickedLine.first }.padding(vertical = Tokens.Space.sp1), color = p.olive, weight = FontWeight.SemiBold)
+                            Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { state.writeDay = pickedLine.first }.padding(vertical = Tokens.Space.sp3), color = p.olive, weight = FontWeight.SemiBold)
                     }
-                } else TokenText(stringResource(R.string.record_hint), Tokens.TypeScale.caption1, Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.Center)
+                } else TokenText(stringResource(R.string.record_hint), Tokens.TypeScale.footnote, Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.Center)
                 GardenButton(stringResource(R.string.share_image), {
                     io.github.graviton94.carpediem.share.ShareCards.send(ctx, io.github.graviton94.carpediem.share.ShareCards.month(ctx, book, days, state.store.haruSeed, night, today, shown, sub), "month-${view.year}-$m")
                 }, filled = false, seed = 1173)
@@ -128,7 +130,7 @@ internal fun RecordPanel(state: AppState, view: RecordView, onView: (RecordView)
                 val title = stringResource(R.string.year_title, "$y"); val count = stringResource(R.string.year_count, "$sent", "${thanksAll.size}")
                 PanelHead(title, count, y > first.year, y < today.year, { onView(RecordView(y - 1, null)) }, { onView(RecordView(y + 1, null)) })
                 YearTiles(state, y, today, night) { mo -> onView(RecordView(y, mo)) }
-                TokenText(stringResource(R.string.record_yearHint), Tokens.TypeScale.caption1, Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.Center)
+                TokenText(stringResource(R.string.record_yearHint), Tokens.TypeScale.footnote, Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.Center)
                 thanks.forEach { TokenText("“$it”", Tokens.TypeScale.callout.serif(), Modifier.padding(horizontal = Tokens.Space.sp2)) }
                 if (y < today.year || (today.monthValue == 12 && today.dayOfMonth == 31))
                     TokenText(stringResource(R.string.year_end), Tokens.TypeScale.callout.serif(), Modifier.fillMaxWidth(), align = TextAlign.Center)

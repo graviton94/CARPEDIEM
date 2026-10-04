@@ -111,9 +111,13 @@ if [ -n "${STORE:-}" ]; then store_scenes; finish; exit 0; fi
 if [ -n "${QUICK:-}" ]; then quick_scenes; finish; exit 0; fi
 
 # 정원: 처음 켜기 → 하루를 만남 → 홈
+open --ez cd.reset true --ez cd.guide true --es cd.design garden --es cd.now $NOW;                    shot g00_intro 4
 open --ez cd.reset true --es cd.design garden --es cd.now $NOW;                                       shot g01_onboarding 5
 open --ez cd.reset true --es cd.design garden --el cd.seed 2718281 --es cd.birth 2000-05-12 --es cd.sex female --ez cd.meet true --es cd.now $NOW; shot g02_meet 14
 open --ez cd.meet false --es cd.now $NOW;                                                              shot g03_home 6
+# 처음 온 사람의 둘러보기: 첫 장 → 한 번 눌러 둘째 장 (남은 시간을 비춤)
+open --ez cd.guide true --es cd.now $NOW;                                                              shot g03b_guide 6
+adb shell input tap 540 250; shot g03c_guide_number 3
 open --ez cd.preview true --es cd.now $NOW;                                                            shot g04_home_all 5
 open --ei cd.page 1 --es cd.now $NOW;                                                             shot g05_write 3
 open --ei cd.page 2 --es cd.now $NOW;                                                             shot g06_memories 3
@@ -141,7 +145,7 @@ open --es cd.now 2026-09-30T18:20;                                              
 open --es cd.now 2026-09-30T05:20;                                                                     shot g20_dawn 5
 # 1.3 깨닫기: 오늘의 질문 · 마음의 하늘 · 계절의 편지 (12월 2일)
 open --ez cd.question true --es cd.now $NOW;                                                          shot g29_question 5
-open --ez cd.moods true --ei cd.page 2 --es cd.now $NOW;                                            shot g30_mood 5
+open --ez cd.moods true --ei cd.page 1 --es cd.now $NOW;                                            shot g30_mood 5
 open --ez cd.letter true --es cd.now 2026-12-02T10:00;                                             shot g31_letter 5
 open --ez cd.wish true --ez cd.openLetter true --es cd.now 2026-12-02T10:00;                            shot g32_letter_open 4
 open --ez cd.letter true --ez cd.openLetter true --es cd.now 2026-12-02T21:30;                         shot g33_letter_night 4

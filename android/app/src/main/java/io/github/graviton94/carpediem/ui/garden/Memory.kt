@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.size
@@ -184,14 +185,14 @@ private fun MemoryStone(state: AppState, m: Person, today: LocalDate, seed: Int)
         if (m.until != null) Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
                 TokenText(stringResource(R.string.memory_weekRow), Tokens.TypeScale.subhead)
-                TokenText(stringResource(R.string.memory_weekHelp), Tokens.TypeScale.caption1, color = p.secondary)
+                TokenText(stringResource(R.string.memory_weekHelp), Tokens.TypeScale.footnote, color = p.secondary)
             }
             Switch(m.id in state.memoryWeekOn, { state.setMemoryWeek(m.id, it) }, colors = SwitchDefaults.colors(checkedTrackColor = p.olive))
         }
         Row(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2), verticalAlignment = Alignment.CenterVertically) {
-            TokenText(stringResource(R.string.memory_back), Tokens.TypeScale.footnote, Modifier.clickable { if (!state.backToGarden(m.id)) full = true }.padding(Tokens.Space.sp2), color = p.secondary)
+            TokenText(stringResource(R.string.memory_back), Tokens.TypeScale.footnote, Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { if (!state.backToGarden(m.id)) full = true }.padding(Tokens.Space.sp3), color = p.secondary)
             TokenText("·", Tokens.TypeScale.footnote, color = p.secondary)
-            TokenText(stringResource(R.string.stone_removeAction), Tokens.TypeScale.footnote, Modifier.clickable { confirmRemove = true }.padding(Tokens.Space.sp2), color = p.secondary)
+            TokenText(stringResource(R.string.stone_removeAction), Tokens.TypeScale.footnote, Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { confirmRemove = true }.padding(Tokens.Space.sp3), color = p.secondary)
         }
         if (full) TokenText(stringResource(R.string.memory_backFull), Tokens.TypeScale.caption1, color = p.secondary)
     }

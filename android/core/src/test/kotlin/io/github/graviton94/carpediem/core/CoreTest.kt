@@ -142,11 +142,27 @@ class DataTest {
         val list = Lines.add(Lines.add(emptyList(), a), a.copy(text = "두 번째"))
         assertEquals(1, list.size)
         val back = Lines.decode(Lines.encode(list + DayLine(d(2026, 10, 1), "그냥", null)))
-        assertEquals("오늘은 좋았다 정말", back[0].text)
+        assertEquals("오늘은 좋았다\n정말", back[0].text)   // 줄바꿈은 남고 탭은 빈칸
         assertEquals(Feeling.JOY, back[0].feeling)
         assertEquals(null, back[1].feeling)
         assertEquals("가나다", Lines.clean("  가나다라마  ", 3))
         assertEquals(emptyList(), Lines.decode(null))
+    }
+
+    @Test fun linesKeepLineBreaks() {
+        // 여러 줄: 빈 줄 여럿은 하나로, 줄 끝 빈칸 없이, 최대 MAX_LINES 줄
+        assertEquals("첫 줄\n\n둘째 줄", Lines.clean("  첫 줄   \r\n\n\n\n둘째 줄\n\n", 60, Lines.MAX_LINES))
+        assertEquals("1\n2\n3\n4\n5", Lines.clean("1\n2\n3\n4\n5\n6\n7", 60, Lines.MAX_LINES))
+        assertEquals("가나\n다", Lines.clean("가나\n다라마", 4, Lines.MAX_LINES))   // 줄바꿈도 한 글자
+        // 한 줄 (기본): 예전처럼 줄바꿈을 빈칸으로
+        assertEquals("가 나", Lines.clean("가\n\u2028나", 60))
+        // 저장 · 읽기: 기록 하나는 한 줄 그대로, 글 안의 줄바꿈은 되살아남. 예전 기록 (줄바꿈 없음) 도 그대로
+        val l = DayLine(d(2026, 10, 4), "아침엔 비\n저녁엔 \\n 해", Feeling.CALM, "k3f9a2qz", 7)
+        val enc = Lines.encode(listOf(l, DayLine(d(2026, 10, 5), "그냥", null)))
+        assertEquals(2, enc.lines().size)
+        assertEquals(listOf(l, DayLine(d(2026, 10, 5), "그냥", null)), Lines.decode(enc))
+        assertEquals("예전 \\n 글", Lines.decode("20000\t-\t예전 \\n 글").single().text)
+        assertEquals("2026-10-04 · 고요 · 아침엔 비 / 저녁엔 \\n 해", Lines.export(listOf(l)) { "고요" })
     }
 
     @Test fun linesStreaksAndYearsAgo() {
@@ -373,7 +389,9 @@ class ReflectTest {
         val list = SpecialDays.put(SpecialDays.put(emptyList(), a), b)
         assertEquals(listOf(b, a), list)
         assertEquals(list, SpecialDays.decode(SpecialDays.encode(list)))
-        assertEquals("결혼", SpecialDays.put(list, a.copy(name = "결혼")).last().name)
+        // 같은 날에 다른 이름은 둘 다 남고, 같은 이름은 한 번만
+        assertEquals(listOf(b, a, a.copy(name = "결혼")), SpecialDays.put(list, a.copy(name = "결혼")))
+        assertEquals(list, SpecialDays.put(list, a))
         // 그 날이 든 달력 칸: 그날까지 지나온 단위 수
         assertEquals(22, LifeSnapshot(LocalDate.of(1998, 1, 15), 80.0, LocalDate.of(2020, 3, 2).atStartOfDay()).lived(LifeUnit.YEARS))
     }

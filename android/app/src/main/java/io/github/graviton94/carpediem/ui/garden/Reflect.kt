@@ -75,9 +75,9 @@ internal fun QuestionBlock(state: AppState, q: Question, sent: Boolean, onAnswer
         TokenText(io.github.graviton94.carpediem.data.Words.main(q, lang, phone), Tokens.TypeScale.headline.serif(), Modifier.fillMaxWidth(), align = TextAlign.Center)
         io.github.graviton94.carpediem.data.Words.second(q, lang, phone)?.let { TokenText(it, Tokens.TypeScale.footnote.serif(), Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.Center) }
         if (!sent) Row(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2), verticalAlignment = Alignment.CenterVertically) {
-            TokenText(stringResource(R.string.question_answer), Tokens.TypeScale.footnote, Modifier.clickable(onClick = onAnswer).padding(Tokens.Space.sp2), weight = FontWeight.SemiBold)
+            TokenText(stringResource(R.string.question_answer), Tokens.TypeScale.footnote, Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable(onClick = onAnswer).padding(Tokens.Space.sp3), weight = FontWeight.SemiBold)
             TokenText("·", Tokens.TypeScale.footnote, color = p.secondary)
-            TokenText(stringResource(R.string.question_skip), Tokens.TypeScale.footnote, Modifier.clickable { state.skipQuestion() }.padding(Tokens.Space.sp2), color = p.secondary)
+            TokenText(stringResource(R.string.question_skip), Tokens.TypeScale.footnote, Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { state.skipQuestion() }.padding(Tokens.Space.sp3), color = p.secondary)
         }
     }
 }
@@ -303,7 +303,7 @@ internal fun WishCard(state: AppState, id: String, today: LocalDate) {
         )
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
             GardenButton(stringResource(R.string.wish_keep), { if (text.isNotBlank()) { state.saveWish(id, text); kept = true; focus.clearFocus() } }, filled = text.isNotBlank(), seed = 1172, modifier = Modifier.weight(1f))
-            TokenText(stringResource(R.string.wish_later), Tokens.TypeScale.footnote, Modifier.clickable { state.skipWish(id) }.padding(Tokens.Space.sp2), color = p.secondary)
+            TokenText(stringResource(R.string.wish_later), Tokens.TypeScale.footnote, Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { state.skipWish(id) }.padding(Tokens.Space.sp3), color = p.secondary)
         }
     }
 }
@@ -333,7 +333,7 @@ internal fun SpecialDaysRow(state: AppState, birth: LocalDate) {
         GardenAlert(
             onDismissRequest = { removing = null },
             title = { androidx.compose.material3.Text(stringResource(R.string.special_removeConfirm, d.name)) },
-            confirmButton = { androidx.compose.material3.TextButton(onClick = { state.removeSpecialDay(d.date); removing = null }) { androidx.compose.material3.Text(stringResource(R.string.special_remove)) } },
+            confirmButton = { androidx.compose.material3.TextButton(onClick = { state.removeSpecialDay(d); removing = null }) { androidx.compose.material3.Text(stringResource(R.string.special_remove)) } },
             dismissButton = { androidx.compose.material3.TextButton(onClick = { removing = null }) { androidx.compose.material3.Text(stringResource(R.string.cancel)) } },
         )
     }
@@ -367,7 +367,7 @@ private fun SpecialDaySheet(state: AppState, birth: LocalDate, onClose: () -> Un
     }
     if (picking) {
         val init = (date?.let { LocalDate.ofEpochDay(it) } ?: LocalDate.now()).atStartOfDay().toInstant(java.time.ZoneOffset.UTC).toEpochMilli()
-        val dp = androidx.compose.material3.rememberDatePickerState(initialSelectedDateMillis = init)
+        val dp = androidx.compose.material3.rememberDatePickerState(initialSelectedDateMillis = init, selectableDates = io.github.graviton94.carpediem.ui.pastDates(from = birth))
         androidx.compose.material3.DatePickerDialog(
             onDismissRequest = { picking = false },
             confirmButton = {

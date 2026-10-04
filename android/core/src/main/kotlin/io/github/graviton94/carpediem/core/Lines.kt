@@ -9,14 +9,30 @@ enum class Feeling { JOY, HOPE, CALM, THANKS, DISAPPOINT, SAD, WORRY }
 data class DayLine(val date: LocalDate, val text: String, val feeling: Feeling?, val to: String? = null, val question: Int? = null)
 
 object Lines {
-    /** 한 줄로 다듬기: 줄바꿈 · 탭을 빈칸으로, 앞뒤 빈칸 없이, 최대 max 글자. */
-    fun clean(text: String, max: Int): String =
-        text.replace(Regex("[\\t\\r\\n]+"), " ").trim().let { if (it.codePointCount(0, it.length) <= max) it else it.substring(0, it.offsetByCodePoints(0, max)) }
+    /** 오늘의 한 줄은 이름은 ‘한 줄’이지만 이만큼 줄을 나눠 쓸 수 있다 (빈 줄 포함). */
+    const val MAX_LINES = 5
+    /** 저장할 때 글 안의 줄바꿈 자리 (기록 하나가 한 줄이라 줄바꿈 대신 U+2028 줄 구분 문자로 둔다). */
+    private const val LS = '\u2028'
 
-    /** 저장 형식: 한 줄에 하나, `epochDay<TAB>FEELING(없으면 -)<TAB>글[<TAB>받는 돌 id(없으면 빈칸)[<TAB>질문 번호]]`. 예전 기록(칸 3 · 4개)도 그대로 읽힌다. */
+    /**
+     * 다듬기: 앞뒤 빈칸 없이, 최대 max 글자. lines = 1 이면 줄바꿈 · 탭을 빈칸으로 (한 줄).
+     * lines > 1 이면 줄바꿈은 남기되 탭은 빈칸, 줄 끝 빈칸은 지우고, 빈 줄이 여럿 이어지면 하나로, 최대 lines 줄.
+     */
+    fun clean(text: String, max: Int, lines: Int = 1): String {
+        val t = if (lines <= 1) text.replace(Regex("[\\t\\r\\n$LS]+"), " ").trim()
+        else text.replace("\r\n", "\n").replace('\r', '\n').replace(LS, '\n').replace('\t', ' ')
+            .split('\n').joinToString("\n") { it.trimEnd() }.replace(Regex("\n{3,}"), "\n\n").trim()
+            .split('\n').take(lines).joinToString("\n").trimEnd()
+        return if (t.codePointCount(0, t.length) <= max) t else t.substring(0, t.offsetByCodePoints(0, max)).trimEnd()
+    }
+
+    /**
+     * 저장 형식: 한 줄에 하나, `epochDay<TAB>FEELING(없으면 -)<TAB>글[<TAB>받는 돌 id(없으면 빈칸)[<TAB>질문 번호]]`. 예전 기록(칸 3 · 4개)도 그대로 읽힌다.
+     * 글 안의 줄바꿈은 U+2028 로 바꿔 둔다 (예전 기록에는 줄바꿈이 없어 그대로 읽힘).
+     */
     fun encode(list: List<DayLine>): String =
         list.joinToString("\n") {
-            "${it.date.toEpochDay()}\t${it.feeling?.name ?: "-"}\t${clean(it.text, Int.MAX_VALUE)}" +
+            "${it.date.toEpochDay()}\t${it.feeling?.name ?: "-"}\t${clean(it.text, Int.MAX_VALUE, Int.MAX_VALUE).replace('\n', LS)}" +
                 (if (it.to != null || it.question != null) "\t${it.to.orEmpty()}" else "") + (it.question?.let { q -> "\t$q" } ?: "")
         }
 
@@ -25,7 +41,7 @@ object Lines {
             val p = row.split('\t', limit = 5)
             if (p.size < 3) return@mapNotNull null
             val day = p[0].toLongOrNull() ?: return@mapNotNull null
-            DayLine(LocalDate.ofEpochDay(day), p[2], Feeling.entries.firstOrNull { it.name == p[1] }, p.getOrNull(3)?.takeIf { it.isNotBlank() }, p.getOrNull(4)?.toIntOrNull())
+            DayLine(LocalDate.ofEpochDay(day), p[2].replace(LS, '\n'), Feeling.entries.firstOrNull { it.name == p[1] }, p.getOrNull(3)?.takeIf { it.isNotBlank() }, p.getOrNull(4)?.toIntOrNull())
         }.toList()
 
     /** 이어 쓰기 흔적: 7 · 30 · 100일 (정원에 바람개비 · 종이배 · 연). */
@@ -73,7 +89,7 @@ object Lines {
 
     /** 내보내기용 글 (한 줄에 하나: 날짜 · 마음 · 글). 마음 이름은 부르는 쪽이 정한다. */
     fun export(list: List<DayLine>, feelingName: (Feeling) -> String): String =
-        list.filter { it.text.isNotBlank() }.joinToString("\n") { l -> listOfNotNull(l.date.toString(), l.feeling?.let(feelingName), l.text).joinToString(" · ") }
+        list.filter { it.text.isNotBlank() }.joinToString("\n") { l -> listOfNotNull(l.date.toString(), l.feeling?.let(feelingName), l.text.replace("\n", " / ")).joinToString(" · ") }
 
     /** 마음의 하늘: 오늘까지 n일 (오래된 날부터), 날마다 보낸 한 줄 또는 null (쉰 날). */
     fun lastDays(list: List<DayLine>, today: LocalDate, n: Int): List<Pair<LocalDate, DayLine?>> {
@@ -120,5 +136,6 @@ object SpecialDays {
         list.filter { it.date.year < day.year && Family.birthdayIn(it.date, day.year) == day }.map { it to day.year - it.date.year }
 
     /** 같은 날은 하나만 (이름을 바꿈), 날짜순, 최대 MAX. */
-    fun put(list: List<SpecialDay>, day: SpecialDay): List<SpecialDay> = (list.filterNot { it.date == day.date } + day).sortedBy { it.date }.takeLast(MAX)
+    /** 같은 날에도 여럿 (같은 날 · 같은 이름은 한 번만). 날짜순, 최대 MAX. */
+    fun put(list: List<SpecialDay>, day: SpecialDay): List<SpecialDay> = (list.filterNot { it == day } + day).sortedBy { it.date }.takeLast(MAX)
 }

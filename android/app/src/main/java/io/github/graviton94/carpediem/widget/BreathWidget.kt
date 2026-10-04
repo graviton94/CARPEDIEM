@@ -52,7 +52,7 @@ import java.time.LocalDateTime
 
 /** 숨 바로가기 (C1): 알림 · 위젯 · 타일이 함께 쓰는 ‘지금 때의 숨 1분’ 열기. */
 internal fun breathIntent(context: Context): Intent = Intent(context, MainActivity::class.java)
-    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK).putExtra(MainActivity.EXTRA_OPEN, "breath")
+    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP).putExtra(MainActivity.EXTRA_OPEN, "breath")
 
 /** 지금 때의 숨 이름 (하루를 여는 숨 → 잠시 쉬어가는 호흡 → …). */
 internal fun breathName(context: Context, now: LocalDateTime): String = context.getString(when (DayPart.of(now.hour)) {

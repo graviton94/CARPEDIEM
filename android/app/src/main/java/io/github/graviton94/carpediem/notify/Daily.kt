@@ -137,7 +137,7 @@ object Daily {
             }
         }
         // 아침 알림을 누르면 (정원 디자인 · 켜 두었을 때) 하루를 여는 숨 1분으로
-        val tap = Intent(context, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        val tap = Intent(context, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
         // 편지 · 정원 소식이면 그곳으로, 아니면 (켜 두었을 때) 아침의 숨
         if (store.design == Design.GARDEN && openAt != null) tap.putExtra(MainActivity.EXTRA_OPEN, openAt)
         else if (store.design == Design.GARDEN && store.morningBreath) tap.putExtra(MainActivity.EXTRA_MORNING_BREATH, true)
@@ -176,7 +176,7 @@ object Evening {
         if (!Daily.allowed(context)) return
         val nm = context.getSystemService(NotificationManager::class.java)
         Daily.eveningChannel(context)
-        val open = PendingIntent.getActivity(context, 1, Intent(context, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK).putExtra(MainActivity.EXTRA_OPEN, "write"),
+        val open = PendingIntent.getActivity(context, 1, Intent(context, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP).putExtra(MainActivity.EXTRA_OPEN, "write"),
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
         val n = NotificationCompat.Builder(context, "evening").setSmallIcon(R.mipmap.ic_launcher_monochrome)
             .setContentTitle(context.getString(R.string.notify_evening)).setContentText(Daily.line(context, "notify_evening_", today, 2).ifEmpty { context.getString(R.string.notify_eveningText) })
@@ -229,7 +229,7 @@ object Tomorrow {
         Daily.daysChannel(context)
         // 생일이면 그 사람의 돌 페이지 (내 생일이면 내 돌), 특별한 날이면 흐름 (인생 달력의 꽃)
         val target = if (mine) "stone:" else who.firstOrNull()?.let { "stone:${it.id}" } ?: "flow"
-        val open = PendingIntent.getActivity(context, 2 + ahead * 10, Intent(context, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK).putExtra(MainActivity.EXTRA_OPEN, target),
+        val open = PendingIntent.getActivity(context, 2 + ahead * 10, Intent(context, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP).putExtra(MainActivity.EXTRA_OPEN, target),
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
         val n = NotificationCompat.Builder(context, "days").setSmallIcon(R.mipmap.ic_launcher_monochrome)
             .setContentTitle(title).setContentText(body).setContentIntent(open).setAutoCancel(true).build()
@@ -268,7 +268,7 @@ object MemoryWeekNote {
         val key = "${m.id}:${io.github.graviton94.carpediem.core.MemoryWeek.of(m, today)}"
         if (key in store.memoryWeekSent) return
         Daily.daysChannel(context)
-        val open = PendingIntent.getActivity(context, 6, Intent(context, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK).putExtra(MainActivity.EXTRA_OPEN, "memory"),
+        val open = PendingIntent.getActivity(context, 6, Intent(context, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP).putExtra(MainActivity.EXTRA_OPEN, "memory"),
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
         val n = NotificationCompat.Builder(context, "days").setSmallIcon(R.mipmap.ic_launcher_monochrome)
             .setContentTitle(context.getString(R.string.memory_weekNotify, m.name, Daily.subject(m.name, context))).setContentIntent(open).setAutoCancel(true).build()

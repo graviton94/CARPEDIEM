@@ -85,6 +85,17 @@ class Store(context: Context) {
         get() = prefs.getBoolean("meetPending", false)
         set(v) = prefs.edit().putBoolean("meetPending", v).apply()
 
+    /** 처음 온 사람의 안내: 첫 화면 앞 소개 몇 장을 봤는지 · 정원 둘러보기를 마쳤는지 · 처음 들어가 본 페이지 (기록 · 추억 · 흐름). */
+    var introSeen: Boolean
+        get() = prefs.getBoolean("introSeen", false)
+        set(v) = prefs.edit().putBoolean("introSeen", v).apply()
+    var guideDone: Boolean
+        get() = prefs.getBoolean("guideDone", false)
+        set(v) = prefs.edit().putBoolean("guideDone", v).apply()
+    var pageHints: Set<String>
+        get() = prefs.getStringSet("pageHints", emptySet()) ?: emptySet()
+        set(v) = prefs.edit().putStringSet("pageHints", v).apply()
+
     /** 디버그 빌드 화면 확인용으로만 하루 번호를 정한다. */
     fun overrideHaruSeed(v: Long) = prefs.edit().putLong("haruSeed", v and 0xFFFFFFFFL).apply()
 
