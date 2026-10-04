@@ -711,7 +711,7 @@ private fun WritePage(state: AppState, now: LocalDateTime, view: RecordView, gui
     ) {
         state.wishDue(today)?.let { id -> WishCard(state, id, today) }
         LetGoSection(state, today, guide = guide)
-        // 쓰는 곳과 읽는 곳을 또렷이 나눔: 한 줄 긋고, 아래는 지난 기록 (찾기 · 달 · 해) 을 한 판에
+        // 쓰는 곳과 읽는 곳을 또렷이 나눔: 한 줄 긋고 제목, 아래는 지난 기록 (찾기 · 달 · 해)
         Spacer(Modifier.height(Tokens.Space.sp6))
         CrayonRule(seed = 1720)
         Spacer(Modifier.height(Tokens.Space.sp2))
@@ -721,8 +721,8 @@ private fun WritePage(state: AppState, now: LocalDateTime, view: RecordView, gui
             // 찾은 줄을 누르면 그 달 판의 그날로, 판이 보이게 끌어옴
             val panel = remember { androidx.compose.foundation.relocation.BringIntoViewRequester() }
             val sc = rememberCoroutineScope()
-            Column(Modifier.fillMaxWidth().crayonBox(Theme.gc.chip.copy(alpha = 0.28f), G.Radius.box, G.Stroke.chip, 1721).padding(Tokens.Space.sp3),
-                verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
+            // 판을 상자로 감싸지 않음: 긴 판 전체를 크레용 층으로 그리면 넘길 때마다 다시 그려 무거움 (선 하나 · 제목으로 충분)
+            Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
                 RecordSearch(state, today) { v -> onView(v); sc.launch { delay(G.Motion.pageMs.toLong() / 2); panel.bringIntoView() } }
                 Box(Modifier.guideTarget(guide, "write.record").bringIntoViewRequester(panel)) { RecordPanel(state, view, onView, today) }
             }
