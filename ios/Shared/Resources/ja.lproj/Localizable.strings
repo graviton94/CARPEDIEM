@@ -954,7 +954,6 @@
 "credits.countLines" = "ひとこと";
 "credits.countThanks" = "感謝";
 "credits.countBreaths" = "呼吸";
-"credits.seasonCount" = "ひとこと %1$@・感謝 %2$@・呼吸 %3$@";
 "credits.myBirthday" = "%1$@回目の誕生日";
 "credits.birthday" = "%1$@の誕生日";
 "credits.togetherDays" = "%1$@・一緒に %2$@日";
@@ -966,7 +965,9 @@
 "credits.first" = "ハルに初めて出会った日";
 "credits.personDays" = "%1$@・一緒に %2$@日";
 "credits.guests" = "特別出演";
-"credits.keptLine" = "ひとこと %1$@件・感謝 %2$@回・呼吸 %3$@回";
 "credits.bloomed" = "%1$@輪";
 "credits.made" = "つくった人";
 "credits.madeBy" = "今日を生きた私";
+"credits.sLines" = "ひとこと %1$@件";
+"credits.sThanks" = "感謝 %1$@回";
+"credits.sBreaths" = "呼吸 %1$@回";

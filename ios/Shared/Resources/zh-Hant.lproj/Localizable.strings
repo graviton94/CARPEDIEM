@@ -954,7 +954,6 @@
 "credits.countLines" = "句話";
 "credits.countThanks" = "感謝";
 "credits.countBreaths" = "呼吸";
-"credits.seasonCount" = "%1$@ 句・感謝 %2$@・呼吸 %3$@";
 "credits.myBirthday" = "第 %1$@ 個生日";
 "credits.birthday" = "%1$@ 的生日";
 "credits.togetherDays" = "%1$@・一起 %2$@ 天";
@@ -966,7 +965,9 @@
 "credits.first" = "第一次遇見小日的日子";
 "credits.personDays" = "%1$@・一起 %2$@ 天";
 "credits.guests" = "特別演出";
-"credits.keptLine" = "%1$@ 句話・感謝 %2$@ 次・呼吸 %3$@ 次";
 "credits.bloomed" = "%1$@ 朵";
 "credits.made" = "創作者";
 "credits.madeBy" = "活過每一天的我";
+"credits.sLines" = "%1$@ 句話";
+"credits.sThanks" = "感謝 %1$@ 次";
+"credits.sBreaths" = "呼吸 %1$@ 次";

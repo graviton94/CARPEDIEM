@@ -180,7 +180,13 @@ private fun SeasonScene(state: AppState, year: Int, sc: CreditScene, elapsed: Lo
         TokenText(Labels.season(ctx, season), Tokens.TypeScale.title2.serif(), color = CREDIT_INK)
         TokenText(months, Tokens.TypeScale.caption1, color = CREDIT_INK.copy(alpha = 0.6f))
         Spacer(Modifier.height(Tokens.Space.sp1))
-        TokenText(stringResource(R.string.credits_seasonCount, "${inSeason.size}", "${inSeason.count { it.feeling == Feeling.THANKS }}", "$breaths"), Tokens.TypeScale.caption1, color = CREDIT_WARM.copy(alpha = 0.85f))
+        // 그 계절의 숫자 (0 인 것은 빼고)
+        val counts = listOfNotNull(
+            inSeason.size.takeIf { it > 0 }?.let { stringResource(R.string.credits_sLines, "$it") },
+            inSeason.count { it.feeling == Feeling.THANKS }.takeIf { it > 0 }?.let { stringResource(R.string.credits_sThanks, "$it") },
+            breaths.takeIf { it > 0 }?.let { stringResource(R.string.credits_sBreaths, "$it") },
+        )
+        if (counts.isNotEmpty()) TokenText(counts.joinToString(" · "), Tokens.TypeScale.footnote, color = CREDIT_WARM.copy(alpha = 0.9f))
         Spacer(Modifier.weight(0.6f))
         val cur = sc.itemAt(elapsed)
         Box(Modifier.fillMaxWidth().heightIn(min = Theme.unit * 200f), contentAlignment = Alignment.Center) {
@@ -222,9 +228,9 @@ private fun ItemCard(state: AppState, item: CreditItem, today: java.time.LocalDa
         CreditKind.FIRST -> stringResource(R.string.credits_first)
     }
     Column(modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
-        CreditIcon(item.kind, Theme.unit * 30f)
-        TokenText(RecordText.day(ctx, item.date), Tokens.TypeScale.caption1, color = CREDIT_INK.copy(alpha = 0.6f))
-        TokenText(text, if (item.kind == CreditKind.LINE) Tokens.TypeScale.title3.serif() else Tokens.TypeScale.headline.serif(), Modifier.fillMaxWidth(),
+        CreditIcon(item.kind, Theme.unit * 64f)
+        TokenText(RecordText.day(ctx, item.date), Tokens.TypeScale.footnote, color = CREDIT_INK.copy(alpha = 0.7f))
+        TokenText(text, Tokens.TypeScale.title2.serif(), Modifier.fillMaxWidth(),
             color = CREDIT_INK, align = TextAlign.Center, maxLines = 5)
         if (item.kind == CreditKind.LINE) WeatheredPhoto(state, item.date, today, Theme.unit * 120f, modifier = Modifier.padding(top = Tokens.Space.sp2))
     }
@@ -292,7 +298,11 @@ private fun Outro(state: AppState, profile: LifeProfile, year: Int, p: Float) {
                 io.github.graviton94.carpediem.core.Memories.from(pp)?.let { t -> val d = java.time.temporal.ChronoUnit.DAYS.between(t, end); if (d > 0) ctx.getString(R.string.credits_personDays, pp.name, Labels.number(d.toInt())) else pp.name } ?: pp.name
             }.toTypedArray())
             if (guests.isNotEmpty()) role(R.string.credits_guests, guests.joinToString(" · "))
-            role(R.string.credits_kept, stringResource(R.string.credits_keptLine, Labels.number(inYear.size), Labels.number(thanks), Labels.number(breaths)))
+            role(R.string.credits_kept, listOfNotNull(
+                inYear.size.takeIf { it > 0 }?.let { stringResource(R.string.credits_sLines, Labels.number(it)) },
+                thanks.takeIf { it > 0 }?.let { stringResource(R.string.credits_sThanks, Labels.number(it)) },
+                breaths.takeIf { it > 0 }?.let { stringResource(R.string.credits_sBreaths, Labels.number(it)) },
+            ).joinToString(" · ").ifEmpty { stringResource(R.string.credits_quiet) })
             if (bloomed > 0) role(R.string.seed_garden, stringResource(R.string.credits_bloomed, "$bloomed"))
             top?.let { role(R.string.credits_mood, Labels.feeling(ctx, it)) }
             role(R.string.credits_made, stringResource(R.string.credits_madeBy))

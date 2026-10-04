@@ -261,7 +261,7 @@ object ShareCards {
         y += text(c, title, paint(ctx, S.text * 0.9f, ink), pad, y, tw) + pad * 0.5f
         val key = when (season) { io.github.graviton94.carpediem.core.Season.SPRING -> "spring"; io.github.graviton94.carpediem.core.Season.SUMMER -> "summer"; io.github.graviton94.carpediem.core.Season.AUTUMN -> "autumn"; io.github.graviton94.carpediem.core.Season.WINTER -> "winter" }
         // ── 작은 정원 한 장: 둥근 틀 안에 하늘과 땅
-        val sceneH = h * 0.5f
+        val sceneH = h * 0.44f
         val scene = RectF(pad, y, w - pad, y + sceneH)
         val r = pad * 0.6f
         c.save()
@@ -308,7 +308,7 @@ object ShareCards {
         c.drawRoundRect(scene, r, r, Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE; strokeWidth = 3f; color = ink })
         y = scene.bottom + pad * 0.7f
         // ── 계절 조각 넷: 봄 · 여름 · 가을 · 겨울
-        val cell = (w - pad * 2) / 4f; val ch = cell * 0.78f
+        val cell = (w - pad * 2) / 4f; val ch = minOf(cell * 0.72f, (h - pad * 1.6f - y) * 0.62f)
         val dash = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE; strokeWidth = 3f; color = inkSoft; pathEffect = android.graphics.DashPathEffect(floatArrayOf(10f, 10f), 0f) }
         val label = paint(ctx, S.small * 0.8f, inkSoft)
         io.github.graviton94.carpediem.core.Season.entries.forEachIndexed { i, s ->

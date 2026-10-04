@@ -957,7 +957,6 @@
     <string name="credits_countLines">lines</string>
     <string name="credits_countThanks">thanks</string>
     <string name="credits_countBreaths">breaths</string>
-    <string name="credits_seasonCount">%1$s lines · %2$s thanks · %3$s breaths</string>
     <string name="credits_myBirthday">My %1$sth birthday</string>
     <string name="credits_birthday">%1$s\'s birthday</string>
     <string name="credits_togetherDays">%1$s · %2$s days together</string>
@@ -969,8 +968,10 @@
     <string name="credits_first">The day I met Haru</string>
     <string name="credits_personDays">%1$s · %2$s days together</string>
     <string name="credits_guests">Special appearances</string>
-    <string name="credits_keptLine">%1$s lines · %2$s thanks · %3$s breaths</string>
     <string name="credits_bloomed">%1$s flowers</string>
     <string name="credits_made">Made by</string>
     <string name="credits_madeBy">Me, who lived each day</string>
+    <string name="credits_sLines">%1$s lines</string>
+    <string name="credits_sThanks">%1$s thanks</string>
+    <string name="credits_sBreaths">%1$s breaths</string>
 </resources>

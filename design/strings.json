@@ -956,7 +956,6 @@
     "credits.countLines": "한 줄",
     "credits.countThanks": "고마움",
     "credits.countBreaths": "숨",
-    "credits.seasonCount": "한 줄 {lines} · 고마움 {thanks} · 숨 {breaths}",
     "credits.myBirthday": "{n}번째 생일",
     "credits.birthday": "{name}의 생일",
     "credits.togetherDays": "{name} · 함께한 지 {n}일",
@@ -968,10 +967,12 @@
     "credits.first": "하루를 처음 만난 날",
     "credits.personDays": "{name} · 함께한 지 {n}일",
     "credits.guests": "특별 출연",
-    "credits.keptLine": "한 줄 {lines}개 · 고마움 {thanks}번 · 숨 {breaths}번",
     "credits.bloomed": "{n}송이",
     "credits.made": "만든 이",
-    "credits.madeBy": "오늘을 살아 낸 나"
+    "credits.madeBy": "오늘을 살아 낸 나",
+    "credits.sLines": "한 줄 {n}개",
+    "credits.sThanks": "고마움 {n}번",
+    "credits.sBreaths": "숨 {n}번"
   },
   "en": {
     "tagline": "Cherish today.",
@@ -1930,7 +1931,6 @@
     "credits.countLines": "lines",
     "credits.countThanks": "thanks",
     "credits.countBreaths": "breaths",
-    "credits.seasonCount": "{lines} lines · {thanks} thanks · {breaths} breaths",
     "credits.myBirthday": "My {n}th birthday",
     "credits.birthday": "{name}'s birthday",
     "credits.togetherDays": "{name} · {n} days together",
@@ -1942,10 +1942,12 @@
     "credits.first": "The day I met Haru",
     "credits.personDays": "{name} · {n} days together",
     "credits.guests": "Special appearances",
-    "credits.keptLine": "{lines} lines · {thanks} thanks · {breaths} breaths",
     "credits.bloomed": "{n} flowers",
     "credits.made": "Made by",
-    "credits.madeBy": "Me, who lived each day"
+    "credits.madeBy": "Me, who lived each day",
+    "credits.sLines": "{n} lines",
+    "credits.sThanks": "{n} thanks",
+    "credits.sBreaths": "{n} breaths"
   },
   "ja": {
     "tagline": "今日を大切に。",
@@ -2903,7 +2905,6 @@
     "credits.countLines": "ひとこと",
     "credits.countThanks": "感謝",
     "credits.countBreaths": "呼吸",
-    "credits.seasonCount": "ひとこと {lines}・感謝 {thanks}・呼吸 {breaths}",
     "credits.myBirthday": "{n}回目の誕生日",
     "credits.birthday": "{name}の誕生日",
     "credits.togetherDays": "{name}・一緒に {n}日",
@@ -2915,10 +2916,12 @@
     "credits.first": "ハルに初めて出会った日",
     "credits.personDays": "{name}・一緒に {n}日",
     "credits.guests": "特別出演",
-    "credits.keptLine": "ひとこと {lines}件・感謝 {thanks}回・呼吸 {breaths}回",
     "credits.bloomed": "{n}輪",
     "credits.made": "つくった人",
-    "credits.madeBy": "今日を生きた私"
+    "credits.madeBy": "今日を生きた私",
+    "credits.sLines": "ひとこと {n}件",
+    "credits.sThanks": "感謝 {n}回",
+    "credits.sBreaths": "呼吸 {n}回"
   },
   "zh-TW": {
     "tagline": "珍惜今天。",
@@ -3876,7 +3879,6 @@
     "credits.countLines": "句話",
     "credits.countThanks": "感謝",
     "credits.countBreaths": "呼吸",
-    "credits.seasonCount": "{lines} 句・感謝 {thanks}・呼吸 {breaths}",
     "credits.myBirthday": "第 {n} 個生日",
     "credits.birthday": "{name} 的生日",
     "credits.togetherDays": "{name}・一起 {n} 天",
@@ -3888,9 +3890,11 @@
     "credits.first": "第一次遇見小日的日子",
     "credits.personDays": "{name}・一起 {n} 天",
     "credits.guests": "特別演出",
-    "credits.keptLine": "{lines} 句話・感謝 {thanks} 次・呼吸 {breaths} 次",
     "credits.bloomed": "{n} 朵",
     "credits.made": "創作者",
-    "credits.madeBy": "活過每一天的我"
+    "credits.madeBy": "活過每一天的我",
+    "credits.sLines": "{n} 句話",
+    "credits.sThanks": "感謝 {n} 次",
+    "credits.sBreaths": "呼吸 {n} 次"
   }
 }

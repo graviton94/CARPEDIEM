@@ -957,7 +957,6 @@
     <string name="credits_countLines">한 줄</string>
     <string name="credits_countThanks">고마움</string>
     <string name="credits_countBreaths">숨</string>
-    <string name="credits_seasonCount">한 줄 %1$s · 고마움 %2$s · 숨 %3$s</string>
     <string name="credits_myBirthday">%1$s번째 생일</string>
     <string name="credits_birthday">%1$s의 생일</string>
     <string name="credits_togetherDays">%1$s · 함께한 지 %2$s일</string>
@@ -969,8 +968,10 @@
     <string name="credits_first">하루를 처음 만난 날</string>
     <string name="credits_personDays">%1$s · 함께한 지 %2$s일</string>
     <string name="credits_guests">특별 출연</string>
-    <string name="credits_keptLine">한 줄 %1$s개 · 고마움 %2$s번 · 숨 %3$s번</string>
     <string name="credits_bloomed">%1$s송이</string>
     <string name="credits_made">만든 이</string>
     <string name="credits_madeBy">오늘을 살아 낸 나</string>
+    <string name="credits_sLines">한 줄 %1$s개</string>
+    <string name="credits_sThanks">고마움 %1$s번</string>
+    <string name="credits_sBreaths">숨 %1$s번</string>
 </resources>

@@ -955,7 +955,6 @@
 "credits.countLines" = "lines";
 "credits.countThanks" = "thanks";
 "credits.countBreaths" = "breaths";
-"credits.seasonCount" = "%1$@ lines · %2$@ thanks · %3$@ breaths";
 "credits.myBirthday" = "My %1$@th birthday";
 "credits.birthday" = "%1$@'s birthday";
 "credits.togetherDays" = "%1$@ · %2$@ days together";
@@ -967,7 +966,9 @@
 "credits.first" = "The day I met Haru";
 "credits.personDays" = "%1$@ · %2$@ days together";
 "credits.guests" = "Special appearances";
-"credits.keptLine" = "%1$@ lines · %2$@ thanks · %3$@ breaths";
 "credits.bloomed" = "%1$@ flowers";
 "credits.made" = "Made by";
 "credits.madeBy" = "Me, who lived each day";
+"credits.sLines" = "%1$@ lines";
+"credits.sThanks" = "%1$@ thanks";
+"credits.sBreaths" = "%1$@ breaths";
