@@ -171,6 +171,14 @@ open --es cd.screen stone --es cd.stoneId mom00001 --es cd.now $NOW;            
 # 생일 전날 밤: 엄마의 돌이 먼저 고깔을 쓰고 “내일은 엄마 생일이에요”
 open --es cd.now 2026-09-29T21:00;                                                                     shot g54_birthday_eve 5
 open --es cd.screen stone --es cd.stoneId mom00001 --es cd.now 2026-09-29T21:00;                      shot g55_birthday_eve_stone 4
+# 하루를 열고 닫는 작은 의식: 아침 씨앗 (04) · 걱정한 밤 다음 아침 (06) · 하루 닫기 입구와 첫 걸음 (03) · 저녁의 ‘싹이 텄나요?’ · 손끝 숨 (05)
+open --es cd.now 2026-10-03T07:40;                                                                     shot g56_seed_card 5
+open --ez cd.comfort true --es cd.now 2026-10-03T08:10;                                                shot g57_comfort 5
+open --es cd.now 2026-10-03T21:10;                                                                     shot g58_closeday_entry 5
+open --es cd.screen close --es cd.now 2026-10-03T21:10;                                                shot g59_closeday_line 4
+open --ez cd.morningSeed true --es cd.today CALM --ei cd.page 1 --es cd.now 2026-10-03T20:30;           shot g60_seed_ask 5
+open --ez cd.touch true --es cd.screen breath --es cd.now 2026-10-03T15:00;                            shot g61_breath_touch 4
+open --ez cd.touch false --es cd.now $NOW; sleep 2
 # 별자리 정원: 마음의 기록 (이번 달 · 낮/밤) · 지난 달의 정원 카드 · 한 해의 띠 (밤) · 지난 정원
 open --ez cd.months true --ez cd.openMonth true --es cd.now 2026-09-28T15:00;                       shot g49_record_month 6
 open --ez cd.openMonth true --es cd.now 2026-09-28T22:30;                                             shot g50_record_month_night 6

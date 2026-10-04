@@ -160,7 +160,7 @@ class DailyWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
 /** 하루 정리 알림: 밤에 한 번, 그날 한 줄을 아직 보내지 않았을 때만. 기본 꺼짐. */
 object Evening {
     private const val WORK = "evening-notify"
-    private const val ID = 2
+    internal const val ID = 2
 
     fun schedule(context: Context, on: Boolean) {
         val wm = WorkManager.getInstance(context)
@@ -178,11 +178,14 @@ object Evening {
         if (!Daily.allowed(context)) return
         val nm = context.getSystemService(NotificationManager::class.java)
         Daily.eveningChannel(context)
-        val open = PendingIntent.getActivity(context, 1, Intent(context, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP).putExtra(MainActivity.EXTRA_OPEN, "write"),
+        // 누르면: 정원은 하루 닫기 (한 줄 → 고마움 → 등불), 유리 버전은 오늘의 한 줄
+        val open = PendingIntent.getActivity(context, 1, Intent(context, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            .putExtra(MainActivity.EXTRA_OPEN, if (store.design == Design.GARDEN) "close" else "write"),
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
+        // 알림을 내려 바로 한 줄 (01): 보내면 앱을 열지 않아도 오늘의 한 줄로
         val n = NotificationCompat.Builder(context, "evening").setSmallIcon(R.mipmap.ic_launcher_monochrome)
             .setContentTitle(context.getString(R.string.notify_evening)).setContentText(Daily.line(context, "notify_evening_", today, 2).ifEmpty { context.getString(R.string.notify_eveningText) })
-            .setContentIntent(open).setAutoCancel(true).build()
+            .setContentIntent(open).setAutoCancel(true).addAction(LineReply.replyAction(context)).build()
         NotificationManagerCompat.from(context).notify(ID, n)
     }
 }

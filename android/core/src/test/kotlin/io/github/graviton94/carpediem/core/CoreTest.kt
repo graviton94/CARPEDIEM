@@ -562,4 +562,43 @@ class ChancesTest {
         assertEquals(Chance.BUTTERFLIES, Chances.onOpen(d(2026, 6, 3), Season.SUMMER, null, null, breaths, emptySet())?.first)
         assertEquals(null, Chances.onOpen(d(2026, 6, 3), Season.AUTUMN, null, null, breaths, emptySet()))
     }
+
+    @Test fun comfortOnlyAfterHeavyYesterdayOncePerDay() {
+        val today = d(2026, 10, 5)
+        val heavy = listOf(DayLine(d(2026, 10, 4), "걱정", Feeling.WORRY))
+        assertTrue(Comfort.due(heavy, today, null))
+        assertEquals(false, Comfort.due(heavy, today, today))
+        assertTrue(Comfort.due(heavy, today, d(2026, 10, 4)))
+        assertEquals(false, Comfort.due(listOf(DayLine(d(2026, 10, 4), "좋아", Feeling.JOY)), today, null))
+        assertEquals(false, Comfort.due(listOf(DayLine(d(2026, 10, 3), "걱정", Feeling.WORRY)), today, null))
+    }
+    @Test fun seedsPlantAnswerAndRoundTrip() {
+        val day = d(2026, 10, 5)
+        var s = Seeds.plant(emptyList(), day, "  한 번 웃기 ")
+        assertEquals("한 번 웃기", Seeds.of(s, day)?.text)
+        s = Seeds.plant(s, day, "하늘 보기")   // 같은 날은 바꿔 심음
+        assertEquals(1, s.size); assertEquals(Seeds.toAsk(s, day)?.text, "하늘 보기")
+        assertEquals(s, Seeds.plant(s, day, "   "))
+        s = Seeds.answer(s, day, bloomed = true)
+        assertEquals(null, Seeds.toAsk(s, day)); assertEquals(1, Seeds.bloomed(s).size)
+        s = Seeds.plant(s, d(2026, 10, 6), "천천히 먹기").let { Seeds.answer(it, d(2026, 10, 6), bloomed = false) }
+        assertEquals(SeedState.RESTING, Seeds.of(s, d(2026, 10, 6))?.state); assertEquals(1, Seeds.bloomed(s).size)
+        assertEquals(s, Seeds.decode(Seeds.encode(s)))
+        assertEquals(24, Seeds.plant(emptyList(), day, "가".repeat(40)).first().text.length)
+        val c = Seeds.choices(10, day, 4); assertEquals(4, c.size); assertTrue(c.all { it in 0 until 10 })
+        assertNotEquals(c, Seeds.choices(10, day.plusDays(1), 4))
+    }
+    @Test fun breathCyclesAndTouchWave() {
+        val r = Breath.Rhythm(4.0, 7.0, 8.0, 0.0)
+        val plan = Breath.cycles(r, 2)
+        assertEquals(6, plan.size); assertEquals(38_000L, plan.last().let { it.startMs + it.lengthMs })
+        val (times, amps) = Breath.touchWave(plan, 0)
+        assertEquals(38_000L, times.sum()); assertEquals(times.size, amps.size)
+        assertTrue(amps.all { it in 0..255 })
+        // 들이쉼은 차오르고 (처음 < 끝), 머묾은 고요
+        val first = amps.first(); assertTrue(amps.take(40).max() > first)
+        assertEquals(0, Breath.touchWave(plan, 5_000).second.first())
+        // 중간부터: 남은 길이만큼
+        assertEquals(38_000L - 20_000L, Breath.touchWave(plan, 20_000).first.sum())
+    }
 }

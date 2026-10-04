@@ -237,6 +237,26 @@ class Store(context: Context) {
         get() = prefs.getBoolean("keepLines", true)
         set(v) = prefs.edit().putBoolean("keepLines", v).apply()
 
+    /** 아침 씨앗 (04): 날마다 하나, 저녁에 꽃 · 쉼. */
+    var seeds: List<io.github.graviton94.carpediem.core.Seed>
+        get() = io.github.graviton94.carpediem.core.Seeds.decode(prefs.getString("seeds", null))
+        set(v) = prefs.edit().putString("seeds", io.github.graviton94.carpediem.core.Seeds.encode(v)).apply()
+    var seedsOn: Boolean
+        get() = prefs.getBoolean("seedsOn", true)
+        set(v) = prefs.edit().putBoolean("seedsOn", v).apply()
+    /** 아침 씨앗을 ‘다음에’ 한 날 (그날은 다시 묻지 않음). */
+    var seedSkipped: LocalDate?
+        get() = prefs.getLong("seedSkip", Long.MIN_VALUE).takeIf { it != Long.MIN_VALUE }?.let { LocalDate.ofEpochDay(it) }
+        set(v) = prefs.edit().apply { if (v == null) remove("seedSkip") else putLong("seedSkip", v.toEpochDay()) }.apply()
+    /** 걱정한 밤 다음 아침의 한마디 (06) 를 보여 준 날. */
+    var comfortShown: LocalDate?
+        get() = prefs.getLong("comfortShown", Long.MIN_VALUE).takeIf { it != Long.MIN_VALUE }?.let { LocalDate.ofEpochDay(it) }
+        set(v) = prefs.edit().apply { if (v == null) remove("comfortShown") else putLong("comfortShown", v.toEpochDay()) }.apply()
+    /** 하루의 숨결을 손끝으로 (05): 숨 쉬는 동안 떨림으로. */
+    var breathTouch: Boolean
+        get() = prefs.getBoolean("breathTouch", false)
+        set(v) = prefs.edit().putBoolean("breathTouch", v).apply()
+
     /** 이어 쓰기 흔적을 얻은 날 (7 · 30 · 100 → 날짜). 기록을 지워도 남는다. 저장 형식 `7:epochDay,30:epochDay`. */
     var streaks: Map<Int, LocalDate>
         get() = prefs.getString("streaks", null).orEmpty().split(',').mapNotNull { e ->

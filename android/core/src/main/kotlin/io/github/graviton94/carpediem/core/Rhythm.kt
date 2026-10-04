@@ -75,3 +75,50 @@ object YearCard {
     const val FROM_DAY = 25
     fun due(today: LocalDate): Int? = if (today.monthValue == 12 && today.dayOfMonth >= FROM_DAY) today.year else null
 }
+
+/**
+ * 걱정한 밤 다음 아침 (06): 어제 남긴 한 줄이 무거운 마음 (걱정 · 슬픔 · 실망) 이었으면, 오늘 처음 정원을 열 때 하루가 위로 한마디만.
+ * 묻지도 세지도 않는다. shown = 이미 보여 준 날 (하루에 한 번).
+ */
+object Comfort {
+    fun due(lines: List<DayLine>, today: LocalDate, shown: LocalDate?): Boolean =
+        shown != today && lines.any { it.date == today.minusDays(1) && it.feeling in Letters.HEAVY }
+}
+
+/** 아침 씨앗 (04): 오늘 마음에 심는 작은 다짐 하나. 저녁에 ‘싹이 텄나요?’ — 텄으면 꽃, 아니면 흙 속에서 쉼 (실패로 남지 않음). */
+enum class SeedState { PLANTED, BLOOMED, RESTING }
+
+data class Seed(val date: LocalDate, val text: String, val state: SeedState = SeedState.PLANTED)
+
+object Seeds {
+    const val MAX_CHARS = 24
+    /** 오래된 것부터 버리는 개수 (꽃은 추억에 남기려 넉넉히). */
+    const val KEEP = 400
+
+    fun encode(list: List<Seed>): String = list.joinToString("\n") { "${it.date.toEpochDay()}\t${it.state.name}\t${Lines.clean(it.text, MAX_CHARS)}" }
+    fun decode(s: String?): List<Seed> = s.orEmpty().lineSequence().mapNotNull { r ->
+        val p = r.split('\t', limit = 3); if (p.size < 3) return@mapNotNull null
+        val d = p[0].toLongOrNull() ?: return@mapNotNull null
+        val st = SeedState.entries.firstOrNull { it.name == p[1] } ?: return@mapNotNull null
+        p[2].takeIf { it.isNotBlank() }?.let { Seed(LocalDate.ofEpochDay(d), it, st) }
+    }.toList()
+
+    fun of(list: List<Seed>, day: LocalDate): Seed? = list.lastOrNull { it.date == day }
+
+    /** 하루에 하나: 같은 날이면 바꿔 심음 (글만, 상태는 처음으로). */
+    fun plant(list: List<Seed>, day: LocalDate, text: String): List<Seed> {
+        val t = Lines.clean(text, MAX_CHARS); if (t.isEmpty()) return list
+        return (list.filterNot { it.date == day } + Seed(day, t)).sortedBy { it.date }.takeLast(KEEP)
+    }
+
+    fun answer(list: List<Seed>, day: LocalDate, bloomed: Boolean): List<Seed> =
+        list.map { if (it.date == day && it.state == SeedState.PLANTED) it.copy(state = if (bloomed) SeedState.BLOOMED else SeedState.RESTING) else it }
+
+    /** 저녁에 물어볼 씨앗: 오늘 심었고 아직 답하지 않은 것. */
+    fun toAsk(list: List<Seed>, today: LocalDate): Seed? = of(list, today)?.takeIf { it.state == SeedState.PLANTED }
+
+    fun bloomed(list: List<Seed>): List<Seed> = list.filter { it.state == SeedState.BLOOMED }.sortedByDescending { it.date }
+
+    /** 오늘 보여 줄 고르기 몇 개 (n 개 중 날마다 돌아가며 k 개). */
+    fun choices(n: Int, today: LocalDate, k: Int): List<Int> = if (n <= 0) emptyList() else (0 until minOf(k, n)).map { Math.floorMod(today.toEpochDay() * k + it, n.toLong()).toInt() }.distinct()
+}

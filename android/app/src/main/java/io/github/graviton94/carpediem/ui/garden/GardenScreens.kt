@@ -205,6 +205,9 @@ private fun Modifier.pageTurn(pager: androidx.compose.foundation.pager.PagerStat
     }
 }
 
+/** 이 시각부터 정원 위쪽에 ‘하루 닫기’ (밤 nightFrom 전이라도). */
+private const val CLOSE_DAY_FROM = 19
+
 /** 정원 아래 작은 한 줄: 깃털과 함께 ‘돌아온 한 줄’을 알림. */
 @Composable
 private fun RecallNote(text: String, onOpen: () -> Unit) {
@@ -226,7 +229,8 @@ internal fun shortName(n: String): String { val max = G.Family.nameChars.toInt()
 @OptIn(ExperimentalMaterial3Api::class, androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
 @Composable
 fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSettings: () -> Unit, onCollection: () -> Unit, onSupport: () -> Unit, onStone: (String?) -> Unit, onAddPerson: () -> Unit,
-               onBreath: (BreathKind, Int, Sound) -> Unit = { _, _, _ -> }, onGaze: () -> Unit = {}, bare: Boolean = false, onLook: () -> Unit = {}, onMemory: () -> Unit = {}) {
+               onBreath: (BreathKind, Int, Sound) -> Unit = { _, _, _ -> }, onGaze: () -> Unit = {}, bare: Boolean = false, onLook: () -> Unit = {}, onMemory: () -> Unit = {},
+               onCloseDay: () -> Unit = {}) {
     val p = Theme.palette
     val ctx = LocalContext.current
     val density = LocalDensity.current
@@ -278,6 +282,11 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
     // 처음 온 사람의 둘러보기: 비출 자리들 (bare = 돌멍하기에는 없음)
     val guide = remember { GuideTargets() }
     val touring = !bare && !state.guideDone
+    // 걱정한 밤 다음 아침의 한마디 (06): 오늘 처음 정원을 열 때 한 번 (보여 준 날을 바로 적어 둠)
+    var comfort by remember { mutableStateOf<String?>(null) }
+    if (!bare) LaunchedEffect(day0, state.guideDone) {
+        if (state.guideDone && state.comfortDue(day0)) { comfort = dayLine(ctx, "comfort_", day0); state.comfortSeen(day0) }
+    }
 
     Box(Modifier.fillMaxSize().paperBackground()) {
       Column(Modifier.fillMaxSize()) {
@@ -379,10 +388,12 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                             if (!sleepy) TokenText(stringResource(R.string.words_next), Tokens.TypeScale.caption1, color = p.secondary, weight = FontWeight.Normal)
                         }
                     }
-                    // 밤: 잠드는 명상 1분 · 아침 (오늘 아직 숨 쉬지 않았으면): 하루를 여는 숨 1분, 옅은 한 줄로
-                    // 누르면 바로 가지 않고 “… 하러 갈까요?” 한 번 묻기
-                    if (isNight(now)) TokenText(stringResource(R.string.breath_night), Tokens.TypeScale.footnote.serif(),
-                        Modifier.clickable { askBreath = BreathKind.SLEEP to R.string.breath_night }.padding(Tokens.Space.sp2), color = p.secondary)
+                    // 걱정한 밤 다음 아침 (06): 하루의 한마디만 (묻지 않음, 누르거나 조금 지나면 사라짐)
+                    comfort?.let { c -> ComfortWords(c) { comfort = null } }
+                    // 저녁 7시 이후 · 밤: 하루 닫기 (한 줄 → 고마움 → 등불) · 아침: 씨앗 하나 (04), 심었거나 넘겼으면 하루를 여는 숨 1분
+                    // 숨은 누르면 바로 가지 않고 “… 하러 갈까요?” 한 번 묻기
+                    if (isNight(now) || now.hour >= CLOSE_DAY_FROM) CloseDayEntry(state.sentOn(day0), onCloseDay)
+                    else if (comfort == null && !touring && state.seedDue(now)) SeedCard(state, day0)
                     else if (Labels.part(now) == io.github.graviton94.carpediem.core.DayPart.MORNING && state.breaths.none { it.first == now.toLocalDate() })
                         TokenText(stringResource(R.string.breath_morning), Tokens.TypeScale.footnote.serif(),
                             Modifier.clickable { askBreath = BreathKind.CALM to R.string.breath_morning }.padding(Tokens.Space.sp2), color = p.secondary)
@@ -422,6 +433,8 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 // 절기가 든 날의 작은 변화 (S1) · 오늘 마친 숨의 흔적 (E3): 그날만, 돌 · 꾸밈 뒤에
                 termToday?.let { tt -> TermTouches(tt.touch, now, gy, topBottom, gy - haruAbove - u * G.Layout.minSkyGap, with(androidx.compose.ui.platform.LocalDensity.current) { Offset(sx.toPx(), sy.toPx()) }, day, Modifier.fillMaxSize()) }
                 BreathTraces(trace, now, gy, xs[0], (widths[0].toFloat() / 2).dp, Modifier.fillMaxSize())
+                // 오늘 심은 아침 씨앗 (04): 하루 왼쪽 발치에 새싹 (저녁에 텄다고 하면 작은 꽃)
+                if (!bare) SeedSprout(state, day0, xs[0] - (widths[0].toFloat() / 2).dp - u * 3f, gy)
 
 
                 // 자리 여섯: 나무 (길의 시작) · 발치의 한 장 · 말뚝 (길의 끝) · 연 (하늘) — 돌들 뒤에. 하루 밑엔 이끼 방석.
@@ -673,6 +686,8 @@ private fun MemoriesPage(state: AppState, profile: LifeProfile, now: LocalDateTi
     ) {
         TokenText(stringResource(R.string.collection), Tokens.TypeScale.title3)
         CollectionBody(state, profile, now, onMemory, guide)
+        // 아침 씨앗 가운데 핀 것만 (04): 쉰 씨앗은 남기지 않음
+        BloomedSeeds(state)
     }
 }
 

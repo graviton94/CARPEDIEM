@@ -34,7 +34,12 @@ object Breath {
      */
     fun plan(r: Rhythm, minutes: Int): List<Phase> {
         val total = minutes * 60_000L
-        val cycles = maxOf(1L, (total + r.cycleMs / 2) / r.cycleMs)
+        return cycles(r, maxOf(1L, (total + r.cycleMs / 2) / r.cycleMs).toInt())
+    }
+
+    /** 숨 n 번만 (하루 닫기의 짧은 숨). */
+    fun cycles(r: Rhythm, n: Int): List<Phase> {
+        val cycles = maxOf(1, n)
         val out = ArrayList<Phase>()
         var t = 0L
         repeat(cycles.toInt()) {
@@ -44,6 +49,29 @@ object Breath {
             }
         }
         return out
+    }
+
+    /**
+     * 하루의 숨결 (손끝으로, 05): from 부터 끝까지의 떨림 모양. slice ms 마다 세기 (0 ~ 255) 하나.
+     * 들이쉼은 약하게 시작해 차오르고, 머묾은 고요, 내쉼은 길게 잦아든다. 같은 세기가 이어지면 하나로 묶는다.
+     */
+    fun touchWave(plan: List<Phase>, from: Long, slice: Long = 100, low: Int = 18, high: Int = 190): Pair<LongArray, IntArray> {
+        val end = plan.lastOrNull()?.let { it.startMs + it.lengthMs } ?: return LongArray(0) to IntArray(0)
+        val times = ArrayList<Long>(); val amps = ArrayList<Int>()
+        var t = from.coerceAtLeast(0)
+        while (t < end) {
+            val len = minOf(slice, end - t)
+            val a = at(plan, t + len / 2)?.let { (ph, f) ->
+                when (ph.step) {
+                    BreathStep.IN -> (low + (high - low) * f).toInt()
+                    BreathStep.OUT -> (high * 0.85f * (1f - f) + low * f * 0.5f).toInt()
+                    else -> 0
+                }
+            } ?: 0
+            if (amps.isNotEmpty() && amps.last() == a) times[times.size - 1] = times.last() + len else { times.add(len); amps.add(a.coerceIn(0, 255)) }
+            t += len
+        }
+        return times.toLongArray() to amps.toIntArray()
     }
 
     /** 지금 몇 번째 단계, 그 단계에서 얼마나 지났는지 (0 ~ 1). 끝났으면 null. */

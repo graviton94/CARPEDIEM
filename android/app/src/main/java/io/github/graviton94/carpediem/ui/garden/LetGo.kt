@@ -236,6 +236,8 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
                         TokenText(stringResource(R.string.edit_delete), Tokens.TypeScale.footnote,
                             Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { confirmDelete = true }.padding(horizontal = Tokens.Space.sp3, vertical = Tokens.Space.sp3), color = p.secondary)
                     }
+                    // 아침에 심은 씨앗 (04): 저녁 · 밤이면 ‘싹이 텄나요?’
+                    if (Theme.garden && state.profile != null) SeedAsk(state, today, state.fixedNow ?: java.time.LocalDateTime.now())
                 }
             }
             else -> Column(Modifier.fillMaxWidth().bringIntoViewRequester(formView), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {

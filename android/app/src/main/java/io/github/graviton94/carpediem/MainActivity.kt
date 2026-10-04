@@ -77,6 +77,8 @@ private sealed interface Screen {
     /** 멍하니 보는 정원. */
     data class Gaze(val back: Screen) : Screen
     data class Look(val back: Screen) : Screen
+    /** 하루 닫기 (03): 한 줄 → 고마움 → 등불. */
+    data class CloseDay(val back: Screen) : Screen
     data class Country(val back: Screen) : Screen
 }
 
@@ -91,7 +93,7 @@ class MainActivity : ComponentActivity() {
 
     companion object {
         const val EXTRA_MORNING_BREATH = "carpediem.morningBreath"
-        /** 알림을 누르면 열 곳: letter · write · flow · month:2026-9 · year:2026 · stone:<id> · memory · breath */
+        /** 알림 · 바로 가기를 누르면 열 곳: letter · write · flow · month:2026-9 · year:2026 · stone:<id> · memory · breath · gaze · close */
         const val EXTRA_OPEN = "carpediem.open"
     }
 
@@ -132,7 +134,7 @@ class MainActivity : ComponentActivity() {
                         screen = if (morning) Screen.Breathe(BreathKind.CALM, 1, state.sound, Screen.Main) else openFrom(open, state) ?: Screen.Main
                         homeEpoch++
                     }
-                    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { now = clock(); state.refreshQuote(); state.opened(); state.refreshQuestion(); state.recheckNotify() }
+                    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { now = clock(); state.refreshQuote(); state.opened(); state.refreshQuestion(); state.recheckNotify(); state.syncFromStore() }
                     // 앱을 다시 열 때(화면에 다시 나올 때) 남은 시간 · 인생 달력 단위를 기본값으로
                     LifecycleEventEffect(Lifecycle.Event.ON_START) { state.resetViewIfAway() }
                     LifecycleEventEffect(Lifecycle.Event.ON_STOP) { state.stopped() }
@@ -211,6 +213,7 @@ class MainActivity : ComponentActivity() {
                         is Screen.Breathe -> state.profile?.let { BreathScreen(state, it, now, s.kind, s.minutes, s.sound) { screen = s.back } } ?: run { screen = Screen.Main }
                         is Screen.Gaze -> state.profile?.let { GazeScreen(state, it, now) { screen = s.back } } ?: run { screen = Screen.Main }
                         is Screen.Look -> LookScreen { screen = s.back }
+                        is Screen.CloseDay -> state.profile?.let { io.github.graviton94.carpediem.ui.garden.CloseDayScreen(state, it, now) { screen = s.back } } ?: run { screen = Screen.Main }
                         is Screen.AddPerson -> state.profile?.let {
                             AddPersonScreen(state, it, s.editId, onDone = { id -> screen = if (s.memory) Screen.Memory(Screen.Main) else if (s.editId != null && id != null) (s.back as? Screen.Stone)?.copy() ?: Screen.Main else Screen.Main },
                                 onBack = { screen = s.back }, memory = s.memory, onAddMemory = { screen = Screen.AddPerson(null, s, memory = true) },
@@ -228,7 +231,7 @@ class MainActivity : ComponentActivity() {
                                     onCollection = { screen = Screen.Collection(Screen.Main) }, onSupport = { screen = Screen.Support(Screen.Main) },
                                     onStone = { id -> screen = Screen.Stone(id, Screen.Main) }, onAddPerson = { screen = Screen.AddPerson(null, Screen.Main) },
                                     onBreath = { k, m, snd -> screen = Screen.Breathe(k, m, snd, Screen.Main) }, onGaze = { screen = Screen.Gaze(Screen.Main) },
-                                    onLook = { screen = Screen.Look(Screen.Main) }, onMemory = { screen = Screen.Memory(Screen.Main) }) }
+                                    onLook = { screen = Screen.Look(Screen.Main) }, onMemory = { screen = Screen.Memory(Screen.Main) }, onCloseDay = { screen = Screen.CloseDay(Screen.Main) }) }
                                 else -> HomeScreen(state, profile, now, onSettings = { screen = Screen.Settings }, onSupport = { screen = Screen.Support(Screen.Main) })
                             }
                         }
@@ -272,6 +275,10 @@ private fun MainActivity.debugSetup(state: AppState): Screen {
     // 캡처용: 우연한 순간 하나를 바로 (bubbles · fireflies · rainbow · butterflies · snail · aurora · wind)
     x.getStringExtra("cd.chance")?.let { k -> io.github.graviton94.carpediem.core.Chance.of(k)?.let { state.showChance(it, (state.fixedNow ?: LocalDateTime.now()).toLocalDate()) } }
     if (x.getBooleanExtra("cd.recall", false)) { state.addSampleYearAgo(); state.addSampleRandom() }
+    // 캡처용: 걱정한 밤 다음 아침 (06) · 아침 씨앗을 심은 날 (04, 저녁에 ‘싹이 텄나요?’)
+    if (x.getBooleanExtra("cd.comfort", false)) state.addSampleWorryYesterday()
+    if (x.getBooleanExtra("cd.morningSeed", false)) state.addSampleSeed()
+    if (x.hasExtra("cd.touch")) state.changeBreathTouch(x.getBooleanExtra("cd.touch", false))
     if (x.getBooleanExtra("cd.letter", false)) state.addSampleLetter()
     if (x.getBooleanExtra("cd.moods", false)) state.addSampleMoods()
     if (x.getBooleanExtra("cd.memory", false)) state.addSampleMemory()
@@ -323,7 +330,7 @@ private fun MainActivity.debugSetup(state: AppState): Screen {
     if (x.getBooleanExtra("cd.widgetShots", false)) lifecycleScope.launch {
         kotlinx.coroutines.delay(1500); io.github.graviton94.carpediem.widget.WidgetShots.save(this@debugSetup)
     }
-    return when (x.getStringExtra("cd.screen")) { "settings" -> Screen.Settings; "widgets" -> Screen.WidgetPreview; "collection" -> Screen.Collection(Screen.Main); "support" -> Screen.Support(Screen.Main); "stone" -> Screen.Stone(x.getStringExtra("cd.stoneId") ?: state.people.firstOrNull()?.id, Screen.Main); "add" -> Screen.AddPerson(null, Screen.Main); "breath" -> Screen.Breathe(BreathKind.CALM, 1, Sound.WAVES, Screen.Main); "gaze" -> Screen.Gaze(Screen.Main); "look" -> Screen.Look(Screen.Main); "thanks" -> Screen.Breathe(BreathKind.THANKS, 1, Sound.SEASON, Screen.Main); "walk" -> Screen.Breathe(BreathKind.BOX, 1, Sound.NONE, Screen.Main); "lantern" -> Screen.Breathe(BreathKind.SLEEP, 1, Sound.NONE, Screen.Main); "ripple" -> Screen.Breathe(BreathKind.CALM, 1, Sound.NONE, Screen.Main); "memory" -> Screen.Memory(Screen.Main); else -> Screen.Main }
+    return when (x.getStringExtra("cd.screen")) { "settings" -> Screen.Settings; "widgets" -> Screen.WidgetPreview; "collection" -> Screen.Collection(Screen.Main); "support" -> Screen.Support(Screen.Main); "stone" -> Screen.Stone(x.getStringExtra("cd.stoneId") ?: state.people.firstOrNull()?.id, Screen.Main); "add" -> Screen.AddPerson(null, Screen.Main); "breath" -> Screen.Breathe(BreathKind.CALM, 1, Sound.WAVES, Screen.Main); "gaze" -> Screen.Gaze(Screen.Main); "look" -> Screen.Look(Screen.Main); "thanks" -> Screen.Breathe(BreathKind.THANKS, 1, Sound.SEASON, Screen.Main); "walk" -> Screen.Breathe(BreathKind.BOX, 1, Sound.NONE, Screen.Main); "lantern" -> Screen.Breathe(BreathKind.SLEEP, 1, Sound.NONE, Screen.Main); "ripple" -> Screen.Breathe(BreathKind.CALM, 1, Sound.NONE, Screen.Main); "memory" -> Screen.Memory(Screen.Main); "close" -> Screen.CloseDay(Screen.Main); else -> Screen.Main }
 }
 
 /** 알림에서 왔을 때 열 곳. 홈 안의 페이지 · 판은 state 에 적어 두고 (홈이 처음 그릴 때 씀), 돌 페이지는 그 화면으로. */
@@ -342,6 +349,9 @@ private fun openFrom(open: String?, state: AppState): Screen? {
         "memory" -> return Screen.Memory(Screen.Main)
         // 숨 바로가기 (위젯 · 빠른 설정 타일, C1): 고르는 창 없이 지금 때의 숨 1분 (밤엔 잠드는 명상)
         "breath" -> return Screen.Breathe(if (io.github.graviton94.carpediem.ui.Labels.part(state.fixedNow ?: java.time.LocalDateTime.now()) == io.github.graviton94.carpediem.core.DayPart.NIGHT) BreathKind.SLEEP else BreathKind.CALM, 1, state.sound, Screen.Main)
+        // 바로 가기 (02): 돌멍하기 · 하루 닫기 (정원 디자인에서만)
+        "gaze" -> return if (state.design == Design.GARDEN) Screen.Gaze(Screen.Main) else null
+        "close" -> return if (state.design == Design.GARDEN) Screen.CloseDay(Screen.Main) else { state.focusWrite = !state.sentOn((state.fixedNow ?: java.time.LocalDateTime.now()).toLocalDate()); null }
         "stone" -> return if (arg.isNullOrEmpty()) Screen.Stone(null, Screen.Main) else arg.takeIf { id -> state.people.any { it.id == id } }?.let { Screen.Stone(it, Screen.Main) }   // 비면 내 돌
     }
     return null

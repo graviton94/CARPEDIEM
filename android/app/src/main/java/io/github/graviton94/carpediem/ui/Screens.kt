@@ -423,7 +423,7 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
             }
             run {
                 var confirmClear by remember { mutableStateOf(false) }
-                FormSection(header = stringResource(R.string.lines), footer = stringResource(R.string.lines_keepFooter) + if (Theme.garden) "\n" + stringResource(R.string.care_footer) + "\n" + stringResource(R.string.question_onFooter) else "") {
+                FormSection(header = stringResource(R.string.lines), footer = stringResource(R.string.lines_keepFooter) + if (Theme.garden) "\n" + stringResource(R.string.care_footer) + "\n" + stringResource(R.string.question_onFooter) + "\n" + stringResource(R.string.seed_settingFooter) else "") {
                     FormRow(stringResource(R.string.lines_keep), onClick = { state.changeKeepLines(!state.keepLines) }) {
                         Switch(state.keepLines, { state.changeKeepLines(it) }, colors = SwitchDefaults.colors(checkedTrackColor = p.olive))
                     }
@@ -432,6 +432,11 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
                         // 오늘의 질문 받기: 끄면 질문 날에도 늘 오늘의 문장
                         FormRow(stringResource(R.string.question_on), onClick = { state.changeQuestionsOn(!state.questionsOn) }) {
                             Switch(state.questionsOn, { state.changeQuestionsOn(it) }, colors = SwitchDefaults.colors(checkedTrackColor = p.olive))
+                        }
+                        RowDivider()
+                        // 아침 씨앗 (04): 아침 정원에 작은 다짐 하나
+                        FormRow(stringResource(R.string.seed_setting), onClick = { state.changeSeedsOn(!state.seedsOn) }) {
+                            Switch(state.seedsOn, { state.changeSeedsOn(it) }, colors = SwitchDefaults.colors(checkedTrackColor = p.olive))
                         }
                     }
                     if (Theme.garden) {

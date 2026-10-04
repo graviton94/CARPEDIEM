@@ -301,6 +301,56 @@ class AppState(private val context: Context) {
     fun sendTodayTo(id: String, today: LocalDate = (fixedNow ?: LocalDateTime.now()).toLocalDate()) {
         val next = lines.map { if (it.date == today) it.copy(to = id) else it }; store.lines = next; lines = next
     }
+    /** 앱 밖에서 바뀐 것 (알림에서 남긴 한 줄 · 고른 마음, 01) 을 다시 읽음. 화면에 다시 나올 때. */
+    fun syncFromStore() {
+        val l = store.lines; if (l != lines) lines = l
+        val s = store.streaks; if (s != streaks) streaks = s
+    }
+
+    // ───── 아침 씨앗 (04) ─────
+    var seedsOn by mutableStateOf(store.seedsOn)
+        private set
+    fun changeSeedsOn(v: Boolean) { store.seedsOn = v; seedsOn = v }
+    var seeds by mutableStateOf(store.seeds)
+        private set
+    private var seedSkipped by mutableStateOf(store.seedSkipped)
+    /** 아침 (5–11시) 정원에 씨앗 카드: 켜 두었고, 오늘 아직 심지도 ‘다음에’도 하지 않았을 때. */
+    fun seedDue(now: LocalDateTime): Boolean {
+        val today = now.toLocalDate()
+        return seedsOn && design == Design.GARDEN && Labels.part(now) == io.github.graviton94.carpediem.core.DayPart.MORNING &&
+            io.github.graviton94.carpediem.core.Seeds.of(seeds, today) == null && seedSkipped != today
+    }
+    fun plantSeed(text: String, today: LocalDate = nowDate()) {
+        val v = io.github.graviton94.carpediem.core.Seeds.plant(seeds, today, text); if (v == seeds) return
+        store.seeds = v; seeds = v
+    }
+    fun skipSeed(today: LocalDate = nowDate()) { store.seedSkipped = today; seedSkipped = today }
+    /** 저녁에 물어볼 씨앗 (오늘 심고 아직 답하지 않은 것). */
+    fun seedToAsk(today: LocalDate = nowDate()): io.github.graviton94.carpediem.core.Seed? =
+        if (!seedsOn) null else io.github.graviton94.carpediem.core.Seeds.toAsk(seeds, today)
+    /** 텄어요 = 꽃 (추억에 모임) · 흙 속에서 쉬어요 = 그대로 쉼 (실패로 남지 않음). */
+    fun answerSeed(bloomed: Boolean, today: LocalDate = nowDate()) {
+        val v = io.github.graviton94.carpediem.core.Seeds.answer(seeds, today, bloomed); store.seeds = v; seeds = v
+        say(context.getString(if (bloomed) R.string.seed_bloomed else R.string.seed_rest))
+    }
+
+    // ───── 걱정한 밤 다음 아침 (06) ─────
+    var comfortShown by mutableStateOf(store.comfortShown)
+        private set
+    fun comfortDue(today: LocalDate): Boolean = design == Design.GARDEN && io.github.graviton94.carpediem.core.Comfort.due(lines, today, comfortShown)
+    fun comfortSeen(today: LocalDate) { store.comfortShown = today; comfortShown = today }
+
+    // ───── 하루의 숨결을 손끝으로 (05) ─────
+    var breathTouch by mutableStateOf(store.breathTouch)
+        private set
+    fun changeBreathTouch(v: Boolean) { store.breathTouch = v; breathTouch = v }
+    /** 캡처용: 어제 ‘걱정’ 한 줄 (다음 아침 한마디를 보려고) · 오늘 심은 씨앗. */
+    fun addSampleWorryYesterday(today: LocalDate = nowDate()) {
+        val y = today.minusDays(1)
+        val next = Lines.add(Lines.remove(lines, y), DayLine(y, context.getString(R.string.seed_hint), Feeling.WORRY)); store.lines = next; lines = next
+        store.comfortShown = null; comfortShown = null
+    }
+    fun addSampleSeed(today: LocalDate = nowDate()) { plantSeed(context.getString(R.string.seed_choice_0), today) }
     fun changeKeepLines(v: Boolean) {
         store.keepLines = v; keepLines = v
         // 끄는 순간 지금까지의 글도 지운다 (날짜는 남겨 흔적을 잇는다)
