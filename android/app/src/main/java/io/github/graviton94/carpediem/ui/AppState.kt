@@ -262,11 +262,13 @@ class AppState(private val context: Context) {
         val l = lastDeleted ?: return; lastDeleted = null
         if (lines.any { it.date == l.date }) return
         val next = Lines.add(lines, l); store.lines = next; lines = next; Widgets.refresh(context); say(context.getString(R.string.edit_restored))
+        io.github.graviton94.carpediem.data.Photos.undo(context, l.date); photoKick++
     }
     /** 그날의 한 줄 지우기 (그날은 다시 빈 날). 이어 쓰기 흔적 (이미 받은 것) 은 그대로 둠. */
     fun deleteLine(day: LocalDate) {
         lastDeleted = lines.firstOrNull { it.date == day }
         val next = Lines.remove(lines, day); store.lines = next; lines = next
+        io.github.graviton94.carpediem.data.Photos.remove(context, day); photoKick++
         if (randomLine?.date == day) randomLine = null
         store.backfilled = store.backfilled - day.toEpochDay().toString()
         Widgets.refresh(context); say(context.getString(R.string.edit_deleted))
@@ -416,6 +418,29 @@ class AppState(private val context: Context) {
     private var previewQ = false
     /** ‘한 줄로 답하기’를 눌러 지금 답하는 질문 (보내면 null). */
     var answering by mutableStateOf<io.github.graviton94.carpediem.core.Question?>(null)
+    /** 한 줄에 붙인 사진 (11): 바뀌면 다시 그리게. draftPhoto = 쓰는 중에 골라 둔 사진 (보내면 그날의 사진으로). */
+    var photoKick by mutableStateOf(0)
+    var draftPhoto by mutableStateOf(false)
+    /** 보낸 한 줄에 맡겨 둔 사진을 붙임 (기록 남기기를 끄면 사진도 남기지 않음). */
+    fun commitPhoto(day: LocalDate) {
+        if (!draftPhoto) return
+        draftPhoto = false
+        if (keepLines) io.github.graviton94.carpediem.data.Photos.commitPending(context, day) else io.github.graviton94.carpediem.data.Photos.dropPending(context)
+        photoKick++
+    }
+    fun addSamplePhotos(today: LocalDate = nowDate()) {
+        // 캡처용: 노을 하늘 그림을 오늘 · 1년 전 오늘 · 3년 전 오늘의 사진으로
+        listOf(today, today.minusYears(1), today.minusYears(3)).forEachIndexed { i, d ->
+            val b = android.graphics.Bitmap.createBitmap(io.github.graviton94.carpediem.data.Photos.SIZE, io.github.graviton94.carpediem.data.Photos.SIZE, android.graphics.Bitmap.Config.ARGB_8888)
+            val c = android.graphics.Canvas(b); val sz = b.width.toFloat()
+            c.drawRect(0f, 0f, sz, sz, android.graphics.Paint().apply { shader = android.graphics.LinearGradient(0f, 0f, 0f, sz, intArrayOf(0xFF3D7BD9.toInt(), 0xFFFF9A3C.toInt(), 0xFFE2483A.toInt()), floatArrayOf(0f, 0.55f, 1f), android.graphics.Shader.TileMode.CLAMP) })
+            c.drawCircle(sz * 0.7f, sz * 0.46f, sz * 0.1f, android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG).apply { color = 0xFFFFE27A.toInt() })
+            c.drawRect(0f, sz * 0.75f, sz, sz, android.graphics.Paint().apply { color = 0xFF1E3B22.toInt() })
+            io.github.graviton94.carpediem.data.Photos.file(context, d).outputStream().use { b.compress(android.graphics.Bitmap.CompressFormat.JPEG, 82, it) }
+            if (lines.none { it.date == d }) { val next = Lines.add(lines, DayLine(d, context.getString(R.string.capsule_hint), Feeling.CALM)); store.lines = next; lines = next }
+        }
+        photoKick++
+    }
     /** 돌아온 한 줄에 이어 쓰는 중 (12): 쓰는 칸 위에 그날의 한 줄. 보내면 비움. */
     var recallReply by mutableStateOf<DayLine?>(null)
     fun answer() { answering = question }

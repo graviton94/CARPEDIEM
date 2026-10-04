@@ -927,7 +927,11 @@
     "chance.guest_squirrel": "다람쥐 손님",
     "chance.guest_hedgehog": "고슴도치 손님",
     "chance.guest_rabbit": "토끼 손님",
-    "chance.guest_owl": "부엉이 손님"
+    "chance.guest_owl": "부엉이 손님",
+    "photo.add": "사진 한 장",
+    "photo.addToday": "오늘의 사진 한 장 붙이기",
+    "photo.remove": "빼기",
+    "photo.fail": "사진을 읽지 못했어요. 다른 사진으로 해 볼까요?"
   },
   "en": {
     "tagline": "Cherish today.",
@@ -1857,7 +1861,11 @@
     "chance.guest_squirrel": "Squirrel guest",
     "chance.guest_hedgehog": "Hedgehog guest",
     "chance.guest_rabbit": "Rabbit guest",
-    "chance.guest_owl": "Owl guest"
+    "chance.guest_owl": "Owl guest",
+    "photo.add": "One photo",
+    "photo.addToday": "Add a photo for today",
+    "photo.remove": "Remove",
+    "photo.fail": "Couldn't read that photo. Try another?"
   },
   "ja": {
     "tagline": "今日を大切に。",
@@ -2786,7 +2794,11 @@
     "chance.guest_squirrel": "リスのお客さん",
     "chance.guest_hedgehog": "ハリネズミのお客さん",
     "chance.guest_rabbit": "ウサギのお客さん",
-    "chance.guest_owl": "フクロウのお客さん"
+    "chance.guest_owl": "フクロウのお客さん",
+    "photo.add": "写真を一枚",
+    "photo.addToday": "今日の写真を一枚添える",
+    "photo.remove": "外す",
+    "photo.fail": "写真を読み込めませんでした。別の写真にしますか？"
   },
   "zh-TW": {
     "tagline": "珍惜今天。",
@@ -3715,6 +3727,10 @@
     "chance.guest_squirrel": "松鼠客人",
     "chance.guest_hedgehog": "刺蝟客人",
     "chance.guest_rabbit": "兔子客人",
-    "chance.guest_owl": "貓頭鷹客人"
+    "chance.guest_owl": "貓頭鷹客人",
+    "photo.add": "一張照片",
+    "photo.addToday": "為今天附上一張照片",
+    "photo.remove": "移除",
+    "photo.fail": "讀不到這張照片，換一張試試？"
   }
 }

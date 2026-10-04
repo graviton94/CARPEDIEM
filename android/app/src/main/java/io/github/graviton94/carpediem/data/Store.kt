@@ -28,6 +28,7 @@ enum class Design { GLASS, GARDEN }
 
 /** 앱과 위젯이 함께 읽는 저장소 (같은 앱 프로세스의 SharedPreferences). */
 class Store(context: Context) {
+    private val app = context.applicationContext
     private val prefs = context.applicationContext.getSharedPreferences("carpediem", Context.MODE_PRIVATE)
     private val assets = context.applicationContext.assets
 
@@ -241,7 +242,7 @@ class Store(context: Context) {
         set(v) = prefs.edit().putString("lines", Lines.encode(v)).apply()
 
     /** 한 줄 기록만 지우기 (이미 정원에 놓인 이어 쓰기 흔적은 남음). */
-    fun clearLines() = prefs.edit().remove("lines").remove("memoryLines").apply()
+    fun clearLines() { prefs.edit().remove("lines").remove("memoryLines").apply(); Photos.clear(app) }
 
     /** 기록 남기지 않기를 켜면 보낸 날짜만 남기고 글 · 마음은 저장하지 않는다. */
     var keepLines: Boolean
@@ -413,7 +414,7 @@ class Store(context: Context) {
         get() = runCatching { Sound.valueOf(prefs.getString("sound", null)!!) }.getOrDefault(Sound.WAVES)
         set(v) = prefs.edit().putString("sound", v.name).apply()
 
-    fun eraseAll() = prefs.edit().clear().apply()
+    fun eraseAll() { prefs.edit().clear().apply(); Photos.clear(app) }
 
     /**
      * 기록 옮기기: 앱 안의 모든 것 (설정 · 한 줄 · 가족 · 기억의 돌 · 특별한 날 …) 을 JSON 한 덩이로.
@@ -434,7 +435,8 @@ class Store(context: Context) {
             }
             all.put(k, e)
         }
-        return org.json.JSONObject().put("app", BACKUP_APP).put("v", 1).put("prefs", all).toString()
+        // 한 줄에 붙인 사진 (11) 도 함께 (작은 사본만)
+        return org.json.JSONObject().put("app", BACKUP_APP).put("v", 1).put("prefs", all).put("photos", Photos.exportAll(app)).toString()
     }
 
     /** [backup] 으로 만든 글을 들여온다. 이 앱의 파일이 아니거나 읽을 수 없으면 아무것도 바꾸지 않고 false. */
@@ -461,7 +463,9 @@ class Store(context: Context) {
         ed.putBoolean("introSeen", true).putBoolean("guideDone", true).putBoolean("meetPending", false)
             .putStringSet("pageHints", io.github.graviton94.carpediem.ui.PAGE_HINTS)
             .putStringSet("nudgesSeen", io.github.graviton94.carpediem.core.FirstWeek.STEPS.map { it.first }.toSet())
-        return ed.commit()
+        val ok = ed.commit()
+        if (ok) Photos.restoreAll(app, root.optJSONObject("photos"))
+        return ok
     }
 
     companion object {

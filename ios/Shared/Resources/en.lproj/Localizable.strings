@@ -927,3 +927,7 @@
 "chance.guest_hedgehog" = "Hedgehog guest";
 "chance.guest_rabbit" = "Rabbit guest";
 "chance.guest_owl" = "Owl guest";
+"photo.add" = "One photo";
+"photo.addToday" = "Add a photo for today";
+"photo.remove" = "Remove";
+"photo.fail" = "Couldn't read that photo. Try another?";

@@ -928,4 +928,8 @@
     <string name="chance_guest_hedgehog">刺蝟客人</string>
     <string name="chance_guest_rabbit">兔子客人</string>
     <string name="chance_guest_owl">貓頭鷹客人</string>
+    <string name="photo_add">一張照片</string>
+    <string name="photo_addToday">為今天附上一張照片</string>
+    <string name="photo_remove">移除</string>
+    <string name="photo_fail">讀不到這張照片，換一張試試？</string>
 </resources>

@@ -928,4 +928,8 @@
     <string name="chance_guest_hedgehog">ハリネズミのお客さん</string>
     <string name="chance_guest_rabbit">ウサギのお客さん</string>
     <string name="chance_guest_owl">フクロウのお客さん</string>
+    <string name="photo_add">写真を一枚</string>
+    <string name="photo_addToday">今日の写真を一枚添える</string>
+    <string name="photo_remove">外す</string>
+    <string name="photo_fail">写真を読み込めませんでした。別の写真にしますか？</string>
 </resources>

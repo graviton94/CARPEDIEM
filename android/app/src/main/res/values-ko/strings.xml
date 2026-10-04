@@ -929,4 +929,8 @@
     <string name="chance_guest_hedgehog">고슴도치 손님</string>
     <string name="chance_guest_rabbit">토끼 손님</string>
     <string name="chance_guest_owl">부엉이 손님</string>
+    <string name="photo_add">사진 한 장</string>
+    <string name="photo_addToday">오늘의 사진 한 장 붙이기</string>
+    <string name="photo_remove">빼기</string>
+    <string name="photo_fail">사진을 읽지 못했어요. 다른 사진으로 해 볼까요?</string>
 </resources>

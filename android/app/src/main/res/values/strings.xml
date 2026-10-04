@@ -929,4 +929,8 @@
     <string name="chance_guest_hedgehog">Hedgehog guest</string>
     <string name="chance_guest_rabbit">Rabbit guest</string>
     <string name="chance_guest_owl">Owl guest</string>
+    <string name="photo_add">One photo</string>
+    <string name="photo_addToday">Add a photo for today</string>
+    <string name="photo_remove">Remove</string>
+    <string name="photo_fail">Couldn\'t read that photo. Try another?</string>
 </resources>

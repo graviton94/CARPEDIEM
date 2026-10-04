@@ -123,6 +123,8 @@ internal fun RecordPanel(state: AppState, view: RecordView, onView: (RecordView)
                         // 오늘 보낸 한 줄은 떠나보낸 그대로 두고, 내일부터 여기서 다시 볼 수 있음
                         TokenText(when { l == null -> stringResource(R.string.record_rest); pickedLine.first == today -> stringResource(R.string.record_todayHidden); l.text.isBlank() -> stringResource(R.string.record_noText); else -> l.text },
                             Tokens.TypeScale.callout.serif(), color = if (l != null && pickedLine.first == today) p.secondary else p.foreground)
+                        // 그날의 사진 (11): 지난 날만 (오늘은 한 줄처럼 내일부터)
+                        if (l != null && pickedLine.first != today) WeatheredPhoto(state, pickedLine.first, today, Theme.unit * 60f, modifier = Modifier.padding(vertical = Tokens.Space.sp2))
                         // 빈 지난 날: 그날의 한 줄을 바로 (기록 페이지로)
                         if (l == null && state.canWriteOn(pickedLine.first, today)) TokenText(stringResource(R.string.record_writeDay), Tokens.TypeScale.footnote,
                             Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { state.writeDay = pickedLine.first }.padding(vertical = Tokens.Space.sp3), color = p.olive, weight = FontWeight.SemiBold)

@@ -927,3 +927,7 @@
 "chance.guest_hedgehog" = "고슴도치 손님";
 "chance.guest_rabbit" = "토끼 손님";
 "chance.guest_owl" = "부엉이 손님";
+"photo.add" = "사진 한 장";
+"photo.addToday" = "오늘의 사진 한 장 붙이기";
+"photo.remove" = "빼기";
+"photo.fail" = "사진을 읽지 못했어요. 다른 사진으로 해 볼까요?";

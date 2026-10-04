@@ -926,3 +926,7 @@
 "chance.guest_hedgehog" = "ハリネズミのお客さん";
 "chance.guest_rabbit" = "ウサギのお客さん";
 "chance.guest_owl" = "フクロウのお客さん";
+"photo.add" = "写真を一枚";
+"photo.addToday" = "今日の写真を一枚添える";
+"photo.remove" = "外す";
+"photo.fail" = "写真を読み込めませんでした。別の写真にしますか？";

@@ -165,12 +165,23 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
     val formView = remember { BringIntoViewRequester() }
     val focusBox = remember { androidx.compose.ui.focus.FocusRequester() }
     val scope = rememberCoroutineScope()
+    // 한 줄에 사진 한 장 (11): 쓰는 중에 골라 두면 보낼 때 그날의 사진으로 · 보낸 뒤에도 그날 안에 붙일 수 있음
+    val photoFail = stringResource(R.string.photo_fail)
+    val pickDraft = rememberPhotoPicker { uri -> scope.launch {
+        val ok = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { io.github.graviton94.carpediem.data.Photos.importPending(ctx, uri) }
+        if (ok) { state.draftPhoto = true; state.photoKick++ } else state.say(photoFail)
+    } }
+    val pickToday = rememberPhotoPicker { uri -> scope.launch {
+        val ok = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { io.github.graviton94.carpediem.data.Photos.importFor(ctx, uri, today) }
+        if (ok) state.photoKick++ else state.say(photoFail)
+    } }
     fun send() {
         if (text.isBlank()) return
         if (editing) { state.editToday(text, feeling, today); editing = false; text = ""; feeling = null; focus.clearFocus(); return }
         val who = to?.takeIf { id -> state.people.any { it.id == id } }
         flying = text.trim()
         if (day != null) state.letGoOn(day, text, feeling, who) else state.letGo(text, feeling, who)
+        state.commitPhoto(day ?: today)
         text = ""; feeling = null; focus.clearFocus()
     }
 
@@ -236,6 +247,12 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
                         TokenText(stringResource(R.string.edit_delete), Tokens.TypeScale.footnote,
                             Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { confirmDelete = true }.padding(horizontal = Tokens.Space.sp3, vertical = Tokens.Space.sp3), color = p.secondary)
                     }
+                    // 오늘의 사진 (11): 붙였으면 한지 액자로, 아니면 그날 안에 붙이기
+                    if (Theme.garden && state.keepLines && mine != null && mine.text.isNotBlank()) {
+                        val hasPhoto = remember(state.photoKick, today) { io.github.graviton94.carpediem.data.Photos.has(ctx, today) }
+                        if (hasPhoto) WeatheredPhoto(state, today, today, u * 70f, modifier = Modifier.padding(vertical = Tokens.Space.sp2))
+                        else GardenChip(stringResource(R.string.photo_addToday), false, 967) { pickToday() }
+                    }
                     // 아침에 심은 씨앗 (04): 저녁 · 밤이면 ‘싹이 텄나요?’
                     if (Theme.garden && state.profile != null) SeedAsk(state, today, state.fixedNow ?: java.time.LocalDateTime.now())
                 }
@@ -289,7 +306,18 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
                 LaunchedEffect(state.focusWrite, state.touring) {
                     if (state.focusWrite && !state.touring) { delay(G.Motion.pageMs.toLong()); runCatching { focusBox.requestFocus() }; state.focusWrite = false }
                 }
-                TokenText("${text.codePointCount(0, text.length)} / $max", Tokens.TypeScale.caption1, Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.End)
+                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                    // 사진 한 장 (11): 기록을 남길 때만 (끄면 글처럼 사진도 남기지 않음)
+                    if (Theme.garden && state.keepLines && !editing) {
+                        if (state.draftPhoto) {
+                            WeatheredPhoto(state, day ?: today, today, u * 26f, pending = true)
+                            TokenText(stringResource(R.string.photo_remove), Tokens.TypeScale.footnote,
+                                Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { io.github.graviton94.carpediem.data.Photos.dropPending(ctx); state.draftPhoto = false }.padding(Tokens.Space.sp3), color = p.secondary)
+                        } else GardenChip(stringResource(R.string.photo_add), false, 969) { pickDraft() }
+                    }
+                    Spacer(Modifier.weight(1f))
+                    TokenText("${text.codePointCount(0, text.length)} / $max", Tokens.TypeScale.caption1, color = p.secondary, align = TextAlign.End)
+                }
                 Action(stringResource(when { editing -> R.string.edit_save; day == null -> R.string.letgo_send; else -> R.string.letgo_daySend }), filled = text.isNotBlank(), seed = 968) { send() }
                 if (editing) TokenText(stringResource(R.string.cancel), Tokens.TypeScale.footnote,
                     Modifier.fillMaxWidth().heightIn(min = Tokens.Layout.tapTarget).clickable { editing = false; text = ""; feeling = null; focus.clearFocus() }.padding(vertical = Tokens.Space.sp3), color = p.secondary, align = TextAlign.Center)
@@ -366,6 +394,8 @@ private fun RecallCard(state: AppState, today: LocalDate, title: String, line: D
             val meta = listOfNotNull(line.date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)), line.feeling?.let { stringResource(feelingName(it)) }).joinToString(" · ")
             TokenText(meta, Tokens.TypeScale.caption1, color = p.secondary)
             TokenText(line.text, lineType(Tokens.TypeScale.headline, Theme.garden))
+            // 그날의 사진 (11): 그 사이 시간만큼 바랜 모습
+            if (Theme.garden) WeatheredPhoto(state, line.date, today, u * 64f, modifier = Modifier.padding(vertical = Tokens.Space.sp2))
             // 돌아온 한 줄로 할 수 있는 것 (12): 카드로 간직 · 오늘 한 줄에 이어 쓰기 (오늘 아직 쓰지 않았을 때)
             androidx.compose.foundation.layout.FlowRow(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
                 if (Theme.garden) GardenChip(stringResource(R.string.recall_keepCard), false, seed + 40) {
