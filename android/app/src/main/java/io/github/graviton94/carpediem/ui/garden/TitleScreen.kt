@@ -120,7 +120,9 @@ fun TitleScreen(state: AppState, now: LocalDateTime, onDone: () -> Unit) {
         // 하늘: 정원과 같은 그림 · 같은 시간의 빛. 처음엔 종이 바탕에서 천천히 밝아짐
         Box(Modifier.fillMaxSize().graphicsLayer { alpha = sky.value }) {
             Image(GardenArt.sky(ctx, season), null, Modifier.fillMaxSize(), contentScale = ContentScale.FillWidth, alignment = Alignment.TopCenter)
-            Image(GardenArt.strip(ctx, season), null, Modifier.offset(y = groundY - u * G.Layout.stripLineY).fillMaxWidth().height(u * G.Layout.stripHeight), contentScale = ContentScale.FillBounds)
+            // 띠 아래로 종이 바탕이 비치지 않게 화면 끝까지 (정원에서는 그 자리를 버튼 · 탭이 덮음)
+            val stripTop = groundY - u * G.Layout.stripLineY
+            Image(GardenArt.strip(ctx, season), null, Modifier.offset(y = stripTop).fillMaxWidth().height(maxOf(u * G.Layout.stripHeight, screenH - stripTop)), contentScale = ContentScale.FillBounds)
             SkyTimeLayer(now, groundY, screenH * 0.14f, maxOf(screenH * 0.2f, groundY - u * 40f), Modifier.fillMaxSize())
         }
         // 위: 이름 · 오늘 · 인사 (땅이 자리 잡은 뒤 천천히)

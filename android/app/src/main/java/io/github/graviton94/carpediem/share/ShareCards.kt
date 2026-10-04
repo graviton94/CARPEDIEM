@@ -293,8 +293,8 @@ object ShareCards {
         val spots = listOf(0.33f, 0.68f, 0.26f, 0.75f)
         got.take(4).forEachIndexed { i, card -> put(c, art(ctx, "card_${card.key}.webp"), w * spots[i], gy + foot, h * 0.075f) }
         // 글자: 위에 큰 해 숫자 · 이름, 아래 땅 위에 작은 꼬리말 (아래를 살짝 어둡게 해 읽히게)
-        text(c, "$year", paint(ctx, S.text * 2.6f, ink), pad, pad * 1.1f, w - (pad * 2).toInt())
-        text(c, ctx.getString(R.string.title_name), paint(ctx, S.small * 1.1f, inkSoft), pad, pad * 1.1f + S.text * 3.4f, w - (pad * 2).toInt())
+        val yh = text(c, "$year", paint(ctx, S.text * 2.6f, ink), pad, pad * 1.0f, w - (pad * 2).toInt())
+        text(c, ctx.getString(R.string.title_name), paint(ctx, S.small * 1.1f, inkSoft), pad, pad * 1.0f + yh + S.small * 0.2f, w - (pad * 2).toInt())
         c.drawRect(0f, h * 0.84f, w.toFloat(), h.toFloat(), Paint().apply { shader = android.graphics.LinearGradient(0f, h * 0.84f, 0f, h.toFloat(), 0x00000000, 0x33000000, android.graphics.Shader.TileMode.CLAMP) })
         text(c, ctx.getString(R.string.share_footer), paint(ctx, S.small * 0.8f, 0xF2FBF4E6.toInt()), pad, h - pad * 0.95f, w - (pad * 2).toInt())
         return b
