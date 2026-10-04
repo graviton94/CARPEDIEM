@@ -108,6 +108,7 @@ fun TitleScreen(state: AppState, now: LocalDateTime, onDone: () -> Unit) {
         .graphicsLayer { alpha = fade.value }) {
         val u = Theme.unit
         val screenH = maxHeight
+        val screenW = maxWidth
         val worldH = screenH * TITLE_WORLD
         val travel = with(density) { (worldH - screenH).toPx() }
         // 하늘 꼭대기부터 땅까지 이어진 한 장 (카메라가 위에서 아래로)
@@ -126,7 +127,7 @@ fun TitleScreen(state: AppState, now: LocalDateTime, onDone: () -> Unit) {
                 Box(Modifier.fillMaxSize().background(androidx.compose.ui.graphics.Brush.verticalGradient(listOf(Color(0x55FFFFFF), Color(0x00FFFFFF)))))
                 // 내려오며 스치는 구름 몇 장
                 listOf(0.18f to 0.12f, 0.42f to 0.6f, 0.7f to 0.25f).forEachIndexed { i, (yf, xf) ->
-                    Image(GardenArt.image(ctx, "cloud_${season.name.lowercase()}_${i % 2}.webp"), null, Modifier.offset(x = maxWidth * xf, y = worldH * yf).size(u * (70f + 20f * i), u * (28f + 8f * i)), contentScale = ContentScale.Fit)
+                    Image(GardenArt.image(ctx, "cloud_${season.name.lowercase()}_${i % 2}.webp"), null, Modifier.offset(x = screenW * xf, y = worldH * yf).size(u * (70f + 20f * i), u * (28f + 8f * i)), contentScale = ContentScale.Fit)
                 }
             }
             // 땅 (월드 아래쪽) 과 졸고 있는 하루
