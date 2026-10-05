@@ -53,7 +53,6 @@
 "words.english" = "英語";
 "words.both" = "両方";
 "widgets" = "ウィジェット";
-"widgets.list" = "置けるウィジェット";
 "widgets.name.daysLeft" = "残りの日数";
 "widgets.name.calendar" = "人生カレンダー";
 "widgets.name.record" = "こころの記録";
@@ -220,10 +219,6 @@
 "obj.kite" = "空の凧";
 "obj.kite.when" = "ひとことを100日続けた日";
 "obj.kite.line" = "百日の風が、凧を高くあげました。";
-"defaults" = "表示の初期設定";
-"defaults.unit" = "残りの時間の単位";
-"defaults.grid" = "人生カレンダーの1マス";
-"defaults.footer" = "ホームで変えた単位は、そのときだけです。\n次にひらいたときは、ここで選んだ単位で表示します。";
 "widget.daysLeft.garden" = "残りの日数";
 "widget.calendar.garden" = "人生カレンダー";
 "letgo.modalTitle" = "残しました";
@@ -1014,3 +1009,6 @@
 "title.setting" = "アプリの最初の画面";
 "title.helloFirst" = "はじめまして。うれしいです。";
 "mood.readSub" = "これまでのひとことを探して、月や年でふり返ります。";
+"settings.notify" = "通知";
+"settings.garden" = "庭";
+"settings.help" = "ヘルプと応援";

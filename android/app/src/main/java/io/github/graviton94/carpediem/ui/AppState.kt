@@ -103,6 +103,14 @@ class AppState(private val context: Context) {
     val guideSteps = androidx.compose.runtime.mutableStateMapOf<String, Int>()
     var pageHints by mutableStateOf(store.pageHints)
         private set
+    /** 알림 · 바로 가기 · 타일에서 숨 · 돌멍으로 왔을 때: 바로 시작하지 않고 정원에서 한 번 묻기 ("breath" · "morning" · "gaze"). */
+    var goAsk by mutableStateOf<String?>(null)
+    /** (?) 를 눌러 그 페이지의 안내를 다시 (정원은 정원 둘러보기, 다른 페이지는 그 페이지의 안내만). */
+    fun replayTour(key: String) {
+        guideSteps.remove(key)
+        if (key == "garden") { store.guideDone = false; guideDone = false }
+        else { val v = pageHints - key; store.pageHints = v; pageHints = v }
+    }
     fun pageHintSeen(key: String) { val v = pageHints + key; store.pageHints = v; pageHints = v; guideSteps.remove(key) }
     var nudgesSeen by mutableStateOf(store.nudgesSeen)
         private set
@@ -206,8 +214,9 @@ class AppState(private val context: Context) {
     var typedQuote: String? = null
     fun changeQuoteLanguage(v: QuoteLanguage) { store.quoteLanguage = v; quoteLanguage = v; Widgets.refresh(context) }
     /** 홈에서 칩으로 바꾸면 이번에만 (다음에 열면 기본 단위로). 기본은 설정에서 고정한다. 위젯도 기본 단위를 쓴다. */
-    fun changeUnit(v: LifeUnit) { unit = v }
-    fun changeGrid(v: GridScale) { grid = v }
+    // 홈에서 고른 단위 · 칸은 그대로 기억 (다음에 열어도 마지막에 고른 대로)
+    fun changeUnit(v: LifeUnit) { if (v != unit) changeDefaultUnit(v) }
+    fun changeGrid(v: GridScale) { if (v != grid) changeDefaultGrid(v) }
     var defaultUnit by mutableStateOf(store.unit)
         private set
     var defaultGrid by mutableStateOf(store.grid)

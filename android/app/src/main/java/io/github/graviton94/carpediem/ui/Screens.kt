@@ -376,13 +376,13 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
                 TextButton(onClick = { state.save(draft); state.draft = null; onClose() }) { TokenText(stringResource(R.string.done), Tokens.TypeScale.headline, color = p.olive) }
             }
             ProfileFields(state, draft, { state.draft = it }, onCountry)
-            // 자주 바꾸는 것부터: 알림 · 기록 · 백업 → 꾸밈 · 가족 · 기본값 · 문장 → 위젯 · 의견 · 응원 → 안내 · 지우기
+            // 묶음: 알림 → 기록 → 백업 → 정원 (꾸밈 · 가족 · 문장) → 위젯 → 도움 · 응원 → 지우기
             val permission = androidx.activity.compose.rememberLauncherForActivityResult(androidx.activity.result.contract.ActivityResultContracts.RequestPermission()) { ok -> state.changeNotify(ok); if (!ok) blocked = true }
             fun toggleNotify(on: Boolean) {
                 if (on && android.os.Build.VERSION.SDK_INT >= 33 && !io.github.graviton94.carpediem.notify.Daily.allowed(ctx)) permission.launch(android.Manifest.permission.POST_NOTIFICATIONS)
                 else state.changeNotify(on)
             }
-            FormSection(footer = stringResource(R.string.notify_footer)) {
+            FormSection(header = stringResource(R.string.settings_notify), footer = stringResource(R.string.notify_footer)) {
                 FormRow(stringResource(R.string.notify_row), onClick = { toggleNotify(!state.notify) }) {
                     Switch(state.notify, { toggleNotify(it) }, colors = SwitchDefaults.colors(checkedTrackColor = p.olive))
                 }
@@ -525,7 +525,7 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
                     )
                 }
             }
-            FormSection(header = stringResource(R.string.design)) {
+            FormSection(header = stringResource(R.string.settings_garden)) {
                 FormRow(stringResource(R.string.design)) {
                     ChipPicker(listOf(Design.GARDEN, Design.GLASS), state.design, { Labels.design(ctx, it) }) { state.changeDesign(it) }
                 }
@@ -564,64 +564,53 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
                     FormRow(stringResource(R.string.family_add), onClick = onAddPerson) { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null, tint = p.secondary) }
                 }
             } else TokenText(stringResource(R.string.family_glassNote), Tokens.TypeScale.footnote, Modifier.padding(horizontal = Tokens.Space.sp4), color = p.secondary)
-            FormSection(header = stringResource(R.string.defaults), footer = stringResource(R.string.defaults_footer)) {
-                Column(Modifier.padding(vertical = Tokens.Space.sp2), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
-                    TokenText(stringResource(R.string.defaults_unit), Tokens.TypeScale.body)
-                    ChipPicker(LifeUnit.entries, state.defaultUnit, { Labels.unit(ctx, it) }) { state.changeDefaultUnit(it) }
-                }
-                RowDivider()
-                Column(Modifier.padding(vertical = Tokens.Space.sp2), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
-                    TokenText(stringResource(R.string.defaults_grid), Tokens.TypeScale.body)
-                    ChipPicker(GridScale.entries, state.defaultGrid, { Labels.gridShort(ctx, it) }) { state.changeDefaultGrid(it) }
-                }
-            }
             // 문장 언어: 고를 것이 있을 때만 (영어 폰은 영어 하나라 칸째 없음)
             if (io.github.graviton94.carpediem.data.Words.choosable(ctx)) FormSection(header = stringResource(R.string.words)) {
                 FormRow(stringResource(R.string.words_language)) {
                     ChipPicker(QuoteLanguage.entries, state.quoteLanguage, { Labels.quoteLanguage(ctx, it) }) { state.changeQuoteLanguage(it) }
                 }
             }
+            // 위젯: 둘 수 있는 것 (정원) 과 두는 법을 한 묶음으로
             FormSection(header = stringResource(R.string.widgets)) {
+                if (state.design == Design.GARDEN) {
+                    listOf(R.string.widgets_name_daysLeft to R.string.widget_daysLeft_desc, R.string.widgets_name_line to R.string.widget_line_desc,
+                        R.string.widgets_name_record to R.string.widget_record_desc, R.string.widgets_name_calendar to R.string.widget_calendar_desc).forEachIndexed { i, (name, desc) ->
+                        if (i > 0) RowDivider()
+                        Row(Modifier.padding(vertical = Tokens.Space.sp3), verticalAlignment = Alignment.CenterVertically) {
+                            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
+                                TokenText(stringResource(name), Tokens.TypeScale.subhead, weight = FontWeight.SemiBold)
+                                TokenText(stringResource(desc), Tokens.TypeScale.footnote, color = p.secondary)
+                            }
+                            // 런처가 지원하면 바로 홈 화면에 두기
+                            val kind = listOf("days", "line", "record", "calendar")[i]
+                            TextButton(onClick = { if (!io.github.graviton94.carpediem.widget.Widgets.pin(ctx, kind)) state.say(ctx.getString(R.string.nudge_widgetHow)) }) {
+                                TokenText(stringResource(R.string.widget_pin), Tokens.TypeScale.footnote, color = p.olive, weight = FontWeight.SemiBold)
+                            }
+                        }
+                    }
+                    RowDivider()
+                }
                 listOf(Icons.Filled.Home to R.string.widgets_android1, Icons.Filled.Search to R.string.widgets_android2, Icons.Filled.Edit to R.string.widgets_android3).forEachIndexed { i, (icon, text) ->
                     if (i > 0) RowDivider()
                     Row(Modifier.padding(vertical = Tokens.Space.sp3), horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
-                        Icon(icon, null, tint = p.olive, modifier = Modifier.size(Tokens.Stroke.icon))
-                        TokenText(stringResource(text), Tokens.TypeScale.subhead)
+                        Icon(icon, null, tint = p.secondary, modifier = Modifier.size(Tokens.Stroke.icon))
+                        TokenText(stringResource(text), Tokens.TypeScale.footnote, color = p.secondary)
                     }
                 }
             }
-            // 둘 수 있는 위젯 (정원): 이름과 한 줄
-            if (state.design == Design.GARDEN) FormSection(header = stringResource(R.string.widgets_list)) {
-                listOf(R.string.widgets_name_daysLeft to R.string.widget_daysLeft_desc, R.string.widgets_name_line to R.string.widget_line_desc,
-                    R.string.widgets_name_record to R.string.widget_record_desc, R.string.widgets_name_calendar to R.string.widget_calendar_desc).forEachIndexed { i, (name, desc) ->
-                    if (i > 0) RowDivider()
-                    Row(Modifier.padding(vertical = Tokens.Space.sp3), verticalAlignment = Alignment.CenterVertically) {
-                        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
-                            TokenText(stringResource(name), Tokens.TypeScale.subhead, weight = FontWeight.SemiBold)
-                            TokenText(stringResource(desc), Tokens.TypeScale.footnote, color = p.secondary)
-                        }
-                        // 런처가 지원하면 바로 홈 화면에 두기
-                        val kind = listOf("days", "line", "record", "calendar")[i]
-                        TextButton(onClick = { if (!io.github.graviton94.carpediem.widget.Widgets.pin(ctx, kind)) state.say(ctx.getString(R.string.nudge_widgetHow)) }) {
-                            TokenText(stringResource(R.string.widget_pin), Tokens.TypeScale.footnote, color = p.olive, weight = FontWeight.SemiBold)
-                        }
+            // 도움 · 응원: 안내 다시 보기 · 의견 보내기 (메일에 기기 · 앱 정보만, 기록은 담지 않음) · 응원하기
+            FormSection(header = stringResource(R.string.settings_help), footer = stringResource(R.string.feedback_footer)) {
+                if (state.design == Design.GARDEN) {
+                    FormRow(stringResource(R.string.guide_again), onClick = { state.draft = null; state.restartGuide(); onClose() }) {
+                        Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null, tint = p.secondary)
                     }
+                    RowDivider()
                 }
-            }
-            // 의견 보내기: 메일에 기기 · 앱 정보만 미리 채움 (기록은 담지 않음)
-            FormSection(footer = stringResource(R.string.feedback_footer)) {
                 FormRow(stringResource(R.string.feedback_row), onClick = { if (!io.github.graviton94.carpediem.data.Feedback.send(ctx)) state.say(ctx.getString(R.string.feedback_copied)) }) {
                     Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null, tint = p.secondary)
                 }
-            }
-            FormSection {
+                RowDivider()
                 FormRow(stringResource(R.string.support), onClick = onSupport) {
-                    Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null, tint = p.secondary)
-                }
-            }
-            // 처음 온 사람의 안내 다시 보기 (정원 둘러보기 · 페이지마다의 첫 안내)
-            if (state.design == Design.GARDEN) FormSection {
-                FormRow(stringResource(R.string.guide_again), onClick = { state.draft = null; state.restartGuide(); onClose() }) {
                     Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null, tint = p.secondary)
                 }
             }

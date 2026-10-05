@@ -121,7 +121,10 @@ fun StoneScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, id: S
                 .padding(horizontal = Theme.deviceClass.pageMargin).padding(bottom = Tokens.Space.sp10),
             verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp4),
         ) {
-            PageBar(name, onBack)
+            Box(Modifier.fillMaxWidth()) {
+                PageBar(name, onBack)
+                if (state.guideDone) HelpButton({ state.replayTour("stone") }, Modifier.align(Alignment.CenterEnd))
+            }
             Box(Modifier.fillMaxWidth().guideTarget(guide, "stone.big"), contentAlignment = Alignment.Center) { BigStone(art, person?.kind == Kind.PET, birthday, size = G.Family.pageStone) }
             Column(Modifier.fillMaxWidth().guideTarget(guide, "stone.big.name"), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
                 TokenText(name, Tokens.TypeScale.title3.serif(), align = TextAlign.Center)

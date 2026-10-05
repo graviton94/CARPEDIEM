@@ -55,7 +55,6 @@
     <string name="words_english">英文</string>
     <string name="words_both">兩種都要</string>
     <string name="widgets">小工具</string>
-    <string name="widgets_list">可以放的小工具</string>
     <string name="widgets_name_daysLeft">剩下的日子</string>
     <string name="widgets_name_calendar">人生月曆</string>
     <string name="widgets_name_record">心情的紀錄</string>
@@ -222,10 +221,6 @@
     <string name="obj_kite">天上的風箏</string>
     <string name="obj_kite_when">連續 100 天寫下一句話</string>
     <string name="obj_kite_line">一百天的風，把風箏送上了高空。</string>
-    <string name="defaults">預設顯示</string>
-    <string name="defaults_unit">剩下時間的單位</string>
-    <string name="defaults_grid">人生月曆的一格</string>
-    <string name="defaults_footer">在首頁換的單位只在當下有效。\n下次打開，會用這裡選的單位。</string>
     <string name="widget_daysLeft_garden">剩下的日子</string>
     <string name="widget_calendar_garden">人生月曆</string>
     <string name="letgo_modalTitle">留下了</string>
@@ -1016,4 +1011,7 @@
     <string name="title_setting">App 開場畫面</string>
     <string name="title_helloFirst">初次見面，很高興認識你。</string>
     <string name="mood_readSub">搜尋留下的話，按月、按年回顧。</string>
+    <string name="settings_notify">通知</string>
+    <string name="settings_garden">庭院</string>
+    <string name="settings_help">說明與支持</string>
 </resources>

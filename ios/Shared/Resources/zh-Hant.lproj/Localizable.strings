@@ -53,7 +53,6 @@
 "words.english" = "英文";
 "words.both" = "兩種都要";
 "widgets" = "小工具";
-"widgets.list" = "可以放的小工具";
 "widgets.name.daysLeft" = "剩下的日子";
 "widgets.name.calendar" = "人生月曆";
 "widgets.name.record" = "心情的紀錄";
@@ -220,10 +219,6 @@
 "obj.kite" = "天上的風箏";
 "obj.kite.when" = "連續 100 天寫下一句話";
 "obj.kite.line" = "一百天的風，把風箏送上了高空。";
-"defaults" = "預設顯示";
-"defaults.unit" = "剩下時間的單位";
-"defaults.grid" = "人生月曆的一格";
-"defaults.footer" = "在首頁換的單位只在當下有效。\n下次打開，會用這裡選的單位。";
 "widget.daysLeft.garden" = "剩下的日子";
 "widget.calendar.garden" = "人生月曆";
 "letgo.modalTitle" = "留下了";
@@ -1014,3 +1009,6 @@
 "title.setting" = "App 開場畫面";
 "title.helloFirst" = "初次見面，很高興認識你。";
 "mood.readSub" = "搜尋留下的話，按月、按年回顧。";
+"settings.notify" = "通知";
+"settings.garden" = "庭院";
+"settings.help" = "說明與支持";

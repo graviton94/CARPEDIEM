@@ -111,7 +111,7 @@ class MainActivity : ComponentActivity() {
         val linked = savedInstanceState == null && (intent?.hasExtra(EXTRA_OPEN) == true || intent?.getBooleanExtra(EXTRA_MORNING_BREATH, false) == true)
         val start = (if (BuildConfig.DEBUG) debugSetup(state) else Screen.Main).let { s ->
             // 아침 알림에서 왔으면 하루를 여는 숨 1분
-            if (savedInstanceState == null && intent?.getBooleanExtra(EXTRA_MORNING_BREATH, false) == true && state.profile != null) Screen.Breathe(BreathKind.CALM, 1, state.sound, Screen.Main) else s
+            if (savedInstanceState == null && intent?.getBooleanExtra(EXTRA_MORNING_BREATH, false) == true && state.profile != null) { state.homePage = 0; state.goAsk = "morning"; Screen.Main } else s
         }.let { s ->
             // 알림 · 위젯에서 왔으면 그곳으로. 처음 켤 때 한 번만 (돌리거나 다시 그릴 때 또 가지 않게), 쓴 표는 지운다
             val open = if (savedInstanceState == null) intent?.getStringExtra(EXTRA_OPEN) else null
@@ -151,7 +151,8 @@ class MainActivity : ComponentActivity() {
                         x.removeExtra(EXTRA_OPEN); x.removeExtra(EXTRA_MORNING_BREATH)
                         if (state.profile == null) return@LaunchedEffect
                         title = false
-                        screen = if (morning) Screen.Breathe(BreathKind.CALM, 1, state.sound, Screen.Main) else openFrom(open, state) ?: Screen.Main
+                        if (morning) { state.homePage = 0; state.goAsk = "morning" }
+                        screen = if (morning) Screen.Main else openFrom(open, state) ?: Screen.Main
                         homeEpoch++
                     }
                     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { now = clock(); state.refreshQuote(); state.opened(); state.refreshQuestion(); state.recheckNotify(); state.syncFromStore() }
@@ -384,10 +385,10 @@ private fun openFrom(open: String?, state: AppState): Screen? {
         }
         "year" -> arg?.toIntOrNull()?.takeIf { it in 1900..java.time.LocalDate.now().year }?.let { y -> state.homePage = 1; state.pendingRecord = io.github.graviton94.carpediem.ui.garden.RecordView(y, null); state.openYear(y) }
         "memory" -> return Screen.Memory(Screen.Main)
-        // 숨 바로가기 (위젯 · 빠른 설정 타일, C1): 고르는 창 없이 지금 때의 숨 1분 (밤엔 잠드는 명상)
-        "breath" -> return Screen.Breathe(if (io.github.graviton94.carpediem.ui.Labels.part(state.fixedNow ?: java.time.LocalDateTime.now()) == io.github.graviton94.carpediem.core.DayPart.NIGHT) BreathKind.SLEEP else BreathKind.CALM, 1, state.sound, Screen.Main)
-        // 바로 가기 (02): 돌멍하기 · 하루 닫기 (정원 디자인에서만)
-        "gaze" -> return if (state.design == Design.GARDEN) Screen.Gaze(Screen.Main) else null
+        // 숨 바로가기 (빠른 설정 타일 · 바로 가기, C1) · 돌멍하기 (02): 바로 시작하지 않고 정원에서 “… 하러 갈까요?” 한 번
+        "breath" -> { state.homePage = 0; state.goAsk = "breath" }
+        "gaze" -> if (state.design == Design.GARDEN) { state.homePage = 0; state.goAsk = "gaze" }
+        // 하루 닫기 (정원 디자인에서만)
         "close" -> return if (state.design == Design.GARDEN) Screen.CloseDay(Screen.Main) else { state.focusWrite = !state.sentOn((state.fixedNow ?: java.time.LocalDateTime.now()).toLocalDate()); null }
         "stone" -> return if (arg.isNullOrEmpty()) Screen.Stone(null, Screen.Main) else arg.takeIf { id -> state.people.any { it.id == id } }?.let { Screen.Stone(it, Screen.Main) }   // 비면 내 돌
     }

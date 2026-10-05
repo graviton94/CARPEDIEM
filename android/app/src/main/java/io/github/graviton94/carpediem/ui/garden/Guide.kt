@@ -56,6 +56,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -165,19 +166,29 @@ val GardenGuideSteps = listOf(
     GuideStep("number", R.string.guide_numberTitle, R.string.guide_number),
     GuideStep("words", R.string.guide_wordsTitle, R.string.guide_words),
     GuideStep("haru", R.string.guide_haruTitle, R.string.guide_haru),
-    GuideStep("path", R.string.guide_pathTitle, R.string.guide_path),
     GuideStep("actions", R.string.guide_actionsTitle, R.string.guide_actions),
     GuideStep("tabs", R.string.guide_tabsTitle, R.string.guide_tabs),
     GuideStep("settings", R.string.guide_settingsTitle, R.string.guide_settings),
     GuideStep(null, R.string.guide_endTitle, R.string.guide_end),
 )
 
+/** 늘 같은 자리 (페이지 오른쪽 위) 의 작은 (?): 누르면 그 페이지의 안내를 다시. */
+@Composable
+fun HelpButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
+    val label = stringResource(R.string.guide_again)
+    Box(modifier.size(Tokens.Layout.tapTarget).clickable(onClickLabel = label, role = androidx.compose.ui.semantics.Role.Button, onClick = onClick)
+        .semantics { contentDescription = label }, contentAlignment = Alignment.Center) {
+        Box(Modifier.size(Tokens.Layout.tapTarget * 0.5f).crayonBox(null, G.Radius.chip, G.Stroke.chip, 1590), contentAlignment = Alignment.Center) {
+            TokenText("?", Tokens.TypeScale.footnote, color = Theme.palette.secondary, weight = FontWeight.SemiBold)
+        }
+    }
+}
+
 /** 페이지마다 처음 들어왔을 때의 짧은 둘러보기 (key = PAGE_HINTS). 비출 자리가 없는 장은 건너뜀. */
 val PageGuideSteps = mapOf(
     "write" to listOf(
         GuideStep("write.box", R.string.tour_writeBoxTitle, R.string.tour_writeBox),
         GuideStep("write.feeling", R.string.tour_writeFeelingTitle, R.string.tour_writeFeeling),
-        GuideStep("write.days", R.string.tour_writeDaysTitle, R.string.tour_writeDays),
         GuideStep("write.record", R.string.tour_writeRecordTitle, R.string.tour_writeRecord),
     ),
     "memories" to listOf(
@@ -192,7 +203,6 @@ val PageGuideSteps = mapOf(
     ),
     "stone" to listOf(
         GuideStep("stone.big", R.string.tour_stoneTitle, R.string.tour_stone),
-        GuideStep("stone.info", R.string.tour_stoneInfoTitle, R.string.tour_stoneInfo),
         GuideStep("stone.calendar", R.string.tour_stoneCalendarTitle, R.string.tour_stoneCalendar),
         GuideStep("stone.action", R.string.tour_stoneActionTitle, R.string.tour_stoneAction),
     ),

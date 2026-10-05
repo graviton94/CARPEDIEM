@@ -54,7 +54,6 @@
     "words.english": "영문",
     "words.both": "둘 다",
     "widgets": "위젯",
-    "widgets.list": "둘 수 있는 위젯",
     "widgets.name.daysLeft": "남은 날",
     "widgets.name.calendar": "인생 달력",
     "widgets.name.record": "마음의 기록",
@@ -221,10 +220,6 @@
     "obj.kite": "하늘의 연",
     "obj.kite.when": "한 줄을 100일 이어 쓴 날",
     "obj.kite.line": "백 날의 바람이 연을 높이 띄웠어요.",
-    "defaults": "보기 기본값",
-    "defaults.unit": "남은 시간 단위",
-    "defaults.grid": "인생 달력 한 칸",
-    "defaults.footer": "홈에서 바꾼 단위는 그때만이에요.\n다시 열면 여기서 고른 단위로 보여요.",
     "widget.daysLeft.garden": "남은 날",
     "widget.calendar.garden": "인생 달력",
     "letgo.modalTitle": "잘 남겼어요",
@@ -1015,7 +1010,10 @@
     "title.hello.night": "하루가 기다리고 있었어요.",
     "title.setting": "앱 첫 화면",
     "title.helloFirst": "처음 만나는 날이에요. 반가워요.",
-    "mood.readSub": "지금까지 남긴 한 줄을 찾고, 달과 해로 돌아봐요."
+    "mood.readSub": "지금까지 남긴 한 줄을 찾고, 달과 해로 돌아봐요.",
+    "settings.notify": "알림",
+    "settings.garden": "정원",
+    "settings.help": "도움 · 응원"
   },
   "en": {
     "tagline": "Cherish today.",
@@ -1072,7 +1070,6 @@
     "words.english": "English",
     "words.both": "Both",
     "widgets": "Widgets",
-    "widgets.list": "Widgets you can add",
     "widgets.name.daysLeft": "Days left",
     "widgets.name.calendar": "Life calendar",
     "widgets.name.record": "Heart’s record",
@@ -1239,10 +1236,6 @@
     "obj.kite": "Kite",
     "obj.kite.when": "100 days of lines in a row",
     "obj.kite.line": "A hundred days of wind lifted a kite.",
-    "defaults": "Default view",
-    "defaults.unit": "Time left in",
-    "defaults.grid": "One dot on the life calendar",
-    "defaults.footer": "Changes on Home are just for now.\nNext time, it opens with these.",
     "widget.daysLeft.garden": "Days left",
     "widget.calendar.garden": "Life calendar",
     "letgo.modalTitle": "Kept",
@@ -2033,7 +2026,10 @@
     "title.hello.night": "Haru was waiting for you.",
     "title.setting": "Title screen",
     "title.helloFirst": "Nice to meet you.",
-    "mood.readSub": "Find the lines you've kept and look back by month and year."
+    "mood.readSub": "Find the lines you've kept and look back by month and year.",
+    "settings.notify": "Reminders",
+    "settings.garden": "Garden",
+    "settings.help": "Help & support"
   },
   "ja": {
     "tagline": "今日を大切に。",
@@ -2090,7 +2086,6 @@
     "words.english": "英語",
     "words.both": "両方",
     "widgets": "ウィジェット",
-    "widgets.list": "置けるウィジェット",
     "widgets.name.daysLeft": "残りの日数",
     "widgets.name.calendar": "人生カレンダー",
     "widgets.name.record": "こころの記録",
@@ -2257,10 +2252,6 @@
     "obj.kite": "空の凧",
     "obj.kite.when": "ひとことを100日続けた日",
     "obj.kite.line": "百日の風が、凧を高くあげました。",
-    "defaults": "表示の初期設定",
-    "defaults.unit": "残りの時間の単位",
-    "defaults.grid": "人生カレンダーの1マス",
-    "defaults.footer": "ホームで変えた単位は、そのときだけです。\n次にひらいたときは、ここで選んだ単位で表示します。",
     "widget.daysLeft.garden": "残りの日数",
     "widget.calendar.garden": "人生カレンダー",
     "letgo.modalTitle": "残しました",
@@ -3050,7 +3041,10 @@
     "title.hello.night": "ハルが待っていました。",
     "title.setting": "アプリの最初の画面",
     "title.helloFirst": "はじめまして。うれしいです。",
-    "mood.readSub": "これまでのひとことを探して、月や年でふり返ります。"
+    "mood.readSub": "これまでのひとことを探して、月や年でふり返ります。",
+    "settings.notify": "通知",
+    "settings.garden": "庭",
+    "settings.help": "ヘルプと応援"
   },
   "zh-TW": {
     "tagline": "珍惜今天。",
@@ -3107,7 +3101,6 @@
     "words.english": "英文",
     "words.both": "兩種都要",
     "widgets": "小工具",
-    "widgets.list": "可以放的小工具",
     "widgets.name.daysLeft": "剩下的日子",
     "widgets.name.calendar": "人生月曆",
     "widgets.name.record": "心情的紀錄",
@@ -3274,10 +3267,6 @@
     "obj.kite": "天上的風箏",
     "obj.kite.when": "連續 100 天寫下一句話",
     "obj.kite.line": "一百天的風，把風箏送上了高空。",
-    "defaults": "預設顯示",
-    "defaults.unit": "剩下時間的單位",
-    "defaults.grid": "人生月曆的一格",
-    "defaults.footer": "在首頁換的單位只在當下有效。\n下次打開，會用這裡選的單位。",
     "widget.daysLeft.garden": "剩下的日子",
     "widget.calendar.garden": "人生月曆",
     "letgo.modalTitle": "留下了",
@@ -4067,6 +4056,9 @@
     "title.hello.night": "小日一直在等你。",
     "title.setting": "App 開場畫面",
     "title.helloFirst": "初次見面，很高興認識你。",
-    "mood.readSub": "搜尋留下的話，按月、按年回顧。"
+    "mood.readSub": "搜尋留下的話，按月、按年回顧。",
+    "settings.notify": "通知",
+    "settings.garden": "庭院",
+    "settings.help": "說明與支持"
   }
 }

@@ -53,7 +53,6 @@
 "words.english" = "English";
 "words.both" = "Both";
 "widgets" = "Widgets";
-"widgets.list" = "Widgets you can add";
 "widgets.name.daysLeft" = "Days left";
 "widgets.name.calendar" = "Life calendar";
 "widgets.name.record" = "Heart’s record";
@@ -220,10 +219,6 @@
 "obj.kite" = "Kite";
 "obj.kite.when" = "100 days of lines in a row";
 "obj.kite.line" = "A hundred days of wind lifted a kite.";
-"defaults" = "Default view";
-"defaults.unit" = "Time left in";
-"defaults.grid" = "One dot on the life calendar";
-"defaults.footer" = "Changes on Home are just for now.\nNext time, it opens with these.";
 "widget.daysLeft.garden" = "Days left";
 "widget.calendar.garden" = "Life calendar";
 "letgo.modalTitle" = "Kept";
@@ -1015,3 +1010,6 @@
 "title.setting" = "Title screen";
 "title.helloFirst" = "Nice to meet you.";
 "mood.readSub" = "Find the lines you've kept and look back by month and year.";
+"settings.notify" = "Reminders";
+"settings.garden" = "Garden";
+"settings.help" = "Help & support";

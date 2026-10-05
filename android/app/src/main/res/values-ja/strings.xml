@@ -55,7 +55,6 @@
     <string name="words_english">英語</string>
     <string name="words_both">両方</string>
     <string name="widgets">ウィジェット</string>
-    <string name="widgets_list">置けるウィジェット</string>
     <string name="widgets_name_daysLeft">残りの日数</string>
     <string name="widgets_name_calendar">人生カレンダー</string>
     <string name="widgets_name_record">こころの記録</string>
@@ -222,10 +221,6 @@
     <string name="obj_kite">空の凧</string>
     <string name="obj_kite_when">ひとことを100日続けた日</string>
     <string name="obj_kite_line">百日の風が、凧を高くあげました。</string>
-    <string name="defaults">表示の初期設定</string>
-    <string name="defaults_unit">残りの時間の単位</string>
-    <string name="defaults_grid">人生カレンダーの1マス</string>
-    <string name="defaults_footer">ホームで変えた単位は、そのときだけです。\n次にひらいたときは、ここで選んだ単位で表示します。</string>
     <string name="widget_daysLeft_garden">残りの日数</string>
     <string name="widget_calendar_garden">人生カレンダー</string>
     <string name="letgo_modalTitle">残しました</string>
@@ -1016,4 +1011,7 @@
     <string name="title_setting">アプリの最初の画面</string>
     <string name="title_helloFirst">はじめまして。うれしいです。</string>
     <string name="mood_readSub">これまでのひとことを探して、月や年でふり返ります。</string>
+    <string name="settings_notify">通知</string>
+    <string name="settings_garden">庭</string>
+    <string name="settings_help">ヘルプと応援</string>
 </resources>

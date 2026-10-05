@@ -53,7 +53,6 @@
 "words.english" = "영문";
 "words.both" = "둘 다";
 "widgets" = "위젯";
-"widgets.list" = "둘 수 있는 위젯";
 "widgets.name.daysLeft" = "남은 날";
 "widgets.name.calendar" = "인생 달력";
 "widgets.name.record" = "마음의 기록";
@@ -220,10 +219,6 @@
 "obj.kite" = "하늘의 연";
 "obj.kite.when" = "한 줄을 100일 이어 쓴 날";
 "obj.kite.line" = "백 날의 바람이 연을 높이 띄웠어요.";
-"defaults" = "보기 기본값";
-"defaults.unit" = "남은 시간 단위";
-"defaults.grid" = "인생 달력 한 칸";
-"defaults.footer" = "홈에서 바꾼 단위는 그때만이에요.\n다시 열면 여기서 고른 단위로 보여요.";
 "widget.daysLeft.garden" = "남은 날";
 "widget.calendar.garden" = "인생 달력";
 "letgo.modalTitle" = "잘 남겼어요";
@@ -1015,3 +1010,6 @@
 "title.setting" = "앱 첫 화면";
 "title.helloFirst" = "처음 만나는 날이에요. 반가워요.";
 "mood.readSub" = "지금까지 남긴 한 줄을 찾고, 달과 해로 돌아봐요.";
+"settings.notify" = "알림";
+"settings.garden" = "정원";
+"settings.help" = "도움 · 응원";

@@ -366,6 +366,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                             TokenText("Carpe Diem", Tokens.TypeScale.headline.serif())
                             TokenText(stringResource(R.string.tagline), Tokens.TypeScale.caption1.serif(), color = p.secondary)
                         }
+                        if (state.guideDone) HelpButton({ state.replayTour("garden") })
                         IconButton(onClick = onSettings, modifier = Modifier.guideTarget(guide, "settings").semantics { contentDescription = ctx.getString(R.string.settings) }) { Icon(Icons.Filled.Settings, null, tint = p.secondary) }
                     }
                     // 윗줄 첫 말이 단위 (남은 날 · 주 · 달 · 해): 밤에 단위 버튼이 쉬어도 숫자가 무엇인지 알 수 있게
@@ -413,6 +414,26 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                         && io.github.graviton94.carpediem.core.Pace.morningBreath(day0))
                         TokenText(stringResource(R.string.breath_morning), Tokens.TypeScale.footnote.serif(),
                             Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { askBreath = BreathKind.CALM to R.string.breath_morning }.padding(Tokens.Space.sp3), color = p.secondary)
+                    // 알림 · 바로 가기에서 왔으면: 첫 화면 · 둘러보기가 끝난 뒤 한 번 묻기
+                    state.goAsk?.takeIf { !state.titleUp && !state.touring && !touring }?.let { go ->
+                        val night = Labels.part(now) == io.github.graviton94.carpediem.core.DayPart.NIGHT
+                        val title = when (go) {
+                            "gaze" -> stringResource(R.string.gaze)
+                            "morning" -> stringResource(R.string.breath_morning)
+                            else -> io.github.graviton94.carpediem.widget.breathName(ctx, now)
+                        }
+                        val help: (@Composable () -> Unit)? = if (go == "gaze") null else { { Text(stringResource(R.string.breath_askHelp)) } }
+                        io.github.graviton94.carpediem.ui.GardenAlert(
+                            onDismissRequest = { state.goAsk = null },
+                            title = { Text(stringResource(R.string.breath_ask, title)) },
+                            text = help,
+                            confirmButton = { androidx.compose.material3.TextButton(onClick = {
+                                state.goAsk = null
+                                if (go == "gaze") onGaze() else onBreath(if (go == "breath" && night) BreathKind.SLEEP else BreathKind.CALM, 1, state.sound)
+                            }) { Text(stringResource(R.string.breath_askGo)) } },
+                            dismissButton = { androidx.compose.material3.TextButton(onClick = { state.goAsk = null }) { Text(stringResource(R.string.breath_askStay), color = p.secondary) } },
+                        )
+                    }
                     askBreath?.let { (kind, name) ->
                         io.github.graviton94.carpediem.ui.GardenAlert(
                             onDismissRequest = { askBreath = null },
@@ -647,6 +668,10 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
         }
         if (!bare && !typing) Box(Modifier.guideTarget(guide, "tabs")) { PageTabs(pager.currentPage) { turnTo(it) } }
       }
+        // 기록 · 추억 · 흐름: 오른쪽 위 같은 자리에 (?) (정원은 이름 줄의 설정 옆)
+        val helpKey = listOf(null, "write", "memories", "flow").getOrNull(pager.currentPage)
+        if (!bare && !typing && helpKey != null && state.guideDone && !state.touring && !pager.isScrollInProgress)
+            HelpButton({ state.replayTour(helpKey) }, Modifier.align(Alignment.TopEnd).statusBarsPadding().padding(end = Tokens.Space.sp2).zIndex(4f))
         // 한 줄을 보낸 뒤: 깃털이 내려오며 한마디 창
         if (!bare) LetGoModal(state, Modifier.fillMaxSize()) { c ->
             when (c) {

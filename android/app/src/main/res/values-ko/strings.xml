@@ -55,7 +55,6 @@
     <string name="words_english">영문</string>
     <string name="words_both">둘 다</string>
     <string name="widgets">위젯</string>
-    <string name="widgets_list">둘 수 있는 위젯</string>
     <string name="widgets_name_daysLeft">남은 날</string>
     <string name="widgets_name_calendar">인생 달력</string>
     <string name="widgets_name_record">마음의 기록</string>
@@ -222,10 +221,6 @@
     <string name="obj_kite">하늘의 연</string>
     <string name="obj_kite_when">한 줄을 100일 이어 쓴 날</string>
     <string name="obj_kite_line">백 날의 바람이 연을 높이 띄웠어요.</string>
-    <string name="defaults">보기 기본값</string>
-    <string name="defaults_unit">남은 시간 단위</string>
-    <string name="defaults_grid">인생 달력 한 칸</string>
-    <string name="defaults_footer">홈에서 바꾼 단위는 그때만이에요.\n다시 열면 여기서 고른 단위로 보여요.</string>
     <string name="widget_daysLeft_garden">남은 날</string>
     <string name="widget_calendar_garden">인생 달력</string>
     <string name="letgo_modalTitle">잘 남겼어요</string>
@@ -1017,4 +1012,7 @@
     <string name="title_setting">앱 첫 화면</string>
     <string name="title_helloFirst">처음 만나는 날이에요. 반가워요.</string>
     <string name="mood_readSub">지금까지 남긴 한 줄을 찾고, 달과 해로 돌아봐요.</string>
+    <string name="settings_notify">알림</string>
+    <string name="settings_garden">정원</string>
+    <string name="settings_help">도움 · 응원</string>
 </resources>

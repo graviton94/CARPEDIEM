@@ -55,7 +55,6 @@
     <string name="words_english">English</string>
     <string name="words_both">Both</string>
     <string name="widgets">Widgets</string>
-    <string name="widgets_list">Widgets you can add</string>
     <string name="widgets_name_daysLeft">Days left</string>
     <string name="widgets_name_calendar">Life calendar</string>
     <string name="widgets_name_record">Heart’s record</string>
@@ -222,10 +221,6 @@
     <string name="obj_kite">Kite</string>
     <string name="obj_kite_when">100 days of lines in a row</string>
     <string name="obj_kite_line">A hundred days of wind lifted a kite.</string>
-    <string name="defaults">Default view</string>
-    <string name="defaults_unit">Time left in</string>
-    <string name="defaults_grid">One dot on the life calendar</string>
-    <string name="defaults_footer">Changes on Home are just for now.\nNext time, it opens with these.</string>
     <string name="widget_daysLeft_garden">Days left</string>
     <string name="widget_calendar_garden">Life calendar</string>
     <string name="letgo_modalTitle">Kept</string>
@@ -1017,4 +1012,7 @@
     <string name="title_setting">Title screen</string>
     <string name="title_helloFirst">Nice to meet you.</string>
     <string name="mood_readSub">Find the lines you\'ve kept and look back by month and year.</string>
+    <string name="settings_notify">Reminders</string>
+    <string name="settings_garden">Garden</string>
+    <string name="settings_help">Help &amp; support</string>
 </resources>
