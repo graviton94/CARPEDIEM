@@ -381,13 +381,14 @@ fun GazeScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, onBack
     val s = LifeSnapshot(profile.birthDate, profile.expectancy(state.store.table), now)
     var soundOn by remember { mutableStateOf(state.sound != Sound.NONE) }
     val player = remember(soundOn) { Soundscape.Player(if (soundOn) state.sound else Sound.NONE, io.github.graviton94.carpediem.core.GardenDecor.realSeason(now.toLocalDate(), profile.countryCode), gaze = true) }
-    // 소리는 숨이 흐를 때만: 멈추면 스르르 꺼지고, 이어 하면 다시
-    DisposableEffect(player, paused, done) { if (!paused && !done) player.start() else player.stop(); onDispose { player.stop() } }
-    // 앱을 떠나면 (홈 · 화면 끔) 멈춤으로: 소리가 혼자 계속 흐르지 않게 (손끝 숨은 주머니 속에서도 이어지므로 그대로)
-    val owner = androidx.lifecycle.compose.LocalLifecycleOwner.current
-    DisposableEffect(owner, touchOn) {
-        val obs = androidx.lifecycle.LifecycleEventObserver { _, e -> if (e == androidx.lifecycle.Lifecycle.Event.ON_STOP && !touchOn) paused = true }
-        owner.lifecycle.addObserver(obs); onDispose { owner.lifecycle.removeObserver(obs) }
+    // 돌멍하기 소리: 앱을 떠나면 스르르 꺼지고, 돌아오면 다시
+    val gazeOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
+    DisposableEffect(player, gazeOwner) {
+        player.start()
+        val obs = androidx.lifecycle.LifecycleEventObserver { _, e ->
+            if (e == androidx.lifecycle.Lifecycle.Event.ON_STOP) player.stop() else if (e == androidx.lifecycle.Lifecycle.Event.ON_START) player.start()
+        }
+        gazeOwner.lifecycle.addObserver(obs); onDispose { gazeOwner.lifecycle.removeObserver(obs); player.stop() }
     }
     var screenOn by remember { mutableStateOf(true) }
     KeepScreenOn(screenOn)
