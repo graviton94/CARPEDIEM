@@ -977,6 +977,7 @@
     <string name="photo_add">一張照片</string>
     <string name="photo_addToday">為今天附上一張照片</string>
     <string name="photo_remove">移除</string>
+    <string name="photo_change">更換</string>
     <string name="photo_fail">讀不到這張照片，換一張試試？</string>
     <string name="credits_section">這一年的片尾名單</string>
     <string name="credits_sectionSub">像電影結尾一樣，用四季和留下的話回顧一年，大約一分鐘。</string>

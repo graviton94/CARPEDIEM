@@ -975,6 +975,7 @@
 "photo.add" = "一張照片";
 "photo.addToday" = "為今天附上一張照片";
 "photo.remove" = "移除";
+"photo.change" = "更換";
 "photo.fail" = "讀不到這張照片，換一張試試？";
 "credits.section" = "這一年的片尾名單";
 "credits.sectionSub" = "像電影結尾一樣，用四季和留下的話回顧一年，大約一分鐘。";

@@ -978,6 +978,7 @@
     <string name="photo_add">One photo</string>
     <string name="photo_addToday">Add a photo for today</string>
     <string name="photo_remove">Remove</string>
+    <string name="photo_change">Change</string>
     <string name="photo_fail">Couldn\'t read that photo. Try another?</string>
     <string name="credits_section">The year\'s ending credits</string>
     <string name="credits_sectionSub">Your year like the end of a film — four seasons and your lines, about a minute.</string>

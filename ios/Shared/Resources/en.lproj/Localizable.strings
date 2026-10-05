@@ -976,6 +976,7 @@
 "photo.add" = "One photo";
 "photo.addToday" = "Add a photo for today";
 "photo.remove" = "Remove";
+"photo.change" = "Change";
 "photo.fail" = "Couldn't read that photo. Try another?";
 "credits.section" = "The year's ending credits";
 "credits.sectionSub" = "Your year like the end of a film — four seasons and your lines, about a minute.";

@@ -975,6 +975,7 @@
 "photo.add" = "写真を一枚";
 "photo.addToday" = "今日の写真を一枚添える";
 "photo.remove" = "外す";
+"photo.change" = "替える";
 "photo.fail" = "写真を読み込めませんでした。別の写真にしますか？";
 "credits.section" = "一年のエンドロール";
 "credits.sectionSub" = "映画の終わりのように、四季と残したひとことで1分ほど。";

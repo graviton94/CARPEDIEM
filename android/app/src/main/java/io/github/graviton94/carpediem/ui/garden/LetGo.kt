@@ -159,8 +159,14 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
     // 오늘 보낸 한 줄 고치기 (그날 안에만) · 지우기
     var editing by rememberSaveable { mutableStateOf(false) }
     var confirmDelete by remember { mutableStateOf(false) }
+    // 고치는 중에 오늘의 사진을 빼기로 했는지 (저장할 때 반영, 그만두면 그대로)
+    var dropPhoto by rememberSaveable { mutableStateOf(false) }
+    fun stopEditing() {
+        editing = false; text = ""; feeling = null; dropPhoto = false
+        if (state.draftPhoto) { io.github.graviton94.carpediem.data.Photos.dropPending(ctx); state.draftPhoto = false; state.photoKick++ }
+    }
     // 고치는 중에 날이 바뀌었거나 다른 날로 가면 고치기를 그만두고 칸을 비움 (어제 글이 오늘 칸에 남지 않게)
-    if (editing && (!sent || day != null)) { editing = false; text = ""; feeling = null }
+    if (editing && (!sent || day != null)) stopEditing()
     // 이미 보낸 날엔 ‘바로 쓰기’ 표시를 지움 (다음에 칸이 열릴 때 갑자기 키보드가 뜨지 않게)
     if (sent && !editing && state.focusWrite) state.focusWrite = false
     // 쓰는 칸에 커서가 있을 때 뒤로 가기: 먼저 키보드만 내림
@@ -169,20 +175,24 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
     val formView = remember { BringIntoViewRequester() }
     val focusBox = remember { androidx.compose.ui.focus.FocusRequester() }
     val scope = rememberCoroutineScope()
-    // 한 줄에 사진 한 장 (11): 쓰는 중에 골라 두면 보낼 때 그날의 사진으로 · 보낸 뒤에도 그날 안에 붙일 수 있음
+    // 한 줄에 사진 한 장 (11): 쓰는 중에 골라 두면 보낼 때 그날의 사진으로 · 그날 안에는 고치기에서 바꾸거나 뺄 수 있음
     val photoFail = stringResource(R.string.photo_fail)
     val pickDraft = rememberPhotoPicker { uri -> scope.launch {
         val ok = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { io.github.graviton94.carpediem.data.Photos.importPending(ctx, uri) }
         if (ok) { state.draftPhoto = true; state.photoKick++ } else state.say(photoFail)
     } }
-    val pickToday = rememberPhotoPicker { uri -> scope.launch {
-        val ok = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { io.github.graviton94.carpediem.data.Photos.importFor(ctx, uri, today) }
-        if (ok) state.photoKick++ else state.say(photoFail)
-    } }
     fun send() {
         if (text.isBlank()) return
         // 남기지 못했으면 (자정이 지나 고칠 수 없거나 그날이 이미 찼으면) 쓰던 글은 그대로
-        if (editing) { if (state.editToday(text, feeling, today)) { editing = false; text = ""; feeling = null; focus.clearFocus() }; return }
+        if (editing) {
+            if (state.editToday(text, feeling, today)) {
+                // 사진: 새로 골랐으면 바꾸고, 빼기로 했으면 뺌
+                if (state.draftPhoto) state.commitPhoto(today)
+                else if (dropPhoto) { io.github.graviton94.carpediem.data.Photos.remove(ctx, today); state.photoKick++ }
+                editing = false; text = ""; feeling = null; dropPhoto = false; focus.clearFocus()
+            }
+            return
+        }
         val who = to?.takeIf { id -> state.people.any { it.id == id } }
         if (day != null) { if (!state.letGoOn(day, text, feeling, who)) return } else state.letGo(text, feeling, who)
         flying = text.trim()
@@ -310,8 +320,17 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
                 }
                 Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                     // 사진 한 장 (11): 기록을 남길 때만 (끄면 글처럼 사진도 남기지 않음)
-                    if (Theme.garden && state.keepLines && !editing) {
-                        if (state.draftPhoto) {
+                    if (Theme.garden && state.keepLines) {
+                        // 고치는 중: 오늘 붙인 사진이 있으면 바꾸거나 뺄 수 있음 (저장할 때 반영)
+                        val hasToday = remember(state.photoKick, today) { io.github.graviton94.carpediem.data.Photos.has(ctx, today) }
+                        val kept = editing && !dropPhoto && hasToday
+                        if (kept && !state.draftPhoto) {
+                            WeatheredPhoto(state, today, today, u * 56f)
+                            TokenText(stringResource(R.string.photo_change), Tokens.TypeScale.footnote,
+                                Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { pickDraft() }.padding(Tokens.Space.sp3), color = p.olive, weight = FontWeight.SemiBold)
+                            TokenText(stringResource(R.string.photo_remove), Tokens.TypeScale.footnote,
+                                Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { dropPhoto = true }.padding(vertical = Tokens.Space.sp3), color = p.secondary)
+                        } else if (state.draftPhoto) {
                             WeatheredPhoto(state, day ?: today, today, u * 56f, pending = true)
                             TokenText(stringResource(R.string.photo_remove), Tokens.TypeScale.footnote,
                                 Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { io.github.graviton94.carpediem.data.Photos.dropPending(ctx); state.draftPhoto = false }.padding(Tokens.Space.sp3), color = p.secondary)
@@ -322,7 +341,7 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
                 }
                 Action(stringResource(when { editing -> R.string.edit_save; day == null -> R.string.letgo_send; else -> R.string.letgo_daySend }), filled = text.isNotBlank(), seed = 968) { send() }
                 if (editing) TokenText(stringResource(R.string.cancel), Tokens.TypeScale.footnote,
-                    Modifier.fillMaxWidth().heightIn(min = Tokens.Layout.tapTarget).clickable { editing = false; text = ""; feeling = null; focus.clearFocus() }.padding(vertical = Tokens.Space.sp3), color = p.secondary, align = TextAlign.Center)
+                    Modifier.fillMaxWidth().heightIn(min = Tokens.Layout.tapTarget).clickable { stopEditing(); focus.clearFocus() }.padding(vertical = Tokens.Space.sp3), color = p.secondary, align = TextAlign.Center)
                 if (day != null) TokenText(stringResource(R.string.letgo_backToday), Tokens.TypeScale.footnote,
                     Modifier.fillMaxWidth().heightIn(min = Tokens.Layout.tapTarget).clickable { state.writeDay = null }.padding(vertical = Tokens.Space.sp3), color = p.secondary, align = TextAlign.Center)
             }

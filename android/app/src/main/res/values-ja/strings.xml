@@ -977,6 +977,7 @@
     <string name="photo_add">写真を一枚</string>
     <string name="photo_addToday">今日の写真を一枚添える</string>
     <string name="photo_remove">外す</string>
+    <string name="photo_change">替える</string>
     <string name="photo_fail">写真を読み込めませんでした。別の写真にしますか？</string>
     <string name="credits_section">一年のエンドロール</string>
     <string name="credits_sectionSub">映画の終わりのように、四季と残したひとことで1分ほど。</string>

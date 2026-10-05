@@ -978,6 +978,7 @@
     <string name="photo_add">사진 한 장</string>
     <string name="photo_addToday">오늘의 사진 한 장 붙이기</string>
     <string name="photo_remove">빼기</string>
+    <string name="photo_change">바꾸기</string>
     <string name="photo_fail">사진을 읽지 못했어요. 다른 사진으로 해 볼까요?</string>
     <string name="credits_section">한 해의 엔딩 크레딧</string>
     <string name="credits_sectionSub">한 해를 영화가 끝날 때처럼, 네 계절과 남긴 한 줄로 1분 남짓.</string>
