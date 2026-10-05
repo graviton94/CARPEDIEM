@@ -21,6 +21,7 @@ import androidx.glance.appwidget.updateAll
 import androidx.glance.color.ColorProvider
 import androidx.glance.layout.Box
 import androidx.glance.layout.Column
+import androidx.glance.layout.Row
 import androidx.glance.layout.Spacer
 import androidx.glance.layout.fillMaxHeight
 import androidx.glance.layout.fillMaxSize
@@ -59,13 +60,10 @@ object Widgets {
     /** 앱에서 정보가 바뀌면 모든 위젯을 새로 그린다. */
     /**
      * 홈 화면에 위젯 두기 (Android 8+, 런처가 지원할 때): 런처가 ‘추가할까요?’ 를 물음. 지원하지 않으면 false (안내 글로).
-     * kind: days · line · record (위젯은 정원 모양 셋만)
+     * kind: line (남은 날 · 오늘의 한 줄) · record (마음의 기록). 위젯은 이 둘뿐
      */
     fun pin(context: Context, kind: String): Boolean {
-        val cls = when (kind) {
-            "line" -> LineGardenReceiver::class.java; "record" -> RecordReceiver::class.java
-            else -> DaysLeftGardenReceiver::class.java
-        }
+        val cls = if (kind == "record") RecordReceiver::class.java else LineGardenReceiver::class.java
         val mgr = android.appwidget.AppWidgetManager.getInstance(context)
         if (!mgr.isRequestPinAppWidgetSupported) return false
         return runCatching { mgr.requestPinAppWidget(android.content.ComponentName(context, cls), null, null) }.getOrDefault(false)
@@ -76,7 +74,6 @@ object Widgets {
     }
 
     suspend fun updateAll(context: Context) {
-        DaysLeftGardenWidget().updateAll(context)
         LineGardenWidget().updateAll(context)
         RecordWidget().updateAll(context)
     }
@@ -133,17 +130,6 @@ private class WidgetData(context: Context) {
 private val gInk get() = (if (gardenNight) Tokens.Garden.Night.Colors.ink else Tokens.Garden.Colors.ink).let { color(it, it) }
 private val gSub get() = (if (gardenNight) Tokens.Garden.Night.Colors.inkSoft else Tokens.Garden.Colors.inkSoft).let { color(it, it) }
 
-/** 정원 그림 바탕 + 글자. 종이 그림이라 다크 모드에서도 밝게. */
-@Composable
-private fun GardenSurface(context: Context, data: WidgetData, kind: GardenWidgetArt.Kind, content: @Composable () -> Unit) {
-    val size = LocalSize.current
-    val bmp = GardenWidgetArt.render(context, kind, px(context, size.width), px(context, size.height), data.snapshot, data.now)
-    Box(GlanceModifier.fillMaxSize().clickable(actionStartActivity<MainActivity>())) {
-        Image(ImageProvider(bmp), null, GlanceModifier.fillMaxSize(), contentScale = androidx.glance.layout.ContentScale.FillBounds)
-        Box(GlanceModifier.fillMaxSize().padding(Tokens.Layout.widgetPadding)) { content() }
-    }
-}
-
 // ───────────────────────── 공통 ─────────────────────────
 
 private fun color(day: Color, night: Color) = ColorProvider(day, night)
@@ -154,33 +140,10 @@ private fun style(size: androidx.compose.ui.unit.TextUnit, c: androidx.glance.un
 
 private fun px(context: Context, dp: Dp) = max(1, (dp.value * context.resources.displayMetrics.density).toInt())
 
-// ───────────────────────── 남은 날 (2×2) ─────────────────────────
-
-class DaysLeftGardenWidget : GlanceAppWidget() {
-    override val sizeMode = SizeMode.Exact
-
-    override suspend fun provideGlance(context: Context, id: GlanceId) {
-        // 다시 그릴 때마다 새로 읽음 (위젯이 떠 있는 동안 고쳐 그려도 예전 값이 남지 않게)
-        provideContent {
-            val data = WidgetData(context)
-            GardenSurface(context, data, GardenWidgetArt.Kind.DAYS) {
-                val s = data.snapshot
-                if (s == null) Text(context.getString(R.string.widget_empty), style = style(Tokens.TypeScale.caption1.size, gSub))
-                else Column {
-                    Text(Labels.number(s.remaining(data.unit)), style = style((Tokens.TypeScale.largeTitle.size.value * Tokens.Widget.numberScale).sp, gInk, FontWeight.Bold, serif = true), maxLines = 1)
-                    Text(if (data.unit == LifeUnit.DAYS) context.getString(R.string.widget_daysLeft) else Labels.unit(context, data.unit), style = style(Tokens.TypeScale.caption1.size, gSub))
-                }
-            }
-        }
-    }
-}
-
-class DaysLeftGardenReceiver : GlanceAppWidgetReceiver() { override val glanceAppWidget: GlanceAppWidget = DaysLeftGardenWidget() }
-
-// ───────────────────────── 오늘의 한 줄 (3×2) ─────────────────────────
+// ───────────────────────── 남은 날 · 오늘의 한 줄 (4×2) ─────────────────────────
 
 /**
- * 오늘의 한 줄 위젯: 정원 그림 위에 오늘의 문장 한 줄과 ‘오늘의 한 줄 남기기’. 누르면 기록 페이지의 쓰는 칸으로.
+ * 남은 날 · 오늘의 한 줄 위젯 (4×2): 정원 그림 위에 남은 날, 오늘의 문장, ‘오늘의 한 줄 남기기’. 누르면 기록 페이지의 쓰는 칸으로.
  * 남긴 날은 ‘남겼어요’ 한 줄만 (보낸 글은 위젯에 보이지 않음).
  */
 class LineGardenWidget : GlanceAppWidget() {
@@ -202,9 +165,16 @@ class LineGardenWidget : GlanceAppWidget() {
             Box(GlanceModifier.fillMaxSize().clickable(androidx.glance.appwidget.action.actionStartActivity(open))) {
                 Image(ImageProvider(bmp), null, GlanceModifier.fillMaxSize(), contentScale = androidx.glance.layout.ContentScale.FillBounds)
                 Column(GlanceModifier.fillMaxSize().padding(Tokens.Layout.widgetPadding)) {
-                    Text(context.getString(R.string.words), style = style(Tokens.TypeScale.caption1.size, gSub))
-                    // 낮은 위젯 · 큰 글씨에서도 아래 ‘남기기’ 가 잘리지 않게 문장은 두 줄까지
-                    Text(words, style = style(Tokens.TypeScale.subhead.size, gInk, FontWeight.Medium), maxLines = if (size.height < 150.dp) 2 else 3)
+                    // 남은 날: 숫자 하나와 작은 이름 (단위는 앱에서 고른 대로)
+                    data.snapshot?.let { s ->
+                        Row(verticalAlignment = androidx.glance.layout.Alignment.Bottom) {
+                            Text(Labels.number(s.remaining(data.unit)), style = style(Tokens.TypeScale.title2.size, gInk, FontWeight.Bold, serif = true), maxLines = 1)
+                            Spacer(GlanceModifier.width(Tokens.Space.sp1))
+                            Text(if (data.unit == LifeUnit.DAYS) context.getString(R.string.widget_daysLeft) else Labels.unit(context, data.unit), style = style(Tokens.TypeScale.caption1.size, gSub), maxLines = 1)
+                        }
+                    }
+                    // 낮은 위젯 · 큰 글씨에서도 아래 ‘남기기’ 가 잘리지 않게 문장은 한두 줄
+                    Text(words, style = style(Tokens.TypeScale.subhead.size, gInk, FontWeight.Medium), maxLines = if (size.height < 150.dp) 1 else 2)
                     Spacer(GlanceModifier.defaultWeight())
                     Text(context.getString(if (sent) R.string.widget_lineDone else R.string.widget_lineWrite),
                         style = style(Tokens.TypeScale.footnote.size, if (sent) gSub else gInk, if (sent) FontWeight.Normal else FontWeight.Bold))

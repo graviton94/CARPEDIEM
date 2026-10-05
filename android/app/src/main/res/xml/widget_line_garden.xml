@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 오늘의 한 줄: 오늘의 문장과 ‘한 줄 남기기’ (누르면 기록 페이지의 쓰는 칸으로). -->
+<!-- 남은 날 · 오늘의 한 줄 (4×2): 남은 날, 오늘의 문장, ‘한 줄 남기기’ (누르면 기록 페이지의 쓰는 칸으로). -->
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
     android:previewImage="@drawable/widget_preview_line_garden"
     android:description="@string/widget_line_desc"
-    android:minWidth="180dp"
+    android:minWidth="250dp"
     android:minHeight="110dp"
-    android:targetCellWidth="3"
+    android:targetCellWidth="4"
     android:targetCellHeight="2"
-    android:minResizeWidth="110dp"
+    android:minResizeWidth="180dp"
     android:minResizeHeight="110dp"
     android:resizeMode="horizontal|vertical"
     android:updatePeriodMillis="1800000"

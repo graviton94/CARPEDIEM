@@ -47,6 +47,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -376,141 +377,118 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
                 TextButton(onClick = { state.save(draft); state.draft = null; onClose() }) { TokenText(stringResource(R.string.done), Tokens.TypeScale.headline, color = p.olive) }
             }
             ProfileFields(state, draft, { state.draft = it }, onCountry)
-            // 묶음: 알림 → 기록 → 백업 → 정원 (꾸밈 · 가족 · 문장) → 위젯 → 도움 · 응원 → 지우기
+            // 여섯 묶음: 나 → 알림 → 기록 · 백업 → 정원 → 위젯 → 도움 · 응원 (지우기는 기록 · 백업 맨 아래)
+            val sw = SwitchDefaults.colors(checkedTrackColor = p.olive)
+            val chevron: @Composable RowScope.() -> Unit = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null, tint = p.secondary) }
+            // ── 알림: 아침 · 밤 · 가족의 날을 한 묶음으로 ──
             val permission = androidx.activity.compose.rememberLauncherForActivityResult(androidx.activity.result.contract.ActivityResultContracts.RequestPermission()) { ok -> state.changeNotify(ok); if (!ok) blocked = true }
-            fun toggleNotify(on: Boolean) {
-                if (on && android.os.Build.VERSION.SDK_INT >= 33 && !io.github.graviton94.carpediem.notify.Daily.allowed(ctx)) permission.launch(android.Manifest.permission.POST_NOTIFICATIONS)
-                else state.changeNotify(on)
-            }
-            FormSection(header = stringResource(R.string.settings_notify), footer = stringResource(R.string.notify_footer)) {
-                FormRow(stringResource(R.string.notify_row), onClick = { toggleNotify(!state.notify) }) {
-                    Switch(state.notify, { toggleNotify(it) }, colors = SwitchDefaults.colors(checkedTrackColor = p.olive))
-                }
-                // 알림 시각 (켜 두었을 때): 누르면 시각 고르기
+            val eveningPermission = androidx.activity.compose.rememberLauncherForActivityResult(androidx.activity.result.contract.ActivityResultContracts.RequestPermission()) { ok -> state.changeEvening(ok); if (!ok) blocked = true }
+            val tomorrowPermission = androidx.activity.compose.rememberLauncherForActivityResult(androidx.activity.result.contract.ActivityResultContracts.RequestPermission()) { ok -> state.changeTomorrow(ok); if (!ok) blocked = true }
+            fun needsAsk() = android.os.Build.VERSION.SDK_INT >= 33 && !io.github.graviton94.carpediem.notify.Daily.allowed(ctx)
+            fun toggleNotify(on: Boolean) { if (on && needsAsk()) permission.launch(android.Manifest.permission.POST_NOTIFICATIONS) else state.changeNotify(on) }
+            fun toggleEvening(on: Boolean) { if (on && needsAsk()) eveningPermission.launch(android.Manifest.permission.POST_NOTIFICATIONS) else state.changeEvening(on) }
+            fun toggleTomorrow(on: Boolean) { if (on && needsAsk()) tomorrowPermission.launch(android.Manifest.permission.POST_NOTIFICATIONS) else state.changeTomorrow(on) }
+            FormSection(header = stringResource(R.string.settings_notify), footer = stringResource(R.string.settings_notifyFooter)) {
+                FormRow(stringResource(R.string.notify_row), onClick = { toggleNotify(!state.notify) }) { Switch(state.notify, { toggleNotify(it) }, colors = sw) }
                 if (state.notify) {
                     RowDivider()
                     FormRow(stringResource(R.string.notify_time), onClick = { pickTime(ctx, state.morningMinute) { state.changeMorningMinute(it) } }) {
                         TokenText(clockText(ctx, state.morningMinute), Tokens.TypeScale.body, color = p.olive)
                     }
-                }
-                if (Theme.garden && state.notify) {
-                    RowDivider()
-                    FormRow(stringResource(R.string.notify_morningBreath), onClick = { state.changeMorningBreath(!state.morningBreath) }) {
-                        Switch(state.morningBreath, { state.changeMorningBreath(it) }, colors = SwitchDefaults.colors(checkedTrackColor = p.olive))
+                    if (Theme.garden) {
+                        RowDivider()
+                        FormRow(stringResource(R.string.notify_morningBreath), onClick = { state.changeMorningBreath(!state.morningBreath) }) { Switch(state.morningBreath, { state.changeMorningBreath(it) }, colors = sw) }
                     }
                 }
-            }
-            // 하루 정리 알림 (선택, 기본 꺼짐): 밤에 한 번, 오늘 한 줄을 아직 보내지 않은 날에만
-            val eveningPermission = androidx.activity.compose.rememberLauncherForActivityResult(androidx.activity.result.contract.ActivityResultContracts.RequestPermission()) { ok -> state.changeEvening(ok); if (!ok) blocked = true }
-            fun toggleEvening(on: Boolean) {
-                if (on && android.os.Build.VERSION.SDK_INT >= 33 && !io.github.graviton94.carpediem.notify.Daily.allowed(ctx)) eveningPermission.launch(android.Manifest.permission.POST_NOTIFICATIONS)
-                else state.changeEvening(on)
-            }
-            FormSection(footer = stringResource(R.string.notify_eveningFooter)) {
-                FormRow(stringResource(R.string.notify_eveningRow), onClick = { toggleEvening(!state.eveningNotify) }) {
-                    Switch(state.eveningNotify, { toggleEvening(it) }, colors = SwitchDefaults.colors(checkedTrackColor = p.olive))
-                }
+                RowDivider()
+                FormRow(stringResource(R.string.notify_eveningRow), onClick = { toggleEvening(!state.eveningNotify) }) { Switch(state.eveningNotify, { toggleEvening(it) }, colors = sw) }
                 if (state.eveningNotify) {
                     RowDivider()
                     FormRow(stringResource(R.string.notify_time), onClick = { pickTime(ctx, state.eveningMinute) { state.changeEveningMinute(it) } }) {
                         TokenText(clockText(ctx, state.eveningMinute), Tokens.TypeScale.body, color = p.olive)
                     }
                 }
-            }
-            // 내일 알림 (정원, 선택, 기본 꺼짐): 내일이 가족의 생일 · 특별한 날이면 전날 저녁에 한 번
-            if (Theme.garden) {
-                val tomorrowPermission = androidx.activity.compose.rememberLauncherForActivityResult(androidx.activity.result.contract.ActivityResultContracts.RequestPermission()) { ok -> state.changeTomorrow(ok); if (!ok) blocked = true }
-                fun toggleTomorrow(on: Boolean) {
-                    if (on && android.os.Build.VERSION.SDK_INT >= 33 && !io.github.graviton94.carpediem.notify.Daily.allowed(ctx)) tomorrowPermission.launch(android.Manifest.permission.POST_NOTIFICATIONS)
-                    else state.changeTomorrow(on)
-                }
-                FormSection(footer = stringResource(R.string.notify_tomorrowFooter)) {
-                    FormRow(stringResource(R.string.notify_tomorrowRow), onClick = { toggleTomorrow(!state.tomorrowNotify) }) {
-                        Switch(state.tomorrowNotify, { toggleTomorrow(it) }, colors = SwitchDefaults.colors(checkedTrackColor = p.olive))
-                    }
-                }
-            }
-            run {
-                var confirmClear by remember { mutableStateOf(false) }
-                FormSection(header = stringResource(R.string.lines), footer = stringResource(R.string.lines_keepFooter)) {   // 켜고 끄는 이름만으로 알 수 있는 것은 설명을 덧붙이지 않음 (지워지는 것만 알림)
-                    FormRow(stringResource(R.string.lines_keep), onClick = { state.changeKeepLines(!state.keepLines) }) {
-                        Switch(state.keepLines, { state.changeKeepLines(it) }, colors = SwitchDefaults.colors(checkedTrackColor = p.olive))
-                    }
-                    if (Theme.garden) {
-                        RowDivider()
-                        // 오늘의 질문 받기: 끄면 질문 날에도 늘 오늘의 문장
-                        FormRow(stringResource(R.string.question_on), onClick = { state.changeQuestionsOn(!state.questionsOn) }) {
-                            Switch(state.questionsOn, { state.changeQuestionsOn(it) }, colors = SwitchDefaults.colors(checkedTrackColor = p.olive))
-                        }
-                        RowDivider()
-                        // 아침 씨앗 (04): 아침 정원에 작은 다짐 하나
-                        FormRow(stringResource(R.string.seed_setting), onClick = { state.changeSeedsOn(!state.seedsOn) }) {
-                            Switch(state.seedsOn, { state.changeSeedsOn(it) }, colors = SwitchDefaults.colors(checkedTrackColor = p.olive))
-                        }
-                    }
-                    if (Theme.garden) {
-                        RowDivider()
-                        FormRow(stringResource(R.string.care_setting), onClick = { state.changeCare(!state.careOn) }) {
-                            Switch(state.careOn, { state.changeCare(it) }, colors = SwitchDefaults.colors(checkedTrackColor = p.olive))
-                        }
-                    }
+                if (Theme.garden) {
                     RowDivider()
-                    FormRow(stringResource(R.string.lines_export), onClick = {
-                        val text = state.exportLines()
-                        if (text.isBlank()) state.say(ctx.getString(R.string.lines_exportEmpty))
-                        else ctx.startActivity(android.content.Intent.createChooser(android.content.Intent(android.content.Intent.ACTION_SEND).setType("text/plain")
-                            .putExtra(android.content.Intent.EXTRA_SUBJECT, ctx.getString(R.string.lines_exportTitle)).putExtra(android.content.Intent.EXTRA_TEXT, text), null))
-                    }) {
-                        TokenText(stringResource(R.string.lines_count, "${state.lines.count { it.text.isNotBlank() }}"), Tokens.TypeScale.subhead, color = p.secondary)
-                    }
-                    RowDivider()
-                    FormRow(stringResource(R.string.lines_clear), onClick = { confirmClear = true }) {}
-                    if (state.devMode) {
-                        RowDivider()
-                        FormRow(stringResource(R.string.recall_addSample), onClick = { state.addSampleYearAgo() }) {}
-                        RowDivider()
-                        FormRow(stringResource(R.string.recall_addRandom), onClick = { state.addSampleRandom() }) {}
-                        RowDivider()
-                        FormRow(stringResource(R.string.dev_letter), onClick = { state.addSampleLetter() }) {}
-                        RowDivider()
-                        FormRow(stringResource(R.string.dev_year), onClick = { state.addSampleYear() }) {}
-                        RowDivider()
-                        // 아침 · 생일 (내일) · 하루 정리 알림을 지금 한 번씩 (켜 두지 않았어도, 알림 권한만 있으면)
-                        FormRow(stringResource(R.string.dev_notify), onClick = {
-                            io.github.graviton94.carpediem.notify.Daily.post(ctx, force = true)
-                            io.github.graviton94.carpediem.notify.Tomorrow.post(ctx, 1, sample = true)
-                            io.github.graviton94.carpediem.notify.Evening.post(ctx, force = true)
-                        }) {}
-                    }
+                    FormRow(stringResource(R.string.notify_tomorrowRow), onClick = { toggleTomorrow(!state.tomorrowNotify) }) { Switch(state.tomorrowNotify, { toggleTomorrow(it) }, colors = sw) }
                 }
-                if (confirmClear) GardenAlert(
-                    onDismissRequest = { confirmClear = false },
-                    title = { Text(stringResource(R.string.lines_clearConfirm)) },
-                    text = { Text(stringResource(R.string.backup_before)) },
-                    confirmButton = { TextButton(onClick = { confirmClear = false; state.clearLines() }) { Text(stringResource(R.string.lines_clearAction), color = p.danger) } },
-                    dismissButton = { TextButton(onClick = { confirmClear = false; backupNow() }) { Text(stringResource(R.string.backup_first)) } },
-                )
             }
-            // 백업: 새 폰으로 옮기거나 지우기 전에 (모든 것을 파일 하나로)
-            // 백업 권유에서 왔으면 이 묶음이 보이게
+            // ── 기록 · 백업: 남기기 · 내보내기 · 파일로 저장 / 들여오기 · 지우기 ──
+            var confirmClear by remember { mutableStateOf(false) }
+            var pickHelp by remember { mutableStateOf(false) }
+            var restoreFrom by remember { mutableStateOf<android.net.Uri?>(null) }
+            // 들여오기: 저장했던 파일이 보통 있는 ‘다운로드’ 에서 열기
+            val openFile = androidx.activity.compose.rememberLauncherForActivityResult(object : androidx.activity.result.contract.ActivityResultContracts.OpenDocument() {
+                override fun createIntent(context: android.content.Context, input: Array<String>) = super.createIntent(context, input).apply {
+                    putExtra(android.provider.DocumentsContract.EXTRA_INITIAL_URI, android.net.Uri.parse("content://com.android.externalstorage.documents/document/primary%3ADownload"))
+                }
+            }) { uri -> restoreFrom = uri }
             val backupView = remember { androidx.compose.foundation.relocation.BringIntoViewRequester() }
             androidx.compose.runtime.LaunchedEffect(state.settingsFocus) { if (state.settingsFocus == "backup") { kotlinx.coroutines.delay(300); backupView.bringIntoView(); state.settingsFocus = null } }
-            FormSection(header = stringResource(R.string.backup_title), footer = stringResource(R.string.backup_footer), modifier = Modifier.bringIntoViewRequester(backupView)) {
-                var restoreFrom by remember { mutableStateOf<android.net.Uri?>(null) }
-                val openFile = androidx.activity.compose.rememberLauncherForActivityResult(androidx.activity.result.contract.ActivityResultContracts.OpenDocument()) { uri -> restoreFrom = uri }
+            FormSection(header = stringResource(R.string.settings_records), footer = stringResource(R.string.settings_recordsFooter), modifier = Modifier.bringIntoViewRequester(backupView)) {
+                FormRow(stringResource(R.string.lines_keep), onClick = { state.changeKeepLines(!state.keepLines) }) { Switch(state.keepLines, { state.changeKeepLines(it) }, colors = sw) }
+                RowDivider()
                 FormRow(stringResource(R.string.backup_export), onClick = { backupNow() }) {
                     // 마지막으로 저장한 날 (조용한 안심 한 줄)
                     if (lastBackup >= 0) TokenText(stringResource(R.string.backup_last, java.time.LocalDate.ofEpochDay(lastBackup).format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM))), Tokens.TypeScale.footnote, color = p.secondary)
                 }
                 RowDivider()
-                FormRow(stringResource(R.string.backup_import), onClick = { deviceCheck { openFile.launch(arrayOf("application/json", "text/plain", "application/octet-stream")) } }) {}
-                restoreFrom?.let { uri ->
-                    GardenAlert(
-                        onDismissRequest = { restoreFrom = null },
-                        title = { Text(stringResource(R.string.backup_importConfirm)) },
-                        confirmButton = { TextButton(onClick = {
-                            restoreFrom = null
-                            settingsScope.launch {
+                FormRow(stringResource(R.string.backup_import), onClick = { pickHelp = true }, trailing = chevron)
+                RowDivider()
+                FormRow(stringResource(R.string.lines_export), onClick = {
+                    val text = state.exportLines()
+                    if (text.isBlank()) state.say(ctx.getString(R.string.lines_exportEmpty))
+                    else ctx.startActivity(android.content.Intent.createChooser(android.content.Intent(android.content.Intent.ACTION_SEND).setType("text/plain")
+                        .putExtra(android.content.Intent.EXTRA_SUBJECT, ctx.getString(R.string.lines_exportTitle)).putExtra(android.content.Intent.EXTRA_TEXT, text), null))
+                }) {
+                    TokenText(stringResource(R.string.lines_count, "${state.lines.count { it.text.isNotBlank() }}"), Tokens.TypeScale.subhead, color = p.secondary)
+                }
+                RowDivider()
+                FormRow(stringResource(R.string.lines_clear), onClick = { confirmClear = true }) {}
+                RowDivider()
+                FormRow(stringResource(R.string.erase), onClick = { confirmErase = true }) {}
+                if (state.devMode) {
+                    RowDivider()
+                    FormRow(stringResource(R.string.recall_addSample), onClick = { state.addSampleYearAgo() }) {}
+                    RowDivider()
+                    FormRow(stringResource(R.string.recall_addRandom), onClick = { state.addSampleRandom() }) {}
+                    RowDivider()
+                    FormRow(stringResource(R.string.dev_letter), onClick = { state.addSampleLetter() }) {}
+                    RowDivider()
+                    FormRow(stringResource(R.string.dev_year), onClick = { state.addSampleYear() }) {}
+                    RowDivider()
+                    // 아침 · 생일 (내일) · 하루 정리 알림을 지금 한 번씩 (켜 두지 않았어도, 알림 권한만 있으면)
+                    FormRow(stringResource(R.string.dev_notify), onClick = {
+                        io.github.graviton94.carpediem.notify.Daily.post(ctx, force = true)
+                        io.github.graviton94.carpediem.notify.Tomorrow.post(ctx, 1, sample = true)
+                        io.github.graviton94.carpediem.notify.Evening.post(ctx, force = true)
+                    }) {}
+                }
+            }
+            if (confirmClear) GardenAlert(
+                onDismissRequest = { confirmClear = false },
+                title = { Text(stringResource(R.string.lines_clearConfirm)) },
+                text = { Text(stringResource(R.string.backup_before)) },
+                confirmButton = { TextButton(onClick = { confirmClear = false; state.clearLines() }) { Text(stringResource(R.string.lines_clearAction), color = p.danger) } },
+                dismissButton = { TextButton(onClick = { confirmClear = false; backupNow() }) { Text(stringResource(R.string.backup_first)) } },
+            )
+            // 들여오기 전에: 어떤 파일을 골라야 하는지 한 번 알려 줌 (저장할 때의 이름 ‘haru-garden-날짜.json’)
+            if (pickHelp) GardenAlert(
+                onDismissRequest = { pickHelp = false },
+                title = { Text(stringResource(R.string.backup_pickTitle)) },
+                text = { Text(stringResource(R.string.backup_pickHelp)) },
+                confirmButton = { TextButton(onClick = { pickHelp = false; deviceCheck { openFile.launch(arrayOf("application/json", "text/plain", "application/octet-stream")) } }) { Text(stringResource(R.string.backup_pickGo)) } },
+                dismissButton = { TextButton(onClick = { pickHelp = false }) { Text(stringResource(R.string.cancel)) } },
+            )
+            restoreFrom?.let { uri ->
+                val name = remember(uri) { fileName(ctx, uri) }
+                GardenAlert(
+                    onDismissRequest = { restoreFrom = null },
+                    title = { Text(stringResource(R.string.backup_importConfirm)) },
+                    text = { Text(listOfNotNull(name?.let { stringResource(R.string.backup_picked, it) }, stringResource(R.string.backup_notOurs).takeIf { name != null && !name.startsWith("haru") }).joinToString("\n\n")) },
+                    confirmButton = { TextButton(onClick = {
+                        restoreFrom = null
+                        settingsScope.launch {
                             val ok = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { runCatching { ctx.contentResolver.openInputStream(uri)?.use { state.store.restore(it) } }.getOrNull() == true }
                             if (ok) {
                                 state.say(ctx.getString(R.string.backup_done))
@@ -519,12 +497,12 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
                                 // 한마디를 잠깐 보인 뒤에
                                 android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({ (ctx as? android.app.Activity)?.takeIf { !it.isFinishing && !it.isDestroyed }?.recreate() }, (Tokens.Garden.Motion.noteMs / 2).toLong())
                             } else state.say(ctx.getString(R.string.backup_fail))
-                            }
-                        }) { Text(stringResource(R.string.backup_importAction), color = p.danger) } },
-                        dismissButton = { TextButton(onClick = { restoreFrom = null }) { Text(stringResource(R.string.cancel)) } },
-                    )
-                }
+                        }
+                    }) { Text(stringResource(R.string.backup_importAction), color = p.danger) } },
+                    dismissButton = { TextButton(onClick = { restoreFrom = null }) { Text(stringResource(R.string.cancel)) } },
+                )
             }
+            // ── 정원: 디자인 · 내 하루 · 가족 · 정원이 건네는 것 (질문 · 씨앗 · 돌봄) · 문장 언어 ──
             FormSection(header = stringResource(R.string.settings_garden)) {
                 FormRow(stringResource(R.string.design)) {
                     ChipPicker(listOf(Design.GARDEN, Design.GLASS), state.design, { Labels.design(ctx, it) }) { state.changeDesign(it) }
@@ -536,88 +514,61 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
                         TokenText(stringResource(R.string.garden_metOn, state.store.startDate.format(java.time.format.DateTimeFormatter.ofLocalizedDate(java.time.format.FormatStyle.MEDIUM)),
                             Labels.stone(ctx, io.github.graviton94.carpediem.core.HaruShape.traits(state.store.haruSeed).stone.id)), Tokens.TypeScale.footnote, color = p.secondary, maxLines = 2)
                     }
+                    // 가족의 돌: 이름마다 한 줄, 끝에 ‘더하기’
+                    state.people.forEach { person -> RowDivider(); FormRow(person.name, onClick = { onStone(person.id) }, trailing = chevron) }
+                    if (state.people.size < Tokens.Garden.Family.max.toInt() - 1) { RowDivider(); FormRow(stringResource(R.string.family_add), onClick = onAddPerson, trailing = chevron) }
                     RowDivider()
-                    // 하루의 첫 화면: 그날 처음 열 때 한 번
-                    FormRow(stringResource(R.string.title_setting), onClick = { state.changeTitleOn(!state.titleOn) }) {
-                        Switch(state.titleOn, { state.changeTitleOn(it) }, colors = SwitchDefaults.colors(checkedTrackColor = p.olive))
-                    }
+                    FormRow(stringResource(R.string.collection), onClick = onCollection, trailing = chevron)
                     RowDivider()
-                    FormRow(stringResource(R.string.collection), onClick = onCollection) {
-                        Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null, tint = p.secondary)
-                    }
+                    // 하루의 첫 화면
+                    FormRow(stringResource(R.string.title_setting), onClick = { state.changeTitleOn(!state.titleOn) }) { Switch(state.titleOn, { state.changeTitleOn(it) }, colors = sw) }
+                    RowDivider()
+                    // 오늘의 질문 받기: 끄면 질문 날에도 늘 오늘의 문장
+                    FormRow(stringResource(R.string.question_on), onClick = { state.changeQuestionsOn(!state.questionsOn) }) { Switch(state.questionsOn, { state.changeQuestionsOn(it) }, colors = sw) }
+                    RowDivider()
+                    // 아침 씨앗 (04)
+                    FormRow(stringResource(R.string.seed_setting), onClick = { state.changeSeedsOn(!state.seedsOn) }) { Switch(state.seedsOn, { state.changeSeedsOn(it) }, colors = sw) }
+                    RowDivider()
+                    FormRow(stringResource(R.string.care_setting), onClick = { state.changeCare(!state.careOn) }) { Switch(state.careOn, { state.changeCare(it) }, colors = sw) }
                     if (state.devMode) {
                         RowDivider()
-                        FormRow(stringResource(R.string.garden_preview), onClick = { state.changePreviewAll(!state.previewAll) }) {
-                            Switch(state.previewAll, { state.changePreviewAll(it) }, colors = SwitchDefaults.colors(checkedTrackColor = p.olive))
-                        }
+                        FormRow(stringResource(R.string.garden_preview), onClick = { state.changePreviewAll(!state.previewAll) }) { Switch(state.previewAll, { state.changePreviewAll(it) }, colors = sw) }
                     }
                 }
-            }
-            // 가족의 정원 (정원 디자인에서만. 유리 디자인은 안내 한 줄)
-            if (state.design == Design.GARDEN) FormSection(header = stringResource(R.string.family)) {
-                state.people.forEachIndexed { i, person ->
-                    if (i > 0) RowDivider()
-                    FormRow(person.name, onClick = { onStone(person.id) }) { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null, tint = p.secondary) }
-                }
-                if (state.people.size < Tokens.Garden.Family.max.toInt() - 1) {
-                    if (state.people.isNotEmpty()) RowDivider()
-                    FormRow(stringResource(R.string.family_add), onClick = onAddPerson) { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null, tint = p.secondary) }
-                }
-            } else TokenText(stringResource(R.string.family_glassNote), Tokens.TypeScale.footnote, Modifier.padding(horizontal = Tokens.Space.sp4), color = p.secondary)
-            // 문장 언어: 고를 것이 있을 때만 (영어 폰은 영어 하나라 칸째 없음)
-            if (io.github.graviton94.carpediem.data.Words.choosable(ctx)) FormSection(header = stringResource(R.string.words)) {
-                FormRow(stringResource(R.string.words_language)) {
-                    ChipPicker(QuoteLanguage.entries, state.quoteLanguage, { Labels.quoteLanguage(ctx, it) }) { state.changeQuoteLanguage(it) }
-                }
-            }
-            // 위젯: 둘 수 있는 것 (정원) 과 두는 법을 한 묶음으로
-            FormSection(header = stringResource(R.string.widgets)) {
-                if (state.design == Design.GARDEN) {
-                    listOf(R.string.widgets_name_daysLeft to R.string.widget_daysLeft_desc, R.string.widgets_name_line to R.string.widget_line_desc,
-                        R.string.widgets_name_record to R.string.widget_record_desc).forEachIndexed { i, (name, desc) ->
-                        if (i > 0) RowDivider()
-                        Row(Modifier.padding(vertical = Tokens.Space.sp3), verticalAlignment = Alignment.CenterVertically) {
-                            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
-                                TokenText(stringResource(name), Tokens.TypeScale.subhead, weight = FontWeight.SemiBold)
-                                TokenText(stringResource(desc), Tokens.TypeScale.footnote, color = p.secondary)
-                            }
-                            // 런처가 지원하면 바로 홈 화면에 두기
-                            val kind = listOf("days", "line", "record")[i]
-                            TextButton(onClick = { if (!io.github.graviton94.carpediem.widget.Widgets.pin(ctx, kind)) state.say(ctx.getString(R.string.nudge_widgetHow)) }) {
-                                TokenText(stringResource(R.string.widget_pin), Tokens.TypeScale.footnote, color = p.olive, weight = FontWeight.SemiBold)
-                            }
-                        }
-                    }
+                // 문장 언어: 고를 것이 있을 때만 (영어 폰은 영어 하나라 칸째 없음)
+                if (io.github.graviton94.carpediem.data.Words.choosable(ctx)) {
                     RowDivider()
-                }
-                listOf(Icons.Filled.Home to R.string.widgets_android1, Icons.Filled.Search to R.string.widgets_android2, Icons.Filled.Edit to R.string.widgets_android3).forEachIndexed { i, (icon, text) ->
-                    if (i > 0) RowDivider()
-                    Row(Modifier.padding(vertical = Tokens.Space.sp3), horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
-                        Icon(icon, null, tint = p.secondary, modifier = Modifier.size(Tokens.Stroke.icon))
-                        TokenText(stringResource(text), Tokens.TypeScale.footnote, color = p.secondary)
+                    FormRow(stringResource(R.string.words_language)) {
+                        ChipPicker(QuoteLanguage.entries, state.quoteLanguage, { Labels.quoteLanguage(ctx, it) }) { state.changeQuoteLanguage(it) }
                     }
                 }
             }
-            // 도움 · 응원: 안내 다시 보기 · 의견 보내기 (메일에 기기 · 앱 정보만, 기록은 담지 않음) · 응원하기
+            // ── 위젯: 둘 (남은 날 · 오늘의 한 줄 4×2, 마음의 기록). 런처가 바로 두기를 못 하면 두는 법 한 줄 ──
+            if (state.design == Design.GARDEN) FormSection(header = stringResource(R.string.widgets)) {
+                listOf(R.string.widgets_name_line to R.string.widget_line_desc, R.string.widgets_name_record to R.string.widget_record_desc).forEachIndexed { i, (name, desc) ->
+                    if (i > 0) RowDivider()
+                    Row(Modifier.padding(vertical = Tokens.Space.sp3), verticalAlignment = Alignment.CenterVertically) {
+                        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
+                            TokenText(stringResource(name), Tokens.TypeScale.subhead, weight = FontWeight.SemiBold)
+                            TokenText(stringResource(desc), Tokens.TypeScale.footnote, color = p.secondary)
+                        }
+                        val kind = listOf("line", "record")[i]
+                        TextButton(onClick = { if (!io.github.graviton94.carpediem.widget.Widgets.pin(ctx, kind)) state.say(ctx.getString(R.string.nudge_widgetHow)) }) {
+                            TokenText(stringResource(R.string.widget_pin), Tokens.TypeScale.footnote, color = p.olive, weight = FontWeight.SemiBold)
+                        }
+                    }
+                }
+            }
+            // ── 도움 · 응원: 안내 다시 보기 · 의견 보내기 (메일에 기기 · 앱 정보만, 기록은 담지 않음) · 응원하기 ──
             FormSection(header = stringResource(R.string.settings_help), footer = stringResource(R.string.feedback_footer)) {
                 if (state.design == Design.GARDEN) {
-                    FormRow(stringResource(R.string.guide_again), onClick = { state.draft = null; state.restartGuide(); onClose() }) {
-                        Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null, tint = p.secondary)
-                    }
+                    FormRow(stringResource(R.string.guide_again), onClick = { state.draft = null; state.restartGuide(); onClose() }, trailing = chevron)
                     RowDivider()
                 }
-                FormRow(stringResource(R.string.feedback_row), onClick = { if (!io.github.graviton94.carpediem.data.Feedback.send(ctx)) state.say(ctx.getString(R.string.feedback_copied)) }) {
-                    Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null, tint = p.secondary)
-                }
+                FormRow(stringResource(R.string.feedback_row), onClick = { if (!io.github.graviton94.carpediem.data.Feedback.send(ctx)) state.say(ctx.getString(R.string.feedback_copied)) }, trailing = chevron)
                 RowDivider()
-                FormRow(stringResource(R.string.support), onClick = onSupport) {
-                    Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null, tint = p.secondary)
-                }
+                FormRow(stringResource(R.string.support), onClick = onSupport, trailing = chevron)
             }
-            FormSection {
-                FormRow(stringResource(R.string.erase), onClick = { confirmErase = true }) {}
-            }
-            // 맨 아래: 웹사이트 바닥글처럼 소개 · 문의 · 고지사항, 그 아래 버전 (여러 번 누르면 개발자 모드)
             SettingsFooter(onVersionTap = { if (io.github.graviton94.carpediem.BuildConfig.DEV_TOOLS && !state.devMode) { state.unlockDev(); state.say(ctx.getString(R.string.dev_unlocked)) } })
         }
     }
@@ -704,6 +655,11 @@ fun CountryScreen(state: AppState, selected: String, sex: Sex, onPick: (String) 
 }
 
 private enum class FooterPage { ABOUT, CONTACT, NOTICES }
+
+/** 고른 파일의 이름 (들여오기 전에 맞는 파일인지 보이게). */
+private fun fileName(ctx: android.content.Context, uri: android.net.Uri): String? = runCatching {
+    ctx.contentResolver.query(uri, arrayOf(android.provider.OpenableColumns.DISPLAY_NAME), null, null, null)?.use { c -> if (c.moveToFirst()) c.getString(0) else null }
+}.getOrNull()
 
 /** 설정 맨 아래 바닥글: 소개 · 문의 · 고지사항 (누르면 작은 창), 기록은 기기에만 · 버전. */
 @Composable

@@ -222,13 +222,15 @@ internal fun CollectionBody(state: AppState, profile: LifeProfile, now: LocalDat
             }
             detail?.let { dt -> CollectDetailSheet(dt) { detail = null } }
             // ── ② 미래의 나에게 ──
-            KeepsakesSection(state, profile, now, onCredits, KeepPart.FUTURE)
+            Column(Modifier.fillMaxWidth().guideTarget(guide, "mem.future"), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) { KeepsakesSection(state, profile, now, onCredits, KeepPart.FUTURE) }
             // ── ③ 돌아보기 ──
             Spacer(Modifier.height(Tokens.Space.sp4))
-            TokenText(stringResource(R.string.lookback_title), Tokens.TypeScale.title3)
-            TokenText(stringResource(R.string.lookback_sub), Tokens.TypeScale.footnote, color = p.secondary)
+            Column(Modifier.fillMaxWidth().guideTarget(guide, "mem.look"), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
+                TokenText(stringResource(R.string.lookback_title), Tokens.TypeScale.title3)
+                TokenText(stringResource(R.string.lookback_sub), Tokens.TypeScale.footnote, color = p.secondary)
+            }
             var yearSheet by remember { mutableStateOf<Int?>(null) }
-            Box(Modifier.guideTarget(guide, "mem.year")) { GardenYearAlbum(state) { yearSheet = it } }
+            GardenYearAlbum(state) { yearSheet = it }
             yearSheet?.let { y -> GardenYearSheet(state, profile, now, y) { yearSheet = null } }
             KeepsakesSection(state, profile, now, onCredits, KeepPart.LOOKBACK)
             BloomedSeeds(state)

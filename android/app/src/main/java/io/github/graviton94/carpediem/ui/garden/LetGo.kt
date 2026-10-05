@@ -240,7 +240,8 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
             sent && !editing -> {
                 val shown = remember { Animatable(0f) }
                 LaunchedEffect(Unit) { shown.animateTo(1f, tween(G.Motion.pageMs.toInt())) }
-                Column(Modifier.fillMaxWidth().graphicsLayer { alpha = shown.value }, verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
+                // 이미 남긴 날에도 (?) 안내가 비출 자리가 있게: 쓰는 칸 대신 남긴 한 줄 묶음
+                Column(Modifier.fillMaxWidth().guideTarget(guide, "write.box").graphicsLayer { alpha = shown.value }, verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
                     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
                         Feather(u * G.LetGo.feather)
                         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {

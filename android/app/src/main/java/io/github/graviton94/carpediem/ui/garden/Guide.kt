@@ -193,8 +193,8 @@ val PageGuideSteps = mapOf(
     ),
     "memories" to listOf(
         GuideStep("mem.album", R.string.tour_memAlbumTitle, R.string.tour_memAlbum),
-        GuideStep("mem.year", R.string.tour_memYearTitle, R.string.tour_memYear),
-        GuideStep(null, R.string.tour_memMoreTitle, R.string.tour_memMore),
+        GuideStep("mem.future", R.string.tour_memFutureTitle, R.string.tour_memFuture),
+        GuideStep("mem.look", R.string.tour_memLookTitle, R.string.tour_memLook),
     ),
     "flow" to listOf(
         GuideStep("flow.bars", R.string.tour_flowBarsTitle, R.string.tour_flowBars),
