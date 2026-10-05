@@ -1,5 +1,7 @@
 package io.github.graviton94.carpediem.ui.garden
 
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.foundation.border
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.geometry.Offset
@@ -115,32 +117,60 @@ internal fun CollectionBody(state: AppState, profile: LifeProfile, now: LocalDat
     var card by remember { mutableStateOf<Pair<SeasonCard, GardenDecor.SeasonLines?>?>(null) }
     Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp4)) {
             TokenText(stringResource(R.string.collection_sub), Tokens.TypeScale.footnote, Modifier.fillMaxWidth(), color = p.secondary)
-            // ── ① 모은 것: 한 판 ──
+            // ── ① 모은 것: 한 판 (같은 크기 칸, 최근 것부터 여섯, 나머지는 펼쳐서). 칸을 누르면 설명과 얻는 방법 ──
+            val today = now.toLocalDate()
+            val fmt = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
+            val earlier = stringResource(R.string.collect_before)
+            fun dateText(d: java.time.LocalDate?) = d?.format(fmt) ?: earlier
             val tiles = ArrayList<Tile>()
-            // 계절 조각 (최근 해부터, 봄 → 겨울)
-            val here = remember(now.toLocalDate()) { state.decor(profile, s, now.toLocalDate()).card }
+            // 계절 조각
+            val here = remember(today) { state.decor(profile, s, today).card }
             val cards = (if (state.previewAll) io.github.graviton94.carpediem.core.Season.entries.map { SeasonCard(here.year, it, here.tree) } else state.seasonCards.mapNotNull { SeasonCard.parse(it) })
-                .distinctBy { it.year to it.season }.sortedWith(compareByDescending<SeasonCard> { it.year }.thenBy { it.season.ordinal })
+                .distinctBy { it.year to it.season }
             val stats = remember(state.lines, profile.countryCode) { GardenDecor.seasonLines(state.lines, profile.countryCode) }
             cards.forEach { c ->
                 val l = stats[c.year to c.season]
-                tiles += Tile({ Image(GardenArt.card(ctx, c.key), null, Modifier.fillMaxSize()) },
-                    stringResource(R.string.album_cell, "${c.year}", io.github.graviton94.carpediem.ui.Labels.season(ctx, c.season)),
-                    l?.count?.takeIf { it > 0 }?.let { n -> stringResource(R.string.album_lines, "$n") } ?: cardName(ctx, c.key)) { card = c to l }
+                val whenText = stringResource(R.string.album_cell, "${c.year}", io.github.graviton94.carpediem.ui.Labels.season(ctx, c.season))
+                val name = cardName(ctx, c.key)
+                val art: @Composable () -> Unit = { Image(GardenArt.card(ctx, c.key), null, Modifier.fillMaxSize()) }
+                val start = java.time.LocalDate.of(c.year, when (c.season) { io.github.graviton94.carpediem.core.Season.SPRING -> 3; io.github.graviton94.carpediem.core.Season.SUMMER -> 6; io.github.graviton94.carpediem.core.Season.AUTUMN -> 9; else -> 12 }, 1)
+                tiles += Tile(art, name, whenText, start, Detail(art, name,
+                    stringResource(R.string.collect_kindCard) + " · " + whenText + (l?.count?.takeIf { it > 0 }?.let { " · " + stringResource(R.string.album_lines, "$it") } ?: ""),
+                    stringResource(R.string.collect_descCard), stringResource(R.string.collect_how), stringResource(R.string.collect_howCard)))
             }
-            // 정원에 자란 것: 지금 정원에 생긴 것을 그림으로 (나무 · 말뚝에 걸린 것 · 연과 리본 · 이끼 봉오리)
-            val d = remember(now.toLocalDate(), state.lines.size, state.breaths.size) { state.decor(profile, s, now.toLocalDate()) }
+            // 정원에 자란 것 (지금 정원에 있는 것만, 처음 보인 날)
+            val d = remember(today, state.lines.size, state.breaths.size) { state.decor(profile, s, today) }
             val sk = d.season.name.lowercase()
-            val grown = buildList<Grown> {
-                if (d.stage > 0) add(Grown(R.string.decor_new_stage) { Image(GardenArt.image(ctx, "tree_${d.tree.key}_${sk}_${d.stage.coerceIn(0, 3)}.webp"), null, Modifier.fillMaxSize()) })
-                if (d.hang != io.github.graviton94.carpediem.core.Hang.NONE) add(Grown(when (d.hang) { io.github.graviton94.carpediem.core.Hang.BELL -> R.string.decor_new_bell; io.github.graviton94.carpediem.core.Hang.LANTERN -> R.string.decor_new_lantern; else -> R.string.decor_new_chime }) {
-                    Box(Modifier.fillMaxSize()) {
-                        Image(GardenArt.image(ctx, "post_$sk.webp"), null, Modifier.fillMaxSize())
-                        Image(GardenArt.image(ctx, "post_${d.hang.name.lowercase()}.webp"), null, Modifier.fillMaxSize())
-                    }
-                })
-                if (d.kite) add(Grown(R.string.decor_new_kite) { Image(GardenArt.image(ctx, "kite.webp"), null, Modifier.fillMaxSize(0.95f)) })
-                if (d.ribbons.isNotEmpty()) add(Grown(R.string.decor_new_ribbon) {
+            val dates = state.decorDates
+            val grownKind = stringResource(R.string.collect_kindGrown)
+            val how = stringResource(R.string.collect_how)
+            if (d.stage > 0) {
+                val art: @Composable () -> Unit = { Image(GardenArt.image(ctx, "tree_${d.tree.key}_${sk}_${d.stage.coerceIn(0, 3)}.webp"), null, Modifier.fillMaxSize()) }
+                val name = stringResource(treeName(d.tree))
+                val steps = listOf(G.Decor.stageDays1, G.Decor.stageDays2, G.Decor.stageDays3).mapIndexed { i, n -> stringResource(R.string.collect_chipDays, "${n.toInt()}") to (d.stage > i) }
+                tiles += Tile(art, name, dateText(dates["stage"]), dates["stage"], Detail(art, name, grownKind + " · " + dateText(dates["stage"]),
+                    stringResource(R.string.collect_descTree), how, stringResource(R.string.collect_howTree), chips = steps.filterIndexed { i, _ -> i < d.stage }))
+            }
+            if (d.hang != io.github.graviton94.carpediem.core.Hang.NONE) {
+                val art: @Composable () -> Unit = { Box(Modifier.fillMaxSize()) {
+                    Image(GardenArt.image(ctx, "post_$sk.webp"), null, Modifier.fillMaxSize())
+                    Image(GardenArt.image(ctx, "post_${d.hang.name.lowercase()}.webp"), null, Modifier.fillMaxSize())
+                } }
+                val names = listOf(R.string.collect_chime, R.string.collect_bell, R.string.collect_lantern).map { stringResource(it) }
+                val name = names[d.hang.ordinal - 1]
+                val steps = listOf(G.Decor.chimeBreaths, G.Decor.bellBreaths, G.Decor.lanternBreaths).mapIndexed { i, n -> stringResource(R.string.collect_chipHang, "${n.toInt()}", names[i]) to (i == d.hang.ordinal - 1) }
+                tiles += Tile(art, name, dateText(dates["hang"]), dates["hang"], Detail(art, name, stringResource(R.string.collect_kindHang) + " · " + dateText(dates["hang"]),
+                    stringResource(listOf(R.string.collect_descChime, R.string.collect_descBell, R.string.collect_descLantern)[d.hang.ordinal - 1]), how, stringResource(R.string.collect_howHang),
+                    chips = steps.take(d.hang.ordinal)))
+            }
+            if (d.kite) {
+                val art: @Composable () -> Unit = { Image(GardenArt.image(ctx, "kite.webp"), null, Modifier.fillMaxSize(0.95f)) }
+                val name = stringResource(R.string.collect_kite)
+                tiles += Tile(art, name, dateText(dates["kite"]), dates["kite"], Detail(art, name, grownKind + " · " + dateText(dates["kite"]),
+                    stringResource(R.string.collect_descKite), how, stringResource(R.string.collect_howKite, "${G.Decor.kiteLines.toInt()}")))
+            }
+            if (d.ribbons.isNotEmpty()) {
+                val art: @Composable () -> Unit = {
                     androidx.compose.foundation.Canvas(Modifier.fillMaxSize(0.7f)) {
                         val n = d.ribbons.size.coerceAtMost(8); val gap = size.width / (n + 1)
                         d.ribbons.take(8).forEachIndexed { i, f ->
@@ -149,25 +179,48 @@ internal fun CollectionBody(state: AppState, profile: LifeProfile, now: LocalDat
                                 feelingColor(f), style = androidx.compose.ui.graphics.drawscope.Stroke(size.width * 0.045f, cap = androidx.compose.ui.graphics.StrokeCap.Round))
                         }
                     }
-                })
-                if (d.buds > 0) add(Grown(R.string.decor_new_bud) { Image(GardenArt.image(ctx, "moss_${sk}_${d.buds.coerceIn(0, 5)}.webp"), null, Modifier.fillMaxSize()) })
+                }
+                val name = stringResource(R.string.collect_ribbon, "${d.ribbons.size}")
+                tiles += Tile(art, name, dateText(dates["ribbon"]), dates["ribbon"], Detail(art, name, grownKind + " · " + dateText(dates["ribbon"]),
+                    stringResource(R.string.collect_descRibbon), how, stringResource(R.string.collect_howRibbon, "${G.Decor.ribbonLines.toInt()}", "${G.Decor.ribbonMax.toInt()}")))
             }
-            grown.forEach { g -> tiles += Tile(g.art, null, stringResource(g.caption), null) }
-            // 만난 손님 · 순간
+            if (d.buds > 0) {
+                val art: @Composable () -> Unit = { Image(GardenArt.image(ctx, "moss_${sk}_${d.buds.coerceIn(0, 5)}.webp"), null, Modifier.fillMaxSize()) }
+                val name = stringResource(R.string.collect_bud, "${d.buds}")
+                tiles += Tile(art, name, dateText(dates["bud"]), dates["bud"], Detail(art, name, grownKind + " · " + dateText(dates["bud"]),
+                    stringResource(R.string.collect_descBud), how, stringResource(R.string.collect_howBud, "${G.Decor.budGazes.toInt()}", "${G.Decor.budMax.toInt()}")))
+            }
+            // 만난 손님 · 순간 (처음 만난 날, 손님은 온 번수도)
             val met = state.chancesMet.mapNotNull { r -> r.split(':', limit = 2).takeIf { it.size == 2 }?.let { (k, d2) -> runCatching { k to java.time.LocalDate.parse(d2) }.getOrNull() } }
                 .sortedBy { it.second }.distinctBy { it.first }
             met.forEach { (k, day) ->
                 val name = ctx.resources.getIdentifier("chance_$k", "string", ctx.packageName).takeIf { it != 0 }?.let { ctx.getString(it) } ?: k
-                tiles += Tile({ MetArt(k, sk) }, name, day.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)), null)
+                fun res(n: String) = ctx.resources.getIdentifier(n, "string", ctx.packageName).takeIf { it != 0 }?.let { ctx.getString(it) }.orEmpty()
+                val guest = k.startsWith("guest_")
+                val art: @Composable () -> Unit = { MetArt(k, sk) }
+                val visits = state.guestVisits[k.removePrefix("guest_")]?.takeIf { guest && it > 1 }
+                val sub = listOfNotNull(stringResource(R.string.collect_firstMet, day.format(fmt)), visits?.let { stringResource(R.string.collect_visits, "$it") }).joinToString(" · ")
+                tiles += Tile(art, name, day.format(fmt), day, Detail(art, name, sub, res("collect_desc_$k"),
+                    stringResource(if (guest) R.string.collect_meet else R.string.collect_how),
+                    if (guest) stringResource(R.string.collect_howGuest) else res("collect_how_$k"),
+                    note = if (guest) stringResource(R.string.collect_howGuestRare) else null))
             }
-            // 첫 정원: 한지 정원 전에 받은 옛 꾸밈
+            // 첫 정원 (옛 꾸밈): 원래의 한 장 (생긴 날 · 그날의 한 줄)
             moments.filter { state.previewAll || it.date.isBefore(io.github.graviton94.carpediem.core.Moments.LEGACY_UNTIL) }.forEach { m ->
-                tiles += Tile({ Image(GardenArt.obj(ctx, m.id), null, Modifier.fillMaxSize()) }, stringResource(objName(m.id)), m.date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM))) { open = m }
+                tiles += Tile({ Image(GardenArt.obj(ctx, m.id), null, Modifier.fillMaxSize()) }, stringResource(objName(m.id)), m.date.format(fmt), m.date, null) { open = m }
             }
+            val sorted = tiles.sortedByDescending { it.date ?: java.time.LocalDate.MIN }
+            var all by rememberSaveable { mutableStateOf(false) }
+            var detail by remember { mutableStateOf<Detail?>(null) }
+            val shown = if (all) sorted else sorted.take(COLLECT_FIRST)
             Column(Modifier.fillMaxWidth().guideTarget(guide, "mem.album"), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
-                if (tiles.isEmpty()) TokenText(stringResource(R.string.collection_empty), Tokens.TypeScale.callout.serif(), Modifier.fillMaxWidth().padding(vertical = Tokens.Space.sp4), color = p.secondary, align = TextAlign.Center)
-                else TileGrid(tiles.size) { i -> val t = tiles[i]; CollectionTile(900 + i, t.art, t.title, t.caption, t.onClick) }
+                if (sorted.isEmpty()) TokenText(stringResource(R.string.collection_empty), Tokens.TypeScale.callout.serif(), Modifier.fillMaxWidth().padding(vertical = Tokens.Space.sp4), color = p.secondary, align = TextAlign.Center)
+                else TileGrid(shown.size) { i -> val t = shown[i]; CollectionTile(900 + i, t.art, t.title, t.dateText, t.onClick ?: { detail = t.detail }) }
+                if (sorted.size > COLLECT_FIRST) Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                    GardenChip(if (all) stringResource(R.string.collect_less) else stringResource(R.string.collect_more, "${sorted.size}"), false, 899) { all = !all }
+                }
             }
+            detail?.let { dt -> CollectDetailSheet(dt) { detail = null } }
             // ── ② 미래의 나에게 ──
             KeepsakesSection(state, profile, now, onCredits, KeepPart.FUTURE)
             // ── ③ 돌아보기 ──
@@ -329,15 +382,19 @@ private fun TileGrid(count: Int, tile: @Composable (Int) -> Unit) {
     }
 }
 
-/** 모은 것 한 칸: 그림 (정사각) · 이름 · 작은 글. */
+/** 모은 것 한 칸: 같은 높이. 그림 (정사각) · 이름 한 줄 (길면 …) · 날짜 한 줄, 오른쪽 위 (?) (누르면 상세). */
 @Composable
-private fun CollectionTile(seed: Int, art: @Composable () -> Unit, title: String?, caption: String, onClick: (() -> Unit)? = null) {
+private fun CollectionTile(seed: Int, art: @Composable () -> Unit, title: String, date: String, onClick: () -> Unit) {
     val u = Theme.unit
-    Column(Modifier.fillMaxWidth().crayonBox(null, G.Radius.box, G.Stroke.chip, seed).then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier).padding(Tokens.Space.sp2),
-        horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
-        Box(Modifier.size(u * G.Layout.collectionCell * 0.72f), contentAlignment = Alignment.Center) { art() }
-        title?.let { TokenText(it, Tokens.TypeScale.subhead, weight = FontWeight.SemiBold, align = TextAlign.Center) }
-        TokenText(caption, Tokens.TypeScale.caption2, color = Theme.palette.secondary, align = TextAlign.Center, maxLines = 3)
+    val p = Theme.palette
+    Box(Modifier.fillMaxWidth().height(u * COLLECT_TILE_H).crayonBox(null, G.Radius.box, G.Stroke.chip, seed).clickable(onClick = onClick)) {
+        Column(Modifier.fillMaxSize().padding(horizontal = Tokens.Space.sp2, vertical = Tokens.Space.sp2), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
+            Box(Modifier.size(u * 64f), contentAlignment = Alignment.Center) { art() }
+            TokenText(title, Tokens.TypeScale.footnote, Modifier.fillMaxWidth(), weight = FontWeight.SemiBold, align = TextAlign.Center, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
+            TokenText(date, Tokens.TypeScale.caption2, color = p.secondary, align = TextAlign.Center, maxLines = 1)
+        }
+        TokenText("?", Tokens.TypeScale.caption2, Modifier.align(Alignment.TopEnd).padding(Tokens.Space.sp1).size(u * 16f)
+            .border(u * 1.2f, p.secondary.copy(alpha = 0.6f), androidx.compose.foundation.shape.CircleShape), color = p.secondary, align = TextAlign.Center)
     }
 }
 
@@ -367,5 +424,38 @@ private fun MetArt(key: String, season: String) {
 /** 정원에 자란 것 한 칸: 그림과 생겼을 때의 한 줄. */
 private class Grown(val caption: Int, val art: @Composable () -> Unit)
 
-/** 모은 것 한 칸의 내용. */
-private class Tile(val art: @Composable () -> Unit, val title: String?, val caption: String, val onClick: (() -> Unit)?)
+/** 모은 것 한 칸: 그림 · 이름 · 날짜, 누르면 상세 (옛 꾸밈은 원래의 한 장). date = 줄 세우는 날 (없으면 맨 뒤). */
+private class Tile(val art: @Composable () -> Unit, val title: String, val dateText: String, val date: java.time.LocalDate?, val detail: Detail?, val onClick: (() -> Unit)? = null)
+
+/** (?) 상세: 큰 그림 · 이름 · 종류와 날짜 · 설명 · 얻는 방법 (단계가 있으면 지나온 단계 칩, 지금 것만 진하게). 아직 얻지 않은 것은 보이지 않음. */
+private class Detail(val art: @Composable () -> Unit, val name: String, val sub: String, val desc: String, val howTitle: String, val how: String,
+                     val chips: List<Pair<String, Boolean>> = emptyList(), val note: String? = null)
+
+private const val COLLECT_FIRST = 6
+private const val COLLECT_TILE_H = 120f
+
+@OptIn(ExperimentalMaterial3Api::class, androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
+@Composable
+private fun CollectDetailSheet(d: Detail, onClose: () -> Unit) {
+    val p = Theme.palette
+    val u = Theme.unit
+    ModalBottomSheet(onDismissRequest = onClose, containerColor = Theme.gc.paper, sheetState = androidx.compose.material3.rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
+        Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(horizontal = Theme.deviceClass.pageMargin).navigationBarsPadding().padding(bottom = Tokens.Space.sp6),
+            horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
+            Box(Modifier.size(u * 120f), contentAlignment = Alignment.Center) { d.art() }
+            TokenText(d.name, Tokens.TypeScale.title3.serif(), align = TextAlign.Center)
+            TokenText(d.sub, Tokens.TypeScale.footnote, color = p.secondary, align = TextAlign.Center)
+            if (d.desc.isNotEmpty()) TokenText(d.desc, Tokens.TypeScale.callout, Modifier.fillMaxWidth().padding(top = Tokens.Space.sp2), align = TextAlign.Center)
+            CrayonRule(Modifier.padding(vertical = Tokens.Space.sp2), seed = 1730)
+            Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
+                TokenText(d.howTitle, Tokens.TypeScale.footnote, color = p.olive, weight = FontWeight.SemiBold)
+                if (d.how.isNotEmpty()) TokenText(d.how, Tokens.TypeScale.subhead)
+                d.note?.let { TokenText(it, Tokens.TypeScale.footnote, color = p.secondary) }
+                if (d.chips.isNotEmpty()) androidx.compose.foundation.layout.FlowRow(Modifier.padding(top = Tokens.Space.sp1), horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
+                    d.chips.forEachIndexed { i, (label, now) -> GardenChip(label, now, 1740 + i) {} }
+                }
+            }
+            GardenButton(stringResource(R.string.collect_close), onClose, filled = false, seed = 1750, modifier = Modifier.fillMaxWidth().padding(top = Tokens.Space.sp3))
+        }
+    }
+}

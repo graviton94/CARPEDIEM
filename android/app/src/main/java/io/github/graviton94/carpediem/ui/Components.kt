@@ -67,9 +67,10 @@ fun TokenText(
     align: TextAlign? = null,
     maxLines: Int = Int.MAX_VALUE,
     onTextLayout: ((TextLayoutResult) -> Unit)? = null,
+    overflow: androidx.compose.ui.text.style.TextOverflow = androidx.compose.ui.text.style.TextOverflow.Clip,
 ) {
     val style = token.style(text).let { if (weight != null) it.copy(fontWeight = weight) else it }.copy(lineBreak = WordLineBreak)
-    Text(text, modifier, color = color, style = style, textAlign = align, maxLines = maxLines, onTextLayout = onTextLayout ?: {})
+    Text(text, modifier, color = color, style = style, textAlign = align, maxLines = maxLines, overflow = overflow, onTextLayout = onTextLayout ?: {})
 }
 
 /** 화면 위쪽에서 햇빛처럼 번지는 배경. 정원 디자인은 종이 위 하늘빛. */

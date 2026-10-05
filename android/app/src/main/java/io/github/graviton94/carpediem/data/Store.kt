@@ -417,6 +417,14 @@ class Store(context: Context) {
     var decorSeen: String?
         get() = prefs.getString("decorSeen", null)
         set(v) = prefs.edit().putString("decorSeen", v).apply()
+    /** 정원에 자란 것이 처음 보인 날 (stage · hang · kite · ribbon · bud → 그날). 모은 것의 날짜. 기록 전부터 있던 것은 없음 (‘이전에’). */
+    var decorDates: Map<String, LocalDate>
+        get() = prefs.getString("decorDates", "").orEmpty().split(',').mapNotNull { e -> e.split(':').takeIf { it.size == 2 }?.let { (k, d) -> d.toLongOrNull()?.let { k to LocalDate.ofEpochDay(it) } } }.toMap()
+        set(v) = prefs.edit().putString("decorDates", v.entries.joinToString(",") { "${it.key}:${it.value.toEpochDay()}" }).apply()
+    /** 손님이 놀러 온 날 수 (손님 → 번). */
+    var guestVisits: Map<String, Int>
+        get() = prefs.getString("guestVisits", "").orEmpty().split(',').mapNotNull { e -> e.split(':').takeIf { it.size == 2 }?.let { (k, n) -> n.toIntOrNull()?.let { k to it } } }.toMap()
+        set(v) = prefs.edit().putString("guestVisits", v.entries.joinToString(",") { "${it.key}:${it.value}" }).apply()
 
     // ───── 숨 ─────
     /** 숨 쉰 날과 종류 (시간 · 횟수는 세지 않음). */

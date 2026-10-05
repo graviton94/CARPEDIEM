@@ -149,6 +149,7 @@ class AppState(private val context: Context) {
     fun greeted(today: LocalDate) {
         store.greetedOn = today
         val g = guest ?: return
+        val v = store.guestVisits.toMutableMap(); v[g] = (v[g] ?: 0) + 1; store.guestVisits = v; guestVisits = v
         if (chancesMet.none { it.startsWith("guest_$g:") }) { val n = chancesMet + "guest_$g:$today"; store.chancesMet = n; chancesMet = n }
     }
     /** 첫 화면 (타이틀) 이 떠 있는 동안: 한 번만 보이는 것 (한마디 · 우연한 순간 · 문장 타자) 은 걷힌 뒤에. */
@@ -622,11 +623,26 @@ class AppState(private val context: Context) {
         return if (!previewAll) d else d.copy(stage = 3, hang = Hang.LANTERN, kite = true, ribbons = Feeling.entries.toList() + null, buds = rules.budMax)
     }
     /** 정원을 열 때: 이번 계절의 한 장을 받고, 지난번에 본 것보다 새로 생긴 것이 있으면 한 줄로 알림 (처음엔 조용히 기억만). */
+    var decorDates by mutableStateOf(store.decorDates)
+        private set
+    var guestVisits by mutableStateOf(store.guestVisits)
+        private set
     fun noticeDecor(d: Decor) {
         if (previewAll) return
         if (d.card.id !in seasonCards) { val next = seasonCards + d.card.id; store.seasonCards = next; seasonCards = next }
         val now = listOf(d.stage, d.tree.ordinal, d.hang.ordinal, if (d.kite) 1 else 0, d.ribbons.size, d.buds).joinToString(",") + "," + d.card.id + "," + (if (d.letter) 1 else 0)
         val before = store.decorSeen; store.decorSeen = now
+        // 새로 생긴 것은 그날을 적어 둠 (모은 것의 날짜). 처음 보는 기록 (앱을 고친 뒤 첫 열기) 은 그 전부터 있던 것이라 적지 않음
+        if (before != null && before != now) {
+            val b0 = before.split(","); fun was(i: Int) = b0.getOrNull(i)?.toIntOrNull() ?: 0
+            val today = nowDate(); val dates = store.decorDates.toMutableMap()
+            if (d.stage > was(0)) dates["stage"] = today
+            if (d.hang.ordinal > was(2)) dates["hang"] = today
+            if (d.kite && was(3) == 0) dates["kite"] = today
+            if (d.ribbons.size > was(4)) dates["ribbon"] = today
+            if (d.buds > was(5)) dates["bud"] = today
+            if (dates != store.decorDates) { store.decorDates = dates; decorDates = dates }
+        }
         // 상태 알림 (위 알약) 은 내가 한 일의 대답에만. 정원에 새로 생긴 것은 그림이 스스로 말하게 (자리만 기억)
         if (before == null || before == now || !DECOR_SAYS) return
         val b = before.split(","); fun n(i: Int) = b.getOrNull(i)?.toIntOrNull() ?: 0
