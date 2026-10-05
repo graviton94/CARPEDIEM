@@ -205,6 +205,13 @@ internal fun CollectionBody(state: AppState, profile: LifeProfile, now: LocalDat
                     if (guest) stringResource(R.string.collect_howGuest) else res("collect_how_$k"),
                     note = if (guest) stringResource(R.string.collect_howGuestRare) else null))
             }
+            // 하루가 준 조약돌: 받은 날마다 한 장
+            state.pebbles.forEach { d ->
+                val art: @Composable () -> Unit = { PebbleArt() }
+                val nm = stringResource(R.string.pebble_name)
+                tiles += Tile(art, nm, d.format(fmt), d, Detail(art, nm, stringResource(R.string.collect_firstMet, d.format(fmt)), stringResource(R.string.pebble_desc),
+                    stringResource(R.string.collect_how), stringResource(R.string.pebble_how)))
+            }
             // 첫 정원 (옛 꾸밈): 원래의 한 장 (생긴 날 · 그날의 한 줄)
             moments.filter { state.previewAll || it.date.isBefore(io.github.graviton94.carpediem.core.Moments.LEGACY_UNTIL) }.forEach { m ->
                 tiles += Tile({ Image(GardenArt.obj(ctx, m.id), null, Modifier.fillMaxSize()) }, stringResource(objName(m.id)), m.date.format(fmt), m.date, null) { open = m }
@@ -414,5 +421,20 @@ private fun CollectDetailSheet(d: Detail, onClose: () -> Unit) {
             }
             GardenButton(stringResource(R.string.collect_close), onClose, filled = false, seed = 1750, modifier = Modifier.fillMaxWidth().padding(top = Tokens.Space.sp3))
         }
+    }
+}
+
+/** 하루가 준 조약돌 (모은 것 칸 · 상세의 그림): 회갈색 조약돌 하나와 작은 빛. */
+@Composable
+internal fun PebbleArt() {
+    val ink = Theme.gc.ink
+    androidx.compose.foundation.Canvas(Modifier.fillMaxSize().padding(Tokens.Space.sp4)) {
+        val w = size.minDimension; val h = w * 0.66f
+        val tl = androidx.compose.ui.geometry.Offset((size.width - w) / 2, (size.height - h) / 2 + h * 0.15f)
+        val sz = androidx.compose.ui.geometry.Size(w, h)
+        drawOval(androidx.compose.ui.graphics.Color(0xFFA29A8B), tl, sz)
+        drawOval(ink, tl, sz, style = androidx.compose.ui.graphics.drawscope.Stroke(w * 0.05f))
+        drawArc(androidx.compose.ui.graphics.Color.White.copy(alpha = 0.5f), 200f, 70f, false, tl + androidx.compose.ui.geometry.Offset(w * 0.2f, h * 0.18f),
+            androidx.compose.ui.geometry.Size(w * 0.5f, h * 0.5f), style = androidx.compose.ui.graphics.drawscope.Stroke(w * 0.035f))
     }
 }

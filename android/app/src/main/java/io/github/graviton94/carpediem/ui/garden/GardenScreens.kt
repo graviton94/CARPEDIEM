@@ -209,6 +209,8 @@ private fun Modifier.pageTurn(pager: androidx.compose.foundation.pager.PagerStat
 /** 이 시각부터 정원 위쪽에 ‘하루 닫기’ (밤 nightFrom 전이라도). */
 /** 하루 닫기 입구가 보이기 시작하는 시각 (잠들기 전에만, 저녁 내내 걸려 있지 않게). */
 private const val CLOSE_DAY_FROM = 21
+/** 생일 축하 가락의 첫머리 (시작 ms, 반음): 솔 솔 라 솔 도 시. */
+private val BDAY_MOTIF = listOf(0f to 0, 280f to 0, 560f to 2, 980f to 0, 1400f to 5, 1820f to 4)
 
 /** 정원 아래 작은 한 줄: 깃털과 함께 ‘돌아온 한 줄’을 알림. */
 @Composable
@@ -247,6 +249,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
     var decorOpen by remember { mutableStateOf<DecorPart?>(null) }
     var breathSheet by remember { mutableStateOf(false) }
     var askBreath by remember { mutableStateOf<Pair<BreathKind, Int>?>(null) }
+    var slipOpen by remember { mutableStateOf<String?>(null) }   // 쪽지를 물고 온 손님 (펼친 동안)
     val sleepy = !bare && isNight(now)
     // 캡처용: 이번 달 편지를 바로 펼침. 고르기만 그리기 중에, ‘연 편지’로 남기기는 그 뒤에
     var gardenYearOpen by remember { mutableStateOf<Int?>(if (state.debugGardenYear && !bare) now.year else null) }
@@ -496,13 +499,22 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 val heavyToday = todayLine?.feeling in io.github.graviton94.carpediem.core.Letters.HEAVY
                 // 노래하는 돌: 하루를 길게 누르면 한 음, 가족 돌들이 왼쪽부터 차례로 저마다의 음으로 대답 (빛 동그라미 + 살짝 뜀)
                 val S = G.Song
-                val singOrder = listOf(0) + slots.indices.drop(1).sortedBy { xs[it].value }
-                fun startAt(i: Int): Float { val k = singOrder.indexOf(i); return if (k <= 0) 0f else S.firstMs + (k - 1) * S.gapMs }
+                // 누군가의 생일 (당일): 생일 돌이 먼저 짧은 축하 가락을 부르고, 다른 돌들이 차례로 따라 부름
+                val bdayIdx = slots.indices.firstOrNull { slots[it].soon == 0 }
+                val singOrder = if (bdayIdx != null) listOf(bdayIdx) + slots.indices.filter { it != bdayIdx }.sortedBy { xs[it].value }
+                    else listOf(0) + slots.indices.drop(1).sortedBy { xs[it].value }
+                val lead = if (bdayIdx != null) BDAY_MOTIF.last().first + S.firstMs else S.firstMs
+                fun startAt(i: Int): Float { val k = singOrder.indexOf(i); return if (k <= 0) 0f else lead + (k - 1) * S.gapMs }
                 fun slotSeed(i: Int): Long = slots[i].id?.let { id -> state.people.firstOrNull { it.id == id }?.seed } ?: state.store.haruSeed
                 val song = remember { androidx.compose.animation.core.Animatable(-1f) }   // 노래가 시작된 뒤 지난 ms (-1 = 쉼)
                 fun sing() {
                     val total = startAt(singOrder.last()) + S.ringMs
-                    if (state.sound != Sound.NONE) io.github.graviton94.carpediem.sound.StoneSong.play(singOrder.map { i -> io.github.graviton94.carpediem.sound.StoneSong.pitch(slotSeed(i), i == 0) to startAt(i).toLong() })
+                    val song0 = io.github.graviton94.carpediem.sound.StoneSong
+                    if (state.sound != Sound.NONE) song0.play(singOrder.flatMap { i ->
+                        val p0 = song0.pitch(slotSeed(i), i == 0)
+                        if (i == bdayIdx) BDAY_MOTIF.map { (at, semi) -> p0 * Math.pow(2.0, semi / 12.0) to at.toLong() }
+                        else listOf(p0 to startAt(i).toLong())
+                    })
                     scope.launch { song.snapTo(0f); song.animateTo(total, androidx.compose.animation.core.tween(total.toInt(), easing = androidx.compose.animation.core.LinearEasing)); song.snapTo(-1f) }
                 }
                 val hopPx = with(density) { (u * S.hop).toPx() }
@@ -519,7 +531,28 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                             transformOrigin = androidx.compose.ui.graphics.TransformOrigin(0.5f, sl.art.meta.ground / sl.art.meta.box); scaleY = 1f + Tokens.Garden.Gaze.swell * b; scaleX = 1f + Tokens.Garden.Gaze.swell * 0.4f * b }
                     }, blinkKick = if (sl.id == null) state.blinkKick else 0, hat = sl.birthday, tiltOn = sl.id == null, lookDown = if (sl.id == null && heavyToday) G.Care.lookDown else 0f,
                         a11y = stringResource(R.string.garden_stoneA11y, sl.name, Labels.stone(ctx, sl.art.meta.stone)), onOpen = { onStone(sl.id) },
-                        onLongPress = if (sl.id == null && !bare) ({ sing() }) else null)
+                        onLongPress = if (sl.id == null && !bare) ({ sing() }) else null,
+                        // 내 하루는 오늘을 앎: 보낸 한 줄의 마음 · 밤
+                        mood = if (sl.id != null || bare) HaruMood.CALM else when (todayLine?.feeling) {
+                            in io.github.graviton94.carpediem.core.Letters.HEAVY -> HaruMood.HEAVY
+                            io.github.graviton94.carpediem.core.Feeling.JOY, io.github.graviton94.carpediem.core.Feeling.HOPE, io.github.graviton94.carpediem.core.Feeling.THANKS -> HaruMood.JOY
+                            else -> HaruMood.CALM },
+                        sleepy = sl.id == null && !bare && isNight(now),
+                        onPet = if (sl.id == null && !bare) ({ state.pettedHaru(day0) }) else null)
+                    // 하루가 준 조약돌: 아주 가끔 발치에 하나 (누르면 주워서 ‘모은 것’ 에)
+                    if (sl.id == null && !bare && state.pebbleOffered == day0) {
+                        val pw = u * 9f
+                        val pebbleLabel = stringResource(R.string.pebble_a11y)
+                        val tookMsg = stringResource(R.string.pebble_taken)
+                        androidx.compose.foundation.Canvas(Modifier.offset(cx + sl.scale * (sl.art.meta.bbox.width / 2) + u * 2f, gy - pw * 0.6f).size(pw, pw * 0.66f)
+                            .semantics { contentDescription = pebbleLabel }
+                            .clickable { state.takePebble(day0); state.say(tookMsg) }) {
+                            drawOval(Color(0xFFA29A8B), size = size)
+                            drawOval(G.Colors.ink, size = size, style = androidx.compose.ui.graphics.drawscope.Stroke(size.width * 0.09f))
+                            drawArc(Color.White.copy(alpha = 0.5f), 200f, 70f, false, topLeft = androidx.compose.ui.geometry.Offset(size.width * 0.2f, size.height * 0.18f),
+                                size = androidx.compose.ui.geometry.Size(size.width * 0.5f, size.height * 0.5f), style = androidx.compose.ui.graphics.drawscope.Stroke(size.width * 0.06f))
+                        }
+                    }
                     // 생일 당일: 돌 앞에 작은 케이크 (전날 저녁엔 모자만)
                     if (sl.soon == 0) {
                         val cw = u * Tokens.Garden.Party.cakeWidth
@@ -557,7 +590,9 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 if (!bare) SnailGuest(state.store.snailAt, now, gy, u * G.Decor.treeX)
                 // 정원 손님 (우연히 놀러 온 날): 그날마다 다른 자리. 어느 돌 위 · 돌 사이 빈 땅 · 줄의 양 끝 가운데 하나 (날마다 정해져, 하루 안에선 그대로).
                 // 돌 얼굴을 가리지 않게 땅은 빈 틈이 넉넉할 때만, 고깔 쓴 돌 · 새싹 난 하루 위는 피함.
-                if (!bare) state.guest?.let { g ->
+                // 지난 한 줄이 돌아온 날엔 손님이 쪽지를 물고 옴 (그날 손님이 없으면 박새나 다람쥐가)
+                val carried = if (bare) null else state.carriedLine(day0)
+                if (!bare) state.carrier(day0)?.let { g ->
                     val gw = u * 40f
                     val order = slots.indices.sortedBy { xs[it].value }
                     fun edgeL(i: Int) = xs[i] - (widths[i].toFloat() / 2).dp
@@ -570,7 +605,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                         if (x1 + u * 8f - edgeR(order.last()) >= gw * 0.9f) add(edgeR(order.last()) + gw * 0.55f to gy + u * 2f)
                     }.ifEmpty { listOf(edgeR(order.last()) + gw * 0.55f to gy + u * 2f) }
                     val (gx, gyy) = spots[Math.floorMod(day0.toEpochDay() * 31 + g.hashCode(), spots.size.toLong()).toInt()]
-                    GuestFigure(g, gx, gyy, screenW)
+                    GuestFigure(g, gx, gyy, screenW, letter = carried != null, onLetter = { slipOpen = g })
                 }
 
                 // 우연한 순간 (한 번에 하나, 몇 초 뒤 사라짐)
@@ -605,11 +640,6 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                     // 계절의 편지는 말뚝에 꽂힌 봉투로 (누르면 펼침). 여기엔 지난 해 · 지난 달의 정원만
                     val year = if (bday == null) state.yearDue(today) else null; val month = if (bday == null && year == null) state.monthDue(today) else null
                     val gardenYear = if (bday == null && year == null && month == null) state.gardenYearDue(today) else null
-                    // 돌아온 한 줄 (몇 해 전 오늘 · 문득): 정원에서도 알 수 있게, 누르면 기록 페이지에서 펼쳐 봄
-                    val recall = remember(state.lines, today, state.randomLine) {
-                        io.github.graviton94.carpediem.core.Lines.yearsAgo(state.lines, today).firstOrNull()?.first?.let { ctx.getString(R.string.recall_notify, "$it") }
-                            ?: state.randomLine?.let { ctx.getString(R.string.recall_randomNotify) }
-                    }
                     // 열린 항아리 (10) · 생일 아침의 나이테 (07): 생일 한 줄보다 먼저 (생일이면 같은 아침에 열림)
                     val capsule = state.capsuleDue(today)
                     val creditsYear = state.creditsDue(today)
@@ -636,7 +666,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                         // 아침 씨앗 (04): 아침에 한 줄로, 누르면 고르는 장
                         state.seedDue(now) && !touring -> { LaunchedEffect(today) { state.seedShown(today) }; RecallNote(stringResource(R.string.seed_note)) { seedOpen = true } }
                         topInvite -> Unit
-                        recall != null -> RecallNote(recall) { turnTo(1) }
+                        // 돌아온 한 줄은 아래 쪽지 대신 손님이 물고 옴 (위)
                         // 첫 일주일 길잡이: 하루에 하나, 해 본 것은 건너뜀 (누르면 그 일로)
                         else -> state.firstWeekNudge(today)?.takeIf { state.guideDone }?.let { k ->
                             val text = stringResource(when (k) { "breath" -> R.string.nudge_breath; "stone" -> R.string.nudge_stone; "gaze" -> R.string.nudge_gaze
@@ -696,6 +726,9 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
             androidx.compose.runtime.key(pageKey) { GuideTour(state, pageKey, guide, PageGuideSteps.getValue(pageKey)) { state.pageHintSeen(pageKey) } }
     }
 
+    slipOpen?.let { g -> state.carriedLine(now.toLocalDate())?.let { line ->
+        SlipSheet(state, line, g, now.toLocalDate(), onRecord = { state.openSlip(now.toLocalDate()); slipOpen = null; turnTo(1) }) { state.openSlip(now.toLocalDate()); slipOpen = null }
+    } ?: run { slipOpen = null } }
     decorOpen?.let { part ->
         ModalBottomSheet(onDismissRequest = { decorOpen = null }, containerColor = Theme.gc.paper, sheetState = androidx.compose.material3.rememberModalBottomSheetState(skipPartiallyExpanded = true)) { DecorSheet(part, decor, state, now) }
     }

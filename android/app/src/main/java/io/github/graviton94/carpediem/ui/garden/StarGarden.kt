@@ -47,6 +47,7 @@ import kotlin.math.PI
 import kotlin.math.hypot
 import kotlin.math.sin
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 /**
  * 마음의 기록 · 한 해의 정원: 날마다 그 달의 별자리 선을 따라 하나씩 (1일부터, 꼭짓점은 조금 크게).
@@ -196,16 +197,33 @@ internal fun rememberTwinkle(dots: List<StarGarden.Dot>, animate: Boolean): Pair
     return pick to e.asState()
 }
 
-/** 한 달의 정원 판 (마음의 기록 · 지난 정원). 누르면 그날을 고른다. */
+/** 별자리 연주에서 별 하나가 빛나는 시간. */
+private const val PLAY_STEP_MS = 320L
+
+/** 한 달의 정원 판 (마음의 기록 · 지난 정원). 누르면 그날을 고른다 · playable 이면 길게 눌러 그 달을 연주. */
 @Composable
 internal fun MonthGarden(
     book: ConstellationBook, days: List<Pair<LocalDate, DayLine?>>, install: Long, night: Boolean, today: LocalDate, modifier: Modifier,
-    animate: Boolean = true, picked: LocalDate? = null, sizes: FloatArray = MONTH_SIZES, onPick: ((StarGarden.Dot) -> Unit)? = null,
+    animate: Boolean = true, picked: LocalDate? = null, sizes: FloatArray = MONTH_SIZES, sound: Boolean = false, playable: Boolean = false,
+    onPick: ((StarGarden.Dot) -> Unit)? = null,
 ) {
     val dots = remember(book, days, install) { StarGarden.month(book, days, install) }
     val (pick, e) = rememberTwinkle(dots, animate)
-    val tap = if (onPick == null) Modifier else Modifier.pointerInput(dots) {
-        detectTapGestures { pos ->
+    // 별자리 연주: 길게 누르면 그 달의 한 줄이 날짜 순서대로 하나씩 빛나며 저마다의 음 (화면에 더하는 글 · 버튼은 없음)
+    val playing = remember { mutableIntStateOf(-1) }
+    val scope = androidx.compose.runtime.rememberCoroutineScope()
+    val view = androidx.compose.ui.platform.LocalView.current
+    fun play() {
+        if (playing.intValue >= 0) return
+        val order = dots.indices.filter { dots[it].line != null && !dots[it].date.isAfter(today) }
+        if (order.isEmpty()) return
+        view.performHapticFeedback(android.view.HapticFeedbackConstants.LONG_PRESS)
+        if (sound) io.github.graviton94.carpediem.sound.StoneSong.play(order.mapIndexed { k, i -> io.github.graviton94.carpediem.sound.StoneSong.feelingPitch(dots[i].line?.feeling) to k * PLAY_STEP_MS })
+        scope.launch { try { order.forEach { i -> playing.intValue = i; delay(PLAY_STEP_MS) } } finally { playing.intValue = -1 } }
+    }
+    val tap = if (onPick == null && !playable) Modifier else Modifier.pointerInput(dots, playable) {
+        detectTapGestures(onLongPress = if (playable) ({ play() }) else null) { pos ->
+            if (onPick == null) return@detectTapGestures
             val w = size.width.toFloat(); val h = size.height.toFloat()
             dots.filter { !it.date.isAfter(today) }.minByOrNull { hypot(w * (0.08f + 0.84f * it.x) - pos.x, h * (0.08f + 0.84f * it.y) - pos.y) }
                 ?.takeIf { hypot(w * (0.08f + 0.84f * it.x) - pos.x, h * (0.08f + 0.84f * it.y) - pos.y) < w * 0.09f }?.let { onPick?.invoke(it) }
@@ -215,7 +233,8 @@ internal fun MonthGarden(
     // 반짝임은 자기 층에서만 다시 그림 (둘레의 크레용 틀 · 페이지가 매 프레임 다시 그려지지 않게)
     Canvas(modifier.aspectRatio(G.Year.monthAspect).then(tap).graphicsLayer()) {
         if (night) { nightSky(); sky.forEach { s -> drawCircle(Color.White, s[2] * size.width, Offset(s[0] * size.width, s[1] * size.height), s[3] * 0.7f) } } else meadow()
-        monthIn(Rect(Offset.Zero, size), dots, night, today, sizes, pick.value, e.value, picked)
+        val pl = playing.intValue
+        monthIn(Rect(Offset.Zero, size), dots, night, today, sizes, if (pl >= 0) pl else pick.value, if (pl >= 0) 1f else e.value, picked)
     }
 }
 

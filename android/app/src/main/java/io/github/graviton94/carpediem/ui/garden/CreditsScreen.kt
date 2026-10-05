@@ -95,13 +95,13 @@ fun CreditsScreen(state: AppState, profile: LifeProfile, year: Int, onDone: () -
         while (elapsed < total) { val t = withFrameMillis { it }; if (t - last < 16) continue; elapsed = (elapsed + t - last).coerceAtMost(total); last = t }
     }
     val scene by remember(plan) { derivedStateOf { Credits.at(plan, elapsed) ?: plan.last() } }
-    val season = scene.season ?: if (scene.part == CreditPart.INTRO) Season.SPRING else Season.WINTER
+    val season = scene.season ?: Season.WINTER   // 인트로는 1월 (겨울) 에서 시작해 12월 겨울로 끝남
     if (state.sound != Sound.NONE) {
         val player = remember(season) { Soundscape.Player(Sound.SEASON, season) }
         DisposableEffect(player, paused) { if (!paused) player.start(); onDispose { player.stop() } }
     }
     Box(Modifier.fillMaxSize().background(CREDIT_BG).pointerInput(done) { detectTapGestures { if (!done) paused = !paused } }) {
-        // 배경: 어두운 종이 위, 아래에 그 장 계절의 땅 한 줄만 (해 · 달 · 정원 글자 없이). 장이 바뀌면 천천히 바뀜
+        // 배경: 그 장 계절의 정원을 어둑하게 (해 · 달 · 정원 글자 없이). 장이 바뀌면 천천히 바뀜
         Crossfade(season, animationSpec = tween(1600), label = "creditGround") { se -> CreditGround(se) }
         val local = elapsed - scene.startMs
         val fade = if (done) 1f else ((minOf(local, scene.startMs + scene.lengthMs - elapsed)) / 600f).coerceIn(0f, 1f)
@@ -126,17 +126,18 @@ fun CreditsScreen(state: AppState, profile: LifeProfile, year: Int, onDone: () -
     }
 }
 
-/** 아래 땅: 그 계절의 땅 그림을 어둡게, 위로 갈수록 바탕에 스며들게. */
+/**
+ * 배경: 그 장 계절의 정원 (하늘 · 땅) 을 어둑하게. 1–2월 겨울 → 봄 → 여름 → 가을 → 12월 겨울로 크레딧과 함께 바뀜.
+ * 글자가 읽히게 위아래를 어둡게 덮는다 (해 · 달 · 돌 · 글자는 없이).
+ */
 @Composable
 private fun CreditGround(season: Season) {
     val ctx = LocalContext.current
     BoxWithConstraints(Modifier.fillMaxSize()) {
+        Image(GardenArt.sky(ctx, season), null, Modifier.fillMaxSize(), contentScale = ContentScale.Crop, alignment = Alignment.TopCenter)
         val h = maxHeight * 0.34f
-        Box(Modifier.align(Alignment.BottomCenter).fillMaxWidth().height(h)) {
-            Image(GardenArt.strip(ctx, season), null, Modifier.fillMaxSize(), contentScale = ContentScale.Crop, alignment = Alignment.TopCenter,
-                colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(CREDIT_BG.copy(alpha = 0.55f), androidx.compose.ui.graphics.BlendMode.SrcAtop))
-            Box(Modifier.fillMaxSize().background(Brush.verticalGradient(listOf(CREDIT_BG, CREDIT_BG.copy(alpha = 0f), CREDIT_BG.copy(alpha = 0.35f)))))
-        }
+        Image(GardenArt.strip(ctx, season), null, Modifier.align(Alignment.BottomCenter).fillMaxWidth().height(h), contentScale = ContentScale.Crop, alignment = Alignment.TopCenter)
+        Box(Modifier.fillMaxSize().background(Brush.verticalGradient(listOf(CREDIT_BG.copy(alpha = 0.78f), CREDIT_BG.copy(alpha = 0.6f), CREDIT_BG.copy(alpha = 0.5f), CREDIT_BG.copy(alpha = 0.7f)))))
     }
 }
 

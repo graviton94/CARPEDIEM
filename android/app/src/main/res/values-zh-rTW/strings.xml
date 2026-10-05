@@ -753,7 +753,7 @@
     <string name="tour_writeDaysTitle">錯過的日子也沒關係</string>
     <string name="tour_writeDays">點「其他日子」，\n就能替過去的日子留下一句話。</string>
     <string name="tour_writeRecordTitle">心情的紀錄</string>
-    <string name="tour_writeRecord">留下的話，會在這個月的庭院裡\n開成花，夜裡變成星星。\n點一天，就能看到那天的話。</string>
+    <string name="tour_writeRecord">留下的話，會在這個月的庭院裡\n開成花，夜裡變成星星。\n點一天，就能看到那天的話。\n長按一下，這個月的星星會依序唱歌。</string>
     <string name="tour_memAlbumTitle">收集的東西</string>
     <string name="tour_memAlbum">庭院裡長出的東西、遇見的客人、季節卡片\n都收在這裡。點一下卡片\n就能看到它的故事和遇見的方法。</string>
     <string name="tour_flowBarsTitle">流動的時間</string>
@@ -1003,4 +1003,19 @@
     <string name="settings_notifyFooter">只有開啟的才會收到。早上是今天的句子，晚上提醒留一句話（已留下的日子就安靜），家人的日子在前一晚和當天早上。</string>
     <string name="settings_records">紀錄與備份</string>
     <string name="settings_recordsFooter">關閉紀錄後只留下日期，文字、心情和照片都會刪除。存成檔案就能搬到新手機。</string>
+    <string name="slip_daysAgo">%1$s天前的今天</string>
+    <string name="slip_yearsAgo">%1$s年前的今天</string>
+    <string name="slip_from">%1$s叼來的</string>
+    <string name="slip_record">看那天的紀錄</string>
+    <string name="slip_a11y">%1$s叼來一張紙條，點一下打開</string>
+    <string name="pebble_name">小日給的小石頭</string>
+    <string name="pebble_desc">小日悄悄滾到你腳邊的小石頭。</string>
+    <string name="pebble_how">摸摸小日時，偶爾（大約一個月一次）會滾一顆到你腳邊。</string>
+    <string name="pebble_a11y">小日給的小石頭，點一下撿起來</string>
+    <string name="pebble_taken">撿起小石頭了，已放進收集。</string>
+    <string name="bday_cardSent">今年寄給%1$s的心意 %2$s 句</string>
+    <string name="bday_cardAsk">要把今年寄給%1$s的一句話放進卡片嗎？</string>
+    <string name="bday_cardOther">換一句</string>
+    <string name="bday_cardWith">放進去寄出</string>
+    <string name="bday_cardPlain">只寄卡片</string>
 </resources>

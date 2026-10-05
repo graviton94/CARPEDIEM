@@ -38,6 +38,10 @@ import java.util.Locale
 enum class Care { CALM_BREATH, BOX_BREATH, LOOK, SEND_TO, SLEEP_BREATH, MORNING_BREATH }
 
 /** 처음 들어가면 맨 위에 한 번 안내가 나오는 페이지들 (PageHint 의 key). */
+/** 조약돌 사이 최소 날수 · 그 뒤 하루에 한 번 굴려 보는 확률 (평균 한 달 남짓에 하나). */
+private const val PEBBLE_GAP = 25L
+private const val PEBBLE_CHANCE = 0.1f
+
 val PAGE_HINTS = setOf("write", "memories", "flow", "stone")
 
 /** 화면이 보는 상태. 바뀌면 저장하고 위젯을 새로 그린다. */
@@ -160,6 +164,38 @@ class AppState(private val context: Context) {
         val v = store.guestVisits.toMutableMap(); v[g] = (v[g] ?: 0) + 1; store.guestVisits = v; guestVisits = v
         if (chancesMet.none { it.startsWith("guest_$g:") }) { val n = chancesMet + "guest_$g:$today"; store.chancesMet = n; chancesMet = n }
     }
+    // ───── 손님이 물고 온 한 줄: 지난 한 줄 (몇 해 전 오늘 · 문득) 이 돌아온 날, 손님이 쪽지로 물고 옴 ─────
+    var slipOpened by mutableStateOf(store.slipOpened)
+        private set
+    /** 오늘 손님이 물고 올 한 줄 (펼쳐 봤으면 없음). */
+    fun carriedLine(today: LocalDate): DayLine? {
+        if (!keepLines || slipOpened == today || design != Design.GARDEN) return null
+        return io.github.graviton94.carpediem.core.Lines.yearsAgo(lines, today).firstOrNull()?.second ?: randomLine
+    }
+    /** 쪽지를 물고 오는 손님: 그날 놀러 온 손님, 없으면 박새나 다람쥐 (날마다 번갈아). */
+    fun carrier(today: LocalDate): String? = guest ?: carriedLine(today)?.let { if (today.toEpochDay() % 2 == 0L) "tit" else "squirrel" }
+    fun openSlip(today: LocalDate) { store.slipOpened = today; slipOpened = today }
+
+    // ───── 하루가 준 조약돌: 쓰다듬다 보면 아주 가끔 (한 달에 한 번쯤) 발치에 하나 ─────
+    var pebbles by mutableStateOf(store.pebbles)
+        private set
+    var pebbleOffered by mutableStateOf(store.pebbleOffered)
+        private set
+    private var pebbleRolled: LocalDate? = null
+    /** 쓰다듬을 때 하루에 한 번만 굴려 봄: 지난 조약돌에서 25일 넘게 지났으면 열에 하나. */
+    fun pettedHaru(today: LocalDate) {
+        if (pebbleRolled == today || pebbleOffered != null || design != Design.GARDEN) return
+        pebbleRolled = today
+        val last = (pebbles.lastOrNull() ?: store.startDate)
+        if (java.time.temporal.ChronoUnit.DAYS.between(last, today) < PEBBLE_GAP) return
+        if (kotlin.random.Random.nextFloat() < PEBBLE_CHANCE) { store.pebbleOffered = today; pebbleOffered = today }
+    }
+    fun takePebble(today: LocalDate) {
+        val v = (pebbles + today).distinct().sorted(); store.pebbles = v; pebbles = v
+        store.pebbleOffered = null; pebbleOffered = null
+    }
+    fun addSamplePebble(today: LocalDate = nowDate()) { store.pebbleOffered = today; pebbleOffered = today }
+
     /** 첫 화면 (타이틀) 이 떠 있는 동안: 한 번만 보이는 것 (한마디 · 우연한 순간 · 문장 타자) 은 걷힌 뒤에. */
     var titleUp by mutableStateOf(false)
     /** 정원의 땅 높이 (첫 화면이 같은 자리에 빈 땅을 깔고 정원으로 이어지게). 정원이 그릴 때 적어 둠. */

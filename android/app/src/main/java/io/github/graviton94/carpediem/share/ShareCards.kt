@@ -178,7 +178,8 @@ object ShareCards {
      * 생일 카드: 나와 그 사람의 돌이 작게 나란히, 사이에 케이크와 작은 하트. 그 사람만 고깔, 둘 다 웃는 눈 · 발그레한 볼.
      * 낮엔 종이에 깃발 줄, 밤 (보내는 때가 어두우면) 엔 남색에 작은 전구 줄과 별, 촛불 빛.
      */
-    fun birthday(ctx: Context, name: String, seed: Long, pet: Boolean, mySeed: Long, night: Boolean): Bitmap {
+    /** sent = (올해 그 사람에게 보낸 한 줄 수, 고른 한 줄): 있으면 인사말 대신 ‘올해 보낸 마음’ 과 그 한 줄. */
+    fun birthday(ctx: Context, name: String, seed: Long, pet: Boolean, mySeed: Long, night: Boolean, sent: Pair<Int, String>? = null): Bitmap {
         val w = S.lineW.toInt(); val h = S.lineH.toInt(); val pad = S.pad
         val (b, c) = board(w, h, night)
         val fg = if (night) Y.plain.toArgb() else ink; val soft = if (night) Y.plain.copy(alpha = 0.7f).toArgb() else inkSoft
@@ -206,7 +207,12 @@ object ShareCards {
         }
         val tp = paint(ctx, S.text, fg)
         text(c, ctx.getString(R.string.bday_cardTitle, name), tp, pad, h * 0.17f, (w - pad * 2).toInt())
-        text(c, ctx.getString(R.string.bday_cardSub), paint(ctx, S.small, soft), pad, h * 0.17f + S.text * 1.8f, (w - pad * 2).toInt())
+        if (sent == null) text(c, ctx.getString(R.string.bday_cardSub), paint(ctx, S.small, soft), pad, h * 0.17f + S.text * 1.8f, (w - pad * 2).toInt())
+        else {
+            val y1 = h * 0.17f + S.text * 1.8f
+            val sh = text(c, ctx.getString(R.string.bday_cardSent, name, "${sent.first}"), paint(ctx, S.small * 0.9f, soft), pad, y1, (w - pad * 2).toInt())
+            text(c, "“${sent.second.replace('\n', ' ')}”", paint(ctx, S.small * 1.15f, fg), pad, y1 + sh + S.small * 0.5f, (w - pad * 2).toInt())
+        }
         val gy = h * 0.72f; val cx = w / 2f
         val myArt = HaruArt.of(mySeed, false); val art = HaruArt.of(seed, false)
         val sw = w * P.card

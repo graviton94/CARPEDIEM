@@ -137,9 +137,29 @@ fun StoneScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, id: S
             // 가족의 생일 (전날 저녁부터 그날까지): 나와 그 사람의 돌이 나란히 앉은 카드 한 장
             if (birthday) TokenText(if (me) stringResource(if (soon == 0) R.string.bday_mineToday else R.string.bday_mineTomorrow) else stringResource(if (soon == 0) R.string.bday_today else R.string.bday_tomorrow, name),
                 Tokens.TypeScale.callout.serif(), Modifier.fillMaxWidth(), align = TextAlign.Center)
-            if (birthday && !me) GardenButton(stringResource(R.string.bday_card), {
-                io.github.graviton94.carpediem.share.ShareCards.send(ctx, "birthday-${person.id}-$today") { io.github.graviton94.carpediem.share.ShareCards.birthday(ctx, name, person!!.seed, person.kind == Kind.PET, state.store.haruSeed, SkyTime.isDark(now)) }
-            }, filled = true, seed = 873)
+            // 생일 카드: 올해 그 사람에게 보낸 한 줄이 있으면 넣을지 한 번 물음 (고르거나 빼고 보낼 수 있게)
+            val sentLines = remember(state.lines, id, today) { person?.let { pp -> state.lines.filter { it.to == pp.id && it.date.year == today.year && it.text.isNotBlank() }.reversed() }.orEmpty() }
+            var cardAsk by remember { mutableStateOf(false) }
+            var pickLine by remember { mutableStateOf(0) }
+            fun sendCard(with: String?) {
+                val pp = person ?: return
+                val sent = with?.let { sentLines.size to it }
+                io.github.graviton94.carpediem.share.ShareCards.send(ctx, "birthday-${pp.id}-$today") { io.github.graviton94.carpediem.share.ShareCards.birthday(ctx, name, pp.seed, pp.kind == Kind.PET, state.store.haruSeed, SkyTime.isDark(now), sent) }
+            }
+            if (birthday && !me) GardenButton(stringResource(R.string.bday_card), { if (sentLines.isEmpty()) sendCard(null) else cardAsk = true }, filled = true, seed = 873)
+            if (cardAsk) io.github.graviton94.carpediem.ui.GardenAlert(
+                onDismissRequest = { cardAsk = false },
+                title = { androidx.compose.material3.Text(stringResource(R.string.bday_cardAsk, name)) },
+                text = {
+                    Column(verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
+                        TokenText("“${sentLines[pickLine % sentLines.size].text}”", Tokens.TypeScale.callout.serif())
+                        if (sentLines.size > 1) TokenText(stringResource(R.string.bday_cardOther), Tokens.TypeScale.footnote,
+                            Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { pickLine++ }.padding(vertical = Tokens.Space.sp3), color = p.olive, weight = FontWeight.SemiBold)
+                    }
+                },
+                confirmButton = { androidx.compose.material3.TextButton(onClick = { cardAsk = false; sendCard(sentLines[pickLine % sentLines.size].text) }) { androidx.compose.material3.Text(stringResource(R.string.bday_cardWith)) } },
+                dismissButton = { androidx.compose.material3.TextButton(onClick = { cardAsk = false; sendCard(null) }) { androidx.compose.material3.Text(stringResource(R.string.bday_cardPlain), color = p.secondary) } },
+            )
             // 함께한 날 · 다음 생일
             Row(Modifier.guideTarget(guide, "stone.info"), horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
                 val since = metOn

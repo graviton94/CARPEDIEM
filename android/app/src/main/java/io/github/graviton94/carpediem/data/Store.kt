@@ -266,6 +266,17 @@ class Store(context: Context) {
     fun writeDayFor(today: LocalDate): LocalDate? = if (prefs.getLong("writeDayOn", Long.MIN_VALUE) == today.toEpochDay())
         prefs.getLong("writeDay", Long.MIN_VALUE).takeIf { it != Long.MIN_VALUE }?.let { LocalDate.ofEpochDay(it) } else null
     fun saveWriteDay(today: LocalDate, day: LocalDate?) = prefs.edit().putLong("writeDayOn", today.toEpochDay()).putLong("writeDay", day?.toEpochDay() ?: Long.MIN_VALUE).apply()
+    /** 손님이 물고 온 쪽지를 펼쳐 본 날 (그날은 다시 물고 오지 않음). */
+    var slipOpened: LocalDate?
+        get() = prefs.getLong("slipOpened", Long.MIN_VALUE).takeIf { it != Long.MIN_VALUE }?.let { LocalDate.ofEpochDay(it) }
+        set(v) = prefs.edit().putLong("slipOpened", v?.toEpochDay() ?: Long.MIN_VALUE).apply()
+    /** 하루가 발치에 굴려 준 조약돌: 받은 날들 · 오늘 굴려 놓은 날 (아직 줍지 않음). */
+    var pebbles: List<LocalDate>
+        get() = prefs.getStringSet("pebbles", emptySet())!!.mapNotNull { it.toLongOrNull()?.let(LocalDate::ofEpochDay) }.sorted()
+        set(v) = prefs.edit().putStringSet("pebbles", v.map { it.toEpochDay().toString() }.toSet()).apply()
+    var pebbleOffered: LocalDate?
+        get() = prefs.getLong("pebbleOffered", Long.MIN_VALUE).takeIf { it != Long.MIN_VALUE }?.let { LocalDate.ofEpochDay(it) }
+        set(v) = prefs.edit().putLong("pebbleOffered", v?.toEpochDay() ?: Long.MIN_VALUE).apply()
     /** 아침 씨앗 쪽지를 마지막으로 보여 준 날 · 한 줄 뒤 권유를 마지막으로 건넨 날 (고요한 빈도, core Pace). */
     var seedOffered: LocalDate?
         get() = prefs.getLong("seedOffered", Long.MIN_VALUE).takeIf { it != Long.MIN_VALUE }?.let { LocalDate.ofEpochDay(it) }

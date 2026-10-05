@@ -752,7 +752,7 @@
 "tour.writeDaysTitle" = "Missed a day? That’s okay";
 "tour.writeDays" = "Tap ‘Another day’\nto leave a line for a day that has passed.";
 "tour.writeRecordTitle" = "Heart’s record";
-"tour.writeRecord" = "Each line you leave blooms as a flower in this month’s garden,\nand shines as a star at night.\nTap a day to read its line.";
+"tour.writeRecord" = "Each line you leave blooms as a flower in this month’s garden,\nand shines as a star at night.\nTap a day to read its line.\nPress and hold to hear the month, star by star.";
 "tour.memAlbumTitle" = "What you’ve gathered";
 "tour.memAlbum" = "What grew in your garden, the guests you met\nand season cards gather here.\nTap a card for its story and how it comes.";
 "tour.flowBarsTitle" = "Passing time";
@@ -1002,3 +1002,18 @@
 "settings.notifyFooter" = "Only what you turn on. Morning words, an evening nudge (quiet on days you wrote), and family days the evening before and that morning.";
 "settings.records" = "Records & backup";
 "settings.recordsFooter" = "Turning off records keeps only the dates and erases words, feelings and photos. Save to a file to move to a new phone.";
+"slip.daysAgo" = "%1$@ days ago today";
+"slip.yearsAgo" = "This day, %1$@ years ago";
+"slip.from" = "Brought by the %1$@";
+"slip.record" = "See that day";
+"slip.a11y" = "The %1$@ brought a note. Tap to open";
+"pebble.name" = "A pebble from Haru";
+"pebble.desc" = "A small pebble Haru quietly rolled to your feet.";
+"pebble.how" = "Now and then, about once a month, Haru rolls one to you after a pat.";
+"pebble.a11y" = "A pebble from Haru. Tap to pick it up";
+"pebble.taken" = "You picked up the pebble. It’s in your collection.";
+"bday.cardSent" = "Lines sent to %1$@ this year: %2$@";
+"bday.cardAsk" = "Add a line you sent %1$@ this year?";
+"bday.cardOther" = "Another line";
+"bday.cardWith" = "Add and send";
+"bday.cardPlain" = "Card only";

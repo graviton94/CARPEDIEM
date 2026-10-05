@@ -751,7 +751,7 @@
 "tour.writeDaysTitle" = "錯過的日子也沒關係";
 "tour.writeDays" = "點「其他日子」，\n就能替過去的日子留下一句話。";
 "tour.writeRecordTitle" = "心情的紀錄";
-"tour.writeRecord" = "留下的話，會在這個月的庭院裡\n開成花，夜裡變成星星。\n點一天，就能看到那天的話。";
+"tour.writeRecord" = "留下的話，會在這個月的庭院裡\n開成花，夜裡變成星星。\n點一天，就能看到那天的話。\n長按一下，這個月的星星會依序唱歌。";
 "tour.memAlbumTitle" = "收集的東西";
 "tour.memAlbum" = "庭院裡長出的東西、遇見的客人、季節卡片\n都收在這裡。點一下卡片\n就能看到它的故事和遇見的方法。";
 "tour.flowBarsTitle" = "流動的時間";
@@ -1001,3 +1001,18 @@
 "settings.notifyFooter" = "只有開啟的才會收到。早上是今天的句子，晚上提醒留一句話（已留下的日子就安靜），家人的日子在前一晚和當天早上。";
 "settings.records" = "紀錄與備份";
 "settings.recordsFooter" = "關閉紀錄後只留下日期，文字、心情和照片都會刪除。存成檔案就能搬到新手機。";
+"slip.daysAgo" = "%1$@天前的今天";
+"slip.yearsAgo" = "%1$@年前的今天";
+"slip.from" = "%1$@叼來的";
+"slip.record" = "看那天的紀錄";
+"slip.a11y" = "%1$@叼來一張紙條，點一下打開";
+"pebble.name" = "小日給的小石頭";
+"pebble.desc" = "小日悄悄滾到你腳邊的小石頭。";
+"pebble.how" = "摸摸小日時，偶爾（大約一個月一次）會滾一顆到你腳邊。";
+"pebble.a11y" = "小日給的小石頭，點一下撿起來";
+"pebble.taken" = "撿起小石頭了，已放進收集。";
+"bday.cardSent" = "今年寄給%1$@的心意 %2$@ 句";
+"bday.cardAsk" = "要把今年寄給%1$@的一句話放進卡片嗎？";
+"bday.cardOther" = "換一句";
+"bday.cardWith" = "放進去寄出";
+"bday.cardPlain" = "只寄卡片";

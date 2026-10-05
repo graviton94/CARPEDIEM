@@ -116,7 +116,8 @@ internal fun RecordPanel(state: AppState, view: RecordView, onView: (RecordView)
                 val shown = if (view.year == today.year) title else "${view.year} · $title"
                 val sub = RecordText.constellation(ctx, state, m) + " · " + stringResource(R.string.year_count, "$sent", "$thanks")
                 PanelHead(shown, sub, canPrev, canNext, { onView(RecordView(prev.year, prev.monthValue)) }, { onView(RecordView(next.year, next.monthValue)) })
-                MonthGarden(book, days, state.store.haruSeed, night, today, Modifier.fillMaxWidth(), picked = picked) { d -> picked = if (picked == d.date) null else d.date }
+                MonthGarden(book, days, state.store.haruSeed, night, today, Modifier.fillMaxWidth(), picked = picked,
+                    sound = state.sound != io.github.graviton94.carpediem.core.Sound.NONE, playable = true) { d -> picked = if (picked == d.date) null else d.date }
                 val pickedLine = picked?.let { d -> days.firstOrNull { it.first == d } }
                 if (pickedLine != null) {
                     Column(Modifier.fillMaxWidth().padding(horizontal = Tokens.Space.sp2), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {

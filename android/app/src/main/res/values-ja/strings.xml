@@ -753,7 +753,7 @@
     <string name="tour_writeDaysTitle">書けなかった日も大丈夫</string>
     <string name="tour_writeDays">「ほかの日」をタップすると、\n過ぎた日のひとことを残せます。</string>
     <string name="tour_writeRecordTitle">こころの記録</string>
-    <string name="tour_writeRecord">残したひとことは、今月の庭に\n花として咲きます。夜は星になります。\n日をタップすると、その日のひとことが見られます。</string>
+    <string name="tour_writeRecord">残したひとことは、今月の庭に\n花として咲きます。夜は星になります。\n日をタップすると、その日のひとことが見られます。\n長押しすると、この月の星が順に歌います。</string>
     <string name="tour_memAlbumTitle">集めたもの</string>
     <string name="tour_memAlbum">庭で育ったもの、出会ったお客さん、季節のカードが\nここに集まります。カードに触れると\nお話と出会い方が見られます。</string>
     <string name="tour_flowBarsTitle">流れる時間</string>
@@ -1003,4 +1003,19 @@
     <string name="settings_notifyFooter">オンにしたものだけ届きます。朝は今日のことば、夜はひとことのお誘い（残した日は静かに）、家族の日は前日の夜とその日の朝。</string>
     <string name="settings_records">記録とバックアップ</string>
     <string name="settings_recordsFooter">記録をオフにすると日付だけ残り、ことば・気持ち・写真は消えます。ファイルに保存すると新しいスマホに移せます。</string>
+    <string name="slip_daysAgo">%1$s日前の今日</string>
+    <string name="slip_yearsAgo">%1$s年前の今日</string>
+    <string name="slip_from">%1$sがくわえてきました</string>
+    <string name="slip_record">その日の記録を見る</string>
+    <string name="slip_a11y">%1$sがメモをくわえています。タップでひらきます</string>
+    <string name="pebble_name">ハルがくれた小石</string>
+    <string name="pebble_desc">ハルが足もとにそっと転がしてくれた小さな石です。</string>
+    <string name="pebble_how">なでていると、ごくたまに（ひと月に一度くらい）足もとに転がしてくれます。</string>
+    <string name="pebble_a11y">ハルがくれた小石。タップで拾います</string>
+    <string name="pebble_taken">小石を拾いました。集めたものに入れました。</string>
+    <string name="bday_cardSent">今年%1$sに送った気持ち %2$s行</string>
+    <string name="bday_cardAsk">今年%1$sに送ったひとことをカードに入れますか？</string>
+    <string name="bday_cardOther">別のひとこと</string>
+    <string name="bday_cardWith">入れて送る</string>
+    <string name="bday_cardPlain">カードだけ送る</string>
 </resources>

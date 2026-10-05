@@ -507,7 +507,7 @@ private const val GUEST_NAME_MS = 1800L
 /** 손님 그림 (하루와 같은 그림체, guest_*.webp 40 × 40 상자, 발 = 아래에서 3/40). x = 발 자리, gy = 땅.
  *  누르면 살짝 뛰고, 머리 위에 이름만 잠깐 (상자 · 다른 말 없이, 2초 남짓 뒤 사라짐). */
 @Composable
-internal fun GuestFigure(guest: String, x: Dp, gy: Dp, screenW: Dp) {
+internal fun GuestFigure(guest: String, x: Dp, gy: Dp, screenW: Dp, letter: Boolean = false, onLetter: () -> Unit = {}) {
     val ctx = LocalContext.current
     val u = Theme.unit
     val w = u * GUEST_SIZE
@@ -525,10 +525,47 @@ internal fun GuestFigure(guest: String, x: Dp, gy: Dp, screenW: Dp) {
     val top = gy - w * (37f / 40f)
     Image(GardenArt.image(ctx, "guest_$guest.webp"), label, Modifier.offset(x - w / 2, top).size(w)
         .graphicsLayer { translationY = -hop.value * w.toPx() * 0.18f }
-        .clickable(interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }, indication = null) { kick++ })
+        .clickable(interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }, indication = null) { if (letter) onLetter() else kick++ })
+    // 지난 한 줄을 물고 온 날: 부리 앞에 작게 접힌 한지 쪽지 (누르면 펼침)
+    if (letter) {
+        val lw = w * 0.3f
+        val ink = Theme.gc.ink
+        androidx.compose.foundation.Canvas(Modifier.offset(x + w * 0.22f, top + w * 0.28f).size(lw, lw * 0.72f).graphicsLayer { rotationZ = -14f; translationY = -hop.value * w.toPx() * 0.18f }) {
+            val sw = size.width * 0.07f
+            val paper = androidx.compose.ui.graphics.Path().apply { moveTo(0f, size.height * 0.12f); lineTo(size.width, 0f); lineTo(size.width * 0.97f, size.height); lineTo(size.width * 0.03f, size.height * 0.96f); close() }
+            drawPath(paper, Color(0xFFFAF3E2))
+            drawPath(paper, ink, style = androidx.compose.ui.graphics.drawscope.Stroke(sw))
+            drawLine(ink, androidx.compose.ui.geometry.Offset(0f, size.height * 0.12f), androidx.compose.ui.geometry.Offset(size.width * 0.5f, size.height * 0.55f), sw * 0.8f)
+            drawLine(ink, androidx.compose.ui.geometry.Offset(size.width * 0.5f, size.height * 0.55f), androidx.compose.ui.geometry.Offset(size.width, 0f), sw * 0.8f)
+        }
+    }
     if (name.value > 0f) {
         val tw = u * 120f
         val left = (x - tw / 2).coerceIn(u * 8f, screenW - tw - u * 8f)
         TokenText(label, Tokens.TypeScale.caption1.serif(), Modifier.offset(left, top - u * 16f).width(tw).graphicsLayer { alpha = name.value }, color = Theme.gc.ink, align = TextAlign.Center)
     }
+}
+
+/** 손님이 물고 온 쪽지를 펼침: 몇 날 (해) 전 오늘 · 그날의 마음 · 한 줄 · 사진. ‘그날 기록 보기’ 는 기록 페이지로. */
+@Composable
+internal fun SlipSheet(state: AppState, line: io.github.graviton94.carpediem.core.DayLine, guest: String, today: LocalDate, onRecord: () -> Unit, onClose: () -> Unit) {
+    val ctx = LocalContext.current
+    val p = Theme.palette
+    val days = java.time.temporal.ChronoUnit.DAYS.between(line.date, today)
+    val years = java.time.Period.between(line.date, today).let { if (it.months == 0 && it.days == 0) it.years else 0 }
+    val ago = if (years > 0) stringResource(io.github.graviton94.carpediem.R.string.slip_yearsAgo, "$years") else stringResource(io.github.graviton94.carpediem.R.string.slip_daysAgo, "$days")
+    val name = remember(guest) { ctx.resources.getIdentifier("chance_guest_$guest", "string", ctx.packageName).takeIf { it != 0 }?.let { ctx.getString(it) }.orEmpty() }
+    io.github.graviton94.carpediem.ui.GardenAlert(
+        onDismissRequest = onClose,
+        title = { androidx.compose.material3.Text(listOfNotNull(ago, line.feeling?.let { Labels.feeling(ctx, it) }).joinToString(" · ")) },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3), horizontalAlignment = Alignment.CenterHorizontally) {
+                TokenText("“${line.text}”", Tokens.TypeScale.title3.serif(), align = TextAlign.Center)
+                WeatheredPhoto(state, line.date, today, Theme.unit * 150f)
+                TokenText(stringResource(io.github.graviton94.carpediem.R.string.slip_from, name), Tokens.TypeScale.footnote, color = p.secondary)
+            }
+        },
+        confirmButton = { androidx.compose.material3.TextButton(onClick = onRecord) { androidx.compose.material3.Text(stringResource(io.github.graviton94.carpediem.R.string.slip_record)) } },
+        dismissButton = { androidx.compose.material3.TextButton(onClick = onClose) { androidx.compose.material3.Text(stringResource(io.github.graviton94.carpediem.R.string.collect_close), color = p.secondary) } },
+    )
 }

@@ -754,7 +754,7 @@
     <string name="tour_writeDaysTitle">Missed a day? That’s okay</string>
     <string name="tour_writeDays">Tap ‘Another day’\nto leave a line for a day that has passed.</string>
     <string name="tour_writeRecordTitle">Heart’s record</string>
-    <string name="tour_writeRecord">Each line you leave blooms as a flower in this month’s garden,\nand shines as a star at night.\nTap a day to read its line.</string>
+    <string name="tour_writeRecord">Each line you leave blooms as a flower in this month’s garden,\nand shines as a star at night.\nTap a day to read its line.\nPress and hold to hear the month, star by star.</string>
     <string name="tour_memAlbumTitle">What you’ve gathered</string>
     <string name="tour_memAlbum">What grew in your garden, the guests you met\nand season cards gather here.\nTap a card for its story and how it comes.</string>
     <string name="tour_flowBarsTitle">Passing time</string>
@@ -1004,4 +1004,19 @@
     <string name="settings_notifyFooter">Only what you turn on. Morning words, an evening nudge (quiet on days you wrote), and family days the evening before and that morning.</string>
     <string name="settings_records">Records &amp; backup</string>
     <string name="settings_recordsFooter">Turning off records keeps only the dates and erases words, feelings and photos. Save to a file to move to a new phone.</string>
+    <string name="slip_daysAgo">%1$s days ago today</string>
+    <string name="slip_yearsAgo">This day, %1$s years ago</string>
+    <string name="slip_from">Brought by the %1$s</string>
+    <string name="slip_record">See that day</string>
+    <string name="slip_a11y">The %1$s brought a note. Tap to open</string>
+    <string name="pebble_name">A pebble from Haru</string>
+    <string name="pebble_desc">A small pebble Haru quietly rolled to your feet.</string>
+    <string name="pebble_how">Now and then, about once a month, Haru rolls one to you after a pat.</string>
+    <string name="pebble_a11y">A pebble from Haru. Tap to pick it up</string>
+    <string name="pebble_taken">You picked up the pebble. It’s in your collection.</string>
+    <string name="bday_cardSent">Lines sent to %1$s this year: %2$s</string>
+    <string name="bday_cardAsk">Add a line you sent %1$s this year?</string>
+    <string name="bday_cardOther">Another line</string>
+    <string name="bday_cardWith">Add and send</string>
+    <string name="bday_cardPlain">Card only</string>
 </resources>

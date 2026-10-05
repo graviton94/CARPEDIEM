@@ -754,7 +754,7 @@
     <string name="tour_writeDaysTitle">놓친 날도 괜찮아요</string>
     <string name="tour_writeDays">‘다른 날’을 누르면\n지나간 날의 한 줄을 남길 수 있어요.</string>
     <string name="tour_writeRecordTitle">마음의 기록</string>
-    <string name="tour_writeRecord">남긴 한 줄은 이 달의 정원에\n꽃으로 피어요. 밤에는 별로 떠요.\n날을 누르면 그날의 한 줄이 보여요.</string>
+    <string name="tour_writeRecord">남긴 한 줄은 이 달의 정원에\n꽃으로 피어요. 밤에는 별로 떠요.\n날을 누르면 그날의 한 줄이 보여요.\n길게 누르면 이 달의 별이 차례로 노래해요.</string>
     <string name="tour_memAlbumTitle">모은 것</string>
     <string name="tour_memAlbum">정원에서 자란 것, 만난 손님, 계절 카드가\n여기 모여요. 카드를 누르면\n이야기와 만나는 법이 보여요.</string>
     <string name="tour_flowBarsTitle">흐르는 시간</string>
@@ -1004,4 +1004,19 @@
     <string name="settings_notifyFooter">켜 둔 것만 와요. 아침엔 오늘의 문장, 밤엔 한 줄 정리 (남긴 날은 조용히), 가족의 날은 전날 저녁과 그날 아침.</string>
     <string name="settings_records">기록 · 백업</string>
     <string name="settings_recordsFooter">기록 남기기를 끄면 날짜만 남고 글 · 마음 · 사진은 지워요. 파일로 저장해 두면 새 폰으로 옮길 수 있어요.</string>
+    <string name="slip_daysAgo">%1$s일 전 오늘</string>
+    <string name="slip_yearsAgo">%1$s년 전 오늘</string>
+    <string name="slip_from">%1$s가 물고 왔어요</string>
+    <string name="slip_record">그날 기록 보기</string>
+    <string name="slip_a11y">%1$s, 쪽지를 물고 왔어요. 누르면 펼쳐요</string>
+    <string name="pebble_name">하루가 준 조약돌</string>
+    <string name="pebble_desc">하루가 발치에 살며시 굴려 준 작은 조약돌이에요.</string>
+    <string name="pebble_how">쓰다듬다 보면 아주 가끔, 한 달에 한 번쯤 하루가 발치에 굴려 줘요.</string>
+    <string name="pebble_a11y">하루가 준 조약돌. 누르면 주워요</string>
+    <string name="pebble_taken">조약돌을 주웠어요. 모은 것에 담았어요.</string>
+    <string name="bday_cardSent">올해 %1$s에게 보낸 마음 %2$s줄</string>
+    <string name="bday_cardAsk">올해 %1$s에게 보낸 한 줄을 카드에 넣을까요?</string>
+    <string name="bday_cardOther">다른 줄</string>
+    <string name="bday_cardWith">넣어서 보내기</string>
+    <string name="bday_cardPlain">카드만 보내기</string>
 </resources>
