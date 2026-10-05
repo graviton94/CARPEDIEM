@@ -13,7 +13,8 @@ Play 앱 서명(Play App Signing)을 켜 두면 Google 이 배포용 키를 관�
 
 ## 3. 버전 번호
 
-- versionCode = 그 워크플로의 실행 번호 (Play 용 AAB 는 `Android release` 실행 번호라 1, 2, 3 … 으로 늘어남)
+- versionCode = 그 워크플로의 실행 번호 × 10 + 시도 횟수 (같은 실행을 다시 돌려도 겹치지 않음). 필요하면 `CD_VERSION_CODE` 로 직접
+- 업로드 키 없이 `bundleRelease` 를 돌리면 빌드가 멈춤 (debug 키 · 개발자 도구가 켜진 AAB 가 만들어지지 않게)
 - versionName = 실행할 때 적는 버전 (1.0.0 …)
 
 ## 4. 응원하기 상품 (Play Console → 수익 창출 → 인앱 상품, 소모성)
@@ -31,11 +32,19 @@ Play 앱 서명(Play App Signing)을 켜 두면 Google 이 배포용 키를 관�
 - [ ] 개발자 계정 (개인, 새 Google 계정) · 본인 확인
 - [ ] 앱 만들기: 기본 언어 영어 (en-US) ‘Carpe Diem’, 무료, 앱. 번역: 한국어 ‘하루의 정원’ · 일본어 ‘ハルの庭’ · 중국어(번체) ‘小日的庭院’
 - [ ] 스토어 등록정보: 문안 `docs/store-listing.md`, 아이콘 512 × 512, 말마다 그래픽 이미지 · 스크린샷 `docs/store/<ko|en|ja|zh-TW>/` (영어는 기본 등록정보, 나머지는 ‘번역 추가’ 로 ko-KR · ja-JP · zh-TW, 홍콩용 zh-HK 는 zh-TW 그대로)
-- [x] 개인정보처리방침 URL: https://graviton94.github.io/privacy/ (공개 저장소 graviton94.github.io). 문의는 Play 의 개발자 연락처로
-- [ ] 데이터 보안: 수집 · 공유하는 데이터 없음, 기기 안에만 저장, 결제는 Google Play
+- [x] 개인정보처리방침 URL: https://graviton94.github.io/privacy/ (공개 저장소 graviton94.github.io, 2026-10-05 판: 문의 ruahn49@gmail.com · 사진 · 의견 메일 반영)
+- [ ] 데이터 보안: `docs/store-listing.md` 의 표대로 — 앱 정보 및 성능 › 비정상 종료 로그 · 진단만 ‘수집’ (선택 사항 · 사용자가 직접 메일로 보낼 때만 · 공유 안 함 · 앱 기능/오류 수정). 그 밖은 기기 안에만, 결제는 Google Play
 - [ ] 콘텐츠 등급 설문 (폭력 · 도박 없음), 대상 연령 13세 이상, 광고 없음
 - [ ] 인앱 상품 3개 (4번 표)
 - [ ] 내부 테스트 트랙에 AAB (3번) → 폰에서 받아 확인 → 비공개 테스트 (개인 계정은 테스터 12명 · 14일 이상) → 프로덕션
 - [x] targetSdk 36 (빌드에 반영됨)
 - [x] 말 네 가지: 설정 › 앱 › 언어 에서 고를 수 있고 (locales_config), AAB 는 말을 나누지 않아 바꿔도 글자가 빠지지 않음
 - [x] 개발자 모드: Play 업로드 키로 만든 빌드 (`BuildConfig.DEV_TOOLS = false`) 에서는 켜지지 않음. 직접 설치 APK 에서는 그대로
+
+## 6. 직접 해야 하는 것만 (코드 · 문서 · 방침 페이지는 끝남)
+
+1. Play Console 개발자 계정 · 앱 만들기 · 스토어 등록정보 올리기 (5번 체크리스트)
+2. 데이터 보안 설문 · 콘텐츠 등급 · 대상 연령 답하기 (5번 표 그대로)
+3. 인앱 상품 3개 만들기 (4번 표)
+4. GitHub Secrets 의 `ANDROID_UPLOAD_PASSPHRASE` 확인 → Actions › **Android release (Play)** 실행 → `.aab` 를 내부 테스트 트랙에 올림 → 실기기 확인 → 비공개 테스트 (테스터 12명 · 14일)
+5. Play 앱 서명 켜기 (업로드 키를 잃어도 재설정할 수 있게)
