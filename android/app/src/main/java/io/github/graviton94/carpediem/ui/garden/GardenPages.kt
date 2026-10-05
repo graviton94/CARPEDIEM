@@ -393,7 +393,8 @@ private fun CollectionTile(seed: Int, art: @Composable () -> Unit, title: String
             TokenText(title, Tokens.TypeScale.footnote, Modifier.fillMaxWidth(), weight = FontWeight.SemiBold, align = TextAlign.Center, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
             TokenText(date, Tokens.TypeScale.caption2, color = p.secondary, align = TextAlign.Center, maxLines = 1)
         }
-        TokenText("?", Tokens.TypeScale.caption2, Modifier.align(Alignment.TopEnd).padding(Tokens.Space.sp1).size(u * 16f)
+        // 크레용 테두리 안쪽으로 넉넉히 (가장자리에 붙지 않게)
+        TokenText("?", Tokens.TypeScale.caption2, Modifier.align(Alignment.TopEnd).padding(top = Tokens.Space.sp2 + Tokens.Space.sp1, end = Tokens.Space.sp2 + Tokens.Space.sp1).size(u * 16f)
             .border(u * 1.2f, p.secondary.copy(alpha = 0.6f), androidx.compose.foundation.shape.CircleShape), color = p.secondary, align = TextAlign.Center)
     }
 }
