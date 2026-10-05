@@ -431,7 +431,7 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
             }
             run {
                 var confirmClear by remember { mutableStateOf(false) }
-                FormSection(header = stringResource(R.string.lines), footer = stringResource(R.string.lines_keepFooter) + if (Theme.garden) "\n" + stringResource(R.string.care_footer) + "\n" + stringResource(R.string.question_onFooter) + "\n" + stringResource(R.string.seed_settingFooter) else "") {
+                FormSection(header = stringResource(R.string.lines), footer = stringResource(R.string.lines_keepFooter)) {   // 켜고 끄는 이름만으로 알 수 있는 것은 설명을 덧붙이지 않음 (지워지는 것만 알림)
                     FormRow(stringResource(R.string.lines_keep), onClick = { state.changeKeepLines(!state.keepLines) }) {
                         Switch(state.keepLines, { state.changeKeepLines(it) }, colors = SwitchDefaults.colors(checkedTrackColor = p.olive))
                     }

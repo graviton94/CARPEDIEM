@@ -224,7 +224,10 @@ internal fun MemoryStars(state: AppState, width: Dp, top: Dp, bottom: Dp, night:
         val r = Crayon.Rng(m.id.hashCode())
         val x = width * (0.14f + 0.72f * r.next()); val y = top + (bottom - top) * r.next()
         val a11y = stringResource(R.string.memory_starNote, m.name)
-        Canvas(Modifier.offset(x - size / 2, y - size / 2).size(size).semantics { contentDescription = a11y }.clickable { shown = m.id }.graphicsLayer()) {
+        val tt = Tokens.Layout.tapTarget
+        Box(Modifier.offset(x - tt / 2, y - tt / 2).size(tt).semantics { contentDescription = a11y }
+            .clickable(interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }, indication = null) { shown = m.id })
+        Canvas(Modifier.offset(x - size / 2, y - size / 2).size(size).graphicsLayer()) {
             val c = Offset(this.size.width / 2, this.size.height / 2); val k = this.size.width / 22f
             val warm = G.Night.Colors.firefly
             // 그 주엔 빛이 넓고 밝게, 6초에 한 번 숨 쉬듯

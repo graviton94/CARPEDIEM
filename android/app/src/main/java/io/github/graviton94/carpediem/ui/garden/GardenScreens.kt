@@ -511,8 +511,11 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                     sl.id?.let { pid -> offered[pid] }?.let { o ->
                         val ow = u * G.Family.offerSize
                         val label = stringResource(R.string.offer_label, Labels.season(ctx, o.card.season), sl.name, cardName(ctx, o.card.key))
-                        Image(GardenArt.card(ctx, o.card.key), label, Modifier.offset(xs[i] - u * widths[i].toFloat() / u.value / 2 - ow * 0.45f, gy - ow * 0.9f).size(ow)
-                            .clickable(enabled = !bare) { state.say(label) }, colorFilter = nightFilter(SkyTime.isDark(now)))
+                        val ox = xs[i] - u * widths[i].toFloat() / u.value / 2 - ow * 0.45f; val oy = gy - ow * 0.9f
+                        Image(GardenArt.card(ctx, o.card.key), label, Modifier.offset(ox, oy).size(ow), colorFilter = nightFilter(SkyTime.isDark(now)))
+                        // 누르는 자리는 손가락 크기만큼 (그림은 작아도)
+                        val tt = Tokens.Layout.tapTarget
+                        if (!bare) Box(Modifier.offset(ox + ow / 2 - tt / 2, oy + ow / 2 - tt / 2).size(tt).clickable(interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }, indication = null) { state.say(label) })
                     }
                 } }
 

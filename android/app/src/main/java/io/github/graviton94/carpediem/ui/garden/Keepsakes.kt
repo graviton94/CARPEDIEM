@@ -1,5 +1,6 @@
 package io.github.graviton94.carpediem.ui.garden
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
@@ -157,7 +158,10 @@ internal fun JarMound(state: AppState, today: LocalDate, x: Dp, gy: Dp) {
     val u = Theme.unit
     val w = u * 12f
     val label = stringResource(R.string.capsule_mound, RecordText.day(ctx, sealed.minOf { it.opens }))
-    Canvas(Modifier.offset(x - w / 2, gy - w * 0.45f).size(w, w * 0.5f).semantics { contentDescription = label }.clickable { state.say(label) }) {
+    val tt = Tokens.Layout.tapTarget
+    Box(Modifier.offset(x - tt / 2, gy - w * 0.2f - tt / 2).size(tt).semantics { contentDescription = label }
+        .clickable(interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }, indication = null) { state.say(label) })
+    Canvas(Modifier.offset(x - w / 2, gy - w * 0.45f).size(w, w * 0.5f)) {
         val k = size.width / 12f
         drawOval(Color(0xFF7A5A38).copy(alpha = 0.75f), Offset(0.5f * k, 2.4f * k), Size(11f * k, 3.4f * k))
         drawRoundRect(Color(0xFF8C6A44), Offset(4.2f * k, 1.6f * k), Size(3.6f * k, 1.1f * k), CornerRadius(0.5f * k))
@@ -177,7 +181,8 @@ internal fun RingSheet(state: AppState, profile: LifeProfile, age: Int, now: Loc
     val older = remember(age, state.lines) { Rings.done(profile.birthDate, now.toLocalDate(), state.lines).filter { it < age }.size }
     var walk by remember { mutableStateOf(false) }
     var letter by remember { mutableStateOf(false) }
-    ModalBottomSheet(onDismissRequest = onDismiss, containerColor = Theme.gc.paper, sheetState = androidx.compose.material3.rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
+    // 편지를 쓰는 동안은 나이테 창을 접어 둠 (창 위에 창이 겹치지 않게), 다 쓰면 다시
+    if (!letter) ModalBottomSheet(onDismissRequest = onDismiss, containerColor = Theme.gc.paper, sheetState = androidx.compose.material3.rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
         Column(Modifier.fillMaxWidth().imePadding().verticalScroll(rememberScrollState()).padding(horizontal = Theme.deviceClass.pageMargin).navigationBarsPadding().padding(bottom = Tokens.Space.sp6),
             horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
             TokenText("${RecordText.day(ctx, ring.start)} — ${RecordText.day(ctx, ring.end)}", Tokens.TypeScale.caption1, color = p.secondary)
@@ -197,7 +202,7 @@ internal fun RingSheet(state: AppState, profile: LifeProfile, age: Int, now: Loc
                         val season = io.github.graviton94.carpediem.core.Memories.seasonOf(l.date)
                         if (season != lastSeason) { lastSeason = season; TokenText(Labels.season(ctx, season), Tokens.TypeScale.caption1, Modifier.padding(top = Tokens.Space.sp2), color = p.olive) }
                         Row(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
-                            Box(Modifier.padding(top = Tokens.Space.sp1).size(Theme.unit * 3f).crayonBox(moodColor(l.feeling), 99f, 0.6f, 1540))
+                            Box(Modifier.padding(top = Tokens.Space.sp1).size(Theme.unit * 3f).background(moodColor(l.feeling), androidx.compose.foundation.shape.CircleShape))   // 줄마다 크레용 층을 두지 않음 (한 해면 수백 줄)
                             TokenText("${RecordText.day(ctx, l.date)}  ${l.text}", Tokens.TypeScale.footnote)
                         }
                     }

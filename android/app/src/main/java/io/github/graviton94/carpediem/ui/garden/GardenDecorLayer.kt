@@ -1,5 +1,7 @@
 package io.github.graviton94.carpediem.ui.garden
 
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.collectAsState
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
@@ -82,7 +84,7 @@ private fun HitArea(img: androidx.compose.ui.graphics.ImageBitmap, x: Dp, y: Dp,
     if (onTap == null) return
     val b = GardenArt.opaque(img); val w = k * boxW; val h = k * boxH
     val left = x - k * atX; val top = y - k * atY
-    val minTap = 40.dp
+    val minTap = Tokens.Layout.tapTarget
     val ww = maxOf(w * b.width, minTap); val hh = maxOf(h * b.height, minTap)
     val cx = left + w * (b.left + b.width / 2); val cy = top + h * (b.top + b.height / 2)
     val quiet = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
@@ -202,12 +204,18 @@ internal fun DecorBack(decor: Decor, now: LocalDateTime, gy: Dp, x0: Dp, x1: Dp,
 
 internal const val FRAME_NS = 33_000_000L
 
+/** 정원의 움직임을 잠시 쉬게 함 (첫 화면이 덮고 있는 동안). */
+internal object GardenPause { var on by androidx.compose.runtime.mutableStateOf(false) }
+
 /** 정원의 시계 (초, 움직임을 끈 기기면 0 에 멈춤). 값은 graphicsLayer · Canvas 안에서만 읽을 것. */
 @Composable
 internal fun rememberGardenClock(moving: Boolean): androidx.compose.runtime.State<Float> {
     val clock = remember { androidx.compose.runtime.mutableFloatStateOf(0f) }
-    if (moving) androidx.compose.runtime.LaunchedEffect(Unit) {
-        val start = androidx.compose.runtime.withFrameNanos { it }; var last = 0L
+    // 쉬는 때: 앱이 앞에 없을 때 · 첫 화면이 덮고 있을 때 (보이지 않는데 배터리만 씀). 다시 흐르면 멈춘 자리에서 이어짐
+    val life by androidx.lifecycle.compose.LocalLifecycleOwner.current.lifecycle.currentStateFlow.collectAsState()
+    val run = moving && !GardenPause.on && life.isAtLeast(androidx.lifecycle.Lifecycle.State.RESUMED)
+    if (run) androidx.compose.runtime.LaunchedEffect(Unit) {
+        val start = androidx.compose.runtime.withFrameNanos { it } - (clock.floatValue * 1_000_000_000f).toLong(); var last = 0L
         // 느린 움직임뿐이라 1초에 30번이면 충분 (그리는 일을 반으로)
         while (true) androidx.compose.runtime.withFrameNanos { if (it - last >= FRAME_NS) { last = it; clock.floatValue = (it - start) / 1_000_000_000f } }
     }

@@ -468,5 +468,5 @@ private fun CareLine(state: AppState, c: Care, onGo: () -> Unit) {
         return
     }
     val text = stringResource(when (c) { Care.CALM_BREATH -> R.string.care_calm; Care.BOX_BREATH -> R.string.care_box; Care.SLEEP_BREATH -> R.string.care_sleep; Care.MORNING_BREATH -> R.string.care_morning; else -> R.string.care_look })
-    TokenText(text, Tokens.TypeScale.footnote, Modifier.clickable(onClick = onGo).padding(vertical = Tokens.Space.sp2), color = p.olive, weight = FontWeight.SemiBold, align = TextAlign.Center)
+    TokenText(text, Tokens.TypeScale.footnote, Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable(onClick = onGo).padding(horizontal = Tokens.Space.sp3, vertical = Tokens.Space.sp3), color = p.olive, weight = FontWeight.SemiBold, align = TextAlign.Center)
 }

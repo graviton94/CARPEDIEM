@@ -1,5 +1,6 @@
 package io.github.graviton94.carpediem
 
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import android.app.Application
@@ -126,7 +127,13 @@ class MainActivity : ComponentActivity() {
                 val screenW = maxWidth
                 fun clock() = state.fixedNow ?: LocalDateTime.now()
                 var now by remember { mutableStateOf(clock()) }
-                LaunchedEffect(Unit) { while (true) { delay(60_000); now = clock() } }
+                // 분이 바뀔 때마다 (분 경계에 맞춰), 앱이 보일 때만. 돌아오면 바로 지금 시각으로
+                val clockOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
+                LaunchedEffect(clockOwner) {
+                    clockOwner.lifecycle.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED) {
+                        while (true) { now = clock(); delay(60_000L - System.currentTimeMillis() % 60_000L) }
+                    }
+                }
                 // 정원은 시각을 따라: 밤 · 새벽은 어두운 한 벌, 낮 · 해 질 녘은 밝은 종이 (폰 테마와 상관없이)
                 val night = SkyTime.isDark(now)
                 CarpeDiemTheme(deviceClass = DeviceClass.of(screenW), design = state.design, screenWidth = screenW, night = night) {
@@ -134,7 +141,7 @@ class MainActivity : ComponentActivity() {
                     // 정원을 처음부터 다시 그리는 번호 (알림에서 다른 페이지 · 판으로 갈 때)
                     var homeEpoch by remember { mutableStateOf(0) }
                     var title by remember { mutableStateOf(firstTitle) }
-                    androidx.compose.runtime.SideEffect { if (state.titleUp != title) state.titleUp = title }
+                    androidx.compose.runtime.SideEffect { if (state.titleUp != title) state.titleUp = title; io.github.graviton94.carpediem.ui.garden.GardenPause.on = title }
                     LaunchedEffect(newOpen) {
                         val x = newOpen ?: return@LaunchedEffect
                         newOpen = null

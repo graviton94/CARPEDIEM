@@ -51,7 +51,11 @@ object Photos {
             ctx.contentResolver.openInputStream(uri)?.use { BitmapFactory.decodeStream(it, null, o) }
             val m = minOf(o.outWidth, o.outHeight).coerceAtLeast(1)
             val opts = BitmapFactory.Options().apply { inSampleSize = maxOf(1, m / (SIZE * 2)) }
-            ctx.contentResolver.openInputStream(uri)?.use { BitmapFactory.decodeStream(it, null, opts) } ?: return false
+            val raw = ctx.contentResolver.openInputStream(uri)?.use { BitmapFactory.decodeStream(it, null, opts) } ?: return false
+            // 안드로이드 8 까지는 사진의 방향 표시를 따로 읽어 돌려 줌 (세운 사진이 눕지 않게)
+            val turn = runCatching { ctx.contentResolver.openInputStream(uri)?.use { android.media.ExifInterface(it).getAttributeInt(android.media.ExifInterface.TAG_ORIENTATION, android.media.ExifInterface.ORIENTATION_NORMAL) } }.getOrNull()
+            val deg = when (turn) { android.media.ExifInterface.ORIENTATION_ROTATE_90 -> 90f; android.media.ExifInterface.ORIENTATION_ROTATE_180 -> 180f; android.media.ExifInterface.ORIENTATION_ROTATE_270 -> 270f; else -> 0f }
+            if (deg == 0f) raw else Bitmap.createBitmap(raw, 0, 0, raw.width, raw.height, android.graphics.Matrix().apply { postRotate(deg) }, true)
         }
         val m = minOf(src.width, src.height)
         val sq = Bitmap.createBitmap(SIZE, SIZE, Bitmap.Config.ARGB_8888)
