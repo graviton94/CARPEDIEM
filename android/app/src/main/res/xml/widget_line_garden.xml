@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- 오늘의 한 줄: 오늘의 문장과 ‘한 줄 남기기’ (누르면 기록 페이지의 쓰는 칸으로). -->
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:previewImage="@drawable/widget_preview_line_garden"
     android:description="@string/widget_line_desc"
     android:minWidth="180dp"
     android:minHeight="110dp"
