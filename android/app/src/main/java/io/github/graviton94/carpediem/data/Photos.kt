@@ -31,7 +31,9 @@ object Photos {
     const val SIZE = 640
     private const val QUALITY = 82
     private const val PENDING = "pending.jpg"
-    private const val UNDO = "undo.jpg"
+    /** 방금 지운 날의 사진 (그날 번호를 붙여, 다른 날에 잘못 되돌아가지 않게). */
+    private fun undoFile(ctx: Context, day: LocalDate) = File(dir(ctx), "undo-${day.toEpochDay()}.jpg")
+    private fun dropUndo(ctx: Context) { dir(ctx).listFiles()?.filter { it.name.startsWith("undo") }?.forEach { it.delete() } }
 
     private fun dir(ctx: Context) = File(ctx.applicationContext.filesDir, "photos").apply { mkdirs() }
     fun file(ctx: Context, day: LocalDate) = File(dir(ctx), "${day.toEpochDay()}.jpg")
@@ -72,21 +74,25 @@ object Photos {
     fun commitPending(ctx: Context, day: LocalDate): Boolean { val p = pending(ctx); if (!p.exists()) return false; file(ctx, day).delete(); cache.evictAll(); return p.renameTo(file(ctx, day)) }
     fun dropPending(ctx: Context) { pending(ctx).delete() }
     /** 한 줄을 지우면 사진도 (방금 지운 것은 되돌리기 전까지 한 장만 맡아 둠). */
-    fun remove(ctx: Context, day: LocalDate) { val f = file(ctx, day); if (f.exists()) { File(dir(ctx), UNDO).delete(); f.renameTo(File(dir(ctx), UNDO)) }; cache.evictAll() }
-    fun undo(ctx: Context, day: LocalDate) { val u = File(dir(ctx), UNDO); if (u.exists() && !file(ctx, day).exists()) u.renameTo(file(ctx, day)); cache.evictAll() }
+    fun remove(ctx: Context, day: LocalDate) { dropUndo(ctx); val f = file(ctx, day); if (f.exists()) f.renameTo(undoFile(ctx, day)); cache.evictAll() }
+    fun undo(ctx: Context, day: LocalDate) { val u = undoFile(ctx, day); if (u.exists() && !file(ctx, day).exists()) u.renameTo(file(ctx, day)); dropUndo(ctx); cache.evictAll() }
     fun clear(ctx: Context) { dir(ctx).listFiles()?.forEach { it.delete() }; cache.evictAll() }
 
     // ───── 기록 옮기기: 사진도 함께 (이름 → base64) ─────
-    fun exportAll(ctx: Context): org.json.JSONObject {
-        val o = org.json.JSONObject()
-        dir(ctx).listFiles()?.filter { it.name.removeSuffix(".jpg").toLongOrNull() != null }?.forEach { f -> o.put(f.name, Base64.encodeToString(f.readBytes(), Base64.NO_WRAP)) }
-        return o
+    private fun photoName(n: String) = n.endsWith(".jpg") && n.removeSuffix(".jpg").toLongOrNull() != null
+    fun exportTo(ctx: Context, w: android.util.JsonWriter) {
+        dir(ctx).listFiles()?.filter { photoName(it.name) }?.forEach { f -> w.name(f.name).value(Base64.encodeToString(f.readBytes(), Base64.NO_WRAP)) }
     }
-    fun restoreAll(ctx: Context, o: org.json.JSONObject?) {
+    /** 들여오는 사진을 잠시 둘 곳 (다 읽고 설정까지 들인 뒤에만 [adopt]). */
+    fun stage(ctx: Context): File = File(ctx.applicationContext.cacheDir, "restore-photos").apply { deleteRecursively(); mkdirs() }
+    fun stageOne(stage: File, name: String, b64: String) {
+        if (!photoName(name)) return   // 날짜 번호 이름만 (경로를 품은 이름은 버림)
+        runCatching { File(stage, name).writeBytes(Base64.decode(b64, Base64.NO_WRAP)) }
+    }
+    fun adopt(ctx: Context, stage: File) {
         clear(ctx)
-        if (o == null) return
-        for (k in o.keys()) { if (k.removeSuffix(".jpg").toLongOrNull() == null) continue
-            runCatching { File(dir(ctx), k).writeBytes(Base64.decode(o.optString(k), Base64.NO_WRAP)) } }
+        stage.listFiles()?.forEach { f -> if (!f.renameTo(File(dir(ctx), f.name))) { f.copyTo(File(dir(ctx), f.name), overwrite = true); f.delete() } }
+        stage.deleteRecursively(); cache.evictAll()
     }
 
     // ───── 시간이 묻은 사진 ─────

@@ -1,5 +1,6 @@
 package io.github.graviton94.carpediem.share
 
+import kotlinx.coroutines.launch
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
@@ -300,12 +301,26 @@ object ShareCards {
         return b
     }
 
-    /** 그림을 캐시에 두고 폰의 ‘보내기’ 창을 연다. */
-    fun send(ctx: Context, bmp: Bitmap, name: String) {
+    /** 그림을 화면 스레드 밖에서 그리고 저장한 뒤 ‘보내기’ 창을 연다 (느린 폰에서 누른 순간 멈추지 않게). */
+    fun send(ctx: Context, name: String, draw: () -> Bitmap) {
+        kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.Default).launch {
+            val f = runCatching { save(ctx, draw(), name) }.getOrNull() ?: return@launch
+            kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) { open(ctx, f) }
+        }
+    }
+
+    /** 이미 그린 그림을 보냄 (저장도 화면 스레드 밖에서). */
+    fun send(ctx: Context, bmp: Bitmap, name: String) = send(ctx, name) { bmp }
+
+    private fun save(ctx: Context, bmp: Bitmap, name: String): File {
+        val dir = File(ctx.cacheDir, "share").apply { mkdirs() }
+        val f = File(dir, "$name.png")
+        f.outputStream().use { bmp.compress(Bitmap.CompressFormat.PNG, 100, it) }
+        return f
+    }
+
+    private fun open(ctx: Context, f: File) {
         runCatching {
-            val dir = File(ctx.cacheDir, "share").apply { mkdirs() }
-            val f = File(dir, "$name.png")
-            f.outputStream().use { bmp.compress(Bitmap.CompressFormat.PNG, 100, it) }
             val uri = FileProvider.getUriForFile(ctx, "${ctx.packageName}.share", f)
             val send = Intent(Intent.ACTION_SEND).setType("image/png").putExtra(Intent.EXTRA_STREAM, uri).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             ctx.startActivity(Intent.createChooser(send, ctx.getString(R.string.share_chooser)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))

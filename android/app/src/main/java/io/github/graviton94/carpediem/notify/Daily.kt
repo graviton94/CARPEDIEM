@@ -54,9 +54,11 @@ object Daily {
 
     /** 지금부터 다음 hour:minute 까지 (분). */
     internal fun delayTo(hour: Int, minute: Int): Long {
-        val now = LocalDateTime.now()
-        var next = now.toLocalDate().atTime(LocalTime.of(hour.coerceIn(0, 23), minute.coerceIn(0, 59)))
-        if (!next.isAfter(now)) next = next.plusDays(1)
+        // 시간대를 붙여 계산 (서머타임이 바뀌는 날에도 벽시계 시각에 맞게)
+        val now = java.time.ZonedDateTime.now()
+        val at = LocalTime.of(hour.coerceIn(0, 23), minute.coerceIn(0, 59))
+        var next = now.toLocalDate().atTime(at).atZone(now.zone)
+        if (!next.isAfter(now)) next = now.toLocalDate().plusDays(1).atTime(at).atZone(now.zone)
         return Duration.between(now, next).toMinutes()
     }
 

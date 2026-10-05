@@ -106,6 +106,7 @@ class MainActivity : ComponentActivity() {
         // 오늘의 하늘 · 땅 그림을 화면 밖에서 먼저 읽기 시작
         runCatching { val p = io.github.graviton94.carpediem.data.Store(applicationContext).profile; io.github.graviton94.carpediem.ui.garden.GardenArt.warm(applicationContext, io.github.graviton94.carpediem.core.GardenDecor.realSeason(java.time.LocalDate.now(), p?.countryCode ?: "KR")) }
         val state = AppState(applicationContext)
+        if (savedInstanceState == null) state.resumeSchedules()
         // 알림 · 위젯 · 바로 가기로 왔는지 (그러면 첫 화면 없이 바로 그곳으로)
         val linked = savedInstanceState == null && (intent?.hasExtra(EXTRA_OPEN) == true || intent?.getBooleanExtra(EXTRA_MORNING_BREATH, false) == true)
         val start = (if (BuildConfig.DEBUG) debugSetup(state) else Screen.Main).let { s ->
@@ -239,7 +240,7 @@ class MainActivity : ComponentActivity() {
                         is Screen.Credits -> state.profile?.let { io.github.graviton94.carpediem.ui.garden.CreditsScreen(state, it, s.year) { screen = s.back } } ?: run { screen = Screen.Main }
                         is Screen.CloseDay -> state.profile?.let { io.github.graviton94.carpediem.ui.garden.CloseDayScreen(state, it, now) { screen = s.back } } ?: run { screen = Screen.Main }
                         is Screen.AddPerson -> state.profile?.let {
-                            AddPersonScreen(state, it, s.editId, onDone = { id -> screen = if (s.memory) Screen.Memory(Screen.Main) else if (s.editId != null && id != null) (s.back as? Screen.Stone)?.copy() ?: Screen.Main else Screen.Main },
+                            AddPersonScreen(state, it, s.editId, onDone = { id -> screen = if (s.memory) Screen.Memory(Screen.Main) else if (s.editId != null && id != null) (s.back as? Screen.Stone)?.copy() ?: Screen.Main else if (s.back == Screen.Settings) Screen.Settings else Screen.Main },
                                 onBack = { screen = s.back }, memory = s.memory, onAddMemory = { screen = Screen.AddPerson(null, s, memory = true) },
                                 onMovedToMemory = { screen = Screen.Memory(Screen.Main) })
                         } ?: run { screen = Screen.Main }

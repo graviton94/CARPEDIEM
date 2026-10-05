@@ -135,7 +135,7 @@ fun StoneScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, id: S
             if (birthday) TokenText(if (me) stringResource(if (soon == 0) R.string.bday_mineToday else R.string.bday_mineTomorrow) else stringResource(if (soon == 0) R.string.bday_today else R.string.bday_tomorrow, name),
                 Tokens.TypeScale.callout.serif(), Modifier.fillMaxWidth(), align = TextAlign.Center)
             if (birthday && !me) GardenButton(stringResource(R.string.bday_card), {
-                io.github.graviton94.carpediem.share.ShareCards.send(ctx, io.github.graviton94.carpediem.share.ShareCards.birthday(ctx, name, person!!.seed, person.kind == Kind.PET, state.store.haruSeed, SkyTime.isDark(now)), "birthday-${person.id}-$today")
+                io.github.graviton94.carpediem.share.ShareCards.send(ctx, "birthday-${person.id}-$today") { io.github.graviton94.carpediem.share.ShareCards.birthday(ctx, name, person!!.seed, person.kind == Kind.PET, state.store.haruSeed, SkyTime.isDark(now)) }
             }, filled = true, seed = 873)
             // 함께한 날 · 다음 생일
             Row(Modifier.guideTarget(guide, "stone.info"), horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {

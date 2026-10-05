@@ -139,7 +139,7 @@ internal fun RecordPanel(state: AppState, view: RecordView, onView: (RecordView)
                     }
                 } else TokenText(stringResource(R.string.record_hint), Tokens.TypeScale.footnote, Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.Center)
                 GardenButton(stringResource(R.string.share_image), {
-                    io.github.graviton94.carpediem.share.ShareCards.send(ctx, io.github.graviton94.carpediem.share.ShareCards.month(ctx, book, days, state.store.haruSeed, night, today, shown, sub), "month-${view.year}-$m")
+                    io.github.graviton94.carpediem.share.ShareCards.send(ctx, "month-${view.year}-$m") { io.github.graviton94.carpediem.share.ShareCards.month(ctx, book, days, state.store.haruSeed, night, today, shown, sub) }
                 }, filled = false, seed = 1173)
             } else {
                 val y = view.year
@@ -155,7 +155,7 @@ internal fun RecordPanel(state: AppState, view: RecordView, onView: (RecordView)
                 if (y < today.year || (today.monthValue == 12 && today.dayOfMonth == 31))
                     TokenText(stringResource(R.string.year_end), Tokens.TypeScale.callout.serif(), Modifier.fillMaxWidth(), align = TextAlign.Center)
                 GardenButton(stringResource(R.string.share_image), {
-                    io.github.graviton94.carpediem.share.ShareCards.send(ctx, io.github.graviton94.carpediem.share.ShareCards.year(ctx, book, days, state.store.haruSeed, night, today, title, count, thanks), "year-$y")
+                    io.github.graviton94.carpediem.share.ShareCards.send(ctx, "year-$y") { io.github.graviton94.carpediem.share.ShareCards.year(ctx, book, days, state.store.haruSeed, night, today, title, count, thanks) }
                 }, filled = false, seed = 1181)
             }
         }

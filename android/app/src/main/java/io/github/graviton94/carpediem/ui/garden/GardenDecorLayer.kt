@@ -290,11 +290,6 @@ internal fun DecorSheet(part: DecorPart, decor: Decor, state: AppState, now: Loc
         DecorPart.KITE -> if (decor.kite) stringResource(R.string.decor_kite_line, "$written", "${decor.ribbons.size}") else stringResource(R.string.decor_kite_none, "${D.kiteLines.toInt()}")
         DecorPart.MOSS -> stringResource(R.string.decor_moss_line, "${state.gazeDays.size}", "${decor.buds}")
     }
-    val next = when (part) {
-        DecorPart.TREE -> listOf(D.stageDays1, D.stageDays2, D.stageDays3).map { it.toInt() }.firstOrNull { days < it }?.let { stringResource(R.string.decor_tree_next, "$it") }
-        DecorPart.POST, DecorPart.LETTER -> listOf(D.bellBreaths, D.lanternBreaths).map { it.toInt() }.firstOrNull { breathDays in 1 until it }?.let { stringResource(R.string.decor_post_next, "$it") }
-        else -> null
-    }
     val help = when (part) {
         DecorPart.TREE -> R.string.decor_tree_help; DecorPart.CARD -> R.string.decor_card_help; DecorPart.POST, DecorPart.LETTER -> R.string.decor_post_help
         DecorPart.KITE -> R.string.decor_kite_help; DecorPart.MOSS -> R.string.decor_moss_help
@@ -303,7 +298,6 @@ internal fun DecorSheet(part: DecorPart, decor: Decor, state: AppState, now: Loc
         Image(img, null, Modifier.height(u * if (part == DecorPart.CARD) 150f else 110f))
         TokenText(title, Tokens.TypeScale.title3.serif(), align = TextAlign.Center)
         TokenText(line, Tokens.TypeScale.body, align = TextAlign.Center)
-        next?.let { TokenText(it, Tokens.TypeScale.footnote, color = p.secondary, align = TextAlign.Center) }
         TokenText(stringResource(help), Tokens.TypeScale.footnote, color = p.secondary, align = TextAlign.Center)
     }
 }

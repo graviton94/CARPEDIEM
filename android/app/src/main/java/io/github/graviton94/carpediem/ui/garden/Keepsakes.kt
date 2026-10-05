@@ -257,7 +257,8 @@ internal fun KeepsakesSection(state: AppState, profile: LifeProfile, now: LocalD
     var reading by remember { mutableStateOf<Capsule?>(null) }
     var ringAge by remember { mutableStateOf<Int?>(null) }
     // 한 해의 엔딩 크레딧 (08): 한 줄이 있는 해마다
-    val years = remember(state.lines) { state.gardenYears() }
+    // 올해 것은 12월 21일부터 (그 전엔 연말의 선물을 미리 펼치지 않게), 이미 본 해는 언제든
+    val years = remember(state.lines, today) { state.gardenYears().filter { y -> y < today.year || (today.monthValue == 12 && today.dayOfMonth >= 21) || y in state.creditsShown } }
     if (part == KeepPart.LOOKBACK && years.isNotEmpty()) {
         TokenText(stringResource(R.string.credits_section), Tokens.TypeScale.headline, Modifier.padding(top = Tokens.Space.sp2))
         TokenText(stringResource(R.string.credits_sectionSub), Tokens.TypeScale.footnote, color = p.secondary)

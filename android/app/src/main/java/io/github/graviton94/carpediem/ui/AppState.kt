@@ -180,7 +180,16 @@ class AppState(private val context: Context) {
     /** 폰 설정에서 알림 허락을 거두었으면 켜 둔 알림 스위치도 끔 (켜져 보이는데 오지 않는 일이 없게). 화면에 돌아올 때마다. */
     fun recheckNotify() {
         if (io.github.graviton94.carpediem.notify.Daily.allowed(context)) return
+        // 켜 둔 알림이 있는데 허락이 없으면 (새 폰으로 옮겨 왔거나 허락을 거둠): 끄고, 다음에 알맞은 때 한 번 다시 물을 수 있게
+        if (notify || eveningNotify || tomorrowNotify) store.notifyAsked = false
         if (notify) changeNotify(false); if (eveningNotify) changeEvening(false); if (tomorrowNotify) changeTomorrow(false)
+    }
+    /** 앱을 열 때 켜 둔 알림을 다시 맞춤 (폰을 옮기거나 기록을 들여오면 예약이 없고, 서머타임이 바뀌면 한 시간 어긋나므로). */
+    fun resumeSchedules() {
+        if (!io.github.graviton94.carpediem.notify.Daily.allowed(context)) return
+        if (notify) io.github.graviton94.carpediem.notify.Daily.schedule(context, true)
+        if (eveningNotify) io.github.graviton94.carpediem.notify.Evening.schedule(context, true)
+        if (tomorrowNotify) io.github.graviton94.carpediem.notify.Tomorrow.schedule(context, true)
     }
     var morningMinute by mutableStateOf(store.morningMinute)
         private set
@@ -337,6 +346,9 @@ class AppState(private val context: Context) {
         val l = store.lines; if (l != lines) lines = l
         val s = store.streaks; if (s != streaks) streaks = s
     }
+    // 앱이 열린 채 알림에서 답장하면 (화면이 멈추지 않으므로 onResume 이 없음) 바로 맞춰, 앱이 낡은 목록으로 덮어쓰지 않게
+    private val prefsWatch = android.content.SharedPreferences.OnSharedPreferenceChangeListener { _, key -> if (key == "lines" || key == "streaks") syncFromStore() }
+    init { context.applicationContext.getSharedPreferences("carpediem", Context.MODE_PRIVATE).registerOnSharedPreferenceChangeListener(prefsWatch) }
 
     // ───── 아침 씨앗 (04) ─────
     var seedsOn by mutableStateOf(store.seedsOn)
@@ -398,7 +410,8 @@ class AppState(private val context: Context) {
     fun titleDue(): Boolean = titleOn && design == Design.GARDEN
     fun titleSeen(today: LocalDate) { store.titleDay = today }
     // ───── 한 해의 엔딩 크레딧 (08) ─────
-    private var creditsShown by mutableStateOf(store.creditsShown)
+    var creditsShown by mutableStateOf(store.creditsShown)
+        private set
     /** 12월 21일부터: 올해 한 줄이 있고 아직 권하지 않았으면 그 해. */
     fun creditsDue(today: LocalDate): Int? = today.year.takeIf { today.monthValue == 12 && today.dayOfMonth >= 21 && design == Design.GARDEN && keepLines && it !in creditsShown && lines.any { l -> l.date.year == it } }
     fun creditsSeen(year: Int) { val v = creditsShown + year; store.creditsShown = v; creditsShown = v }
@@ -428,6 +441,8 @@ class AppState(private val context: Context) {
         if (!v) {
             val dates = lines.map { DayLine(it.date, "", null) }; store.lines = dates; lines = dates
             val m = memoryLines.map { it.copy(text = "") }; store.memoryLines = m; memoryLines = m
+            // 사진도 글처럼 남기지 않음
+            io.github.graviton94.carpediem.data.Photos.clear(context); draftPhoto = false; photoKick++
         }
     }
     fun clearLines() { store.clearLines(); lines = emptyList(); randomLine = null; memoryLines = emptyList() }
@@ -455,7 +470,7 @@ class AppState(private val context: Context) {
     var answering by mutableStateOf<io.github.graviton94.carpediem.core.Question?>(null)
     /** 한 줄에 붙인 사진 (11): 바뀌면 다시 그리게. draftPhoto = 쓰는 중에 골라 둔 사진 (보내면 그날의 사진으로). */
     var photoKick by mutableStateOf(0)
-    var draftPhoto by mutableStateOf(false)
+    var draftPhoto by mutableStateOf(io.github.graviton94.carpediem.data.Photos.pending(context).exists())   // 사진을 고르는 사이 앱이 닫혀도 이어서
     /** 보낸 한 줄에 맡겨 둔 사진을 붙임 (기록 남기기를 끄면 사진도 남기지 않음). */
     fun commitPhoto(day: LocalDate) {
         if (!draftPhoto) return

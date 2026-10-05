@@ -136,7 +136,7 @@ fun OnboardingScreen(state: AppState, onCountry: () -> Unit) {
                 if (uri == null) return@rememberLauncherForActivityResult
                 // 읽고 되살리기는 화면 밖에서 (사진이 많으면 오래 걸림)
                 backupScope.launch {
-                val ok = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { runCatching { ctx.contentResolver.openInputStream(uri)?.use { it.readBytes().decodeToString() } }.getOrNull()?.let { state.store.restore(it) } == true }
+                val ok = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { runCatching { ctx.contentResolver.openInputStream(uri)?.use { state.store.restore(it) } }.getOrNull() == true }
                 if (ok) {
                     state.say(ctx.getString(R.string.backup_done))
                     io.github.graviton94.carpediem.widget.Widgets.refresh(ctx)
@@ -356,7 +356,7 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
     val saveFile = androidx.activity.compose.rememberLauncherForActivityResult(androidx.activity.result.contract.ActivityResultContracts.CreateDocument("application/json")) { uri ->
         if (uri != null) settingsScope.launch {
             // 사진까지 담으면 커서 화면 밖에서 만들고 씀
-            val ok = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { runCatching { ctx.contentResolver.openOutputStream(uri)?.use { it.write(state.store.backup().toByteArray()) } != null }.getOrDefault(false) }
+            val ok = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { runCatching { ctx.contentResolver.openOutputStream(uri)?.use { state.store.backup(it) } != null }.getOrDefault(false) }
             if (ok) { state.store.lastBackup = java.time.LocalDate.now().toEpochDay(); lastBackup = state.store.lastBackup }
             state.say(ctx.getString(if (ok) R.string.backup_saved else R.string.backup_saveFail))
         }
@@ -511,7 +511,7 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
                         confirmButton = { TextButton(onClick = {
                             restoreFrom = null
                             settingsScope.launch {
-                            val ok = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { runCatching { ctx.contentResolver.openInputStream(uri)?.use { it.readBytes().decodeToString() } }.getOrNull()?.let { state.store.restore(it) } == true }
+                            val ok = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { runCatching { ctx.contentResolver.openInputStream(uri)?.use { state.store.restore(it) } }.getOrNull() == true }
                             if (ok) {
                                 state.say(ctx.getString(R.string.backup_done))
                                 // 새로 들여온 기록으로 처음부터 (알림 · 위젯도 새로)
@@ -575,9 +575,10 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
                     ChipPicker(GridScale.entries, state.defaultGrid, { Labels.gridShort(ctx, it) }) { state.changeDefaultGrid(it) }
                 }
             }
-            FormSection(header = stringResource(R.string.words)) {
+            // 문장 언어: 고를 것이 있을 때만 (영어 폰은 영어 하나라 칸째 없음)
+            if (io.github.graviton94.carpediem.data.Words.choosable(ctx)) FormSection(header = stringResource(R.string.words)) {
                 FormRow(stringResource(R.string.words_language)) {
-                    if (io.github.graviton94.carpediem.data.Words.choosable(ctx)) ChipPicker(QuoteLanguage.entries, state.quoteLanguage, { Labels.quoteLanguage(ctx, it) }) { state.changeQuoteLanguage(it) }
+                    ChipPicker(QuoteLanguage.entries, state.quoteLanguage, { Labels.quoteLanguage(ctx, it) }) { state.changeQuoteLanguage(it) }
                 }
             }
             FormSection(header = stringResource(R.string.widgets)) {
@@ -636,7 +637,9 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
             onDismissRequest = { confirmErase = false },
             title = { Text(stringResource(R.string.erase_confirm)) },
             text = { Text(stringResource(R.string.backup_before)) },
-            confirmButton = { TextButton(onClick = { confirmErase = false; state.eraseAll(); onClose() }) { Text(stringResource(R.string.erase_action), color = p.danger) } },
+            confirmButton = { TextButton(onClick = { confirmErase = false; state.eraseAll(); onClose()
+                // 지운 뒤에는 화면을 새로 지어, 메모리에 남은 지난 값 (묻어 둔 편지 · 씨앗 등) 이 다시 저장되지 않게
+                (ctx as? android.app.Activity)?.takeIf { !it.isFinishing && !it.isDestroyed }?.recreate() }) { Text(stringResource(R.string.erase_action), color = p.danger) } },
             dismissButton = { TextButton(onClick = { confirmErase = false; backupNow() }) { Text(stringResource(R.string.backup_first)) } },
         )
     }

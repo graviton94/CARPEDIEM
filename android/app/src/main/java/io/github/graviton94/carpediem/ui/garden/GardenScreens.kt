@@ -31,6 +31,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -398,7 +399,8 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                             val second = if (!sleepy) io.github.graviton94.carpediem.data.Words.second(q, state.quoteLanguage, phone) else null
                             // 한 글자씩 바뀌는 수는 이 작은 묶음 안에서만 읽음 (정원 전체가 글자마다 다시 짜이지 않게)
                             TypedQuote(state, main, second)
-                            if (!sleepy) TokenText(stringResource(R.string.words_next), Tokens.TypeScale.caption1, color = p.secondary, weight = FontWeight.Normal)
+                            // ‘눌러서 다음 문장’ 은 처음 일주일만 (알고 난 뒤엔 문장만 조용히)
+                            if (!sleepy && day0.isBefore(state.store.startDate.plusDays(7))) TokenText(stringResource(R.string.words_next), Tokens.TypeScale.caption1, color = p.secondary, weight = FontWeight.Normal)
                         }
                     }
                     // 저녁 7시 이후 · 밤: 하루 닫기 (한 줄 → 고마움 → 등불) · 아침: 씨앗 하나 (04), 심었거나 넘겼으면 하루를 여는 숨 1분
@@ -410,7 +412,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                     else if (Labels.part(now) == io.github.graviton94.carpediem.core.DayPart.MORNING && state.breaths.none { it.first == now.toLocalDate() } && !(state.seedDue(now) && !touring)
                         && io.github.graviton94.carpediem.core.Pace.morningBreath(day0))
                         TokenText(stringResource(R.string.breath_morning), Tokens.TypeScale.footnote.serif(),
-                            Modifier.clickable { askBreath = BreathKind.CALM to R.string.breath_morning }.padding(Tokens.Space.sp2), color = p.secondary)
+                            Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { askBreath = BreathKind.CALM to R.string.breath_morning }.padding(Tokens.Space.sp3), color = p.secondary)
                     askBreath?.let { (kind, name) ->
                         io.github.graviton94.carpediem.ui.GardenAlert(
                             onDismissRequest = { askBreath = null },
@@ -978,7 +980,8 @@ internal fun Sparkles(art: HaruArt, scale: Dp) {
 @Composable
 fun GardenChip(text: String, selected: Boolean, seed: Int, onClick: () -> Unit) {
     Box(
-        Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable(onClick = onClick), contentAlignment = Alignment.Center,
+        // 읽어 주기에서도 고른 칩인지 알 수 있게 (선택 상태 · 버튼 역할)
+        Modifier.heightIn(min = Tokens.Layout.tapTarget).selectable(selected = selected, role = androidx.compose.ui.semantics.Role.Button, onClick = onClick), contentAlignment = Alignment.Center,
     ) {
         Box(Modifier.crayonBox(if (selected) Theme.gc.chip else null, G.Radius.chip, G.Stroke.chip, seed).padding(horizontal = Tokens.Space.sp3, vertical = Tokens.Space.sp1)) {
             TokenText(text, Tokens.TypeScale.subhead, weight = if (selected) FontWeight.Bold else FontWeight.Medium)
@@ -989,7 +992,7 @@ fun GardenChip(text: String, selected: Boolean, seed: Int, onClick: () -> Unit) 
 @Composable
 fun GardenButton(text: String, onClick: () -> Unit, filled: Boolean, seed: Int, modifier: Modifier = Modifier, paper: Boolean = false) {
     Box(
-        modifier.fillMaxWidth().heightIn(min = Tokens.Layout.tapTarget + Tokens.Space.sp2).crayonBox(if (filled) Theme.gc.button else if (paper) Theme.gc.paper else null, G.Radius.button, G.Stroke.box, seed).clickable(onClick = onClick),
+        modifier.fillMaxWidth().heightIn(min = Tokens.Layout.tapTarget + Tokens.Space.sp2).crayonBox(if (filled) Theme.gc.button else if (paper) Theme.gc.paper else null, G.Radius.button, G.Stroke.box, seed).clickable(role = androidx.compose.ui.semantics.Role.Button, onClick = onClick),
         contentAlignment = Alignment.Center,
     ) { TokenText(text, Tokens.TypeScale.headline) }
 }

@@ -142,7 +142,7 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
     var text by state.draftText
     var feeling by state.draftFeeling
     // 쓰는 동안 잠깐 멈출 때마다 폰에 적어 둠 (보내면 빈 글로)
-    LaunchedEffect(Unit) { snapshotFlow { text }.collectLatest { t -> kotlinx.coroutines.delay(400); state.store.saveDraft(today, t) } }
+    LaunchedEffect(Unit) { snapshotFlow { text }.collectLatest { t -> kotlinx.coroutines.delay(400); state.store.saveDraft((state.fixedNow ?: java.time.LocalDateTime.now()).toLocalDate(), t) } }
     // 누구에게 (선택): 생일인 사람이 있으면 먼저 골라 둠
     val birthdayId = state.people.firstOrNull { io.github.graviton94.carpediem.core.Family.isBirthday(it.birth, today) }?.id
     var to by rememberSaveable(birthdayId) { mutableStateOf(birthdayId) }
@@ -194,9 +194,11 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
             return
         }
         val who = to?.takeIf { id -> state.people.any { it.id == id } }
-        if (day != null) { if (!state.letGoOn(day, text, feeling, who)) return } else state.letGo(text, feeling, who)
+        // 날은 한 번만 정해 글과 사진에 함께 (자정 무렵 보내도 둘이 다른 날로 갈라지지 않게)
+        val on = day ?: (state.fixedNow ?: java.time.LocalDateTime.now()).toLocalDate()
+        if (day != null) { if (!state.letGoOn(day, text, feeling, who)) return } else state.letGo(text, feeling, who, on)
         flying = text.trim()
-        state.commitPhoto(day ?: today)
+        state.commitPhoto(on)
         text = ""; feeling = null; focus.clearFocus()
     }
 
@@ -337,7 +339,9 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
                         } else GardenChip(stringResource(R.string.photo_add), false, 969) { pickDraft() }
                     }
                     Spacer(Modifier.weight(1f))
-                    TokenText("${text.codePointCount(0, text.length)} / $max", Tokens.TypeScale.caption1, color = p.secondary, align = TextAlign.End)
+                    // 글자 수는 끝에 가까워질 때만 (늘 숫자가 보이면 재촉하는 것 같아서)
+                    val count = text.codePointCount(0, text.length)
+                    if (count >= max * 4 / 5) TokenText("$count / $max", Tokens.TypeScale.caption1, color = p.secondary, align = TextAlign.End)
                 }
                 Action(stringResource(when { editing -> R.string.edit_save; day == null -> R.string.letgo_send; else -> R.string.letgo_daySend }), filled = text.isNotBlank(), seed = 968) { send() }
                 if (editing) TokenText(stringResource(R.string.cancel), Tokens.TypeScale.footnote,
@@ -420,7 +424,7 @@ private fun RecallCard(state: AppState, today: LocalDate, title: String, line: D
             // 돌아온 한 줄로 할 수 있는 것 (12): 카드로 간직 · 오늘 한 줄에 이어 쓰기 (오늘 아직 쓰지 않았을 때)
             androidx.compose.foundation.layout.FlowRow(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
                 if (Theme.garden) GardenChip(stringResource(R.string.recall_keepCard), false, seed + 40) {
-                    io.github.graviton94.carpediem.share.ShareCards.send(ctx, io.github.graviton94.carpediem.share.ShareCards.line(ctx, line, io.github.graviton94.carpediem.share.ShareCards.feelingName(ctx, line.feeling), state.store.haruSeed), "line-${line.date}")
+                    io.github.graviton94.carpediem.share.ShareCards.send(ctx, "line-${line.date}") { io.github.graviton94.carpediem.share.ShareCards.line(ctx, line, io.github.graviton94.carpediem.share.ShareCards.feelingName(ctx, line.feeling), state.store.haruSeed) }
                 }
                 if (!state.sentOn(today)) GardenChip(stringResource(R.string.recall_continue), false, seed + 41) { state.recallReply = line; state.focusWrite = true }
             }
@@ -465,9 +469,9 @@ fun LetGoModal(state: AppState, modifier: Modifier = Modifier, onCare: (Care) ->
             val todayLine = state.lines.lastOrNull { it.date == (state.fixedNow ?: java.time.LocalDateTime.now()).toLocalDate() }
             if (Theme.garden && todayLine != null && todayLine.text.isNotBlank()) TokenText(stringResource(R.string.share_image), Tokens.TypeScale.footnote,
                 Modifier.clickable {
-                    io.github.graviton94.carpediem.share.ShareCards.send(ctx, io.github.graviton94.carpediem.share.ShareCards.line(ctx, todayLine,
-                        io.github.graviton94.carpediem.share.ShareCards.feelingName(ctx, todayLine.feeling), state.store.haruSeed), "line-${todayLine.date}")
-                }.padding(vertical = Tokens.Space.sp1), color = p.secondary, align = TextAlign.Center)
+                    io.github.graviton94.carpediem.share.ShareCards.send(ctx, "line-${todayLine.date}") { io.github.graviton94.carpediem.share.ShareCards.line(ctx, todayLine,
+                        io.github.graviton94.carpediem.share.ShareCards.feelingName(ctx, todayLine.feeling), state.store.haruSeed) }
+                }.heightIn(min = Tokens.Layout.tapTarget).padding(vertical = Tokens.Space.sp3), color = p.secondary, align = TextAlign.Center)
             // 돌봄 권하기: 확인 아래 작은 한 줄 (지나쳐도 되는 곳에)
             state.care?.let { c -> CareLine(state, c) { state.toast = null; state.care = null; onCare(c) } }
         }

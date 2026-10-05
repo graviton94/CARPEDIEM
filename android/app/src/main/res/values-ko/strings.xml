@@ -59,21 +59,11 @@
     <string name="widgets_name_daysLeft">남은 날</string>
     <string name="widgets_name_calendar">인생 달력</string>
     <string name="widgets_name_record">마음의 기록</string>
-    <string name="widgets_help1">홈 화면을 길게 눌러 ‘편집’ → ‘위젯 추가’</string>
-    <string name="widgets_help2">‘하루의 정원’을 찾아 크기를 골라요</string>
-    <string name="widgets_help3">‘남은 날’ 위젯을 길게 눌러 단위를 바꿔요</string>
-    <string name="widgets_help4">잠금 화면에도 둘 수 있어요</string>
     <string name="erase">모든 기록 지우기</string>
     <string name="country_search">나라 검색</string>
     <string name="country_source">UN 세계인구전망 2024 기준.</string>
     <string name="widget_daysLeft">남은 날</string>
     <string name="widget_yearsLeft">남은 해</string>
-    <string name="widget_monthsLeft">%1$s개월 남음</string>
-    <string name="lock_inline">%1$s일</string>
-    <string name="lock_rect_sub">%1$s주 남음</string>
-    <string name="android_notification">오늘의 문장을 하루 한 번 알림으로 받기</string>
-    <string name="widget_unit">단위</string>
-    <string name="widget_unit_desc">남은 날을 어떤 단위로 볼지 골라요.</string>
     <string name="widget_daysLeft_desc">남은 날을 조용히 세어요.</string>
     <string name="widget_calendar_desc">한 생을 작은 칸으로. 크게 두면 오늘의 말도.</string>
     <string name="widget_empty">앱에서 생년월일을 넣어 주세요.</string>
@@ -544,7 +534,6 @@
     <string name="decor_stage_2">나무</string>
     <string name="decor_stage_3">큰 나무와 그네</string>
     <string name="decor_tree_line">함께한 지 %1$s일, %2$s.</string>
-    <string name="decor_tree_next">%1$s일이 되면 한 뼘 더 자라요.</string>
     <string name="decor_tree_help">인생의 계절마다 나무가 바뀌고, 실제 계절마다 옷을 갈아입어요.</string>
     <string name="decor_post">말뚝</string>
     <string name="decor_hang_chime">풍경</string>
@@ -552,7 +541,6 @@
     <string name="decor_hang_lantern">한지 등</string>
     <string name="decor_post_none">숨, 쉼을 처음 한 날 풍경이 걸려요.</string>
     <string name="decor_post_line">숨 쉰 날 %1$s일.</string>
-    <string name="decor_post_next">숨 쉰 날이 %1$s일이 되면 하나 더 걸려요.</string>
     <string name="decor_post_help">숨 쉰 날이 쌓이면 풍경, 작은 종, 한지 등이 차례로 걸려요. 밤엔 등이 켜져요.</string>
     <string name="decor_post_letter">편지가 꽂혀 있어요</string>
     <string name="decor_kite">가오리연</string>
@@ -712,7 +700,6 @@
     <string name="notify_evening_4">오늘 하루, 한 줄로 남겨 볼까요?</string>
     <string name="breathTile_label">숨, 쉼</string>
     <string name="breathTile_sub">1분</string>
-    <string name="widgets_name_breath">숨 바로가기</string>
     <string name="gardenYear_ask">올해의 정원을 한 장으로 볼까요?</string>
     <string name="gardenYear_open">보기</string>
     <string name="gardenYear_title">%1$s년, 하루의 정원</string>

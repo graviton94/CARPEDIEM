@@ -27,6 +27,8 @@ object LineReply {
     private const val ACTION_REPLY = "io.github.graviton94.carpediem.LINE_REPLY"
     private const val ACTION_FEEL = "io.github.graviton94.carpediem.LINE_FEEL"
     private const val EXTRA_FEELING = "feeling"
+    /** 알림을 띄운 날 (자정이 지나 답해도 그 저녁의 한 줄로). */
+    private const val EXTRA_DAY = "day"
     /** 알림에서 고를 수 있는 마음 (자리가 셋뿐이라). */
     val FEELINGS = listOf(Feeling.JOY, Feeling.CALM, Feeling.WORRY)
 
@@ -35,14 +37,14 @@ object LineReply {
     /** 알림의 ‘한 줄 쓰기’ 칸. */
     fun replyAction(context: Context): NotificationCompat.Action {
         val input = RemoteInput.Builder(KEY).setLabel(context.getString(R.string.reply_hint)).build()
-        val pi = PendingIntent.getBroadcast(context, 20, Intent(context, LineReplyReceiver::class.java).setAction(ACTION_REPLY),
+        val pi = PendingIntent.getBroadcast(context, 20, Intent(context, LineReplyReceiver::class.java).setAction(ACTION_REPLY).putExtra(EXTRA_DAY, LocalDate.now().toEpochDay()),
             PendingIntent.FLAG_UPDATE_CURRENT or mutable())
         return NotificationCompat.Action.Builder(0, context.getString(R.string.reply_action), pi).addRemoteInput(input)
             .setSemanticAction(NotificationCompat.Action.SEMANTIC_ACTION_REPLY).setAllowGeneratedReplies(false).build()
     }
 
-    private fun feelAction(context: Context, f: Feeling, i: Int): NotificationCompat.Action {
-        val pi = PendingIntent.getBroadcast(context, 21 + i, Intent(context, LineReplyReceiver::class.java).setAction(ACTION_FEEL).putExtra(EXTRA_FEELING, f.name),
+    private fun feelAction(context: Context, f: Feeling, i: Int, day: LocalDate): NotificationCompat.Action {
+        val pi = PendingIntent.getBroadcast(context, 21 + i, Intent(context, LineReplyReceiver::class.java).setAction(ACTION_FEEL).putExtra(EXTRA_FEELING, f.name).putExtra(EXTRA_DAY, day.toEpochDay()),
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
         return NotificationCompat.Action.Builder(0, io.github.graviton94.carpediem.ui.Labels.feeling(context, f), pi).build()
     }
@@ -78,13 +80,13 @@ object LineReply {
     }
 
     /** 보낸 뒤의 알림: 글 없이 ‘정원에 두었어요’ + 마음 고르기. */
-    internal fun posted(context: Context, id: Int) {
+    internal fun posted(context: Context, id: Int, day: LocalDate = LocalDate.now()) {
         if (!Daily.allowed(context)) return
         Daily.eveningChannel(context)
         val b = NotificationCompat.Builder(context, "evening").setSmallIcon(R.mipmap.ic_launcher_monochrome)
             .setContentTitle(context.getString(R.string.reply_done)).setContentText(context.getString(R.string.reply_feel))
             .setOnlyAlertOnce(true).setAutoCancel(true).setTimeoutAfter(10 * 60_000L)
-        if (Store(context).keepLines) FEELINGS.forEachIndexed { i, f -> b.addAction(feelAction(context, f, i)) }
+        if (Store(context).keepLines) FEELINGS.forEachIndexed { i, f -> b.addAction(feelAction(context, f, i, day)) }
         NotificationManagerCompat.from(context).notify(id, b.build())
     }
 
@@ -97,15 +99,18 @@ object LineReply {
     }
 
     internal fun handle(context: Context, intent: Intent) {
+        // 알림을 띄운 날: 오늘이나 어제(자정 넘어 답함)만, 더 지난 알림이면 오늘로
+        val now = LocalDate.now()
+        val day = intent.getLongExtra(EXTRA_DAY, now.toEpochDay()).let { LocalDate.ofEpochDay(it) }.takeIf { !it.isAfter(now) && !it.isBefore(now.minusDays(1)) } ?: now
         when (intent.action) {
             ACTION_REPLY -> {
                 val text = RemoteInput.getResultsFromIntent(intent)?.getCharSequence(KEY)?.toString().orEmpty()
-                if (save(context, text)) posted(context, Evening.ID)
+                if (save(context, text, day)) posted(context, Evening.ID, day)
                 else NotificationManagerCompat.from(context).cancel(Evening.ID)
             }
             ACTION_FEEL -> {
                 val f = Feeling.entries.firstOrNull { it.name == intent.getStringExtra(EXTRA_FEELING) } ?: return
-                feel(context, f); felt(context, Evening.ID, f)
+                feel(context, f, day); felt(context, Evening.ID, f)
             }
         }
     }

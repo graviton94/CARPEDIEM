@@ -34,6 +34,8 @@ import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
 import androidx.work.CoroutineWorker
 import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
@@ -84,6 +86,23 @@ object Widgets {
     fun scheduleHourly(context: Context) {
         val work = PeriodicWorkRequestBuilder<RefreshWorker>(1, TimeUnit.HOURS).build()
         WorkManager.getInstance(context).enqueueUniquePeriodicWork("widget-refresh", ExistingPeriodicWorkPolicy.KEEP, work)
+        scheduleMidnight(context, ExistingWorkPolicy.KEEP)
+    }
+
+    /** 자정 바로 뒤에 한 번 (남은 날 · ‘남겼어요’ 가 날이 바뀌자마자 맞게). 돌 때마다 다음 자정을 다시 예약. */
+    fun scheduleMidnight(context: Context, policy: ExistingWorkPolicy = ExistingWorkPolicy.REPLACE) {
+        val now = java.time.ZonedDateTime.now()
+        val next = now.toLocalDate().plusDays(1).atStartOfDay(now.zone).plusMinutes(1)
+        val work = OneTimeWorkRequestBuilder<MidnightWorker>().setInitialDelay(java.time.Duration.between(now, next).toMinutes().coerceAtLeast(1), TimeUnit.MINUTES).build()
+        WorkManager.getInstance(context).enqueueUniqueWork("widget-midnight", policy, work)
+    }
+}
+
+class MidnightWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
+    override suspend fun doWork(): Result {
+        Widgets.updateAll(applicationContext)
+        Widgets.scheduleMidnight(applicationContext, ExistingWorkPolicy.APPEND_OR_REPLACE)   // 지금 도는 일이 끝난 뒤 이어서
+        return Result.success()
     }
 }
 

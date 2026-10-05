@@ -49,7 +49,7 @@
 "cancel" = "キャンセル";
 "done" = "完了";
 "words.language" = "ことばの表示言語";
-"words.korean" = "韓国語";
+"words.korean" = "日本語";
 "words.english" = "英語";
 "words.both" = "両方";
 "widgets" = "ウィジェット";
@@ -57,21 +57,11 @@
 "widgets.name.daysLeft" = "残りの日数";
 "widgets.name.calendar" = "人生カレンダー";
 "widgets.name.record" = "こころの記録";
-"widgets.help1" = "ホーム画面を長押しして「編集」→「ウィジェットを追加」";
-"widgets.help2" = "「ハルの庭」を探して、サイズを選びます";
-"widgets.help3" = "「残りの日数」ウィジェットを長押しして、単位を変えます";
-"widgets.help4" = "ロック画面にも置けます";
 "erase" = "すべての記録を消す";
 "country.search" = "国を検索";
 "country.source" = "国連「世界人口推計2024」より。";
 "widget.daysLeft" = "残りの日数";
 "widget.yearsLeft" = "残りの年数";
-"widget.monthsLeft" = "あと%1$@か月";
-"lock.inline" = "%1$@日";
-"lock.rect.sub" = "あと%1$@週";
-"android.notification" = "今日のことばを1日1回、通知で受けとる";
-"widget.unit" = "単位";
-"widget.unit.desc" = "残りの日数を、どの単位で見るか選びます。";
 "widget.daysLeft.desc" = "残りの日々を、静かに数えます。";
 "widget.calendar.desc" = "ひとつの人生を、小さなマスに。大きく置けば、今日のことばも。";
 "widget.empty" = "アプリで生年月日を入れてください。";
@@ -541,7 +531,6 @@
 "decor.stage.2" = "木";
 "decor.stage.3" = "大きな木とブランコ";
 "decor.tree.line" = "いっしょに%1$@日、%2$@。";
-"decor.tree.next" = "%1$@日になると、またすこし育ちます。";
 "decor.tree.help" = "人生の季節ごとに木が変わり、めぐる季節ごとに衣がえをします。";
 "decor.post" = "杭";
 "decor.hang.chime" = "風鈴";
@@ -549,7 +538,6 @@
 "decor.hang.lantern" = "紙の灯り";
 "decor.post.none" = "はじめてひと息ついた日に、風鈴がかかります。";
 "decor.post.line" = "ひと息ついた日 %1$@日。";
-"decor.post.next" = "ひと息ついた日が%1$@日になると、もうひとつかかります。";
 "decor.post.help" = "ひと息ついた日が重なると、風鈴、小さな鈴、紙の灯りが順にかかります。夜には灯りがともります。";
 "decor.post.letter" = "手紙がはさまっています";
 "decor.kite" = "エイ凧";
@@ -709,7 +697,6 @@
 "notify.evening.4" = "今日一日、ひとことで残してみませんか？";
 "breathTile.label" = "ひと息";
 "breathTile.sub" = "1分";
-"widgets.name.breath" = "すぐにひと息";
 "gardenYear.ask" = "今年の庭を、一枚で見てみませんか？";
 "gardenYear.open" = "見る";
 "gardenYear.title" = "%1$@年、ハルの庭";

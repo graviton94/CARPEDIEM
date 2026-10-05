@@ -448,42 +448,49 @@ class Store(context: Context) {
      * 기록 옮기기: 앱 안의 모든 것 (설정 · 한 줄 · 가족 · 기억의 돌 · 특별한 날 …) 을 JSON 한 덩이로.
      * 새 폰에서 [restore] 로 그대로 들여온다. 파일은 사람이 고른 곳에만 저장된다 (앱은 어디로도 보내지 않음).
      */
-    fun backup(): String {
-        val all = org.json.JSONObject()
+    fun backup(out: java.io.OutputStream) {
+        // 사진이 많아도 메모리에 한꺼번에 올리지 않게, 한 칸씩 흘려 씀 (파일 모양은 예전과 같음)
+        val w = android.util.JsonWriter(java.io.BufferedWriter(java.io.OutputStreamWriter(out, Charsets.UTF_8)))
+        w.beginObject().name("app").value(BACKUP_APP).name("v").value(1)
+        w.name("prefs").beginObject()
         prefs.all.forEach { (k, v) ->
-            val e = org.json.JSONObject()
             when (v) {
-                is Boolean -> e.put("t", "b").put("v", v)
-                is Int -> e.put("t", "i").put("v", v)
-                is Long -> e.put("t", "l").put("v", v)
-                is Float -> e.put("t", "f").put("v", v.toDouble())
-                is String -> e.put("t", "s").put("v", v)
-                is Set<*> -> e.put("t", "ss").put("v", org.json.JSONArray(v.filterIsInstance<String>()))
-                else -> return@forEach
+                is Boolean -> { w.name(k).beginObject().name("t").value("b").name("v").value(v).endObject() }
+                is Int -> { w.name(k).beginObject().name("t").value("i").name("v").value(v.toLong()).endObject() }
+                is Long -> { w.name(k).beginObject().name("t").value("l").name("v").value(v).endObject() }
+                is Float -> { w.name(k).beginObject().name("t").value("f").name("v").value(v.toDouble()).endObject() }
+                is String -> { w.name(k).beginObject().name("t").value("s").name("v").value(v).endObject() }
+                is Set<*> -> { w.name(k).beginObject().name("t").value("ss").name("v").beginArray(); v.filterIsInstance<String>().forEach { w.value(it) }; w.endArray().endObject() }
+                else -> {}
             }
-            all.put(k, e)
         }
+        w.endObject()
         // 한 줄에 붙인 사진 (11) 도 함께 (작은 사본만)
-        return org.json.JSONObject().put("app", BACKUP_APP).put("v", 1).put("prefs", all).put("photos", Photos.exportAll(app)).toString()
+        w.name("photos").beginObject(); Photos.exportTo(app, w); w.endObject()
+        w.endObject(); w.flush()
     }
 
-    /** [backup] 으로 만든 글을 들여온다. 이 앱의 파일이 아니거나 읽을 수 없으면 아무것도 바꾸지 않고 false. */
-    fun restore(json: String): Boolean {
-        val root = runCatching { org.json.JSONObject(json) }.getOrNull() ?: return false
-        if (root.optString("app") != BACKUP_APP) return false
-        val all = root.optJSONObject("prefs") ?: return false
-        if (!all.has("birth")) return false   // 하루의 정보 (생년월일) 가 없는 파일로는 지금 기록을 지우지 않음
-        val ed = prefs.edit().clear().putBoolean("gridMonths", true)   // 되살린 인생 달력 단위는 그대로
-        for (k in all.keys()) {
-            val e = all.optJSONObject(k) ?: continue
-            when (e.optString("t")) {
-                "b" -> ed.putBoolean(k, e.optBoolean("v"))
-                "i" -> ed.putInt(k, e.optInt("v"))
-                "l" -> ed.putLong(k, e.optLong("v"))
-                "f" -> ed.putFloat(k, e.optDouble("v").toFloat())
-                "s" -> ed.putString(k, e.optString("v"))
-                "ss" -> ed.putStringSet(k, e.optJSONArray("v")?.let { a -> (0 until a.length()).map { a.optString(it) }.toSet() } ?: emptySet())
+    /** [backup] 으로 만든 파일을 들여온다. 이 앱의 파일이 아니거나 읽을 수 없으면 아무것도 바꾸지 않고 false. */
+    fun restore(input: java.io.InputStream): Boolean {
+        val stage = Photos.stage(app)   // 사진은 먼저 따로 두었다가, 설정을 다 들인 뒤에만 옮김
+        val all = HashMap<String, Any>()
+        var appTag: String? = null
+        val ok = runCatching {
+            val r = android.util.JsonReader(java.io.BufferedReader(java.io.InputStreamReader(input, Charsets.UTF_8)))
+            r.beginObject()
+            while (r.hasNext()) when (r.nextName()) {
+                "app" -> appTag = r.nextString()
+                "prefs" -> { r.beginObject(); while (r.hasNext()) { val k = r.nextName(); readPref(r)?.let { all[k] = it } }; r.endObject() }
+                "photos" -> { r.beginObject(); while (r.hasNext()) Photos.stageOne(stage, r.nextName(), r.nextString()); r.endObject() }
+                else -> r.skipValue()
             }
+            r.endObject(); true
+        }.getOrDefault(false)
+        if (!ok || appTag != BACKUP_APP || !all.containsKey("birth")) { stage.deleteRecursively(); return false }   // 하루의 정보 (생년월일) 가 없는 파일로는 지금 기록을 지우지 않음
+        val ed = prefs.edit().clear().putBoolean("gridMonths", true)   // 되살린 인생 달력 단위는 그대로
+        for ((k, v) in all) when (v) {
+            is Boolean -> ed.putBoolean(k, v); is Int -> ed.putInt(k, v); is Long -> ed.putLong(k, v); is Float -> ed.putFloat(k, v); is String -> ed.putString(k, v)
+            is Set<*> -> ed.putStringSet(k, v.filterIsInstance<String>().toSet())
         }
         // 기록을 들여온 사람은 처음 온 사람이 아님: 소개 · 둘러보기 · 페이지 안내 · 하루를 만나는 장면은 건너뜀
         // 알림 허락은 폰마다 다르니 새 폰에서 다시 물음
@@ -491,9 +498,36 @@ class Store(context: Context) {
         ed.putBoolean("introSeen", true).putBoolean("guideDone", true).putBoolean("meetPending", false)
             .putStringSet("pageHints", io.github.graviton94.carpediem.ui.PAGE_HINTS)
             .putStringSet("nudgesSeen", io.github.graviton94.carpediem.core.FirstWeek.STEPS.map { it.first }.toSet())
-        val ok = ed.commit()
-        if (ok) Photos.restoreAll(app, root.optJSONObject("photos"))
-        return ok
+        val done = ed.commit()
+        if (done) Photos.adopt(app, stage) else stage.deleteRecursively()
+        return done
+    }
+
+    /** 설정 한 칸 {"t": 종류, "v": 값}. 모르는 종류면 null. */
+    private fun readPref(r: android.util.JsonReader): Any? {
+        var t: String? = null; var v: Any? = null
+        r.beginObject()
+        while (r.hasNext()) when (r.nextName()) {
+            "t" -> t = r.nextString()
+            "v" -> v = when (r.peek()) {
+                android.util.JsonToken.BOOLEAN -> r.nextBoolean()
+                android.util.JsonToken.BEGIN_ARRAY -> { val l = mutableSetOf<String>(); r.beginArray(); while (r.hasNext()) l += r.nextString(); r.endArray(); l }
+                android.util.JsonToken.NULL -> { r.nextNull(); null }
+                else -> r.nextString()   // 숫자도 글로 읽어 아래에서 종류에 맞게
+            }
+            else -> r.skipValue()
+        }
+        r.endObject()
+        val raw = v ?: return null
+        return when (t) {
+            "b" -> raw as? Boolean ?: raw.toString().toBooleanStrictOrNull()
+            "i" -> raw.toString().toDoubleOrNull()?.toInt()
+            "l" -> raw.toString().toDoubleOrNull()?.toLong()
+            "f" -> raw.toString().toDoubleOrNull()?.toFloat()
+            "s" -> raw as? String
+            "ss" -> raw as? Set<*>
+            else -> null
+        }
     }
 
     companion object {

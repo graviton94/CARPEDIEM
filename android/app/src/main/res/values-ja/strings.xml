@@ -51,7 +51,7 @@
     <string name="cancel">キャンセル</string>
     <string name="done">完了</string>
     <string name="words_language">ことばの表示言語</string>
-    <string name="words_korean">韓国語</string>
+    <string name="words_korean">日本語</string>
     <string name="words_english">英語</string>
     <string name="words_both">両方</string>
     <string name="widgets">ウィジェット</string>
@@ -59,21 +59,11 @@
     <string name="widgets_name_daysLeft">残りの日数</string>
     <string name="widgets_name_calendar">人生カレンダー</string>
     <string name="widgets_name_record">こころの記録</string>
-    <string name="widgets_help1">ホーム画面を長押しして「編集」→「ウィジェットを追加」</string>
-    <string name="widgets_help2">「ハルの庭」を探して、サイズを選びます</string>
-    <string name="widgets_help3">「残りの日数」ウィジェットを長押しして、単位を変えます</string>
-    <string name="widgets_help4">ロック画面にも置けます</string>
     <string name="erase">すべての記録を消す</string>
     <string name="country_search">国を検索</string>
     <string name="country_source">国連「世界人口推計2024」より。</string>
     <string name="widget_daysLeft">残りの日数</string>
     <string name="widget_yearsLeft">残りの年数</string>
-    <string name="widget_monthsLeft">あと%1$sか月</string>
-    <string name="lock_inline">%1$s日</string>
-    <string name="lock_rect_sub">あと%1$s週</string>
-    <string name="android_notification">今日のことばを1日1回、通知で受けとる</string>
-    <string name="widget_unit">単位</string>
-    <string name="widget_unit_desc">残りの日数を、どの単位で見るか選びます。</string>
     <string name="widget_daysLeft_desc">残りの日々を、静かに数えます。</string>
     <string name="widget_calendar_desc">ひとつの人生を、小さなマスに。大きく置けば、今日のことばも。</string>
     <string name="widget_empty">アプリで生年月日を入れてください。</string>
@@ -543,7 +533,6 @@
     <string name="decor_stage_2">木</string>
     <string name="decor_stage_3">大きな木とブランコ</string>
     <string name="decor_tree_line">いっしょに%1$s日、%2$s。</string>
-    <string name="decor_tree_next">%1$s日になると、またすこし育ちます。</string>
     <string name="decor_tree_help">人生の季節ごとに木が変わり、めぐる季節ごとに衣がえをします。</string>
     <string name="decor_post">杭</string>
     <string name="decor_hang_chime">風鈴</string>
@@ -551,7 +540,6 @@
     <string name="decor_hang_lantern">紙の灯り</string>
     <string name="decor_post_none">はじめてひと息ついた日に、風鈴がかかります。</string>
     <string name="decor_post_line">ひと息ついた日 %1$s日。</string>
-    <string name="decor_post_next">ひと息ついた日が%1$s日になると、もうひとつかかります。</string>
     <string name="decor_post_help">ひと息ついた日が重なると、風鈴、小さな鈴、紙の灯りが順にかかります。夜には灯りがともります。</string>
     <string name="decor_post_letter">手紙がはさまっています</string>
     <string name="decor_kite">エイ凧</string>
@@ -711,7 +699,6 @@
     <string name="notify_evening_4">今日一日、ひとことで残してみませんか？</string>
     <string name="breathTile_label">ひと息</string>
     <string name="breathTile_sub">1分</string>
-    <string name="widgets_name_breath">すぐにひと息</string>
     <string name="gardenYear_ask">今年の庭を、一枚で見てみませんか？</string>
     <string name="gardenYear_open">見る</string>
     <string name="gardenYear_title">%1$s年、ハルの庭</string>

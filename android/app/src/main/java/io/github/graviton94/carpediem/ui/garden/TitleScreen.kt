@@ -47,6 +47,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import io.github.graviton94.carpediem.R
@@ -110,7 +111,7 @@ fun TitleScreen(state: AppState, now: LocalDateTime, onDone: () -> Unit) {
     }
     BackHandler { onDone() }
     val enterLabel = stringResource(R.string.title_enter)
-    BoxWithConstraints(Modifier.fillMaxSize().clipToBounds().paperBackground().semantics { contentDescription = enterLabel }
+    BoxWithConstraints(Modifier.fillMaxSize().clipToBounds().paperBackground().semantics { contentDescription = enterLabel; onClick(enterLabel) { enter(); true } }
         .pointerInput(Unit) { detectTapGestures { enter() } }.graphicsLayer { alpha = fade.value }) {
         val u = Theme.unit
         val screenH = maxHeight
@@ -130,9 +131,10 @@ fun TitleScreen(state: AppState, now: LocalDateTime, onDone: () -> Unit) {
         Column(Modifier.fillMaxWidth().statusBarsPadding().padding(top = screenH * 0.16f).padding(horizontal = Theme.deviceClass.pageMargin)
             .graphicsLayer { alpha = words.value; translationY = (1f - words.value) * 14f },
             horizontalAlignment = Alignment.CenterHorizontally) {
-            TokenText("Carpe Diem", Tokens.TypeScale.footnote.serif(), color = ink.copy(alpha = 0.6f))
-            Spacer(Modifier.height(Tokens.Space.sp2))
-            TokenText(stringResource(R.string.title_name), Tokens.TypeScale.largeTitle.serif(), color = ink, align = TextAlign.Center)
+            // 이름이 이미 ‘Carpe Diem’ 인 말 (영어) 에서는 위의 작은 줄을 두 번 쓰지 않음
+            val name = stringResource(R.string.title_name)
+            if (name != "Carpe Diem") { TokenText("Carpe Diem", Tokens.TypeScale.footnote.serif(), color = ink.copy(alpha = 0.6f)); Spacer(Modifier.height(Tokens.Space.sp2)) }
+            TokenText(name, Tokens.TypeScale.largeTitle.serif(), color = ink, align = TextAlign.Center)
             Spacer(Modifier.height(Tokens.Space.sp4))
             TokenText(now.toLocalDate().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL)), Tokens.TypeScale.footnote, color = ink.copy(alpha = 0.65f))
             Spacer(Modifier.height(Tokens.Space.sp1))
