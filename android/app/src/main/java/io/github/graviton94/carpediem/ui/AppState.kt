@@ -175,6 +175,8 @@ class AppState(private val context: Context) {
     /** 쪽지를 물고 오는 손님: 그날 놀러 온 손님, 없으면 박새나 다람쥐 (날마다 번갈아). */
     fun carrier(today: LocalDate): String? = guest ?: carriedLine(today)?.let { if (today.toEpochDay() % 2 == 0L) "tit" else "squirrel" }
     fun openSlip(today: LocalDate) { store.slipOpened = today; slipOpened = today }
+    /** 캡처용: 정원이 뜨면 쪽지를 바로 펼침. */
+    var debugSlip = false
 
     // ───── 하루가 준 조약돌: 쓰다듬다 보면 아주 가끔 (한 달에 한 번쯤) 발치에 하나 ─────
     var pebbles by mutableStateOf(store.pebbles)

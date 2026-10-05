@@ -250,6 +250,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
     var breathSheet by remember { mutableStateOf(false) }
     var askBreath by remember { mutableStateOf<Pair<BreathKind, Int>?>(null) }
     var slipOpen by remember { mutableStateOf<String?>(null) }   // 쪽지를 물고 온 손님 (펼친 동안)
+    if (state.debugSlip) LaunchedEffect(Unit) { kotlinx.coroutines.delay(2500); slipOpen = state.carrier(now.toLocalDate()) }
     val sleepy = !bare && isNight(now)
     // 캡처용: 이번 달 편지를 바로 펼침. 고르기만 그리기 중에, ‘연 편지’로 남기기는 그 뒤에
     var gardenYearOpen by remember { mutableStateOf<Int?>(if (state.debugGardenYear && !bare) now.year else null) }

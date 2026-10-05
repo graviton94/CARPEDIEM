@@ -316,6 +316,7 @@ private fun MainActivity.debugSetup(state: AppState): Screen {
     x.getStringExtra("cd.guest")?.let { state.pretendGuest(it) }
     if (x.getBooleanExtra("cd.photos", false)) state.addSamplePhotos()
     if (x.getBooleanExtra("cd.pebble", false)) state.addSamplePebble()
+    state.debugSlip = x.getBooleanExtra("cd.slip", false)
     state.debugGardenYear = x.getBooleanExtra("cd.gardenYear", false)
     if (x.getBooleanExtra("cd.letter", false)) state.addSampleLetter()
     if (x.getBooleanExtra("cd.moods", false)) state.addSampleMoods()
