@@ -122,7 +122,8 @@ class AppState(private val context: Context) {
     /** 설정을 열 때 바로 보여 줄 묶음 (예: 백업 권유에서 온 경우 "backup"). */
     var settingsFocus by mutableStateOf<String?>(null)
     /** 오늘의 한 줄에 쓰던 글 · 고른 마음 (보내기 전까지, 앱을 켜 둔 동안). */
-    val draftText = mutableStateOf("")
+    // 앱이 잠깐 내려갔다 (사진 고르기 · 메모리 부족) 다시 떠도 이어 쓰게: 폰에 살짝 적어 둠 (오늘 것만)
+    val draftText = mutableStateOf(store.draftFor(nowDate()))
     val draftFeeling = mutableStateOf<Feeling?>(null)
     /** 위젯 · 둘러보기에서 ‘한 줄 쓰러’ 왔을 때: 기록 페이지의 쓰는 칸에 바로 커서 (한 번). */
     var focusWrite by mutableStateOf(false)
@@ -150,6 +151,8 @@ class AppState(private val context: Context) {
         val g = guest ?: return
         if (chancesMet.none { it.startsWith("guest_$g:") }) { val n = chancesMet + "guest_$g:$today"; store.chancesMet = n; chancesMet = n }
     }
+    /** 첫 화면 (타이틀) 이 떠 있는 동안: 한 번만 보이는 것 (한마디 · 우연한 순간 · 문장 타자) 은 걷힌 뒤에. */
+    var titleUp by mutableStateOf(false)
     /** 정원의 땅 높이 (첫 화면이 같은 자리에 빈 땅을 깔고 정원으로 이어지게). 정원이 그릴 때 적어 둠. */
     var gardenGround by mutableStateOf<androidx.compose.ui.unit.Dp?>(null)
     fun pretendGuest(g: String) { store.pretendGuest(nowDate(), g); guest = store.guestToday(nowDate()) }
@@ -290,15 +293,17 @@ class AppState(private val context: Context) {
     /** 이어 쓰기를 셀 때는 그날 쓴 줄만 (나중에 채운 날은 빼고). */
     private fun onTime(list: List<DayLine>): List<DayLine> { val b = store.backfilled; return list.filter { it.date.toEpochDay().toString() !in b } }
     /** 지난 날에 한 줄: 그날 기록 · 별자리 · 편지에 놓이고, 보낸 순간의 작은 일 (바람 · 돌봄 권하기) 은 없음. */
-    fun letGoOn(day: LocalDate, text: String, feeling: Feeling?, to: String? = null) {
-        val t = Lines.clean(text, Tokens.Garden.LetGo.maxChars.toInt(), Lines.MAX_LINES); if (t.isEmpty()) return
-        if (!canWriteOn(day)) { say(context.getString(R.string.letgo_dayTaken)); return }
+    /** 지난 날에 한 줄. 남겼으면 true (그날이 이미 차 있으면 false, 쓰던 글은 그대로 두게). */
+    fun letGoOn(day: LocalDate, text: String, feeling: Feeling?, to: String? = null): Boolean {
+        val t = Lines.clean(text, Tokens.Garden.LetGo.maxChars.toInt(), Lines.MAX_LINES); if (t.isEmpty()) return false
+        if (!canWriteOn(day)) { say(context.getString(R.string.letgo_dayTaken)); return false }
         val line = if (keepLines) DayLine(day, t, feeling, to) else DayLine(day, "", null, to)
         store.backfilled = store.backfilled + day.toEpochDay().toString()
         val next = Lines.add(lines, line); store.lines = next; lines = next
         writeDay = null
         say(context.getString(R.string.letgo_dayDone, io.github.graviton94.carpediem.ui.garden.RecordText.day(context, day)))
         Widgets.refresh(context)
+        return true
     }
     /** 돌봄 권하기 (켜 두었을 때). 하루 한 줄이라 하루 한 번까지. 오늘 이미 숨 쉬었으면 숨은 권하지 않음. */
     var careOn by mutableStateOf(store.care)

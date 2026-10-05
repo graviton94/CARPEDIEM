@@ -48,7 +48,8 @@ object Daily {
         val now = LocalDateTime.now()
         val at = Store(context).morningMinute
         val work = PeriodicWorkRequestBuilder<DailyWorker>(1, TimeUnit.DAYS).setInitialDelay(delayTo(at / 60, at % 60), TimeUnit.MINUTES).build()
-        wm.enqueueUniquePeriodicWork(WORK, ExistingPeriodicWorkPolicy.UPDATE, work)
+        // 시각을 바꾸거나 서머타임이 바뀌어도 새 시각부터 다시 (UPDATE 는 처음 정한 주기를 그대로 둠)
+        wm.enqueueUniquePeriodicWork(WORK, ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE, work)
     }
 
     /** 지금부터 다음 hour:minute 까지 (분). */
@@ -171,7 +172,8 @@ object Evening {
         if (!on) { wm.cancelUniqueWork(WORK); return }
         val at = Store(context).eveningMinute
         val work = PeriodicWorkRequestBuilder<EveningWorker>(1, TimeUnit.DAYS).setInitialDelay(Daily.delayTo(at / 60, at % 60), TimeUnit.MINUTES).build()
-        wm.enqueueUniquePeriodicWork(WORK, ExistingPeriodicWorkPolicy.UPDATE, work)
+        // 시각을 바꾸거나 서머타임이 바뀌어도 새 시각부터 다시 (UPDATE 는 처음 정한 주기를 그대로 둠)
+        wm.enqueueUniquePeriodicWork(WORK, ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE, work)
     }
 
     fun post(context: Context, force: Boolean = false) {

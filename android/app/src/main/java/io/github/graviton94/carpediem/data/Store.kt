@@ -259,6 +259,9 @@ class Store(context: Context) {
     var seedSkipped: LocalDate?
         get() = prefs.getLong("seedSkip", Long.MIN_VALUE).takeIf { it != Long.MIN_VALUE }?.let { LocalDate.ofEpochDay(it) }
         set(v) = prefs.edit().apply { if (v == null) remove("seedSkip") else putLong("seedSkip", v.toEpochDay()) }.apply()
+    /** 보내기 전 쓰던 한 줄 (그날 안에서만 되살림). */
+    fun draftFor(today: LocalDate): String = if (prefs.getLong("draftDay", Long.MIN_VALUE) == today.toEpochDay()) prefs.getString("draft", "").orEmpty() else ""
+    fun saveDraft(today: LocalDate, text: String) = prefs.edit().putString("draft", text).putLong("draftDay", today.toEpochDay()).apply()
     /** 아침 씨앗 쪽지를 마지막으로 보여 준 날 · 한 줄 뒤 권유를 마지막으로 건넨 날 (고요한 빈도, core Pace). */
     var seedOffered: LocalDate?
         get() = prefs.getLong("seedOffered", Long.MIN_VALUE).takeIf { it != Long.MIN_VALUE }?.let { LocalDate.ofEpochDay(it) }

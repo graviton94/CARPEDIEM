@@ -267,7 +267,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
     val onGarden = bare || pager.currentPage == 0
     if (!bare && onGarden) LaunchedEffect(decor.stage, decor.tree, decor.hang, decor.kite, decor.ribbons.size, decor.buds, decor.card.id, decor.letter) { state.noticeDecor(decor) }
     // 정원을 열 때의 우연한 순간 (달팽이 · 비눗방울 · 나비, 각각 한 번씩)
-    if (!bare && onGarden) LaunchedEffect(day0) { state.openChance(day0, real) }
+    if (!bare && onGarden) LaunchedEffect(day0, state.titleUp) { if (!state.titleUp) state.openChance(day0, real) }
     // 절기가 든 날 (S1): 처음 열 때 한 줄, 정원엔 그날 하루 작은 변화
     val termToday = remember(day0, state.profile?.countryCode) { state.termToday(day0) }
     if (!bare && onGarden) LaunchedEffect(day0) { state.noticeTerm(day0) }
@@ -291,7 +291,8 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
     // 걱정한 밤 다음 아침의 한마디 (06): 오늘 처음 정원을 열 때 한 번 (보여 준 날을 바로 적어 둠)
     // 고요한 정원: 정원 위 글자는 한 번에 하나 (한마디가 있으면 오늘의 문장 · 질문 · 숨 권유 · 아래 쪽지가 쉼)
     var comfort by remember { mutableStateOf<String?>(null) }
-    if (!bare) LaunchedEffect(day0, state.guideDone, state.guest) {
+    if (!bare) LaunchedEffect(day0, state.guideDone, state.guest, state.titleUp) {
+        if (state.titleUp) return@LaunchedEffect   // 첫 화면 뒤에서 보이지 않은 채 지나가지 않게
         // 손님은 말없이 와 있을 뿐 (만난 것만 적어 둠). 누르면 그때 한마디
         if (state.guideDone && state.greetingDue(day0)) state.greeted(day0)
         if (state.guideDone && state.comfortDue(day0)) { comfort = dayLine(ctx, "comfort_", day0); state.comfortSeen(day0) }
@@ -395,9 +396,8 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                             val phone = io.github.graviton94.carpediem.data.Words.lang(ctx)
                             val main = io.github.graviton94.carpediem.data.Words.main(q, state.quoteLanguage, phone)
                             val second = if (!sleepy) io.github.graviton94.carpediem.data.Words.second(q, state.quoteLanguage, phone) else null
-                            val typed = rememberTyping(state, main, second)
-                            QuoteText(main, typed)
-                            if (second != null) TypedText(second, typed - main.length, Tokens.TypeScale.footnote.serif(), p.secondary, Modifier.fillMaxWidth())
+                            // 한 글자씩 바뀌는 수는 이 작은 묶음 안에서만 읽음 (정원 전체가 글자마다 다시 짜이지 않게)
+                            TypedQuote(state, main, second)
                             if (!sleepy) TokenText(stringResource(R.string.words_next), Tokens.TypeScale.caption1, color = p.secondary, weight = FontWeight.Normal)
                         }
                     }
@@ -592,14 +592,14 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                         // 위에 한마디가 떠 있는 동안은 아래 쪽지도 쉼 (화면에 말 거는 것은 하나만)
                         comfort != null -> Unit
                         capsule != null -> RecallNote(stringResource(R.string.capsule_opened)) { capsuleOpen = capsule }
-                        // 12월 마지막 열흘 (08): 올해의 엔딩 크레딧 (한 번 보면 다시 권하지 않음)
-                        creditsYear != null -> RecallNote(stringResource(R.string.credits_ready)) { state.creditsSeen(creditsYear); onCredits(creditsYear) }
                         ringNew != null && ringNew !in ringsSeen -> RecallNote(stringResource(R.string.ring_new, "$ringNew")) { ringsSeen = ringsSeen + ringNew; ringOpen = ringNew }
                         bday != null -> {
                             val line = if (bday.id == null) stringResource(if (bday.soon == 0) R.string.bday_mineToday else R.string.bday_mineTomorrow)
                                 else stringResource(if (bday.soon == 0) R.string.bday_today else R.string.bday_tomorrow, bday.name)
                             TokenText(line, Tokens.TypeScale.callout.serif(), Modifier.fillMaxWidth(), align = TextAlign.Center)
                         }
+                        // 12월 마지막 열흘 (08): 올해의 엔딩 크레딧. 생일 한 줄보다 뒤 (그날의 생일을 가리지 않게), 한 번 보면 다시 권하지 않음
+                        creditsYear != null -> RecallNote(stringResource(R.string.credits_ready)) { state.creditsSeen(creditsYear); onCredits(creditsYear) }
                         year != null -> YearCard(year) { state.openYear(year); toRecord(RecordView(year, null)) }
                         month != null -> MonthCard(month.second) { state.openMonth(month.first, month.second); toRecord(RecordView(month.first, month.second)) }
                         gardenYear != null -> RecallNote(stringResource(R.string.gardenYear_ask)) { state.gardenYearSeen(gardenYear); gardenYearOpen = gardenYear }
@@ -835,8 +835,8 @@ private fun rememberTyping(state: AppState, main: String, second: String?): Int 
     val still = remember { android.provider.Settings.Global.getFloat(ctx.contentResolver, android.provider.Settings.Global.ANIMATOR_DURATION_SCALE, 1f) == 0f }
     val done = still || state.debugTyped || state.typedQuote == key
     var n by remember(key) { mutableStateOf(if (done) Int.MAX_VALUE else 0) }
-    LaunchedEffect(key) {
-        if (done) return@LaunchedEffect
+    LaunchedEffect(key, state.titleUp) {
+        if (done || state.titleUp) return@LaunchedEffect
         state.typedQuote = key
         val all = main.length + (second?.length ?: 0)
         val r = java.util.Random(key.hashCode().toLong())
@@ -992,4 +992,13 @@ fun GardenButton(text: String, onClick: () -> Unit, filled: Boolean, seed: Int, 
         modifier.fillMaxWidth().heightIn(min = Tokens.Layout.tapTarget + Tokens.Space.sp2).crayonBox(if (filled) Theme.gc.button else if (paper) Theme.gc.paper else null, G.Radius.button, G.Stroke.box, seed).clickable(onClick = onClick),
         contentAlignment = Alignment.Center,
     ) { TokenText(text, Tokens.TypeScale.headline) }
+}
+
+
+/** 오늘의 문장 (타자기처럼). 글자 수는 여기서만 읽어, 바뀌어도 이 문장만 다시 그림. */
+@Composable
+private fun TypedQuote(state: AppState, main: String, second: String?) {
+    val typed = rememberTyping(state, main, second)
+    QuoteText(main, typed)
+    if (second != null) TypedText(second, typed - main.length, Tokens.TypeScale.footnote.serif(), Theme.palette.secondary, Modifier.fillMaxWidth())
 }

@@ -1,5 +1,7 @@
 package io.github.graviton94.carpediem.ui
 
+import kotlinx.coroutines.launch
+import androidx.compose.runtime.rememberCoroutineScope
 import io.github.graviton94.carpediem.ui.garden.LetGoModal
 import io.github.graviton94.carpediem.ui.garden.LetGoSection
 import androidx.activity.compose.BackHandler
@@ -128,14 +130,18 @@ fun OnboardingScreen(state: AppState, onCountry: () -> Unit) {
             ) { TokenText(stringResource(R.string.begin), Tokens.TypeScale.headline, color = p.onOlive) }
             TokenText(stringResource(R.string.privacy), Tokens.TypeScale.footnote, Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.Center)
             // 다른 폰에서 쓰던 사람: 백업 파일로 바로 (소개 · 둘러보기 없이 예전 정원으로)
+            val backupScope = rememberCoroutineScope()
             val openFile = androidx.activity.compose.rememberLauncherForActivityResult(androidx.activity.result.contract.ActivityResultContracts.OpenDocument()) { uri ->
                 if (uri == null) return@rememberLauncherForActivityResult
-                val text = runCatching { ctx.contentResolver.openInputStream(uri)?.use { it.readBytes().decodeToString() } }.getOrNull()
-                if (text != null && state.store.restore(text)) {
+                // 읽고 되살리기는 화면 밖에서 (사진이 많으면 오래 걸림)
+                backupScope.launch {
+                val ok = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { runCatching { ctx.contentResolver.openInputStream(uri)?.use { it.readBytes().decodeToString() } }.getOrNull()?.let { state.store.restore(it) } == true }
+                if (ok) {
                     state.say(ctx.getString(R.string.backup_done))
                     io.github.graviton94.carpediem.widget.Widgets.refresh(ctx)
                     android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({ (ctx as? android.app.Activity)?.takeIf { !it.isFinishing && !it.isDestroyed }?.recreate() }, (Tokens.Garden.Motion.noteMs / 2).toLong())
                 } else state.say(ctx.getString(R.string.backup_fail))
+                }
             }
             val deviceCheck = rememberDeviceCheck()
             TokenText(stringResource(R.string.onboard_restore), Tokens.TypeScale.footnote,
@@ -344,10 +350,12 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
     // 알림 허락이 막혀 있을 때: 폰 설정으로 안내
     var blocked by remember { mutableStateOf(false) }
     var lastBackup by remember { mutableStateOf(state.store.lastBackup) }
+    val settingsScope = rememberCoroutineScope()
     // 백업 파일 저장 (설정의 백업 · 모두 지우기 전에)
     val saveFile = androidx.activity.compose.rememberLauncherForActivityResult(androidx.activity.result.contract.ActivityResultContracts.CreateDocument("application/json")) { uri ->
-        if (uri != null) {
-            val ok = runCatching { ctx.contentResolver.openOutputStream(uri)?.use { it.write(state.store.backup().toByteArray()) } != null }.getOrDefault(false)
+        if (uri != null) settingsScope.launch {
+            // 사진까지 담으면 커서 화면 밖에서 만들고 씀
+            val ok = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { runCatching { ctx.contentResolver.openOutputStream(uri)?.use { it.write(state.store.backup().toByteArray()) } != null }.getOrDefault(false) }
             if (ok) { state.store.lastBackup = java.time.LocalDate.now().toEpochDay(); lastBackup = state.store.lastBackup }
             state.say(ctx.getString(if (ok) R.string.backup_saved else R.string.backup_saveFail))
         }
@@ -501,14 +509,16 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
                         title = { Text(stringResource(R.string.backup_importConfirm)) },
                         confirmButton = { TextButton(onClick = {
                             restoreFrom = null
-                            val text = runCatching { ctx.contentResolver.openInputStream(uri)?.use { it.readBytes().decodeToString() } }.getOrNull()
-                            if (text != null && state.store.restore(text)) {
+                            settingsScope.launch {
+                            val ok = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { runCatching { ctx.contentResolver.openInputStream(uri)?.use { it.readBytes().decodeToString() } }.getOrNull()?.let { state.store.restore(it) } == true }
+                            if (ok) {
                                 state.say(ctx.getString(R.string.backup_done))
                                 // 새로 들여온 기록으로 처음부터 (알림 · 위젯도 새로)
                                 io.github.graviton94.carpediem.widget.Widgets.refresh(ctx)
                                 // 한마디를 잠깐 보인 뒤에
                                 android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({ (ctx as? android.app.Activity)?.takeIf { !it.isFinishing && !it.isDestroyed }?.recreate() }, (Tokens.Garden.Motion.noteMs / 2).toLong())
                             } else state.say(ctx.getString(R.string.backup_fail))
+                            }
                         }) { Text(stringResource(R.string.backup_importAction), color = p.danger) } },
                         dismissButton = { TextButton(onClick = { restoreFrom = null }) { Text(stringResource(R.string.cancel)) } },
                     )

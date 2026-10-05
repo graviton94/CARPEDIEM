@@ -189,7 +189,15 @@ fun BreathScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, kind
         }
     }
     KeepScreenOn(!done)
-    DisposableEffect(player) { player.start(); onDispose { player.stop() } }
+    val touchOn = state.breathTouch
+    // 소리는 숨이 흐를 때만: 멈추면 스르르 꺼지고, 이어 하면 다시
+    DisposableEffect(player, paused, done) { if (!paused && !done) player.start() else player.stop(); onDispose { player.stop() } }
+    // 앱을 떠나면 (홈 · 화면 끔) 멈춤으로: 소리가 혼자 계속 흐르지 않게 (손끝 숨은 주머니 속에서도 이어지므로 그대로)
+    val owner = androidx.lifecycle.compose.LocalLifecycleOwner.current
+    DisposableEffect(owner, touchOn) {
+        val obs = androidx.lifecycle.LifecycleEventObserver { _, e -> if (e == androidx.lifecycle.Lifecycle.Event.ON_STOP && !touchOn) paused = true }
+        owner.lifecycle.addObserver(obs); onDispose { owner.lifecycle.removeObserver(obs) }
+    }
     // 숨 시작 전: “맑은 종에 들이쉬고, 낮은 종에 내쉬어요” 와 두 종을 한 번씩 (소리가 있을 때만)
     val S = Tokens.Garden.Sound
     var intro by remember { mutableStateOf(sound != Sound.NONE) }
@@ -373,7 +381,14 @@ fun GazeScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, onBack
     val s = LifeSnapshot(profile.birthDate, profile.expectancy(state.store.table), now)
     var soundOn by remember { mutableStateOf(state.sound != Sound.NONE) }
     val player = remember(soundOn) { Soundscape.Player(if (soundOn) state.sound else Sound.NONE, io.github.graviton94.carpediem.core.GardenDecor.realSeason(now.toLocalDate(), profile.countryCode), gaze = true) }
-    DisposableEffect(player) { player.start(); onDispose { player.stop() } }
+    // 소리는 숨이 흐를 때만: 멈추면 스르르 꺼지고, 이어 하면 다시
+    DisposableEffect(player, paused, done) { if (!paused && !done) player.start() else player.stop(); onDispose { player.stop() } }
+    // 앱을 떠나면 (홈 · 화면 끔) 멈춤으로: 소리가 혼자 계속 흐르지 않게 (손끝 숨은 주머니 속에서도 이어지므로 그대로)
+    val owner = androidx.lifecycle.compose.LocalLifecycleOwner.current
+    DisposableEffect(owner, touchOn) {
+        val obs = androidx.lifecycle.LifecycleEventObserver { _, e -> if (e == androidx.lifecycle.Lifecycle.Event.ON_STOP && !touchOn) paused = true }
+        owner.lifecycle.addObserver(obs); onDispose { owner.lifecycle.removeObserver(obs) }
+    }
     var screenOn by remember { mutableStateOf(true) }
     KeepScreenOn(screenOn)
     val dim = remember { Animatable(0f) }

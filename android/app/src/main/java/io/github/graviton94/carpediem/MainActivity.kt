@@ -132,6 +132,7 @@ class MainActivity : ComponentActivity() {
                     // 정원을 처음부터 다시 그리는 번호 (알림에서 다른 페이지 · 판으로 갈 때)
                     var homeEpoch by remember { mutableStateOf(0) }
                     var title by remember { mutableStateOf(firstTitle) }
+                    androidx.compose.runtime.SideEffect { if (state.titleUp != title) state.titleUp = title }
                     LaunchedEffect(newOpen) {
                         val x = newOpen ?: return@LaunchedEffect
                         newOpen = null

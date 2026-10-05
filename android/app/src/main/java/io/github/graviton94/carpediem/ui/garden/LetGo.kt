@@ -1,5 +1,7 @@
 package io.github.graviton94.carpediem.ui.garden
 
+import kotlinx.coroutines.flow.collectLatest
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -139,6 +141,8 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
     // 쓰던 글 · 고른 마음은 state 에 (알림 · 위젯으로 정원이 다시 그려져도 남게)
     var text by state.draftText
     var feeling by state.draftFeeling
+    // 쓰는 동안 잠깐 멈출 때마다 폰에 적어 둠 (보내면 빈 글로)
+    LaunchedEffect(Unit) { snapshotFlow { text }.collectLatest { t -> kotlinx.coroutines.delay(400); state.store.saveDraft(today, t) } }
     // 누구에게 (선택): 생일인 사람이 있으면 먼저 골라 둠
     val birthdayId = state.people.firstOrNull { io.github.graviton94.carpediem.core.Family.isBirthday(it.birth, today) }?.id
     var to by rememberSaveable(birthdayId) { mutableStateOf(birthdayId) }
@@ -177,10 +181,11 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
     } }
     fun send() {
         if (text.isBlank()) return
-        if (editing) { state.editToday(text, feeling, today); editing = false; text = ""; feeling = null; focus.clearFocus(); return }
+        // 남기지 못했으면 (자정이 지나 고칠 수 없거나 그날이 이미 찼으면) 쓰던 글은 그대로
+        if (editing) { if (state.editToday(text, feeling, today)) { editing = false; text = ""; feeling = null; focus.clearFocus() }; return }
         val who = to?.takeIf { id -> state.people.any { it.id == id } }
+        if (day != null) { if (!state.letGoOn(day, text, feeling, who)) return } else state.letGo(text, feeling, who)
         flying = text.trim()
-        if (day != null) state.letGoOn(day, text, feeling, who) else state.letGo(text, feeling, who)
         state.commitPhoto(day ?: today)
         text = ""; feeling = null; focus.clearFocus()
     }

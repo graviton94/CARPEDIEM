@@ -1,5 +1,6 @@
 package io.github.graviton94.carpediem.ui.garden
 
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
@@ -211,7 +212,8 @@ internal fun MonthGarden(
         }
     }
     val sky = remember(days) { field(days.firstOrNull()?.first?.toEpochDay()?.toInt() ?: 0, 1f) }
-    Canvas(modifier.aspectRatio(G.Year.monthAspect).then(tap)) {
+    // 반짝임은 자기 층에서만 다시 그림 (둘레의 크레용 틀 · 페이지가 매 프레임 다시 그려지지 않게)
+    Canvas(modifier.aspectRatio(G.Year.monthAspect).then(tap).graphicsLayer()) {
         if (night) { nightSky(); sky.forEach { s -> drawCircle(Color.White, s[2] * size.width, Offset(s[0] * size.width, s[1] * size.height), s[3] * 0.7f) } } else meadow()
         monthIn(Rect(Offset.Zero, size), dots, night, today, sizes, pick.value, e.value, picked)
     }
@@ -223,7 +225,7 @@ internal fun TinyGarden(night: Boolean, modifier: Modifier) {
     val still = reducedMotion(LocalContext.current)
     val t = rememberInfiniteTransition(label = "tiny").animateFloat(0f, 1f, infiniteRepeatable(tween(G.Year.twinkleMs.toInt(), easing = LinearEasing)), label = "t")
     val spots = listOf(Triple(0.25f, 0.5f, Feeling.JOY), Triple(0.5f, 0.68f, Feeling.HOPE), Triple(0.76f, 0.38f, Feeling.THANKS))
-    Canvas(modifier) {
+    Canvas(modifier.graphicsLayer()) {
         val ph = if (still) 0.2f else t.value
         if (night) nightSky() else meadow()
         spots.forEachIndexed { i, (x, y, f) ->

@@ -30,14 +30,18 @@ object Soundscape {
         @Volatile private var stopping = false
         private var thread: Thread? = null
 
+        /** 껐다 다시 켤 수 있음 (앱을 떠났다 돌아와 이어 할 때). 앞의 소리는 세대가 바뀌면 스르르 꺼짐. */
+        @Volatile private var gen = 0
         fun start() {
-            if (sound == Sound.NONE || thread != null) return
-            thread = Thread({ runCatching { play() } }, "soundscape").apply { isDaemon = true; start() }
+            if (sound == Sound.NONE) return
+            if (thread?.isAlive == true && !stopping) return
+            val my = ++gen; stopping = false
+            thread = Thread({ runCatching { play(my) } }, "soundscape").apply { isDaemon = true; start() }
         }
 
         fun stop() { stopping = true }
 
-        private fun play() {
+        private fun play(my: Int) {
             val sr = T.sampleRate.toInt()
             val min = AudioTrack.getMinBufferSize(sr, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT)
             val track = AudioTrack.Builder().setAudioAttributes(attributes()).setAudioFormat(format(sr))
@@ -172,11 +176,11 @@ object Soundscape {
                         Sound.SEASON -> seasonal(t, w, pink)
                         Sound.NONE -> 0f
                     } + (if (gaze) layer(t, w, pink) else 0f)
-                    gain = if (stopping) (gain - fadeOut).coerceAtLeast(0f) else (gain + fadeIn).coerceAtMost(1f)
+                    gain = if (stopping || my != gen) (gain - fadeOut).coerceAtLeast(0f) else (gain + fadeIn).coerceAtMost(1f)
                     buf[i] = (v * gain * T.volume * Short.MAX_VALUE).coerceIn(-32767f, 32767f).toInt().toShort()
                 }
                 track.write(buf, 0, buf.size)
-                if (stopping && gain <= 0f) break
+                if ((stopping || my != gen) && gain <= 0f) break
             }
             runCatching { track.stop() }; track.release()
         }
