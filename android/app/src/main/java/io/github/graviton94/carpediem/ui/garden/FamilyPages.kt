@@ -260,7 +260,7 @@ fun AddPersonScreen(state: AppState, profile: LifeProfile, editId: String?, onDo
         BasicTextField(
             value = name, onValueChange = { v -> name = v.replace('\n', ' ').let { if (it.codePointCount(0, it.length) <= Family.NAME_MAX) it else it.substring(0, it.offsetByCodePoints(0, Family.NAME_MAX)) } },
             singleLine = true, textStyle = Tokens.TypeScale.headline.style().copy(color = p.foreground), cursorBrush = SolidColor(p.foreground),
-            modifier = Modifier.fillMaxWidth().crayonBox(Theme.gc.paper, G.Radius.box, G.Stroke.chip, 896).padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3),
+            modifier = Modifier.fillMaxWidth().keepAboveKeyboard().crayonBox(Theme.gc.paper, G.Radius.box, G.Stroke.chip, 896).padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3),
             decorationBox = { inner -> Box { if (name.isEmpty()) TokenText(stringResource(R.string.add_nameHint), Tokens.TypeScale.headline, color = p.secondary); inner() } },
         )
     }

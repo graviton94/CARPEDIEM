@@ -601,6 +601,9 @@
 "decor.new.letter" = "杭に季節の手紙がはさまりました。";
 "collection.grown" = "庭に育ったもの";
 "collection.grownSub" = "呼吸・ひとこと・石ながめが重なって、庭に生まれたもの。";
+"lookback.title" = "ふりかえる";
+"lookback.sub" = "過ぎた年と季節を、もう一度ひらいてみて。";
+"collection.empty" = "まだ集まったものはありません。季節が過ぎるたびにひとつずつ。";
 "decor.hint" = "木や杭に、そっと触れてみてください。";
 "album" = "季節のアルバム";
 "album.lines" = "%1$@件";

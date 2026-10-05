@@ -604,6 +604,9 @@
     <string name="decor_new_letter">말뚝에 계절의 편지가 꽂혔어요.</string>
     <string name="collection_grown">정원에 자란 것</string>
     <string name="collection_grownSub">숨 · 한 줄 · 돌멍이 쌓이며 정원에 생긴 것들이에요.</string>
+    <string name="lookback_title">돌아보기</string>
+    <string name="lookback_sub">지나온 해와 계절을 다시 펼쳐 봐요.</string>
+    <string name="collection_empty">아직 모인 것이 없어요. 계절이 지나면 하나씩 놓여요.</string>
     <string name="decor_hint">나무와 말뚝을 살짝 눌러 보세요.</string>
     <string name="album">계절 앨범</string>
     <string name="album_lines">%1$s줄</string>

@@ -157,7 +157,7 @@ private fun MemoryStone(state: AppState, m: Person, today: LocalDate, seed: Int)
                     value = text, onValueChange = { v -> val one = v.replace('\n', ' '); if (one.codePointCount(0, one.length) <= G.LetGo.maxChars.toInt()) text = one },
                     singleLine = true, textStyle = Tokens.TypeScale.callout.style().copy(color = p.foreground), cursorBrush = SolidColor(p.foreground),
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send), keyboardActions = KeyboardActions(onSend = { send() }),
-                    modifier = Modifier.fillMaxWidth().crayonBox(null, G.Radius.box, G.Stroke.chip, seed + 2).padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3),
+                    modifier = Modifier.fillMaxWidth().keepAboveKeyboard().crayonBox(null, G.Radius.box, G.Stroke.chip, seed + 2).padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3),
                     decorationBox = { inner -> Box { if (text.isEmpty()) TokenText(stringResource(R.string.memory_sendHint), Tokens.TypeScale.callout, color = p.secondary); inner() } },
                 )
                 GardenButton(stringResource(R.string.memory_send, m.name), { send() }, filled = text.isNotBlank(), seed = seed + 3)

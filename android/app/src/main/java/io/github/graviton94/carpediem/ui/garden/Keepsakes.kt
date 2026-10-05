@@ -95,7 +95,7 @@ internal fun FutureLetterSheet(state: AppState, start: CapsuleWhen, today: Local
             BasicTextField(
                 value = text, onValueChange = { v -> if (v.codePointCount(0, v.length) <= Capsules.MAX_CHARS && v.count { it == '\n' } < Lines.MAX_LINES) text = v },
                 minLines = 3, maxLines = Lines.MAX_LINES, textStyle = Tokens.TypeScale.callout.style().copy(color = p.foreground), cursorBrush = SolidColor(p.foreground),
-                modifier = Modifier.fillMaxWidth().crayonBox(null, G.Radius.box, G.Stroke.chip, 1510).padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3),
+                modifier = Modifier.fillMaxWidth().keepAboveKeyboard().crayonBox(null, G.Radius.box, G.Stroke.chip, 1510).padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3),
                 decorationBox = { inner -> Box { if (text.isEmpty()) TokenText(stringResource(R.string.capsule_hint), Tokens.TypeScale.callout, color = p.secondary); inner() } },
             )
             WhenChips(w, R.string.capsule_seasonPlain) { w = it }
@@ -244,10 +244,12 @@ private fun RingArt(months: List<io.github.graviton94.carpediem.core.Feeling?>, 
     }
 }
 
-/** 추억: 미래의 나에게 · 열어 본 항아리 · 나이테. */
+internal enum class KeepPart { FUTURE, LOOKBACK }
+
+/** 추억의 간직한 것: FUTURE = 미래의 나에게 (항아리 · 열어 본 항아리), LOOKBACK = 돌아보기 안의 엔딩 크레딧 · 나이테. */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-internal fun KeepsakesSection(state: AppState, profile: LifeProfile, now: LocalDateTime, onCredits: (Int) -> Unit = {}) {
+internal fun KeepsakesSection(state: AppState, profile: LifeProfile, now: LocalDateTime, onCredits: (Int) -> Unit = {}, part: KeepPart = KeepPart.FUTURE) {
     val p = Theme.palette
     val ctx = LocalContext.current
     val today = now.toLocalDate()
@@ -256,14 +258,14 @@ internal fun KeepsakesSection(state: AppState, profile: LifeProfile, now: LocalD
     var ringAge by remember { mutableStateOf<Int?>(null) }
     // 한 해의 엔딩 크레딧 (08): 한 줄이 있는 해마다
     val years = remember(state.lines) { state.gardenYears() }
-    if (years.isNotEmpty()) {
-        Spacer(Modifier.height(Tokens.Space.sp4))
-        TokenText(stringResource(R.string.credits_section), Tokens.TypeScale.title3)
+    if (part == KeepPart.LOOKBACK && years.isNotEmpty()) {
+        TokenText(stringResource(R.string.credits_section), Tokens.TypeScale.headline, Modifier.padding(top = Tokens.Space.sp2))
         TokenText(stringResource(R.string.credits_sectionSub), Tokens.TypeScale.footnote, color = p.secondary)
         FlowRow(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
             years.take(10).forEachIndexed { i, y -> GardenChip(stringResource(R.string.credits_chip, "$y"), false, 1570 + i) { onCredits(y) } }
         }
     }
+    if (part == KeepPart.FUTURE) {
     Spacer(Modifier.height(Tokens.Space.sp4))
     TokenText(stringResource(R.string.capsule_section), Tokens.TypeScale.title3)
     TokenText(stringResource(R.string.capsule_sectionSub), Tokens.TypeScale.footnote, color = p.secondary)
@@ -280,11 +282,11 @@ internal fun KeepsakesSection(state: AppState, profile: LifeProfile, now: LocalD
             TokenText(stringResource(R.string.capsule_openedRow, RecordText.day(ctx, c.written), RecordText.day(ctx, c.opens)), Tokens.TypeScale.footnote, Modifier.weight(1f))
         }
     }
+    }
     // 나이테: 다 지나간 해 가운데 한 줄이 있는 해
     val rings = remember(state.lines, today) { Rings.done(profile.birthDate, today, state.lines) }
-    if (rings.isNotEmpty()) {
-        Spacer(Modifier.height(Tokens.Space.sp4))
-        TokenText(stringResource(R.string.ring_section), Tokens.TypeScale.title3)
+    if (part == KeepPart.LOOKBACK && rings.isNotEmpty()) {
+        TokenText(stringResource(R.string.ring_section), Tokens.TypeScale.headline, Modifier.padding(top = Tokens.Space.sp2))
         TokenText(stringResource(R.string.ring_sectionSub), Tokens.TypeScale.footnote, color = p.secondary)
         FlowRow(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
             rings.take(12).forEachIndexed { i, a -> GardenChip(stringResource(R.string.ring_chip, "$a"), false, 1560 + i) { ringAge = a } }

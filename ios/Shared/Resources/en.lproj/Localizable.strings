@@ -602,6 +602,9 @@
 "decor.new.letter" = "A season letter is tucked into the post.";
 "collection.grown" = "Grown in the garden";
 "collection.grownSub" = "What appeared as breaths, lines and stone gazing added up.";
+"lookback.title" = "Look back";
+"lookback.sub" = "Open past years and seasons again.";
+"collection.empty" = "Nothing gathered yet. Pieces arrive as the seasons pass.";
 "decor.hint" = "Try a gentle tap on the tree or the post.";
 "album" = "Season album";
 "album.lines" = "%1$@ lines";

@@ -1,5 +1,6 @@
 package io.github.graviton94.carpediem.ui
 
+import io.github.graviton94.carpediem.ui.garden.keepAboveKeyboard
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.rememberCoroutineScope
 import io.github.graviton94.carpediem.ui.garden.LetGoModal
@@ -690,7 +691,7 @@ fun CountryScreen(state: AppState, selected: String, sex: Sex, onPick: (String) 
                 }
                 TokenText(stringResource(R.string.country), Tokens.TypeScale.headline)
             }
-            OutlinedTextField(query, { query = it }, Modifier.fillMaxWidth(), placeholder = { Text(stringResource(R.string.country_search)) }, singleLine = true,
+            OutlinedTextField(query, { query = it }, Modifier.fillMaxWidth().keepAboveKeyboard(), placeholder = { Text(stringResource(R.string.country_search)) }, singleLine = true,
                 leadingIcon = { Icon(Icons.Filled.Search, null) })
             Spacer(Modifier.height(Tokens.Space.sp3))
             LazyColumn(Modifier.fillMaxWidth().weight(1f)) {

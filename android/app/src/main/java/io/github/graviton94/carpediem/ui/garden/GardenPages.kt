@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -96,10 +97,15 @@ fun CollectionScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, 
     }
 }
 
-/** 모은 것의 내용 (모은 것 화면 · 추억 페이지): 놓인 것 · 받은 편지 · 고마움 책 · 지난 정원 · 기억의 자리. */
+/**
+ * 추억 페이지 (와 모은 것 화면): 세 묶음.
+ * ① 모은 것: 계절 조각 · 정원에 자란 것 · 만난 손님과 순간 · 첫 정원의 꾸밈을 한 판에 (그림 칸, 받은 것만)
+ * ② 미래의 나에게: 항아리에 묻는 편지
+ * ③ 돌아보기: 한 해를 한 장으로 · 엔딩 크레딧 · 나이테 · 핀 씨앗 · 받은 편지 · 고마움 책 · 지난 정원 · 기억의 자리
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun CollectionBody(state: AppState, profile: LifeProfile, now: LocalDateTime, onMemory: () -> Unit, guide: GuideTargets? = null) {
+internal fun CollectionBody(state: AppState, profile: LifeProfile, now: LocalDateTime, onMemory: () -> Unit, guide: GuideTargets? = null, onCredits: (Int) -> Unit = {}) {
     val p = Theme.palette
     val ctx = LocalContext.current
     val u = Theme.unit
@@ -108,13 +114,20 @@ internal fun CollectionBody(state: AppState, profile: LifeProfile, now: LocalDat
     var open by remember { mutableStateOf<Moment?>(null) }
     var card by remember { mutableStateOf<Pair<SeasonCard, GardenDecor.SeasonLines?>?>(null) }
     Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp4)) {
-            TokenText(stringResource(R.string.collection_sub), Tokens.TypeScale.callout.serif(), Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.Center)
-            // 계절 앨범: 해마다 한 줄, 계절 네 장 (그 계절에 정원을 열면 나무가 남긴 한 장). 테두리 = 그 계절에 가장 많았던 마음
-            Column(Modifier.fillMaxWidth().guideTarget(guide, "mem.album"), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp4)) { SeasonAlbum(state, profile, now) { card = it } }
-            // 정원의 한 해 (S2): 해마다 한 장으로 다시 보기
-            var yearSheet by remember { mutableStateOf<Int?>(null) }
-            Box(Modifier.guideTarget(guide, "mem.year")) { GardenYearAlbum(state) { yearSheet = it } }
-            yearSheet?.let { y -> GardenYearSheet(state, profile, now, y) { yearSheet = null } }
+            TokenText(stringResource(R.string.collection_sub), Tokens.TypeScale.footnote, Modifier.fillMaxWidth(), color = p.secondary)
+            // ── ① 모은 것: 한 판 ──
+            val tiles = ArrayList<Tile>()
+            // 계절 조각 (최근 해부터, 봄 → 겨울)
+            val here = remember(now.toLocalDate()) { state.decor(profile, s, now.toLocalDate()).card }
+            val cards = (if (state.previewAll) io.github.graviton94.carpediem.core.Season.entries.map { SeasonCard(here.year, it, here.tree) } else state.seasonCards.mapNotNull { SeasonCard.parse(it) })
+                .distinctBy { it.year to it.season }.sortedWith(compareByDescending<SeasonCard> { it.year }.thenBy { it.season.ordinal })
+            val stats = remember(state.lines, profile.countryCode) { GardenDecor.seasonLines(state.lines, profile.countryCode) }
+            cards.forEach { c ->
+                val l = stats[c.year to c.season]
+                tiles += Tile({ Image(GardenArt.card(ctx, c.key), null, Modifier.fillMaxSize()) },
+                    stringResource(R.string.album_cell, "${c.year}", io.github.graviton94.carpediem.ui.Labels.season(ctx, c.season)),
+                    l?.count?.takeIf { it > 0 }?.let { n -> stringResource(R.string.album_lines, "$n") } ?: cardName(ctx, c.key)) { card = c to l }
+            }
             // 정원에 자란 것: 지금 정원에 생긴 것을 그림으로 (나무 · 말뚝에 걸린 것 · 연과 리본 · 이끼 봉오리)
             val d = remember(now.toLocalDate(), state.lines.size, state.breaths.size) { state.decor(profile, s, now.toLocalDate()) }
             val sk = d.season.name.lowercase()
@@ -139,48 +152,34 @@ internal fun CollectionBody(state: AppState, profile: LifeProfile, now: LocalDat
                 })
                 if (d.buds > 0) add(Grown(R.string.decor_new_bud) { Image(GardenArt.image(ctx, "moss_${sk}_${d.buds.coerceIn(0, 5)}.webp"), null, Modifier.fillMaxSize()) })
             }
-            if (grown.isNotEmpty()) {
-                TokenText(stringResource(R.string.collection_grown), Tokens.TypeScale.headline, Modifier.fillMaxWidth().padding(top = Tokens.Space.sp4))
-                TokenText(stringResource(R.string.collection_grownSub), Tokens.TypeScale.footnote, Modifier.fillMaxWidth(), color = p.secondary)
-                TileGrid(grown.size) { i -> val g = grown[i]; CollectionTile(900 + i, g.art, null, stringResource(g.caption)) }
-            }
-            // 만난 손님 · 순간: 그림과 처음 만난 날
+            grown.forEach { g -> tiles += Tile(g.art, null, stringResource(g.caption), null) }
+            // 만난 손님 · 순간
             val met = state.chancesMet.mapNotNull { r -> r.split(':', limit = 2).takeIf { it.size == 2 }?.let { (k, d2) -> runCatching { k to java.time.LocalDate.parse(d2) }.getOrNull() } }
                 .sortedBy { it.second }.distinctBy { it.first }
-            if (met.isNotEmpty()) {
-                TokenText(stringResource(R.string.album_met), Tokens.TypeScale.headline, Modifier.fillMaxWidth().padding(top = Tokens.Space.sp4))
-                TokenText(stringResource(R.string.album_metSub), Tokens.TypeScale.footnote, Modifier.fillMaxWidth(), color = p.secondary)
-                TileGrid(met.size) { i ->
-                    val (k, day) = met[i]
-                    val name = ctx.resources.getIdentifier("chance_$k", "string", ctx.packageName).takeIf { it != 0 }?.let { ctx.getString(it) } ?: k
-                    CollectionTile(940 + i, { MetArt(k, sk) }, name, day.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)))
-                }
+            met.forEach { (k, day) ->
+                val name = ctx.resources.getIdentifier("chance_$k", "string", ctx.packageName).takeIf { it != 0 }?.let { ctx.getString(it) } ?: k
+                tiles += Tile({ MetArt(k, sk) }, name, day.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)), null)
             }
-            // 첫 정원: 한지 정원 전에 받은 옛 꾸밈 (정원에는 놓이지 않고 여기에 날짜와 함께)
-            val legacy = moments.filter { state.previewAll || it.date.isBefore(io.github.graviton94.carpediem.core.Moments.LEGACY_UNTIL) }
-            if (legacy.isNotEmpty()) {
-                TokenText(stringResource(R.string.album_first), Tokens.TypeScale.headline, Modifier.fillMaxWidth().padding(top = Tokens.Space.sp4))
-                TokenText(stringResource(R.string.album_firstSub), Tokens.TypeScale.footnote, Modifier.fillMaxWidth(), color = p.secondary)
+            // 첫 정원: 한지 정원 전에 받은 옛 꾸밈
+            moments.filter { state.previewAll || it.date.isBefore(io.github.graviton94.carpediem.core.Moments.LEGACY_UNTIL) }.forEach { m ->
+                tiles += Tile({ Image(GardenArt.obj(ctx, m.id), null, Modifier.fillMaxSize()) }, stringResource(objName(m.id)), m.date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM))) { open = m }
             }
-            val cols = 3
-            legacy.chunked(cols).forEachIndexed { row, list ->
-                Row(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
-                    list.forEachIndexed { i, m ->
-                        Column(
-                            Modifier.weight(1f).crayonBox(null, G.Radius.box, G.Stroke.chip, seed = 900 + row * cols + i).clickable { open = m }.padding(Tokens.Space.sp2),
-                            horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1),
-                        ) {
-                            Image(GardenArt.obj(ctx, m.id), null, Modifier.size(u * G.Layout.collectionCell * 0.7f))
-                            TokenText(stringResource(objName(m.id)), Tokens.TypeScale.subhead, weight = FontWeight.SemiBold, align = TextAlign.Center)
-                            TokenText(m.date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)), Tokens.TypeScale.caption2, color = p.secondary, align = TextAlign.Center)
-                        }
-                    }
-                    repeat(cols - list.size) { Spacer(Modifier.weight(1f)) }
-                }
+            Column(Modifier.fillMaxWidth().guideTarget(guide, "mem.album"), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
+                if (tiles.isEmpty()) TokenText(stringResource(R.string.collection_empty), Tokens.TypeScale.callout.serif(), Modifier.fillMaxWidth().padding(vertical = Tokens.Space.sp4), color = p.secondary, align = TextAlign.Center)
+                else TileGrid(tiles.size) { i -> val t = tiles[i]; CollectionTile(900 + i, t.art, t.title, t.caption, t.onClick) }
             }
-            // 계절마다 한 통씩 쌓이는 편지
+            // ── ② 미래의 나에게 ──
+            KeepsakesSection(state, profile, now, onCredits, KeepPart.FUTURE)
+            // ── ③ 돌아보기 ──
+            Spacer(Modifier.height(Tokens.Space.sp4))
+            TokenText(stringResource(R.string.lookback_title), Tokens.TypeScale.title3)
+            TokenText(stringResource(R.string.lookback_sub), Tokens.TypeScale.footnote, color = p.secondary)
+            var yearSheet by remember { mutableStateOf<Int?>(null) }
+            Box(Modifier.guideTarget(guide, "mem.year")) { GardenYearAlbum(state) { yearSheet = it } }
+            yearSheet?.let { y -> GardenYearSheet(state, profile, now, y) { yearSheet = null } }
+            KeepsakesSection(state, profile, now, onCredits, KeepPart.LOOKBACK)
+            BloomedSeeds(state)
             ReceivedLetters(state, now.toLocalDate())
-            // 고마움 책 · 흘려보낸 마음 · 지난 해들의 정원
             ThanksAndLetGo(state)
             PastGardens(state, now.toLocalDate())
             // 기억의 자리: 기억의 돌이 있을 때만 (앱이 먼저 권하지 않음)
@@ -332,9 +331,9 @@ private fun TileGrid(count: Int, tile: @Composable (Int) -> Unit) {
 
 /** 모은 것 한 칸: 그림 (정사각) · 이름 · 작은 글. */
 @Composable
-private fun CollectionTile(seed: Int, art: @Composable () -> Unit, title: String?, caption: String) {
+private fun CollectionTile(seed: Int, art: @Composable () -> Unit, title: String?, caption: String, onClick: (() -> Unit)? = null) {
     val u = Theme.unit
-    Column(Modifier.fillMaxWidth().crayonBox(null, G.Radius.box, G.Stroke.chip, seed).padding(Tokens.Space.sp2),
+    Column(Modifier.fillMaxWidth().crayonBox(null, G.Radius.box, G.Stroke.chip, seed).then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier).padding(Tokens.Space.sp2),
         horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
         Box(Modifier.size(u * G.Layout.collectionCell * 0.72f), contentAlignment = Alignment.Center) { art() }
         title?.let { TokenText(it, Tokens.TypeScale.subhead, weight = FontWeight.SemiBold, align = TextAlign.Center) }
@@ -367,3 +366,6 @@ private fun MetArt(key: String, season: String) {
 
 /** 정원에 자란 것 한 칸: 그림과 생겼을 때의 한 줄. */
 private class Grown(val caption: Int, val art: @Composable () -> Unit)
+
+/** 모은 것 한 칸의 내용. */
+private class Tile(val art: @Composable () -> Unit, val title: String?, val caption: String, val onClick: (() -> Unit)?)

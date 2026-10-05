@@ -301,7 +301,7 @@ internal fun WishCard(state: AppState, id: String, today: LocalDate) {
         androidx.compose.foundation.text.BasicTextField(
             value = text, onValueChange = { v -> val one = v.replace('\n', ' '); if (one.codePointCount(0, one.length) <= G.LetGo.maxChars.toInt()) text = one },
             singleLine = true, textStyle = Tokens.TypeScale.callout.style().copy(color = p.foreground), cursorBrush = androidx.compose.ui.graphics.SolidColor(p.foreground),
-            modifier = Modifier.fillMaxWidth().crayonBox(null, G.Radius.box, G.Stroke.chip, 1171).padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3),
+            modifier = Modifier.fillMaxWidth().keepAboveKeyboard().crayonBox(null, G.Radius.box, G.Stroke.chip, 1171).padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3),
             decorationBox = { inner -> Box { if (text.isEmpty()) TokenText(stringResource(R.string.wish_hint), Tokens.TypeScale.callout, color = p.secondary); inner() } },
         )
         WhenChips(opensWhen) { opensWhen = it }
@@ -365,7 +365,7 @@ private fun SpecialDaySheet(state: AppState, birth: LocalDate, onClose: () -> Un
             androidx.compose.foundation.text.BasicTextField(
                 value = name, onValueChange = { v -> val one = v.replace('\n', ' '); if (one.codePointCount(0, one.length) <= io.github.graviton94.carpediem.core.SpecialDays.NAME_MAX) name = one },
                 singleLine = true, textStyle = Tokens.TypeScale.headline.style().copy(color = p.foreground), cursorBrush = androidx.compose.ui.graphics.SolidColor(p.foreground),
-                modifier = Modifier.fillMaxWidth().crayonBox(null, G.Radius.box, G.Stroke.chip, 1410).padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3),
+                modifier = Modifier.fillMaxWidth().keepAboveKeyboard().crayonBox(null, G.Radius.box, G.Stroke.chip, 1410).padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3),
                 decorationBox = { inner -> Box { if (name.isEmpty()) TokenText(stringResource(R.string.special_nameHint), Tokens.TypeScale.headline, color = p.secondary); inner() } },
             )
             GardenChip(date?.let { LocalDate.ofEpochDay(it).format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)) } ?: stringResource(R.string.add_birthPick), date != null, 1411) { picking = true }

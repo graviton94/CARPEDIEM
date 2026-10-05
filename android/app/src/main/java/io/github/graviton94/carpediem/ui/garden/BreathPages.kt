@@ -488,7 +488,7 @@ private fun ThanksAfter(state: AppState, today: java.time.LocalDate) {
         androidx.compose.foundation.text.BasicTextField(
             value = text, onValueChange = { v -> val one = v.replace('\n', ' '); if (one.codePointCount(0, one.length) <= G.LetGo.maxChars.toInt()) text = one },
             singleLine = true, textStyle = Tokens.TypeScale.callout.style().copy(color = p.foreground), cursorBrush = androidx.compose.ui.graphics.SolidColor(p.foreground),
-            modifier = Modifier.fillMaxWidth().crayonBox(null, G.Radius.box, G.Stroke.chip, 1025).padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3),
+            modifier = Modifier.fillMaxWidth().keepAboveKeyboard().crayonBox(null, G.Radius.box, G.Stroke.chip, 1025).padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3),
             decorationBox = { inner -> Box { if (text.isEmpty()) TokenText(stringResource(R.string.breath_thanksHint), Tokens.TypeScale.callout, color = p.secondary); inner() } },
         )
         GardenButton(stringResource(R.string.breath_thanksKeep), {

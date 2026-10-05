@@ -745,11 +745,8 @@ private fun MemoriesPage(state: AppState, profile: LifeProfile, now: LocalDateTi
         verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3),
     ) {
         TokenText(stringResource(R.string.collection), Tokens.TypeScale.title3)
-        CollectionBody(state, profile, now, onMemory, guide)
-        // 아침 씨앗 가운데 핀 것만 (04): 쉰 씨앗은 남기지 않음
-        BloomedSeeds(state)
-        // 미래의 나에게 (10) · 나이테 (07)
-        KeepsakesSection(state, profile, now, onCredits)
+        // 모은 것 → 미래의 나에게 → 돌아보기
+        CollectionBody(state, profile, now, onMemory, guide, onCredits)
     }
 }
 

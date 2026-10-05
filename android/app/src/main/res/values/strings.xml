@@ -604,6 +604,9 @@
     <string name="decor_new_letter">A season letter is tucked into the post.</string>
     <string name="collection_grown">Grown in the garden</string>
     <string name="collection_grownSub">What appeared as breaths, lines and stone gazing added up.</string>
+    <string name="lookback_title">Look back</string>
+    <string name="lookback_sub">Open past years and seasons again.</string>
+    <string name="collection_empty">Nothing gathered yet. Pieces arrive as the seasons pass.</string>
     <string name="decor_hint">Try a gentle tap on the tree or the post.</string>
     <string name="album">Season album</string>
     <string name="album_lines">%1$s lines</string>

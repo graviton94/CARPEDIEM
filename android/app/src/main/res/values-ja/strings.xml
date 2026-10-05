@@ -603,6 +603,9 @@
     <string name="decor_new_letter">杭に季節の手紙がはさまりました。</string>
     <string name="collection_grown">庭に育ったもの</string>
     <string name="collection_grownSub">呼吸・ひとこと・石ながめが重なって、庭に生まれたもの。</string>
+    <string name="lookback_title">ふりかえる</string>
+    <string name="lookback_sub">過ぎた年と季節を、もう一度ひらいてみて。</string>
+    <string name="collection_empty">まだ集まったものはありません。季節が過ぎるたびにひとつずつ。</string>
     <string name="decor_hint">木や杭に、そっと触れてみてください。</string>
     <string name="album">季節のアルバム</string>
     <string name="album_lines">%1$s件</string>

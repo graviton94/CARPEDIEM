@@ -136,7 +136,7 @@ internal fun SeedSheet(state: AppState, today: LocalDate, onDismiss: () -> Unit)
         if (own) BasicTextField(
             value = text, onValueChange = { v -> val one = v.replace('\n', ' '); if (one.codePointCount(0, one.length) <= Seeds.MAX_CHARS) text = one },
             singleLine = true, textStyle = Tokens.TypeScale.callout.style().copy(color = p.foreground), cursorBrush = SolidColor(p.foreground),
-            modifier = Modifier.fillMaxWidth().crayonBox(null, G.Radius.box, G.Stroke.chip, 1406).padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3),
+            modifier = Modifier.fillMaxWidth().keepAboveKeyboard().crayonBox(null, G.Radius.box, G.Stroke.chip, 1406).padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3),
             decorationBox = { inner -> Box { if (text.isEmpty()) TokenText(stringResource(R.string.seed_hint), Tokens.TypeScale.callout, color = p.secondary); inner() } },
         )
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
@@ -319,7 +319,7 @@ private fun LineStep(state: AppState, today: LocalDate, now: LocalDateTime, onNe
             BasicTextField(
                 value = text, onValueChange = { v -> if (v.codePointCount(0, v.length) <= max && v.count { it == '\n' } < Lines.MAX_LINES) text = v },
                 minLines = 2, maxLines = Lines.MAX_LINES, textStyle = Tokens.TypeScale.callout.style().copy(color = p.foreground), cursorBrush = SolidColor(p.foreground),
-                modifier = Modifier.fillMaxWidth().crayonBox(null, G.Radius.box, G.Stroke.chip, 1460).padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3),
+                modifier = Modifier.fillMaxWidth().keepAboveKeyboard().crayonBox(null, G.Radius.box, G.Stroke.chip, 1460).padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3),
                 decorationBox = { inner -> Box { if (text.isEmpty()) TokenText(stringResource(R.string.letgo_hint), Tokens.TypeScale.callout, color = p.secondary); inner() } },
             )
             GardenButton(stringResource(R.string.letgo_send), {

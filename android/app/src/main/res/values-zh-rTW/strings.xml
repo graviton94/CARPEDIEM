@@ -603,6 +603,9 @@
     <string name="decor_new_letter">木樁上插了一封季節的信。</string>
     <string name="collection_grown">花園裡長出的</string>
     <string name="collection_grownSub">呼吸、一句話、看石頭累積起來，花園裡多出的東西。</string>
+    <string name="lookback_title">回顧</string>
+    <string name="lookback_sub">再翻開走過的年與季節。</string>
+    <string name="collection_empty">還沒有收集到東西。季節走過，就會一樣一樣放進來。</string>
     <string name="decor_hint">輕輕碰一下樹或木樁看看。</string>
     <string name="album">季節相簿</string>
     <string name="album_lines">%1$s 句</string>

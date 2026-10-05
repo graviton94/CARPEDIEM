@@ -259,7 +259,7 @@ internal fun RecordSearch(state: AppState, today: LocalDate, onOpen: (RecordView
     androidx.compose.foundation.text.BasicTextField(
         value = q, onValueChange = { q = it.replace('\n', ' ').take(40) }, singleLine = true,
         textStyle = Tokens.TypeScale.callout.style().copy(color = p.foreground), cursorBrush = androidx.compose.ui.graphics.SolidColor(p.foreground),
-        modifier = Modifier.fillMaxWidth().crayonBox(null, G.Radius.chip, G.Stroke.chip, 1195).padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3),
+        modifier = Modifier.fillMaxWidth().keepAboveKeyboard().crayonBox(null, G.Radius.chip, G.Stroke.chip, 1195).padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3),
         decorationBox = { inner -> Box { if (q.isEmpty()) TokenText(stringResource(R.string.search_hint), Tokens.TypeScale.callout, color = p.secondary); inner() } },
     )
     if (q.isBlank()) return
