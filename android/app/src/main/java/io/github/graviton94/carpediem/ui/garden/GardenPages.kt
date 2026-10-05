@@ -1,5 +1,9 @@
 package io.github.graviton94.carpediem.ui.garden
 
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
@@ -82,7 +86,7 @@ fun CollectionScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, 
     BackHandler(onBack = onBack)
     SkyBackground {
         Column(
-            Modifier.fillMaxSize().verticalScroll(rememberScrollState()).statusBarsPadding().navigationBarsPadding()
+            Modifier.fillMaxSize().imePadding().verticalScroll(rememberScrollState()).statusBarsPadding().navigationBarsPadding()
                 .padding(horizontal = Theme.deviceClass.pageMargin).padding(bottom = Tokens.Space.sp10),
             verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp4),
         ) {
@@ -111,17 +115,45 @@ internal fun CollectionBody(state: AppState, profile: LifeProfile, now: LocalDat
             var yearSheet by remember { mutableStateOf<Int?>(null) }
             Box(Modifier.guideTarget(guide, "mem.year")) { GardenYearAlbum(state) { yearSheet = it } }
             yearSheet?.let { y -> GardenYearSheet(state, profile, now, y) { yearSheet = null } }
-            // 만난 순간: 처음 만난 날과 함께 (순간마다 한 줄)
-            val met = state.chancesMet.mapNotNull { r -> r.split(':', limit = 2).takeIf { it.size == 2 }?.let { (k, d) -> runCatching { k to java.time.LocalDate.parse(d) }.getOrNull() } }.sortedBy { it.second }
+            // 정원에 자란 것: 지금 정원에 생긴 것을 그림으로 (나무 · 말뚝에 걸린 것 · 연과 리본 · 이끼 봉오리)
+            val d = remember(now.toLocalDate(), state.lines.size, state.breaths.size) { state.decor(profile, s, now.toLocalDate()) }
+            val sk = d.season.name.lowercase()
+            val grown = buildList<Grown> {
+                if (d.stage > 0) add(Grown(R.string.decor_new_stage) { Image(GardenArt.image(ctx, "tree_${d.tree.key}_${sk}_${d.stage.coerceIn(0, 3)}.webp"), null, Modifier.fillMaxSize()) })
+                if (d.hang != io.github.graviton94.carpediem.core.Hang.NONE) add(Grown(when (d.hang) { io.github.graviton94.carpediem.core.Hang.BELL -> R.string.decor_new_bell; io.github.graviton94.carpediem.core.Hang.LANTERN -> R.string.decor_new_lantern; else -> R.string.decor_new_chime }) {
+                    Box(Modifier.fillMaxSize()) {
+                        Image(GardenArt.image(ctx, "post_$sk.webp"), null, Modifier.fillMaxSize())
+                        Image(GardenArt.image(ctx, "post_${d.hang.name.lowercase()}.webp"), null, Modifier.fillMaxSize())
+                    }
+                })
+                if (d.kite) add(Grown(R.string.decor_new_kite) { Image(GardenArt.image(ctx, "kite.webp"), null, Modifier.fillMaxSize(0.7f)) })
+                if (d.ribbons.isNotEmpty()) add(Grown(R.string.decor_new_ribbon) {
+                    androidx.compose.foundation.Canvas(Modifier.fillMaxSize(0.7f)) {
+                        val n = d.ribbons.size.coerceAtMost(8); val gap = size.width / (n + 1)
+                        d.ribbons.take(8).forEachIndexed { i, f ->
+                            val x = gap * (i + 1)
+                            drawPath(androidx.compose.ui.graphics.Path().apply { moveTo(x, size.height * 0.1f); quadraticTo(x - gap * 0.6f, size.height * 0.5f, x - gap * 0.2f + (i % 2) * gap * 0.3f, size.height * 0.9f) },
+                                feelingColor(f), style = androidx.compose.ui.graphics.drawscope.Stroke(size.width * 0.045f, cap = androidx.compose.ui.graphics.StrokeCap.Round))
+                        }
+                    }
+                })
+                if (d.buds > 0) add(Grown(R.string.decor_new_bud) { Image(GardenArt.image(ctx, "moss_${sk}_${d.buds.coerceIn(0, 5)}.webp"), null, Modifier.fillMaxSize()) })
+            }
+            if (grown.isNotEmpty()) {
+                TokenText(stringResource(R.string.collection_grown), Tokens.TypeScale.headline, Modifier.fillMaxWidth().padding(top = Tokens.Space.sp4))
+                TokenText(stringResource(R.string.collection_grownSub), Tokens.TypeScale.footnote, Modifier.fillMaxWidth(), color = p.secondary)
+                TileGrid(grown.size) { i -> val g = grown[i]; CollectionTile(900 + i, g.art, null, stringResource(g.caption)) }
+            }
+            // 만난 손님 · 순간: 그림과 처음 만난 날
+            val met = state.chancesMet.mapNotNull { r -> r.split(':', limit = 2).takeIf { it.size == 2 }?.let { (k, d2) -> runCatching { k to java.time.LocalDate.parse(d2) }.getOrNull() } }
+                .sortedBy { it.second }.distinctBy { it.first }
             if (met.isNotEmpty()) {
                 TokenText(stringResource(R.string.album_met), Tokens.TypeScale.headline, Modifier.fillMaxWidth().padding(top = Tokens.Space.sp4))
                 TokenText(stringResource(R.string.album_metSub), Tokens.TypeScale.footnote, Modifier.fillMaxWidth(), color = p.secondary)
-                met.forEach { (k, d) ->
+                TileGrid(met.size) { i ->
+                    val (k, day) = met[i]
                     val name = ctx.resources.getIdentifier("chance_$k", "string", ctx.packageName).takeIf { it != 0 }?.let { ctx.getString(it) } ?: k
-                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                        TokenText(name, Tokens.TypeScale.subhead)
-                        TokenText(d.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)), Tokens.TypeScale.footnote, color = p.secondary)
-                    }
+                    CollectionTile(940 + i, { MetArt(k, sk) }, name, day.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)))
                 }
             }
             // 첫 정원: 한지 정원 전에 받은 옛 꾸밈 (정원에는 놓이지 않고 여기에 날짜와 함께)
@@ -162,11 +194,11 @@ internal fun CollectionBody(state: AppState, profile: LifeProfile, now: LocalDat
             }
     }
     open?.let { m ->
-        ModalBottomSheet(onDismissRequest = { open = null }, containerColor = Theme.gc.paper) { ItemSheet(m) { open = null } }
+        ModalBottomSheet(onDismissRequest = { open = null }, containerColor = Theme.gc.paper, sheetState = androidx.compose.material3.rememberModalBottomSheetState(skipPartiallyExpanded = true)) { ItemSheet(m) { open = null } }
     }
     card?.let { (c, l) ->
-        ModalBottomSheet(onDismissRequest = { card = null }, containerColor = Theme.gc.paper) {
-            Column(Modifier.fillMaxWidth().padding(horizontal = Theme.deviceClass.pageMargin).padding(bottom = Tokens.Space.sp6), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
+        ModalBottomSheet(onDismissRequest = { card = null }, containerColor = Theme.gc.paper, sheetState = androidx.compose.material3.rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
+            Column(Modifier.fillMaxWidth().imePadding().verticalScroll(rememberScrollState()).padding(horizontal = Theme.deviceClass.pageMargin).padding(bottom = Tokens.Space.sp6), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
                 Image(GardenArt.card(ctx, c.key), null, Modifier.size(u * 160f * G.Decor.cardBoxW / G.Decor.cardBoxH, u * 160f))
                 TokenText(cardName(ctx, c.key), Tokens.TypeScale.title3.serif(), align = TextAlign.Center)
                 TokenText(stringResource(R.string.album_when, "${c.year}", io.github.graviton94.carpediem.ui.Labels.season(ctx, c.season), stringResource(treeName(c.tree))), Tokens.TypeScale.body, align = TextAlign.Center)
@@ -240,7 +272,7 @@ fun SupportScreen(state: AppState, now: LocalDateTime, onBack: () -> Unit) {
     BackHandler(onBack = onBack)
     SkyBackground {
         Column(
-            Modifier.fillMaxSize().verticalScroll(rememberScrollState()).statusBarsPadding().navigationBarsPadding()
+            Modifier.fillMaxSize().imePadding().verticalScroll(rememberScrollState()).statusBarsPadding().navigationBarsPadding()
                 .padding(horizontal = Theme.deviceClass.pageMargin).padding(bottom = Tokens.Space.sp10),
             verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp4),
         ) {
@@ -284,3 +316,54 @@ fun SupportScreen(state: AppState, now: LocalDateTime, onBack: () -> Unit) {
         }
     }
 }
+
+
+/** 세 칸씩 놓는 판 (마지막 줄은 빈칸으로 채움). */
+@Composable
+private fun TileGrid(count: Int, tile: @Composable (Int) -> Unit) {
+    val cols = 3
+    (0 until count).chunked(cols).forEach { row ->
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
+            row.forEach { i -> Box(Modifier.weight(1f)) { tile(i) } }
+            repeat(cols - row.size) { Spacer(Modifier.weight(1f)) }
+        }
+    }
+}
+
+/** 모은 것 한 칸: 그림 (정사각) · 이름 · 작은 글. */
+@Composable
+private fun CollectionTile(seed: Int, art: @Composable () -> Unit, title: String?, caption: String) {
+    val u = Theme.unit
+    Column(Modifier.fillMaxWidth().crayonBox(null, G.Radius.box, G.Stroke.chip, seed).padding(Tokens.Space.sp2),
+        horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
+        Box(Modifier.size(u * G.Layout.collectionCell * 0.72f), contentAlignment = Alignment.Center) { art() }
+        title?.let { TokenText(it, Tokens.TypeScale.subhead, weight = FontWeight.SemiBold, align = TextAlign.Center) }
+        TokenText(caption, Tokens.TypeScale.caption2, color = Theme.palette.secondary, align = TextAlign.Center, maxLines = 3)
+    }
+}
+
+/** 만난 손님 · 순간의 그림 (정원에서 쓰는 그림 그대로). */
+@Composable
+private fun MetArt(key: String, season: String) {
+    val ctx = LocalContext.current
+    when {
+        key.startsWith("guest_") -> Image(GardenArt.image(ctx, "${key}.webp"), null, Modifier.fillMaxSize(0.85f))
+        key == "rainbow" -> Image(GardenArt.image(ctx, "moment_rainbow.webp"), null, Modifier.fillMaxSize())
+        key == "aurora" -> Image(GardenArt.image(ctx, "moment_aurora.webp"), null, Modifier.fillMaxSize())
+        key == "snail" -> Image(GardenArt.image(ctx, "moment_snail.webp"), null, Modifier.fillMaxSize(0.8f))
+        key == "butterflies" -> Box(Modifier.fillMaxSize(0.7f)) {
+            listOf("fly_wing_l", "fly_wing_r", "fly_body").forEach { n -> Image(GardenArt.image(ctx, "$n.webp"), null, Modifier.fillMaxSize()) }
+        }
+        key == "wind" -> Image(GardenArt.image(ctx, "wind_$season.webp"), null, Modifier.fillMaxSize(0.5f))
+        else -> androidx.compose.foundation.Canvas(Modifier.fillMaxSize(0.7f)) {
+            val r = size.minDimension
+            if (key == "bubbles") listOf(Offset(0.35f, 0.6f) to 0.2f, Offset(0.65f, 0.4f) to 0.14f, Offset(0.55f, 0.75f) to 0.1f).forEach { (o, k) ->
+                drawCircle(Color(0xFF9DB9C9), r * k, Offset(o.x * r, o.y * r), style = androidx.compose.ui.graphics.drawscope.Stroke(r * 0.02f)) }
+            else listOf(Offset(0.3f, 0.5f), Offset(0.6f, 0.35f), Offset(0.7f, 0.7f), Offset(0.45f, 0.75f)).forEach { o ->
+                drawCircle(Brush.radialGradient(listOf(Color(0xCCF6EC96), Color(0x00F6EC96)), Offset(o.x * r, o.y * r), r * 0.12f), r * 0.12f, Offset(o.x * r, o.y * r)) }
+        }
+    }
+}
+
+/** 정원에 자란 것 한 칸: 그림과 생겼을 때의 한 줄. */
+private class Grown(val caption: Int, val art: @Composable () -> Unit)

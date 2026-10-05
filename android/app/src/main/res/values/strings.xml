@@ -602,6 +602,8 @@
     <string name="decor_new_bud">A bud opened on the moss.</string>
     <string name="decor_new_card">This season\'s piece lies at the foot of your tree.</string>
     <string name="decor_new_letter">A season letter is tucked into the post.</string>
+    <string name="collection_grown">Grown in the garden</string>
+    <string name="collection_grownSub">What appeared as breaths, lines and stone gazing added up.</string>
     <string name="decor_hint">Try a gentle tap on the tree or the post.</string>
     <string name="album">Season album</string>
     <string name="album_lines">%1$s lines</string>

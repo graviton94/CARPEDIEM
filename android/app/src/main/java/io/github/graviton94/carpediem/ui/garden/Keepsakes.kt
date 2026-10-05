@@ -1,5 +1,6 @@
 package io.github.graviton94.carpediem.ui.garden
 
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -85,8 +86,8 @@ internal fun FutureLetterSheet(state: AppState, start: CapsuleWhen, today: Local
     val ctx = LocalContext.current
     var text by rememberSaveable { mutableStateOf("") }
     var w by rememberSaveable { mutableStateOf(start) }
-    ModalBottomSheet(onDismissRequest = onDismiss, containerColor = Theme.gc.paper) {
-        Column(Modifier.fillMaxWidth().padding(horizontal = Theme.deviceClass.pageMargin).navigationBarsPadding().padding(bottom = Tokens.Space.sp6),
+    ModalBottomSheet(onDismissRequest = onDismiss, containerColor = Theme.gc.paper, sheetState = androidx.compose.material3.rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
+        Column(Modifier.fillMaxWidth().imePadding().verticalScroll(rememberScrollState()).padding(horizontal = Theme.deviceClass.pageMargin).navigationBarsPadding().padding(bottom = Tokens.Space.sp6),
             verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
             TokenText(stringResource(R.string.capsule_title), Tokens.TypeScale.title3.serif())
             TokenText(stringResource(R.string.capsule_sub), Tokens.TypeScale.footnote, color = p.secondary)
@@ -112,8 +113,8 @@ internal fun FutureLetterSheet(state: AppState, start: CapsuleWhen, today: Local
 internal fun CapsuleSheet(c: Capsule, onDone: () -> Unit) {
     val p = Theme.palette
     val ctx = LocalContext.current
-    ModalBottomSheet(onDismissRequest = onDone, containerColor = Theme.gc.paper) {
-        Column(Modifier.fillMaxWidth().padding(horizontal = Theme.deviceClass.pageMargin).navigationBarsPadding().padding(bottom = Tokens.Space.sp6),
+    ModalBottomSheet(onDismissRequest = onDone, containerColor = Theme.gc.paper, sheetState = androidx.compose.material3.rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
+        Column(Modifier.fillMaxWidth().imePadding().verticalScroll(rememberScrollState()).padding(horizontal = Theme.deviceClass.pageMargin).navigationBarsPadding().padding(bottom = Tokens.Space.sp6),
             horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
             Jar(Theme.unit * 34f, open = true)
             TokenText(stringResource(R.string.capsule_from, RecordText.day(ctx, c.written)), Tokens.TypeScale.footnote, color = p.secondary, align = TextAlign.Center)
@@ -176,8 +177,8 @@ internal fun RingSheet(state: AppState, profile: LifeProfile, age: Int, now: Loc
     val older = remember(age, state.lines) { Rings.done(profile.birthDate, now.toLocalDate(), state.lines).filter { it < age }.size }
     var walk by remember { mutableStateOf(false) }
     var letter by remember { mutableStateOf(false) }
-    ModalBottomSheet(onDismissRequest = onDismiss, containerColor = Theme.gc.paper) {
-        Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(horizontal = Theme.deviceClass.pageMargin).navigationBarsPadding().padding(bottom = Tokens.Space.sp6),
+    ModalBottomSheet(onDismissRequest = onDismiss, containerColor = Theme.gc.paper, sheetState = androidx.compose.material3.rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
+        Column(Modifier.fillMaxWidth().imePadding().verticalScroll(rememberScrollState()).padding(horizontal = Theme.deviceClass.pageMargin).navigationBarsPadding().padding(bottom = Tokens.Space.sp6),
             horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
             TokenText("${RecordText.day(ctx, ring.start)} — ${RecordText.day(ctx, ring.end)}", Tokens.TypeScale.caption1, color = p.secondary)
             TokenText(stringResource(R.string.ring_title, "$age"), Tokens.TypeScale.title3.serif())

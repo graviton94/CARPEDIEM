@@ -1,5 +1,6 @@
 package io.github.graviton94.carpediem.ui.garden
 
+import androidx.compose.foundation.layout.imePadding
 import io.github.graviton94.carpediem.ui.GardenAlert
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
@@ -154,7 +155,7 @@ internal fun LetterSheet(letter: Letter, wish: String? = null, onClose: () -> Un
     val month = DateTimeFormatter.ofPattern("MMMM", ctx.resources.configuration.locales[0])
     ModalBottomSheet(onDismissRequest = onClose, containerColor = Theme.gc.paper, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
         Column(
-            Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(horizontal = Theme.deviceClass.pageMargin).navigationBarsPadding().padding(bottom = Tokens.Space.sp8),
+            Modifier.fillMaxWidth().imePadding().verticalScroll(rememberScrollState()).padding(horizontal = Theme.deviceClass.pageMargin).navigationBarsPadding().padding(bottom = Tokens.Space.sp8),
             verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3),
         ) {
             TokenText(stringResource(R.string.letter_title, "${letter.arrives.year}", Labels.season(ctx, letter.season)), Tokens.TypeScale.title3.serif())
@@ -262,7 +263,7 @@ private fun ThanksPages(list: List<DayLine>, onClose: () -> Unit) {
     val pages = list.size + 1
     val pager = androidx.compose.foundation.pager.rememberPagerState(initialPage = 0) { pages }
     val date = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
-    Column(Modifier.fillMaxWidth().navigationBarsPadding().padding(bottom = Tokens.Space.sp6), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp4)) {
+    Column(Modifier.fillMaxWidth().imePadding().verticalScroll(rememberScrollState()).navigationBarsPadding().padding(bottom = Tokens.Space.sp6), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp4)) {
         TokenText(stringResource(R.string.thanks_book), Tokens.TypeScale.title3.serif(), Modifier.fillMaxWidth(), align = TextAlign.Center)
         androidx.compose.foundation.pager.HorizontalPager(pager, Modifier.fillMaxWidth(), contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = Theme.deviceClass.pageMargin), pageSpacing = Tokens.Space.sp3) { i ->
             Column(
@@ -357,8 +358,8 @@ private fun SpecialDaySheet(state: AppState, birth: LocalDate, onClose: () -> Un
     var date by rememberSaveable { mutableStateOf<Long?>(null) }
     var picking by remember { mutableStateOf(false) }
     val full = state.specialDays.size >= io.github.graviton94.carpediem.core.SpecialDays.MAX
-    ModalBottomSheet(onDismissRequest = onClose, containerColor = Theme.gc.paper) {
-        Column(Modifier.fillMaxWidth().padding(horizontal = Theme.deviceClass.pageMargin).navigationBarsPadding().padding(bottom = Tokens.Space.sp6),
+    ModalBottomSheet(onDismissRequest = onClose, containerColor = Theme.gc.paper, sheetState = androidx.compose.material3.rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
+        Column(Modifier.fillMaxWidth().imePadding().verticalScroll(rememberScrollState()).padding(horizontal = Theme.deviceClass.pageMargin).navigationBarsPadding().padding(bottom = Tokens.Space.sp6),
             verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
             TokenText(stringResource(R.string.special_name), Tokens.TypeScale.title3.serif())
             androidx.compose.foundation.text.BasicTextField(

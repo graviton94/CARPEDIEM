@@ -123,8 +123,8 @@ internal fun SeedSheet(state: AppState, today: LocalDate, onDismiss: () -> Unit)
     var own by remember(today) { mutableStateOf(false) }
     var text by remember(today) { mutableStateOf("") }
     val chosen = if (own) text.takeIf { it.isNotBlank() } else pick
-    androidx.compose.material3.ModalBottomSheet(onDismissRequest = onDismiss, containerColor = Theme.gc.paper) { Column(
-        Modifier.fillMaxWidth().padding(horizontal = Theme.deviceClass.pageMargin).navigationBarsPadding().padding(bottom = Tokens.Space.sp6),
+    androidx.compose.material3.ModalBottomSheet(onDismissRequest = onDismiss, containerColor = Theme.gc.paper, sheetState = androidx.compose.material3.rememberModalBottomSheetState(skipPartiallyExpanded = true)) { Column(
+        Modifier.fillMaxWidth().imePadding().verticalScroll(rememberScrollState()).padding(horizontal = Theme.deviceClass.pageMargin).navigationBarsPadding().padding(bottom = Tokens.Space.sp6),
         verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3),
     ) {
         TokenText(stringResource(R.string.seed_title), Tokens.TypeScale.title3.serif())

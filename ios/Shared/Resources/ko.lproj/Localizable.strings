@@ -600,6 +600,8 @@
 "decor.new.bud" = "이끼에 봉오리가 하나 피었어요.";
 "decor.new.card" = "나무 발치에 이번 계절의 한 조각이 놓였어요.";
 "decor.new.letter" = "말뚝에 계절의 편지가 꽂혔어요.";
+"collection.grown" = "정원에 자란 것";
+"collection.grownSub" = "숨 · 한 줄 · 돌멍이 쌓이며 정원에 생긴 것들이에요.";
 "decor.hint" = "나무와 말뚝을 살짝 눌러 보세요.";
 "album" = "계절 앨범";
 "album.lines" = "%1$@줄";

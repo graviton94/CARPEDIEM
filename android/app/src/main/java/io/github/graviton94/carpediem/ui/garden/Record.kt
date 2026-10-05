@@ -1,5 +1,6 @@
 package io.github.graviton94.carpediem.ui.garden
 
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -66,7 +67,7 @@ internal fun RecordSheet(state: AppState, start: RecordView, today: LocalDate, o
     var view by remember { mutableStateOf(start) }
     ModalBottomSheet(onDismissRequest = onClose, containerColor = Theme.gc.paper, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
         Column(
-            Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(horizontal = Theme.deviceClass.pageMargin).navigationBarsPadding().padding(bottom = Tokens.Space.sp8),
+            Modifier.fillMaxWidth().imePadding().verticalScroll(rememberScrollState()).padding(horizontal = Theme.deviceClass.pageMargin).navigationBarsPadding().padding(bottom = Tokens.Space.sp8),
             verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3),
         ) {
             RecordPanel(state, view, { view = it }, today)

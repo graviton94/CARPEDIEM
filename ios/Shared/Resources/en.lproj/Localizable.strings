@@ -600,6 +600,8 @@
 "decor.new.bud" = "A bud opened on the moss.";
 "decor.new.card" = "This season's piece lies at the foot of your tree.";
 "decor.new.letter" = "A season letter is tucked into the post.";
+"collection.grown" = "Grown in the garden";
+"collection.grownSub" = "What appeared as breaths, lines and stone gazing added up.";
 "decor.hint" = "Try a gentle tap on the tree or the post.";
 "album" = "Season album";
 "album.lines" = "%1$@ lines";

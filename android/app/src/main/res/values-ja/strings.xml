@@ -601,6 +601,8 @@
     <string name="decor_new_bud">苔に、つぼみがひとつ咲きました。</string>
     <string name="decor_new_card">木の根もとに、この季節のひとかけらが置かれました。</string>
     <string name="decor_new_letter">杭に季節の手紙がはさまりました。</string>
+    <string name="collection_grown">庭に育ったもの</string>
+    <string name="collection_grownSub">呼吸・ひとこと・石ながめが重なって、庭に生まれたもの。</string>
     <string name="decor_hint">木や杭に、そっと触れてみてください。</string>
     <string name="album">季節のアルバム</string>
     <string name="album_lines">%1$s件</string>

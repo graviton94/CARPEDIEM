@@ -117,7 +117,7 @@ fun StoneScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, id: S
     BackHandler(onBack = onBack)
     SkyBackground {
         Column(
-            Modifier.fillMaxSize().verticalScroll(rememberScrollState()).statusBarsPadding().navigationBarsPadding()
+            Modifier.fillMaxSize().imePadding().verticalScroll(rememberScrollState()).statusBarsPadding().navigationBarsPadding()
                 .padding(horizontal = Theme.deviceClass.pageMargin).padding(bottom = Tokens.Space.sp10),
             verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp4),
         ) {

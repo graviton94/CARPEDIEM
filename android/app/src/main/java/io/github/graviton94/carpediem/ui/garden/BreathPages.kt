@@ -1,5 +1,8 @@
 package io.github.graviton94.carpediem.ui.garden
 
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.layout.imePadding
 import io.github.graviton94.carpediem.ui.GardenAlert
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.Animatable
@@ -116,8 +119,8 @@ fun BreathSheet(state: AppState, now: LocalDateTime, onStart: (BreathKind, Int, 
     var minutes by remember { mutableStateOf(state.breathMinutes) }
     var sound by remember { mutableStateOf(state.sound) }
     var touchOn by remember { mutableStateOf(state.breathTouch) }
-    ModalBottomSheet(onDismissRequest = onDismiss, containerColor = Theme.gc.paper) {
-        Column(Modifier.fillMaxWidth().padding(horizontal = Theme.deviceClass.pageMargin).navigationBarsPadding().padding(bottom = Tokens.Space.sp6),
+    ModalBottomSheet(onDismissRequest = onDismiss, containerColor = Theme.gc.paper, sheetState = androidx.compose.material3.rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
+        Column(Modifier.fillMaxWidth().imePadding().verticalScroll(rememberScrollState()).padding(horizontal = Theme.deviceClass.pageMargin).navigationBarsPadding().padding(bottom = Tokens.Space.sp6),
             verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
             TokenText(stringResource(R.string.breath), Tokens.TypeScale.title3.serif())
             // 때에 맞는 숨의 이름 (하루를 여는 · 잠시 쉬어가는 · 내려놓는 · 마무리하는)

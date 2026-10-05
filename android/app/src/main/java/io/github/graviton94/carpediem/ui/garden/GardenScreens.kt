@@ -662,7 +662,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
     }
 
     decorOpen?.let { part ->
-        ModalBottomSheet(onDismissRequest = { decorOpen = null }, containerColor = Theme.gc.paper) { DecorSheet(part, decor, state, now) }
+        ModalBottomSheet(onDismissRequest = { decorOpen = null }, containerColor = Theme.gc.paper, sheetState = androidx.compose.material3.rememberModalBottomSheetState(skipPartiallyExpanded = true)) { DecorSheet(part, decor, state, now) }
     }
     letterOpen?.let { LetterSheet(it, state.wishFor(it)) { letterOpen = null } }
     gardenYearOpen?.let { y -> GardenYearSheet(state, profile, now, y) { gardenYearOpen = null } }
@@ -737,7 +737,7 @@ private fun WritePage(state: AppState, now: LocalDateTime, view: RecordView, gui
 @Composable
 private fun MemoriesPage(state: AppState, profile: LifeProfile, now: LocalDateTime, guide: GuideTargets, onMemory: () -> Unit, onCredits: (Int) -> Unit) {
     Column(
-        Modifier.fillMaxSize().verticalScroll(rememberScrollState()).statusBarsPadding()
+        Modifier.fillMaxSize().imePadding().verticalScroll(rememberScrollState()).statusBarsPadding()
             .padding(horizontal = Theme.deviceClass.pageMargin).padding(top = Tokens.Space.sp6, bottom = Tokens.Space.sp8),
         verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3),
     ) {
@@ -758,7 +758,7 @@ private fun FlowPage(state: AppState, profile: LifeProfile, now: LocalDateTime, 
     val s = LifeSnapshot(profile.birthDate, profile.expectancy(state.store.table), now)
     val season = s.season
     Column(
-        Modifier.fillMaxSize().verticalScroll(rememberScrollState()).statusBarsPadding()
+        Modifier.fillMaxSize().imePadding().verticalScroll(rememberScrollState()).statusBarsPadding()
             .padding(horizontal = Theme.deviceClass.pageMargin).padding(top = Tokens.Space.sp6, bottom = Tokens.Space.sp8),
         verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3),
     ) {

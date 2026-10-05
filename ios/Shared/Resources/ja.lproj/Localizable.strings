@@ -599,6 +599,8 @@
 "decor.new.bud" = "苔に、つぼみがひとつ咲きました。";
 "decor.new.card" = "木の根もとに、この季節のひとかけらが置かれました。";
 "decor.new.letter" = "杭に季節の手紙がはさまりました。";
+"collection.grown" = "庭に育ったもの";
+"collection.grownSub" = "呼吸・ひとこと・石ながめが重なって、庭に生まれたもの。";
 "decor.hint" = "木や杭に、そっと触れてみてください。";
 "album" = "季節のアルバム";
 "album.lines" = "%1$@件";
