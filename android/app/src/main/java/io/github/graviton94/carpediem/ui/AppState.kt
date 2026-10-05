@@ -251,9 +251,11 @@ class AppState(private val context: Context) {
         showChance(moment, today)   // 정원에 돌아가면 계절 바람 (어제 무거웠으면 무지개)
         val s = Lines.streaks(onTime(next), streaks); if (s != streaks) { store.streaks = s; streaks = s }
         val part = Labels.part(fixedNow ?: LocalDateTime.now())
-        toast = Labels.letGoMessage(context, feeling, part)
+        val msg = Labels.letGoMessage(context, feeling, part)
         care = careFor(feeling, line.to, today, part)
         if (care != null) store.careShown = today
+        // 한 줄마다 ‘확인’을 눌러야 닫히는 창은 무거움: 권유 (사흘에 한 번까지) 나 누군가에게 보낸 날만 창으로, 나머지는 위에 잠깐 떴다 사라지는 한마디로
+        if (care != null || toastTitle != null) toast = msg else { toast = null; say(msg.replace('\n', ' ')) }
         Widgets.refresh(context)   // 마음의 기록 위젯에 오늘의 꽃 · 별
     }
     // ───── 고치기 · 지우기 ─────

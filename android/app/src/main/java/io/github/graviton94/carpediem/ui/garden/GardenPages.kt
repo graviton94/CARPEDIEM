@@ -126,7 +126,7 @@ internal fun CollectionBody(state: AppState, profile: LifeProfile, now: LocalDat
                         Image(GardenArt.image(ctx, "post_${d.hang.name.lowercase()}.webp"), null, Modifier.fillMaxSize())
                     }
                 })
-                if (d.kite) add(Grown(R.string.decor_new_kite) { Image(GardenArt.image(ctx, "kite.webp"), null, Modifier.fillMaxSize(0.7f)) })
+                if (d.kite) add(Grown(R.string.decor_new_kite) { Image(GardenArt.image(ctx, "kite.webp"), null, Modifier.fillMaxSize(0.95f)) })
                 if (d.ribbons.isNotEmpty()) add(Grown(R.string.decor_new_ribbon) {
                     androidx.compose.foundation.Canvas(Modifier.fillMaxSize(0.7f)) {
                         val n = d.ribbons.size.coerceAtMost(8); val gap = size.width / (n + 1)

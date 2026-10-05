@@ -233,12 +233,9 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
                         Feather(u * G.LetGo.feather)
                         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
                             TokenText(stringResource(R.string.letgo_done), Tokens.TypeScale.subhead)
-                            // 지금까지 몇 번 (이어 쓴 날 수처럼 다그치는 숫자는 두지 않음)
-                            val count = state.lines.size
-                            if (count > 1) TokenText(stringResource(R.string.letgo_total, "$count"), Tokens.TypeScale.footnote, color = p.secondary)
                         }
                     }
-                    if (state.keepLines) TokenText(stringResource(R.string.letgo_seeBelow), Tokens.TypeScale.footnote, color = p.secondary)
+                    // 남긴 뒤의 글은 짧게: 몇 번 남겼는지 (세는 숫자) · ‘아래 기록에 더해졌어요’ 같은 설명은 두지 않음
                     // 그날 안에는 고치거나 지울 수 있음 (조용히, 작게)
                     val mine = state.lines.lastOrNull { it.date == today }
                     if (mine != null && state.keepLines && mine.text.isNotBlank()) TokenText(stringResource(R.string.edit_until), Tokens.TypeScale.caption1, color = p.secondary)
