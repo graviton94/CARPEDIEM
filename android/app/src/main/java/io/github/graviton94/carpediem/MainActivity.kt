@@ -102,6 +102,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        // 오늘의 하늘 · 땅 그림을 화면 밖에서 먼저 읽기 시작
+        runCatching { val p = io.github.graviton94.carpediem.data.Store(applicationContext).profile; io.github.graviton94.carpediem.ui.garden.GardenArt.warm(applicationContext, io.github.graviton94.carpediem.core.GardenDecor.realSeason(java.time.LocalDate.now(), p?.countryCode ?: "KR")) }
         val state = AppState(applicationContext)
         // 알림 · 위젯 · 바로 가기로 왔는지 (그러면 첫 화면 없이 바로 그곳으로)
         val linked = savedInstanceState == null && (intent?.hasExtra(EXTRA_OPEN) == true || intent?.getBooleanExtra(EXTRA_MORNING_BREATH, false) == true)

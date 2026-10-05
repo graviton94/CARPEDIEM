@@ -12,8 +12,16 @@ import io.github.graviton94.carpediem.core.Tree
 object GardenArt {
     private val cache = HashMap<String, ImageBitmap>()
 
-    fun image(context: Context, name: String): ImageBitmap = synchronized(cache) {
-        cache.getOrPut(name) { context.assets.open("garden/$name").use { BitmapFactory.decodeStream(it).asImageBitmap() } }
+    fun image(context: Context, name: String): ImageBitmap {
+        synchronized(cache) { cache[name]?.let { return it } }
+        // 읽기는 자물쇠 밖에서 (다른 그림을 읽는 동안 화면이 기다리지 않게)
+        val img = context.assets.open("garden/$name").use { BitmapFactory.decodeStream(it).asImageBitmap() }
+        return synchronized(cache) { cache.getOrPut(name) { img } }
+    }
+
+    /** 앱을 켤 때 화면이 뜨기 전에 오늘의 하늘 · 땅을 미리 읽어 둠 (첫 화면이 멈칫하지 않게). */
+    fun warm(context: Context, s: Season) {
+        Thread({ runCatching { sky(context, s); strip(context, s) } }, "garden-art").apply { isDaemon = true; priority = Thread.NORM_PRIORITY }.start()
     }
 
     private val bounds = HashMap<ImageBitmap, androidx.compose.ui.geometry.Rect>()

@@ -1,5 +1,6 @@
 package io.github.graviton94.carpediem.ui.garden
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -178,6 +179,13 @@ private fun PanelHead(title: String, sub: String, canPrev: Boolean, canNext: Boo
     }
 }
 
+/** 열두 달 칸의 얇은 테두리: 크레용 층 대신 가벼운 선 (한 해에 열두 칸, 여러 해가 한꺼번에 그려져도 가볍게). */
+@Composable
+private fun Modifier.tileEdge(weight: Float): Modifier {
+    val u = Theme.unit
+    return this.border(u * G.Stroke.chip * 0.6f * weight, Theme.gc.ink.copy(alpha = 0.45f * weight + 0.15f), androidx.compose.foundation.shape.RoundedCornerShape(u * G.Radius.chip))
+}
+
 /** 한 해: 열두 달의 무늬를 4 × 3 칸에 (지나간 달만, 오지 않은 달은 빈 칸). 누르면 그 달. */
 @Composable
 internal fun YearTiles(state: AppState, y: Int, today: LocalDate, night: Boolean, onMonth: (Int) -> Unit) {
@@ -193,9 +201,9 @@ internal fun YearTiles(state: AppState, y: Int, today: LocalDate, night: Boolean
                         if (passed) {
                             val days = remember(state.lines, y, m) { Constellations.monthDays(state.lines, y, m) }
                             MonthGarden(state.store.constellations, days, state.store.haruSeed, night, today,
-                                Modifier.fillMaxWidth().crayonBox(null, G.Radius.chip, G.Stroke.chip, 1190 + m).clickable(role = Role.Button) { onMonth(m) },
+                                Modifier.fillMaxWidth().tileEdge(1f).clickable(role = Role.Button) { onMonth(m) },
                                 animate = false, sizes = TILE_SIZES)
-                        } else Spacer(Modifier.fillMaxWidth().aspectRatio(G.Year.monthAspect).crayonBox(null, G.Radius.chip, G.Stroke.chip * 0.5f, 1190 + m))
+                        } else Spacer(Modifier.fillMaxWidth().aspectRatio(G.Year.monthAspect).tileEdge(0.5f))
                         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
                             TokenText(RecordText.month(ctx, m), Tokens.TypeScale.caption1, color = if (passed) p.foreground else p.secondary)
                             // 마음의 날씨: 그 달에 가장 많았던 마음을 작은 하늘로 (숫자 없이)

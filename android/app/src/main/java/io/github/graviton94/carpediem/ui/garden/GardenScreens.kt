@@ -202,7 +202,7 @@ private fun Modifier.pageTurn(pager: androidx.compose.foundation.pager.PagerStat
             drawRect(androidx.compose.ui.graphics.Brush.horizontalGradient(listOf(Color.Transparent, shade.copy(alpha = shade.alpha * 0.8f * (1f + o * 0.2f))), -e, 0f),
                 androidx.compose.ui.geometry.Offset(-e, 0f), androidx.compose.ui.geometry.Size(e, size.height))
         }
-    }
+    }.graphicsLayer()   // 장의 내용은 자기 층에: 넘기는 동안 그늘만 다시 그리고 내용은 그대로 (끊김 없게)
 }
 
 /** 이 시각부터 정원 위쪽에 ‘하루 닫기’ (밤 nightFrom 전이라도). */
