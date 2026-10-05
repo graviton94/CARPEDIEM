@@ -262,6 +262,10 @@ class Store(context: Context) {
     /** 보내기 전 쓰던 한 줄 (그날 안에서만 되살림). */
     fun draftFor(today: LocalDate): String = if (prefs.getLong("draftDay", Long.MIN_VALUE) == today.toEpochDay()) prefs.getString("draft", "").orEmpty() else ""
     fun saveDraft(today: LocalDate, text: String) = prefs.edit().putString("draft", text).putLong("draftDay", today.toEpochDay()).apply()
+    /** 다른 날의 한 줄을 쓰던 중이면 그날 (고른 날 당일에만 유효, 앱이 닫혔다 열려도 같은 날에 쓰게). */
+    fun writeDayFor(today: LocalDate): LocalDate? = if (prefs.getLong("writeDayOn", Long.MIN_VALUE) == today.toEpochDay())
+        prefs.getLong("writeDay", Long.MIN_VALUE).takeIf { it != Long.MIN_VALUE }?.let { LocalDate.ofEpochDay(it) } else null
+    fun saveWriteDay(today: LocalDate, day: LocalDate?) = prefs.edit().putLong("writeDayOn", today.toEpochDay()).putLong("writeDay", day?.toEpochDay() ?: Long.MIN_VALUE).apply()
     /** 아침 씨앗 쪽지를 마지막으로 보여 준 날 · 한 줄 뒤 권유를 마지막으로 건넨 날 (고요한 빈도, core Pace). */
     var seedOffered: LocalDate?
         get() = prefs.getLong("seedOffered", Long.MIN_VALUE).takeIf { it != Long.MIN_VALUE }?.let { LocalDate.ofEpochDay(it) }

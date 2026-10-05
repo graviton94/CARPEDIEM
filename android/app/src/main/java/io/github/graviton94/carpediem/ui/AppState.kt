@@ -307,7 +307,10 @@ class AppState(private val context: Context) {
     }
     // ───── 다른 날의 한 줄 ─────
     /** 기록 페이지에서 고른 지난 날 (null = 오늘의 한 줄). */
-    var writeDay by mutableStateOf<LocalDate?>(null)
+    private val writeDayState = mutableStateOf(store.writeDayFor(nowDate())?.takeIf { canWriteOn(it) })
+    var writeDay: LocalDate?
+        get() = writeDayState.value
+        set(v) { writeDayState.value = v; store.saveWriteDay(nowDate(), v) }
     /** 그날에 한 줄을 남길 수 있는지: 생일부터 어제까지, 아직 한 줄이 없는 날. */
     fun canWriteOn(day: LocalDate, today: LocalDate = (fixedNow ?: LocalDateTime.now()).toLocalDate()): Boolean =
         day.isBefore(today) && profile?.birthDate?.let { !day.isBefore(it) } == true && lines.none { it.date == day }

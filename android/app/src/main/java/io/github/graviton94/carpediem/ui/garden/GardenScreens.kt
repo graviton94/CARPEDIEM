@@ -614,6 +614,10 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                     val capsule = state.capsuleDue(today)
                     val creditsYear = state.creditsDue(today)
                     val ringNew = remember(state.lines, today) { io.github.graviton94.carpediem.core.Rings.newToday(profile.birthDate, today, state.lines) }
+                    // 위에서 권하는 것 (하루 닫기 · 아침 숨) 이 있으면 아래의 가벼운 쪽지 (지난 한 줄 · 첫 주 길잡이) 는 쉼: 한 번에 하나만 말 걸기
+                    val topInvite = isNight(now) || now.hour >= CLOSE_DAY_FROM ||
+                        (Labels.part(now) == io.github.graviton94.carpediem.core.DayPart.MORNING && state.breaths.none { it.first == now.toLocalDate() } && !(state.seedDue(now) && !touring)
+                            && io.github.graviton94.carpediem.core.Pace.morningBreath(day0))
                     when {
                         // 위에 한마디가 떠 있는 동안은 아래 쪽지도 쉼 (화면에 말 거는 것은 하나만)
                         comfort != null -> Unit
@@ -631,6 +635,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                         gardenYear != null -> RecallNote(stringResource(R.string.gardenYear_ask)) { state.gardenYearSeen(gardenYear); gardenYearOpen = gardenYear }
                         // 아침 씨앗 (04): 아침에 한 줄로, 누르면 고르는 장
                         state.seedDue(now) && !touring -> { LaunchedEffect(today) { state.seedShown(today) }; RecallNote(stringResource(R.string.seed_note)) { seedOpen = true } }
+                        topInvite -> Unit
                         recall != null -> RecallNote(recall) { turnTo(1) }
                         // 첫 일주일 길잡이: 하루에 하나, 해 본 것은 건너뜀 (누르면 그 일로)
                         else -> state.firstWeekNudge(today)?.takeIf { state.guideDone }?.let { k ->

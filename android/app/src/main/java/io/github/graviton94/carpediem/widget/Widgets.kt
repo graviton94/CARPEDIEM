@@ -161,8 +161,9 @@ class DaysLeftGardenWidget : GlanceAppWidget() {
     override val sizeMode = SizeMode.Exact
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
-        val data = WidgetData(context)
+        // 다시 그릴 때마다 새로 읽음 (위젯이 떠 있는 동안 고쳐 그려도 예전 값이 남지 않게)
         provideContent {
+            val data = WidgetData(context)
             GardenSurface(context, data, GardenWidgetArt.Kind.DAYS) {
                 val s = data.snapshot
                 if (s == null) Text(context.getString(R.string.widget_empty), style = style(Tokens.TypeScale.caption1.size, gSub))
@@ -187,15 +188,16 @@ class LineGardenWidget : GlanceAppWidget() {
     override val sizeMode = SizeMode.Exact
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
-        val data = WidgetData(context)
-        val store = Store(context)
-        val today = java.time.LocalDate.now()
-        val words = store.todaysQuote(today)?.let { io.github.graviton94.carpediem.data.Words.main(it, store.quoteLanguage, io.github.graviton94.carpediem.data.Words.lang(context)) }.orEmpty()
-        val sent = store.lines.any { it.date == today }
-        val open = android.content.Intent(context, MainActivity::class.java)
-            .addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK or android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP or android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP)
-            .putExtra(MainActivity.EXTRA_OPEN, "write")
+        // 다시 그릴 때마다 새로 읽음 (위젯이 떠 있는 동안 고쳐 그려도 예전 값이 남지 않게)
         provideContent {
+            val data = WidgetData(context)
+            val store = Store(context)
+            val today = java.time.LocalDate.now()
+            val words = store.todaysQuote(today)?.let { io.github.graviton94.carpediem.data.Words.main(it, store.quoteLanguage, io.github.graviton94.carpediem.data.Words.lang(context)) }.orEmpty()
+            val sent = store.lines.any { it.date == today }
+            val open = android.content.Intent(context, MainActivity::class.java)
+                .addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK or android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP or android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                .putExtra(MainActivity.EXTRA_OPEN, "write")
             val size = LocalSize.current
             val bmp = GardenWidgetArt.render(context, GardenWidgetArt.Kind.TODAY, px(context, size.width), px(context, size.height), data.snapshot, data.now)
             Box(GlanceModifier.fillMaxSize().clickable(androidx.glance.appwidget.action.actionStartActivity(open))) {
@@ -220,8 +222,9 @@ class LifeCalendarGardenWidget : GlanceAppWidget() {
     override val sizeMode = SizeMode.Exact
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
-        val data = WidgetData(context)
+        // 다시 그릴 때마다 새로 읽음 (위젯이 떠 있는 동안 고쳐 그려도 예전 값이 남지 않게)
         provideContent {
+            val data = WidgetData(context)
             val gs = LocalSize.current
             val large = gs.height >= Tokens.Widget.largeFromHeight.dp
             GardenSurface(context, data, if (large) GardenWidgetArt.Kind.LARGE else GardenWidgetArt.Kind.CALENDAR) {
