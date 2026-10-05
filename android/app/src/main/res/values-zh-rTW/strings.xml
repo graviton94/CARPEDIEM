@@ -57,9 +57,7 @@
     <string name="widgets">小工具</string>
     <string name="widgets_list">可以放的小工具</string>
     <string name="widgets_name_daysLeft">剩下的日子</string>
-    <string name="widgets_name_today">今天</string>
     <string name="widgets_name_calendar">人生月曆</string>
-    <string name="widgets_name_family">家人的庭院</string>
     <string name="widgets_name_record">心情的紀錄</string>
     <string name="widgets_help1">長按主畫面，點「編輯」→「加入小工具」</string>
     <string name="widgets_help2">找到「小日的庭院」，選個大小</string>
@@ -69,9 +67,6 @@
     <string name="country_search">搜尋國家</string>
     <string name="country_source">依據聯合國《世界人口展望 2024》。</string>
     <string name="widget_daysLeft">剩下的日子</string>
-    <string name="widget_today">今天</string>
-    <string name="widget_todayLeft">%1$s 小時</string>
-    <string name="widget_todaySub">今天還剩</string>
     <string name="widget_yearsLeft">剩下的年數</string>
     <string name="widget_monthsLeft">還有 %1$s 個月</string>
     <string name="lock_inline">%1$s 天</string>
@@ -80,7 +75,6 @@
     <string name="widget_unit">單位</string>
     <string name="widget_unit_desc">選一個單位，來看剩下的日子。</string>
     <string name="widget_daysLeft_desc">靜靜數著剩下的日子。</string>
-    <string name="widget_today_desc">今天的太陽，現在走到哪裡了。</string>
     <string name="widget_calendar_desc">把一生放進小小的格子裡。放大一點，還有今天的句子。</string>
     <string name="widget_empty">請先在 App 裡填上出生日期。</string>
     <string name="erase_confirm">要清除所有紀錄嗎？</string>
@@ -242,12 +236,8 @@
     <string name="defaults_unit">剩下時間的單位</string>
     <string name="defaults_grid">人生月曆的一格</string>
     <string name="defaults_footer">在首頁換的單位只在當下有效。\n下次打開，會用這裡選的單位。</string>
-    <string name="widget_daysLeft_glass">剩下的日子 · 玻璃</string>
-    <string name="widget_daysLeft_garden">剩下的日子 · 庭院</string>
-    <string name="widget_today_glass">今天 · 玻璃</string>
-    <string name="widget_today_garden">今天 · 庭院</string>
-    <string name="widget_calendar_glass">人生月曆 · 玻璃</string>
-    <string name="widget_calendar_garden">人生月曆 · 庭院</string>
+    <string name="widget_daysLeft_garden">剩下的日子</string>
+    <string name="widget_calendar_garden">人生月曆</string>
     <string name="letgo_modalTitle">留下了</string>
     <string name="letgo_ok">確定</string>
     <string name="recall_random">忽然，%1$s放下的一句話又回來了</string>
@@ -296,8 +286,6 @@
     <string name="letgo_modalTo">送給%1$s了</string>
     <string name="garden_stoneA11y">%1$s的石頭，%2$s。點兩下查看詳情</string>
     <string name="garden_pet">摸摸</string>
-    <string name="widget_family_garden">家人的庭院 · 庭院</string>
-    <string name="widget_family_desc">我和家人的石頭，一起待著的庭院。</string>
     <string name="breath">喘口氣</string>
     <string name="breath_kind_calm">心之漣漪</string>
     <string name="breath_kind_box">心之散步</string>
@@ -537,7 +525,7 @@
     <string name="gaze_ask">要回到庭院嗎？</string>
     <string name="gaze_back">回去</string>
     <string name="gaze_stay">再待一會兒</string>
-    <string name="widget_record_garden">心情的紀錄 · 庭院</string>
+    <string name="widget_record_garden">心情的紀錄</string>
     <string name="widget_record_desc">這個月的心情化作花與星星。點一下，打開心情的紀錄。</string>
     <string name="backup_export">匯出為檔案</string>
     <string name="backup_import">從檔案匯入</string>
@@ -724,9 +712,6 @@
     <string name="breathTile_label">喘口氣</string>
     <string name="breathTile_sub">1 分鐘</string>
     <string name="widgets_name_breath">喘口氣捷徑</string>
-    <string name="widget_breath_garden">喘口氣捷徑 · 庭院</string>
-    <string name="widget_breath_desc">點一下，馬上開始適合此刻的一分鐘呼吸。</string>
-    <string name="widget_breath_minute">%1$s · 1 分鐘</string>
     <string name="gardenYear_ask">要把今年的庭院收在一頁裡看嗎？</string>
     <string name="gardenYear_open">看看</string>
     <string name="gardenYear_title">%1$s 年，小日的庭院</string>
@@ -847,7 +832,7 @@
     <string name="feedback_crashSend">告訴我們</string>
     <string name="feedback_crashSkip">不用了</string>
     <string name="notify_time">時間</string>
-    <string name="widget_line_garden">今天的一句話・庭院</string>
+    <string name="widget_line_garden">今天的一句話</string>
     <string name="widget_line_desc">今天的句子和「留下一句話」</string>
     <string name="widgets_name_line">今天的一句話</string>
     <string name="widget_lineWrite">＋ 留下今天的一句話</string>

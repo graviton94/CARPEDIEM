@@ -20,13 +20,9 @@ import io.github.graviton94.carpediem.core.Season
 import io.github.graviton94.carpediem.data.Store
 import io.github.graviton94.carpediem.design.Tokens
 import io.github.graviton94.carpediem.ui.garden.drawHaru
-import io.github.graviton94.carpediem.ui.garden.birthdayCake
-import io.github.graviton94.carpediem.core.Family
 import io.github.graviton94.carpediem.core.Kind as PersonKind
 import io.github.graviton94.carpediem.ui.garden.SkyTime
-import org.json.JSONObject
 import java.time.LocalDateTime
-import kotlin.math.hypot
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sin
@@ -36,7 +32,7 @@ import kotlin.math.sin
  * 앱과 같은 그림 파일(assets/garden)과 앱과 같은 벡터 하루(drawHaru)로 그린다.
  */
 object GardenWidgetArt {
-    enum class Kind { DAYS, TODAY, CALENDAR, LARGE, FAMILY }
+    enum class Kind { DAYS, TODAY, CALENDAR, LARGE }
 
     private val L = Tokens.Garden.Layout
     private val W = Tokens.Garden.Widget
@@ -75,7 +71,7 @@ object GardenWidgetArt {
         val sky = asset(context, "sky_${key(season)}.jpg")
         c.drawBitmap(sky, null, RectF(0f, 0f, w.toFloat(), w * sky.height / sky.width.toFloat()), paint)
 
-        val gy = h * when (kind) { Kind.LARGE -> W.largeGroundRatio; Kind.FAMILY -> W.familyGround; else -> W.groundRatio }
+        val gy = h * when (kind) { Kind.LARGE -> W.largeGroundRatio; else -> W.groundRatio }
         if (kind != Kind.CALENDAR) {
             val strip = asset(context, "strip_${key(season)}.webp")
             val sh = w * strip.height / strip.width.toFloat(); val lineY = sh * (L.stripLineY / L.stripHeight)
@@ -88,7 +84,7 @@ object GardenWidgetArt {
             c.drawRect(0f, 0f, w.toFloat(), h.toFloat(), Paint().apply { shader = LinearGradient(0f, 0f, 0f, max(1f, gy), top, low, Shader.TileMode.CLAMP) })
         }
         // 해 · 달: 폰 시각
-        if (kind == Kind.TODAY || kind == Kind.LARGE || kind == Kind.FAMILY) {
+        if (kind == Kind.TODAY || kind == Kind.LARGE) {
             val (day, t) = SkyTime.sunPath(now)   // 그날 실제 해 뜨고 지는 시각 (앱 정원과 같음)
             // 해 · 달은 늘 땅 위, 가장자리에서도 반쪽이 잘리지 않게 (가로 끝은 반지름만큼 안쪽)
             val r = W.sunRadius * u
@@ -117,7 +113,6 @@ object GardenWidgetArt {
             haru(context, c, hx, gy, W.haruLarge * u, u, now)
         }
         if (kind == Kind.DAYS) haru(context, c, w * W.haruX, gy, W.haruSmall * u, u, now)
-        if (kind == Kind.FAMILY) family(context, c, w, gy, u, now)
 
         // 위젯 모서리 둥글게
         val out = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
@@ -127,47 +122,6 @@ object GardenWidgetArt {
         }
         bmp.recycle()
         return out
-    }
-
-    /** 돌 하나: 몸 가운데를 bodyX 에, 땅 gy 에 (Compose 그리기를 위젯 캔버스에). */
-    private fun stone(c: Canvas, art: io.github.graviton94.carpediem.ui.garden.HaruArt, bodyX: Float, gy: Float, k: Float, hat: Boolean) {
-        val box = art.meta.box
-        c.save(); c.translate(bodyX - art.meta.bbox.center.x * k, gy - art.meta.ground * k)
-        androidx.compose.ui.graphics.drawscope.CanvasDrawScope().draw(
-            androidx.compose.ui.unit.Density(1f), androidx.compose.ui.unit.LayoutDirection.Ltr, androidx.compose.ui.graphics.Canvas(c), androidx.compose.ui.geometry.Size(box * k, box * k),
-        ) { drawHaru(art, k, hat = hat) }
-        c.restore()
-    }
-
-    /** 가족의 정원: 나와 가족의 돌을 앱과 같은 규칙으로 (겹치지 않게, 생일이면 모자와 케이크). 글자 없음. */
-    private fun family(context: Context, c: Canvas, w: Int, gy: Float, u: Float, now: LocalDateTime, shrink: Float = 1f) {
-        val store = Store(context)
-        val profile = store.profile ?: return
-        val today = now.toLocalDate()
-        val me = LifeSnapshot(profile.birthDate, profile.expectancy(store.table), now)
-        val sprout = me.season == Season.SPRING
-        val base = W.familyHaru * u / L.haruArtWidth * shrink
-        data class S(val art: io.github.graviton94.carpediem.ui.garden.HaruArt, val k: Float, val prog: Double?, val soon: Int?) { val bday get() = soon != null }
-        val slots = listOf(S(io.github.graviton94.carpediem.ui.garden.HaruArt.of(store.haruSeed, sprout), base, me.progress, Family.birthdaySoon(profile.birthDate, now, Tokens.Notify.birthdayFrom.toInt()))) +
-            store.people.map { p -> S(io.github.graviton94.carpediem.ui.garden.HaruArt.of(p.seed, sprout), if (p.kind == PersonKind.PET) base * Tokens.Garden.Family.petScale else base,
-                p.birth?.let { LifeSnapshot(it, store.expectancy(p), now).progress }, Family.birthdaySoon(p.birth, now, Tokens.Notify.birthdayFrom.toInt())) }
-        val lo = W.gridInset * u; val hi = w - W.gridInset * u
-        // 돌이 많으면 모두 같은 비율로 작게 (앱과 같은 규칙)
-        val ws = slots.map { (it.art.meta.bbox.width * it.k).toDouble() }; val og = Family.overlapGap(ws, Tokens.Garden.Family.overlap.toDouble()) / shrink   // 줄이기 전 폭으로 정한 겹침 (줄인 뒤에도 같은 간격)
-        val fit = Family.fitScale(ws, (hi - lo).toDouble(), og).toFloat()
-        if (fit < 1f && shrink == 1f) return family(context, c, w, gy, u, now, fit)
-        val xs = Family.place(slots.map { sl -> sl.prog?.let { (lo + (hi - lo) * (0.06 + 0.88 * it.coerceIn(0.0, 1.0))) } }, slots.map { (it.art.meta.bbox.width * it.k).toDouble() }, 0,
-            lo.toDouble(), hi.toDouble(), (Tokens.Garden.Family.gap * u).toDouble(), og)
-        slots.indices.sortedBy { xs[it] }.forEach { i -> val sl = slots[i]
-            stone(c, sl.art, xs[i].toFloat(), gy, sl.k, sl.bday)
-            if (sl.soon == 0) {
-                val cw = Tokens.Garden.Party.cakeWidth * u; val cx = xs[i].toFloat() + sl.art.meta.bbox.width * sl.k * 0.18f
-                c.save(); c.translate(cx - cw / 2, gy - cw + u * 1.5f)
-                androidx.compose.ui.graphics.drawscope.CanvasDrawScope().draw(androidx.compose.ui.unit.Density(1f), androidx.compose.ui.unit.LayoutDirection.Ltr,
-                    androidx.compose.ui.graphics.Canvas(c), androidx.compose.ui.geometry.Size(cw, cw)) { birthdayCake() }
-                c.restore()
-            }
-        }
     }
 
     /** 하루를 앱과 같은 벡터로 (Compose 그리기를 위젯 캔버스에). */

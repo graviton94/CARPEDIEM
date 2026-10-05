@@ -39,25 +39,9 @@
             <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts" />
         </activity>
 
-        <receiver android:name=".widget.DaysLeftReceiver" android:exported="false" android:label="@string/widget_daysLeft_glass">
-            <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
-            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_days_left_glass" />
-        </receiver>
-        <receiver android:name=".widget.TodayReceiver" android:exported="false" android:label="@string/widget_today_glass">
-            <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
-            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_today_glass" />
-        </receiver>
-        <receiver android:name=".widget.LifeCalendarReceiver" android:exported="false" android:label="@string/widget_calendar_glass">
-            <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
-            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_calendar_glass" />
-        </receiver>
         <receiver android:name=".widget.DaysLeftGardenReceiver" android:exported="false" android:label="@string/widget_daysLeft_garden">
             <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
             <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_days_left_garden" />
-        </receiver>
-        <receiver android:name=".widget.TodayGardenReceiver" android:exported="false" android:label="@string/widget_today_garden">
-            <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
-            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_today_garden" />
         </receiver>
         <receiver android:name=".widget.LifeCalendarGardenReceiver" android:exported="false" android:label="@string/widget_calendar_garden">
             <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
@@ -71,19 +55,11 @@
             <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
             <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_line_garden" />
         </receiver>
-        <receiver android:name=".widget.BreathReceiver" android:exported="false" android:label="@string/widget_breath_garden">
-            <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
-            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_breath_garden" />
-        </receiver>
         <!-- 하루 정리 알림에서 바로 한 줄 (01) -->
         <receiver android:name=".notify.LineReplyReceiver" android:exported="false" />
         <service android:name=".widget.BreathTile" android:exported="true" android:label="@string/breathTile_label" android:icon="@drawable/ic_tile_breath"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
             <intent-filter><action android:name="android.service.quicksettings.action.QS_TILE" /></intent-filter>
         </service>
-        <receiver android:name=".widget.FamilyGardenReceiver" android:exported="false" android:label="@string/widget_family_garden">
-            <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
-            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_family_garden" />
-        </receiver>
     </application>
 </manifest>

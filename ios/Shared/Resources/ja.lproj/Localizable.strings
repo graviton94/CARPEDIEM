@@ -55,9 +55,7 @@
 "widgets" = "ウィジェット";
 "widgets.list" = "置けるウィジェット";
 "widgets.name.daysLeft" = "残りの日数";
-"widgets.name.today" = "今日";
 "widgets.name.calendar" = "人生カレンダー";
-"widgets.name.family" = "家族の庭";
 "widgets.name.record" = "こころの記録";
 "widgets.help1" = "ホーム画面を長押しして「編集」→「ウィジェットを追加」";
 "widgets.help2" = "「ハルの庭」を探して、サイズを選びます";
@@ -67,9 +65,6 @@
 "country.search" = "国を検索";
 "country.source" = "国連「世界人口推計2024」より。";
 "widget.daysLeft" = "残りの日数";
-"widget.today" = "今日";
-"widget.todayLeft" = "%1$@時間";
-"widget.todaySub" = "今日の残り";
 "widget.yearsLeft" = "残りの年数";
 "widget.monthsLeft" = "あと%1$@か月";
 "lock.inline" = "%1$@日";
@@ -78,7 +73,6 @@
 "widget.unit" = "単位";
 "widget.unit.desc" = "残りの日数を、どの単位で見るか選びます。";
 "widget.daysLeft.desc" = "残りの日々を、静かに数えます。";
-"widget.today.desc" = "今日の太陽が、いまどのあたりか。";
 "widget.calendar.desc" = "ひとつの人生を、小さなマスに。大きく置けば、今日のことばも。";
 "widget.empty" = "アプリで生年月日を入れてください。";
 "erase.confirm" = "すべての記録を消しますか？";
@@ -240,12 +234,8 @@
 "defaults.unit" = "残りの時間の単位";
 "defaults.grid" = "人生カレンダーの1マス";
 "defaults.footer" = "ホームで変えた単位は、そのときだけです。\n次にひらいたときは、ここで選んだ単位で表示します。";
-"widget.daysLeft.glass" = "残りの日数 · ガラス";
-"widget.daysLeft.garden" = "残りの日数 · 庭";
-"widget.today.glass" = "今日 · ガラス";
-"widget.today.garden" = "今日 · 庭";
-"widget.calendar.glass" = "人生カレンダー · ガラス";
-"widget.calendar.garden" = "人生カレンダー · 庭";
+"widget.daysLeft.garden" = "残りの日数";
+"widget.calendar.garden" = "人生カレンダー";
 "letgo.modalTitle" = "残しました";
 "letgo.ok" = "OK";
 "recall.random" = "ふと、%1$@に送ったひとことが戻ってきました";
@@ -294,8 +284,6 @@
 "letgo.modalTo" = "%1$@へ送りました";
 "garden.stoneA11y" = "%1$@の石、%2$@。ダブルタップで詳しく見る";
 "garden.pet" = "なでる";
-"widget.family.garden" = "家族の庭 · 庭";
-"widget.family.desc" = "わたしと家族の石が、いっしょにいる庭。";
 "breath" = "ひと息";
 "breath.kind.calm" = "こころの波紋";
 "breath.kind.box" = "こころの散歩";
@@ -535,7 +523,7 @@
 "gaze.ask" = "庭へ戻りますか？";
 "gaze.back" = "戻る";
 "gaze.stay" = "もう少しいる";
-"widget.record.garden" = "こころの記録 · 庭";
+"widget.record.garden" = "こころの記録";
 "widget.record.desc" = "今月のこころが、花と星になって咲きます。触れると、こころの記録へ。";
 "backup.export" = "ファイルに書き出す";
 "backup.import" = "ファイルから読み込む";
@@ -722,9 +710,6 @@
 "breathTile.label" = "ひと息";
 "breathTile.sub" = "1分";
 "widgets.name.breath" = "すぐにひと息";
-"widget.breath.garden" = "すぐにひと息 · 庭";
-"widget.breath.desc" = "触れると、いまの時間に合った1分の呼吸が、すぐにはじまります。";
-"widget.breath.minute" = "%1$@ · 1分";
 "gardenYear.ask" = "今年の庭を、一枚で見てみませんか？";
 "gardenYear.open" = "見る";
 "gardenYear.title" = "%1$@年、ハルの庭";
@@ -845,7 +830,7 @@
 "feedback.crashSend" = "知らせる";
 "feedback.crashSkip" = "大丈夫です";
 "notify.time" = "時刻";
-"widget.line.garden" = "今日のひとこと・庭";
+"widget.line.garden" = "今日のひとこと";
 "widget.line.desc" = "今日のことばと「ひとことを残す」";
 "widgets.name.line" = "今日のひとこと";
 "widget.lineWrite" = "＋ 今日のひとことを残す";

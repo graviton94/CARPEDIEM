@@ -57,9 +57,7 @@
     <string name="widgets">ウィジェット</string>
     <string name="widgets_list">置けるウィジェット</string>
     <string name="widgets_name_daysLeft">残りの日数</string>
-    <string name="widgets_name_today">今日</string>
     <string name="widgets_name_calendar">人生カレンダー</string>
-    <string name="widgets_name_family">家族の庭</string>
     <string name="widgets_name_record">こころの記録</string>
     <string name="widgets_help1">ホーム画面を長押しして「編集」→「ウィジェットを追加」</string>
     <string name="widgets_help2">「ハルの庭」を探して、サイズを選びます</string>
@@ -69,9 +67,6 @@
     <string name="country_search">国を検索</string>
     <string name="country_source">国連「世界人口推計2024」より。</string>
     <string name="widget_daysLeft">残りの日数</string>
-    <string name="widget_today">今日</string>
-    <string name="widget_todayLeft">%1$s時間</string>
-    <string name="widget_todaySub">今日の残り</string>
     <string name="widget_yearsLeft">残りの年数</string>
     <string name="widget_monthsLeft">あと%1$sか月</string>
     <string name="lock_inline">%1$s日</string>
@@ -80,7 +75,6 @@
     <string name="widget_unit">単位</string>
     <string name="widget_unit_desc">残りの日数を、どの単位で見るか選びます。</string>
     <string name="widget_daysLeft_desc">残りの日々を、静かに数えます。</string>
-    <string name="widget_today_desc">今日の太陽が、いまどのあたりか。</string>
     <string name="widget_calendar_desc">ひとつの人生を、小さなマスに。大きく置けば、今日のことばも。</string>
     <string name="widget_empty">アプリで生年月日を入れてください。</string>
     <string name="erase_confirm">すべての記録を消しますか？</string>
@@ -242,12 +236,8 @@
     <string name="defaults_unit">残りの時間の単位</string>
     <string name="defaults_grid">人生カレンダーの1マス</string>
     <string name="defaults_footer">ホームで変えた単位は、そのときだけです。\n次にひらいたときは、ここで選んだ単位で表示します。</string>
-    <string name="widget_daysLeft_glass">残りの日数 · ガラス</string>
-    <string name="widget_daysLeft_garden">残りの日数 · 庭</string>
-    <string name="widget_today_glass">今日 · ガラス</string>
-    <string name="widget_today_garden">今日 · 庭</string>
-    <string name="widget_calendar_glass">人生カレンダー · ガラス</string>
-    <string name="widget_calendar_garden">人生カレンダー · 庭</string>
+    <string name="widget_daysLeft_garden">残りの日数</string>
+    <string name="widget_calendar_garden">人生カレンダー</string>
     <string name="letgo_modalTitle">残しました</string>
     <string name="letgo_ok">OK</string>
     <string name="recall_random">ふと、%1$sに送ったひとことが戻ってきました</string>
@@ -296,8 +286,6 @@
     <string name="letgo_modalTo">%1$sへ送りました</string>
     <string name="garden_stoneA11y">%1$sの石、%2$s。ダブルタップで詳しく見る</string>
     <string name="garden_pet">なでる</string>
-    <string name="widget_family_garden">家族の庭 · 庭</string>
-    <string name="widget_family_desc">わたしと家族の石が、いっしょにいる庭。</string>
     <string name="breath">ひと息</string>
     <string name="breath_kind_calm">こころの波紋</string>
     <string name="breath_kind_box">こころの散歩</string>
@@ -537,7 +525,7 @@
     <string name="gaze_ask">庭へ戻りますか？</string>
     <string name="gaze_back">戻る</string>
     <string name="gaze_stay">もう少しいる</string>
-    <string name="widget_record_garden">こころの記録 · 庭</string>
+    <string name="widget_record_garden">こころの記録</string>
     <string name="widget_record_desc">今月のこころが、花と星になって咲きます。触れると、こころの記録へ。</string>
     <string name="backup_export">ファイルに書き出す</string>
     <string name="backup_import">ファイルから読み込む</string>
@@ -724,9 +712,6 @@
     <string name="breathTile_label">ひと息</string>
     <string name="breathTile_sub">1分</string>
     <string name="widgets_name_breath">すぐにひと息</string>
-    <string name="widget_breath_garden">すぐにひと息 · 庭</string>
-    <string name="widget_breath_desc">触れると、いまの時間に合った1分の呼吸が、すぐにはじまります。</string>
-    <string name="widget_breath_minute">%1$s · 1分</string>
     <string name="gardenYear_ask">今年の庭を、一枚で見てみませんか？</string>
     <string name="gardenYear_open">見る</string>
     <string name="gardenYear_title">%1$s年、ハルの庭</string>
@@ -847,7 +832,7 @@
     <string name="feedback_crashSend">知らせる</string>
     <string name="feedback_crashSkip">大丈夫です</string>
     <string name="notify_time">時刻</string>
-    <string name="widget_line_garden">今日のひとこと・庭</string>
+    <string name="widget_line_garden">今日のひとこと</string>
     <string name="widget_line_desc">今日のことばと「ひとことを残す」</string>
     <string name="widgets_name_line">今日のひとこと</string>
     <string name="widget_lineWrite">＋ 今日のひとことを残す</string>

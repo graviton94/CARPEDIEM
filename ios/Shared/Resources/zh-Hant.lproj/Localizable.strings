@@ -55,9 +55,7 @@
 "widgets" = "小工具";
 "widgets.list" = "可以放的小工具";
 "widgets.name.daysLeft" = "剩下的日子";
-"widgets.name.today" = "今天";
 "widgets.name.calendar" = "人生月曆";
-"widgets.name.family" = "家人的庭院";
 "widgets.name.record" = "心情的紀錄";
 "widgets.help1" = "長按主畫面，點「編輯」→「加入小工具」";
 "widgets.help2" = "找到「小日的庭院」，選個大小";
@@ -67,9 +65,6 @@
 "country.search" = "搜尋國家";
 "country.source" = "依據聯合國《世界人口展望 2024》。";
 "widget.daysLeft" = "剩下的日子";
-"widget.today" = "今天";
-"widget.todayLeft" = "%1$@ 小時";
-"widget.todaySub" = "今天還剩";
 "widget.yearsLeft" = "剩下的年數";
 "widget.monthsLeft" = "還有 %1$@ 個月";
 "lock.inline" = "%1$@ 天";
@@ -78,7 +73,6 @@
 "widget.unit" = "單位";
 "widget.unit.desc" = "選一個單位，來看剩下的日子。";
 "widget.daysLeft.desc" = "靜靜數著剩下的日子。";
-"widget.today.desc" = "今天的太陽，現在走到哪裡了。";
 "widget.calendar.desc" = "把一生放進小小的格子裡。放大一點，還有今天的句子。";
 "widget.empty" = "請先在 App 裡填上出生日期。";
 "erase.confirm" = "要清除所有紀錄嗎？";
@@ -240,12 +234,8 @@
 "defaults.unit" = "剩下時間的單位";
 "defaults.grid" = "人生月曆的一格";
 "defaults.footer" = "在首頁換的單位只在當下有效。\n下次打開，會用這裡選的單位。";
-"widget.daysLeft.glass" = "剩下的日子 · 玻璃";
-"widget.daysLeft.garden" = "剩下的日子 · 庭院";
-"widget.today.glass" = "今天 · 玻璃";
-"widget.today.garden" = "今天 · 庭院";
-"widget.calendar.glass" = "人生月曆 · 玻璃";
-"widget.calendar.garden" = "人生月曆 · 庭院";
+"widget.daysLeft.garden" = "剩下的日子";
+"widget.calendar.garden" = "人生月曆";
 "letgo.modalTitle" = "留下了";
 "letgo.ok" = "確定";
 "recall.random" = "忽然，%1$@放下的一句話又回來了";
@@ -294,8 +284,6 @@
 "letgo.modalTo" = "送給%1$@了";
 "garden.stoneA11y" = "%1$@的石頭，%2$@。點兩下查看詳情";
 "garden.pet" = "摸摸";
-"widget.family.garden" = "家人的庭院 · 庭院";
-"widget.family.desc" = "我和家人的石頭，一起待著的庭院。";
 "breath" = "喘口氣";
 "breath.kind.calm" = "心之漣漪";
 "breath.kind.box" = "心之散步";
@@ -535,7 +523,7 @@
 "gaze.ask" = "要回到庭院嗎？";
 "gaze.back" = "回去";
 "gaze.stay" = "再待一會兒";
-"widget.record.garden" = "心情的紀錄 · 庭院";
+"widget.record.garden" = "心情的紀錄";
 "widget.record.desc" = "這個月的心情化作花與星星。點一下，打開心情的紀錄。";
 "backup.export" = "匯出為檔案";
 "backup.import" = "從檔案匯入";
@@ -722,9 +710,6 @@
 "breathTile.label" = "喘口氣";
 "breathTile.sub" = "1 分鐘";
 "widgets.name.breath" = "喘口氣捷徑";
-"widget.breath.garden" = "喘口氣捷徑 · 庭院";
-"widget.breath.desc" = "點一下，馬上開始適合此刻的一分鐘呼吸。";
-"widget.breath.minute" = "%1$@ · 1 分鐘";
 "gardenYear.ask" = "要把今年的庭院收在一頁裡看嗎？";
 "gardenYear.open" = "看看";
 "gardenYear.title" = "%1$@ 年，小日的庭院";
@@ -845,7 +830,7 @@
 "feedback.crashSend" = "告訴我們";
 "feedback.crashSkip" = "不用了";
 "notify.time" = "時間";
-"widget.line.garden" = "今天的一句話・庭院";
+"widget.line.garden" = "今天的一句話";
 "widget.line.desc" = "今天的句子和「留下一句話」";
 "widgets.name.line" = "今天的一句話";
 "widget.lineWrite" = "＋ 留下今天的一句話";

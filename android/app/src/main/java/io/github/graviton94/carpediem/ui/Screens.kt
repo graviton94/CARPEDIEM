@@ -527,7 +527,7 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
             }
             FormSection(header = stringResource(R.string.design)) {
                 FormRow(stringResource(R.string.design)) {
-                    ChipPicker(Design.entries, state.design, { Labels.design(ctx, it) }) { state.changeDesign(it) }
+                    ChipPicker(listOf(Design.GARDEN, Design.GLASS), state.design, { Labels.design(ctx, it) }) { state.changeDesign(it) }
                 }
                 if (state.design == Design.GARDEN) {
                     RowDivider()
@@ -591,9 +591,8 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
             }
             // 둘 수 있는 위젯 (정원): 이름과 한 줄
             if (state.design == Design.GARDEN) FormSection(header = stringResource(R.string.widgets_list)) {
-                listOf(R.string.widgets_name_daysLeft to R.string.widget_daysLeft_desc, R.string.widgets_name_today to R.string.widget_today_desc,
-                    R.string.widgets_name_calendar to R.string.widget_calendar_desc, R.string.widgets_name_family to R.string.widget_family_desc,
-                    R.string.widgets_name_record to R.string.widget_record_desc, R.string.widgets_name_line to R.string.widget_line_desc).forEachIndexed { i, (name, desc) ->
+                listOf(R.string.widgets_name_daysLeft to R.string.widget_daysLeft_desc, R.string.widgets_name_line to R.string.widget_line_desc,
+                    R.string.widgets_name_record to R.string.widget_record_desc, R.string.widgets_name_calendar to R.string.widget_calendar_desc).forEachIndexed { i, (name, desc) ->
                     if (i > 0) RowDivider()
                     Row(Modifier.padding(vertical = Tokens.Space.sp3), verticalAlignment = Alignment.CenterVertically) {
                         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
@@ -601,7 +600,7 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
                             TokenText(stringResource(desc), Tokens.TypeScale.footnote, color = p.secondary)
                         }
                         // 런처가 지원하면 바로 홈 화면에 두기
-                        val kind = listOf("days", "today", "calendar", "family", "record", "line")[i]
+                        val kind = listOf("days", "line", "record", "calendar")[i]
                         TextButton(onClick = { if (!io.github.graviton94.carpediem.widget.Widgets.pin(ctx, kind)) state.say(ctx.getString(R.string.nudge_widgetHow)) }) {
                             TokenText(stringResource(R.string.widget_pin), Tokens.TypeScale.footnote, color = p.olive, weight = FontWeight.SemiBold)
                         }

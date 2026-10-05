@@ -57,9 +57,7 @@
     <string name="widgets">Widgets</string>
     <string name="widgets_list">Widgets you can add</string>
     <string name="widgets_name_daysLeft">Days left</string>
-    <string name="widgets_name_today">Today</string>
     <string name="widgets_name_calendar">Life calendar</string>
-    <string name="widgets_name_family">Family garden</string>
     <string name="widgets_name_record">Heart’s record</string>
     <string name="widgets_help1">Touch and hold the Home Screen, tap Edit → Add Widget</string>
     <string name="widgets_help2">Find Carpe Diem and pick a size</string>
@@ -69,9 +67,6 @@
     <string name="country_search">Search countries</string>
     <string name="country_source">UN World Population Prospects 2024.</string>
     <string name="widget_daysLeft">Days left</string>
-    <string name="widget_today">Today</string>
-    <string name="widget_todayLeft">%1$sh</string>
-    <string name="widget_todaySub">left today</string>
     <string name="widget_yearsLeft">years left</string>
     <string name="widget_monthsLeft">%1$s months left</string>
     <string name="lock_inline">%1$s days</string>
@@ -80,7 +75,6 @@
     <string name="widget_unit">Unit</string>
     <string name="widget_unit_desc">Choose how to count the days left.</string>
     <string name="widget_daysLeft_desc">Quietly counts the days left.</string>
-    <string name="widget_today_desc">Where today\'s sun is now.</string>
     <string name="widget_calendar_desc">A whole life in small cells. Larger, with today\'s words.</string>
     <string name="widget_empty">Add your birthday in the app.</string>
     <string name="erase_confirm">Erase everything?</string>
@@ -242,12 +236,8 @@
     <string name="defaults_unit">Time left in</string>
     <string name="defaults_grid">One dot on the life calendar</string>
     <string name="defaults_footer">Changes on Home are just for now.\nNext time, it opens with these.</string>
-    <string name="widget_daysLeft_glass">Days left · Glass</string>
-    <string name="widget_daysLeft_garden">Days left · Garden</string>
-    <string name="widget_today_glass">Today · Glass</string>
-    <string name="widget_today_garden">Today · Garden</string>
-    <string name="widget_calendar_glass">Life calendar · Glass</string>
-    <string name="widget_calendar_garden">Life calendar · Garden</string>
+    <string name="widget_daysLeft_garden">Days left</string>
+    <string name="widget_calendar_garden">Life calendar</string>
     <string name="letgo_modalTitle">Kept</string>
     <string name="letgo_ok">OK</string>
     <string name="recall_random">Out of nowhere, a line from %1$s came back</string>
@@ -296,8 +286,6 @@
     <string name="letgo_modalTo">Sent to %1$s</string>
     <string name="garden_stoneA11y">%1$s\'s stone, %2$s. Double-tap for details</string>
     <string name="garden_pet">Pet</string>
-    <string name="widget_family_garden">Family garden · Garden</string>
-    <string name="widget_family_desc">Your stone and your family\'s, together in the garden.</string>
     <string name="breath">Breathe, rest</string>
     <string name="breath_kind_calm">Ripple</string>
     <string name="breath_kind_box">Mind walk</string>
@@ -538,7 +526,7 @@
     <string name="gaze_ask">Back to the garden?</string>
     <string name="gaze_back">Go back</string>
     <string name="gaze_stay">Stay a while</string>
-    <string name="widget_record_garden">Heart’s record · Garden</string>
+    <string name="widget_record_garden">Heart’s record</string>
     <string name="widget_record_desc">This month\'s heart, in flowers and stars. Tap to open the record.</string>
     <string name="backup_export">Save to a file</string>
     <string name="backup_import">Bring in from a file</string>
@@ -725,9 +713,6 @@
     <string name="breathTile_label">Breathe</string>
     <string name="breathTile_sub">1 min</string>
     <string name="widgets_name_breath">Breath shortcut</string>
-    <string name="widget_breath_garden">Breath shortcut · garden</string>
-    <string name="widget_breath_desc">Tap to begin a minute of breath for this time of day.</string>
-    <string name="widget_breath_minute">%1$s · 1 min</string>
     <string name="gardenYear_ask">See this year’s garden on one page?</string>
     <string name="gardenYear_open">See it</string>
     <string name="gardenYear_title">%1$s in the garden</string>
@@ -848,7 +833,7 @@
     <string name="feedback_crashSend">Let us know</string>
     <string name="feedback_crashSkip">Not now</string>
     <string name="notify_time">Time</string>
-    <string name="widget_line_garden">Today’s line · garden</string>
+    <string name="widget_line_garden">Today’s line</string>
     <string name="widget_line_desc">Today’s words and a shortcut to write</string>
     <string name="widgets_name_line">Today’s line</string>
     <string name="widget_lineWrite">＋ Write today’s line</string>

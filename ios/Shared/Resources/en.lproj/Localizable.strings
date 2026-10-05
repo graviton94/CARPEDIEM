@@ -55,9 +55,7 @@
 "widgets" = "Widgets";
 "widgets.list" = "Widgets you can add";
 "widgets.name.daysLeft" = "Days left";
-"widgets.name.today" = "Today";
 "widgets.name.calendar" = "Life calendar";
-"widgets.name.family" = "Family garden";
 "widgets.name.record" = "Heart’s record";
 "widgets.help1" = "Touch and hold the Home Screen, tap Edit → Add Widget";
 "widgets.help2" = "Find Carpe Diem and pick a size";
@@ -67,9 +65,6 @@
 "country.search" = "Search countries";
 "country.source" = "UN World Population Prospects 2024.";
 "widget.daysLeft" = "Days left";
-"widget.today" = "Today";
-"widget.todayLeft" = "%1$@h";
-"widget.todaySub" = "left today";
 "widget.yearsLeft" = "years left";
 "widget.monthsLeft" = "%1$@ months left";
 "lock.inline" = "%1$@ days";
@@ -78,7 +73,6 @@
 "widget.unit" = "Unit";
 "widget.unit.desc" = "Choose how to count the days left.";
 "widget.daysLeft.desc" = "Quietly counts the days left.";
-"widget.today.desc" = "Where today's sun is now.";
 "widget.calendar.desc" = "A whole life in small cells. Larger, with today's words.";
 "widget.empty" = "Add your birthday in the app.";
 "erase.confirm" = "Erase everything?";
@@ -240,12 +234,8 @@
 "defaults.unit" = "Time left in";
 "defaults.grid" = "One dot on the life calendar";
 "defaults.footer" = "Changes on Home are just for now.\nNext time, it opens with these.";
-"widget.daysLeft.glass" = "Days left · Glass";
-"widget.daysLeft.garden" = "Days left · Garden";
-"widget.today.glass" = "Today · Glass";
-"widget.today.garden" = "Today · Garden";
-"widget.calendar.glass" = "Life calendar · Glass";
-"widget.calendar.garden" = "Life calendar · Garden";
+"widget.daysLeft.garden" = "Days left";
+"widget.calendar.garden" = "Life calendar";
 "letgo.modalTitle" = "Kept";
 "letgo.ok" = "OK";
 "recall.random" = "Out of nowhere, a line from %1$@ came back";
@@ -294,8 +284,6 @@
 "letgo.modalTo" = "Sent to %1$@";
 "garden.stoneA11y" = "%1$@'s stone, %2$@. Double-tap for details";
 "garden.pet" = "Pet";
-"widget.family.garden" = "Family garden · Garden";
-"widget.family.desc" = "Your stone and your family's, together in the garden.";
 "breath" = "Breathe, rest";
 "breath.kind.calm" = "Ripple";
 "breath.kind.box" = "Mind walk";
@@ -536,7 +524,7 @@
 "gaze.ask" = "Back to the garden?";
 "gaze.back" = "Go back";
 "gaze.stay" = "Stay a while";
-"widget.record.garden" = "Heart’s record · Garden";
+"widget.record.garden" = "Heart’s record";
 "widget.record.desc" = "This month's heart, in flowers and stars. Tap to open the record.";
 "backup.export" = "Save to a file";
 "backup.import" = "Bring in from a file";
@@ -723,9 +711,6 @@
 "breathTile.label" = "Breathe";
 "breathTile.sub" = "1 min";
 "widgets.name.breath" = "Breath shortcut";
-"widget.breath.garden" = "Breath shortcut · garden";
-"widget.breath.desc" = "Tap to begin a minute of breath for this time of day.";
-"widget.breath.minute" = "%1$@ · 1 min";
 "gardenYear.ask" = "See this year’s garden on one page?";
 "gardenYear.open" = "See it";
 "gardenYear.title" = "%1$@ in the garden";
@@ -846,7 +831,7 @@
 "feedback.crashSend" = "Let us know";
 "feedback.crashSkip" = "Not now";
 "notify.time" = "Time";
-"widget.line.garden" = "Today’s line · garden";
+"widget.line.garden" = "Today’s line";
 "widget.line.desc" = "Today’s words and a shortcut to write";
 "widgets.name.line" = "Today’s line";
 "widget.lineWrite" = "＋ Write today’s line";
