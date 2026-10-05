@@ -1006,9 +1006,9 @@
     <string name="settings_recordsFooter">기록 남기기를 끄면 날짜만 남고 글 · 마음 · 사진은 지워요. 파일로 저장해 두면 새 폰으로 옮길 수 있어요.</string>
     <string name="slip_daysAgo">%1$s일 전 오늘</string>
     <string name="slip_yearsAgo">%1$s년 전 오늘</string>
-    <string name="slip_from">%1$s가 물고 왔어요</string>
+    <string name="slip_from">%1$s이 물고 왔어요</string>
     <string name="slip_record">그날 기록 보기</string>
-    <string name="slip_a11y">%1$s, 쪽지를 물고 왔어요. 누르면 펼쳐요</string>
+    <string name="slip_a11y">%1$s이 쪽지를 물고 왔어요. 누르면 펼쳐요</string>
     <string name="pebble_name">하루가 준 조약돌</string>
     <string name="pebble_desc">하루가 발치에 살며시 굴려 준 작은 조약돌이에요.</string>
     <string name="pebble_how">쓰다듬다 보면 아주 가끔, 한 달에 한 번쯤 하루가 발치에 굴려 줘요.</string>

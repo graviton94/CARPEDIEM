@@ -540,20 +540,6 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                             else -> HaruMood.CALM },
                         sleepy = sl.id == null && !bare && isNight(now),
                         onPet = if (sl.id == null && !bare) ({ state.pettedHaru(day0) }) else null)
-                    // 하루가 준 조약돌: 아주 가끔 발치에 하나 (누르면 주워서 ‘모은 것’ 에)
-                    if (sl.id == null && !bare && state.pebbleOffered == day0) {
-                        val pw = u * 9f
-                        val pebbleLabel = stringResource(R.string.pebble_a11y)
-                        val tookMsg = stringResource(R.string.pebble_taken)
-                        androidx.compose.foundation.Canvas(Modifier.offset(cx + sl.scale * (sl.art.meta.bbox.width / 2) + u * 2f, gy - pw * 0.6f).size(pw, pw * 0.66f)
-                            .semantics { contentDescription = pebbleLabel }
-                            .clickable { state.takePebble(day0); state.say(tookMsg) }) {
-                            drawOval(Color(0xFFA29A8B), size = size)
-                            drawOval(G.Colors.ink, size = size, style = androidx.compose.ui.graphics.drawscope.Stroke(size.width * 0.09f))
-                            drawArc(Color.White.copy(alpha = 0.5f), 200f, 70f, false, topLeft = androidx.compose.ui.geometry.Offset(size.width * 0.2f, size.height * 0.18f),
-                                size = androidx.compose.ui.geometry.Size(size.width * 0.5f, size.height * 0.5f), style = androidx.compose.ui.graphics.drawscope.Stroke(size.width * 0.06f))
-                        }
-                    }
                     // 생일 당일: 돌 앞에 작은 케이크 (전날 저녁엔 모자만)
                     if (sl.soon == 0) {
                         val cw = u * Tokens.Garden.Party.cakeWidth
@@ -585,6 +571,21 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                         val c = Offset(xs[i].toPx(), (gy - sl.scale * (sl.art.meta.ground - sl.art.meta.bbox.center.y)).toPx())
                         drawCircle(Tokens.Garden.Night.Colors.firefly.copy(alpha = (1f - a) * 0.3f), ring * 0.5f * (0.3f + a), c)
                         drawCircle(Tokens.Garden.Colors.now.copy(alpha = (1f - a) * 0.8f), ring * (0.25f + 0.75f * a), c, style = androidx.compose.ui.graphics.drawscope.Stroke(u.toPx() * 1.2f))
+                    }
+                }
+                // 하루가 준 조약돌: 아주 가끔 하루 앞 땅에 하나 (돌들 위에 그려 가리지 않게, 누르면 주워서 ‘모은 것’ 에)
+                if (!bare && state.pebbleOffered == day0) {
+                    val pw = u * 10f
+                    val pebbleLabel = stringResource(R.string.pebble_a11y)
+                    val tookMsg = stringResource(R.string.pebble_taken)
+                    val px0 = xs[0] + (widths[0].toFloat() / 2).dp * 0.55f
+                    androidx.compose.foundation.Canvas(Modifier.offset(px0 - pw / 2, gy - pw * 0.25f).size(pw, pw * 0.66f)
+                        .semantics { contentDescription = pebbleLabel }
+                        .clickable { state.takePebble(day0); state.say(tookMsg) }) {
+                        drawOval(Color(0xFFA29A8B), size = size)
+                        drawOval(G.Colors.ink, size = size, style = androidx.compose.ui.graphics.drawscope.Stroke(size.width * 0.09f))
+                        drawArc(Color.White.copy(alpha = 0.5f), 200f, 70f, false, topLeft = androidx.compose.ui.geometry.Offset(size.width * 0.2f, size.height * 0.18f),
+                            size = androidx.compose.ui.geometry.Size(size.width * 0.5f, size.height * 0.5f), style = androidx.compose.ui.graphics.drawscope.Stroke(size.width * 0.06f))
                     }
                 }
                 // 달팽이 손님: 오랜만에 돌아온 날, 한 시간쯤 돌들 앞 길을 천천히 건넘
