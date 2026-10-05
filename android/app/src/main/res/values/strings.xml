@@ -56,15 +56,12 @@
     <string name="words_both">Both</string>
     <string name="widgets">Widgets</string>
     <string name="widgets_name_daysLeft">Days left</string>
-    <string name="widgets_name_calendar">Life calendar</string>
     <string name="widgets_name_record">Heart’s record</string>
     <string name="erase">Erase everything</string>
     <string name="country_search">Search countries</string>
     <string name="country_source">UN World Population Prospects 2024.</string>
     <string name="widget_daysLeft">Days left</string>
-    <string name="widget_yearsLeft">years left</string>
     <string name="widget_daysLeft_desc">Quietly counts the days left.</string>
-    <string name="widget_calendar_desc">A whole life in small cells. Larger, with today\'s words.</string>
     <string name="widget_empty">Add your birthday in the app.</string>
     <string name="erase_confirm">Erase everything?</string>
     <string name="erase_action">Erase</string>
@@ -222,7 +219,6 @@
     <string name="obj_kite_when">100 days of lines in a row</string>
     <string name="obj_kite_line">A hundred days of wind lifted a kite.</string>
     <string name="widget_daysLeft_garden">Days left</string>
-    <string name="widget_calendar_garden">Life calendar</string>
     <string name="letgo_modalTitle">Kept</string>
     <string name="letgo_ok">OK</string>
     <string name="recall_random">Out of nowhere, a line from %1$s came back</string>
@@ -875,8 +871,8 @@
     <string name="seed_plant">Plant</string>
     <string name="seed_later">Later</string>
     <string name="seed_planted">Seed planted. I\'ll gently ask in the evening.</string>
-    <string name="seed_askLabel">This morning\'s seed: ‘%1$s’</string>
-    <string name="seed_ask">Did it sprout?</string>
+    <string name="seed_askFrom">This morning you planted</string>
+    <string name="seed_ask">Did it sprout today?</string>
     <string name="seed_yes">It sprouted</string>
     <string name="seed_no">Resting in the soil</string>
     <string name="seed_bloomed">A little flower bloomed.</string>

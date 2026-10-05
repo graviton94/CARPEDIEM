@@ -56,15 +56,12 @@
     <string name="words_both">両方</string>
     <string name="widgets">ウィジェット</string>
     <string name="widgets_name_daysLeft">残りの日数</string>
-    <string name="widgets_name_calendar">人生カレンダー</string>
     <string name="widgets_name_record">こころの記録</string>
     <string name="erase">すべての記録を消す</string>
     <string name="country_search">国を検索</string>
     <string name="country_source">国連「世界人口推計2024」より。</string>
     <string name="widget_daysLeft">残りの日数</string>
-    <string name="widget_yearsLeft">残りの年数</string>
     <string name="widget_daysLeft_desc">残りの日々を、静かに数えます。</string>
-    <string name="widget_calendar_desc">ひとつの人生を、小さなマスに。大きく置けば、今日のことばも。</string>
     <string name="widget_empty">アプリで生年月日を入れてください。</string>
     <string name="erase_confirm">すべての記録を消しますか？</string>
     <string name="erase_action">消す</string>
@@ -222,7 +219,6 @@
     <string name="obj_kite_when">ひとことを100日続けた日</string>
     <string name="obj_kite_line">百日の風が、凧を高くあげました。</string>
     <string name="widget_daysLeft_garden">残りの日数</string>
-    <string name="widget_calendar_garden">人生カレンダー</string>
     <string name="letgo_modalTitle">残しました</string>
     <string name="letgo_ok">OK</string>
     <string name="recall_random">ふと、%1$sに送ったひとことが戻ってきました</string>
@@ -874,8 +870,8 @@
     <string name="seed_plant">まく</string>
     <string name="seed_later">また今度</string>
     <string name="seed_planted">種をまきました。夕方にそっと聞きますね。</string>
-    <string name="seed_askLabel">朝にまいた「%1$s」</string>
-    <string name="seed_ask">芽は出ましたか？</string>
+    <string name="seed_askFrom">朝にまいた小さな決意</string>
+    <string name="seed_ask">今日、芽は出ましたか？</string>
     <string name="seed_yes">出ました</string>
     <string name="seed_no">土の中で休んでいます</string>
     <string name="seed_bloomed">小さな花が咲きました。</string>

@@ -56,15 +56,12 @@
     <string name="words_both">兩種都要</string>
     <string name="widgets">小工具</string>
     <string name="widgets_name_daysLeft">剩下的日子</string>
-    <string name="widgets_name_calendar">人生月曆</string>
     <string name="widgets_name_record">心情的紀錄</string>
     <string name="erase">清除所有紀錄</string>
     <string name="country_search">搜尋國家</string>
     <string name="country_source">依據聯合國《世界人口展望 2024》。</string>
     <string name="widget_daysLeft">剩下的日子</string>
-    <string name="widget_yearsLeft">剩下的年數</string>
     <string name="widget_daysLeft_desc">靜靜數著剩下的日子。</string>
-    <string name="widget_calendar_desc">把一生放進小小的格子裡。放大一點，還有今天的句子。</string>
     <string name="widget_empty">請先在 App 裡填上出生日期。</string>
     <string name="erase_confirm">要清除所有紀錄嗎？</string>
     <string name="erase_action">清除</string>
@@ -222,7 +219,6 @@
     <string name="obj_kite_when">連續 100 天寫下一句話</string>
     <string name="obj_kite_line">一百天的風，把風箏送上了高空。</string>
     <string name="widget_daysLeft_garden">剩下的日子</string>
-    <string name="widget_calendar_garden">人生月曆</string>
     <string name="letgo_modalTitle">留下了</string>
     <string name="letgo_ok">確定</string>
     <string name="recall_random">忽然，%1$s放下的一句話又回來了</string>
@@ -874,8 +870,8 @@
     <string name="seed_plant">種下</string>
     <string name="seed_later">下次吧</string>
     <string name="seed_planted">種子種下了。傍晚會輕輕問你。</string>
-    <string name="seed_askLabel">早上種下的「%1$s」</string>
-    <string name="seed_ask">發芽了嗎？</string>
+    <string name="seed_askFrom">早上種下的小小心願</string>
+    <string name="seed_ask">今天，發芽了嗎？</string>
     <string name="seed_yes">發芽了</string>
     <string name="seed_no">在土裡休息</string>
     <string name="seed_bloomed">開了一朵小花。</string>

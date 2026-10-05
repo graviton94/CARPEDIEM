@@ -54,15 +54,12 @@
 "words.both" = "둘 다";
 "widgets" = "위젯";
 "widgets.name.daysLeft" = "남은 날";
-"widgets.name.calendar" = "인생 달력";
 "widgets.name.record" = "마음의 기록";
 "erase" = "모든 기록 지우기";
 "country.search" = "나라 검색";
 "country.source" = "UN 세계인구전망 2024 기준.";
 "widget.daysLeft" = "남은 날";
-"widget.yearsLeft" = "남은 해";
 "widget.daysLeft.desc" = "남은 날을 조용히 세어요.";
-"widget.calendar.desc" = "한 생을 작은 칸으로. 크게 두면 오늘의 말도.";
 "widget.empty" = "앱에서 생년월일을 넣어 주세요.";
 "erase.confirm" = "모든 기록을 지울까요?";
 "erase.action" = "지우기";
@@ -220,7 +217,6 @@
 "obj.kite.when" = "한 줄을 100일 이어 쓴 날";
 "obj.kite.line" = "백 날의 바람이 연을 높이 띄웠어요.";
 "widget.daysLeft.garden" = "남은 날";
-"widget.calendar.garden" = "인생 달력";
 "letgo.modalTitle" = "잘 남겼어요";
 "letgo.ok" = "확인";
 "recall.random" = "문득, %1$@에 보낸 한 줄이 다시 찾아왔어요";
@@ -873,8 +869,8 @@
 "seed.plant" = "심기";
 "seed.later" = "다음에";
 "seed.planted" = "씨앗을 심었어요. 저녁에 살짝 물어볼게요.";
-"seed.askLabel" = "아침에 심은 ‘%1$@’";
-"seed.ask" = "싹이 텄나요?";
+"seed.askFrom" = "아침에 심은 다짐";
+"seed.ask" = "오늘 하루, 싹이 텄나요?";
 "seed.yes" = "텄어요";
 "seed.no" = "흙 속에서 쉬어요";
 "seed.bloomed" = "작은 꽃이 피었어요.";

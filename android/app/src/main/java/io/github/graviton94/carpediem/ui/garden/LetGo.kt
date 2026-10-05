@@ -250,6 +250,9 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
                     // 남긴 뒤의 글은 짧게: 몇 번 남겼는지 (세는 숫자) · ‘아래 기록에 더해졌어요’ 같은 설명은 두지 않음
                     // 그날 안에는 고치거나 지울 수 있음 (조용히, 작게)
                     val mine = state.lines.lastOrNull { it.date == today }
+                    // 오늘 남긴 한 줄 그대로 (무엇을 남겼는지 보이게)
+                    if (mine != null && state.keepLines && mine.text.isNotBlank())
+                        TokenText("“${mine.text}”", lineType(Tokens.TypeScale.callout, Theme.garden), Modifier.fillMaxWidth().lineBox(962).padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3))
                     if (mine != null && state.keepLines && mine.text.isNotBlank()) TokenText(stringResource(R.string.edit_until), Tokens.TypeScale.caption1, color = p.secondary)
                     if (mine != null) Row(verticalAlignment = Alignment.CenterVertically) {
                         if (state.keepLines && mine.text.isNotBlank()) {

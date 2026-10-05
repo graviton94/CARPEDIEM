@@ -54,15 +54,12 @@
 "words.both" = "兩種都要";
 "widgets" = "小工具";
 "widgets.name.daysLeft" = "剩下的日子";
-"widgets.name.calendar" = "人生月曆";
 "widgets.name.record" = "心情的紀錄";
 "erase" = "清除所有紀錄";
 "country.search" = "搜尋國家";
 "country.source" = "依據聯合國《世界人口展望 2024》。";
 "widget.daysLeft" = "剩下的日子";
-"widget.yearsLeft" = "剩下的年數";
 "widget.daysLeft.desc" = "靜靜數著剩下的日子。";
-"widget.calendar.desc" = "把一生放進小小的格子裡。放大一點，還有今天的句子。";
 "widget.empty" = "請先在 App 裡填上出生日期。";
 "erase.confirm" = "要清除所有紀錄嗎？";
 "erase.action" = "清除";
@@ -220,7 +217,6 @@
 "obj.kite.when" = "連續 100 天寫下一句話";
 "obj.kite.line" = "一百天的風，把風箏送上了高空。";
 "widget.daysLeft.garden" = "剩下的日子";
-"widget.calendar.garden" = "人生月曆";
 "letgo.modalTitle" = "留下了";
 "letgo.ok" = "確定";
 "recall.random" = "忽然，%1$@放下的一句話又回來了";
@@ -872,8 +868,8 @@
 "seed.plant" = "種下";
 "seed.later" = "下次吧";
 "seed.planted" = "種子種下了。傍晚會輕輕問你。";
-"seed.askLabel" = "早上種下的「%1$@」";
-"seed.ask" = "發芽了嗎？";
+"seed.askFrom" = "早上種下的小小心願";
+"seed.ask" = "今天，發芽了嗎？";
 "seed.yes" = "發芽了";
 "seed.no" = "在土裡休息";
 "seed.bloomed" = "開了一朵小花。";

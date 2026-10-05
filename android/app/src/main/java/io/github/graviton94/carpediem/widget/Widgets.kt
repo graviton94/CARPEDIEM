@@ -59,12 +59,12 @@ object Widgets {
     /** 앱에서 정보가 바뀌면 모든 위젯을 새로 그린다. */
     /**
      * 홈 화면에 위젯 두기 (Android 8+, 런처가 지원할 때): 런처가 ‘추가할까요?’ 를 물음. 지원하지 않으면 false (안내 글로).
-     * kind: days · line · record · calendar (위젯은 정원 모양 넷만)
+     * kind: days · line · record (위젯은 정원 모양 셋만)
      */
     fun pin(context: Context, kind: String): Boolean {
         val cls = when (kind) {
             "line" -> LineGardenReceiver::class.java; "record" -> RecordReceiver::class.java
-            "calendar" -> LifeCalendarGardenReceiver::class.java; else -> DaysLeftGardenReceiver::class.java
+            else -> DaysLeftGardenReceiver::class.java
         }
         val mgr = android.appwidget.AppWidgetManager.getInstance(context)
         if (!mgr.isRequestPinAppWidgetSupported) return false
@@ -79,7 +79,6 @@ object Widgets {
         DaysLeftGardenWidget().updateAll(context)
         LineGardenWidget().updateAll(context)
         RecordWidget().updateAll(context)
-        LifeCalendarGardenWidget().updateAll(context)
     }
 
     /** 하늘 빛 · 오늘의 문장이 제때 바뀌도록 한 시간마다 새로 그린다. */
@@ -215,40 +214,3 @@ class LineGardenWidget : GlanceAppWidget() {
     }
 }
 class LineGardenReceiver : GlanceAppWidgetReceiver() { override val glanceAppWidget: GlanceAppWidget = LineGardenWidget() }
-
-// ───────────────────────── 인생 달력 (4×2 · 4×4) ─────────────────────────
-
-class LifeCalendarGardenWidget : GlanceAppWidget() {
-    override val sizeMode = SizeMode.Exact
-
-    override suspend fun provideGlance(context: Context, id: GlanceId) {
-        // 다시 그릴 때마다 새로 읽음 (위젯이 떠 있는 동안 고쳐 그려도 예전 값이 남지 않게)
-        provideContent {
-            val data = WidgetData(context)
-            val gs = LocalSize.current
-            val large = gs.height >= Tokens.Widget.largeFromHeight.dp
-            GardenSurface(context, data, if (large) GardenWidgetArt.Kind.LARGE else GardenWidgetArt.Kind.CALENDAR) {
-                val s = data.snapshot
-                when {
-                    s == null -> Text(context.getString(R.string.widget_empty), style = style(Tokens.TypeScale.caption1.size, gSub))
-                    large -> Column(GlanceModifier.fillMaxSize()) {
-                        Text(Labels.number(s.remaining(LifeUnit.DAYS)), style = style(Tokens.TypeScale.largeTitle.size, gInk, FontWeight.Bold, serif = true), maxLines = 1)
-                        Text(context.getString(R.string.widget_daysLeft), style = style(Tokens.TypeScale.caption1.size, gSub))
-                        Spacer(GlanceModifier.defaultWeight())
-                        data.quote?.let { q -> Text(io.github.graviton94.carpediem.data.Words.main(q, data.language, data.lang), style = style(Tokens.TypeScale.footnote.size, gInk), maxLines = 2) }
-                    }
-                    else -> Column(GlanceModifier.fillMaxHeight().width((gs.width - Tokens.Layout.widgetPadding * 2) * Tokens.Garden.Widget.gridLeft)) {
-                        Text(context.getString(R.string.calendar), style = style(Tokens.TypeScale.footnote.size, gInk, FontWeight.Bold))
-                        Spacer(GlanceModifier.defaultWeight())
-                        Text("${s.remaining(LifeUnit.YEARS)}", style = style(Tokens.TypeScale.largeTitle.size, gInk, FontWeight.Bold, serif = true))
-                        Text(context.getString(R.string.widget_yearsLeft), style = style(Tokens.TypeScale.caption1.size, gSub))
-                        Spacer(GlanceModifier.defaultWeight())
-                        Text("${Labels.season(context, s.season)} · ${Labels.percent(s.progress, 0)}", style = style(Tokens.TypeScale.caption2.size, gSub))
-                    }
-                }
-            }
-        }
-    }
-}
-
-class LifeCalendarGardenReceiver : GlanceAppWidgetReceiver() { override val glanceAppWidget: GlanceAppWidget = LifeCalendarGardenWidget() }

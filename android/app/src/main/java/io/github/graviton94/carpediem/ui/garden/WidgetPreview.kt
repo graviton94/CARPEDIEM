@@ -25,7 +25,7 @@ import io.github.graviton94.carpediem.ui.AppState
 import io.github.graviton94.carpediem.widget.WidgetShots
 import java.time.LocalDateTime
 
-/** 디버그 빌드 전용 (cd.screen=widgets): 둘 수 있는 정원 위젯 넷을 실제 위젯 그대로 앱 안에서 미리 본다. 화면 캡처 CI 가 쓴다. */
+/** 디버그 빌드 전용 (cd.screen=widgets): 둘 수 있는 정원 위젯 셋을 실제 위젯 그대로 앱 안에서 미리 본다. 화면 캡처 CI 가 쓴다. */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun WidgetPreviewScreen(state: AppState, now: LocalDateTime) {

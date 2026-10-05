@@ -574,7 +574,7 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
             FormSection(header = stringResource(R.string.widgets)) {
                 if (state.design == Design.GARDEN) {
                     listOf(R.string.widgets_name_daysLeft to R.string.widget_daysLeft_desc, R.string.widgets_name_line to R.string.widget_line_desc,
-                        R.string.widgets_name_record to R.string.widget_record_desc, R.string.widgets_name_calendar to R.string.widget_calendar_desc).forEachIndexed { i, (name, desc) ->
+                        R.string.widgets_name_record to R.string.widget_record_desc).forEachIndexed { i, (name, desc) ->
                         if (i > 0) RowDivider()
                         Row(Modifier.padding(vertical = Tokens.Space.sp3), verticalAlignment = Alignment.CenterVertically) {
                             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
@@ -582,7 +582,7 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
                                 TokenText(stringResource(desc), Tokens.TypeScale.footnote, color = p.secondary)
                             }
                             // 런처가 지원하면 바로 홈 화면에 두기
-                            val kind = listOf("days", "line", "record", "calendar")[i]
+                            val kind = listOf("days", "line", "record")[i]
                             TextButton(onClick = { if (!io.github.graviton94.carpediem.widget.Widgets.pin(ctx, kind)) state.say(ctx.getString(R.string.nudge_widgetHow)) }) {
                                 TokenText(stringResource(R.string.widget_pin), Tokens.TypeScale.footnote, color = p.olive, weight = FontWeight.SemiBold)
                             }

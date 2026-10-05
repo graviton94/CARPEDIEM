@@ -17,16 +17,16 @@ import androidx.glance.appwidget.compose
 import java.io.File
 
 /**
- * 디버그 빌드 전용: 정원 위젯 넷을 실제 위젯 그대로 그린다.
+ * 디버그 빌드 전용: 정원 위젯 셋을 실제 위젯 그대로 그린다.
  * cd.widgetShots 는 파일로 남기고 (화면 캡처 CI 가 꺼내 res/drawable-nodpi/widget_preview_*.png 로), 미리보기 화면은 앱 안에 늘어놓는다.
  */
 object WidgetShots {
     class Shot(val name: String, val widget: GlanceAppWidget, val w: Int, val h: Int)
 
-    /** 둘 수 있는 위젯 전부: 남은 날 · 오늘의 한 줄 · 마음의 기록 · 인생 달력. */
+    /** 둘 수 있는 위젯 전부: 남은 날 · 오늘의 한 줄 · 마음의 기록. */
     val shots get() = listOf(
         Shot("days_left_garden", DaysLeftGardenWidget(), 160, 160), Shot("line_garden", LineGardenWidget(), 240, 160),
-        Shot("record_garden", RecordWidget(), 160, 160), Shot("calendar_garden", LifeCalendarGardenWidget(), 320, 160),
+        Shot("record_garden", RecordWidget(), 160, 160),
     )
 
     /** 위젯 하나를 홈 화면처럼 둥근 모서리로 그린 그림. */

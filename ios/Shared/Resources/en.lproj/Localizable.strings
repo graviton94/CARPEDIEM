@@ -54,15 +54,12 @@
 "words.both" = "Both";
 "widgets" = "Widgets";
 "widgets.name.daysLeft" = "Days left";
-"widgets.name.calendar" = "Life calendar";
 "widgets.name.record" = "Heart’s record";
 "erase" = "Erase everything";
 "country.search" = "Search countries";
 "country.source" = "UN World Population Prospects 2024.";
 "widget.daysLeft" = "Days left";
-"widget.yearsLeft" = "years left";
 "widget.daysLeft.desc" = "Quietly counts the days left.";
-"widget.calendar.desc" = "A whole life in small cells. Larger, with today's words.";
 "widget.empty" = "Add your birthday in the app.";
 "erase.confirm" = "Erase everything?";
 "erase.action" = "Erase";
@@ -220,7 +217,6 @@
 "obj.kite.when" = "100 days of lines in a row";
 "obj.kite.line" = "A hundred days of wind lifted a kite.";
 "widget.daysLeft.garden" = "Days left";
-"widget.calendar.garden" = "Life calendar";
 "letgo.modalTitle" = "Kept";
 "letgo.ok" = "OK";
 "recall.random" = "Out of nowhere, a line from %1$@ came back";
@@ -873,8 +869,8 @@
 "seed.plant" = "Plant";
 "seed.later" = "Later";
 "seed.planted" = "Seed planted. I'll gently ask in the evening.";
-"seed.askLabel" = "This morning's seed: ‘%1$@’";
-"seed.ask" = "Did it sprout?";
+"seed.askFrom" = "This morning you planted";
+"seed.ask" = "Did it sprout today?";
 "seed.yes" = "It sprouted";
 "seed.no" = "Resting in the soil";
 "seed.bloomed" = "A little flower bloomed.";

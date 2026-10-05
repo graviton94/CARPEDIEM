@@ -159,8 +159,10 @@ internal fun SeedAsk(state: AppState, today: LocalDate, now: LocalDateTime) {
         Modifier.fillMaxWidth().crayonBox(Theme.gc.chip, G.Radius.box, G.Stroke.chip, 1410).padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3),
         verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1),
     ) {
-        TokenText(stringResource(R.string.seed_askLabel, seed.text), Tokens.TypeScale.footnote, color = p.secondary)
-        TokenText(stringResource(R.string.seed_ask), Tokens.TypeScale.headline.serif())
+        // 무엇을 심었는지가 먼저 크게 보이게: ‘아침에 심은 다짐’ → ‘평정심’ → 싹이 텄나요?
+        TokenText(stringResource(R.string.seed_askFrom), Tokens.TypeScale.footnote, color = p.secondary)
+        TokenText("‘${seed.text}’", Tokens.TypeScale.headline.serif())
+        TokenText(stringResource(R.string.seed_ask), Tokens.TypeScale.subhead, color = p.secondary)
         FlowRow(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
             GardenChip(stringResource(R.string.seed_yes), false, 1411) { state.answerSeed(true, today) }
             GardenChip(stringResource(R.string.seed_no), false, 1412) { state.answerSeed(false, today) }

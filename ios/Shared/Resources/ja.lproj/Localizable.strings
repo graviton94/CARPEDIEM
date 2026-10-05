@@ -54,15 +54,12 @@
 "words.both" = "両方";
 "widgets" = "ウィジェット";
 "widgets.name.daysLeft" = "残りの日数";
-"widgets.name.calendar" = "人生カレンダー";
 "widgets.name.record" = "こころの記録";
 "erase" = "すべての記録を消す";
 "country.search" = "国を検索";
 "country.source" = "国連「世界人口推計2024」より。";
 "widget.daysLeft" = "残りの日数";
-"widget.yearsLeft" = "残りの年数";
 "widget.daysLeft.desc" = "残りの日々を、静かに数えます。";
-"widget.calendar.desc" = "ひとつの人生を、小さなマスに。大きく置けば、今日のことばも。";
 "widget.empty" = "アプリで生年月日を入れてください。";
 "erase.confirm" = "すべての記録を消しますか？";
 "erase.action" = "消す";
@@ -220,7 +217,6 @@
 "obj.kite.when" = "ひとことを100日続けた日";
 "obj.kite.line" = "百日の風が、凧を高くあげました。";
 "widget.daysLeft.garden" = "残りの日数";
-"widget.calendar.garden" = "人生カレンダー";
 "letgo.modalTitle" = "残しました";
 "letgo.ok" = "OK";
 "recall.random" = "ふと、%1$@に送ったひとことが戻ってきました";
@@ -872,8 +868,8 @@
 "seed.plant" = "まく";
 "seed.later" = "また今度";
 "seed.planted" = "種をまきました。夕方にそっと聞きますね。";
-"seed.askLabel" = "朝にまいた「%1$@」";
-"seed.ask" = "芽は出ましたか？";
+"seed.askFrom" = "朝にまいた小さな決意";
+"seed.ask" = "今日、芽は出ましたか？";
 "seed.yes" = "出ました";
 "seed.no" = "土の中で休んでいます";
 "seed.bloomed" = "小さな花が咲きました。";
