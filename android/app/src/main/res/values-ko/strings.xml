@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- 자동 생성 파일 — 직접 고치지 말고 scripts/generate.py 를 실행하세요. -->
 <resources>
+    <string name="support_invite">벌써 하루와 %1$s번의 추억을 쌓았어요 · 응원하기</string>
+    <string name="support_thanksItem">고마워요.\n하루 곁에 %1$s이 놓였어요.</string>
+    <string name="support_markLabel">%1$s, 고마운 마음이 남긴 %2$s</string>
+    <string name="support_mark1">찻잔</string>
+    <string name="support_mark2">커피</string>
+    <string name="support_mark3">케이크</string>
     <string name="support_tier1_note">조용히 건네는 고마운 마음</string>
     <string name="support_tier2_note">다음 업데이트를 만드는 힘</string>
     <string name="support_tier3_note">정원이 오래 자라도록</string>
@@ -1045,6 +1051,7 @@
     <string name="news_v1_1_3_1">새 버전이 나오면 정원에서 조용히 알려 드려요. 눌러서 바로 받을 수 있어요.</string>
     <string name="news_v1_1_3_2">설정 › 도움 · 응원에서 새로워진 점을 언제든 다시 볼 수 있어요.</string>
     <string name="news_v1_1_3_3">응원하기 화면을 새로 다듬었어요. 고른 뒤 한 번에 응원할 수 있어요.</string>
+    <string name="news_v1_1_3_4">응원해 주시면 하루 곁에 고마움의 흔적 (찻잔 · 커피 · 케이크) 이 남아요.</string>
     <string name="news_v1_1_2_1">지난 날의 한 줄도 고칠 수 있어요 (글 · 마음 · 사진).</string>
     <string name="news_v1_1_2_2">처음 화면에서 새로 시작하기 / 기록 불러오기를 고를 수 있어요.</string>
     <string name="news_v1_1_2_3">기록 남기기를 끌 때 한 번 더 확인해요.</string>

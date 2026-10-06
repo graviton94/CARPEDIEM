@@ -285,7 +285,7 @@ fun SupportScreen(state: AppState, now: LocalDateTime, onBack: () -> Unit) {
     val load = haruArt(state, sprout = false)
     var soon by remember { mutableStateOf(false) }
     val support = remember { io.github.graviton94.carpediem.billing.Support(ctx) }
-    androidx.compose.runtime.DisposableEffect(support) { support.connect(); onDispose { support.close() } }
+    androidx.compose.runtime.DisposableEffect(support) { support.onSupported = { id -> state.supported(id, now.toLocalDate()) }; support.connect(); onDispose { support.onSupported = null; support.close() } }
     BackHandler(onBack = onBack)
     SkyBackground {
         Column(
@@ -336,7 +336,10 @@ fun SupportScreen(state: AppState, now: LocalDateTime, onBack: () -> Unit) {
                 soon = act == null || !support.buy(act, io.github.graviton94.carpediem.billing.Support.IDS[picked])
             }, filled = true, seed = 930)
             if (support.thanked) Box(Modifier.fillMaxWidth().crayonBox(Theme.gc.chip, G.Radius.box, G.Stroke.chip, seed = 941).padding(Tokens.Space.sp4)) {
-                TokenText(stringResource(R.string.support_thanks), Tokens.TypeScale.subhead.serif(), Modifier.fillMaxWidth(), align = TextAlign.Center)
+                // 무엇이 하루 곁에 놓였는지 (정원에 돌아가면 보임)
+                val k = io.github.graviton94.carpediem.billing.Support.IDS.indexOf(support.lastId)
+                val item = if (k >= 0) stringResource(tiers[k].first) else null
+                TokenText(if (item != null) stringResource(R.string.support_thanksItem, item) else stringResource(R.string.support_thanks), Tokens.TypeScale.subhead.serif(), Modifier.fillMaxWidth(), align = TextAlign.Center)
             }
             else if (soon) Box(Modifier.fillMaxWidth().crayonBox(Theme.gc.paper, G.Radius.box, G.Stroke.chip, seed = 940).padding(Tokens.Space.sp4)) {
                 TokenText(stringResource(R.string.support_soon), Tokens.TypeScale.subhead, Modifier.fillMaxWidth(), align = TextAlign.Center)

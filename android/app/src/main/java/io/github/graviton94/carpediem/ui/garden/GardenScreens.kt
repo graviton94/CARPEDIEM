@@ -596,6 +596,20 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                         .semantics { contentDescription = pebbleLabel }
                         .clickable(interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }, indication = null) { state.takePebble(day0); state.say(tookMsg) })
                 }
+                // 고마움의 흔적: 응원한 것 (찻잔 · 머그 · 케이크) 이 하루 돌 앞 오른쪽에 작게 (누르면 언제 남긴 것인지)
+                if (!bare && state.supportMarks.isNotEmpty()) {
+                    val mw = u * 15f
+                    val tt = Tokens.Layout.tapTarget
+                    io.github.graviton94.carpediem.billing.Support.IDS.forEachIndexed { k, id ->
+                        val day = state.supportMarks[id] ?: return@forEachIndexed
+                        val slot = io.github.graviton94.carpediem.billing.Support.IDS.filter { it in state.supportMarks }.indexOf(id)
+                        val mx = xs[0] + (widths[0].toFloat() / 2).dp * 0.2f + mw * 1.05f * slot
+                        val label = stringResource(R.string.support_markLabel, RecordText.day(ctx, day), stringResource(when (k) { 0 -> R.string.support_mark1; 1 -> R.string.support_mark2; else -> R.string.support_mark3 }))
+                        Box(Modifier.offset(mx, gy - mw * 0.86f).size(mw)) { SupportIcon(k, mw) }
+                        Box(Modifier.offset(mx + mw / 2 - tt / 2, gy - mw * 0.43f - tt / 2).size(tt).semantics { contentDescription = label }
+                            .clickable(interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }, indication = null) { state.say(label) })
+                    }
+                }
                 // 달팽이 손님: 오랜만에 돌아온 날, 한 시간쯤 돌들 앞 길을 천천히 건넘
                 if (!bare) SnailGuest(state.store.snailAt, now, gy, u * G.Decor.treeX)
                 // 정원 손님 (우연히 놀러 온 날): 그날마다 다른 자리. 어느 돌 위 · 돌 사이 빈 땅 · 줄의 양 끝 가운데 하나 (날마다 정해져, 하루 안에선 그대로).
@@ -678,6 +692,8 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                         // 새 버전을 받는 중 · 다 받음 (Play 앱 안 업데이트): 누르면 새 버전으로 다시 열림
                         state.update == AppState.UpdateState.READY -> RecallNote(stringResource(R.string.update_ready)) { state.finishUpdate() }
                         state.update == AppState.UpdateState.DOWNLOADING -> RecallNote(stringResource(R.string.update_downloading)) {}
+                        // 한 줄 30 · 60 · 90… 번째를 남긴 날: 응원 권유 한 줄 (그날만, 응원한 뒤로는 없음)
+                        state.supportInviteDue(today) != null -> RecallNote(stringResource(R.string.support_invite, "${state.supportInviteDue(today)}")) { onSupport() }
                         topInvite -> Unit
                         // 돌아온 한 줄은 아래 쪽지 대신 손님이 물고 옴 (위)
                         // 첫 일주일 길잡이: 하루에 하나, 해 본 것은 건너뜀 (누르면 그 일로)

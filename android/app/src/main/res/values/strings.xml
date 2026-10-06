@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- 자동 생성 파일 — 직접 고치지 말고 scripts/generate.py 를 실행하세요. -->
 <resources>
+    <string name="support_invite">%1$s memories with Haru already · Support</string>
+    <string name="support_thanksItem">Thank you.\n%1$s now sits beside Haru.</string>
+    <string name="support_markLabel">%1$s · %2$s, left with thanks</string>
+    <string name="support_mark1">tea</string>
+    <string name="support_mark2">coffee</string>
+    <string name="support_mark3">cake</string>
     <string name="support_tier1_note">A quiet thank-you</string>
     <string name="support_tier2_note">Fuel for the next update</string>
     <string name="support_tier3_note">Help the garden keep growing</string>
@@ -1045,6 +1051,7 @@
     <string name="news_v1_1_3_1">When a new version is out, the garden lets you know quietly. Tap to get it.</string>
     <string name="news_v1_1_3_2">See what’s new any time in Settings › Help &amp; support.</string>
     <string name="news_v1_1_3_3">A refreshed support page: pick one, then support in one tap.</string>
+    <string name="news_v1_1_3_4">If you support the garden, a small thank-you (tea, coffee or cake) stays beside Haru.</string>
     <string name="news_v1_1_2_1">Edit lines from past days (text, feeling, photo).</string>
     <string name="news_v1_1_2_2">Choose “Start new” or “Restore records” on the first screen.</string>
     <string name="news_v1_1_2_3">Turning off “Keep my lines” now asks first.</string>

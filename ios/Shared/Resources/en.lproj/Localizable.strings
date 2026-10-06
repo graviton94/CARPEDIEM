@@ -1,4 +1,10 @@
 /* 자동 생성 파일 — 직접 고치지 말고 scripts/generate.py 를 실행하세요. */
+"support.invite" = "%1$@ memories with Haru already · Support";
+"support.thanksItem" = "Thank you.\n%1$@ now sits beside Haru.";
+"support.markLabel" = "%1$@ · %2$@, left with thanks";
+"support.mark1" = "tea";
+"support.mark2" = "coffee";
+"support.mark3" = "cake";
 "support.tier1.note" = "A quiet thank-you";
 "support.tier2.note" = "Fuel for the next update";
 "support.tier3.note" = "Help the garden keep growing";
@@ -1043,6 +1049,7 @@
 "news.v1_1_3.1" = "When a new version is out, the garden lets you know quietly. Tap to get it.";
 "news.v1_1_3.2" = "See what’s new any time in Settings › Help & support.";
 "news.v1_1_3.3" = "A refreshed support page: pick one, then support in one tap.";
+"news.v1_1_3.4" = "If you support the garden, a small thank-you (tea, coffee or cake) stays beside Haru.";
 "news.v1_1_2.1" = "Edit lines from past days (text, feeling, photo).";
 "news.v1_1_2.2" = "Choose “Start new” or “Restore records” on the first screen.";
 "news.v1_1_2.3" = "Turning off “Keep my lines” now asks first.";

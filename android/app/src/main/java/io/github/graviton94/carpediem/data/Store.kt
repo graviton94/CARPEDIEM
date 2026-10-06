@@ -307,6 +307,13 @@ class Store(context: Context) {
     fun updateNoteShown(versionCode: Int, today: LocalDate) {
         if (prefs.getInt("updNoteVer", -1) != versionCode) prefs.edit().putInt("updNoteVer", versionCode).putLong("updNoteDay", today.toEpochDay()).apply()
     }
+    /** 고마움의 흔적: 응원한 것 (상품 id → 처음 응원한 날). 정원 하루 돌 곁에 그림으로 남음 (기능 보상은 없음). */
+    var supportMarks: Map<String, LocalDate>
+        get() = prefs.getString("supportMarks", "").orEmpty().split(',').mapNotNull { e ->
+            val k = e.substringBefore(':', ""); val d = e.substringAfter(':', "").toLongOrNull()
+            if (k.isEmpty() || d == null) null else k to LocalDate.ofEpochDay(d)
+        }.toMap()
+        set(v) = prefs.edit().putString("supportMarks", v.entries.joinToString(",") { "${it.key}:${it.value.toEpochDay()}" }).apply()
     var slipOpened: LocalDate?
         get() = prefs.getLong("slipOpened", Long.MIN_VALUE).takeIf { it != Long.MIN_VALUE }?.let { LocalDate.ofEpochDay(it) }
         set(v) = prefs.edit().putLong("slipOpened", v?.toEpochDay() ?: Long.MIN_VALUE).apply()

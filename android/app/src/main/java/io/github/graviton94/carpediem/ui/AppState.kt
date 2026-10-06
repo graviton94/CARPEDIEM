@@ -41,6 +41,8 @@ enum class Care { CALM_BREATH, BOX_BREATH, LOOK, SEND_TO, SLEEP_BREATH, MORNING_
 /** 조약돌 사이 최소 날수 · 그 뒤 하루에 한 번 굴려 보는 확률 (평균 한 달 남짓에 하나). */
 private const val PEBBLE_GAP = 25L
 private const val PEBBLE_CHANCE = 0.1f
+/** 한 줄이 이만큼 쌓일 때마다 (30 · 60 · 90…), 그날 하루 정원 아래에 응원 권유 한 줄. */
+private const val SUPPORT_INVITE_EVERY = 30
 
 val PAGE_HINTS = setOf("write", "memories", "flow", "stone")
 
@@ -201,6 +203,21 @@ class AppState(private val context: Context) {
         UpdateState.NONE -> false
         UpdateState.AVAILABLE -> store.updateNoteDue(updateVersion, today)
         else -> true
+    }
+
+    // ───── 응원: 고마움의 흔적 · 한 줄 30번마다 한 번 권유 ─────
+    var supportMarks by mutableStateOf(store.supportMarks)
+        private set
+    /** 응원이 끝나면: 그 상품의 흔적을 정원에 (같은 것은 처음 날짜 그대로). */
+    fun supported(id: String, today: LocalDate = nowDate()) {
+        if (id in supportMarks) return
+        val v = supportMarks + (id to today); store.supportMarks = v; supportMarks = v
+    }
+    /** 오늘 30 · 60 · 90… 번째 한 줄을 남겼으면 그 수 (응원한 적이 있으면 권하지 않음). */
+    fun supportInviteDue(today: LocalDate): Int? {
+        if (supportMarks.isNotEmpty() || design != Design.GARDEN) return null
+        val n = lines.size
+        return n.takeIf { it > 0 && it % SUPPORT_INVITE_EVERY == 0 && lines.any { l -> l.date == today } }
     }
 
     // ───── 하루가 준 조약돌: 쓰다듬다 보면 아주 가끔 (한 달에 한 번쯤) 발치에 하나 ─────

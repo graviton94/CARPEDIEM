@@ -1,5 +1,11 @@
 {
   "ko": {
+    "support.invite": "벌써 하루와 {n}번의 추억을 쌓았어요 · 응원하기",
+    "support.thanksItem": "고마워요.\n하루 곁에 {item}이 놓였어요.",
+    "support.markLabel": "{date}, 고마운 마음이 남긴 {item}",
+    "support.mark1": "찻잔",
+    "support.mark2": "커피",
+    "support.mark3": "케이크",
     "support.tier1.note": "조용히 건네는 고마운 마음",
     "support.tier2.note": "다음 업데이트를 만드는 힘",
     "support.tier3.note": "정원이 오래 자라도록",
@@ -1043,6 +1049,12 @@
     "welcome.restoreSub": "예전 폰에서 저장한 파일로 이어서 써요."
   },
   "en": {
+    "support.invite": "{n} memories with Haru already · Support",
+    "support.thanksItem": "Thank you.\n{item} now sits beside Haru.",
+    "support.markLabel": "{date} · {item}, left with thanks",
+    "support.mark1": "tea",
+    "support.mark2": "coffee",
+    "support.mark3": "cake",
     "support.tier1.note": "A quiet thank-you",
     "support.tier2.note": "Fuel for the next update",
     "support.tier3.note": "Help the garden keep growing",
@@ -2086,6 +2098,12 @@
     "welcome.restoreSub": "Continue from a file you saved on your old phone."
   },
   "ja": {
+    "support.invite": "ハルとの思い出がもう{n}個に・応援する",
+    "support.thanksItem": "ありがとう。\nハルのそばに{item}置きました。",
+    "support.markLabel": "{date}、ありがとうの気持ちが残した{item}",
+    "support.mark1": "お茶",
+    "support.mark2": "コーヒー",
+    "support.mark3": "ケーキ",
     "support.tier1.note": "そっと届けるありがとう",
     "support.tier2.note": "次のアップデートの力に",
     "support.tier3.note": "庭が長く育つように",
@@ -3129,6 +3147,12 @@
     "welcome.restoreSub": "前のスマホで保存したファイルから続けます。"
   },
   "zh-TW": {
+    "support.invite": "已經和哈魯累積了{n}段回憶・支持",
+    "support.thanksItem": "謝謝你。\n哈魯身旁多了{item}。",
+    "support.markLabel": "{date}，謝意留下的{item}",
+    "support.mark1": "茶",
+    "support.mark2": "咖啡",
+    "support.mark3": "蛋糕",
     "support.tier1.note": "安靜送上的謝意",
     "support.tier2.note": "下一次更新的動力",
     "support.tier3.note": "讓花園長長久久",
