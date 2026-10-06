@@ -89,6 +89,8 @@ internal fun RecordPanel(state: AppState, view: RecordView, onView: (RecordView)
     val book = state.store.constellations
     var picked by remember(view) { mutableStateOf(view.pick) }
     var deleting by remember { mutableStateOf<LocalDate?>(null) }
+    var editingPast by remember { mutableStateOf<io.github.graviton94.carpediem.core.DayLine?>(null) }
+    editingPast?.let { PastLineSheet(state, it, today) { editingPast = null } }
     deleting?.let { d ->
         io.github.graviton94.carpediem.ui.GardenAlert(
             onDismissRequest = { deleting = null },
@@ -134,9 +136,13 @@ internal fun RecordPanel(state: AppState, view: RecordView, onView: (RecordView)
                         // 방금 지운 날이면 되돌리기 (앱을 켜 둔 동안)
                         if (l == null && state.lastDeleted?.date == pickedLine.first) TokenText(stringResource(R.string.edit_undo), Tokens.TypeScale.footnote,
                             Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { state.undoDelete() }.padding(vertical = Tokens.Space.sp3), color = p.olive, weight = FontWeight.SemiBold)
-                        // 지난 날의 한 줄 지우기 (오늘 것은 위 쓰는 칸에서)
-                        if (l != null && pickedLine.first != today) TokenText(stringResource(R.string.edit_deleteDay), Tokens.TypeScale.footnote,
-                            Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { deleting = pickedLine.first }.padding(vertical = Tokens.Space.sp3), color = p.secondary)
+                        // 지난 날의 한 줄 고치기 · 지우기 (오늘 것은 위 쓰는 칸에서)
+                        if (l != null && pickedLine.first != today) Row(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp4)) {
+                            if (state.keepLines) TokenText(stringResource(R.string.edit_action), Tokens.TypeScale.footnote,
+                                Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { editingPast = l }.padding(vertical = Tokens.Space.sp3), color = p.olive, weight = FontWeight.SemiBold)
+                            TokenText(stringResource(R.string.edit_deleteDay), Tokens.TypeScale.footnote,
+                                Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { deleting = pickedLine.first }.padding(vertical = Tokens.Space.sp3), color = p.secondary)
+                        }
                     }
                 } else TokenText(stringResource(R.string.record_hint), Tokens.TypeScale.footnote, Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.Center)
                 GardenButton(stringResource(R.string.share_image), {

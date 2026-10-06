@@ -35,11 +35,11 @@ import java.time.LocalDate
 
 /** 한지 액자에 걸린 시간이 묻은 사진 (11). 날마다 기울기가 조금씩 다르고, 아래에 날짜 (와 한마디). 사진이 없으면 아무것도 그리지 않음. */
 @Composable
-internal fun WeatheredPhoto(state: AppState, day: LocalDate, today: LocalDate, width: Dp, pending: Boolean = false, caption: String? = null, modifier: Modifier = Modifier) {
+internal fun WeatheredPhoto(state: AppState, day: LocalDate, today: LocalDate, width: Dp, pending: Boolean = false, edit: Boolean = false, caption: String? = null, modifier: Modifier = Modifier) {
     val ctx = LocalContext.current
     var img by remember(day, pending) { mutableStateOf<ImageBitmap?>(null) }
     LaunchedEffect(day, today, pending, state.photoKick) {
-        img = withContext(Dispatchers.Default) { runCatching { Photos.weathered(ctx, day, today, pending)?.asImageBitmap() }.getOrNull() }
+        img = withContext(Dispatchers.Default) { runCatching { Photos.weathered(ctx, day, today, pending, edit)?.asImageBitmap() }.getOrNull() }
     }
     val bmp = img ?: return
     val tilt = remember(day) { (Math.floorMod(day.toEpochDay() * 7919, 70L) - 35) / 10f }   // -3.5° … 3.4°

@@ -46,6 +46,9 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.BasicTextField
@@ -496,4 +499,74 @@ private fun CareLine(state: AppState, c: Care, onGo: () -> Unit) {
     }
     val text = stringResource(when (c) { Care.CALM_BREATH -> R.string.care_calm; Care.BOX_BREATH -> R.string.care_box; Care.SLEEP_BREATH -> R.string.care_sleep; Care.MORNING_BREATH -> R.string.care_morning; else -> R.string.care_look })
     TokenText(text, Tokens.TypeScale.footnote, Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable(onClick = onGo).padding(horizontal = Tokens.Space.sp3, vertical = Tokens.Space.sp3), color = p.olive, weight = FontWeight.SemiBold, align = TextAlign.Center)
+}
+
+/**
+ * 지난 날의 한 줄 고치기 (마음의 기록에서 그날을 고른 뒤): 글 · 마음 · 사진 (붙이기 · 바꾸기 · 빼기).
+ * 저장할 때만 반영하고, 그만두면 그대로.
+ */
+@OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
+@Composable
+internal fun PastLineSheet(state: AppState, line: DayLine, today: LocalDate, onClose: () -> Unit) {
+    val p = Theme.palette
+    val ctx = LocalContext.current
+    val u = Theme.unit
+    val scope = rememberCoroutineScope()
+    var text by rememberSaveable(line.date) { mutableStateOf(line.text) }
+    var feeling by rememberSaveable(line.date) { mutableStateOf(line.feeling) }
+    var dropPhoto by rememberSaveable(line.date) { mutableStateOf(false) }
+    var newPhoto by rememberSaveable(line.date) { mutableStateOf(false) }
+    val max = Tokens.Garden.LetGo.maxChars.toInt()
+    val photoFail = stringResource(R.string.photo_fail)
+    val pick = rememberPhotoPicker { uri -> scope.launch {
+        val ok = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { io.github.graviton94.carpediem.data.Photos.importPending(ctx, uri, edit = true) }
+        if (ok) { newPhoto = true; dropPhoto = false; state.photoKick++ } else state.say(photoFail)
+    } }
+    fun close() { if (newPhoto) io.github.graviton94.carpediem.data.Photos.dropPending(ctx, edit = true); state.photoKick++; onClose() }
+    androidx.compose.material3.ModalBottomSheet(onDismissRequest = { close() }, containerColor = Theme.gc.paper,
+        sheetState = androidx.compose.material3.rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
+        Column(Modifier.fillMaxWidth().imePadding().verticalScroll(rememberScrollState()).padding(horizontal = Theme.deviceClass.pageMargin).padding(bottom = Tokens.Space.sp8),
+            verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
+            TokenText(stringResource(R.string.edit_pastTitle, RecordText.day(ctx, line.date)), Tokens.TypeScale.title3)
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
+                Feeling.entries.forEachIndexed { i, f -> Chip(stringResource(feelingName(f)), feeling == f, seed = 1270 + i) { feeling = if (feeling == f) null else f } }
+            }
+            BasicTextField(
+                value = text,
+                onValueChange = { v -> if (v.codePointCount(0, v.length) <= max && v.count { it == '\n' } < Lines.MAX_LINES) text = v },
+                singleLine = false, minLines = 2, maxLines = Lines.MAX_LINES, textStyle = Tokens.TypeScale.callout.style().copy(color = p.foreground), cursorBrush = SolidColor(p.foreground),
+                modifier = Modifier.fillMaxWidth().keepAboveKeyboard().lineBox(1280).padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3),
+            )
+            // 사진: 새로 고른 것 · 지금 붙은 것 (바꾸기 · 빼기) · 없으면 ‘사진 한 장’
+            val has = remember(state.photoKick, line.date) { io.github.graviton94.carpediem.data.Photos.has(ctx, line.date) }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                when {
+                    newPhoto -> {
+                        WeatheredPhoto(state, line.date, today, u * 56f, pending = true, edit = true)
+                        TokenText(stringResource(R.string.photo_remove), Tokens.TypeScale.footnote,
+                            Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { io.github.graviton94.carpediem.data.Photos.dropPending(ctx, edit = true); newPhoto = false; state.photoKick++ }.padding(Tokens.Space.sp3), color = p.secondary)
+                    }
+                    has && !dropPhoto -> {
+                        WeatheredPhoto(state, line.date, today, u * 56f)
+                        TokenText(stringResource(R.string.photo_change), Tokens.TypeScale.footnote,
+                            Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { pick() }.padding(Tokens.Space.sp3), color = p.olive, weight = FontWeight.SemiBold)
+                        TokenText(stringResource(R.string.photo_remove), Tokens.TypeScale.footnote,
+                            Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { dropPhoto = true }.padding(vertical = Tokens.Space.sp3), color = p.secondary)
+                    }
+                    else -> GardenChip(stringResource(R.string.photo_add), false, 1285) { pick() }
+                }
+            }
+            Action(stringResource(R.string.edit_save), filled = text.isNotBlank(), seed = 1286) {
+                if (text.isBlank()) return@Action
+                if (state.editLine(line.date, text, feeling)) {
+                    if (newPhoto) { io.github.graviton94.carpediem.data.Photos.commitPending(ctx, line.date, edit = true); newPhoto = false }
+                    else if (dropPhoto) io.github.graviton94.carpediem.data.Photos.remove(ctx, line.date)
+                    state.photoKick++
+                    onClose()
+                }
+            }
+            TokenText(stringResource(R.string.cancel), Tokens.TypeScale.footnote,
+                Modifier.fillMaxWidth().heightIn(min = Tokens.Layout.tapTarget).clickable { close() }.padding(vertical = Tokens.Space.sp3), color = p.secondary, align = TextAlign.Center)
+        }
+    }
 }

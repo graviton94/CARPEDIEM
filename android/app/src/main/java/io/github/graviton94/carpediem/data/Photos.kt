@@ -31,13 +31,15 @@ object Photos {
     const val SIZE = 640
     private const val QUALITY = 82
     private const val PENDING = "pending.jpg"
+    /** 지난 날을 고치며 골라 둔 사진 (오늘 쓰는 중인 사진과 겹치지 않게 따로). */
+    private const val EDIT = "edit.jpg"
     /** 방금 지운 날의 사진 (그날 번호를 붙여, 다른 날에 잘못 되돌아가지 않게). */
     private fun undoFile(ctx: Context, day: LocalDate) = File(dir(ctx), "undo-${day.toEpochDay()}.jpg")
     private fun dropUndo(ctx: Context) { dir(ctx).listFiles()?.filter { it.name.startsWith("undo") }?.forEach { it.delete() } }
 
     private fun dir(ctx: Context) = File(ctx.applicationContext.filesDir, "photos").apply { mkdirs() }
     fun file(ctx: Context, day: LocalDate) = File(dir(ctx), "${day.toEpochDay()}.jpg")
-    fun pending(ctx: Context) = File(dir(ctx), PENDING)
+    fun pending(ctx: Context, edit: Boolean = false) = File(dir(ctx), if (edit) EDIT else PENDING)
     fun has(ctx: Context, day: LocalDate) = file(ctx, day).exists()
 
     /** 고른 사진 → 정사각 사본 (target). 읽지 못하면 false. */
@@ -68,11 +70,11 @@ object Photos {
     }.getOrDefault(false)
 
     fun importFor(ctx: Context, uri: Uri, day: LocalDate) = importFile(ctx, uri, file(ctx, day))
-    fun importPending(ctx: Context, uri: Uri) = importFile(ctx, uri, pending(ctx))
+    fun importPending(ctx: Context, uri: Uri, edit: Boolean = false) = importFile(ctx, uri, pending(ctx, edit))
 
     /** 보낸 한 줄에 맡겨 둔 사진을 그날의 사진으로. */
-    fun commitPending(ctx: Context, day: LocalDate): Boolean { val p = pending(ctx); if (!p.exists()) return false; file(ctx, day).delete(); cache.evictAll(); return p.renameTo(file(ctx, day)) }
-    fun dropPending(ctx: Context) { pending(ctx).delete() }
+    fun commitPending(ctx: Context, day: LocalDate, edit: Boolean = false): Boolean { val p = pending(ctx, edit); if (!p.exists()) return false; file(ctx, day).delete(); cache.evictAll(); return p.renameTo(file(ctx, day)) }
+    fun dropPending(ctx: Context, edit: Boolean = false) { pending(ctx, edit).delete() }
     /** 한 줄을 지우면 사진도 (방금 지운 것은 되돌리기 전까지 한 장만 맡아 둠). */
     fun remove(ctx: Context, day: LocalDate) { dropUndo(ctx); val f = file(ctx, day); if (f.exists()) f.renameTo(undoFile(ctx, day)); cache.evictAll() }
     fun undo(ctx: Context, day: LocalDate) { val u = undoFile(ctx, day); if (u.exists() && !file(ctx, day).exists()) u.renameTo(file(ctx, day)); dropUndo(ctx); cache.evictAll() }
@@ -99,8 +101,8 @@ object Photos {
     private val cache = LruCache<String, Bitmap>(12)
 
     /** 정원에 걸 모습 (한지 액자 포함, 가장자리는 투명). 사진이 없으면 null. 화면 스레드 밖에서 부를 것. */
-    fun weathered(ctx: Context, day: LocalDate, today: LocalDate, pending: Boolean = false): Bitmap? {
-        val f = if (pending) pending(ctx) else file(ctx, day)
+    fun weathered(ctx: Context, day: LocalDate, today: LocalDate, pending: Boolean = false, edit: Boolean = false): Bitmap? {
+        val f = if (pending) pending(ctx, edit) else file(ctx, day)
         if (!f.exists()) return null
         val age = ChronoUnit.DAYS.between(day, today).coerceAtLeast(0)
         val stage = if (pending) 0 else ageStage(age)

@@ -783,6 +783,8 @@
     <string name="edit_deleteHelp">지운 뒤 바로 ‘되돌리기’로 되살릴 수 있어요. 앱을 닫으면 되돌릴 수 없어요.</string>
     <string name="edit_deleteDay">이날의 한 줄 지우기</string>
     <string name="edit_deleteDayAsk">%1$s의 한 줄을 지울까요?</string>
+    <string name="edit_pastTitle">%1$s의 한 줄 고치기</string>
+    <string name="edit_pastDone">그날의 한 줄을 고쳤어요.</string>
     <string name="feedback_row">의견 보내기</string>
     <string name="feedback_footer">메일에 앱 버전과 기기 정보만 미리 적어 둬요. 기록은 담지 않아요.</string>
     <string name="feedback_subject">[하루의 정원] 의견</string>

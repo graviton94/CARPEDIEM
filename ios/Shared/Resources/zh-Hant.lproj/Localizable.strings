@@ -780,6 +780,8 @@
 "edit.deleteHelp" = "刪除後可以馬上復原。關閉 App 後就無法復原。";
 "edit.deleteDay" = "刪除這天的話";
 "edit.deleteDayAsk" = "要刪除 %1$@ 的話嗎？";
+"edit.pastTitle" = "修改 %1$@ 的話";
+"edit.pastDone" = "已修改那天的話。";
 "feedback.row" = "傳送意見";
 "feedback.footer" = "郵件裡只會先填好 App 版本和裝置資訊，不會附上紀錄。";
 "feedback.subject" = "［小日的庭院］意見";

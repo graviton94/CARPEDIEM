@@ -782,6 +782,8 @@
     <string name="edit_deleteHelp">消した直後なら「戻す」で戻せます。アプリを閉じると戻せません。</string>
     <string name="edit_deleteDay">この日のひとことを消す</string>
     <string name="edit_deleteDayAsk">%1$sのひとことを消しますか？</string>
+    <string name="edit_pastTitle">%1$sのひとことを直す</string>
+    <string name="edit_pastDone">その日のひとことを直しました。</string>
     <string name="feedback_row">ご意見を送る</string>
     <string name="feedback_footer">メールにはアプリのバージョンと端末情報だけを書いておきます。記録は含みません。</string>
     <string name="feedback_subject">［ハルの庭］ご意見</string>

@@ -327,6 +327,14 @@ class AppState(private val context: Context) {
         Widgets.refresh(context); say(context.getString(R.string.edit_done))
         return true
     }
+    /** 지난 날의 한 줄 고치기 (마음의 기록에서): 글 · 마음. 사진은 부르는 쪽에서 (맡겨 둔 사진을 그날로 · 빼기). */
+    fun editLine(day: LocalDate, text: String, feeling: Feeling?): Boolean {
+        val t = Lines.clean(text, Tokens.Garden.LetGo.maxChars.toInt(), Lines.MAX_LINES); if (t.isEmpty() || !keepLines) return false
+        if (lines.none { it.date == day }) return false
+        val next = Lines.edit(lines, day, t, feeling); store.lines = next; lines = next
+        Widgets.refresh(context); say(context.getString(R.string.edit_pastDone))
+        return true
+    }
     /** 방금 지운 한 줄 (앱을 켜 둔 동안 되돌리기). */
     var lastDeleted by mutableStateOf<DayLine?>(null)
         private set

@@ -781,6 +781,8 @@
 "edit.deleteHelp" = "Right after deleting you can bring it back. Once the app is closed, it’s gone.";
 "edit.deleteDay" = "Delete this day’s line";
 "edit.deleteDayAsk" = "Delete the line from %1$@?";
+"edit.pastTitle" = "Edit the line of %1$@";
+"edit.pastDone" = "That day’s line is updated.";
 "feedback.row" = "Send feedback";
 "feedback.footer" = "Your mail starts with the app version and device details only. Your records are never included.";
 "feedback.subject" = "[Carpe Diem] Feedback";

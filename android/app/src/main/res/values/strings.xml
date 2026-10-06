@@ -783,6 +783,8 @@
     <string name="edit_deleteHelp">Right after deleting you can bring it back. Once the app is closed, it’s gone.</string>
     <string name="edit_deleteDay">Delete this day’s line</string>
     <string name="edit_deleteDayAsk">Delete the line from %1$s?</string>
+    <string name="edit_pastTitle">Edit the line of %1$s</string>
+    <string name="edit_pastDone">That day’s line is updated.</string>
     <string name="feedback_row">Send feedback</string>
     <string name="feedback_footer">Your mail starts with the app version and device details only. Your records are never included.</string>
     <string name="feedback_subject">[Carpe Diem] Feedback</string>

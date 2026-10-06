@@ -780,6 +780,8 @@
 "edit.deleteHelp" = "消した直後なら「戻す」で戻せます。アプリを閉じると戻せません。";
 "edit.deleteDay" = "この日のひとことを消す";
 "edit.deleteDayAsk" = "%1$@のひとことを消しますか？";
+"edit.pastTitle" = "%1$@のひとことを直す";
+"edit.pastDone" = "その日のひとことを直しました。";
 "feedback.row" = "ご意見を送る";
 "feedback.footer" = "メールにはアプリのバージョンと端末情報だけを書いておきます。記録は含みません。";
 "feedback.subject" = "［ハルの庭］ご意見";
