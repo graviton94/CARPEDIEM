@@ -1,6 +1,7 @@
 package io.github.graviton94.carpediem.ui.garden
 
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.border
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Brush
@@ -301,34 +302,90 @@ fun SupportScreen(state: AppState, now: LocalDateTime, onBack: () -> Unit) {
             }
             TokenText(stringResource(R.string.support_title), Tokens.TypeScale.title3.serif(), Modifier.fillMaxWidth(), align = TextAlign.Center)
             TokenText(stringResource(R.string.support_body), Tokens.TypeScale.callout, Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.Center)
-            listOf(
-                Triple(R.string.support_tier1, R.string.support_tier1_price, "teacup"),
-                Triple(R.string.support_tier2, R.string.support_tier2_price, "teacup"),
-                Triple(R.string.support_tier3, R.string.support_tier3_price, "candle"),
-            ).forEachIndexed { i, (name, price, obj) ->
-                val id = io.github.graviton94.carpediem.billing.Support.IDS[i]
-                Row(
-                    Modifier.fillMaxWidth().heightIn(min = Tokens.Layout.tapTarget + Tokens.Space.sp4)
-                        .crayonBox(if (i == 1) Theme.gc.chip else null, G.Radius.button, G.Stroke.box, seed = 920 + i * 3).clickable {
-                            // Play 에 상품이 있으면 결제 창, 없으면 시험판 안내
-                            val act = ctx as? android.app.Activity
-                            soon = act == null || !support.buy(act, id)
+            // 고르고 → 아래 버튼으로 결제 (누르자마자 결제 창이 뜨지 않게). 처음엔 가운데 (커피)
+            var picked by rememberSaveable { mutableStateOf(1) }
+            val tiers = listOf(
+                Triple(R.string.support_tier1, R.string.support_tier1_price, R.string.support_tier1_note),
+                Triple(R.string.support_tier2, R.string.support_tier2_price, R.string.support_tier2_note),
+                Triple(R.string.support_tier3, R.string.support_tier3_price, R.string.support_tier3_note),
+            )
+            val priceOf = { i: Int -> support.prices[io.github.graviton94.carpediem.billing.Support.IDS[i]]?.takeIf { it.isNotBlank() } }
+            Column(verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
+                tiers.forEachIndexed { i, (name, price, note) ->
+                    val on = picked == i
+                    Row(
+                        Modifier.fillMaxWidth().heightIn(min = Tokens.Layout.tapTarget + Tokens.Space.sp6)
+                            .crayonBox(if (on) Theme.gc.chip else Theme.gc.paper, G.Radius.box, if (on) G.Stroke.box else G.Stroke.chip, seed = 920 + i * 3)
+                            .selectable(selected = on, role = androidx.compose.ui.semantics.Role.RadioButton) { picked = i }
+                            .padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3),
+                        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp3),
+                    ) {
+                        SupportIcon(i, Theme.unit * 52f)
+                        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
+                            TokenText(stringResource(name), Tokens.TypeScale.headline)
+                            TokenText(stringResource(note), Tokens.TypeScale.footnote, color = p.secondary)
                         }
-                        .padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp2),
-                    verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp3),
-                ) {
-                    Image(GardenArt.obj(ctx, obj), null, Modifier.size(Theme.unit * G.Layout.collectionCell * 0.42f))
-                    TokenText(stringResource(name), Tokens.TypeScale.headline, Modifier.weight(1f))
-                    TokenText(support.prices[id]?.takeIf { it.isNotBlank() } ?: stringResource(price), Tokens.TypeScale.headline, color = p.secondary)
+                        TokenText(priceOf(i) ?: stringResource(price), Tokens.TypeScale.subhead, weight = FontWeight.SemiBold)
+                    }
                 }
             }
+            val cta = stringResource(R.string.support_cta, stringResource(tiers[picked].first), priceOf(picked) ?: stringResource(tiers[picked].second))
+            GardenButton(cta, {
+                // Play 에 상품이 있으면 결제 창, 없으면 시험판 안내
+                val act = ctx as? android.app.Activity
+                soon = act == null || !support.buy(act, io.github.graviton94.carpediem.billing.Support.IDS[picked])
+            }, filled = true, seed = 930)
             if (support.thanked) Box(Modifier.fillMaxWidth().crayonBox(Theme.gc.chip, G.Radius.box, G.Stroke.chip, seed = 941).padding(Tokens.Space.sp4)) {
                 TokenText(stringResource(R.string.support_thanks), Tokens.TypeScale.subhead.serif(), Modifier.fillMaxWidth(), align = TextAlign.Center)
             }
             else if (soon) Box(Modifier.fillMaxWidth().crayonBox(Theme.gc.paper, G.Radius.box, G.Stroke.chip, seed = 940).padding(Tokens.Space.sp4)) {
                 TokenText(stringResource(R.string.support_soon), Tokens.TypeScale.subhead, Modifier.fillMaxWidth(), align = TextAlign.Center)
             }
-            TokenText(stringResource(R.string.support_once), Tokens.TypeScale.footnote, Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.Center)
+            TokenText(stringResource(R.string.support_once) + "\n" + stringResource(R.string.support_use), Tokens.TypeScale.footnote, Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.Center)
+        }
+    }
+}
+
+/** 응원 한 가지의 그림 (크레용 선): 0 차 한 잔 · 1 커피 한 잔 · 2 케이크 한 조각. */
+@Composable
+internal fun SupportIcon(kind: Int, size: androidx.compose.ui.unit.Dp) {
+    val ink = Theme.gc.ink
+    androidx.compose.foundation.Canvas(Modifier.size(size)) {
+        val w = this.size.width; val h = this.size.height; val sw = w * 0.05f
+        val stroke = androidx.compose.ui.graphics.drawscope.Stroke(sw, cap = androidx.compose.ui.graphics.StrokeCap.Round, join = androidx.compose.ui.graphics.StrokeJoin.Round)
+        fun steam(x: Float, top: Float) = listOf(-0.06f, 0.06f).forEach { dx ->
+            val path = androidx.compose.ui.graphics.Path().apply { moveTo(w * (x + dx), top + h * 0.2f); cubicTo(w * (x + dx - 0.05f), top + h * 0.13f, w * (x + dx + 0.05f), top + h * 0.07f, w * (x + dx), top) }
+            drawPath(path, ink.copy(alpha = 0.35f), style = androidx.compose.ui.graphics.drawscope.Stroke(sw * 0.7f, cap = androidx.compose.ui.graphics.StrokeCap.Round))
+        }
+        when (kind) {
+            0 -> {   // 찻잔 + 받침
+                drawOval(Color(0xFFDCD3C3), Offset(w * 0.14f, h * 0.74f), androidx.compose.ui.geometry.Size(w * 0.72f, h * 0.14f))
+                drawOval(ink, Offset(w * 0.14f, h * 0.74f), androidx.compose.ui.geometry.Size(w * 0.72f, h * 0.14f), style = stroke)
+                val cup = androidx.compose.ui.graphics.Path().apply { moveTo(w * 0.24f, h * 0.48f); lineTo(w * 0.70f, h * 0.48f); cubicTo(w * 0.70f, h * 0.70f, w * 0.60f, h * 0.78f, w * 0.47f, h * 0.78f); cubicTo(w * 0.34f, h * 0.78f, w * 0.24f, h * 0.70f, w * 0.24f, h * 0.48f); close() }
+                drawPath(cup, Color(0xFFF7F2E8)); drawRect(Color(0xFFB8C98E), Offset(w * 0.27f, h * 0.49f), androidx.compose.ui.geometry.Size(w * 0.40f, h * 0.05f))
+                drawPath(cup, ink, style = stroke)
+                drawArc(ink, -90f, 180f, false, Offset(w * 0.62f, h * 0.52f), androidx.compose.ui.geometry.Size(w * 0.18f, h * 0.16f), style = stroke)
+                steam(0.47f, h * 0.18f)
+            }
+            1 -> {   // 머그잔 커피
+                val body = androidx.compose.ui.geometry.Size(w * 0.46f, h * 0.48f)
+                drawRoundRect(Color(0xFFF1E7D6), Offset(w * 0.2f, h * 0.36f), body, androidx.compose.ui.geometry.CornerRadius(w * 0.06f))
+                drawRect(Color(0xFF8A5A3B), Offset(w * 0.22f, h * 0.38f), androidx.compose.ui.geometry.Size(w * 0.42f, h * 0.07f))
+                drawRoundRect(ink, Offset(w * 0.2f, h * 0.36f), body, androidx.compose.ui.geometry.CornerRadius(w * 0.06f), style = stroke)
+                drawArc(ink, -90f, 180f, false, Offset(w * 0.56f, h * 0.46f), androidx.compose.ui.geometry.Size(w * 0.24f, h * 0.24f), style = stroke)
+                drawLine(ink.copy(alpha = 0.25f), Offset(w * 0.28f, h * 0.62f), Offset(w * 0.58f, h * 0.62f), sw * 0.6f)
+                steam(0.43f, h * 0.08f)
+            }
+            else -> {   // 케이크 한 조각 (옆에서): 시트 · 크림 · 딸기
+                val l = w * 0.14f; val r = w * 0.86f; val top = h * 0.44f; val bot = h * 0.82f
+                drawRect(Color(0xFFF2D49C), Offset(l, top), androidx.compose.ui.geometry.Size(r - l, bot - top))
+                drawRect(Color(0xFFFFF8EC), Offset(l, top + (bot - top) * 0.42f), androidx.compose.ui.geometry.Size(r - l, (bot - top) * 0.16f))
+                drawRect(Color(0xFFFFF8EC), Offset(l, top - h * 0.06f), androidx.compose.ui.geometry.Size(r - l, h * 0.08f))
+                drawRect(ink, Offset(l, top - h * 0.06f), androidx.compose.ui.geometry.Size(r - l, bot - top + h * 0.06f), style = stroke)
+                drawCircle(Color(0xFFD9534F), w * 0.09f, Offset(w * 0.5f, top - h * 0.12f))
+                drawCircle(ink, w * 0.09f, Offset(w * 0.5f, top - h * 0.12f), style = stroke)
+                drawLine(Color(0xFF6E8B3D), Offset(w * 0.5f, top - h * 0.21f), Offset(w * 0.56f, top - h * 0.26f), sw)
+            }
         }
     }
 }

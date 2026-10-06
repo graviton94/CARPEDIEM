@@ -567,7 +567,16 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
                 }
                 FormRow(stringResource(R.string.feedback_row), onClick = { if (!io.github.graviton94.carpediem.data.Feedback.send(ctx)) state.say(ctx.getString(R.string.feedback_copied)) }, trailing = chevron)
                 RowDivider()
-                FormRow(stringResource(R.string.support), onClick = onSupport, trailing = chevron)
+                // 응원하기: 커피 한 잔 그림과 한 줄 (눈에 띄게, 그러나 조용히)
+                Row(Modifier.fillMaxWidth().heightIn(min = Tokens.Layout.tapTarget + Tokens.Space.sp4).clickable(onClick = onSupport).padding(vertical = Tokens.Space.sp2),
+                    verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
+                    io.github.graviton94.carpediem.ui.garden.SupportIcon(1, Theme.unit * 40f)
+                    Column(Modifier.weight(1f)) {
+                        TokenText(stringResource(R.string.support), Tokens.TypeScale.body, weight = FontWeight.SemiBold)
+                        TokenText(stringResource(R.string.support_row), Tokens.TypeScale.footnote, color = p.secondary)
+                    }
+                    chevron()
+                }
             }
             if (newsOpen) WhatsNewSheet(null) { newsOpen = false }
             SettingsFooter(onVersionTap = { if (io.github.graviton94.carpediem.BuildConfig.DEV_TOOLS && !state.devMode) { state.unlockDev(); state.say(ctx.getString(R.string.dev_unlocked)) } })

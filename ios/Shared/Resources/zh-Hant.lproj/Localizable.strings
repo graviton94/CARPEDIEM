@@ -1,4 +1,10 @@
 /* 자동 생성 파일 — 직접 고치지 말고 scripts/generate.py 를 실행하세요. */
+"support.tier1.note" = "安靜送上的謝意";
+"support.tier2.note" = "下一次更新的動力";
+"support.tier3.note" = "讓花園長長久久";
+"support.cta" = "以%1$@支持・%2$@";
+"support.use" = "你的支持會用來照顧花園與製作下一次更新。";
+"support.row" = "用一杯飲料支持沒有廣告的花園";
 "news.title" = "更新內容";
 "news.version" = "版本 %1$@";
 "news.ok" = "好";

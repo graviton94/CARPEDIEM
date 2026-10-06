@@ -1,4 +1,10 @@
 /* 자동 생성 파일 — 직접 고치지 말고 scripts/generate.py 를 실행하세요. */
+"support.tier1.note" = "조용히 건네는 고마운 마음";
+"support.tier2.note" = "다음 업데이트를 만드는 힘";
+"support.tier3.note" = "정원이 오래 자라도록";
+"support.cta" = "%1$@으로 응원하기 · %2$@";
+"support.use" = "응원은 정원을 가꾸고 다음 업데이트를 만드는 데 쓰여요.";
+"support.row" = "광고 없는 정원을 한 잔으로 응원해 주세요";
 "news.title" = "새로워진 점";
 "news.version" = "버전 %1$@";
 "news.ok" = "확인";

@@ -1,5 +1,11 @@
 {
   "ko": {
+    "support.tier1.note": "조용히 건네는 고마운 마음",
+    "support.tier2.note": "다음 업데이트를 만드는 힘",
+    "support.tier3.note": "정원이 오래 자라도록",
+    "support.cta": "{item}으로 응원하기 · {price}",
+    "support.use": "응원은 정원을 가꾸고 다음 업데이트를 만드는 데 쓰여요.",
+    "support.row": "광고 없는 정원을 한 잔으로 응원해 주세요",
     "news.title": "새로워진 점",
     "news.version": "버전 {v}",
     "news.ok": "확인",
@@ -1037,6 +1043,12 @@
     "welcome.restoreSub": "예전 폰에서 저장한 파일로 이어서 써요."
   },
   "en": {
+    "support.tier1.note": "A quiet thank-you",
+    "support.tier2.note": "Fuel for the next update",
+    "support.tier3.note": "Help the garden keep growing",
+    "support.cta": "Support with {item} · {price}",
+    "support.use": "Your support goes into tending the garden and the next update.",
+    "support.row": "Support an ad-free garden with a cup",
     "news.title": "What’s new",
     "news.version": "Version {v}",
     "news.ok": "OK",
@@ -2074,6 +2086,12 @@
     "welcome.restoreSub": "Continue from a file you saved on your old phone."
   },
   "ja": {
+    "support.tier1.note": "そっと届けるありがとう",
+    "support.tier2.note": "次のアップデートの力に",
+    "support.tier3.note": "庭が長く育つように",
+    "support.cta": "{item}で応援する・{price}",
+    "support.use": "応援は庭の手入れと次のアップデートに使われます。",
+    "support.row": "広告のない庭を一杯で応援してください",
     "news.title": "新しくなったこと",
     "news.version": "バージョン {v}",
     "news.ok": "OK",
@@ -3111,6 +3129,12 @@
     "welcome.restoreSub": "前のスマホで保存したファイルから続けます。"
   },
   "zh-TW": {
+    "support.tier1.note": "安靜送上的謝意",
+    "support.tier2.note": "下一次更新的動力",
+    "support.tier3.note": "讓花園長長久久",
+    "support.cta": "以{item}支持・{price}",
+    "support.use": "你的支持會用來照顧花園與製作下一次更新。",
+    "support.row": "用一杯飲料支持沒有廣告的花園",
     "news.title": "更新內容",
     "news.version": "版本 {v}",
     "news.ok": "好",

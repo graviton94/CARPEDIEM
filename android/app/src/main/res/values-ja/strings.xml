@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- 자동 생성 파일 — 직접 고치지 말고 scripts/generate.py 를 실행하세요. -->
 <resources>
+    <string name="support_tier1_note">そっと届けるありがとう</string>
+    <string name="support_tier2_note">次のアップデートの力に</string>
+    <string name="support_tier3_note">庭が長く育つように</string>
+    <string name="support_cta">%1$sで応援する・%2$s</string>
+    <string name="support_use">応援は庭の手入れと次のアップデートに使われます。</string>
+    <string name="support_row">広告のない庭を一杯で応援してください</string>
     <string name="news_title">新しくなったこと</string>
     <string name="news_version">バージョン %1$s</string>
     <string name="news_ok">OK</string>

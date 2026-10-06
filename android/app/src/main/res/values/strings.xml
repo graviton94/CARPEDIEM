@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- 자동 생성 파일 — 직접 고치지 말고 scripts/generate.py 를 실행하세요. -->
 <resources>
+    <string name="support_tier1_note">A quiet thank-you</string>
+    <string name="support_tier2_note">Fuel for the next update</string>
+    <string name="support_tier3_note">Help the garden keep growing</string>
+    <string name="support_cta">Support with %1$s · %2$s</string>
+    <string name="support_use">Your support goes into tending the garden and the next update.</string>
+    <string name="support_row">Support an ad-free garden with a cup</string>
     <string name="news_title">What’s new</string>
     <string name="news_version">Version %1$s</string>
     <string name="news_ok">OK</string>
