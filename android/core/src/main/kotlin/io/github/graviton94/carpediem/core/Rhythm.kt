@@ -150,14 +150,22 @@ object Seeds {
 object Guests {
     val COMMON = listOf("tit", "squirrel", "hedgehog")
     val RARE = listOf("rabbit", "owl")
-    /** 평균 며칠에 한 번. */
-    const val EVERY = 7
+    /**
+     * 손님은 지난 한 줄이 돌아오는 날 (5–20일에 한 번쯤) 쪽지를 물고 온다. 아직 돌아올 한 줄이 없는 처음엔
+     * 빈손으로 평균 EVERY 일에 한 번 (같은 박자).
+     */
+    const val EVERY = 12
 
-    /** 오늘 손님 (없으면 null). seed = 사람마다 다른 수 (하루 번호). */
+    /** 쪽지 없는 날의 손님 (처음 한 달 남짓, 없으면 null). seed = 사람마다 다른 수. */
     fun on(today: LocalDate, seed: Long): String? {
         val h = mix(seed * 1_000_003L + today.toEpochDay())
         if (Math.floorMod(h, EVERY.toLong()) != 0L) return null
-        val k = Math.floorMod(h ushr 16, 10L).toInt()
+        return pick(today, seed)
+    }
+
+    /** 그날 올 손님 (열에 둘은 드문 손님). 같은 날은 늘 같은 손님. */
+    fun pick(today: LocalDate, seed: Long): String {
+        val k = Math.floorMod(mix(seed * 1_000_003L + today.toEpochDay()) ushr 16, 10L).toInt()
         return if (k < RARE.size) RARE[k] else COMMON[k % COMMON.size]
     }
 

@@ -180,9 +180,20 @@ class Store(context: Context) {
     }
 
     /** 오늘 정원에 놀러 온 손님 (날마다 정해진 우연, 앱을 열든 안 열든), 없으면 null. */
-    fun guestToday(today: LocalDate = LocalDate.now()): String? =
-        prefs.getString("guestForce", null)?.takeIf { prefs.getLong("guestForceDay", Long.MIN_VALUE) == today.toEpochDay() }
-            ?: io.github.graviton94.carpediem.core.Guests.on(today, haruSeed)
+    /**
+     * 오늘 손님: 지난 한 줄이 돌아온 날 (몇 해 전 오늘 · 문득) 에만, 그 쪽지를 물고. 돌아올 한 줄이 아직 없으면 (처음 한 달 남짓)
+     * 빈손으로 같은 박자 (평균 열이틀에 한 번). 쪽지 · 손님이 따로 오지 않게 한 박자로.
+     */
+    fun guestToday(today: LocalDate = LocalDate.now()): String? {
+        prefs.getString("guestForce", null)?.takeIf { prefs.getLong("guestForceDay", Long.MIN_VALUE) == today.toEpochDay() }?.let { return it }
+        val G = io.github.graviton94.carpediem.core.Guests
+        val lines = this.lines
+        val slipDay = prefs.getLong("randomOn", -1) == today.toEpochDay() || Lines.yearsAgo(lines, today).isNotEmpty()
+        if (slipDay && keepLines) return G.pick(today, haruSeed)
+        val minAge = io.github.graviton94.carpediem.design.Tokens.Garden.LetGo.randomMinAge.toLong()
+        val canRecall = keepLines && lines.any { it.text.isNotBlank() && java.time.temporal.ChronoUnit.DAYS.between(it.date, today) >= minAge }
+        return if (canRecall) null else G.on(today, haruSeed)
+    }
     var greetedOn: LocalDate?
         get() = prefs.getLong("greetedOn", Long.MIN_VALUE).takeIf { it != Long.MIN_VALUE }?.let { LocalDate.ofEpochDay(it) }
         set(v) = prefs.edit().apply { if (v == null) remove("greetedOn") else putLong("greetedOn", v.toEpochDay()) }.apply()

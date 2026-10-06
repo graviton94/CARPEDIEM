@@ -172,8 +172,8 @@ class AppState(private val context: Context) {
         if (!keepLines || slipOpened == today || design != Design.GARDEN) return null
         return io.github.graviton94.carpediem.core.Lines.yearsAgo(lines, today).firstOrNull()?.second ?: randomLine
     }
-    /** 쪽지를 물고 오는 손님: 그날 놀러 온 손님, 없으면 박새나 다람쥐 (날마다 번갈아). */
-    fun carrier(today: LocalDate): String? = guest ?: carriedLine(today)?.let { if (today.toEpochDay() % 2 == 0L) "tit" else "squirrel" }
+    /** 쪽지를 물고 오는 손님: 그날의 손님 (손님은 쪽지 오는 날에만 옴). 쪽지를 펼친 뒤에도 그날은 머묾. */
+    fun carrier(today: LocalDate): String? = guest ?: carriedLine(today)?.let { io.github.graviton94.carpediem.core.Guests.pick(today, store.haruSeed) }
     fun openSlip(today: LocalDate) { store.slipOpened = today; slipOpened = today }
     /** 캡처용: 정원이 뜨면 쪽지를 바로 펼침. */
     var debugSlip = false

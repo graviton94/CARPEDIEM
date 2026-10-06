@@ -647,11 +647,12 @@ class ChancesTest {
         val start = d(2026, 1, 1)
         val year = (0 until 365).map { Guests.on(start.plusDays(it.toLong()), 42L) }
         val visits = year.filterNotNull()
-        assertTrue(visits.size in 35..70)                                // 평균 일주일에 한 번쯤
+        assertTrue(visits.size in 18..45)                                // 쪽지 없는 날: 평균 열이틀에 한 번쯤
         assertTrue(visits.all { it in Guests.COMMON || it in Guests.RARE })
         assertTrue(visits.count { it in Guests.RARE } in 1 until visits.size / 2)
         assertEquals(year, (0 until 365).map { Guests.on(start.plusDays(it.toLong()), 42L) })   // 같은 날은 늘 같은 손님
         assertTrue(year != (0 until 365).map { Guests.on(start.plusDays(it.toLong()), 7L) })   // 사람마다 다른 날
+        assertEquals(Guests.pick(start, 42L), Guests.pick(start, 42L))
     }
 
     @Test fun creditsFitSixtyToEightySeconds() {
