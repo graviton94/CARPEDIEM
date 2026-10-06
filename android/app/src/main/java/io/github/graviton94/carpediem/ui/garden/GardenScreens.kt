@@ -598,15 +598,15 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 }
                 // 고마움의 흔적: 응원한 것 (찻잔 · 머그 · 케이크) 이 하루 돌 앞 오른쪽에 작게 (누르면 언제 남긴 것인지)
                 if (!bare && state.supportMarks.isNotEmpty()) {
-                    val mw = u * 15f
+                    val mw = u * 21f
                     val tt = Tokens.Layout.tapTarget
                     io.github.graviton94.carpediem.billing.Support.IDS.forEachIndexed { k, id ->
                         val day = state.supportMarks[id] ?: return@forEachIndexed
                         val slot = io.github.graviton94.carpediem.billing.Support.IDS.filter { it in state.supportMarks }.indexOf(id)
-                        val mx = xs[0] + (widths[0].toFloat() / 2).dp * 0.2f + mw * 1.05f * slot
+                        val mx = xs[0] - mw * 0.15f + mw * 0.95f * slot
                         val label = stringResource(R.string.support_markLabel, RecordText.day(ctx, day), stringResource(when (k) { 0 -> R.string.support_mark1; 1 -> R.string.support_mark2; else -> R.string.support_mark3 }))
-                        Box(Modifier.offset(mx, gy - mw * 0.86f).size(mw)) { SupportIcon(k, mw) }
-                        Box(Modifier.offset(mx + mw / 2 - tt / 2, gy - mw * 0.43f - tt / 2).size(tt).semantics { contentDescription = label }
+                        Box(Modifier.offset(mx, gy - mw * 0.62f).size(mw)) { SupportIcon(k, mw) }
+                        Box(Modifier.offset(mx + mw / 2 - tt / 2, gy - mw * 0.2f - tt / 2).size(tt).semantics { contentDescription = label }
                             .clickable(interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }, indication = null) { state.say(label) })
                     }
                 }
