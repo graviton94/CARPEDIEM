@@ -170,7 +170,7 @@ class AppState(private val context: Context) {
     /** 오늘 손님이 물고 올 한 줄 (펼쳐 봤으면 없음). */
     fun carriedLine(today: LocalDate): DayLine? {
         if (!keepLines || slipOpened == today || design != Design.GARDEN) return null
-        return io.github.graviton94.carpediem.core.Lines.yearsAgo(lines, today).firstOrNull()?.second ?: randomLine
+        return store.yearsAgoSlip(today)?.second ?: randomLine
     }
     /** 쪽지를 물고 오는 손님: 그날의 손님 (손님은 쪽지 오는 날에만 옴). 쪽지를 펼친 뒤에도 그날은 머묾. */
     fun carrier(today: LocalDate): String? = guest ?: carriedLine(today)?.let { io.github.graviton94.carpediem.core.Guests.pick(today, store.haruSeed) }
@@ -188,6 +188,8 @@ class AppState(private val context: Context) {
     private var pebbleRolled: LocalDate? = null
     /** 쓰다듬을 때 하루에 한 번만 굴려 봄: 지난 조약돌에서 25일 넘게 지났으면 열에 하나. */
     fun pettedHaru(today: LocalDate) {
+        // 지난날 줍지 않은 조약돌은 그날과 함께 사라짐 (남아 있으면 다시는 굴리지 못하니)
+        if (pebbleOffered != null && pebbleOffered != today) { store.pebbleOffered = null; pebbleOffered = null }
         if (pebbleRolled == today || pebbleOffered != null || design != Design.GARDEN) return
         pebbleRolled = today
         val last = (pebbles.lastOrNull() ?: store.startDate)

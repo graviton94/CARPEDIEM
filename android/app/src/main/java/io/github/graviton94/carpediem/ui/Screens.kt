@@ -131,24 +131,6 @@ fun OnboardingScreen(state: AppState, onCountry: () -> Unit) {
                 contentAlignment = Alignment.Center,
             ) { TokenText(stringResource(R.string.begin), Tokens.TypeScale.headline, color = p.onOlive) }
             TokenText(stringResource(R.string.privacy), Tokens.TypeScale.footnote, Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.Center)
-            // 다른 폰에서 쓰던 사람: 백업 파일로 바로 (소개 · 둘러보기 없이 예전 정원으로)
-            val backupScope = rememberCoroutineScope()
-            val openFile = androidx.activity.compose.rememberLauncherForActivityResult(androidx.activity.result.contract.ActivityResultContracts.OpenDocument()) { uri ->
-                if (uri == null) return@rememberLauncherForActivityResult
-                // 읽고 되살리기는 화면 밖에서 (사진이 많으면 오래 걸림)
-                backupScope.launch {
-                val ok = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { runCatching { ctx.contentResolver.openInputStream(uri)?.use { state.store.restore(it) } }.getOrNull() == true }
-                if (ok) {
-                    state.say(ctx.getString(R.string.backup_done))
-                    io.github.graviton94.carpediem.widget.Widgets.refresh(ctx)
-                    android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({ (ctx as? android.app.Activity)?.takeIf { !it.isFinishing && !it.isDestroyed }?.recreate() }, (Tokens.Garden.Motion.noteMs / 2).toLong())
-                } else state.say(ctx.getString(R.string.backup_fail))
-                }
-            }
-            val deviceCheck = rememberDeviceCheck()
-            TokenText(stringResource(R.string.onboard_restore), Tokens.TypeScale.footnote,
-                Modifier.fillMaxWidth().heightIn(min = Tokens.Layout.tapTarget).clickable { deviceCheck { openFile.launch(arrayOf("application/json", "text/plain", "application/octet-stream")) } }.padding(vertical = Tokens.Space.sp3),
-                color = p.olive, weight = FontWeight.SemiBold, align = TextAlign.Center)
         }
     }
 }
@@ -415,6 +397,7 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
             }
             // ── 기록 · 백업: 남기기 · 내보내기 · 파일로 저장 / 들여오기 · 지우기 ──
             var confirmClear by remember { mutableStateOf(false) }
+            var confirmKeepOff by remember { mutableStateOf(false) }
             var pickHelp by remember { mutableStateOf(false) }
             var restoreFrom by remember { mutableStateOf<android.net.Uri?>(null) }
             // 들여오기: 저장했던 파일이 보통 있는 ‘다운로드’ 에서 열기
@@ -426,7 +409,7 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
             val backupView = remember { androidx.compose.foundation.relocation.BringIntoViewRequester() }
             androidx.compose.runtime.LaunchedEffect(state.settingsFocus) { if (state.settingsFocus == "backup") { kotlinx.coroutines.delay(300); backupView.bringIntoView(); state.settingsFocus = null } }
             FormSection(header = stringResource(R.string.settings_records), footer = stringResource(R.string.settings_recordsFooter), modifier = Modifier.bringIntoViewRequester(backupView)) {
-                FormRow(stringResource(R.string.lines_keep), onClick = { state.changeKeepLines(!state.keepLines) }) { Switch(state.keepLines, { state.changeKeepLines(it) }, colors = sw) }
+                FormRow(stringResource(R.string.lines_keep), onClick = { if (state.keepLines) confirmKeepOff = true else state.changeKeepLines(true) }) { Switch(state.keepLines, { if (it) state.changeKeepLines(true) else confirmKeepOff = true }, colors = sw) }
                 RowDivider()
                 FormRow(stringResource(R.string.backup_export), onClick = { backupNow() }) {
                     // 마지막으로 저장한 날 (조용한 안심 한 줄)
@@ -465,6 +448,14 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
                     }) {}
                 }
             }
+            // 기록 남기기를 끄면 지금까지의 글 · 사진도 지워지므로 한 번 묻기
+            if (confirmKeepOff) GardenAlert(
+                onDismissRequest = { confirmKeepOff = false },
+                title = { Text(stringResource(R.string.lines_keepOffConfirm)) },
+                text = { Text(stringResource(R.string.backup_before)) },
+                confirmButton = { TextButton(onClick = { confirmKeepOff = false; state.changeKeepLines(false) }) { Text(stringResource(R.string.lines_keepOffAction), color = p.danger) } },
+                dismissButton = { TextButton(onClick = { confirmKeepOff = false; backupNow() }) { Text(stringResource(R.string.backup_first)) } },
+            )
             if (confirmClear) GardenAlert(
                 onDismissRequest = { confirmClear = false },
                 title = { Text(stringResource(R.string.lines_clearConfirm)) },

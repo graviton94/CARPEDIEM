@@ -194,6 +194,8 @@
     <string name="recall_sample">小さなことにも笑える一年になりますように。</string>
     <string name="recall_addSample">テスト：1年前の今日のひとことを入れる</string>
     <string name="lines_keep">記録を残す</string>
+    <string name="lines_keepOffConfirm">記録を残すのをやめますか？\nこれまでのひとことと写真が消え、日付だけが残ります。</string>
+    <string name="lines_keepOffAction">やめて消す</string>
     <string name="lines_export">ひとことの記録を書き出す</string>
     <string name="lines_exportEmpty">書き出せるひとことは、まだありません。</string>
     <string name="lines_exportTitle">Carpe Diem · 今日のひとこと</string>
@@ -1010,6 +1012,8 @@
     <string name="slip_from">%1$sがくわえてきました</string>
     <string name="slip_record">その日の記録を見る</string>
     <string name="slip_a11y">%1$sがメモをくわえています。タップでひらきます</string>
+    <string name="a11y_sing">ハルと歌う</string>
+    <string name="a11y_playStars">石の星座を奏でる</string>
     <string name="pebble_name">ハルがくれた小石</string>
     <string name="pebble_desc">ハルが足もとにそっと転がしてくれた小さな石です。</string>
     <string name="pebble_how">なでていると、ごくたまに（ひと月に一度くらい）足もとに転がしてくれます。</string>

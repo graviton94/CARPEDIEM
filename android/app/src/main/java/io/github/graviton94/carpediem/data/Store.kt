@@ -188,7 +188,7 @@ class Store(context: Context) {
         prefs.getString("guestForce", null)?.takeIf { prefs.getLong("guestForceDay", Long.MIN_VALUE) == today.toEpochDay() }?.let { return it }
         val G = io.github.graviton94.carpediem.core.Guests
         val lines = this.lines
-        val slipDay = prefs.getLong("randomOn", -1) == today.toEpochDay() || Lines.yearsAgo(lines, today).isNotEmpty()
+        val slipDay = prefs.getLong("randomOn", -1) == today.toEpochDay() || yearsAgoSlip(today) != null
         if (slipDay && keepLines) return G.pick(today, haruSeed)
         val minAge = io.github.graviton94.carpediem.design.Tokens.Garden.LetGo.randomMinAge.toLong()
         val canRecall = keepLines && lines.any { it.text.isNotBlank() && java.time.temporal.ChronoUnit.DAYS.between(it.date, today) >= minAge }
@@ -278,6 +278,18 @@ class Store(context: Context) {
         prefs.getLong("writeDay", Long.MIN_VALUE).takeIf { it != Long.MIN_VALUE }?.let { LocalDate.ofEpochDay(it) } else null
     fun saveWriteDay(today: LocalDate, day: LocalDate?) = prefs.edit().putLong("writeDayOn", today.toEpochDay()).putLong("writeDay", day?.toEpochDay() ?: Long.MIN_VALUE).apply()
     /** 손님이 물고 온 쪽지를 펼쳐 본 날 (그날은 다시 물고 오지 않음). */
+    /**
+     * 몇 해 전 오늘의 한 줄이 손님 쪽지 · 아침 알림으로 오는 날: 한 해 넘게 쓰면 거의 날마다 있으니, 손님 박자 (EVERY 일) 에 한 번만.
+     * 처음 온 날을 적어 두고 그날 하루는 그대로. (기록 페이지의 ‘몇 해 전 오늘’ 은 따로, 늘 보임)
+     */
+    fun yearsAgoSlip(today: LocalDate): Pair<Int, io.github.graviton94.carpediem.core.DayLine>? {
+        val hit = Lines.yearsAgo(lines, today).firstOrNull() ?: return null
+        val last = prefs.getLong("yearsSlipOn", Long.MIN_VALUE)
+        if (last == today.toEpochDay()) return hit
+        if (last != Long.MIN_VALUE && today.toEpochDay() - last < io.github.graviton94.carpediem.core.Guests.EVERY) return null
+        prefs.edit().putLong("yearsSlipOn", today.toEpochDay()).apply()
+        return hit
+    }
     var slipOpened: LocalDate?
         get() = prefs.getLong("slipOpened", Long.MIN_VALUE).takeIf { it != Long.MIN_VALUE }?.let { LocalDate.ofEpochDay(it) }
         set(v) = prefs.edit().putLong("slipOpened", v?.toEpochDay() ?: Long.MIN_VALUE).apply()

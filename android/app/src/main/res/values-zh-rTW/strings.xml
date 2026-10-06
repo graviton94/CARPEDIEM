@@ -194,6 +194,8 @@
     <string name="recall_sample">願這一年，小事也能讓人微笑。</string>
     <string name="recall_addSample">測試：加入一年前今天的一句話</string>
     <string name="lines_keep">保留紀錄</string>
+    <string name="lines_keepOffConfirm">要停止保留紀錄嗎？\n至今的話與照片會被刪除，只留下日期。</string>
+    <string name="lines_keepOffAction">停止並刪除</string>
     <string name="lines_export">匯出一句話紀錄</string>
     <string name="lines_exportEmpty">還沒有可以匯出的一句話。</string>
     <string name="lines_exportTitle">小日的庭院 · 今天的一句話</string>
@@ -1010,6 +1012,8 @@
     <string name="slip_from">%1$s叼來的</string>
     <string name="slip_record">看那天的紀錄</string>
     <string name="slip_a11y">%1$s叼來一張紙條，點一下打開</string>
+    <string name="a11y_sing">和哈魯一起唱歌</string>
+    <string name="a11y_playStars">演奏石頭星座</string>
     <string name="pebble_name">小日給的小石頭</string>
     <string name="pebble_desc">小日悄悄滾到你腳邊的小石頭。</string>
     <string name="pebble_how">摸摸小日時，偶爾（大約一個月一次）會滾一顆到你腳邊。</string>

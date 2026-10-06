@@ -192,6 +192,8 @@
 "recall.sample" = "小さなことにも笑える一年になりますように。";
 "recall.addSample" = "テスト：1年前の今日のひとことを入れる";
 "lines.keep" = "記録を残す";
+"lines.keepOffConfirm" = "記録を残すのをやめますか？\nこれまでのひとことと写真が消え、日付だけが残ります。";
+"lines.keepOffAction" = "やめて消す";
 "lines.export" = "ひとことの記録を書き出す";
 "lines.exportEmpty" = "書き出せるひとことは、まだありません。";
 "lines.exportTitle" = "Carpe Diem · 今日のひとこと";
@@ -1008,6 +1010,8 @@
 "slip.from" = "%1$@がくわえてきました";
 "slip.record" = "その日の記録を見る";
 "slip.a11y" = "%1$@がメモをくわえています。タップでひらきます";
+"a11y.sing" = "ハルと歌う";
+"a11y.playStars" = "石の星座を奏でる";
 "pebble.name" = "ハルがくれた小石";
 "pebble.desc" = "ハルが足もとにそっと転がしてくれた小さな石です。";
 "pebble.how" = "なでていると、ごくたまに（ひと月に一度くらい）足もとに転がしてくれます。";

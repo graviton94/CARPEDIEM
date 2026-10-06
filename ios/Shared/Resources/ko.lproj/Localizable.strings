@@ -192,6 +192,8 @@
 "recall.sample" = "작은 일에도 웃을 수 있는 한 해가 되기를.";
 "recall.addSample" = "시험: 1년 전 오늘 한 줄 넣기";
 "lines.keep" = "기록 남기기";
+"lines.keepOffConfirm" = "기록 남기기를 끌까요?\n지금까지의 한 줄과 사진이 지워지고, 날짜만 남아요.";
+"lines.keepOffAction" = "끄고 지우기";
 "lines.export" = "한 줄 기록 내보내기";
 "lines.exportEmpty" = "내보낼 한 줄이 아직 없어요.";
 "lines.exportTitle" = "Carpe Diem · 오늘의 한 줄";
@@ -1009,6 +1011,8 @@
 "slip.from" = "%1$@이 물고 왔어요";
 "slip.record" = "그날 기록 보기";
 "slip.a11y" = "%1$@이 쪽지를 물고 왔어요. 누르면 펼쳐요";
+"a11y.sing" = "하루와 노래하기";
+"a11y.playStars" = "돌 별자리 연주하기";
 "pebble.name" = "하루가 준 조약돌";
 "pebble.desc" = "하루가 발치에 살며시 굴려 준 작은 조약돌이에요.";
 "pebble.how" = "쓰다듬다 보면 아주 가끔, 한 달에 한 번쯤 하루가 발치에 굴려 줘요.";

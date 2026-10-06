@@ -116,9 +116,9 @@ object Daily {
         }
         // 몇 해 전 오늘 보낸 한 줄이 있으면 그것을 알린다 (잠금 화면에는 글을 보이지 않음)
         var body = text
-        val yearAgo = Lines.yearsAgo(store.lines, LocalDate.now()).firstOrNull()
-        if (yearAgo != null) { title = context.getString(R.string.recall_notify, "${yearAgo.first}"); body = context.getString(R.string.recall_notifyText); openAt = "write" }
-        else if (store.keepLines && store.randomRecall() != null) { title = context.getString(R.string.recall_randomNotify); body = context.getString(R.string.recall_notifyText); openAt = "write" }
+        val yearAgo = store.yearsAgoSlip(LocalDate.now())
+        if (yearAgo != null) { title = context.getString(R.string.recall_notify, "${yearAgo.first}"); body = context.getString(R.string.recall_notifyText); openAt = "garden" }
+        else if (store.keepLines && store.randomRecall() != null) { title = context.getString(R.string.recall_randomNotify); body = context.getString(R.string.recall_notifyText); openAt = "garden" }
         if (store.design == Design.GARDEN) {
             val today = LocalDate.now()
             // 지난 달 · 지난 해의 정원이 핀 날 (달의 첫날 · 1월 1일, 그때 한 줄이 있었으면)

@@ -17,6 +17,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.semantics.customActions
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -221,8 +223,14 @@ internal fun MonthGarden(
         if (sound) io.github.graviton94.carpediem.sound.StoneSong.play(order.mapIndexed { k, i -> io.github.graviton94.carpediem.sound.StoneSong.feelingPitch(dots[i].line?.feeling) to k * PLAY_STEP_MS })
         scope.launch { try { order.forEach { i -> playing.intValue = i; delay(PLAY_STEP_MS) } } finally { playing.intValue = -1 } }
     }
+    val playNow by androidx.compose.runtime.rememberUpdatedState({ play() })
+    val todayNow by androidx.compose.runtime.rememberUpdatedState(today)
+    val playLabel = androidx.compose.ui.res.stringResource(io.github.graviton94.carpediem.R.string.a11y_playStars)
+    // 길게 눌러 연주하기를 TalkBack 동작으로도
+    val playA11y = if (playable) Modifier.semantics { customActions = listOf(androidx.compose.ui.semantics.CustomAccessibilityAction(playLabel) { playNow(); true }) } else Modifier
     val tap = if (onPick == null && !playable) Modifier else Modifier.pointerInput(dots, playable) {
-        detectTapGestures(onLongPress = if (playable) ({ play() }) else null) { pos ->
+        detectTapGestures(onLongPress = if (playable) ({ playNow() }) else null) { pos ->
+            val today = todayNow
             if (onPick == null) return@detectTapGestures
             val w = size.width.toFloat(); val h = size.height.toFloat()
             dots.filter { !it.date.isAfter(today) }.minByOrNull { hypot(w * (0.08f + 0.84f * it.x) - pos.x, h * (0.08f + 0.84f * it.y) - pos.y) }
@@ -231,7 +239,7 @@ internal fun MonthGarden(
     }
     val sky = remember(days) { field(days.firstOrNull()?.first?.toEpochDay()?.toInt() ?: 0, 1f) }
     // 반짝임은 자기 층에서만 다시 그림 (둘레의 크레용 틀 · 페이지가 매 프레임 다시 그려지지 않게)
-    Canvas(modifier.aspectRatio(G.Year.monthAspect).then(tap).graphicsLayer()) {
+    Canvas(modifier.aspectRatio(G.Year.monthAspect).then(tap).then(playA11y).graphicsLayer()) {
         if (night) { nightSky(); sky.forEach { s -> drawCircle(Color.White, s[2] * size.width, Offset(s[0] * size.width, s[1] * size.height), s[3] * 0.7f) } } else meadow()
         val pl = playing.intValue
         monthIn(Rect(Offset.Zero, size), dots, night, today, sizes, if (pl >= 0) pl else pick.value, if (pl >= 0) 1f else e.value, picked)

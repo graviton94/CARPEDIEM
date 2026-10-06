@@ -276,6 +276,9 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
     // 절기가 든 날 (S1): 처음 열 때 한 줄, 정원엔 그날 하루 작은 변화
     val termToday = remember(day0, state.profile?.countryCode) { state.termToday(day0) }
     if (!bare && onGarden) LaunchedEffect(day0) { state.noticeTerm(day0) }
+    // 켜 둔 채 자정을 넘기면: 그날의 손님 · 돌아온 한 줄을 새 날 것으로 (어제 손님이 남아 또 세지 않게)
+    var seenDay by remember { mutableStateOf(day0) }
+    if (!bare) LaunchedEffect(day0) { if (day0 != seenDay) { seenDay = day0; state.opened() } }
     // 오늘 마친 숨의 흔적 (E3)
     val trace = remember(day0, state.breaths) { state.breathTrace(day0) }
     // 돌에게 건넨 이번 계절의 조각 (R1): 사람 id → 조각
@@ -509,7 +512,9 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 fun slotSeed(i: Int): Long = slots[i].id?.let { id -> state.people.firstOrNull { it.id == id }?.seed } ?: state.store.haruSeed
                 val song = remember { androidx.compose.animation.core.Animatable(-1f) }   // 노래가 시작된 뒤 지난 ms (-1 = 쉼)
                 fun sing() {
-                    val total = startAt(singOrder.last()) + S.ringMs
+                    if (song.value >= 0f) return   // 부르는 중엔 겹쳐 부르지 않음
+                    // 생일 돌 혼자일 때도 축하 가락이 끝날 때까지 빛이 머물게
+                    val total = maxOf(startAt(singOrder.last()), if (bdayIdx != null) BDAY_MOTIF.last().first else 0f) + S.ringMs
                     val song0 = io.github.graviton94.carpediem.sound.StoneSong
                     if (state.sound != Sound.NONE) song0.play(singOrder.flatMap { i ->
                         val p0 = song0.pitch(slotSeed(i), i == 0)
@@ -579,14 +584,17 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                     val pebbleLabel = stringResource(R.string.pebble_a11y)
                     val tookMsg = stringResource(R.string.pebble_taken)
                     val px0 = xs[0] + (widths[0].toFloat() / 2).dp * 0.55f
-                    androidx.compose.foundation.Canvas(Modifier.offset(px0 - pw / 2, gy - pw * 0.25f).size(pw, pw * 0.66f)
-                        .semantics { contentDescription = pebbleLabel }
-                        .clickable { state.takePebble(day0); state.say(tookMsg) }) {
+                    androidx.compose.foundation.Canvas(Modifier.offset(px0 - pw / 2, gy - pw * 0.25f).size(pw, pw * 0.66f)) {
                         drawOval(Color(0xFFA29A8B), size = size)
                         drawOval(G.Colors.ink, size = size, style = androidx.compose.ui.graphics.drawscope.Stroke(size.width * 0.09f))
                         drawArc(Color.White.copy(alpha = 0.5f), 200f, 70f, false, topLeft = androidx.compose.ui.geometry.Offset(size.width * 0.2f, size.height * 0.18f),
                             size = androidx.compose.ui.geometry.Size(size.width * 0.5f, size.height * 0.5f), style = androidx.compose.ui.graphics.drawscope.Stroke(size.width * 0.06f))
                     }
+                    // 누르는 자리는 손가락 크기만큼 (조약돌은 작아도)
+                    val tt = Tokens.Layout.tapTarget
+                    Box(Modifier.offset(px0 - tt / 2, gy + pw * 0.08f - tt / 2).size(tt)
+                        .semantics { contentDescription = pebbleLabel }
+                        .clickable(interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }, indication = null) { state.takePebble(day0); state.say(tookMsg) })
                 }
                 // 달팽이 손님: 오랜만에 돌아온 날, 한 시간쯤 돌들 앞 길을 천천히 건넘
                 if (!bare) SnailGuest(state.store.snailAt, now, gy, u * G.Decor.treeX)
@@ -729,7 +737,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
     }
 
     slipOpen?.let { g -> state.carriedLine(now.toLocalDate())?.let { line ->
-        SlipSheet(state, line, g, now.toLocalDate(), onRecord = { state.openSlip(now.toLocalDate()); slipOpen = null; turnTo(1) }) { state.openSlip(now.toLocalDate()); slipOpen = null }
+        SlipSheet(state, line, g, now.toLocalDate(), onRecord = { state.openSlip(now.toLocalDate()); slipOpen = null; toRecord(RecordView(line.date.year, line.date.monthValue, line.date)) }) { state.openSlip(now.toLocalDate()); slipOpen = null }
     } ?: run { slipOpen = null } }
     decorOpen?.let { part ->
         ModalBottomSheet(onDismissRequest = { decorOpen = null }, containerColor = Theme.gc.paper, sheetState = androidx.compose.material3.rememberModalBottomSheetState(skipPartiallyExpanded = true)) { DecorSheet(part, decor, state, now) }

@@ -192,6 +192,8 @@
 "recall.sample" = "願這一年，小事也能讓人微笑。";
 "recall.addSample" = "測試：加入一年前今天的一句話";
 "lines.keep" = "保留紀錄";
+"lines.keepOffConfirm" = "要停止保留紀錄嗎？\n至今的話與照片會被刪除，只留下日期。";
+"lines.keepOffAction" = "停止並刪除";
 "lines.export" = "匯出一句話紀錄";
 "lines.exportEmpty" = "還沒有可以匯出的一句話。";
 "lines.exportTitle" = "小日的庭院 · 今天的一句話";
@@ -1008,6 +1010,8 @@
 "slip.from" = "%1$@叼來的";
 "slip.record" = "看那天的紀錄";
 "slip.a11y" = "%1$@叼來一張紙條，點一下打開";
+"a11y.sing" = "和哈魯一起唱歌";
+"a11y.playStars" = "演奏石頭星座";
 "pebble.name" = "小日給的小石頭";
 "pebble.desc" = "小日悄悄滾到你腳邊的小石頭。";
 "pebble.how" = "摸摸小日時，偶爾（大約一個月一次）會滾一顆到你腳邊。";

@@ -192,6 +192,8 @@
 "recall.sample" = "May this be a year of smiling at small things.";
 "recall.addSample" = "Test: add a line from a year ago";
 "lines.keep" = "Keep my lines";
+"lines.keepOffConfirm" = "Stop keeping lines?\nYour lines and photos so far will be erased. Only the dates stay.";
+"lines.keepOffAction" = "Turn off and erase";
 "lines.export" = "Export my lines";
 "lines.exportEmpty" = "No lines to export yet.";
 "lines.exportTitle" = "Carpe Diem · Today's lines";
@@ -1004,11 +1006,13 @@
 "settings.notifyFooter" = "Only what you turn on. Morning words, an evening nudge (quiet on days you wrote), and family days the evening before and that morning.";
 "settings.records" = "Records & backup";
 "settings.recordsFooter" = "Turning off records keeps only the dates and erases words, feelings and photos. Save to a file to move to a new phone.";
-"slip.daysAgo" = "%1$@ days ago today";
+"slip.daysAgo" = "From %1$@ days ago";
 "slip.yearsAgo" = "This day, %1$@ years ago";
 "slip.from" = "Brought by the %1$@";
 "slip.record" = "See that day";
 "slip.a11y" = "The %1$@ brought a note. Tap to open";
+"a11y.sing" = "Sing with Haru";
+"a11y.playStars" = "Play the stones";
 "pebble.name" = "A pebble from Haru";
 "pebble.desc" = "A small pebble Haru quietly rolled to your feet.";
 "pebble.how" = "Now and then, about once a month, Haru rolls one to you after a pat.";

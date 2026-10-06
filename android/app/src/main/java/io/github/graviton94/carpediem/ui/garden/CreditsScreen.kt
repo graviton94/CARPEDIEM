@@ -95,7 +95,13 @@ fun CreditsScreen(state: AppState, profile: LifeProfile, year: Int, onDone: () -
         while (elapsed < total) { val t = withFrameMillis { it }; if (t - last < 16) continue; elapsed = (elapsed + t - last).coerceAtMost(total); last = t }
     }
     val scene by remember(plan) { derivedStateOf { Credits.at(plan, elapsed) ?: plan.last() } }
-    val season = scene.season ?: Season.WINTER   // 인트로는 1월 (겨울) 에서 시작해 12월 겨울로 끝남
+    val season = hemi(scene.season ?: Season.WINTER, state.profile?.countryCode)   // 인트로는 1월 (겨울) 에서 시작해 12월 겨울로 끝남 (남반구는 여름)
+    // 앱을 떠나면 잠시 멈춤 (소리도 함께 멈추고, 돌아오면 눌러서 이어 봄)
+    val creditsOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
+    DisposableEffect(creditsOwner) {
+        val obs = androidx.lifecycle.LifecycleEventObserver { _, e -> if (e == androidx.lifecycle.Lifecycle.Event.ON_STOP && !done) paused = true }
+        creditsOwner.lifecycle.addObserver(obs); onDispose { creditsOwner.lifecycle.removeObserver(obs) }
+    }
     if (state.sound != Sound.NONE) {
         val player = remember(season) { Soundscape.Player(Sound.SEASON, season) }
         DisposableEffect(player, paused) { if (!paused) player.start(); onDispose { player.stop() } }
@@ -175,10 +181,14 @@ private fun monthsLabel(months: IntRange): String {
  * 한 장 (계절): 처음 2초는 가운데에 계절 이름 · 달, 그다음 이름은 위로 작게 물러나고 그 장의 일이 한 줄씩 가운데에 (그림 · 상자 없이 글자만).
  * 한 줄을 남긴 날이면 그날의 사진이 아래에 작게.
  */
+/** 장은 달 순서 (1–2월 · 3–5월 …) 그대로, 남반구 나라면 그 달의 실제 계절로 (1월 = 여름). */
+private fun hemi(s: Season, country: String?): Season =
+    if (country?.uppercase() in io.github.graviton94.carpediem.core.GardenDecor.SOUTH) Season.entries[(s.ordinal + 2) % 4] else s
+
 @Composable
 private fun SeasonScene(state: AppState, year: Int, sc: CreditScene, elapsed: Long) {
     val ctx = LocalContext.current
-    val season = sc.season ?: return
+    val season = hemi(sc.season ?: return, state.profile?.countryCode)
     val now = (state.fixedNow ?: LocalDateTime.now()).toLocalDate()
     val local = elapsed - sc.startMs
     val settle = ((local - Credits.HEADER_MS + 500f) / 700f).coerceIn(0f, 1f)   // 이름이 위로 물러나는 정도

@@ -391,6 +391,8 @@ fun HaruFigure(art: HaruArt, scale: Dp, modifier: Modifier = Modifier, blinkKick
     val tilt = rememberTilt(animate && tiltOn)
     val open by androidx.compose.runtime.rememberUpdatedState(onOpen)
     val hold by androidx.compose.runtime.rememberUpdatedState(onLongPress)
+    // 쓰다듬기는 지금의 기분 · 졸림 · 날짜로 (켜 둔 사이 한 줄이 오거나 밤이 되거나 자정을 넘겨도)
+    val petNow by androidx.compose.runtime.rememberUpdatedState({ pet() })
     // 그림 칸은 넉넉하지만 누르는 자리는 돌 둘레 + touchPad 까지만 (바로 아래 이끼 · 옆 돌을 누를 수 있게)
     androidx.compose.foundation.layout.Box(modifier.size(scale * art.meta.box)) {
     Canvas(
@@ -420,6 +422,8 @@ fun HaruFigure(art: HaruArt, scale: Dp, modifier: Modifier = Modifier, blinkKick
                 ).joinToString(", ")
                 customActions = listOfNotNull(
                     androidx.compose.ui.semantics.CustomAccessibilityAction(ctx.getString(io.github.graviton94.carpediem.R.string.garden_pet)) { pet(); true },
+                    // 길게 누르기 (노래) 도 TalkBack 동작으로
+                    if (onLongPress != null) androidx.compose.ui.semantics.CustomAccessibilityAction(ctx.getString(io.github.graviton94.carpediem.R.string.a11y_sing)) { onLongPress(); true } else null,
                 )
                 if (onOpen != null) onClick { onOpen(); true }
             }
@@ -434,7 +438,7 @@ fun HaruFigure(art: HaruArt, scale: Dp, modifier: Modifier = Modifier, blinkKick
                         if (!released) { tick(); h(); waitForUpOrCancellation(); return@awaitEachGesture }
                         up ?: return@awaitEachGesture
                     } else waitForUpOrCancellation() ?: return@awaitEachGesture
-                    pet()   // 첫 누름에 바로 반응
+                    petNow()   // 첫 누름에 바로 반응
                     val o = open ?: return@awaitEachGesture
                     val second = withTimeoutOrNull(tc.doubleMs.toLong()) { awaitFirstDown(requireUnconsumed = false) }
                     if (second != null) { tick(); o() }

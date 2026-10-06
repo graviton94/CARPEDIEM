@@ -523,9 +523,12 @@ internal fun GuestFigure(guest: String, x: Dp, gy: Dp, screenW: Dp, letter: Bool
         }
     }
     val top = gy - w * (37f / 40f)
-    Image(GardenArt.image(ctx, "guest_$guest.webp"), label, Modifier.offset(x - w / 2, top).size(w)
+    // 쪽지를 물고 왔으면 TalkBack 에도 ‘누르면 펼쳐요’ 로 (버튼으로 읽힘)
+    val a11y = if (letter) stringResource(io.github.graviton94.carpediem.R.string.slip_a11y, label) else label
+    Image(GardenArt.image(ctx, "guest_$guest.webp"), a11y, Modifier.offset(x - w / 2, top).size(w)
         .graphicsLayer { translationY = -hop.value * w.toPx() * 0.18f }
-        .clickable(interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }, indication = null) { if (letter) onLetter() else kick++ })
+        .clickable(interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }, indication = null,
+            role = if (letter) androidx.compose.ui.semantics.Role.Button else null) { if (letter) onLetter() else kick++ })
     // 지난 한 줄을 물고 온 날: 부리 앞에 작게 접힌 한지 쪽지 (누르면 펼침)
     if (letter) {
         val lw = w * 0.3f
@@ -552,7 +555,8 @@ internal fun SlipSheet(state: AppState, line: io.github.graviton94.carpediem.cor
     val ctx = LocalContext.current
     val p = Theme.palette
     val days = java.time.temporal.ChronoUnit.DAYS.between(line.date, today)
-    val years = java.time.Period.between(line.date, today).let { if (it.months == 0 && it.days == 0) it.years else 0 }
+    // 몇 해 전 오늘 (2월 29일의 한 줄은 평년엔 2월 28일에 ‘1년 전’ 으로)
+    val years = io.github.graviton94.carpediem.core.Lines.yearsAgo(listOf(line), today).firstOrNull()?.first ?: 0
     val ago = if (years > 0) stringResource(io.github.graviton94.carpediem.R.string.slip_yearsAgo, "$years") else stringResource(io.github.graviton94.carpediem.R.string.slip_daysAgo, "$days")
     val name = remember(guest) { ctx.resources.getIdentifier("chance_guest_$guest", "string", ctx.packageName).takeIf { it != 0 }?.let { ctx.getString(it) }.orEmpty() }
     io.github.graviton94.carpediem.ui.GardenAlert(

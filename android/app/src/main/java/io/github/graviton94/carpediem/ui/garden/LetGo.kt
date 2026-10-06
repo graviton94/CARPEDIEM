@@ -505,7 +505,7 @@ private fun CareLine(state: AppState, c: Care, onGo: () -> Unit) {
  * 지난 날의 한 줄 고치기 (마음의 기록에서 그날을 고른 뒤): 글 · 마음 · 사진 (붙이기 · 바꾸기 · 빼기).
  * 저장할 때만 반영하고, 그만두면 그대로.
  */
-@OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
+@OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 internal fun PastLineSheet(state: AppState, line: DayLine, today: LocalDate, onClose: () -> Unit) {
     val p = Theme.palette

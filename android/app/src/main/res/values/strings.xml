@@ -194,6 +194,8 @@
     <string name="recall_sample">May this be a year of smiling at small things.</string>
     <string name="recall_addSample">Test: add a line from a year ago</string>
     <string name="lines_keep">Keep my lines</string>
+    <string name="lines_keepOffConfirm">Stop keeping lines?\nYour lines and photos so far will be erased. Only the dates stay.</string>
+    <string name="lines_keepOffAction">Turn off and erase</string>
     <string name="lines_export">Export my lines</string>
     <string name="lines_exportEmpty">No lines to export yet.</string>
     <string name="lines_exportTitle">Carpe Diem · Today\'s lines</string>
@@ -1006,11 +1008,13 @@
     <string name="settings_notifyFooter">Only what you turn on. Morning words, an evening nudge (quiet on days you wrote), and family days the evening before and that morning.</string>
     <string name="settings_records">Records &amp; backup</string>
     <string name="settings_recordsFooter">Turning off records keeps only the dates and erases words, feelings and photos. Save to a file to move to a new phone.</string>
-    <string name="slip_daysAgo">%1$s days ago today</string>
+    <string name="slip_daysAgo">From %1$s days ago</string>
     <string name="slip_yearsAgo">This day, %1$s years ago</string>
     <string name="slip_from">Brought by the %1$s</string>
     <string name="slip_record">See that day</string>
     <string name="slip_a11y">The %1$s brought a note. Tap to open</string>
+    <string name="a11y_sing">Sing with Haru</string>
+    <string name="a11y_playStars">Play the stones</string>
     <string name="pebble_name">A pebble from Haru</string>
     <string name="pebble_desc">A small pebble Haru quietly rolled to your feet.</string>
     <string name="pebble_how">Now and then, about once a month, Haru rolls one to you after a pat.</string>

@@ -194,6 +194,8 @@
     <string name="recall_sample">작은 일에도 웃을 수 있는 한 해가 되기를.</string>
     <string name="recall_addSample">시험: 1년 전 오늘 한 줄 넣기</string>
     <string name="lines_keep">기록 남기기</string>
+    <string name="lines_keepOffConfirm">기록 남기기를 끌까요?\n지금까지의 한 줄과 사진이 지워지고, 날짜만 남아요.</string>
+    <string name="lines_keepOffAction">끄고 지우기</string>
     <string name="lines_export">한 줄 기록 내보내기</string>
     <string name="lines_exportEmpty">내보낼 한 줄이 아직 없어요.</string>
     <string name="lines_exportTitle">Carpe Diem · 오늘의 한 줄</string>
@@ -1011,6 +1013,8 @@
     <string name="slip_from">%1$s이 물고 왔어요</string>
     <string name="slip_record">그날 기록 보기</string>
     <string name="slip_a11y">%1$s이 쪽지를 물고 왔어요. 누르면 펼쳐요</string>
+    <string name="a11y_sing">하루와 노래하기</string>
+    <string name="a11y_playStars">돌 별자리 연주하기</string>
     <string name="pebble_name">하루가 준 조약돌</string>
     <string name="pebble_desc">하루가 발치에 살며시 굴려 준 작은 조약돌이에요.</string>
     <string name="pebble_how">쓰다듬다 보면 아주 가끔, 한 달에 한 번쯤 하루가 발치에 굴려 줘요.</string>
