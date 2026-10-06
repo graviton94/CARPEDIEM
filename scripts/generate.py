@@ -5,6 +5,8 @@
   design/strings.json  → ios/Shared/Design/L10n.swift, ios/Shared/Resources/{ko,en}.lproj/Localizable.strings
                          android/app/src/main/res/values{,-ko}/strings.xml
   data/*.csv           → ios/Shared/Resources/, android/app/src/main/assets/ (앱에 그대로 포함)
+  design/changelog.json → 앱의 ‘새로워진 점’ (strings 의 news.v* · Changelog.kt) 과
+                         Play Console 출시 노트 (docs/release-notes/<버전>.txt, 4개 언어 한 덩어리) — 한 번 쓰면 둘 다
 
     python3 scripts/generate.py          # 파일 생성
     python3 scripts/generate.py --check  # 생성 결과가 저장소와 같은지 확인 (CI)
@@ -322,11 +324,68 @@ def android_outputs(tokens: dict, strings: dict) -> dict:
     return files
 
 
+# ───── 새로워진 점 · 출시 노트: design/changelog.json 하나에서 ─────
+PLAY_TAGS = {"ko": "ko-KR", "en": "en-US", "ja": "ja-JP", "zh-TW": "zh-TW"}
+PLAY_LIMIT = 500   # Play Console 출시 노트: 언어마다 500자까지
+
+
+def news_key(ver: str, i: int) -> str:
+    return f"news.v{ver.replace('.', '_')}.{i + 1}"
+
+
+def changelog_strings(cl: dict, strings: dict) -> None:
+    """버전마다의 줄을 strings 에 끼워 넣음 (앱 · iOS 가 같은 번역 길을 탐)."""
+    for ver, langs in cl.items():
+        n = len(langs["ko"])
+        for lang in strings:
+            items = langs.get(lang)
+            if not items or len(items) != n:
+                raise SystemExit(f"changelog.json: {ver} 의 {lang} 줄 수가 한국어와 다릅니다")
+            for i, t in enumerate(items):
+                strings[lang][news_key(ver, i)] = t
+
+
+def changelog_kotlin(cl: dict) -> str:
+    rows = []
+    for ver, langs in cl.items():
+        ids = ", ".join(f"R.string.{news_key(ver, i).replace('.', '_')}" for i in range(len(langs["ko"])))
+        rows.append(f'        "{ver}" to listOf({ids}),')
+    return HEADER + """package io.github.graviton94.carpediem.ui
+
+import io.github.graviton94.carpediem.R
+
+/** 버전마다 새로워진 점 (최신이 위). 원본: design/changelog.json */
+object Changelog {
+    val entries: List<Pair<String, List<Int>>> = listOf(
+""" + "\n".join(rows) + """
+    )
+    fun of(version: String) = entries.firstOrNull { it.first == version }
+}
+"""
+
+
+def release_notes(cl: dict) -> dict:
+    files = {}
+    for ver, langs in cl.items():
+        parts = []
+        for lang, tag in PLAY_TAGS.items():
+            body = "\n".join("· " + t for t in langs[lang])
+            if len(body) > PLAY_LIMIT:
+                raise SystemExit(f"changelog.json: {ver} {lang} 출시 노트가 {len(body)}자 (Play 는 {PLAY_LIMIT}자까지)")
+            parts.append(f"<{tag}>\n{body}\n</{tag}>")
+        files[f"docs/release-notes/{ver}.txt"] = "\n".join(parts) + "\n"
+    return files
+
+
 def main() -> None:
     check = "--check" in sys.argv
     tokens = json.loads((ROOT / "design/tokens.json").read_text(encoding="utf-8"))
     strings = json.loads((ROOT / "design/strings.json").read_text(encoding="utf-8"))
+    changelog = json.loads((ROOT / "design/changelog.json").read_text(encoding="utf-8"))
+    changelog_strings(changelog, strings)
     files = {"ios/Shared/Design/Tokens.swift": tokens_swift(tokens)}
+    files["android/app/src/main/java/io/github/graviton94/carpediem/ui/Changelog.kt"] = changelog_kotlin(changelog)
+    files.update(release_notes(changelog))
     files.update(strings_outputs(strings))
     for name in ("quotes.csv", "life-expectancy.csv", "questions.csv", "constellations.csv", "places.csv"):
         files[f"ios/Shared/Resources/{name}"] = (ROOT / "data" / name).read_text(encoding="utf-8")

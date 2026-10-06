@@ -2,13 +2,6 @@
 "news.title" = "What’s new";
 "news.version" = "Version %1$@";
 "news.ok" = "OK";
-"news.113.update" = "When a new version is out, the garden lets you know quietly. Tap to get it.";
-"news.113.notes" = "See what’s new any time in Settings › Help & support.";
-"news.112.edit" = "Edit lines from past days (text, feeling, photo).";
-"news.112.welcome" = "Choose “Start new” or “Restore records” on the first screen.";
-"news.112.keep" = "Turning off “Keep my lines” now asks first.";
-"news.112.slip" = "Notes from years ago come only now and then.";
-"news.112.fix" = "Small bug fixes and screen reader improvements.";
 "update.available" = "A new version is here · Get it";
 "update.downloading" = "Getting the new version…";
 "update.ready" = "New version ready · Restart";
@@ -1041,3 +1034,10 @@
 "welcome.start" = "Start fresh";
 "welcome.restore" = "Bring back my records";
 "welcome.restoreSub" = "Continue from a file you saved on your old phone.";
+"news.v1_1_3.1" = "When a new version is out, the garden lets you know quietly. Tap to get it.";
+"news.v1_1_3.2" = "See what’s new any time in Settings › Help & support.";
+"news.v1_1_2.1" = "Edit lines from past days (text, feeling, photo).";
+"news.v1_1_2.2" = "Choose “Start new” or “Restore records” on the first screen.";
+"news.v1_1_2.3" = "Turning off “Keep my lines” now asks first.";
+"news.v1_1_2.4" = "Notes from years ago come only now and then.";
+"news.v1_1_2.5" = "Small bug fixes and screen reader improvements.";

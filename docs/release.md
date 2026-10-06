@@ -48,3 +48,9 @@ Play 앱 서명(Play App Signing)을 켜 두면 Google 이 배포용 키를 관�
 3. 인앱 상품 3개 만들기 (4번 표)
 4. GitHub Secrets 의 `ANDROID_UPLOAD_PASSPHRASE` 확인 → Actions › **Android release (Play)** 실행 → `.aab` 를 내부 테스트 트랙에 올림 → 실기기 확인 → 비공개 테스트 (테스터 12명 · 14일)
 5. Play 앱 서명 켜기 (업로드 키를 잃어도 재설정할 수 있게)
+
+## 7. 새 버전 낼 때 (새로워진 점 · 출시 노트는 한 번만 씀)
+
+1. `design/changelog.json` 맨 위에 새 버전과 4개 언어 줄을 더함 (언어마다 줄 수 같게, Play 는 언어마다 500자까지)
+2. `python3 scripts/generate.py` → 앱의 ‘새로워진 점’ (업데이트 뒤 한 번 · 설정 › 도움 · 응원) 과 `docs/release-notes/<버전>.txt` 가 같이 만들어짐
+3. Actions › **Android release (Play)** 를 그 버전으로 실행 → 실행 요약에 4개 언어 출시 노트가 나옴 → Play Console 출시 노트 칸에 그대로 붙여넣기

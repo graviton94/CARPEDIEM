@@ -4,13 +4,6 @@
     <string name="news_title">新しくなったこと</string>
     <string name="news_version">バージョン %1$s</string>
     <string name="news_ok">OK</string>
-    <string name="news_113_update">新しいバージョンが出ると、庭でそっとお知らせします。タップで受け取れます。</string>
-    <string name="news_113_notes">設定 › ヘルプと応援 から、いつでも新しくなったことを見られます。</string>
-    <string name="news_112_edit">過去の日のひとことも直せます（文・気持ち・写真）。</string>
-    <string name="news_112_welcome">最初の画面で「新しく始める／記録を読み込む」を選べます。</string>
-    <string name="news_112_keep">「記録を残す」をオフにする前に確認します。</string>
-    <string name="news_112_slip">何年前の今日のメモは、ときどきだけ届きます。</string>
-    <string name="news_112_fix">細かな不具合を直し、読み上げ対応を整えました。</string>
     <string name="update_available">新しいバージョンが届きました・受け取る</string>
     <string name="update_downloading">新しいバージョンを受け取っています…</string>
     <string name="update_ready">受け取りました・開き直す</string>
@@ -1043,4 +1036,11 @@
     <string name="welcome_start">はじめから始める</string>
     <string name="welcome_restore">記録を読み込む</string>
     <string name="welcome_restoreSub">前のスマホで保存したファイルから続けます。</string>
+    <string name="news_v1_1_3_1">新しいバージョンが出ると、庭でそっとお知らせします。タップで受け取れます。</string>
+    <string name="news_v1_1_3_2">設定 › ヘルプと応援 から、いつでも新しくなったことを見られます。</string>
+    <string name="news_v1_1_2_1">過去の日のひとことも直せます（文・気持ち・写真）。</string>
+    <string name="news_v1_1_2_2">最初の画面で「新しく始める／記録を読み込む」を選べます。</string>
+    <string name="news_v1_1_2_3">「記録を残す」をオフにする前に確認します。</string>
+    <string name="news_v1_1_2_4">何年前の今日のメモは、ときどきだけ届きます。</string>
+    <string name="news_v1_1_2_5">細かな不具合を直し、読み上げ対応を整えました。</string>
 </resources>

@@ -1,0 +1,28 @@
+<ko-KR>
+· 지난 날의 한 줄도 고칠 수 있어요 (글 · 마음 · 사진).
+· 처음 화면에서 새로 시작하기 / 기록 불러오기를 고를 수 있어요.
+· 기록 남기기를 끌 때 한 번 더 확인해요.
+· 몇 해 전 오늘의 쪽지는 가끔만 와요.
+· 자잘한 오류를 고치고 화면 읽기 지원을 다듬었어요.
+</ko-KR>
+<en-US>
+· Edit lines from past days (text, feeling, photo).
+· Choose “Start new” or “Restore records” on the first screen.
+· Turning off “Keep my lines” now asks first.
+· Notes from years ago come only now and then.
+· Small bug fixes and screen reader improvements.
+</en-US>
+<ja-JP>
+· 過去の日のひとことも直せます（文・気持ち・写真）。
+· 最初の画面で「新しく始める／記録を読み込む」を選べます。
+· 「記録を残す」をオフにする前に確認します。
+· 何年前の今日のメモは、ときどきだけ届きます。
+· 細かな不具合を直し、読み上げ対応を整えました。
+</ja-JP>
+<zh-TW>
+· 過去的話也能修改了（文字・心情・照片）。
+· 第一個畫面可選「重新開始／匯入紀錄」。
+· 關閉「保留紀錄」前會再確認一次。
+· 幾年前今天的紙條只會偶爾出現。
+· 修正小錯誤，改善螢幕閱讀支援。
+</zh-TW>

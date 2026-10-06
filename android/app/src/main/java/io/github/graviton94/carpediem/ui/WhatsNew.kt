@@ -18,15 +18,6 @@ import io.github.graviton94.carpediem.design.Theme
 import io.github.graviton94.carpediem.design.Tokens
 import io.github.graviton94.carpediem.ui.garden.GardenButton
 
-/** 버전마다 새로워진 점 (최신이 위). 새 버전을 낼 때 여기 한 줄과 strings 의 news.* 를 더함. */
-object Changelog {
-    val entries: List<Pair<String, List<Int>>> = listOf(
-        "1.1.3" to listOf(R.string.news_113_update, R.string.news_113_notes),
-        "1.1.2" to listOf(R.string.news_112_edit, R.string.news_112_welcome, R.string.news_112_keep, R.string.news_112_slip, R.string.news_112_fix),
-    )
-    fun of(version: String) = entries.firstOrNull { it.first == version }
-}
-
 /**
  * 새로워진 점: 업데이트 뒤 처음 열 때 그 버전 하나 (only), 설정에서 열면 지난 버전까지 모두.
  * 보통 앱의 업데이트 소식처럼: 제목 · 버전 · 점 목록 · 확인.

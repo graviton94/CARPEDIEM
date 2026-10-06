@@ -4,13 +4,6 @@
     <string name="news_title">What’s new</string>
     <string name="news_version">Version %1$s</string>
     <string name="news_ok">OK</string>
-    <string name="news_113_update">When a new version is out, the garden lets you know quietly. Tap to get it.</string>
-    <string name="news_113_notes">See what’s new any time in Settings › Help &amp; support.</string>
-    <string name="news_112_edit">Edit lines from past days (text, feeling, photo).</string>
-    <string name="news_112_welcome">Choose “Start new” or “Restore records” on the first screen.</string>
-    <string name="news_112_keep">Turning off “Keep my lines” now asks first.</string>
-    <string name="news_112_slip">Notes from years ago come only now and then.</string>
-    <string name="news_112_fix">Small bug fixes and screen reader improvements.</string>
     <string name="update_available">A new version is here · Get it</string>
     <string name="update_downloading">Getting the new version…</string>
     <string name="update_ready">New version ready · Restart</string>
@@ -1043,4 +1036,11 @@
     <string name="welcome_start">Start fresh</string>
     <string name="welcome_restore">Bring back my records</string>
     <string name="welcome_restoreSub">Continue from a file you saved on your old phone.</string>
+    <string name="news_v1_1_3_1">When a new version is out, the garden lets you know quietly. Tap to get it.</string>
+    <string name="news_v1_1_3_2">See what’s new any time in Settings › Help &amp; support.</string>
+    <string name="news_v1_1_2_1">Edit lines from past days (text, feeling, photo).</string>
+    <string name="news_v1_1_2_2">Choose “Start new” or “Restore records” on the first screen.</string>
+    <string name="news_v1_1_2_3">Turning off “Keep my lines” now asks first.</string>
+    <string name="news_v1_1_2_4">Notes from years ago come only now and then.</string>
+    <string name="news_v1_1_2_5">Small bug fixes and screen reader improvements.</string>
 </resources>

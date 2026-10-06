@@ -1,0 +1,16 @@
+<ko-KR>
+· 새 버전이 나오면 정원에서 조용히 알려 드려요. 눌러서 바로 받을 수 있어요.
+· 설정 › 도움 · 응원에서 새로워진 점을 언제든 다시 볼 수 있어요.
+</ko-KR>
+<en-US>
+· When a new version is out, the garden lets you know quietly. Tap to get it.
+· See what’s new any time in Settings › Help & support.
+</en-US>
+<ja-JP>
+· 新しいバージョンが出ると、庭でそっとお知らせします。タップで受け取れます。
+· 設定 › ヘルプと応援 から、いつでも新しくなったことを見られます。
+</ja-JP>
+<zh-TW>
+· 有新版本時，花園會安靜地告訴你。點一下就能下載。
+· 隨時可在 設定 › 說明與支持 再看一次更新內容。
+</zh-TW>

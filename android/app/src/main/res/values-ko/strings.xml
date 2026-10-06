@@ -4,13 +4,6 @@
     <string name="news_title">새로워진 점</string>
     <string name="news_version">버전 %1$s</string>
     <string name="news_ok">확인</string>
-    <string name="news_113_update">새 버전이 나오면 정원에서 조용히 알려 드려요. 눌러서 바로 받을 수 있어요.</string>
-    <string name="news_113_notes">설정 › 도움 · 응원에서 새로워진 점을 언제든 다시 볼 수 있어요.</string>
-    <string name="news_112_edit">지난 날의 한 줄도 고칠 수 있어요 (글 · 마음 · 사진).</string>
-    <string name="news_112_welcome">처음 화면에서 새로 시작하기 / 기록 불러오기를 고를 수 있어요.</string>
-    <string name="news_112_keep">기록 남기기를 끌 때 한 번 더 확인해요.</string>
-    <string name="news_112_slip">몇 해 전 오늘의 쪽지는 가끔만 와요.</string>
-    <string name="news_112_fix">자잘한 오류를 고치고 화면 읽기 지원을 다듬었어요.</string>
     <string name="update_available">새 버전이 왔어요 · 받기</string>
     <string name="update_downloading">새 버전을 받는 중이에요…</string>
     <string name="update_ready">새 버전을 다 받았어요 · 다시 열기</string>
@@ -1043,4 +1036,11 @@
     <string name="welcome_start">새로 시작하기</string>
     <string name="welcome_restore">기록 불러오기</string>
     <string name="welcome_restoreSub">예전 폰에서 저장한 파일로 이어서 써요.</string>
+    <string name="news_v1_1_3_1">새 버전이 나오면 정원에서 조용히 알려 드려요. 눌러서 바로 받을 수 있어요.</string>
+    <string name="news_v1_1_3_2">설정 › 도움 · 응원에서 새로워진 점을 언제든 다시 볼 수 있어요.</string>
+    <string name="news_v1_1_2_1">지난 날의 한 줄도 고칠 수 있어요 (글 · 마음 · 사진).</string>
+    <string name="news_v1_1_2_2">처음 화면에서 새로 시작하기 / 기록 불러오기를 고를 수 있어요.</string>
+    <string name="news_v1_1_2_3">기록 남기기를 끌 때 한 번 더 확인해요.</string>
+    <string name="news_v1_1_2_4">몇 해 전 오늘의 쪽지는 가끔만 와요.</string>
+    <string name="news_v1_1_2_5">자잘한 오류를 고치고 화면 읽기 지원을 다듬었어요.</string>
 </resources>
