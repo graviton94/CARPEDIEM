@@ -563,7 +563,7 @@ internal fun SlipSheet(state: AppState, line: io.github.graviton94.carpediem.cor
             verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3),
         ) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
-                Image(GardenArt.card(ctx, "slip"), null, Modifier.size(Theme.unit * 52f))
+                PieceImage(GardenArt.card(ctx, "slip"), Theme.unit * 52f)
                 Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
                     TokenText(listOfNotNull(ago, line.feeling?.let { Labels.feeling(ctx, it) }).joinToString(" · "), Tokens.TypeScale.title3.serif())
                     TokenText(stringResource(io.github.graviton94.carpediem.R.string.slip_from, name) + " · " + RecordText.day(ctx, line.date), Tokens.TypeScale.footnote, color = p.secondary)

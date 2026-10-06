@@ -354,7 +354,7 @@ fun SupportScreen(state: AppState, now: LocalDateTime, onBack: () -> Unit) {
 internal fun SupportIcon(kind: Int, size: androidx.compose.ui.unit.Dp) {
     val ctx = LocalContext.current
     val img = remember(kind) { GardenArt.card(ctx, when (kind) { 0 -> "tea"; 1 -> "coffee"; else -> "cake" }) }
-    Image(img, null, Modifier.size(size))
+    PieceImage(img, size)
 }
 
 

@@ -22,6 +22,8 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -47,6 +49,19 @@ internal fun adornArt(ctx: Context, item: String): ImageBitmap? = when {
     item.startsWith("pebble:") -> GardenArt.card(ctx, "pebble")
     else -> null
 }
+
+/**
+ * 한지 조각 한 장을 작은 칸에 꽉 차게 (조각 그림은 상자 아래쪽 가운데에 작게 있어서, 키워서 가운데로 올림).
+ */
+@Composable
+internal fun PieceImage(img: ImageBitmap, size: androidx.compose.ui.unit.Dp, modifier: Modifier = Modifier) {
+    Box(modifier.size(size).clipToBounds()) {
+        Image(img, null, Modifier.size(size).graphicsLayer { scaleX = PIECE_ZOOM; scaleY = PIECE_ZOOM; translationY = -this.size.height * PIECE_LIFT })
+    }
+}
+private const val PIECE_ZOOM = 1.7f
+/** 조각의 가운데 (상자 높이의 0.70) 를 키운 뒤 칸 가운데로: (0.70 − 0.5) × 1.7 */
+private const val PIECE_LIFT = 0.34f
 
 /** 꾸밈 이름 (예: ‘가을 은행잎’ · ‘커피’ · ‘조약돌’). */
 internal fun adornName(ctx: Context, item: String): String = when {
@@ -81,7 +96,7 @@ internal fun AdornRow(state: AppState, stone: String, stoneName: String, onPick:
         verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp3),
     ) {
         Box(Modifier.size(Theme.unit * 48f), contentAlignment = Alignment.Center) {
-            item?.let { adornArt(ctx, it) }?.let { Image(it, null, Modifier.size(Theme.unit * 48f)) }
+            item?.let { adornArt(ctx, it) }?.let { PieceImage(it, Theme.unit * 48f) }
         }
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
             TokenText(stringResource(R.string.adorn_title, stoneName), Tokens.TypeScale.subhead, weight = FontWeight.SemiBold)
@@ -128,7 +143,7 @@ internal fun AdornSheet(state: AppState, stone: String, stoneName: String, onClo
                                 .padding(Tokens.Space.sp2),
                             horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1),
                         ) {
-                            adornArt(ctx, item)?.let { Image(it, null, Modifier.fillMaxWidth(0.8f).aspectRatio(G.Decor.cardBoxW / G.Decor.cardBoxH)) }
+                            adornArt(ctx, item)?.let { PieceImage(it, Theme.unit * 64f) }
                             TokenText(adornName(ctx, item), Tokens.TypeScale.footnote, Modifier.fillMaxWidth(), weight = FontWeight.SemiBold, align = TextAlign.Center, maxLines = 1)
                             TokenText(if (at != null && !here) stringResource(R.string.adorn_atOther, nameOf(at)) else adornFrom(ctx, state, item),
                                 Tokens.TypeScale.caption2, Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.Center, maxLines = 1)

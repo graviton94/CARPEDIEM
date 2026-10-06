@@ -210,6 +210,8 @@ private fun Modifier.pageTurn(pager: androidx.compose.foundation.pager.PagerStat
 /** 하루 닫기 입구가 보이기 시작하는 시각 (잠들기 전에만, 저녁 내내 걸려 있지 않게). */
 private const val CLOSE_DAY_FROM = 21
 /** 생일 축하 가락의 첫머리 (시작 ms, 반음): 솔 솔 라 솔 도 시. */
+/** 돌 곁 꾸밈의 상자 배율 (조각 그림이 상자의 절반쯤이라, 계절 조각 크기 offerSize 의 1.7배 상자 → 그림 폭 ≈ 15). */
+private const val ADORN_SCALE = 1.7f
 private val BDAY_MOTIF = listOf(0f to 0, 280f to 0, 560f to 2, 980f to 0, 1400f to 5, 1820f to 4)
 
 /** 정원 아래 작은 한 줄: 깃털과 함께 ‘돌아온 한 줄’을 알림. */
@@ -558,13 +560,14 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                     // 돌 별 꾸밈 (1.1.3): 그 돌 왼쪽 발치에 곁에 둔 것 하나 (계절 조각 · 응원 · 조약돌). 누르면 ‘엄마 곁의 가을 은행잎’
                     adorned[sl.id ?: io.github.graviton94.carpediem.core.Adornments.ME]?.let { item ->
                         val art = adornArt(ctx, item) ?: return@let
-                        val ow = u * G.Family.offerSize
+                        // 조각 그림은 상자 아래 가운데에 작게 있어서 상자를 키워 그림 크기를 맞춤 (그림 가운데 = 돌 왼쪽 끝, 아래 = 땅)
+                        val ow = u * G.Family.offerSize * ADORN_SCALE
                         val label = stringResource(R.string.adorn_label, sl.name, adornName(ctx, item))
-                        val ox = xs[i] - u * widths[i].toFloat() / u.value / 2 - ow * 0.45f; val oy = gy - ow * 0.9f
+                        val ox = xs[i] - u * widths[i].toFloat() / u.value / 2 - ow * 0.5f + u * 2f; val oy = gy + u * 1f - ow * (G.Decor.cardAtY / G.Decor.cardBoxH)
                         Image(art, label, Modifier.offset(ox, oy).size(ow), colorFilter = nightFilter(SkyTime.isDark(now)))
                         // 누르는 자리는 손가락 크기만큼 (그림은 작아도)
                         val tt = Tokens.Layout.tapTarget
-                        if (!bare) Box(Modifier.offset(ox + ow / 2 - tt / 2, oy + ow / 2 - tt / 2).size(tt).clickable(interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }, indication = null) { state.say(label) })
+                        if (!bare) Box(Modifier.offset(ox + ow / 2 - tt / 2, gy - u * 8f - tt / 2).size(tt).clickable(interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }, indication = null) { state.say(label) })
                     }
                 } }
 
