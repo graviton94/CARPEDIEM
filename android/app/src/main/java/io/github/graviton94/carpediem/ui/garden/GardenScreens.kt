@@ -675,9 +675,17 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                         gardenYear != null -> RecallNote(stringResource(R.string.gardenYear_ask)) { state.gardenYearSeen(gardenYear); gardenYearOpen = gardenYear }
                         // 아침 씨앗 (04): 아침에 한 줄로, 누르면 고르는 장
                         state.seedDue(now) && !touring -> { LaunchedEffect(today) { state.seedShown(today) }; RecallNote(stringResource(R.string.seed_note)) { seedOpen = true } }
+                        // 새 버전을 받는 중 · 다 받음 (Play 앱 안 업데이트): 누르면 새 버전으로 다시 열림
+                        state.update == AppState.UpdateState.READY -> RecallNote(stringResource(R.string.update_ready)) { state.finishUpdate() }
+                        state.update == AppState.UpdateState.DOWNLOADING -> RecallNote(stringResource(R.string.update_downloading)) {}
                         topInvite -> Unit
                         // 돌아온 한 줄은 아래 쪽지 대신 손님이 물고 옴 (위)
                         // 첫 일주일 길잡이: 하루에 하나, 해 본 것은 건너뜀 (누르면 그 일로)
+                        // 새 버전이 올라왔으면 (길잡이도 없는 날, 처음 안 날 · 사흘 뒤 하루씩만): 누르면 뒤에서 받음
+                        state.firstWeekNudge(today)?.takeIf { state.guideDone } == null && state.update == AppState.UpdateState.AVAILABLE && state.updateNoteDue(today) -> {
+                            LaunchedEffect(state.updateVersion, today) { state.store.updateNoteShown(state.updateVersion, today) }
+                            RecallNote(stringResource(R.string.update_available)) { state.startUpdate() }
+                        }
                         else -> state.firstWeekNudge(today)?.takeIf { state.guideDone }?.let { k ->
                             val text = stringResource(when (k) { "breath" -> R.string.nudge_breath; "stone" -> R.string.nudge_stone; "gaze" -> R.string.nudge_gaze
                                 "special" -> R.string.nudge_special; "widget" -> R.string.nudge_widget; else -> R.string.nudge_backup })

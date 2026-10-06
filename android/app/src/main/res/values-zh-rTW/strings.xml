@@ -1,6 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- 자동 생성 파일 — 직접 고치지 말고 scripts/generate.py 를 실행하세요. -->
 <resources>
+    <string name="news_title">更新內容</string>
+    <string name="news_version">版本 %1$s</string>
+    <string name="news_ok">好</string>
+    <string name="news_113_update">有新版本時，花園會安靜地告訴你。點一下就能下載。</string>
+    <string name="news_113_notes">隨時可在 設定 › 說明與支持 再看一次更新內容。</string>
+    <string name="news_112_edit">過去的話也能修改了（文字・心情・照片）。</string>
+    <string name="news_112_welcome">第一個畫面可選「重新開始／匯入紀錄」。</string>
+    <string name="news_112_keep">關閉「保留紀錄」前會再確認一次。</string>
+    <string name="news_112_slip">幾年前今天的紙條只會偶爾出現。</string>
+    <string name="news_112_fix">修正小錯誤，改善螢幕閱讀支援。</string>
+    <string name="update_available">新版本來了・下載</string>
+    <string name="update_downloading">正在下載新版本…</string>
+    <string name="update_ready">新版本已下載・重新開啟</string>
+    <string name="update_getRow">下載新版本</string>
+    <string name="update_restartRow">以新版本重新開啟</string>
     <string name="contact_email">ruahn49@gmail.com</string>
     <string name="tagline">珍惜今天。</string>
     <string name="you">我</string>

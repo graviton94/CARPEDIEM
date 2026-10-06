@@ -1,4 +1,19 @@
 /* 자동 생성 파일 — 직접 고치지 말고 scripts/generate.py 를 실행하세요. */
+"news.title" = "새로워진 점";
+"news.version" = "버전 %1$@";
+"news.ok" = "확인";
+"news.113.update" = "새 버전이 나오면 정원에서 조용히 알려 드려요. 눌러서 바로 받을 수 있어요.";
+"news.113.notes" = "설정 › 도움 · 응원에서 새로워진 점을 언제든 다시 볼 수 있어요.";
+"news.112.edit" = "지난 날의 한 줄도 고칠 수 있어요 (글 · 마음 · 사진).";
+"news.112.welcome" = "처음 화면에서 새로 시작하기 / 기록 불러오기를 고를 수 있어요.";
+"news.112.keep" = "기록 남기기를 끌 때 한 번 더 확인해요.";
+"news.112.slip" = "몇 해 전 오늘의 쪽지는 가끔만 와요.";
+"news.112.fix" = "자잘한 오류를 고치고 화면 읽기 지원을 다듬었어요.";
+"update.available" = "새 버전이 왔어요 · 받기";
+"update.downloading" = "새 버전을 받는 중이에요…";
+"update.ready" = "새 버전을 다 받았어요 · 다시 열기";
+"update.getRow" = "새 버전 받기";
+"update.restartRow" = "새 버전으로 다시 열기";
 "tagline" = "오늘을 소중히.";
 "you" = "나";
 "birthday" = "생년월일";

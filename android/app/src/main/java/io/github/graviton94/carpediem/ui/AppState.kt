@@ -180,6 +180,29 @@ class AppState(private val context: Context) {
     /** 캡처용: 정원이 뜨면 쪽지를 바로 펼침. */
     var debugSlip = false
 
+    // ───── 새로워진 점 · 새 버전 ─────
+    /** 업데이트 뒤 처음 열었을 때 보여 줄 버전 (보고 나면 null). */
+    var whatsNew by mutableStateOf<String?>(null)
+    /** 앱을 열 때: 버전이 바뀌었으면 적어 두고, 쓰던 사람이면 (프로필이 있으면) 그 버전의 새로워진 점을 한 번. 처음 깐 사람에겐 보이지 않음. */
+    fun checkWhatsNew(version: String) {
+        if (store.seenVersion == version) return
+        store.seenVersion = version
+        if (profile != null && Changelog.of(version) != null) whatsNew = version
+    }
+    enum class UpdateState { NONE, AVAILABLE, DOWNLOADING, READY }
+    /** Play 에 올라온 새 버전 (Play 로 깐 앱만, 확인은 앱을 열 때마다). */
+    var update by mutableStateOf(UpdateState.NONE)
+    var updateVersion = 0
+    /** 받기 · 다시 열기: 화면 (Activity) 이 이어 줌. */
+    var startUpdate: () -> Unit = {}
+    var finishUpdate: () -> Unit = {}
+    /** 오늘 새 버전 쪽지를 보여 줄 날인지 (받는 중 · 다 받음은 늘). */
+    fun updateNoteDue(today: LocalDate): Boolean = when (update) {
+        UpdateState.NONE -> false
+        UpdateState.AVAILABLE -> store.updateNoteDue(updateVersion, today)
+        else -> true
+    }
+
     // ───── 하루가 준 조약돌: 쓰다듬다 보면 아주 가끔 (한 달에 한 번쯤) 발치에 하나 ─────
     var pebbles by mutableStateOf(store.pebbles)
         private set

@@ -327,6 +327,7 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
     val p = Theme.palette
     val ctx = LocalContext.current
     val draft = state.draft ?: profile.also { state.draft = it }
+    var newsOpen by remember { mutableStateOf(false) }
     var confirmErase by remember { mutableStateOf(false) }
     // 생일 · 나라 · 성별 · 기대수명은 ‘완료’로 저장. 바꾼 채 뒤로 가면 저장할지 묻는다 (말없이 버리지 않게)
     var askSave by remember { mutableStateOf(false) }
@@ -556,10 +557,19 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
                     FormRow(stringResource(R.string.guide_again), onClick = { state.draft = null; state.restartGuide(); onClose() }, trailing = chevron)
                     RowDivider()
                 }
+                // 새로워진 점 (버전마다) · Play 에 새 버전이 있으면 받기 / 다 받았으면 다시 열기
+                FormRow(stringResource(R.string.news_title), onClick = { newsOpen = true }, trailing = chevron)
+                RowDivider()
+                if (state.update == AppState.UpdateState.AVAILABLE || state.update == AppState.UpdateState.READY) {
+                    FormRow(stringResource(if (state.update == AppState.UpdateState.READY) R.string.update_restartRow else R.string.update_getRow),
+                        onClick = { if (state.update == AppState.UpdateState.READY) state.finishUpdate() else state.startUpdate() }, trailing = chevron)
+                    RowDivider()
+                }
                 FormRow(stringResource(R.string.feedback_row), onClick = { if (!io.github.graviton94.carpediem.data.Feedback.send(ctx)) state.say(ctx.getString(R.string.feedback_copied)) }, trailing = chevron)
                 RowDivider()
                 FormRow(stringResource(R.string.support), onClick = onSupport, trailing = chevron)
             }
+            if (newsOpen) WhatsNewSheet(null) { newsOpen = false }
             SettingsFooter(onVersionTap = { if (io.github.graviton94.carpediem.BuildConfig.DEV_TOOLS && !state.devMode) { state.unlockDev(); state.say(ctx.getString(R.string.dev_unlocked)) } })
         }
     }

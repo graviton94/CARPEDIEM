@@ -290,6 +290,23 @@ class Store(context: Context) {
         prefs.edit().putLong("yearsSlipOn", today.toEpochDay()).apply()
         return hit
     }
+    /** 마지막으로 연 앱 버전 (업데이트 뒤 처음 열 때 ‘새로워진 점’ 을 한 번 보여 주려고). */
+    var seenVersion: String?
+        get() = prefs.getString("seenVersion", null)
+        set(v) = prefs.edit().putString("seenVersion", v).apply()
+    /**
+     * 새 버전 쪽지 (Play 에 새 버전이 올라왔을 때): 그 버전을 처음 안 날 하루, 받지 않았으면 사흘 뒤 하루 더. 그 뒤로는 그 버전엔 다시 말하지 않음.
+     */
+    fun updateNoteDue(versionCode: Int, today: LocalDate): Boolean {
+        val d = today.toEpochDay()
+        if (prefs.getInt("updNoteVer", -1) != versionCode) return true
+        val first = prefs.getLong("updNoteDay", d)
+        return d == first || d == first + UPDATE_NOTE_AGAIN
+    }
+    /** 새 버전 쪽지를 처음 보인 날을 적어 둠 (그 버전에 한 번만). */
+    fun updateNoteShown(versionCode: Int, today: LocalDate) {
+        if (prefs.getInt("updNoteVer", -1) != versionCode) prefs.edit().putInt("updNoteVer", versionCode).putLong("updNoteDay", today.toEpochDay()).apply()
+    }
     var slipOpened: LocalDate?
         get() = prefs.getLong("slipOpened", Long.MIN_VALUE).takeIf { it != Long.MIN_VALUE }?.let { LocalDate.ofEpochDay(it) }
         set(v) = prefs.edit().putLong("slipOpened", v?.toEpochDay() ?: Long.MIN_VALUE).apply()
@@ -569,6 +586,8 @@ class Store(context: Context) {
     }
 
     companion object {
+        /** 새 버전 쪽지를 받지 않았을 때 한 번 더 말하는 날 (처음 안 날로부터). */
+        const val UPDATE_NOTE_AGAIN = 3L
         /** 기록 옮기기 파일의 표 (다른 앱의 파일을 들여오지 않게). */
         private const val BACKUP_APP = "carpediem-backup"
         /** 이만큼 쉬었다 돌아오면 달팽이가 놓인다. */

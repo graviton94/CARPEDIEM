@@ -80,6 +80,8 @@ dependencies {
     implementation("com.android.billingclient:billing-ktx:8.0.0")
     implementation("androidx.glance:glance-appwidget:1.1.1")
     implementation("androidx.work:work-runtime-ktx:2.10.0")
+    // 새 버전 알림 (Play 앱 안 업데이트, 가벼운 방식만)
+    implementation("com.google.android.play:app-update-ktx:2.1.0")
 }
 
 // 스토어용 AAB 는 업로드 키로만: 키 없이 bundleRelease 를 돌리면 (debug 키 · 개발자 도구가 켜진 채로 만들어지지 않게) 멈춘다

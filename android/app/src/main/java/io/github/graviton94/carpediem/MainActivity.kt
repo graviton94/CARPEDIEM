@@ -93,6 +93,45 @@ private sealed interface Screen {
 class MainActivity : ComponentActivity() {
     /** 앱이 떠 있을 때 알림 · 위젯을 누르면 (singleTop): 하던 일을 지우지 않고 그 자리로 옮겨 감. */
     private var newOpen by mutableStateOf<android.content.Intent?>(null)
+    // ───── 새 버전 (Play 앱 안 업데이트, 가벼운 방식): Play 로 깐 앱이 아니면 조용히 아무것도 하지 않음 ─────
+    private val updates by lazy { runCatching { com.google.android.play.core.appupdate.AppUpdateManagerFactory.create(this) }.getOrNull() }
+    private var updateInfo: com.google.android.play.core.appupdate.AppUpdateInfo? = null
+    private val updateFlow = registerForActivityResult(androidx.activity.result.contract.ActivityResultContracts.StartIntentSenderForResult()) { }
+    private var updateListener: com.google.android.play.core.install.InstallStateUpdatedListener? = null
+    private fun checkUpdate(state: AppState) {
+        val m = updates ?: return
+        runCatching {
+            m.appUpdateInfo.addOnSuccessListener { info ->
+                val st = info.installStatus()
+                state.update = when {
+                    st == com.google.android.play.core.install.model.InstallStatus.DOWNLOADED -> AppState.UpdateState.READY
+                    st == com.google.android.play.core.install.model.InstallStatus.DOWNLOADING || st == com.google.android.play.core.install.model.InstallStatus.PENDING -> AppState.UpdateState.DOWNLOADING
+                    info.updateAvailability() == com.google.android.play.core.install.model.UpdateAvailability.UPDATE_AVAILABLE &&
+                        info.isUpdateTypeAllowed(com.google.android.play.core.install.model.AppUpdateType.FLEXIBLE) -> { updateInfo = info; state.updateVersion = info.availableVersionCode(); AppState.UpdateState.AVAILABLE }
+                    else -> AppState.UpdateState.NONE
+                }
+            }
+        }
+    }
+    private fun wireUpdates(state: AppState) {
+        val m = updates ?: return
+        updateListener = com.google.android.play.core.install.InstallStateUpdatedListener { s ->
+            state.update = when (s.installStatus()) {
+                com.google.android.play.core.install.model.InstallStatus.DOWNLOADED -> AppState.UpdateState.READY
+                com.google.android.play.core.install.model.InstallStatus.DOWNLOADING, com.google.android.play.core.install.model.InstallStatus.PENDING -> AppState.UpdateState.DOWNLOADING
+                com.google.android.play.core.install.model.InstallStatus.FAILED, com.google.android.play.core.install.model.InstallStatus.CANCELED -> if (updateInfo != null) AppState.UpdateState.AVAILABLE else AppState.UpdateState.NONE
+                else -> state.update
+            }
+        }.also { l -> runCatching { m.registerListener(l) } }
+        state.startUpdate = {
+            updateInfo?.let { info -> runCatching { m.startUpdateFlowForResult(info, updateFlow, com.google.android.play.core.appupdate.AppUpdateOptions.defaultOptions(com.google.android.play.core.install.model.AppUpdateType.FLEXIBLE)) } }
+        }
+        state.finishUpdate = { runCatching { m.completeUpdate() } }
+    }
+    override fun onDestroy() {
+        updateListener?.let { l -> runCatching { updates?.unregisterListener(l) } }
+        super.onDestroy()
+    }
 
     override fun onNewIntent(intent: android.content.Intent) {
         super.onNewIntent(intent)
@@ -112,6 +151,9 @@ class MainActivity : ComponentActivity() {
         runCatching { val p = io.github.graviton94.carpediem.data.Store(applicationContext).profile; io.github.graviton94.carpediem.ui.garden.GardenArt.warm(applicationContext, io.github.graviton94.carpediem.core.GardenDecor.realSeason(java.time.LocalDate.now(), p?.countryCode ?: "KR")) }
         val state = AppState(applicationContext)
         if (savedInstanceState == null) state.resumeSchedules()
+        // 업데이트 뒤 처음이면 새로워진 점 (한 번), 새 버전 확인 이어 두기
+        state.checkWhatsNew(BuildConfig.VERSION_NAME)
+        wireUpdates(state)
         // 알림 · 위젯 · 바로 가기로 왔는지 (그러면 첫 화면 없이 바로 그곳으로)
         val linked = savedInstanceState == null && (intent?.hasExtra(EXTRA_OPEN) == true || intent?.getBooleanExtra(EXTRA_MORNING_BREATH, false) == true)
         val start = (if (BuildConfig.DEBUG) debugSetup(state) else Screen.Main).let { s ->
@@ -160,7 +202,7 @@ class MainActivity : ComponentActivity() {
                         screen = if (morning) Screen.Main else openFrom(open, state) ?: Screen.Main
                         homeEpoch++
                     }
-                    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { now = clock(); state.refreshQuote(); state.opened(); state.refreshQuestion(); state.recheckNotify(); state.syncFromStore() }
+                    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { now = clock(); state.refreshQuote(); state.opened(); state.refreshQuestion(); state.recheckNotify(); state.syncFromStore(); if (!scripted) checkUpdate(state) }
                     // 앱을 다시 열 때(화면에 다시 나올 때) 남은 시간 · 인생 달력 단위를 기본값으로
                     LifecycleEventEffect(Lifecycle.Event.ON_START) {
                         // 30분 넘게 떠났다 돌아오면 다시 첫 화면부터 (resetViewIfAway 보다 먼저 물어야 함)
@@ -204,6 +246,9 @@ class MainActivity : ComponentActivity() {
                         }) { androidx.compose.material3.Text(getString(R.string.feedback_crashSend)) } },
                         dismissButton = { androidx.compose.material3.TextButton(onClick = { crash = null; io.github.graviton94.carpediem.data.Feedback.clearCrash(this@MainActivity) }) { androidx.compose.material3.Text(getString(R.string.feedback_crashSkip), color = io.github.graviton94.carpediem.design.Theme.palette.secondary) } },
                     ) }
+                    // 업데이트 뒤 처음 열었을 때: 새로워진 점 (첫 화면 · 둘러보기 · 다른 물음이 끝난 뒤, 한 번)
+                    state.whatsNew?.let { v -> if (screen == Screen.Main && state.profile != null && !state.touring && !notifyNote && crash == null && !title)
+                        io.github.graviton94.carpediem.ui.WhatsNewSheet(v) { state.whatsNew = null } }
                     if (notifyNote) io.github.graviton94.carpediem.ui.GardenAlert(
                         onDismissRequest = { notifyNote = false; state.notifyAsked(false) },
                         title = { androidx.compose.material3.Text(getString(R.string.notify_askTitle)) },
@@ -330,6 +375,9 @@ private fun MainActivity.debugSetup(state: AppState): Screen {
     x.getStringExtra("cd.guest")?.let { state.pretendGuest(it) }
     if (x.getBooleanExtra("cd.photos", false)) state.addSamplePhotos()
     if (x.getBooleanExtra("cd.pebble", false)) state.addSamplePebble()
+    // 캡처용: 새로워진 점 · 새 버전 쪽지
+    if (x.getBooleanExtra("cd.news", false)) state.whatsNew = io.github.graviton94.carpediem.ui.Changelog.entries.first().first
+    x.getStringExtra("cd.update")?.let { u -> state.update = when (u) { "ready" -> AppState.UpdateState.READY; "downloading" -> AppState.UpdateState.DOWNLOADING; else -> AppState.UpdateState.AVAILABLE }; state.updateVersion = 999 }
     state.debugSlip = x.getBooleanExtra("cd.slip", false)
     state.debugGardenYear = x.getBooleanExtra("cd.gardenYear", false)
     if (x.getBooleanExtra("cd.letter", false)) state.addSampleLetter()

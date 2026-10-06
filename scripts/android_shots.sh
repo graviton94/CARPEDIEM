@@ -193,6 +193,8 @@ open --ez cd.recall true --es cd.now 2026-10-04T10:00;                          
 open --ez cd.recall true --ez cd.slip true --es cd.now 2026-10-04T10:00;                                shot g76_slip_open 6
 open --ez cd.pebble true --es cd.now 2026-10-04T10:00;                                                  shot g77_pebble 5
 open --ez cd.family true --es cd.screen card --es cd.now 2026-10-04T10:00;                               shot g78_bday_card 5
+open --ez cd.news true --es cd.now 2026-10-04T10:00;                                                    shot g79_news 5
+open --es cd.update available --es cd.now 2026-10-04T15:00;                                             shot g80_update 5
 open --es cd.guest owl --es cd.now 2026-10-05T10:00;                                                    shot g66_guest_rare 5
 # 한 줄에 사진 한 장 (11): 오늘 · 1년 전 오늘 (돌아온 한 줄, 그만큼 바랜 사진) · 지난 날 기록
 open --ez cd.photos true --ei cd.page 1 --es cd.now 2026-10-06T21:00;                                  shot g67_photo_today 5

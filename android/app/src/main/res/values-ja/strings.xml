@@ -1,6 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- 자동 생성 파일 — 직접 고치지 말고 scripts/generate.py 를 실행하세요. -->
 <resources>
+    <string name="news_title">新しくなったこと</string>
+    <string name="news_version">バージョン %1$s</string>
+    <string name="news_ok">OK</string>
+    <string name="news_113_update">新しいバージョンが出ると、庭でそっとお知らせします。タップで受け取れます。</string>
+    <string name="news_113_notes">設定 › ヘルプと応援 から、いつでも新しくなったことを見られます。</string>
+    <string name="news_112_edit">過去の日のひとことも直せます（文・気持ち・写真）。</string>
+    <string name="news_112_welcome">最初の画面で「新しく始める／記録を読み込む」を選べます。</string>
+    <string name="news_112_keep">「記録を残す」をオフにする前に確認します。</string>
+    <string name="news_112_slip">何年前の今日のメモは、ときどきだけ届きます。</string>
+    <string name="news_112_fix">細かな不具合を直し、読み上げ対応を整えました。</string>
+    <string name="update_available">新しいバージョンが届きました・受け取る</string>
+    <string name="update_downloading">新しいバージョンを受け取っています…</string>
+    <string name="update_ready">受け取りました・開き直す</string>
+    <string name="update_getRow">新しいバージョンを受け取る</string>
+    <string name="update_restartRow">新しいバージョンで開き直す</string>
     <string name="contact_email">ruahn49@gmail.com</string>
     <string name="tagline">今日を大切に。</string>
     <string name="you">わたし</string>
