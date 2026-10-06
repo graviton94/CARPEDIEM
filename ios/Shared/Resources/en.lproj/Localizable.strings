@@ -1017,3 +1017,6 @@
 "bday.cardOther" = "Another line";
 "bday.cardWith" = "Add and send";
 "bday.cardPlain" = "Card only";
+"welcome.start" = "Start fresh";
+"welcome.restore" = "Bring back my records";
+"welcome.restoreSub" = "Continue from a file you saved on your old phone.";

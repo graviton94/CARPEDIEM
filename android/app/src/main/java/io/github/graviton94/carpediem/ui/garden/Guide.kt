@@ -62,6 +62,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import io.github.graviton94.carpediem.R
+import kotlinx.coroutines.launch
 import io.github.graviton94.carpediem.core.Season
 import io.github.graviton94.carpediem.design.Theme
 import io.github.graviton94.carpediem.design.Tokens
@@ -297,5 +298,73 @@ fun GuideTour(state: AppState, key: String, targets: GuideTargets, steps: List<G
                 }
             }
         }
+    }
+}
+
+/**
+ * 처음 켤 때의 첫 화면: 하늘 아래 이름 · 인사, 그리고 ‘새로 시작하기’ · ‘기록 불러오기’.
+ * 예전 폰의 기록이 있는 사람은 프로필을 새로 만들지 않고 바로 파일에서 이어 쓴다 (들여오면 화면을 새로 지음).
+ */
+@Composable
+fun WelcomeScreen(state: AppState, onStart: () -> Unit) {
+    val p = Theme.palette
+    val ctx = LocalContext.current
+    val scope = androidx.compose.runtime.rememberCoroutineScope()
+    var pickHelp by remember { mutableStateOf(false) }
+    var restoreFrom by remember { mutableStateOf<android.net.Uri?>(null) }
+    val openFile = androidx.activity.compose.rememberLauncherForActivityResult(object : androidx.activity.result.contract.ActivityResultContracts.OpenDocument() {
+        override fun createIntent(context: android.content.Context, input: Array<String>) = super.createIntent(context, input).apply {
+            putExtra(android.provider.DocumentsContract.EXTRA_INITIAL_URI, android.net.Uri.parse("content://com.android.externalstorage.documents/document/primary%3ADownload"))
+        }
+    }) { uri -> restoreFrom = uri }
+    Box(Modifier.fillMaxSize().paperBackground()) {
+        Image(GardenArt.sky(ctx, Season.SPRING), null, Modifier.fillMaxSize(), contentScale = androidx.compose.ui.layout.ContentScale.FillWidth, alignment = Alignment.TopCenter)
+        Column(
+            Modifier.fillMaxSize().statusBarsPadding().navigationBarsPadding().padding(horizontal = Theme.deviceClass.pageMargin),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Box(Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
+                    val name = stringResource(R.string.title_name)
+                    if (name != "Carpe Diem") TokenText("Carpe Diem", Tokens.TypeScale.footnote.serif(), color = p.secondary)
+                    TokenText(name, Tokens.TypeScale.largeTitle.serif(), align = TextAlign.Center)
+                    TokenText(stringResource(R.string.title_helloFirst), Tokens.TypeScale.callout.serif(), color = p.secondary, align = TextAlign.Center)
+                }
+            }
+            GardenButton(stringResource(R.string.welcome_start), onStart, filled = true, seed = 770)
+            Spacer(Modifier.height(Tokens.Space.sp3))
+            GardenButton(stringResource(R.string.welcome_restore), { pickHelp = true }, filled = false, seed = 771, paper = true)
+            Spacer(Modifier.height(Tokens.Space.sp2))
+            TokenText(stringResource(R.string.welcome_restoreSub), Tokens.TypeScale.footnote, color = p.secondary, align = TextAlign.Center)
+            Spacer(Modifier.height(Tokens.Space.sp6))
+        }
+    }
+    // 어떤 파일을 고르는지 한 번 알려 준 뒤 ‘다운로드’ 에서 열기
+    if (pickHelp) io.github.graviton94.carpediem.ui.GardenAlert(
+        onDismissRequest = { pickHelp = false },
+        title = { androidx.compose.material3.Text(stringResource(R.string.backup_pickTitle)) },
+        text = { androidx.compose.material3.Text(stringResource(R.string.backup_pickHelp)) },
+        confirmButton = { androidx.compose.material3.TextButton(onClick = { pickHelp = false; openFile.launch(arrayOf("application/json", "text/plain", "application/octet-stream")) }) { androidx.compose.material3.Text(stringResource(R.string.backup_pickGo)) } },
+        dismissButton = { androidx.compose.material3.TextButton(onClick = { pickHelp = false }) { androidx.compose.material3.Text(stringResource(R.string.cancel)) } },
+    )
+    restoreFrom?.let { uri ->
+        val name = remember(uri) { io.github.graviton94.carpediem.ui.fileName(ctx, uri) }
+        io.github.graviton94.carpediem.ui.GardenAlert(
+            onDismissRequest = { restoreFrom = null },
+            title = { androidx.compose.material3.Text(stringResource(R.string.welcome_restore)) },
+            text = { androidx.compose.material3.Text(listOfNotNull(name?.let { stringResource(R.string.backup_picked, it) }, stringResource(R.string.backup_notOurs).takeIf { name != null && !name.startsWith("haru") }).joinToString("\n\n")) },
+            confirmButton = { androidx.compose.material3.TextButton(onClick = {
+                restoreFrom = null
+                scope.launch {
+                    val ok = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { runCatching { ctx.contentResolver.openInputStream(uri)?.use { state.store.restore(it) } }.getOrNull() == true }
+                    if (ok) {
+                        state.say(ctx.getString(R.string.backup_done))
+                        io.github.graviton94.carpediem.widget.Widgets.refresh(ctx)
+                        android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({ (ctx as? android.app.Activity)?.takeIf { !it.isFinishing && !it.isDestroyed }?.recreate() }, (Tokens.Garden.Motion.noteMs / 2).toLong())
+                    } else state.say(ctx.getString(R.string.backup_fail))
+                }
+            }) { androidx.compose.material3.Text(stringResource(R.string.backup_pickGo)) } },
+            dismissButton = { androidx.compose.material3.TextButton(onClick = { restoreFrom = null }) { androidx.compose.material3.Text(stringResource(R.string.cancel)) } },
+        )
     }
 }

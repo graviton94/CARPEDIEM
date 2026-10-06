@@ -262,7 +262,8 @@ class MainActivity : ComponentActivity() {
                             val profile = state.profile
                             val garden = state.design == Design.GARDEN
                             when {
-                                // 처음 온 사람: 소개 석 장 (정원 디자인) → 생일 · 나라 → 하루를 만남 → 정원 둘러보기
+                                // 처음 온 사람: 첫 화면 (새로 시작하기 · 기록 불러오기) → 소개 석 장 (정원 디자인) → 생일 · 나라 → 하루를 만남 → 정원 둘러보기
+                                profile == null && !state.welcomed -> io.github.graviton94.carpediem.ui.garden.WelcomeScreen(state) { state.welcomed = true }
                                 profile == null && garden && !state.introSeen -> io.github.graviton94.carpediem.ui.garden.IntroScreen(state) { state.finishIntro() }
                                 profile == null -> OnboardingScreen(state) { screen = Screen.Country(Screen.Main) }
                                 garden && state.meetPending -> MeetScreen(state) { state.finishMeet() }

@@ -194,7 +194,8 @@ internal fun CollectionBody(state: AppState, profile: LifeProfile, now: LocalDat
             val met = state.chancesMet.mapNotNull { r -> r.split(':', limit = 2).takeIf { it.size == 2 }?.let { (k, d2) -> runCatching { k to java.time.LocalDate.parse(d2) }.getOrNull() } }
                 .sortedBy { it.second }.distinctBy { it.first }
             met.forEach { (k, day) ->
-                val name = ctx.resources.getIdentifier("chance_$k", "string", ctx.packageName).takeIf { it != 0 }?.let { ctx.getString(it) } ?: k
+                // 이름이 없는 것 (다른 버전의 기록에서 온 모르는 손님 · 순간) 은 내부 이름을 보이지 않고 건너뜀
+                val name = ctx.resources.getIdentifier("chance_$k", "string", ctx.packageName).takeIf { it != 0 }?.let { ctx.getString(it) } ?: return@forEach
                 fun res(n: String) = ctx.resources.getIdentifier(n, "string", ctx.packageName).takeIf { it != 0 }?.let { ctx.getString(it) }.orEmpty()
                 val guest = k.startsWith("guest_")
                 val art: @Composable () -> Unit = { MetArt(k, sk) }

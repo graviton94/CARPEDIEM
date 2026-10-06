@@ -237,7 +237,7 @@ private fun Outro(state: AppState, profile: LifeProfile, year: Int, p: Float) {
     val breaths = remember(year) { state.breaths.count { it.first.year == year } }
     val guests = remember(year) {
         state.chancesMet.mapNotNull { r -> r.split(':', limit = 2).takeIf { it.size == 2 && it[1].startsWith("$year") }?.get(0) }
-            .map { k -> ctx.resources.getIdentifier("chance_$k", "string", ctx.packageName).takeIf { it != 0 }?.let { ctx.getString(it) } ?: k }.distinct()
+            .mapNotNull { k -> ctx.resources.getIdentifier("chance_$k", "string", ctx.packageName).takeIf { it != 0 }?.let { ctx.getString(it) } }.distinct()   // 이름 없는 것은 빼고
     }
     val bloomed = state.seeds.count { it.date.year == year && it.state == io.github.graviton94.carpediem.core.SeedState.BLOOMED }
     val end = java.time.LocalDate.of(year, 12, 31)

@@ -1016,3 +1016,6 @@
 "bday.cardOther" = "換一句";
 "bday.cardWith" = "放進去寄出";
 "bday.cardPlain" = "只寄卡片";
+"welcome.start" = "重新開始";
+"welcome.restore" = "載入紀錄";
+"welcome.restoreSub" = "用舊手機儲存的檔案繼續使用。";

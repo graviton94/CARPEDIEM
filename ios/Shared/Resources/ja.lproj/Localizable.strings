@@ -1016,3 +1016,6 @@
 "bday.cardOther" = "別のひとこと";
 "bday.cardWith" = "入れて送る";
 "bday.cardPlain" = "カードだけ送る";
+"welcome.start" = "はじめから始める";
+"welcome.restore" = "記録を読み込む";
+"welcome.restoreSub" = "前のスマホで保存したファイルから続けます。";

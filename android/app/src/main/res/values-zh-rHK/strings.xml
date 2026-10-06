@@ -1018,4 +1018,7 @@
     <string name="bday_cardOther">換一句</string>
     <string name="bday_cardWith">放進去寄出</string>
     <string name="bday_cardPlain">只寄卡片</string>
+    <string name="welcome_start">重新開始</string>
+    <string name="welcome_restore">載入紀錄</string>
+    <string name="welcome_restoreSub">用舊手機儲存的檔案繼續使用。</string>
 </resources>

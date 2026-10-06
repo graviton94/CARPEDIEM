@@ -175,6 +175,8 @@ class AppState(private val context: Context) {
     /** 쪽지를 물고 오는 손님: 그날의 손님 (손님은 쪽지 오는 날에만 옴). 쪽지를 펼친 뒤에도 그날은 머묾. */
     fun carrier(today: LocalDate): String? = guest ?: carriedLine(today)?.let { io.github.graviton94.carpediem.core.Guests.pick(today, store.haruSeed) }
     fun openSlip(today: LocalDate) { store.slipOpened = today; slipOpened = today }
+    /** 첫 화면에서 ‘새로 시작하기’ 를 눌렀는지 (앱을 켜 둔 동안만: 프로필을 만들기 전에 다시 켜면 첫 화면부터). */
+    var welcomed by mutableStateOf(false)
     /** 캡처용: 정원이 뜨면 쪽지를 바로 펼침. */
     var debugSlip = false
 

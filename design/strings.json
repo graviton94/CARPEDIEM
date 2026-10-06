@@ -1017,7 +1017,10 @@
     "bday.cardAsk": "올해 {name}에게 보낸 한 줄을 카드에 넣을까요?",
     "bday.cardOther": "다른 줄",
     "bday.cardWith": "넣어서 보내기",
-    "bday.cardPlain": "카드만 보내기"
+    "bday.cardPlain": "카드만 보내기",
+    "welcome.start": "새로 시작하기",
+    "welcome.restore": "기록 불러오기",
+    "welcome.restoreSub": "예전 폰에서 저장한 파일로 이어서 써요."
   },
   "en": {
     "tagline": "Cherish today.",
@@ -2037,7 +2040,10 @@
     "bday.cardAsk": "Add a line you sent {name} this year?",
     "bday.cardOther": "Another line",
     "bday.cardWith": "Add and send",
-    "bday.cardPlain": "Card only"
+    "bday.cardPlain": "Card only",
+    "welcome.start": "Start fresh",
+    "welcome.restore": "Bring back my records",
+    "welcome.restoreSub": "Continue from a file you saved on your old phone."
   },
   "ja": {
     "tagline": "今日を大切に。",
@@ -3056,7 +3062,10 @@
     "bday.cardAsk": "今年{name}に送ったひとことをカードに入れますか？",
     "bday.cardOther": "別のひとこと",
     "bday.cardWith": "入れて送る",
-    "bday.cardPlain": "カードだけ送る"
+    "bday.cardPlain": "カードだけ送る",
+    "welcome.start": "はじめから始める",
+    "welcome.restore": "記録を読み込む",
+    "welcome.restoreSub": "前のスマホで保存したファイルから続けます。"
   },
   "zh-TW": {
     "tagline": "珍惜今天。",
@@ -4075,6 +4084,9 @@
     "bday.cardAsk": "要把今年寄給{name}的一句話放進卡片嗎？",
     "bday.cardOther": "換一句",
     "bday.cardWith": "放進去寄出",
-    "bday.cardPlain": "只寄卡片"
+    "bday.cardPlain": "只寄卡片",
+    "welcome.start": "重新開始",
+    "welcome.restore": "載入紀錄",
+    "welcome.restoreSub": "用舊手機儲存的檔案繼續使用。"
   }
 }

@@ -657,7 +657,7 @@ fun CountryScreen(state: AppState, selected: String, sex: Sex, onPick: (String) 
 private enum class FooterPage { ABOUT, CONTACT, NOTICES }
 
 /** 고른 파일의 이름 (들여오기 전에 맞는 파일인지 보이게). */
-private fun fileName(ctx: android.content.Context, uri: android.net.Uri): String? = runCatching {
+internal fun fileName(ctx: android.content.Context, uri: android.net.Uri): String? = runCatching {
     ctx.contentResolver.query(uri, arrayOf(android.provider.OpenableColumns.DISPLAY_NAME), null, null, null)?.use { c -> if (c.moveToFirst()) c.getString(0) else null }
 }.getOrNull()
 

@@ -1018,4 +1018,7 @@
     <string name="bday_cardOther">別のひとこと</string>
     <string name="bday_cardWith">入れて送る</string>
     <string name="bday_cardPlain">カードだけ送る</string>
+    <string name="welcome_start">はじめから始める</string>
+    <string name="welcome_restore">記録を読み込む</string>
+    <string name="welcome_restoreSub">前のスマホで保存したファイルから続けます。</string>
 </resources>

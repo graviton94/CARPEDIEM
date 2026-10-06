@@ -1019,4 +1019,7 @@
     <string name="bday_cardOther">Another line</string>
     <string name="bday_cardWith">Add and send</string>
     <string name="bday_cardPlain">Card only</string>
+    <string name="welcome_start">Start fresh</string>
+    <string name="welcome_restore">Bring back my records</string>
+    <string name="welcome_restoreSub">Continue from a file you saved on your old phone.</string>
 </resources>
