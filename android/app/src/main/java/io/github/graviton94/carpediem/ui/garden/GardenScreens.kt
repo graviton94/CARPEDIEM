@@ -427,18 +427,19 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                     state.goAsk?.takeIf { !state.titleUp && !state.touring && !touring }?.let { go ->
                         val night = Labels.part(now) == io.github.graviton94.carpediem.core.DayPart.NIGHT
                         val title = when (go) {
+                            "close" -> ""
                             "gaze" -> stringResource(R.string.gaze)
                             "morning" -> stringResource(R.string.breath_morning)
                             else -> io.github.graviton94.carpediem.widget.breathName(ctx, now)
                         }
-                        val help: (@Composable () -> Unit)? = if (go == "gaze") null else { { Text(stringResource(R.string.breath_askHelp)) } }
+                        val help: (@Composable () -> Unit)? = when (go) { "gaze" -> null; "close" -> { { Text(stringResource(R.string.closeDay_entrySub)) } }; else -> { { Text(stringResource(R.string.breath_askHelp)) } } }
                         io.github.graviton94.carpediem.ui.GardenAlert(
                             onDismissRequest = { state.goAsk = null },
-                            title = { Text(stringResource(R.string.breath_ask, title)) },
+                            title = { Text(if (go == "close") stringResource(R.string.closeDay_ask) else stringResource(R.string.breath_ask, title)) },
                             text = help,
                             confirmButton = { androidx.compose.material3.TextButton(onClick = {
                                 state.goAsk = null
-                                if (go == "gaze") onGaze() else onBreath(if (go == "breath" && night) BreathKind.SLEEP else BreathKind.CALM, 1, state.sound)
+                                if (go == "close") onCloseDay() else if (go == "gaze") onGaze() else onBreath(if (go == "breath" && night) BreathKind.SLEEP else BreathKind.CALM, 1, state.sound)
                             }) { Text(stringResource(R.string.breath_askGo)) } },
                             dismissButton = { androidx.compose.material3.TextButton(onClick = { state.goAsk = null }) { Text(stringResource(R.string.breath_askStay), color = p.secondary) } },
                         )

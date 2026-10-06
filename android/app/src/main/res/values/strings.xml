@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- 자동 생성 파일 — 직접 고치지 말고 scripts/generate.py 를 실행하세요. -->
 <resources>
+    <string name="closeDay_ask">Close the day now?</string>
     <string name="adorn_card">%1$s %2$s</string>
     <string name="adorn_pebble">Pebble</string>
     <string name="adorn_fromSupport">Support, %1$s</string>
@@ -1066,7 +1067,8 @@
     <string name="news_v1_1_3_1">Decorate each stone with one piece: season pieces, support gifts or pebbles.</string>
     <string name="news_v1_1_3_2">Notes brought by guests now open as a hanji letter.</string>
     <string name="news_v1_1_3_3">The garden quietly tells you when a new version is out. See what’s new in Settings › Help &amp; support.</string>
-    <string name="news_v1_1_3_4">A refreshed support page.</string>
+    <string name="news_v1_1_3_4">Opening from a notification now asks before starting a breath or closing the day.</string>
+    <string name="news_v1_1_3_5">A refreshed support page.</string>
     <string name="news_v1_1_2_1">Edit lines from past days (text, feeling, photo).</string>
     <string name="news_v1_1_2_2">Choose “Start new” or “Restore records” on the first screen.</string>
     <string name="news_v1_1_2_3">Turning off “Keep my lines” now asks first.</string>

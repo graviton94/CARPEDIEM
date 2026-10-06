@@ -458,7 +458,8 @@ private fun openFrom(open: String?, state: AppState): Screen? {
         "breath" -> { state.homePage = 0; state.goAsk = "breath" }
         "gaze" -> if (state.design == Design.GARDEN) { state.homePage = 0; state.goAsk = "gaze" }
         // 하루 닫기 (정원 디자인에서만)
-        "close" -> return if (state.design == Design.GARDEN) Screen.CloseDay(Screen.Main) else { state.focusWrite = !state.sentOn((state.fixedNow ?: java.time.LocalDateTime.now()).toLocalDate()); null }
+        // 저녁 알림 (하루 닫기): 숨 · 고마움으로 바로 들어가지 않고 정원에서 “오늘 하루를 닫으러 갈까요?” 한 번
+        "close" -> return if (state.design == Design.GARDEN) { state.homePage = 0; state.goAsk = "close"; null } else { state.focusWrite = !state.sentOn((state.fixedNow ?: java.time.LocalDateTime.now()).toLocalDate()); null }
         "stone" -> return if (arg.isNullOrEmpty()) Screen.Stone(null, Screen.Main) else arg.takeIf { id -> state.people.any { it.id == id } }?.let { Screen.Stone(it, Screen.Main) }   // 비면 내 돌
     }
     return null

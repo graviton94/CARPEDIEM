@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- 자동 생성 파일 — 직접 고치지 말고 scripts/generate.py 를 실행하세요. -->
 <resources>
+    <string name="closeDay_ask">오늘 하루를 닫으러 갈까요?</string>
     <string name="adorn_card">%1$s %2$s</string>
     <string name="adorn_pebble">조약돌</string>
     <string name="adorn_fromSupport">%1$s 응원</string>
@@ -1066,7 +1067,8 @@
     <string name="news_v1_1_3_1">돌마다 곁에 하나씩 꾸밀 수 있어요. 모은 계절 조각 · 응원 · 조약돌 가운데서 골라요.</string>
     <string name="news_v1_1_3_2">손님이 물고 온 쪽지가 한지 편지로 새로워졌어요.</string>
     <string name="news_v1_1_3_3">새 버전이 나오면 정원에서 조용히 알려 드려요. 설정 › 도움 · 응원에서 새로워진 점을 다시 볼 수 있어요.</string>
-    <string name="news_v1_1_3_4">응원하기 화면을 새로 다듬었어요.</string>
+    <string name="news_v1_1_3_4">알림을 눌러 들어오면 숨 · 하루 닫기로 바로 가지 않고 한 번 물어봐요.</string>
+    <string name="news_v1_1_3_5">응원하기 화면을 새로 다듬었어요.</string>
     <string name="news_v1_1_2_1">지난 날의 한 줄도 고칠 수 있어요 (글 · 마음 · 사진).</string>
     <string name="news_v1_1_2_2">처음 화면에서 새로 시작하기 / 기록 불러오기를 고를 수 있어요.</string>
     <string name="news_v1_1_2_3">기록 남기기를 끌 때 한 번 더 확인해요.</string>
