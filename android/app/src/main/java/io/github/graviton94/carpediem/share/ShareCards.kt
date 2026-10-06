@@ -116,6 +116,8 @@ object ShareCards {
         return b to c
     }
     private val Y = Tokens.Garden.Year.Colors
+    /** 생일 카드의 돌 크기 (예전 대비). */
+    private const val CARD_STONE = 0.58f
 
     /** 한 달의 정원: 그 달의 별자리 (보내는 때가 밤이면 별, 낮이면 꽃), 별자리 이름 · 한 줄 수. */
     fun month(ctx: Context, book: io.github.graviton94.carpediem.core.ConstellationBook, days: List<Pair<LocalDate, DayLine?>>, install: Long, night: Boolean, today: LocalDate, title: String, sub: String): Bitmap {
@@ -179,9 +181,15 @@ object ShareCards {
      * 낮엔 종이에 깃발 줄, 밤 (보내는 때가 어두우면) 엔 남색에 작은 전구 줄과 별, 촛불 빛.
      */
     /** sent = (올해 그 사람에게 보낸 한 줄 수, 고른 한 줄): 있으면 인사말 대신 ‘올해 보낸 마음’ 과 그 한 줄. */
-    fun birthday(ctx: Context, name: String, seed: Long, pet: Boolean, mySeed: Long, night: Boolean, sent: Pair<Int, String>? = null): Bitmap {
+    @Suppress("UNUSED_PARAMETER")
+    fun birthday(ctx: Context, name: String, seed: Long, pet: Boolean, mySeed: Long, dark: Boolean, sent: Pair<Int, String>? = null): Bitmap {
+        // 생일 카드는 늘 ‘밤의 촛불’: 별 뜬 밤하늘 · 전구 줄 · 촛불 빛 안의 작은 두 돌과 케이크
+        val night = true
         val w = S.lineW.toInt(); val h = S.lineH.toInt(); val pad = S.pad
         val (b, c) = board(w, h, night)
+        drawCompose(c, 0f, 0f, w.toFloat(), h.toFloat()) {
+            drawRect(androidx.compose.ui.graphics.Brush.verticalGradient(listOf(Y.skyTop, Y.skyBottom)), size = size)
+        }
         val fg = if (night) Y.plain.toArgb() else ink; val soft = if (night) Y.plain.copy(alpha = 0.7f).toArgb() else inkSoft
         val P = Tokens.Garden.Party
         // 깃발 줄 · 전구 줄 (위), 밤엔 별 몇 개
@@ -203,7 +211,7 @@ object ShareCards {
                     drawPath(flag, cols[k % cols.size])
                 }
             }
-            if (night) { val r = Crayon.Rng(5); repeat(18) { drawCircle(Y.core, 1.5f + 2f * r.next(), androidx.compose.ui.geometry.Offset(w * (0.08f + 0.84f * r.next()), h * (0.32f + 0.25f * r.next())), 0.2f + 0.4f * r.next()) } }
+            if (night) { val r = Crayon.Rng(5); repeat(60) { drawCircle(Y.core, 1.2f + 2.2f * r.next(), androidx.compose.ui.geometry.Offset(w * (0.05f + 0.9f * r.next()), h * (0.05f + 0.6f * r.next())), 0.2f + 0.5f * r.next()) } }
         }
         val tp = paint(ctx, S.text, fg)
         text(c, ctx.getString(R.string.bday_cardTitle, name), tp, pad, h * 0.17f, (w - pad * 2).toInt())
@@ -213,9 +221,9 @@ object ShareCards {
             val sh = text(c, ctx.getString(R.string.bday_cardSent, name, "${sent.first}"), paint(ctx, S.small * 0.9f, soft), pad, y1, (w - pad * 2).toInt())
             text(c, "“${sent.second.replace('\n', ' ')}”", paint(ctx, S.small * 1.15f, fg), pad, y1 + sh + S.small * 0.5f, (w - pad * 2).toInt())
         }
-        val gy = h * 0.72f; val cx = w / 2f
+        val gy = h * 0.78f; val cx = w / 2f
         val myArt = HaruArt.of(mySeed, false); val art = HaruArt.of(seed, false)
-        val sw = w * P.card
+        val sw = w * P.card * CARD_STONE   // 돌은 작게: 글과 밤하늘이 주인공
         fun stone(a: HaruArt, x: Float, width: Float, hat: Boolean) {
             val k = width / a.meta.bbox.width
             c.save(); c.translate(x - a.meta.bbox.center.x * k, gy - a.meta.ground * k)
@@ -223,12 +231,13 @@ object ShareCards {
                 androidx.compose.ui.graphics.Canvas(c), androidx.compose.ui.geometry.Size(a.meta.box * k, a.meta.box * k)) { drawHaru(a, k, smile = 1f, blush = 0.8f, hat = hat) }
             c.restore()
         }
-        // 촛불 빛 (밤): 두 돌을 비춤
-        if (night) drawCompose(c, 0f, 0f, w.toFloat(), h.toFloat()) {
-            val o = androidx.compose.ui.geometry.Offset(cx, gy - sw * 0.5f)
-            drawCircle(androidx.compose.ui.graphics.Brush.radialGradient(listOf(Tokens.Garden.Party.Colors.glow.copy(alpha = 0.22f), androidx.compose.ui.graphics.Color.Transparent), o, sw * 1.6f), sw * 1.6f, o)
+        // 촛불 빛: 케이크에서 퍼져 두 돌을 비춤 · 아래는 어두운 땅
+        drawCompose(c, 0f, 0f, w.toFloat(), h.toFloat()) {
+            val o = androidx.compose.ui.geometry.Offset(cx, gy - sw * 0.4f)
+            drawCircle(androidx.compose.ui.graphics.Brush.radialGradient(listOf(Tokens.Garden.Party.Colors.glow.copy(alpha = 0.34f), androidx.compose.ui.graphics.Color.Transparent), o, sw * 3.6f), sw * 3.6f, o)
+            drawRect(Y.skyBottom.copy(alpha = 0.55f), androidx.compose.ui.geometry.Offset(0f, gy), androidx.compose.ui.geometry.Size(size.width, size.height - gy))
         }
-        val gap = sw * 0.95f
+        val gap = sw * 1.2f
         stone(myArt, cx - gap, sw, false)
         stone(art, cx + gap, sw * (if (pet) 0.78f else 1f), true)
         val cw = sw * 0.62f
@@ -241,7 +250,7 @@ object ShareCards {
         val hx = cx; val hy = gy - cw * 1.35f; val hs = sw * 0.07f
         c.drawPath(android.graphics.Path().apply { moveTo(hx, hy + hs); cubicTo(hx - hs * 2f, hy - hs * 0.6f, hx - hs, hy - hs * 2.2f, hx, hy - hs); cubicTo(hx + hs, hy - hs * 2.2f, hx + hs * 2f, hy - hs * 0.6f, hx, hy + hs); close() }, hp)
         val lp = Paint(Paint.ANTI_ALIAS_FLAG).apply { strokeWidth = 5f; color = fg; strokeCap = Paint.Cap.ROUND }
-        c.drawLine(cx - sw * 2.1f, gy, cx + sw * 2.1f, gy, lp)
+        lp.alpha = 110; c.drawLine(pad, gy, w - pad, gy, lp)
         text(c, ctx.getString(R.string.share_footer), paint(ctx, S.small * 0.8f, soft), pad, h - pad * 1.25f, (w - pad * 2).toInt())
         return b
     }

@@ -10,6 +10,9 @@ import androidx.activity.compose.setContent
 import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.toArgb
 import io.github.graviton94.carpediem.core.LifeProfile
 import io.github.graviton94.carpediem.core.Sex
@@ -66,6 +69,8 @@ private sealed interface Screen {
     data object Main : Screen
     data object Settings : Screen
     data object WidgetPreview : Screen
+    /** 캡처용: 생일 카드 그림 (보내기 전 모습) 을 화면 가득. */
+    data object CardPreview : Screen
     data class Collection(val back: Screen) : Screen
     data class Support(val back: Screen) : Screen
     /** 돌의 페이지 (id = null 이면 내 하루). */
@@ -220,6 +225,14 @@ class MainActivity : ComponentActivity() {
                     ) { target ->
                     when (val s = target) {
                         Screen.WidgetPreview -> WidgetPreviewScreen(state, now)
+                        Screen.CardPreview -> {
+                            val c = androidx.compose.ui.platform.LocalContext.current
+                            val person = state.people.firstOrNull()
+                            val bmp = androidx.compose.runtime.remember(person) { person?.let { io.github.graviton94.carpediem.share.ShareCards.birthday(c, it.name, it.seed, false, state.store.haruSeed, false, 7 to "전화 고마워요. 다음엔 같이 산책해요.").asImageBitmap() } }
+                            androidx.compose.foundation.layout.Box(androidx.compose.ui.Modifier.fillMaxSize().background(androidx.compose.ui.graphics.Color.Black), contentAlignment = androidx.compose.ui.Alignment.Center) {
+                                bmp?.let { androidx.compose.foundation.Image(it, null, androidx.compose.ui.Modifier.fillMaxSize(), contentScale = androidx.compose.ui.layout.ContentScale.Fit) }
+                            }
+                        }
                         is Screen.Country -> {
                             val d = state.draft
                             if (d == null) screen = s.back
@@ -369,7 +382,7 @@ private fun MainActivity.debugSetup(state: AppState): Screen {
     if (x.getBooleanExtra("cd.widgetShots", false)) lifecycleScope.launch {
         kotlinx.coroutines.delay(1500); io.github.graviton94.carpediem.widget.WidgetShots.save(this@debugSetup)
     }
-    return when (x.getStringExtra("cd.screen")) { "settings" -> Screen.Settings; "widgets" -> Screen.WidgetPreview; "collection" -> Screen.Collection(Screen.Main); "support" -> Screen.Support(Screen.Main); "stone" -> Screen.Stone(x.getStringExtra("cd.stoneId") ?: state.people.firstOrNull()?.id, Screen.Main); "add" -> Screen.AddPerson(null, Screen.Main); "breath" -> Screen.Breathe(BreathKind.CALM, 1, Sound.WAVES, Screen.Main); "gaze" -> Screen.Gaze(Screen.Main); "look" -> Screen.Look(Screen.Main); "thanks" -> Screen.Breathe(BreathKind.THANKS, 1, Sound.SEASON, Screen.Main); "walk" -> Screen.Breathe(BreathKind.BOX, 1, Sound.NONE, Screen.Main); "lantern" -> Screen.Breathe(BreathKind.SLEEP, 1, Sound.NONE, Screen.Main); "ripple" -> Screen.Breathe(BreathKind.CALM, 1, Sound.NONE, Screen.Main); "memory" -> Screen.Memory(Screen.Main); "close" -> Screen.CloseDay(Screen.Main); "credits" -> Screen.Credits(x.getIntExtra("cd.creditsYear", (state.fixedNow ?: LocalDateTime.now()).year), Screen.Main); else -> Screen.Main }
+    return when (x.getStringExtra("cd.screen")) { "settings" -> Screen.Settings; "widgets" -> Screen.WidgetPreview; "card" -> Screen.CardPreview; "collection" -> Screen.Collection(Screen.Main); "support" -> Screen.Support(Screen.Main); "stone" -> Screen.Stone(x.getStringExtra("cd.stoneId") ?: state.people.firstOrNull()?.id, Screen.Main); "add" -> Screen.AddPerson(null, Screen.Main); "breath" -> Screen.Breathe(BreathKind.CALM, 1, Sound.WAVES, Screen.Main); "gaze" -> Screen.Gaze(Screen.Main); "look" -> Screen.Look(Screen.Main); "thanks" -> Screen.Breathe(BreathKind.THANKS, 1, Sound.SEASON, Screen.Main); "walk" -> Screen.Breathe(BreathKind.BOX, 1, Sound.NONE, Screen.Main); "lantern" -> Screen.Breathe(BreathKind.SLEEP, 1, Sound.NONE, Screen.Main); "ripple" -> Screen.Breathe(BreathKind.CALM, 1, Sound.NONE, Screen.Main); "memory" -> Screen.Memory(Screen.Main); "close" -> Screen.CloseDay(Screen.Main); "credits" -> Screen.Credits(x.getIntExtra("cd.creditsYear", (state.fixedNow ?: LocalDateTime.now()).year), Screen.Main); else -> Screen.Main }
 }
 
 /** 알림에서 왔을 때 열 곳. 홈 안의 페이지 · 판은 state 에 적어 두고 (홈이 처음 그릴 때 씀), 돌 페이지는 그 화면으로. */
