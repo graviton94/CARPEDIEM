@@ -358,7 +358,10 @@ private fun MainActivity.debugSetup(state: AppState): Screen {
     if (x.getBooleanExtra("cd.offer", false)) state.profile?.let { p ->
         val day = (state.fixedNow ?: LocalDateTime.now()).toLocalDate()
         val card = state.decor(p, io.github.graviton94.carpediem.core.LifeSnapshot(p.birthDate, p.expectancy(state.store.table), day.atTime(12, 0)), day).card
-        state.people.filter { it.id == "mom00001" || it.id == "pet00001" }.forEach { state.offer(it.id, card, day) }
+        // 돌 별 꾸밈 (1.1.3): 엄마 곁엔 이번 계절 조각, 콩이 곁엔 조약돌 (하루 곁은 cd.supported 의 응원)
+        state.debugOwn(card.id, day)
+        state.adorn("mom00001", "card:${card.id}")
+        state.adorn("pet00001", "pebble:${day.toEpochDay()}")
     }
     x.getStringExtra("cd.term")?.let { k -> state.termOverride = io.github.graviton94.carpediem.core.SolarTerm.entries.firstOrNull { it.key == k } }
     // 캡처용: 우연한 순간 하나를 바로 (bubbles · fireflies · rainbow · butterflies · snail · aurora · wind)
@@ -377,6 +380,7 @@ private fun MainActivity.debugSetup(state: AppState): Screen {
     if (x.getBooleanExtra("cd.pebble", false)) state.addSamplePebble()
     // 캡처용: 새로워진 점 · 새 버전 쪽지
     x.getStringExtra("cd.supported")?.split(',')?.forEach { state.supported(it) }
+    state.debugAdornSheet = x.getBooleanExtra("cd.adornSheet", false)
     if (x.getBooleanExtra("cd.news", false)) state.whatsNew = io.github.graviton94.carpediem.ui.Changelog.entries.first().first
     x.getStringExtra("cd.update")?.let { u -> state.update = when (u) { "ready" -> AppState.UpdateState.READY; "downloading" -> AppState.UpdateState.DOWNLOADING; else -> AppState.UpdateState.AVAILABLE }; state.updateVersion = 999 }
     state.debugSlip = x.getBooleanExtra("cd.slip", false)

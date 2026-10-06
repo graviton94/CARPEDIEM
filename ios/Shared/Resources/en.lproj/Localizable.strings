@@ -1,6 +1,21 @@
 /* 자동 생성 파일 — 직접 고치지 말고 scripts/generate.py 를 실행하세요. */
+"adorn.card" = "%1$@ %2$@";
+"adorn.pebble" = "Pebble";
+"adorn.fromSupport" = "Support, %1$@";
+"adorn.fromPebble" = "From Haru, %1$@";
+"adorn.title" = "Beside %1$@";
+"adorn.none" = "Collect season pieces to place one beside each stone";
+"adorn.empty" = "Nothing placed yet";
+"adorn.change" = "Change";
+"adorn.pick" = "Choose";
+"adorn.sheetTitle" = "Place beside %1$@";
+"adorn.sheetHelp" = "One for each stone, and each piece in one place only. Choosing one that sits by another stone moves it here.";
+"adorn.atOther" = "Beside %1$@";
+"adorn.done" = "Placed beside %1$@ · %2$@";
+"adorn.remove" = "Take it away";
+"adorn.label" = "%2$@ beside %1$@";
 "support.invite" = "%1$@ memories with Haru already · Support";
-"support.thanksItem" = "Thank you.\n%1$@ now sits beside Haru.";
+"support.thanksItem" = "Thank you.\n%1$@ has arrived in the garden. Place it beside a stone.";
 "support.markLabel" = "%1$@ · %2$@, left with thanks";
 "support.mark1" = "tea";
 "support.mark2" = "coffee";
@@ -1046,10 +1061,10 @@
 "welcome.start" = "Start fresh";
 "welcome.restore" = "Bring back my records";
 "welcome.restoreSub" = "Continue from a file you saved on your old phone.";
-"news.v1_1_3.1" = "When a new version is out, the garden lets you know quietly. Tap to get it.";
-"news.v1_1_3.2" = "See what’s new any time in Settings › Help & support.";
-"news.v1_1_3.3" = "A refreshed support page: pick one, then support in one tap.";
-"news.v1_1_3.4" = "If you support the garden, a small thank-you (tea, coffee or cake) stays beside Haru.";
+"news.v1_1_3.1" = "Decorate each stone with one piece: season pieces, support gifts or pebbles.";
+"news.v1_1_3.2" = "Notes brought by guests now open as a hanji letter.";
+"news.v1_1_3.3" = "The garden quietly tells you when a new version is out. See what’s new in Settings › Help & support.";
+"news.v1_1_3.4" = "A refreshed support page.";
 "news.v1_1_2.1" = "Edit lines from past days (text, feeling, photo).";
 "news.v1_1_2.2" = "Choose “Start new” or “Restore records” on the first screen.";
 "news.v1_1_2.3" = "Turning off “Keep my lines” now asks first.";

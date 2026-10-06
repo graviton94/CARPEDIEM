@@ -282,7 +282,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
     // 오늘 마친 숨의 흔적 (E3)
     val trace = remember(day0, state.breaths) { state.breathTrace(day0) }
     // 돌에게 건넨 이번 계절의 조각 (R1): 사람 id → 조각
-    val offered = remember(state.offerings, decor.card) { io.github.graviton94.carpediem.core.Offerings.shown(state.offerings, decor.card) }
+    val adorned = remember(state.adornments, state.people) { state.adornmentsShown() }
     val scope = rememberCoroutineScope()
     var recordView by remember { mutableStateOf(state.pendingRecord?.also { state.pendingRecord = null } ?: if (state.debugOpenYear) RecordView(state.yearDue(now.toLocalDate()) ?: now.year, null) else RecordView(now.year, now.monthValue)) }
     // 정원이 아닌 페이지에서 뒤로 가기: 앱을 닫지 않고 정원으로
@@ -555,12 +555,13 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                         val fw = u * G.Family.feather
                         Image(GardenArt.obj(ctx, "feather"), null, Modifier.offset(xs[i] + u * widths[i].toFloat() / u.value / 2 - fw * 0.3f, gy - sl.scale * (sl.art.meta.ground - sl.art.meta.bbox.top) - fw * 0.4f).size(fw))
                     }
-                    // 이번 계절에 건넨 조각 (R1): 그 돌 왼쪽 발치에 계절이 끝날 때까지. 누르면 ‘가을에 엄마에게 놓은 감’
-                    sl.id?.let { pid -> offered[pid] }?.let { o ->
+                    // 돌 별 꾸밈 (1.1.3): 그 돌 왼쪽 발치에 곁에 둔 것 하나 (계절 조각 · 응원 · 조약돌). 누르면 ‘엄마 곁의 가을 은행잎’
+                    adorned[sl.id ?: io.github.graviton94.carpediem.core.Adornments.ME]?.let { item ->
+                        val art = adornArt(ctx, item) ?: return@let
                         val ow = u * G.Family.offerSize
-                        val label = stringResource(R.string.offer_label, Labels.season(ctx, o.card.season), sl.name, cardName(ctx, o.card.key))
+                        val label = stringResource(R.string.adorn_label, sl.name, adornName(ctx, item))
                         val ox = xs[i] - u * widths[i].toFloat() / u.value / 2 - ow * 0.45f; val oy = gy - ow * 0.9f
-                        Image(GardenArt.card(ctx, o.card.key), label, Modifier.offset(ox, oy).size(ow), colorFilter = nightFilter(SkyTime.isDark(now)))
+                        Image(art, label, Modifier.offset(ox, oy).size(ow), colorFilter = nightFilter(SkyTime.isDark(now)))
                         // 누르는 자리는 손가락 크기만큼 (그림은 작아도)
                         val tt = Tokens.Layout.tapTarget
                         if (!bare) Box(Modifier.offset(ox + ow / 2 - tt / 2, oy + ow / 2 - tt / 2).size(tt).clickable(interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }, indication = null) { state.say(label) })
@@ -595,20 +596,6 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                     Box(Modifier.offset(px0 - tt / 2, gy + pw * 0.08f - tt / 2).size(tt)
                         .semantics { contentDescription = pebbleLabel }
                         .clickable(interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }, indication = null) { state.takePebble(day0); state.say(tookMsg) })
-                }
-                // 고마움의 흔적: 응원한 것 (찻잔 · 머그 · 케이크) 이 하루 돌 앞 오른쪽에 작게 (누르면 언제 남긴 것인지)
-                if (!bare && state.supportMarks.isNotEmpty()) {
-                    val mw = u * 21f
-                    val tt = Tokens.Layout.tapTarget
-                    io.github.graviton94.carpediem.billing.Support.IDS.forEachIndexed { k, id ->
-                        val day = state.supportMarks[id] ?: return@forEachIndexed
-                        val slot = io.github.graviton94.carpediem.billing.Support.IDS.filter { it in state.supportMarks }.indexOf(id)
-                        val mx = xs[0] - mw * 0.15f + mw * 0.95f * slot
-                        val label = stringResource(R.string.support_markLabel, RecordText.day(ctx, day), stringResource(when (k) { 0 -> R.string.support_mark1; 1 -> R.string.support_mark2; else -> R.string.support_mark3 }))
-                        Box(Modifier.offset(mx, gy - mw * 0.62f).size(mw)) { SupportIcon(k, mw) }
-                        Box(Modifier.offset(mx + mw / 2 - tt / 2, gy - mw * 0.2f - tt / 2).size(tt).semantics { contentDescription = label }
-                            .clickable(interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }, indication = null) { state.say(label) })
-                    }
                 }
                 // 달팽이 손님: 오랜만에 돌아온 날, 한 시간쯤 돌들 앞 길을 천천히 건넘
                 if (!bare) SnailGuest(state.store.snailAt, now, gy, u * G.Decor.treeX)

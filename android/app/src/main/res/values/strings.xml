@@ -1,8 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- 자동 생성 파일 — 직접 고치지 말고 scripts/generate.py 를 실행하세요. -->
 <resources>
+    <string name="adorn_card">%1$s %2$s</string>
+    <string name="adorn_pebble">Pebble</string>
+    <string name="adorn_fromSupport">Support, %1$s</string>
+    <string name="adorn_fromPebble">From Haru, %1$s</string>
+    <string name="adorn_title">Beside %1$s</string>
+    <string name="adorn_none">Collect season pieces to place one beside each stone</string>
+    <string name="adorn_empty">Nothing placed yet</string>
+    <string name="adorn_change">Change</string>
+    <string name="adorn_pick">Choose</string>
+    <string name="adorn_sheetTitle">Place beside %1$s</string>
+    <string name="adorn_sheetHelp">One for each stone, and each piece in one place only. Choosing one that sits by another stone moves it here.</string>
+    <string name="adorn_atOther">Beside %1$s</string>
+    <string name="adorn_done">Placed beside %1$s · %2$s</string>
+    <string name="adorn_remove">Take it away</string>
+    <string name="adorn_label">%2$s beside %1$s</string>
     <string name="support_invite">%1$s memories with Haru already · Support</string>
-    <string name="support_thanksItem">Thank you.\n%1$s now sits beside Haru.</string>
+    <string name="support_thanksItem">Thank you.\n%1$s has arrived in the garden. Place it beside a stone.</string>
     <string name="support_markLabel">%1$s · %2$s, left with thanks</string>
     <string name="support_mark1">tea</string>
     <string name="support_mark2">coffee</string>
@@ -1048,10 +1063,10 @@
     <string name="welcome_start">Start fresh</string>
     <string name="welcome_restore">Bring back my records</string>
     <string name="welcome_restoreSub">Continue from a file you saved on your old phone.</string>
-    <string name="news_v1_1_3_1">When a new version is out, the garden lets you know quietly. Tap to get it.</string>
-    <string name="news_v1_1_3_2">See what’s new any time in Settings › Help &amp; support.</string>
-    <string name="news_v1_1_3_3">A refreshed support page: pick one, then support in one tap.</string>
-    <string name="news_v1_1_3_4">If you support the garden, a small thank-you (tea, coffee or cake) stays beside Haru.</string>
+    <string name="news_v1_1_3_1">Decorate each stone with one piece: season pieces, support gifts or pebbles.</string>
+    <string name="news_v1_1_3_2">Notes brought by guests now open as a hanji letter.</string>
+    <string name="news_v1_1_3_3">The garden quietly tells you when a new version is out. See what’s new in Settings › Help &amp; support.</string>
+    <string name="news_v1_1_3_4">A refreshed support page.</string>
     <string name="news_v1_1_2_1">Edit lines from past days (text, feeling, photo).</string>
     <string name="news_v1_1_2_2">Choose “Start new” or “Restore records” on the first screen.</string>
     <string name="news_v1_1_2_3">Turning off “Keep my lines” now asks first.</string>

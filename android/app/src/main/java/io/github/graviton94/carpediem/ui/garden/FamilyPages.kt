@@ -189,6 +189,11 @@ fun StoneScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, id: S
                     }
                 }
             }
+            // 돌 별 꾸밈 (1.1.3): 곁에 둔 것 하나 (모은 계절 조각 · 응원 · 조약돌 가운데서)
+            var adornOpen by rememberSaveable { mutableStateOf(state.debugAdornSheet.also { state.debugAdornSheet = false }) }
+            val stoneKey = if (me) io.github.graviton94.carpediem.core.Adornments.ME else id!!
+            AdornRow(state, stoneKey, name) { adornOpen = true }
+            if (adornOpen) AdornSheet(state, stoneKey, name) { adornOpen = false }
             // 내 돌: 하루와 숨 쉬기
             if (me) GardenButton(stringResource(R.string.breath), { breathSheet = true }, filled = false, seed = 879, modifier = Modifier.guideTarget(guide, "stone.action"))
             // 이 돌에게 보낸 마음
@@ -206,16 +211,6 @@ fun StoneScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, id: S
                         }
                     }
                 }
-                // 이번 계절의 조각 놓기 (R1): 내 나무의 이번 계절 조각을 그 사람 돌 곁에, 계절마다 한 번
-                val nowCard = remember(today) { state.decor(profile, LifeSnapshot(profile.birthDate, profile.expectancy(state.store.table), now), today).card }
-                val given = state.offerings.firstOrNull { it.personId == id && it.card.year == nowCard.year && it.card.season == nowCard.season }
-                if (given == null) {
-                    val piece = cardName(ctx, nowCard.key)
-                    ActionNote(stringResource(R.string.offer_action, piece), stringResource(R.string.offer_ask), 881) {
-                        state.offer(id!!, nowCard, today); state.say(ctx.getString(R.string.offer_done, name))
-                    }
-                } else TokenText(stringResource(R.string.offer_label, Labels.season(ctx, given.card.season), name, cardName(ctx, given.card.key)), Tokens.TypeScale.footnote,
-                    Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.Center)
                 GardenButton(stringResource(R.string.stone_edit), { onEdit(id!!) }, filled = false, seed = 880, modifier = Modifier.guideTarget(guide, "stone.action"))
             }
         }

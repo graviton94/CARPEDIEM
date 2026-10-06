@@ -1,8 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- 자동 생성 파일 — 직접 고치지 말고 scripts/generate.py 를 실행하세요. -->
 <resources>
+    <string name="adorn_card">%1$sの%2$s</string>
+    <string name="adorn_pebble">小石</string>
+    <string name="adorn_fromSupport">%1$s 応援</string>
+    <string name="adorn_fromPebble">%1$s ハルから</string>
+    <string name="adorn_title">%1$sのそばに置いたもの</string>
+    <string name="adorn_none">季節のかけらを集めると、石のそばにひとつずつ置けます</string>
+    <string name="adorn_empty">まだ何も置いていません</string>
+    <string name="adorn_change">かえる</string>
+    <string name="adorn_pick">えらぶ</string>
+    <string name="adorn_sheetTitle">%1$sのそばに置くもの</string>
+    <string name="adorn_sheetHelp">石ごとにひとつ、同じものは一か所だけ。ほかの石のそばにあるものを選ぶと、こちらへ移ります。</string>
+    <string name="adorn_atOther">%1$sのそばに</string>
+    <string name="adorn_done">%1$sのそばに置きました・%2$s</string>
+    <string name="adorn_remove">そばから片づける</string>
+    <string name="adorn_label">%1$sのそばの%2$s</string>
     <string name="support_invite">ハルとの思い出がもう%1$s個に・応援する</string>
-    <string name="support_thanksItem">ありがとう。\nハルのそばに%1$s置きました。</string>
+    <string name="support_thanksItem">ありがとう。\n庭に%1$s届きました。石のそばに置けます。</string>
     <string name="support_markLabel">%1$s、ありがとうの気持ちが残した%2$s</string>
     <string name="support_mark1">お茶</string>
     <string name="support_mark2">コーヒー</string>
@@ -1048,10 +1063,10 @@
     <string name="welcome_start">はじめから始める</string>
     <string name="welcome_restore">記録を読み込む</string>
     <string name="welcome_restoreSub">前のスマホで保存したファイルから続けます。</string>
-    <string name="news_v1_1_3_1">新しいバージョンが出ると、庭でそっとお知らせします。タップで受け取れます。</string>
-    <string name="news_v1_1_3_2">設定 › ヘルプと応援 から、いつでも新しくなったことを見られます。</string>
-    <string name="news_v1_1_3_3">応援ページを新しくしました。選んでから一度で応援できます。</string>
-    <string name="news_v1_1_3_4">応援すると、ハルのそばに感謝のしるし（お茶・コーヒー・ケーキ）が残ります。</string>
+    <string name="news_v1_1_3_1">石ごとにひとつ、そばを飾れます。集めた季節のかけら・応援・小石から選びます。</string>
+    <string name="news_v1_1_3_2">お客さんがくわえてきたメモが、和紙の手紙になりました。</string>
+    <string name="news_v1_1_3_3">新しいバージョンが出ると庭でそっとお知らせします。設定 › ヘルプと応援 で新しくなったことを見られます。</string>
+    <string name="news_v1_1_3_4">応援ページを新しくしました。</string>
     <string name="news_v1_1_2_1">過去の日のひとことも直せます（文・気持ち・写真）。</string>
     <string name="news_v1_1_2_2">最初の画面で「新しく始める／記録を読み込む」を選べます。</string>
     <string name="news_v1_1_2_3">「記録を残す」をオフにする前に確認します。</string>

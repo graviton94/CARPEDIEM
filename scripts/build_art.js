@@ -1,6 +1,8 @@
 // design/art/src 의 손그림 코드로 정원 그림을 파일로 굽습니다.
 // 정원 (하늘 · 땅 · 자리 여섯 · 계절 한 장 · 해 · 달) = 한지 (hanji_*.js), 옛 꾸밈 obj_* 과 응원 · 테마 그림 = 크레용 파스텔 (mix.js).
 // 사용법: npm i playwright (또는 전역 설치) 후  node scripts/build_art.js
+//   ONLY=card_tea.webp,card_cake.webp node scripts/build_art.js  → 그 파일만 씀 (다른 그림은 그대로)
+//   CHROMIUM=/경로/chrome  → 설치된 크롬으로
 // 결과
 //   design/art/                       : 보기용 (obj_*.png · season_*.jpg · theme_*.jpg · donation.jpg · store_bg.jpg)
 //   android/app/src/main/assets/garden: 앱용 (sky_* · strip_* · tree_* · post_* · moss_* · kite · card_* · sun · moon · fiber · obj_* · sparkle · tooth_*)
@@ -24,7 +26,7 @@ const app = path.join(root, "android/app/src/main/assets/garden");
 
 (async () => {
   fs.mkdirSync(app, { recursive: true });
-  const browser = await chromium.launch();
+  const browser = await chromium.launch(process.env.CHROMIUM ? { executablePath: process.env.CHROMIUM } : {});
   const page = await browser.newPage();
   await page.setContent("<body></body>");
   await page.addScriptTag({ content: "window.ART = (function () {\n" + src + "\nreturn { OBJ, SEASONS: SEASONS_MIX, THEMES, TOOTH, objCanvas, gardenScene: gardenMix, theme, donation: donationMix, store: storeMix, sparkleArt, H: HANJI };\n})();" });
@@ -74,7 +76,9 @@ const app = path.join(root, "android/app/src/main/assets/garden");
     make("app", "paper.png", 256, 256, "image/png", (cv) => cv.getContext("2d").drawImage(A.TOOTH.paper, 0, 0));
     return list;
   }, D);
+  const only = (process.env.ONLY || "").split(",").filter(Boolean);
   for (const j of jobs) {
+    if (only.length && !only.includes(j.name)) continue;
     const buf = Buffer.from(j.data.split(",")[1], "base64");
     if (j.dir !== "app") fs.writeFileSync(path.join(out, j.name), buf);
     if (j.dir !== "art") fs.writeFileSync(path.join(app, j.name), buf);

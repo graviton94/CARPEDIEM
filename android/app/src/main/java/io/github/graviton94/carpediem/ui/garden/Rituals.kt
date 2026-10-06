@@ -531,16 +531,10 @@ internal fun GuestFigure(guest: String, x: Dp, gy: Dp, screenW: Dp, letter: Bool
             role = if (letter) androidx.compose.ui.semantics.Role.Button else null) { if (letter) onLetter() else kick++ })
     // 지난 한 줄을 물고 온 날: 부리 앞에 작게 접힌 한지 쪽지 (누르면 펼침)
     if (letter) {
-        val lw = w * 0.3f
-        val ink = Theme.gc.ink
-        androidx.compose.foundation.Canvas(Modifier.offset(x + w * 0.22f, top + w * 0.28f).size(lw, lw * 0.72f).graphicsLayer { rotationZ = -14f; translationY = -hop.value * w.toPx() * 0.18f }) {
-            val sw = size.width * 0.07f
-            val paper = androidx.compose.ui.graphics.Path().apply { moveTo(0f, size.height * 0.12f); lineTo(size.width, 0f); lineTo(size.width * 0.97f, size.height); lineTo(size.width * 0.03f, size.height * 0.96f); close() }
-            drawPath(paper, Color(0xFFFAF3E2))
-            drawPath(paper, ink, style = androidx.compose.ui.graphics.drawscope.Stroke(sw))
-            drawLine(ink, androidx.compose.ui.geometry.Offset(0f, size.height * 0.12f), androidx.compose.ui.geometry.Offset(size.width * 0.5f, size.height * 0.55f), sw * 0.8f)
-            drawLine(ink, androidx.compose.ui.geometry.Offset(size.width * 0.5f, size.height * 0.55f), androidx.compose.ui.geometry.Offset(size.width, 0f), sw * 0.8f)
-        }
+        // 한지 쪽지 (계절 조각과 같은 한지 그림): 부리 앞에 작게, 손님과 같이 뜀
+        val bw = w * 0.8f; val bh = bw * (G.Decor.cardBoxH / G.Decor.cardBoxW)
+        Image(GardenArt.card(ctx, "slip"), null, Modifier.offset(x + w * 0.36f - bw * 0.5f, top + w * 0.46f - bh * 0.7f).size(bw, bh)
+            .graphicsLayer { rotationZ = -10f; translationY = -hop.value * w.toPx() * 0.18f })
     }
     if (name.value > 0f) {
         val tw = u * 120f
@@ -559,17 +553,27 @@ internal fun SlipSheet(state: AppState, line: io.github.graviton94.carpediem.cor
     val years = io.github.graviton94.carpediem.core.Lines.yearsAgo(listOf(line), today).firstOrNull()?.first ?: 0
     val ago = if (years > 0) stringResource(io.github.graviton94.carpediem.R.string.slip_yearsAgo, "$years") else stringResource(io.github.graviton94.carpediem.R.string.slip_daysAgo, "$days")
     val name = remember(guest) { ctx.resources.getIdentifier("chance_guest_$guest", "string", ctx.packageName).takeIf { it != 0 }?.let { ctx.getString(it) }.orEmpty() }
-    io.github.graviton94.carpediem.ui.GardenAlert(
-        onDismissRequest = onClose,
-        title = { androidx.compose.material3.Text(listOfNotNull(ago, line.feeling?.let { Labels.feeling(ctx, it) }).joinToString(" · ")) },
-        text = {
-            Column(verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3), horizontalAlignment = Alignment.CenterHorizontally) {
-                TokenText("“${line.text}”", Tokens.TypeScale.title3.serif(), align = TextAlign.Center)
-                WeatheredPhoto(state, line.date, today, Theme.unit * 150f)
-                TokenText(stringResource(io.github.graviton94.carpediem.R.string.slip_from, name), Tokens.TypeScale.footnote, color = p.secondary)
+    // 한지 편지처럼 (계절 편지와 같은 종이 · 글꼴): 쪽지 그림 · 언제 · 누가 → 그날의 한 줄 · 사진 → 그날 기록 보기
+    androidx.compose.material3.ModalBottomSheet(onDismissRequest = onClose, containerColor = Theme.gc.paper,
+        sheetState = androidx.compose.material3.rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
+        Column(
+            Modifier.fillMaxWidth().verticalScroll(androidx.compose.foundation.rememberScrollState()).padding(horizontal = Theme.deviceClass.pageMargin)
+                .navigationBarsPadding().padding(bottom = Tokens.Space.sp8),
+            verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3),
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
+                Image(GardenArt.card(ctx, "slip"), null, Modifier.size(Theme.unit * 52f))
+                Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
+                    TokenText(listOfNotNull(ago, line.feeling?.let { Labels.feeling(ctx, it) }).joinToString(" · "), Tokens.TypeScale.title3.serif())
+                    TokenText(stringResource(io.github.graviton94.carpediem.R.string.slip_from, name) + " · " + RecordText.day(ctx, line.date), Tokens.TypeScale.footnote, color = p.secondary)
+                }
             }
-        },
-        confirmButton = { androidx.compose.material3.TextButton(onClick = onRecord) { androidx.compose.material3.Text(stringResource(io.github.graviton94.carpediem.R.string.slip_record)) } },
-        dismissButton = { androidx.compose.material3.TextButton(onClick = onClose) { androidx.compose.material3.Text(stringResource(io.github.graviton94.carpediem.R.string.collect_close), color = p.secondary) } },
-    )
+            CrayonRule(seed = 1430)
+            TokenText(line.text, Tokens.TypeScale.headline.serif())
+            Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) { WeatheredPhoto(state, line.date, today, Theme.unit * 160f) }
+            GardenButton(stringResource(io.github.graviton94.carpediem.R.string.slip_record), onRecord, filled = false, seed = 1431, paper = true)
+            TokenText(stringResource(io.github.graviton94.carpediem.R.string.collect_close), Tokens.TypeScale.footnote,
+                Modifier.fillMaxWidth().heightIn(min = Tokens.Layout.tapTarget).clickable(onClick = onClose).padding(vertical = Tokens.Space.sp3), color = p.secondary, align = TextAlign.Center)
+        }
+    }
 }

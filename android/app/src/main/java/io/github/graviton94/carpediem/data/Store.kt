@@ -455,6 +455,18 @@ class Store(context: Context) {
     var termNoted: String?
         get() = prefs.getString("termNoted", null)
         set(v) = prefs.edit().putString("termNoted", v).apply()
+    /**
+     * 돌 별 꾸밈 (core Adornments, 1.1.3): 돌 → 꾸밈 하나. 처음 읽을 때 예전 ‘이번 계절의 조각’ 과 응원의 흔적을 옮겨 옴.
+     */
+    var adornments: Map<String, String>
+        get() {
+            prefs.getString("adornments", null)?.let { return io.github.graviton94.carpediem.core.Adornments.decode(it) }
+            var m = io.github.graviton94.carpediem.core.Adornments.fromOfferings(offerings, emptyMap())
+            supportMarks.keys.firstOrNull()?.let { id -> if (io.github.graviton94.carpediem.core.Adornments.ME !in m) m = m + (io.github.graviton94.carpediem.core.Adornments.ME to "support:$id") }
+            prefs.edit().putString("adornments", io.github.graviton94.carpediem.core.Adornments.encode(m)).apply()
+            return m
+        }
+        set(v) = prefs.edit().putString("adornments", io.github.graviton94.carpediem.core.Adornments.encode(v)).apply()
     /** 돌에게 건넨 이번 계절의 조각 (core Offerings, R1). */
     var offerings: List<io.github.graviton94.carpediem.core.Offering>
         get() = io.github.graviton94.carpediem.core.Offerings.decode(prefs.getString("offerings", null))

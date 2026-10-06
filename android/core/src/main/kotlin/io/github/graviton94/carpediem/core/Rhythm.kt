@@ -70,6 +70,29 @@ object Offerings {
         list.filter { same(it.card, now) }.associateBy { it.personId }
 }
 
+/**
+ * 돌 별 꾸밈 (1.1.3): 돌마다 꾸밈 하나, 같은 꾸밈은 한 곳에만 (다른 돌로 옮기면 먼저 있던 돌에선 빠짐).
+ * 돌 = [ME] (내 하루) 또는 가족 id. 꾸밈 = "card:<SeasonCard.id>" (모은 계절 조각) · "support:<상품 id>" (응원) · "pebble:<날짜>" (하루가 준 조약돌).
+ */
+object Adornments {
+    const val ME = "me"
+    fun encode(m: Map<String, String>) = m.entries.joinToString("\n") { "${it.key}\t${it.value}" }
+    fun decode(s: String?): Map<String, String> = s.orEmpty().lineSequence().mapNotNull { r ->
+        val f = r.split('\t'); if (f.size < 2 || f[0].isEmpty() || f[1].isEmpty()) null else f[0] to f[1]
+    }.toMap()
+    /** 놓기: 그 돌에 있던 것은 손으로, 다른 돌에 있던 같은 꾸밈은 이리로 옮겨 옴. */
+    fun put(m: Map<String, String>, stone: String, item: String): Map<String, String> = m.filterValues { it != item } - stone + (stone to item)
+    fun remove(m: Map<String, String>, stone: String): Map<String, String> = m - stone
+    /** 그 꾸밈이 놓인 돌 (없으면 null). */
+    fun stoneOf(m: Map<String, String>, item: String): String? = m.entries.firstOrNull { it.value == item }?.key
+    /** 예전 ‘이번 계절의 조각’ (같은 조각을 여러 돌에) 을 옮겨 옴: 조각마다 처음 놓은 돌 하나에만, 이미 꾸밈이 있는 돌은 그대로. */
+    fun fromOfferings(list: List<Offering>, m: Map<String, String>): Map<String, String> = list.sortedBy { it.date }.fold(m) { acc, o ->
+        val item = "card:${o.card.id}"; if (o.personId in acc || acc.containsValue(item)) acc else acc + (o.personId to item)
+    }
+    /** 내려놓은 돌의 꾸밈은 다시 손으로. */
+    fun prune(m: Map<String, String>, stones: Set<String>): Map<String, String> = m.filterKeys { it == ME || it in stones }
+}
+
 /** 정원의 한 해 (S2): 12월 마지막 주 (25 ~ 31일) 에 그해의 정원을 한 장으로 볼까 묻는다. */
 object YearCard {
     const val FROM_DAY = 25

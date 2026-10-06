@@ -212,7 +212,27 @@ class AppState(private val context: Context) {
     fun supported(id: String, today: LocalDate = nowDate()) {
         if (id in supportMarks) return
         val v = supportMarks + (id to today); store.supportMarks = v; supportMarks = v
+        // 처음 받은 응원은 내 하루 곁에 (이미 꾸밈이 있으면 손에 두었다가 돌 페이지에서 고름)
+        if (io.github.graviton94.carpediem.core.Adornments.ME !in adornments) adorn(io.github.graviton94.carpediem.core.Adornments.ME, "support:$id")
     }
+    // ───── 돌 별 꾸밈: 돌마다 하나, 같은 것은 한 곳에만 ─────
+    var adornments by mutableStateOf(store.adornments)
+        private set
+    fun adorn(stone: String, item: String) { val v = io.github.graviton94.carpediem.core.Adornments.put(adornments, stone, item); store.adornments = v; adornments = v; Widgets.refresh(context) }
+    fun unadorn(stone: String) { val v = io.github.graviton94.carpediem.core.Adornments.remove(adornments, stone); store.adornments = v; adornments = v }
+    /** 캡처용: 계절 조각 하나 · 조약돌 하나를 가진 것으로, 돌 페이지에서 꾸밈 고르기를 바로 펼침. */
+    fun debugOwn(cardId: String, day: LocalDate) {
+        if (cardId !in seasonCards) { val n = seasonCards + cardId; store.seasonCards = n; seasonCards = n }
+        if (day !in pebbles) { val v = (pebbles + day).sorted(); store.pebbles = v; pebbles = v }
+    }
+    var debugAdornSheet = false
+    /** 지금 정원에 있는 돌의 꾸밈만 (내려놓은 돌의 것은 손으로). */
+    fun adornmentsShown(): Map<String, String> = io.github.graviton94.carpediem.core.Adornments.prune(adornments, people.map { it.id }.toSet())
+    /** 가진 꾸밈 (새것이 앞): 모은 계절 조각 · 응원 · 조약돌. */
+    fun ownedAdornments(): List<String> =
+        supportMarks.entries.sortedByDescending { it.value }.map { "support:${it.key}" } +
+            seasonCards.mapNotNull { io.github.graviton94.carpediem.core.SeasonCard.parse(it) }.sortedWith(compareByDescending<io.github.graviton94.carpediem.core.SeasonCard> { it.year }.thenByDescending { it.season.ordinal }).map { "card:${it.id}" } +
+            pebbles.sortedDescending().map { "pebble:${it.toEpochDay()}" }
     /** 오늘 30 · 60 · 90… 번째 한 줄을 남겼으면 그 수 (응원한 적이 있으면 권하지 않음). */
     fun supportInviteDue(today: LocalDate): Int? {
         if (supportMarks.isNotEmpty() || design != Design.GARDEN) return null
@@ -911,7 +931,7 @@ class AppState(private val context: Context) {
 
     fun eraseAll() {
         previewQ = false
-        store.eraseAll(); store.ensureQuoteSeed(); unit = store.unit; grid = store.grid; defaultUnit = unit; defaultGrid = grid; lines = emptyList(); streaks = emptyMap(); keepLines = true; care = null; careOn = true; question = null; answering = null; lettersOpened = emptySet(); toast = null; randomLine = null; people = emptyList(); memories = emptyList(); memoryLines = emptyList(); wishes = emptyMap(); wishSkipped = emptySet(); specialDays = emptyList(); yearsOpened = emptySet(); introSeen = store.introSeen; guideDone = store.guideDone; pageHints = store.pageHints; nudgesSeen = store.nudgesSeen; birthPicked = false; breaths = emptyList(); gazeDays = emptySet(); seasonCards = emptySet(); chancesMet = emptySet(); chance = null; breathKind = store.breathKind; breathMinutes = store.breathMinutes; sound = store.sound
+        store.eraseAll(); store.ensureQuoteSeed(); unit = store.unit; grid = store.grid; defaultUnit = unit; defaultGrid = grid; lines = emptyList(); streaks = emptyMap(); keepLines = true; care = null; careOn = true; question = null; answering = null; lettersOpened = emptySet(); toast = null; randomLine = null; people = emptyList(); memories = emptyList(); memoryLines = emptyList(); wishes = emptyMap(); wishSkipped = emptySet(); specialDays = emptyList(); yearsOpened = emptySet(); introSeen = store.introSeen; guideDone = store.guideDone; pageHints = store.pageHints; nudgesSeen = store.nudgesSeen; birthPicked = false; breaths = emptyList(); gazeDays = emptySet(); seasonCards = emptySet(); adornments = store.adornments; supportMarks = store.supportMarks; chancesMet = emptySet(); chance = null; breathKind = store.breathKind; breathMinutes = store.breathMinutes; sound = store.sound
         profile = null; quoteLanguage = store.quoteLanguage; quote = store.todaysQuote(); design = store.design; meetPending = false; previewAll = false; notify = false; devMode = false; io.github.graviton94.carpediem.notify.Daily.schedule(context, false); io.github.graviton94.carpediem.notify.Evening.schedule(context, false); eveningNotify = false; io.github.graviton94.carpediem.notify.Tomorrow.schedule(context, false); tomorrowNotify = false; morningBreath = true; Widgets.refresh(context)
     }
 
