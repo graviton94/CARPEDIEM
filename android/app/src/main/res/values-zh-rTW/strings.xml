@@ -1044,6 +1044,7 @@
     <string name="welcome_restoreSub">用舊手機儲存的檔案繼續使用。</string>
     <string name="news_v1_1_3_1">有新版本時，花園會安靜地告訴你。點一下就能下載。</string>
     <string name="news_v1_1_3_2">隨時可在 設定 › 說明與支持 再看一次更新內容。</string>
+    <string name="news_v1_1_3_3">重新整理了支持頁面：選好後一次完成支持。</string>
     <string name="news_v1_1_2_1">過去的話也能修改了（文字・心情・照片）。</string>
     <string name="news_v1_1_2_2">第一個畫面可選「重新開始／匯入紀錄」。</string>
     <string name="news_v1_1_2_3">關閉「保留紀錄」前會再確認一次。</string>

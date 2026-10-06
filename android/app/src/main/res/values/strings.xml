@@ -1044,6 +1044,7 @@
     <string name="welcome_restoreSub">Continue from a file you saved on your old phone.</string>
     <string name="news_v1_1_3_1">When a new version is out, the garden lets you know quietly. Tap to get it.</string>
     <string name="news_v1_1_3_2">See what’s new any time in Settings › Help &amp; support.</string>
+    <string name="news_v1_1_3_3">A refreshed support page: pick one, then support in one tap.</string>
     <string name="news_v1_1_2_1">Edit lines from past days (text, feeling, photo).</string>
     <string name="news_v1_1_2_2">Choose “Start new” or “Restore records” on the first screen.</string>
     <string name="news_v1_1_2_3">Turning off “Keep my lines” now asks first.</string>
