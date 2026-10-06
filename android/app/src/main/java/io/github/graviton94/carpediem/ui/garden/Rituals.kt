@@ -544,6 +544,7 @@ internal fun GuestFigure(guest: String, x: Dp, gy: Dp, screenW: Dp, letter: Bool
 }
 
 /** 손님이 물고 온 쪽지를 펼침: 몇 날 (해) 전 오늘 · 그날의 마음 · 한 줄 · 사진. ‘그날 기록 보기’ 는 기록 페이지로. */
+@OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 @Composable
 internal fun SlipSheet(state: AppState, line: io.github.graviton94.carpediem.core.DayLine, guest: String, today: LocalDate, onRecord: () -> Unit, onClose: () -> Unit) {
     val ctx = LocalContext.current
