@@ -314,6 +314,10 @@ class Store(context: Context) {
             if (k.isEmpty() || d == null) null else k to LocalDate.ofEpochDay(d)
         }.toMap()
         set(v) = prefs.edit().putString("supportMarks", v.entries.joinToString(",") { "${it.key}:${it.value.toEpochDay()}" }).apply()
+    /** 권유 쪽지를 × 로 접은 것 ("key:날짜", 그날 것만 남김). */
+    var notesHidden: Set<String>
+        get() = prefs.getStringSet("notesHidden", emptySet()) ?: emptySet()
+        set(v) = prefs.edit().putStringSet("notesHidden", v).apply()
     var slipOpened: LocalDate?
         get() = prefs.getLong("slipOpened", Long.MIN_VALUE).takeIf { it != Long.MIN_VALUE }?.let { LocalDate.ofEpochDay(it) }
         set(v) = prefs.edit().putLong("slipOpened", v?.toEpochDay() ?: Long.MIN_VALUE).apply()

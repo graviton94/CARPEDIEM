@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- 자동 생성 파일 — 직접 고치지 말고 scripts/generate.py 를 실행하세요. -->
 <resources>
+    <string name="note_dismiss">今日はやめておく</string>
     <string name="closeDay_ask">今日を閉じに行きますか？</string>
     <string name="adorn_card">%1$sの%2$s</string>
     <string name="adorn_pebble">小石</string>
@@ -1068,7 +1069,8 @@
     <string name="news_v1_1_3_2">お客さんがくわえてきたメモが、和紙の手紙になりました。</string>
     <string name="news_v1_1_3_3">新しいバージョンが出ると庭でそっとお知らせします。設定 › ヘルプと応援 で新しくなったことを見られます。</string>
     <string name="news_v1_1_3_4">通知から開いたときは、呼吸や一日の締めくくりを始める前にひと声かけます。</string>
-    <string name="news_v1_1_3_5">応援ページを新しくしました。</string>
+    <string name="news_v1_1_3_5">庭の下のおすすめは × で閉じられます。地面が画面の下までつながりました。</string>
+    <string name="news_v1_1_3_6">応援ページを新しくしました。</string>
     <string name="news_v1_1_2_1">過去の日のひとことも直せます（文・気持ち・写真）。</string>
     <string name="news_v1_1_2_2">最初の画面で「新しく始める／記録を読み込む」を選べます。</string>
     <string name="news_v1_1_2_3">「記録を残す」をオフにする前に確認します。</string>

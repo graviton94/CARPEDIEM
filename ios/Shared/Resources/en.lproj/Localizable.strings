@@ -1,4 +1,5 @@
 /* 자동 생성 파일 — 직접 고치지 말고 scripts/generate.py 를 실행하세요. */
+"note.dismiss" = "Not today";
 "closeDay.ask" = "Close the day now?";
 "adorn.card" = "%1$@ %2$@";
 "adorn.pebble" = "Pebble";
@@ -1066,7 +1067,8 @@
 "news.v1_1_3.2" = "Notes brought by guests now open as a hanji letter.";
 "news.v1_1_3.3" = "The garden quietly tells you when a new version is out. See what’s new in Settings › Help & support.";
 "news.v1_1_3.4" = "Opening from a notification now asks before starting a breath or closing the day.";
-"news.v1_1_3.5" = "A refreshed support page.";
+"news.v1_1_3.5" = "Suggestions in the garden can be dismissed with ×, and the ground now reaches the bottom of the screen.";
+"news.v1_1_3.6" = "A refreshed support page.";
 "news.v1_1_2.1" = "Edit lines from past days (text, feeling, photo).";
 "news.v1_1_2.2" = "Choose “Start new” or “Restore records” on the first screen.";
 "news.v1_1_2.3" = "Turning off “Keep my lines” now asks first.";

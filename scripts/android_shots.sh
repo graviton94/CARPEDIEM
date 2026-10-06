@@ -127,6 +127,8 @@ open --es cd.screen stone --es cd.stoneId mom00001 --ez cd.adornSheet true --es 
 open --ez cd.recall true --es cd.now 2026-10-04T10:00; sleep 5
 open --ez cd.recall true --ez cd.slip true --es cd.now 2026-10-04T10:00;                                shot a04_slip_letter 8
 open --es cd.screen support --es cd.now 2026-10-05T15:00;                                                shot a05_support 5
+# 화면이 짧은 폰 (세 버튼 내비게이션 등): 땅이 탭 위까지 이어지는지 · 권유 쪽지의 ×
+adb shell wm size 1080x2100; open --ez cd.reset true --es cd.design garden --el cd.seed 2718281 --es cd.birth 2000-05-12 --es cd.sex female --ez cd.meet false --es cd.update available --es cd.now 2026-10-05T15:00; shot a06_short_ground 8; adb shell wm size reset
 open --ez cd.reset true --es cd.design garden --el cd.seed 2718281 --es cd.birth 2000-05-12 --es cd.sex female --ez cd.meet false --es cd.now $NOW; sleep 6
 # 처음 온 사람의 둘러보기: 첫 장 → 한 번 눌러 둘째 장 (남은 시간을 비춤)
 open --ez cd.guide true --es cd.now $NOW;                                                              shot g03b_guide 6

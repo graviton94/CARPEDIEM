@@ -1,5 +1,6 @@
 {
   "ko": {
+    "note.dismiss": "오늘은 넘기기",
     "closeDay.ask": "오늘 하루를 닫으러 갈까요?",
     "adorn.card": "{season} {piece}",
     "adorn.pebble": "조약돌",
@@ -1065,6 +1066,7 @@
     "welcome.restoreSub": "예전 폰에서 저장한 파일로 이어서 써요."
   },
   "en": {
+    "note.dismiss": "Not today",
     "closeDay.ask": "Close the day now?",
     "adorn.card": "{season} {piece}",
     "adorn.pebble": "Pebble",
@@ -2130,6 +2132,7 @@
     "welcome.restoreSub": "Continue from a file you saved on your old phone."
   },
   "ja": {
+    "note.dismiss": "今日はやめておく",
     "closeDay.ask": "今日を閉じに行きますか？",
     "adorn.card": "{season}の{piece}",
     "adorn.pebble": "小石",
@@ -3195,6 +3198,7 @@
     "welcome.restoreSub": "前のスマホで保存したファイルから続けます。"
   },
   "zh-TW": {
+    "note.dismiss": "今天先不要",
     "closeDay.ask": "要去為今天收尾嗎？",
     "adorn.card": "{season}的{piece}",
     "adorn.pebble": "小石子",

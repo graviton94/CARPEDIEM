@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- 자동 생성 파일 — 직접 고치지 말고 scripts/generate.py 를 실행하세요. -->
 <resources>
+    <string name="note_dismiss">今天先不要</string>
     <string name="closeDay_ask">要去為今天收尾嗎？</string>
     <string name="adorn_card">%1$s的%2$s</string>
     <string name="adorn_pebble">小石子</string>
@@ -1068,7 +1069,8 @@
     <string name="news_v1_1_3_2">客人叼來的紙條，變成了韓紙信。</string>
     <string name="news_v1_1_3_3">有新版本時花園會安靜地告訴你。可在 設定 › 說明與支持 再看更新內容。</string>
     <string name="news_v1_1_3_4">從通知進入時，會先問一聲再開始呼吸或為今天收尾。</string>
-    <string name="news_v1_1_3_5">重新整理了支持頁面。</string>
+    <string name="news_v1_1_3_5">花園下方的建議可以用 × 關掉，地面也延伸到畫面底部了。</string>
+    <string name="news_v1_1_3_6">重新整理了支持頁面。</string>
     <string name="news_v1_1_2_1">過去的話也能修改了（文字・心情・照片）。</string>
     <string name="news_v1_1_2_2">第一個畫面可選「重新開始／匯入紀錄」。</string>
     <string name="news_v1_1_2_3">關閉「保留紀錄」前會再確認一次。</string>

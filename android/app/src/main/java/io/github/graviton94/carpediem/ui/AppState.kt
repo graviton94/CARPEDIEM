@@ -120,6 +120,10 @@ class AppState(private val context: Context) {
     fun pageHintSeen(key: String) { val v = pageHints + key; store.pageHints = v; pageHints = v; guideSteps.remove(key) }
     var nudgesSeen by mutableStateOf(store.nudgesSeen)
         private set
+    /** 정원 아래 권유 쪽지를 × 로 접은 날 (그날만 다시 보이지 않음). */
+    private var notesHidden by mutableStateOf(store.notesHidden)
+    fun noteHidden(key: String, today: LocalDate) = "$key:${today.toEpochDay()}" in notesHidden
+    fun hideNote(key: String, today: LocalDate) { val v = notesHidden.filter { it.substringAfter(':').toLongOrNull() == today.toEpochDay() }.toSet() + "$key:${today.toEpochDay()}"; store.notesHidden = v; notesHidden = v }
     fun nudgeSeen(key: String) { val v = nudgesSeen + key; store.nudgesSeen = v; nudgesSeen = v }
     /** 권유를 처음 보여 준 날: 하루 지나면 해 보지 않았어도 다음 권유로 (같은 권유가 매일 머물지 않게). */
     fun nudgeShown(key: String, today: LocalDate) {

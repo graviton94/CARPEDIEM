@@ -15,6 +15,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.background
+import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.rememberInfiniteTransition
@@ -216,14 +217,20 @@ private val BDAY_MOTIF = listOf(0f to 0, 280f to 0, 560f to 2, 980f to 0, 1400f 
 
 /** 정원 아래 작은 한 줄: 깃털과 함께 ‘돌아온 한 줄’을 알림. */
 @Composable
-private fun RecallNote(text: String, onOpen: () -> Unit) {
+private fun RecallNote(text: String, onDismiss: (() -> Unit)? = null, onOpen: () -> Unit) {
+    val dismissLabel = stringResource(R.string.note_dismiss)
     Row(
         Modifier.fillMaxWidth().crayonBox(Theme.gc.paper, G.Radius.button, G.Stroke.chip, 1190).clickable(onClick = onOpen)
-            .padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp2),
+            .padding(start = Tokens.Space.sp4, end = if (onDismiss != null) 0.dp else Tokens.Space.sp4).padding(vertical = Tokens.Space.sp2),
         verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2),
     ) {
         Image(GardenArt.obj(LocalContext.current, "feather"), null, Modifier.size(Theme.unit * G.LetGo.feather))
         TokenText(text, Tokens.TypeScale.footnote, Modifier.weight(1f), weight = FontWeight.Medium, maxLines = 2)
+        // 권유 (해 볼까요?) 는 하지 않아도 되게: × 로 오늘은 접어 둠
+        if (onDismiss != null) Box(Modifier.size(Tokens.Layout.tapTarget).clickable(role = androidx.compose.ui.semantics.Role.Button, onClick = onDismiss)
+            .semantics { contentDescription = dismissLabel }, contentAlignment = Alignment.Center) {
+            TokenText("×", Tokens.TypeScale.headline, color = Theme.palette.secondary)
+        }
     }
 }
 
@@ -351,7 +358,15 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 // 땅 그림도 시간의 빛 아래에 (밤이면 땅까지 어두워짐)
                 // 하늘의 우연한 순간 (무지개 · 오로라): 먼 산 뒤
                 if (!bare) state.chance?.let { c -> ChanceLayer(c, now, real, gy, 0.dp, u * G.Decor.treeX, u * G.Layout.pathEnd, topBottom + u * G.Layout.minSkyGap, back = true) { seen -> state.chanceDone(seen, c) } }
-                Image(GardenArt.strip(ctx, real), null, Modifier.offset(y = gy - u * G.Layout.stripLineY).fillMaxWidth().guideTarget(guide.takeIf { !bare }, "path.ground").height(u * G.Layout.stripHeight), contentScale = ContentScale.FillBounds)
+                // 땅 그림이 화면 아래 끝 (탭 위) 까지 닿지 않는 폰: 그림 아래를 맨 아래 띠의 색으로 이어 칠함 (땅이 중간에 끊겨 보이지 않게)
+                val stripImg = remember(real) { GardenArt.strip(ctx, real) }
+                val stripTop = gy - u * G.Layout.stripLineY
+                val stripEnd = stripTop + u * G.Layout.stripHeight
+                if (stripEnd < screenH) {
+                    val under = remember(stripImg) { androidx.compose.ui.graphics.Color(stripImg.asAndroidBitmap().let { b -> b.getPixel(b.width / 2, b.height - 2) }) }
+                    Box(Modifier.offset(y = stripEnd - u * 1f).fillMaxWidth().height(screenH - stripEnd + u * 1f).background(under))
+                }
+                Image(stripImg, null, Modifier.offset(y = stripTop).fillMaxWidth().guideTarget(guide.takeIf { !bare }, "path.ground").height(u * G.Layout.stripHeight), contentScale = ContentScale.FillBounds)
                 // 정원만 보기(bare)는 위 글자가 없어도 별이 상태바 · 소리 버튼에 닿지 않게
                 SkyTimeLayer(now, gy, if (bare) screenH * 0.14f else topBottom, gy - haruAbove - u * G.Layout.minSkyGap, Modifier.fillMaxSize())
                 // 기억의 돌 가운데 ‘하늘에 별로 두기’를 켠 것: 하늘에 따뜻한 별 하나 (돌멍하기에는 두지 않음)
@@ -679,26 +694,27 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                         month != null -> MonthCard(month.second) { state.openMonth(month.first, month.second); toRecord(RecordView(month.first, month.second)) }
                         gardenYear != null -> RecallNote(stringResource(R.string.gardenYear_ask)) { state.gardenYearSeen(gardenYear); gardenYearOpen = gardenYear }
                         // 아침 씨앗 (04): 아침에 한 줄로, 누르면 고르는 장
-                        state.seedDue(now) && !touring -> { LaunchedEffect(today) { state.seedShown(today) }; RecallNote(stringResource(R.string.seed_note)) { seedOpen = true } }
+                        state.seedDue(now) && !touring -> { LaunchedEffect(today) { state.seedShown(today) }; RecallNote(stringResource(R.string.seed_note), onDismiss = { state.skipSeed(today) }) { seedOpen = true } }
                         // 새 버전을 받는 중 · 다 받음 (Play 앱 안 업데이트): 누르면 새 버전으로 다시 열림
                         state.update == AppState.UpdateState.READY -> RecallNote(stringResource(R.string.update_ready)) { state.finishUpdate() }
                         state.update == AppState.UpdateState.DOWNLOADING -> RecallNote(stringResource(R.string.update_downloading)) {}
                         // 한 줄 30 · 60 · 90… 번째를 남긴 날: 응원 권유 한 줄 (그날만, 응원한 뒤로는 없음)
-                        state.supportInviteDue(today) != null -> RecallNote(stringResource(R.string.support_invite, "${state.supportInviteDue(today)}")) { onSupport() }
+                        state.supportInviteDue(today) != null && !state.noteHidden("support", today) -> RecallNote(stringResource(R.string.support_invite, "${state.supportInviteDue(today)}"), onDismiss = { state.hideNote("support", today) }) { onSupport() }
                         topInvite -> Unit
                         // 돌아온 한 줄은 아래 쪽지 대신 손님이 물고 옴 (위)
                         // 첫 일주일 길잡이: 하루에 하나, 해 본 것은 건너뜀 (누르면 그 일로)
                         // 새 버전이 올라왔으면 (길잡이도 없는 날, 처음 안 날 · 사흘 뒤 하루씩만): 누르면 뒤에서 받음
-                        state.firstWeekNudge(today)?.takeIf { state.guideDone } == null && state.update == AppState.UpdateState.AVAILABLE && state.updateNoteDue(today) -> {
+                        state.firstWeekNudge(today)?.takeIf { state.guideDone } == null && state.update == AppState.UpdateState.AVAILABLE && state.updateNoteDue(today) && !state.noteHidden("update", today) -> {
                             LaunchedEffect(state.updateVersion, today) { state.store.updateNoteShown(state.updateVersion, today) }
-                            RecallNote(stringResource(R.string.update_available)) { state.startUpdate() }
+                            RecallNote(stringResource(R.string.update_available), onDismiss = { state.hideNote("update", today) }) { state.startUpdate() }
                         }
                         else -> state.firstWeekNudge(today)?.takeIf { state.guideDone }?.let { k ->
                             val text = stringResource(when (k) { "breath" -> R.string.nudge_breath; "stone" -> R.string.nudge_stone; "gaze" -> R.string.nudge_gaze
                                 "special" -> R.string.nudge_special; "widget" -> R.string.nudge_widget; else -> R.string.nudge_backup })
                             // 보여 준 날을 적어 둠: 하루 지나면 해 보지 않았어도 다음 권유로
                             LaunchedEffect(k) { state.nudgeShown(k, today) }
-                            RecallNote(text) {
+                            // ×: 이 권유는 건너뜀 (다시 권하지 않음, 다음 날 다른 권유로)
+                            RecallNote(text, onDismiss = { state.nudgeSeen(k) }) {
                                 when (k) {
                                     "breath" -> { breathSheet = true }
                                     "stone" -> onAddPerson()

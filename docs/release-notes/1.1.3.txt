@@ -3,6 +3,7 @@
 · 손님이 물고 온 쪽지가 한지 편지로 새로워졌어요.
 · 새 버전이 나오면 정원에서 조용히 알려 드려요. 설정 › 도움 · 응원에서 새로워진 점을 다시 볼 수 있어요.
 · 알림을 눌러 들어오면 숨 · 하루 닫기로 바로 가지 않고 한 번 물어봐요.
+· 정원 아래 권유 쪽지는 × 로 넘길 수 있어요. 땅이 화면 아래까지 이어져요.
 · 응원하기 화면을 새로 다듬었어요.
 </ko-KR>
 <en-US>
@@ -10,6 +11,7 @@
 · Notes brought by guests now open as a hanji letter.
 · The garden quietly tells you when a new version is out. See what’s new in Settings › Help & support.
 · Opening from a notification now asks before starting a breath or closing the day.
+· Suggestions in the garden can be dismissed with ×, and the ground now reaches the bottom of the screen.
 · A refreshed support page.
 </en-US>
 <ja-JP>
@@ -17,6 +19,7 @@
 · お客さんがくわえてきたメモが、和紙の手紙になりました。
 · 新しいバージョンが出ると庭でそっとお知らせします。設定 › ヘルプと応援 で新しくなったことを見られます。
 · 通知から開いたときは、呼吸や一日の締めくくりを始める前にひと声かけます。
+· 庭の下のおすすめは × で閉じられます。地面が画面の下までつながりました。
 · 応援ページを新しくしました。
 </ja-JP>
 <zh-TW>
@@ -24,5 +27,6 @@
 · 客人叼來的紙條，變成了韓紙信。
 · 有新版本時花園會安靜地告訴你。可在 設定 › 說明與支持 再看更新內容。
 · 從通知進入時，會先問一聲再開始呼吸或為今天收尾。
+· 花園下方的建議可以用 × 關掉，地面也延伸到畫面底部了。
 · 重新整理了支持頁面。
 </zh-TW>
