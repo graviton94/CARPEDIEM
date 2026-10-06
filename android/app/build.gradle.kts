@@ -82,6 +82,8 @@ dependencies {
     implementation("androidx.work:work-runtime-ktx:2.10.0")
     // 새 버전 알림 (Play 앱 안 업데이트, 가벼운 방식만)
     implementation("com.google.android.play:app-update-ktx:2.1.0")
+    // app-update 가 끌어오는 오래된 Fragment 대신 (앱 결과 API 를 쓰려면 1.3 이상)
+    implementation("androidx.fragment:fragment-ktx:1.8.5")
 }
 
 // 스토어용 AAB 는 업로드 키로만: 키 없이 bundleRelease 를 돌리면 (debug 키 · 개발자 도구가 켜진 채로 만들어지지 않게) 멈춘다
