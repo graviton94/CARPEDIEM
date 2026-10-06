@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- 자동 생성 파일 — 직접 고치지 말고 scripts/generate.py 를 실행하세요. -->
 <resources>
+    <string name="contact_email">ruahn49@gmail.com</string>
     <string name="tagline">珍惜今天。</string>
     <string name="you">我</string>
     <string name="birthday">出生日期</string>
