@@ -21,12 +21,15 @@ enum class DayPart {
 }
 
 object Breath {
-    class Phase(val step: BreathStep, val startMs: Long, val lengthMs: Long)
+    /** 숨 한 단계. lo · hi = 이 단계가 채우는 숨의 크기 (한숨 호흡의 두 번째 들이쉼은 0.75 → 1). */
+    class Phase(val step: BreathStep, val startMs: Long, val lengthMs: Long, val lo: Float = 0f, val hi: Float = 1f)
 
-    /** 숨 한 번의 박자 (초): 들이쉼 · 머묾 · 내쉼 · 머묾. 앱 토큰에서 받는다. */
-    class Rhythm(val inS: Double, val holdS: Double, val outS: Double, val restS: Double) {
-        val cycleMs get() = ((inS + holdS + outS + restS) * 1000).toLong()
+    /** 숨 한 번의 박자 (초): 들이쉼 · 머묾 · 내쉼 · 머묾. topS = 한 번 더 들이쉬는 숨 (한숨 호흡, 0 이면 없음). 앱 토큰에서 받는다. */
+    class Rhythm(val inS: Double, val holdS: Double, val outS: Double, val restS: Double, val topS: Double = 0.0) {
+        val cycleMs get() = ((inS + topS + holdS + outS + restS) * 1000).toLong()
     }
+    /** 한숨 호흡에서 첫 들이쉼이 채우는 몫. */
+    const val FIRST_SIP = 0.75f
 
     /**
      * 정해진 분 동안의 숨 단계 목록. 마지막 숨은 끝까지 쉬고 끝낸다 (시간이 조금 넘어도 중간에 끊지 않음).
@@ -43,9 +46,12 @@ object Breath {
         val out = ArrayList<Phase>()
         var t = 0L
         repeat(cycles.toInt()) {
-            listOf(BreathStep.IN to r.inS, BreathStep.HOLD to r.holdS, BreathStep.OUT to r.outS, BreathStep.REST to r.restS).forEach { (s, sec) ->
+            val top = r.topS > 0
+            listOf(BreathStep.IN to r.inS, BreathStep.IN to r.topS, BreathStep.HOLD to r.holdS, BreathStep.OUT to r.outS, BreathStep.REST to r.restS).forEachIndexed { i, (s, sec) ->
                 val ms = (sec * 1000).toLong()
-                if (ms > 0) { out.add(Phase(s, t, ms)); t += ms }
+                // 한숨 호흡: 첫 들이쉼은 0 → 0.75, 한 번 더는 0.75 → 1
+                val (lo, hi) = when { !top -> 0f to 1f; i == 0 -> 0f to FIRST_SIP; i == 1 -> FIRST_SIP to 1f; else -> 0f to 1f }
+                if (ms > 0) { out.add(Phase(s, t, ms, lo, hi)); t += ms }
             }
         }
         return out
@@ -55,21 +61,33 @@ object Breath {
      * 하루의 숨결 (손끝으로, 05): from 부터 끝까지의 떨림 모양. slice ms 마다 세기 (0 ~ 255) 하나.
      * 들이쉼은 약하게 시작해 차오르고, 머묾은 고요, 내쉼은 길게 잦아든다. 같은 세기가 이어지면 하나로 묶는다.
      */
-    fun touchWave(plan: List<Phase>, from: Long, slice: Long = 100, low: Int = 18, high: Int = 190): Pair<LongArray, IntArray> {
-        val end = plan.lastOrNull()?.let { it.startMs + it.lengthMs } ?: return LongArray(0) to IntArray(0)
+    /**
+     * 하루의 숨결 (손끝으로, 05): from 부터 끝까지의 떨림 (길이 ms, 세기 0 ~ 255; 세기 0 = 쉼).
+     * 빠르게 떨지 않고 맥박보다 느리게 톡톡: 들이쉼엔 [inEvery] ms 마다 점점 세게, 내쉼엔 [outEvery] ms 마다 점점 약하게, 머묾은 고요.
+     */
+    fun touchWave(plan: List<Phase>, from: Long, pulse: Long = 60, inEvery: Long = 1000, outEvery: Long = 1500, low: Int = 40, high: Int = 170): Pair<LongArray, IntArray> {
         val times = ArrayList<Long>(); val amps = ArrayList<Int>()
+        fun add(len: Long, a: Int) { if (len <= 0) return; if (amps.isNotEmpty() && amps.last() == a) times[times.size - 1] = times.last() + len else { times.add(len); amps.add(a.coerceIn(0, 255)) } }
         var t = from.coerceAtLeast(0)
-        while (t < end) {
-            val len = minOf(slice, end - t)
-            val a = at(plan, t + len / 2)?.let { (ph, f) ->
-                when (ph.step) {
-                    BreathStep.IN -> (low + (high - low) * f).toInt()
-                    BreathStep.OUT -> (high * 0.85f * (1f - f) + low * f * 0.5f).toInt()
-                    else -> 0
+        plan.forEach { ph ->
+            val end = ph.startMs + ph.lengthMs
+            if (end <= t) return@forEach
+            val every = when (ph.step) { BreathStep.IN -> inEvery; BreathStep.OUT -> outEvery; else -> 0L }
+            if (every == 0L) { add(end - t, 0); t = end; return@forEach }
+            // 이 단계 안의 톡: 단계 시작에서 every 마다
+            var k = ph.startMs
+            while (k < end) {
+                val pEnd = minOf(k + pulse, end)
+                if (pEnd > t) {
+                    if (k > t) add(k - t, 0)
+                    val f = ((k - ph.startMs).toFloat() / ph.lengthMs).coerceIn(0f, 1f)
+                    val a = if (ph.step == BreathStep.IN) (low + (high - low) * (ph.lo + (ph.hi - ph.lo) * f)).toInt() else (high - (high - low) * f).toInt()
+                    add(pEnd - maxOf(k, t), a); t = pEnd
                 }
-            } ?: 0
-            if (amps.isNotEmpty() && amps.last() == a) times[times.size - 1] = times.last() + len else { times.add(len); amps.add(a.coerceIn(0, 255)) }
-            t += len
+                val next = minOf(k + every, end)
+                if (next > t) { add(next - t, 0); t = next }
+                k += every
+            }
         }
         return times.toLongArray() to amps.toIntArray()
     }
@@ -82,6 +100,7 @@ object Breath {
     }
 
     /** 숨의 크기 (0 = 다 내쉼, 1 = 다 들이쉼): 들이쉼에 차오르고, 머묾에 그대로, 내쉼에 비워짐. 부드럽게 (사인). */
+    fun fullness(p: Phase, f: Float): Float = if (p.step == BreathStep.IN) p.lo + (p.hi - p.lo) * ease(f) else fullness(p.step, f)
     fun fullness(step: BreathStep, f: Float): Float = when (step) {
         BreathStep.IN -> ease(f)
         BreathStep.HOLD -> 1f

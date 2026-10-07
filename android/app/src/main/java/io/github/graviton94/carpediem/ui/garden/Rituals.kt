@@ -428,12 +428,13 @@ private fun DarkStep(onDone: () -> Unit) {
 internal class TouchBreath(private val vib: Vibrator) {
     fun play(plan: List<Breath.Phase>, from: Long) {
         if (!vib.hasVibrator()) return
-        val (t, a) = Breath.touchWave(plan, from, slice = 150)
+        // 맥박보다 느린 톡톡 (들이쉼 1초 · 내쉼 1.5초에 한 번), 빠르게 떨지 않음
+        val (t, a) = Breath.touchWave(plan, from)
         if (t.isEmpty()) return
         val effect = if (vib.hasAmplitudeControl()) VibrationEffect.createWaveform(t, a, -1) else {
-            // 세기 조절이 없으면: 들이쉼 · 내쉼 동안 짧은 박동 (조용한 때는 쉼)
+            // 세기 조절이 없으면: 같은 박자로 짧게 한 번씩 (조용한 때는 쉼)
             val times = ArrayList<Long>(); var wait = 0L
-            t.indices.forEach { i -> if (a[i] > 0) { times.add(wait); times.add(18L); wait = t[i] - 18L } else wait += t[i] }
+            t.indices.forEach { i -> if (a[i] > 0) { times.add(wait); times.add(t[i]); wait = 0L } else wait += t[i] }
             if (times.isEmpty()) return
             VibrationEffect.createWaveform(times.toLongArray(), -1)
         }

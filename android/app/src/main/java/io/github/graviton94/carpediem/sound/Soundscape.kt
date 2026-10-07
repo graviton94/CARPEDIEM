@@ -25,7 +25,9 @@ object Soundscape {
 
     /** 바탕 소리 하나. start() 로 켜고 stop() 으로 스르르 끈다. breath (0 ~ 1) 를 주면 파도 · 파장이 숨을 따른다. */
     /** gaze = 돌멍하기: 바탕 소리 위에 계절 한 겹 (가끔 새 · 풀벌레 · 마른 잎 · 눈 밟기, 늘 연못 물소리 또는 장작 소리) 을 아주 작게 (E2). */
-    class Player(private val sound: Sound, private val season: Season = Season.SPRING, private val gaze: Boolean = false) {
+    /** notes = 돌멍하기 노래에 쓸 음 (정원 돌들의 음, Hz). 음색은 열 때마다 셋 중 하나 (유리 풍경 · 텅드럼 · 하루의 종). */
+    class Player(private val sound: Sound, private val season: Season = Season.SPRING, private val gaze: Boolean = false, private val notes: DoubleArray = DoubleArray(0)) {
+        private val timbre = kotlin.random.Random.nextInt(3)
         @Volatile var breath: Float = -1f
         @Volatile private var stopping = false
         private var thread: Thread? = null
@@ -58,7 +60,25 @@ object Soundscape {
             val two = 2.0 * PI
             // 계절의 소리: 새 한 마리의 짧은 지저귐 (음 몇 개), 풀벌레 울음, 장작 튀는 소리
             var chirpLeft = 0; var chirpLen = 1; var chirpF0 = 3000.0; var chirpF1 = 4000.0; var chirpPh = 0.0; var notes = 0; var noteGap = 0
-            var cricketPh = 0.0; var crackle = 0f; var hpC = 0f
+            var crackle = 0f; var hpC = 0f
+            fun r01() = (white() + 1f) / 2f
+            // 풀벌레 (1.1.4): 한 음을 켰다 껐다 하지 않고, 진짜 귀뚜라미처럼 아주 짧은 펄스 3–4개가 한 번의 ‘찌르르’.
+            // 마리마다 높이 · 박자가 조금씩 달라 멀리서 여럿이 우는 소리 (칸 0–2 여름, 3–4 가을, 5–6 돌멍하기)
+            val crHz = doubleArrayOf(4300.0, 4650.0, 3950.0, 3800.0, 4150.0, 4500.0, 4050.0)
+            val crPer = doubleArrayOf(0.62, 0.81, 1.07, 1.7, 2.4, 0.9, 1.3)
+            val crNext = LongArray(crHz.size) { (sr * (0.3 + 0.4 * it)).toLong() }; val crStart = LongArray(crHz.size) { -sr * 10L }
+            val crPulses = IntArray(crHz.size); val crPh = DoubleArray(crHz.size)
+            val pulseGap = (0.032 * sr).toLong(); val pulseLen = (0.02 * sr).toLong()
+            fun crickets(from: Int, to: Int, vol: Float): Float {
+                var out = 0f
+                for (c in from until to) {
+                    if (n >= crNext[c]) { crStart[c] = n; crPulses[c] = 3 + (if (r01() < 0.4f) 1 else 0); crNext[c] = n + (sr * crPer[c] * (0.85 + 0.3 * r01())).toLong() }
+                    val d = n - crStart[c]; val idx = d / pulseGap
+                    if (idx < crPulses[c]) { val w = d % pulseGap
+                        if (w < pulseLen) { val e = sin(PI * w / pulseLen); crPh[c] += two * crHz[c] * (1 - 0.01 * idx) / sr; out += (sin(crPh[c]) * e * e).toFloat() * vol } }
+                }
+                return out
+            }
             fun seasonal(t: Double, w: Float, pink: Float): Float {
                 lp += (pink - lp) * 0.03f
                 val air = lp
@@ -82,18 +102,13 @@ object Soundscape {
                         air * 1.1f + bird
                     }
                     Season.SUMMER -> {
-                        // 풀벌레: 높은 음이 빠르게 떨며, 잠깐 울고 잠깐 쉼
-                        cricketPh += two * 4400 / sr
-                        val trill = if (sin(two * t * 28) > 0) 1f else 0f
-                        val bout = if (0.5 + 0.5 * sin(two * t * 0.55) > 0.35) 1f else 0f
-                        air * 0.6f + sin(cricketPh).toFloat() * trill * bout * 0.05f
+                        // 여름 밤 풀벌레: 세 마리가 저마다의 박자로 찌르르
+                        air * 0.6f + crickets(0, 3, 0.045f)
                     }
                     Season.AUTUMN -> {
-                        // 가을 바람 + 드문 귀뚜라미
+                        // 가을 바람 + 드문 귀뚜라미 두 마리 (느리게)
                         val gust = 0.5f + 0.5f * sin(two * t * 0.05 + sin(two * t * 0.011) * 2).toFloat()
-                        cricketPh += two * 3900 / sr
-                        val chirp = if ((t % 2.6) < 0.36 && sin(two * t * 9) > 0.2) 1f else 0f
-                        air * 2.0f * gust + sin(cricketPh).toFloat() * chirp * 0.035f
+                        air * 2.0f * gust + crickets(3, 5, 0.03f)
                     }
                     Season.WINTER -> {
                         // 장작 불: 낮게 웅웅 + 가끔 탁 튀는 소리
@@ -106,7 +121,6 @@ object Soundscape {
             }
             // 돌멍하기의 계절 한 겹 (E2): 가끔 오는 계절 소리 하나 + 연못 (봄 · 여름) 또는 화톳불 (가을 · 겨울)
             val pond = season == Season.SPRING || season == Season.SUMMER
-            fun r01() = (white() + 1f) / 2f
             var evLeft = 0; var evLen = 1; var nextEv = (sr * 8).toLong(); var evPh = 0.0
             var lp2 = 0f; var tr = 0f; var plop = 0; var plopLen = 1; var plopPh = 0.0; var nextPlop = (sr * 4).toLong(); var crack2 = 0f; var hpC2 = 0f
             fun layer(t: Double, w: Float, pink: Float): Float {
@@ -123,7 +137,7 @@ object Soundscape {
                             evPh += two * (3000.0 + 500.0 * note + 600.0 * kk) / sr
                             if (kk < 0.55) (sin(evPh) * sin(PI * kk / 0.55)).toFloat() * 0.12f else 0f }
                         // 여름: 풀벌레 한 번 낮게 이어짐
-                        Season.SUMMER -> { evPh += two * 4600 / sr; val trill = if (sin(two * t * 30) > 0) 1f else 0f; sin(evPh).toFloat() * trill * env * 0.03f }
+                        Season.SUMMER -> crickets(5, 7, 0.03f) * env
                         // 가을: 바람이 지날 때 마른 잎 바스락
                         Season.AUTUMN -> { lp2 += (w - lp2) * 0.25f; (w - lp2) * env * env * 0.16f * (0.6f + 0.4f * sin(two * t * 11).toFloat()) }
                         // 겨울: 아주 멀리 천천히 눈 밟는 네 걸음
@@ -144,6 +158,43 @@ object Soundscape {
                     out += brown * 1.0f + hp * crack2 * 0.9f
                 }
                 return out * T.layer
+            }
+            // 돌멍하기 노래 (1.1.4): 바람에 흩날리듯 아주 느리고 불규칙하게, 정원 돌들의 음으로 (오음계라 어떻게 겹쳐도 어울림)
+            val pool = if (notes.isNotEmpty()) notes else doubleArrayOf(329.63, 392.00, 440.00, 523.25, 587.33)
+            val vF = DoubleArray(8); val vAt = LongArray(8) { Long.MIN_VALUE }; var vNext = 0; var lastNote = -1
+            var nextSong = (sr * (2 + 4 * r01())).toLong()
+            // 음색: 0 유리 풍경 (맑고 길게, 어긋난 배음) · 1 텅드럼 (둥글고 낮게) · 2 하루의 종 (돌을 꾹 누를 때의 그 소리)
+            val parts = when (timbre) { 0 -> doubleArrayOf(1.0, 2.76, 5.4, 8.9); 1 -> doubleArrayOf(1.0, 2.0, 3.0); else -> doubleArrayOf(1.0, 2.0, 3.0) }
+            val amps = when (timbre) { 0 -> doubleArrayOf(1.0, 0.45, 0.22, 0.08); 1 -> doubleArrayOf(1.0, 0.18, 0.05); else -> doubleArrayOf(1.0, 0.25, 0.08) }
+            val taus = when (timbre) { 0 -> doubleArrayOf(2.2, 1.4, 0.8, 0.5); 1 -> doubleArrayOf(1.3, 0.6, 0.35); else -> doubleArrayOf(0.9, 0.45, 0.25) }
+            val attackS = when (timbre) { 0 -> 0.004; 1 -> 0.012; else -> 0.011 }
+            val octave = if (timbre == 1) 0.5 else 1.0
+            fun song(): Float {
+                if (n >= nextSong) {
+                    val count = if (r01() < 0.35f) 2 + (if (r01() < 0.5f) 1 else 0) else 1
+                    var at = n
+                    repeat(count) {
+                        var k: Int; do { k = (r01() * pool.size).toInt().coerceIn(0, pool.size - 1) } while (pool.size > 1 && k == lastNote); lastNote = k
+                        vF[vNext] = pool[k] * octave; vAt[vNext] = at; vNext = (vNext + 1) % vF.size
+                        at += (sr * (0.5 + 0.7 * r01())).toLong()
+                    }
+                    nextSong = n + (sr * (T.noteMin + (T.noteMax - T.noteMin) * r01())).toLong()
+                }
+                var out = 0.0
+                for (v in vF.indices) {
+                    if (vAt[v] == Long.MIN_VALUE || n < vAt[v]) continue
+                    val tt = (n - vAt[v]).toDouble() / sr
+                    if (tt > 7.0) { vAt[v] = Long.MIN_VALUE; continue }
+                    val a = if (tt < attackS) tt / attackS else 1.0
+                    for (j in parts.indices) out += amps[j] * exp(-tt / taus[j]) * sin(two * vF[v] * parts[j] * tt) * a
+                }
+                return (out * 0.12 * T.songVolume).toFloat()
+            }
+            // 숨 소리 (1.1.4): 숨이 곧 소리. 들이쉬면 부드러운 바람 소리가 차오르고 (거르개가 열림), 머금으면 머물고, 내쉬면 잦아듦
+            var gLp = 0f
+            fun guide(pink: Float): Float {
+                gLp += (pink - gLp) * (0.06f + 0.30f * smooth)
+                return gLp * (0.03f + 0.97f * smooth * kotlin.math.sqrt(smooth)) * 2.2f * T.guide
             }
             while (true) {
                 for (i in buf.indices) {
@@ -175,7 +226,15 @@ object Soundscape {
                         }
                         Sound.SEASON -> seasonal(t, w, pink)
                         Sound.NONE -> 0f
-                    } + (if (gaze) layer(t, w, pink) else 0f)
+                    }.let { bed ->
+                        when {
+                            // 돌멍하기: 바탕은 조금 낮추고 계절 한 겹 + 노래
+                            gaze -> bed * T.gazeBed + layer(t, w, pink) + song()
+                            // 숨 화면: 숨 소리가 주인공, 바탕은 그 아래로
+                            breath >= 0f -> bed * T.bed + guide(pink)
+                            else -> bed
+                        }
+                    }
                     gain = if (stopping || my != gen) (gain - fadeOut).coerceAtLeast(0f) else (gain + fadeIn).coerceAtMost(1f)
                     buf[i] = (v * gain * T.volume * Short.MAX_VALUE).coerceIn(-32767f, 32767f).toInt().toShort()
                 }

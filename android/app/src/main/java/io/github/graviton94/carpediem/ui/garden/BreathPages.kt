@@ -90,9 +90,22 @@ internal fun rhythm(k: BreathKind): Breath.Rhythm {
         BreathKind.CALM -> Breath.Rhythm(b.calmIn.toDouble(), 0.0, b.calmOut.toDouble(), 0.0)
         BreathKind.BOX -> Breath.Rhythm(b.boxIn.toDouble(), b.boxHold.toDouble(), b.boxOut.toDouble(), b.boxRest.toDouble())
         BreathKind.SLEEP -> Breath.Rhythm(b.sleepIn.toDouble(), b.sleepHold.toDouble(), b.sleepOut.toDouble(), 0.0)
-        BreathKind.THANKS -> Breath.Rhythm(b.calmIn.toDouble(), 0.0, b.calmOut.toDouble(), 0.0)
+        // 한숨 호흡 (cyclic sighing): 코로 두 번 나눠 들이쉬고 (2 + 1) 길게 내쉼 (6)
+        BreathKind.THANKS -> Breath.Rhythm(b.thanksIn.toDouble(), 0.0, b.thanksOut.toDouble(), 0.0, topS = b.thanksTop.toDouble())
     }
 }
+/** 고르면 정해지는 숨 (1.1.4): 물결 5분 · 산책 4분 · 등불 여덟 번 · 꽃밭 5분. 시간은 고르지 않음. */
+internal fun planFor(k: BreathKind): List<Breath.Phase> {
+    val b = G.Breath
+    return when (k) {
+        BreathKind.CALM -> Breath.plan(rhythm(k), b.calmMinutes.toInt())
+        BreathKind.BOX -> Breath.plan(rhythm(k), b.boxMinutes.toInt())
+        BreathKind.SLEEP -> Breath.cycles(rhythm(k), b.sleepCycles.toInt())
+        BreathKind.THANKS -> Breath.plan(rhythm(k), b.thanksMinutes.toInt())
+    }
+}
+/** 그 숨의 길이 (분, 반올림). */
+internal fun planMinutes(k: BreathKind): Int = planFor(k).last().let { ((it.startMs + it.lengthMs + 30_000) / 60_000).toInt().coerceAtLeast(1) }
 internal fun partTitle(p: io.github.graviton94.carpediem.core.DayPart) = when (p) {
     io.github.graviton94.carpediem.core.DayPart.MORNING -> R.string.breath_part_morning; io.github.graviton94.carpediem.core.DayPart.DAY -> R.string.breath_part_day
     io.github.graviton94.carpediem.core.DayPart.EVENING -> R.string.breath_part_evening; io.github.graviton94.carpediem.core.DayPart.NIGHT -> R.string.breath_part_night
@@ -116,7 +129,6 @@ internal fun isNight(now: LocalDateTime) = now.hour >= G.Breath.nightFrom.toInt(
 fun BreathSheet(state: AppState, now: LocalDateTime, onStart: (BreathKind, Int, Sound) -> Unit, onDismiss: () -> Unit) {
     val p = Theme.palette
     var kind by remember { mutableStateOf(if (isNight(now)) BreathKind.SLEEP else state.breathKind) }
-    var minutes by remember { mutableStateOf(state.breathMinutes) }
     var sound by remember { mutableStateOf(state.sound) }
     var touchOn by remember { mutableStateOf(state.breathTouch) }
     ModalBottomSheet(onDismissRequest = onDismiss, containerColor = Theme.gc.paper, sheetState = androidx.compose.material3.rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
@@ -128,10 +140,8 @@ fun BreathSheet(state: AppState, now: LocalDateTime, onStart: (BreathKind, Int, 
             FlowRow(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
                 BreathKind.entries.forEachIndexed { i, k -> GardenChip(stringResource(kindName(k)), kind == k, 1000 + i) { kind = k } }
             }
+            // 숨마다 목적 · 호흡법 · 정해진 길이 (시간은 고르지 않음)
             TokenText(stringResource(kindDesc(kind)), Tokens.TypeScale.footnote, color = p.secondary)
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
-                listOf(1, 3, 5).forEachIndexed { i, m -> GardenChip(stringResource(R.string.breath_minutes, "$m"), minutes == m, 1004 + i) { minutes = m } }
-            }
             // 하루와 함께하는 방법: 눈으로 (화면) · 손끝으로 (떨림, 화면은 어둡게)
             val ctx = androidx.compose.ui.platform.LocalContext.current
             if (remember { canTouch(ctx) }) {
@@ -147,7 +157,7 @@ fun BreathSheet(state: AppState, now: LocalDateTime, onStart: (BreathKind, Int, 
                 Sound.entries.forEachIndexed { i, s -> GardenChip(stringResource(soundName(s)), sound == s, 1008 + i) { sound = s } }
             }
             Spacer(Modifier.height(Tokens.Space.sp2))
-            GardenButton(stringResource(R.string.breath_start), { state.chooseBreath(if (isNight(now) && kind == BreathKind.SLEEP) state.breathKind else kind, minutes, sound); state.changeBreathTouch(touchOn); onStart(kind, minutes, sound) }, filled = true, seed = 1015)
+            GardenButton(stringResource(R.string.breath_start), { val minutes = planMinutes(kind); state.chooseBreath(if (isNight(now) && kind == BreathKind.SLEEP) state.breathKind else kind, minutes, sound); state.changeBreathTouch(touchOn); onStart(kind, minutes, sound) }, filled = true, seed = 1015)
         }
     }
 }
@@ -172,7 +182,7 @@ fun BreathScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, kind
     val ctx = LocalContext.current
     val view = LocalView.current
     val b = G.Breath
-    val plan = remember(kind, minutes) { Breath.plan(rhythm(kind), minutes) }
+    val plan = remember(kind) { planFor(kind) }
     val total = plan.last().let { it.startMs + it.lengthMs }
     var elapsed by remember { mutableLongStateOf(0L) }
     var paused by remember { mutableStateOf(false) }
@@ -231,6 +241,8 @@ fun BreathScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, kind
     // 매 프레임 바뀌는 값 (elapsed) 은 그리는 단계에서만 읽음: 화면은 단계가 바뀔 때만 다시 짜임
     val step by remember(plan) { androidx.compose.runtime.derivedStateOf { Breath.at(plan, elapsed)?.first?.step } }
     val cueOn by remember { androidx.compose.runtime.derivedStateOf { elapsed < b.cueSeconds * 1000 } }
+    // 한숨 호흡의 두 번째 들이쉼 (“한 번 더 들이쉬어요”)
+    val topUp by remember(plan) { androidx.compose.runtime.derivedStateOf { (Breath.at(plan, elapsed)?.first?.lo ?: 0f) > 0f } }
     // 단계가 바뀌면 아주 짧게 (들이쉼 한 번, 내쉼 두 번)
     LaunchedEffect(step, intro) {
         if (intro) return@LaunchedEffect
@@ -286,7 +298,7 @@ fun BreathScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, kind
             // 두 줄이 되어도 잘리지 않게 (높이는 최소만 정함)
             Box(Modifier.heightIn(min = Tokens.Space.sp10 * 2), contentAlignment = Alignment.Center) {
                 if (intro) BreathCue(stringResource(R.string.breath_bells), p.secondary)
-                else if (cue != null) BreathCue(stringResource(cueName(kind, cue)), p.secondary)
+                else if (cue != null) BreathCue(stringResource(if (topUp && cue == BreathStep.IN) R.string.breath_inTop else cueName(kind, cue)), p.secondary)
             }
             if (kind == BreathKind.BOX && cue != null && animate) WalkCount(plan, { elapsed }, Modifier.size(u * 44f, u * 4f))
             if (done) {
@@ -297,7 +309,7 @@ fun BreathScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, kind
                 // 고마움 명상 뒤: 떠오른 고마움을 오늘의 한 줄로 (오늘 아직 보내지 않았을 때)
                 if (kind == BreathKind.THANKS && state.keepLines) ThanksAfter(state, now.toLocalDate())
                 GardenButton(stringResource(R.string.breath_home), onDone, filled = true, seed = 1021)
-            } else TokenText(stringResource(R.string.breath_startA11y, stringResource(kindName(kind)), "$minutes"), Tokens.TypeScale.caption2,
+            } else TokenText(stringResource(R.string.breath_startA11y, stringResource(kindName(kind)), "${planMinutes(kind)}"), Tokens.TypeScale.caption2,
                 Modifier.semantics { liveRegion = LiveRegionMode.Polite }.graphicsLayer { alpha = 0f })
         }
         // 아주 옅은 가는 선 하나가 차오름 (남은 시간은 보이지 않음)
@@ -341,7 +353,7 @@ internal fun cueName(kind: BreathKind, s: BreathStep): Int = when {
 /** 지금 숨이 얼마나 찼는지 (0 … 1). 머무는 숨에서도 멈춰 있지 않고 아주 조금 부풀었다 가라앉음. */
 internal fun fullAt(plan: List<Breath.Phase>, ms: Long): Float {
     val a = Breath.at(plan, ms) ?: return 0f
-    val f = Breath.fullness(a.first.step, a.second)
+    val f = Breath.fullness(a.first, a.second)
     return if (a.first.step == BreathStep.HOLD) f + 0.03f * kotlin.math.sin(a.second * a.first.lengthMs / 2400f * 6.2832f) else f
 }
 
@@ -380,7 +392,8 @@ fun GazeScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, onBack
     val z = G.Gaze
     val s = LifeSnapshot(profile.birthDate, profile.expectancy(state.store.table), now)
     var soundOn by remember { mutableStateOf(state.sound != Sound.NONE) }
-    val player = remember(soundOn) { Soundscape.Player(if (soundOn) state.sound else Sound.NONE, io.github.graviton94.carpediem.core.GardenDecor.realSeason(now.toLocalDate(), profile.countryCode), gaze = true) }
+    val player = remember(soundOn) { Soundscape.Player(if (soundOn) state.sound else Sound.NONE, io.github.graviton94.carpediem.core.GardenDecor.realSeason(now.toLocalDate(), profile.countryCode), gaze = true,
+        notes = io.github.graviton94.carpediem.sound.StoneSong.gardenNotes(state.store.haruSeed, state.people.map { it.seed })) }
     // 돌멍하기 소리: 앱을 떠나면 스르르 꺼지고, 돌아오면 다시
     val gazeOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
     DisposableEffect(player, gazeOwner) {

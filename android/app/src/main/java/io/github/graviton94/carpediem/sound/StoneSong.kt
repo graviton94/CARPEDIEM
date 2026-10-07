@@ -20,6 +20,13 @@ object StoneSong {
     /** 돌마다 늘 같은 음 (seed 로). 내 하루는 가운데 쯤. */
     fun pitch(seed: Long, me: Boolean): Double = if (me) SCALE[4 + Math.floorMod(seed, 3L).toInt()] else SCALE[Math.floorMod(seed * 31 + 7, SCALE.size.toLong()).toInt()]
 
+    /** 돌멍하기 노래의 음 (1.1.4): 정원 돌들의 음, 모자라면 가운데 오음계로 채워 다섯 음 이상. */
+    fun gardenNotes(haruSeed: Long, seeds: List<Long>): DoubleArray {
+        val set = LinkedHashSet<Double>(); set.add(pitch(haruSeed, true)); seeds.forEach { set.add(pitch(it, false)) }
+        var i = 3; while (set.size < 5 && i < SCALE.size) { set.add(SCALE[i]); i++ }
+        return set.toDoubleArray()
+    }
+
     /** 별자리 연주: 마음마다 한 음 (가벼운 마음은 높고 맑게, 무거운 마음은 낮고 부드럽게). 마음이 없으면 가운데. */
     fun feelingPitch(f: io.github.graviton94.carpediem.core.Feeling?): Double = SCALE[when (f) {
         io.github.graviton94.carpediem.core.Feeling.JOY -> 9; io.github.graviton94.carpediem.core.Feeling.HOPE -> 8; io.github.graviton94.carpediem.core.Feeling.THANKS -> 7

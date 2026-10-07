@@ -597,9 +597,14 @@ class ChancesTest {
         val (times, amps) = Breath.touchWave(plan, 0)
         assertEquals(38_000L, times.sum()); assertEquals(times.size, amps.size)
         assertTrue(amps.all { it in 0..255 })
-        // 들이쉼은 차오르고 (처음 < 끝), 머묾은 고요
-        val first = amps.first(); assertTrue(amps.take(40).max() > first)
+        // 들이쉼은 톡톡 차오르고 (처음 < 끝), 머묾은 고요, 톡 사이는 쉼 (빠르게 떨지 않음)
+        val first = amps.first(); assertTrue(amps.take(8).max() > first)
         assertEquals(0, Breath.touchWave(plan, 5_000).second.first())
+        val pulses = amps.count { it > 0 }; assertTrue(pulses in 20..32, "1초 남짓에 한 번: $pulses")
+        // 한숨 호흡: 첫 들이쉼 0 → 0.75, 한 번 더 0.75 → 1, 그다음 내쉼
+        val sigh = Breath.cycles(Breath.Rhythm(2.0, 0.0, 6.0, 0.0, topS = 1.0), 1)
+        assertEquals(listOf(BreathStep.IN, BreathStep.IN, BreathStep.OUT), sigh.map { it.step }); assertEquals(9_000L, sigh.last().let { it.startMs + it.lengthMs })
+        assertEquals(Breath.FIRST_SIP, Breath.fullness(sigh[0], 1f), 1e-4f); assertEquals(1f, Breath.fullness(sigh[1], 1f), 1e-4f)
         // 중간부터: 남은 길이만큼
         assertEquals(38_000L - 20_000L, Breath.touchWave(plan, 20_000).first.sum())
     }

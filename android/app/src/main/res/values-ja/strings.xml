@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- 자동 생성 파일 — 직접 고치지 말고 scripts/generate.py 를 실행하세요. -->
 <resources>
+    <string name="breath_inTop">もうひと息吸って</string>
     <string name="note_dismiss">今日はやめておく</string>
     <string name="closeDay_ask">今日を閉じに行きますか？</string>
     <string name="adorn_card">%1$sの%2$s</string>
@@ -300,9 +301,9 @@
     <string name="breath_kind_calm">こころの波紋</string>
     <string name="breath_kind_box">こころの散歩</string>
     <string name="breath_kind_sleep">こころの灯り</string>
-    <string name="breath_kindDesc_calm">4秒吸って、6秒吐きます。</string>
-    <string name="breath_kindDesc_box">四歩で吸って、四歩で吐きます。</string>
-    <string name="breath_kindDesc_sleep">4秒吸って、7秒とめて、8秒吐きます。</string>
+    <string name="breath_kindDesc_calm">落ち着き · 共鳴呼吸：4秒吸って6秒吐きます（1分に6回）。5分。</string>
+    <string name="breath_kindDesc_box">集中 · ボックス呼吸：四歩ずつ吸って・とめて・吐いて・休みます。4分。</string>
+    <string name="breath_kindDesc_sleep">眠り · 4-7-8呼吸：4秒吸って7秒とめて8秒吐きます。8回（約2分30秒）。</string>
     <string name="breath_minutes">%1$s分</string>
     <string name="breath_sound">音</string>
     <string name="sound_none">なし</string>
@@ -456,7 +457,7 @@
     <string name="haru_state_hat">誕生日の帽子をかぶっています</string>
     <string name="haru_state_calm">静かに座っています</string>
     <string name="breath_kind_thanks">こころの花畑</string>
-    <string name="breath_kindDesc_thanks">息を吐くたびに、ありがたいことをひとつ思い浮かべます。</string>
+    <string name="breath_kindDesc_thanks">気分 · ため息呼吸：鼻で2回に分けて吸い、長く吐きます。吐くときにありがたいことをひとつ。5分。</string>
     <string name="breath_out_thanks">ありがたいことをひとつ</string>
     <string name="breath_done_thanks_1">ありがたいことが、静かに浮かびました。</string>
     <string name="breath_done_thanks_2">ありがとうが、こころに静かにとどまりました。</string>
@@ -1065,6 +1066,10 @@
     <string name="welcome_start">はじめから始める</string>
     <string name="welcome_restore">記録を読み込む</string>
     <string name="welcome_restoreSub">前のスマホで保存したファイルから続けます。</string>
+    <string name="news_v1_1_4_1">4つの呼吸がそれぞれの呼吸法になりました：波紋（共鳴呼吸 5分）・散歩（ボックス呼吸 4分）・灯り（4-7-8 を8回）・花畑（ため息呼吸 5分）。時間を選ばなくて大丈夫です。</string>
+    <string name="news_v1_1_4_2">息がそのまま音になりました。吸うと満ち、吐くと静まる音についていくだけ。ハルの足もとの呼吸の輪も一緒に満ちて空きます。</string>
+    <string name="news_v1_1_4_3">指先の振動が、脈よりゆっくりトントンと変わりました。</string>
+    <string name="news_v1_1_4_4">石ぼんやりに、風に散るようなハルの歌がとてもゆっくり流れます。虫の声も新しくしました。</string>
     <string name="news_v1_1_3_1">石ごとにひとつ、そばを飾れます。集めた季節のかけら・応援・小石から選びます。</string>
     <string name="news_v1_1_3_2">お客さんがくわえてきたメモが、和紙の手紙になりました。</string>
     <string name="news_v1_1_3_3">新しいバージョンが出ると庭でそっとお知らせします。設定 › ヘルプと応援 で新しくなったことを見られます。</string>

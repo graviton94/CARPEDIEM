@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- 자동 생성 파일 — 직접 고치지 말고 scripts/generate.py 를 실행하세요. -->
 <resources>
+    <string name="breath_inTop">One more sip in</string>
     <string name="note_dismiss">Not today</string>
     <string name="closeDay_ask">Close the day now?</string>
     <string name="adorn_card">%1$s %2$s</string>
@@ -299,9 +300,9 @@
     <string name="breath_kind_calm">Ripple</string>
     <string name="breath_kind_box">Mind walk</string>
     <string name="breath_kind_sleep">Lantern</string>
-    <string name="breath_kindDesc_calm">In for 4, out for 6.</string>
-    <string name="breath_kindDesc_box">Breathe in for four steps, out for four steps.</string>
-    <string name="breath_kindDesc_sleep">In for 4, hold for 7, out for 8.</string>
+    <string name="breath_kindDesc_calm">Calm · resonance breathing: in for 4, out for 6 (six breaths a minute). 5 min.</string>
+    <string name="breath_kindDesc_box">Focus · box breathing: four steps in, hold, out, rest. 4 min.</string>
+    <string name="breath_kindDesc_sleep">Sleep · 4-7-8 breathing: in for 4, hold for 7, out for 8. Eight rounds (about 2.5 min).</string>
     <string name="breath_minutes">%1$s min</string>
     <string name="breath_sound">Sound</string>
     <string name="sound_none">None</string>
@@ -456,7 +457,7 @@
     <string name="haru_state_hat">wearing a birthday hat</string>
     <string name="haru_state_calm">sitting quietly</string>
     <string name="breath_kind_thanks">Flower bed</string>
-    <string name="breath_kindDesc_thanks">With each breath out, recall one thing you’re thankful for.</string>
+    <string name="breath_kindDesc_thanks">Mood · cyclic sighing: two sips in through the nose, then a long breath out. Recall one thankful thing. 5 min.</string>
     <string name="breath_out_thanks">One thankful thing</string>
     <string name="breath_done_thanks_1">Thankful things rose quietly.</string>
     <string name="breath_done_thanks_2">Thanks rested quietly in your heart.</string>
@@ -1065,6 +1066,10 @@
     <string name="welcome_start">Start fresh</string>
     <string name="welcome_restore">Bring back my records</string>
     <string name="welcome_restoreSub">Continue from a file you saved on your old phone.</string>
+    <string name="news_v1_1_4_1">Each breath now follows its own method: Ripple (resonance, 5 min), Mind walk (box, 4 min), Lantern (4-7-8, eight rounds), Flower bed (cyclic sighing, 5 min).</string>
+    <string name="news_v1_1_4_2">The breath itself is the sound, swelling as you breathe in and fading as you breathe out. A breath ring at Haru’s feet follows it.</string>
+    <string name="news_v1_1_4_3">Fingertip vibration now taps gently, slower than a resting pulse.</string>
+    <string name="news_v1_1_4_4">Stone gazing plays a slow, wind-scattered song of your garden’s stones. New cricket sounds.</string>
     <string name="news_v1_1_3_1">Decorate each stone with one piece: season pieces, support gifts or pebbles.</string>
     <string name="news_v1_1_3_2">Notes brought by guests now open as a hanji letter.</string>
     <string name="news_v1_1_3_3">The garden quietly tells you when a new version is out. See what’s new in Settings › Help &amp; support.</string>

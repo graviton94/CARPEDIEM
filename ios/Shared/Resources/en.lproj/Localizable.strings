@@ -1,4 +1,5 @@
 /* 자동 생성 파일 — 직접 고치지 말고 scripts/generate.py 를 실행하세요. */
+"breath.inTop" = "One more sip in";
 "note.dismiss" = "Not today";
 "closeDay.ask" = "Close the day now?";
 "adorn.card" = "%1$@ %2$@";
@@ -297,9 +298,9 @@
 "breath.kind.calm" = "Ripple";
 "breath.kind.box" = "Mind walk";
 "breath.kind.sleep" = "Lantern";
-"breath.kindDesc.calm" = "In for 4, out for 6.";
-"breath.kindDesc.box" = "Breathe in for four steps, out for four steps.";
-"breath.kindDesc.sleep" = "In for 4, hold for 7, out for 8.";
+"breath.kindDesc.calm" = "Calm · resonance breathing: in for 4, out for 6 (six breaths a minute). 5 min.";
+"breath.kindDesc.box" = "Focus · box breathing: four steps in, hold, out, rest. 4 min.";
+"breath.kindDesc.sleep" = "Sleep · 4-7-8 breathing: in for 4, hold for 7, out for 8. Eight rounds (about 2.5 min).";
 "breath.minutes" = "%1$@ min";
 "breath.sound" = "Sound";
 "sound.none" = "None";
@@ -454,7 +455,7 @@
 "haru.state.hat" = "wearing a birthday hat";
 "haru.state.calm" = "sitting quietly";
 "breath.kind.thanks" = "Flower bed";
-"breath.kindDesc.thanks" = "With each breath out, recall one thing you’re thankful for.";
+"breath.kindDesc.thanks" = "Mood · cyclic sighing: two sips in through the nose, then a long breath out. Recall one thankful thing. 5 min.";
 "breath.out.thanks" = "One thankful thing";
 "breath.done.thanks.1" = "Thankful things rose quietly.";
 "breath.done.thanks.2" = "Thanks rested quietly in your heart.";
@@ -1063,6 +1064,10 @@
 "welcome.start" = "Start fresh";
 "welcome.restore" = "Bring back my records";
 "welcome.restoreSub" = "Continue from a file you saved on your old phone.";
+"news.v1_1_4.1" = "Each breath now follows its own method: Ripple (resonance, 5 min), Mind walk (box, 4 min), Lantern (4-7-8, eight rounds), Flower bed (cyclic sighing, 5 min).";
+"news.v1_1_4.2" = "The breath itself is the sound, swelling as you breathe in and fading as you breathe out. A breath ring at Haru’s feet follows it.";
+"news.v1_1_4.3" = "Fingertip vibration now taps gently, slower than a resting pulse.";
+"news.v1_1_4.4" = "Stone gazing plays a slow, wind-scattered song of your garden’s stones. New cricket sounds.";
 "news.v1_1_3.1" = "Decorate each stone with one piece: season pieces, support gifts or pebbles.";
 "news.v1_1_3.2" = "Notes brought by guests now open as a hanji letter.";
 "news.v1_1_3.3" = "The garden quietly tells you when a new version is out. See what’s new in Settings › Help & support.";
