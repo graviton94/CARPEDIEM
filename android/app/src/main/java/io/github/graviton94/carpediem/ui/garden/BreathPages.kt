@@ -393,7 +393,7 @@ fun GazeScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, onBack
     val s = LifeSnapshot(profile.birthDate, profile.expectancy(state.store.table), now)
     var soundOn by remember { mutableStateOf(state.sound != Sound.NONE) }
     val player = remember(soundOn) { Soundscape.Player(if (soundOn) state.sound else Sound.NONE, io.github.graviton94.carpediem.core.GardenDecor.realSeason(now.toLocalDate(), profile.countryCode), gaze = true,
-        notes = io.github.graviton94.carpediem.sound.StoneSong.gardenNotes(state.store.haruSeed, state.people.map { it.seed })) }
+        songNotes = io.github.graviton94.carpediem.sound.StoneSong.gardenNotes(state.store.haruSeed, state.people.map { it.seed })) }
     // 돌멍하기 소리: 앱을 떠나면 스르르 꺼지고, 돌아오면 다시
     val gazeOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
     DisposableEffect(player, gazeOwner) {

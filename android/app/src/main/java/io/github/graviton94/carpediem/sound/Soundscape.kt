@@ -25,8 +25,8 @@ object Soundscape {
 
     /** 바탕 소리 하나. start() 로 켜고 stop() 으로 스르르 끈다. breath (0 ~ 1) 를 주면 파도 · 파장이 숨을 따른다. */
     /** gaze = 돌멍하기: 바탕 소리 위에 계절 한 겹 (가끔 새 · 풀벌레 · 마른 잎 · 눈 밟기, 늘 연못 물소리 또는 장작 소리) 을 아주 작게 (E2). */
-    /** notes = 돌멍하기 노래에 쓸 음 (정원 돌들의 음, Hz). 음색은 열 때마다 셋 중 하나 (유리 풍경 · 텅드럼 · 하루의 종). */
-    class Player(private val sound: Sound, private val season: Season = Season.SPRING, private val gaze: Boolean = false, private val notes: DoubleArray = DoubleArray(0)) {
+    /** songNotes = 돌멍하기 노래에 쓸 음 (정원 돌들의 음, Hz). 음색은 열 때마다 셋 중 하나 (유리 풍경 · 텅드럼 · 하루의 종). */
+    class Player(private val sound: Sound, private val season: Season = Season.SPRING, private val gaze: Boolean = false, private val songNotes: DoubleArray = DoubleArray(0)) {
         private val timbre = kotlin.random.Random.nextInt(3)
         @Volatile var breath: Float = -1f
         @Volatile private var stopping = false
@@ -160,7 +160,7 @@ object Soundscape {
                 return out * T.layer
             }
             // 돌멍하기 노래 (1.1.4): 바람에 흩날리듯 아주 느리고 불규칙하게, 정원 돌들의 음으로 (오음계라 어떻게 겹쳐도 어울림)
-            val pool = if (notes.isNotEmpty()) notes else doubleArrayOf(329.63, 392.00, 440.00, 523.25, 587.33)
+            val pool = if (songNotes.isNotEmpty()) songNotes else doubleArrayOf(329.63, 392.00, 440.00, 523.25, 587.33)
             val vF = DoubleArray(8); val vAt = LongArray(8) { Long.MIN_VALUE }; var vNext = 0; var lastNote = -1
             var nextSong = (sr * (2 + 4 * r01())).toLong()
             // 음색: 0 유리 풍경 (맑고 길게, 어긋난 배음) · 1 텅드럼 (둥글고 낮게) · 2 하루의 종 (돌을 꾹 누를 때의 그 소리)
