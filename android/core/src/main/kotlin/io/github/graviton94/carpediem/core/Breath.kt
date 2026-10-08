@@ -63,9 +63,9 @@ object Breath {
      */
     /**
      * 하루의 숨결 (손끝으로, 05): from 부터 끝까지의 떨림 (길이 ms, 세기 0 ~ 255; 세기 0 = 쉼).
-     * 빠르게 떨지 않고 맥박보다 느리게 톡톡: 들이쉼엔 [inEvery] ms 마다 점점 세게, 내쉼엔 [outEvery] ms 마다 점점 약하게, 머묾은 고요.
+     * 빠르게 떨지 않고 아주 느리고 여리게 톡톡 (1.1.4): 들이쉼엔 [inEvery] ms 마다 조금씩 또렷하게, 내쉼엔 [outEvery] ms 마다 잦아들게, 머묾은 고요.
      */
-    fun touchWave(plan: List<Phase>, from: Long, pulse: Long = 60, inEvery: Long = 1000, outEvery: Long = 1500, low: Int = 40, high: Int = 170): Pair<LongArray, IntArray> {
+    fun touchWave(plan: List<Phase>, from: Long, pulse: Long = 40, inEvery: Long = 1500, outEvery: Long = 2500, low: Int = 18, high: Int = 80): Pair<LongArray, IntArray> {
         val times = ArrayList<Long>(); val amps = ArrayList<Int>()
         fun add(len: Long, a: Int) { if (len <= 0) return; if (amps.isNotEmpty() && amps.last() == a) times[times.size - 1] = times.last() + len else { times.add(len); amps.add(a.coerceIn(0, 255)) } }
         var t = from.coerceAtLeast(0)

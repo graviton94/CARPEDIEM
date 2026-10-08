@@ -457,7 +457,7 @@
 "haru.state.calm" = "sitting quietly";
 "breath.kind.thanks" = "Flower bed";
 "breath.kindDesc.thanks" = "Mood · cyclic sighing: two sips in through the nose, then a long breath out. Recall one thankful thing. 5 min.";
-"breath.out.thanks" = "One thankful thing";
+"breath.out.thanks" = "Breathe out, one thankful thing";
 "breath.done.thanks.1" = "Thankful things rose quietly.";
 "breath.done.thanks.2" = "Thanks rested quietly in your heart.";
 "breath.done.thanks.3" = "There were thankful things today, too.";
@@ -1066,10 +1066,10 @@
 "welcome.restore" = "Bring back my records";
 "welcome.restoreSub" = "Continue from a file you saved on your old phone.";
 "news.v1_1_4.1" = "Each breath has its own method: Ripple (resonance, 5 min), Mind walk (box, 4 min), Lantern (4-7-8, 8 rounds), Flower bed (cyclic sighing, 5 min).";
-"news.v1_1_4.2" = "The breath is the sound now, swelling in and fading out, with a breath ring at Haru’s feet.";
-"news.v1_1_4.3" = "Fingertip vibration now taps gently, slower than a resting pulse.";
-"news.v1_1_4.4" = "Stone gazing plays a slow song of your garden’s stones. New cricket sounds.";
-"news.v1_1_4.5" = "An empty line asks you to write first; photo previews are no longer covered by the date.";
+"news.v1_1_4.2" = "The breath is the sound now, with a breath ring at Haru’s feet. Vibration is softer and slower.";
+"news.v1_1_4.3" = "Stone gazing plays a slow song of your garden’s stones. New cricket sounds.";
+"news.v1_1_4.4" = "Close the day takes a photo and won’t reappear once done.";
+"news.v1_1_4.5" = "An empty line asks you to write first; photo previews no longer hide the date.";
 "news.v1_1_3.1" = "Decorate each stone with one piece: season pieces, support gifts or pebbles.";
 "news.v1_1_3.2" = "Notes brought by guests now open as a hanji letter.";
 "news.v1_1_3.3" = "The garden quietly tells you when a new version is out. See what’s new in Settings › Help & support.";

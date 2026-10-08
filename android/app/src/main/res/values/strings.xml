@@ -459,7 +459,7 @@
     <string name="haru_state_calm">sitting quietly</string>
     <string name="breath_kind_thanks">Flower bed</string>
     <string name="breath_kindDesc_thanks">Mood · cyclic sighing: two sips in through the nose, then a long breath out. Recall one thankful thing. 5 min.</string>
-    <string name="breath_out_thanks">One thankful thing</string>
+    <string name="breath_out_thanks">Breathe out, one thankful thing</string>
     <string name="breath_done_thanks_1">Thankful things rose quietly.</string>
     <string name="breath_done_thanks_2">Thanks rested quietly in your heart.</string>
     <string name="breath_done_thanks_3">There were thankful things today, too.</string>
@@ -1068,10 +1068,10 @@
     <string name="welcome_restore">Bring back my records</string>
     <string name="welcome_restoreSub">Continue from a file you saved on your old phone.</string>
     <string name="news_v1_1_4_1">Each breath has its own method: Ripple (resonance, 5 min), Mind walk (box, 4 min), Lantern (4-7-8, 8 rounds), Flower bed (cyclic sighing, 5 min).</string>
-    <string name="news_v1_1_4_2">The breath is the sound now, swelling in and fading out, with a breath ring at Haru’s feet.</string>
-    <string name="news_v1_1_4_3">Fingertip vibration now taps gently, slower than a resting pulse.</string>
-    <string name="news_v1_1_4_4">Stone gazing plays a slow song of your garden’s stones. New cricket sounds.</string>
-    <string name="news_v1_1_4_5">An empty line asks you to write first; photo previews are no longer covered by the date.</string>
+    <string name="news_v1_1_4_2">The breath is the sound now, with a breath ring at Haru’s feet. Vibration is softer and slower.</string>
+    <string name="news_v1_1_4_3">Stone gazing plays a slow song of your garden’s stones. New cricket sounds.</string>
+    <string name="news_v1_1_4_4">Close the day takes a photo and won’t reappear once done.</string>
+    <string name="news_v1_1_4_5">An empty line asks you to write first; photo previews no longer hide the date.</string>
     <string name="news_v1_1_3_1">Decorate each stone with one piece: season pieces, support gifts or pebbles.</string>
     <string name="news_v1_1_3_2">Notes brought by guests now open as a hanji letter.</string>
     <string name="news_v1_1_3_3">The garden quietly tells you when a new version is out. See what’s new in Settings › Help &amp; support.</string>

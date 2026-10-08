@@ -459,7 +459,7 @@
     <string name="haru_state_calm">静かに座っています</string>
     <string name="breath_kind_thanks">こころの花畑</string>
     <string name="breath_kindDesc_thanks">気分 · ため息呼吸：鼻で2回に分けて吸い、長く吐きます。吐くときにありがたいことをひとつ。5分。</string>
-    <string name="breath_out_thanks">ありがたいことをひとつ</string>
+    <string name="breath_out_thanks">吐きながら、ありがたいことをひとつ</string>
     <string name="breath_done_thanks_1">ありがたいことが、静かに浮かびました。</string>
     <string name="breath_done_thanks_2">ありがとうが、こころに静かにとどまりました。</string>
     <string name="breath_done_thanks_3">今日も、ありがたいことがありました。</string>
@@ -1069,9 +1069,9 @@
     <string name="welcome_restoreSub">前のスマホで保存したファイルから続けます。</string>
     <string name="news_v1_1_4_1">4つの呼吸がそれぞれの呼吸法になりました：波紋（共鳴呼吸 5分）・散歩（ボックス呼吸 4分）・灯り（4-7-8 を8回）・花畑（ため息呼吸 5分）。時間を選ばなくて大丈夫です。</string>
     <string name="news_v1_1_4_2">息がそのまま音になりました。吸うと満ち、吐くと静まる音についていくだけ。ハルの足もとの呼吸の輪も一緒に満ちて空きます。</string>
-    <string name="news_v1_1_4_3">指先の振動が、脈よりゆっくりトントンと変わりました。</string>
-    <string name="news_v1_1_4_4">石ぼんやりに、風に散るようなハルの歌がとてもゆっくり流れます。虫の声も新しくしました。</string>
-    <string name="news_v1_1_4_5">空のまま残すを押すと、先に書くようお知らせします。写真のプレビューが日付で隠れなくなりました。</string>
+    <string name="news_v1_1_4_3">石ぼんやりに、風に散るようなハルの歌がとてもゆっくり流れます。虫の声も新しくしました。</string>
+    <string name="news_v1_1_4_4">空のまま残すを押すと、先に書くようお知らせします。写真のプレビューが日付で隠れなくなりました。</string>
+    <string name="news_v1_1_4_5">一日の締めくくりでも写真を添えられ、終えた日は庭に出ません。振動はさらに弱く、ゆっくりに。</string>
     <string name="news_v1_1_3_1">石ごとにひとつ、そばを飾れます。集めた季節のかけら・応援・小石から選びます。</string>
     <string name="news_v1_1_3_2">お客さんがくわえてきたメモが、和紙の手紙になりました。</string>
     <string name="news_v1_1_3_3">新しいバージョンが出ると庭でそっとお知らせします。設定 › ヘルプと応援 で新しくなったことを見られます。</string>

@@ -244,6 +244,11 @@ class AppState(private val context: Context) {
         return n.takeIf { it > 0 && it % SUPPORT_INVITE_EVERY == 0 && lines.any { l -> l.date == today } }
     }
 
+    // ───── 하루 닫기: 오늘 마쳤으면 정원에 다시 권하지 않음 ─────
+    var closedOn by mutableStateOf(store.closedOn)
+        private set
+    fun closeDayDone(today: LocalDate) { if (closedOn != today) { store.closedOn = today; closedOn = today } }
+
     // ───── 하루가 준 조약돌: 쓰다듬다 보면 아주 가끔 (한 달에 한 번쯤) 발치에 하나 ─────
     var pebbles by mutableStateOf(store.pebbles)
         private set

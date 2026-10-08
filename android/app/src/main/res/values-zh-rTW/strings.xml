@@ -459,7 +459,7 @@
     <string name="haru_state_calm">靜靜坐著</string>
     <string name="breath_kind_thanks">心之花田</string>
     <string name="breath_kindDesc_thanks">心情 · 嘆息呼吸：用鼻子分兩次吸氣，再長長吐氣。吐氣時想一件感謝的事。5 分鐘。</string>
-    <string name="breath_out_thanks">一件感謝的事</string>
+    <string name="breath_out_thanks">吐氣，想一件感謝的事</string>
     <string name="breath_done_thanks_1">感謝的事靜靜浮現了。</string>
     <string name="breath_done_thanks_2">感謝靜靜留在心裡。</string>
     <string name="breath_done_thanks_3">今天也有值得感謝的事。</string>
@@ -1069,9 +1069,9 @@
     <string name="welcome_restoreSub">用舊手機儲存的檔案繼續使用。</string>
     <string name="news_v1_1_4_1">四種呼吸各有方法：漣漪（共振呼吸 5 分鐘）・散步（方塊呼吸 4 分鐘）・燈火（4-7-8 八次）・花田（嘆息呼吸 5 分鐘）。不用再選時間。</string>
     <string name="news_v1_1_4_2">呼吸就是聲音：吸氣時聲音漲起，吐氣時慢慢退去。哈魯腳邊的呼吸圈也跟著盈滿、清空。</string>
-    <string name="news_v1_1_4_3">指尖震動改成比脈搏更慢的輕點。</string>
-    <string name="news_v1_1_4_4">發呆看石頭時，會有像被風吹散的哈魯之歌慢慢流過。蟲鳴也重新做了。</string>
-    <string name="news_v1_1_4_5">空白時按下留下，會提醒先寫一句話；照片預覽不再被日期遮住。</string>
+    <string name="news_v1_1_4_3">發呆看石頭時，會有像被風吹散的哈魯之歌慢慢流過。蟲鳴也重新做了。</string>
+    <string name="news_v1_1_4_4">空白時按下留下，會提醒先寫一句話；照片預覽不再被日期遮住。</string>
+    <string name="news_v1_1_4_5">為今天收尾也能附照片，完成後當天不再出現。震動更輕更慢。</string>
     <string name="news_v1_1_3_1">每顆石頭旁都能放一件裝飾：季節碎片、支持的禮物或小石子。</string>
     <string name="news_v1_1_3_2">客人叼來的紙條，變成了韓紙信。</string>
     <string name="news_v1_1_3_3">有新版本時花園會安靜地告訴你。可在 設定 › 說明與支持 再看更新內容。</string>

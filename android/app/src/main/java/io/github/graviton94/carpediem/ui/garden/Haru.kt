@@ -352,8 +352,8 @@ fun HaruFigure(art: HaruArt, scale: Dp, modifier: Modifier = Modifier, blinkKick
         runCatching {
             val v = ctx.getSystemService(android.os.Vibrator::class.java) ?: return
             if (!v.hasVibrator()) return
-            val e = if (v.hasAmplitudeControl()) android.os.VibrationEffect.createWaveform(longArrayOf(0, 120, 120, 160, 160, 200), intArrayOf(0, 30, 70, 110, 60, 20), -1)
-                else android.os.VibrationEffect.createOneShot(60, android.os.VibrationEffect.DEFAULT_AMPLITUDE)
+            val e = if (v.hasAmplitudeControl()) android.os.VibrationEffect.createWaveform(longArrayOf(0, 180, 180, 220, 220, 260), intArrayOf(0, 12, 28, 45, 25, 8), -1)
+                else android.os.VibrationEffect.createOneShot(25, android.os.VibrationEffect.DEFAULT_AMPLITUDE)
             v.vibrate(e)
         }
     }

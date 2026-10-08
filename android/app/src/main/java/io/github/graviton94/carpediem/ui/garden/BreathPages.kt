@@ -243,14 +243,14 @@ fun BreathScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, kind
     val cueOn by remember { androidx.compose.runtime.derivedStateOf { elapsed < b.cueSeconds * 1000 } }
     // 한숨 호흡의 두 번째 들이쉼 (“한 번 더 들이쉬어요”)
     val topUp by remember(plan) { androidx.compose.runtime.derivedStateOf { (Breath.at(plan, elapsed)?.first?.lo ?: 0f) > 0f } }
-    // 단계가 바뀌면 아주 짧게 (들이쉼 한 번, 내쉼 두 번)
+    // 단계가 바뀌면 들이쉼에만 아주 짧게 한 번 (내쉼은 고요히)
     LaunchedEffect(step, intro) {
         if (intro) return@LaunchedEffect
         // 숨마다 명상 종: 들이쉴 땐 맑은 종, 내쉴 땐 낮은 종 (머무는 숨에는 없음)
         if (sound != Sound.NONE) when (step) { BreathStep.IN -> Soundscape.bowl(S.bowlInHz.toDouble()); BreathStep.OUT -> Soundscape.bowl(S.bowlOutHz.toDouble()); else -> {} }
         if (touch != null) return@LaunchedEffect   // 손끝 숨은 숨결 떨림이 대신
         if (step == BreathStep.IN) view.performHapticFeedback(android.view.HapticFeedbackConstants.CLOCK_TICK)
-        if (step == BreathStep.OUT) { view.performHapticFeedback(android.view.HapticFeedbackConstants.CLOCK_TICK); delay(120); view.performHapticFeedback(android.view.HapticFeedbackConstants.CLOCK_TICK) }
+        // 내쉼에는 떨지 않음 (들이쉼에 아주 짧게 한 번만, 눈으로 할 때)
     }
     // 눈: 처음 3초는 뜨고, 그다음 지긋이 감고, 끝나면 천천히 뜸
     val lid = remember { Animatable(0f) }

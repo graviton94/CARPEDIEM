@@ -318,6 +318,9 @@ class Store(context: Context) {
     var notesHidden: Set<String>
         get() = prefs.getStringSet("notesHidden", emptySet()) ?: emptySet()
         set(v) = prefs.edit().putStringSet("notesHidden", v).apply()
+    var closedOn: LocalDate?
+        get() = prefs.getLong("closedOn", Long.MIN_VALUE).takeIf { it != Long.MIN_VALUE }?.let { LocalDate.ofEpochDay(it) }
+        set(v) = prefs.edit().putLong("closedOn", v?.toEpochDay() ?: Long.MIN_VALUE).apply()
     var slipOpened: LocalDate?
         get() = prefs.getLong("slipOpened", Long.MIN_VALUE).takeIf { it != Long.MIN_VALUE }?.let { LocalDate.ofEpochDay(it) }
         set(v) = prefs.edit().putLong("slipOpened", v?.toEpochDay() ?: Long.MIN_VALUE).apply()

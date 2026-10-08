@@ -431,7 +431,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                     // 저녁 7시 이후 · 밤: 하루 닫기 (한 줄 → 고마움 → 등불) · 아침: 씨앗 하나 (04), 심었거나 넘겼으면 하루를 여는 숨 1분
                     // 숨은 누르면 바로 가지 않고 “… 하러 갈까요?” 한 번 묻기
                     if (quiet != null) Unit
-                    else if (isNight(now) || now.hour >= CLOSE_DAY_FROM) CloseDayEntry(state.sentOn(day0), onCloseDay)
+                    else if ((isNight(now) || now.hour >= CLOSE_DAY_FROM) && state.closedOn != day0 && !(now.hour < 5 && state.closedOn == day0.minusDays(1))) CloseDayEntry(state.sentOn(day0), onCloseDay)
                     // 아침 숨 권유는 씨앗 쪽지가 없을 때만 (아침 권유도 하나만)
                     // 사흘에 하루만 (날마다 같은 권유를 되풀이하지 않게)
                     else if (Labels.part(now) == io.github.graviton94.carpediem.core.DayPart.MORNING && state.breaths.none { it.first == now.toLocalDate() } && !(state.seedDue(now) && !touring)
