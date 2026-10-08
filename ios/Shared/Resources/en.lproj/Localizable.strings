@@ -1,4 +1,5 @@
 /* 자동 생성 파일 — 직접 고치지 말고 scripts/generate.py 를 실행하세요. */
+"letgo.empty" = "Write your line first.";
 "breath.inTop" = "One more sip in";
 "note.dismiss" = "Not today";
 "closeDay.ask" = "Close the day now?";
@@ -1064,10 +1065,11 @@
 "welcome.start" = "Start fresh";
 "welcome.restore" = "Bring back my records";
 "welcome.restoreSub" = "Continue from a file you saved on your old phone.";
-"news.v1_1_4.1" = "Each breath now follows its own method: Ripple (resonance, 5 min), Mind walk (box, 4 min), Lantern (4-7-8, eight rounds), Flower bed (cyclic sighing, 5 min).";
-"news.v1_1_4.2" = "The breath itself is the sound, swelling as you breathe in and fading as you breathe out. A breath ring at Haru’s feet follows it.";
+"news.v1_1_4.1" = "Each breath has its own method: Ripple (resonance, 5 min), Mind walk (box, 4 min), Lantern (4-7-8, 8 rounds), Flower bed (cyclic sighing, 5 min).";
+"news.v1_1_4.2" = "The breath is the sound now, swelling in and fading out, with a breath ring at Haru’s feet.";
 "news.v1_1_4.3" = "Fingertip vibration now taps gently, slower than a resting pulse.";
-"news.v1_1_4.4" = "Stone gazing plays a slow, wind-scattered song of your garden’s stones. New cricket sounds.";
+"news.v1_1_4.4" = "Stone gazing plays a slow song of your garden’s stones. New cricket sounds.";
+"news.v1_1_4.5" = "An empty line asks you to write first; photo previews are no longer covered by the date.";
 "news.v1_1_3.1" = "Decorate each stone with one piece: season pieces, support gifts or pebbles.";
 "news.v1_1_3.2" = "Notes brought by guests now open as a hanji letter.";
 "news.v1_1_3.3" = "The garden quietly tells you when a new version is out. See what’s new in Settings › Help & support.";

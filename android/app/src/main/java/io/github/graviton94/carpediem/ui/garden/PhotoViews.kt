@@ -35,7 +35,7 @@ import java.time.LocalDate
 
 /** 한지 액자에 걸린 시간이 묻은 사진 (11). 날마다 기울기가 조금씩 다르고, 아래에 날짜 (와 한마디). 사진이 없으면 아무것도 그리지 않음. */
 @Composable
-internal fun WeatheredPhoto(state: AppState, day: LocalDate, today: LocalDate, width: Dp, pending: Boolean = false, edit: Boolean = false, caption: String? = null, modifier: Modifier = Modifier) {
+internal fun WeatheredPhoto(state: AppState, day: LocalDate, today: LocalDate, width: Dp, pending: Boolean = false, edit: Boolean = false, caption: String? = null, dated: Boolean = true, modifier: Modifier = Modifier) {
     val ctx = LocalContext.current
     var img by remember(day, pending) { mutableStateOf<ImageBitmap?>(null) }
     LaunchedEffect(day, today, pending, state.photoKick) {
@@ -45,7 +45,8 @@ internal fun WeatheredPhoto(state: AppState, day: LocalDate, today: LocalDate, w
     val tilt = remember(day) { (Math.floorMod(day.toEpochDay() * 7919, 70L) - 35) / 10f }   // -3.5° … 3.4°
     Box(modifier.width(width).graphicsLayer { rotationZ = tilt }) {
         Image(bmp, caption ?: RecordText.day(ctx, day), Modifier.fillMaxWidth().aspectRatio(bmp.width.toFloat() / bmp.height))
-        TokenText(listOfNotNull(RecordText.day(ctx, day), caption).joinToString(" · "), Tokens.TypeScale.caption1.serif(),
+        // 작은 미리보기 (쓰는 칸 옆) 에서는 날짜를 빼고 사진만 (글자가 사진을 가리거나 잘리지 않게)
+        if (dated || caption != null) TokenText(listOfNotNull(RecordText.day(ctx, day).takeIf { dated }, caption).joinToString(" · "), Tokens.TypeScale.caption1.serif(),
             Modifier.align(Alignment.BottomCenter).fillMaxWidth().padding(horizontal = width * 0.08f).padding(bottom = width * 0.06f),
             color = Theme.gc.inkSoft, align = TextAlign.Center, maxLines = 1)
     }

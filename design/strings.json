@@ -1,5 +1,6 @@
 {
   "ko": {
+    "letgo.empty": "한 줄을 먼저 적어 주세요.",
     "breath.inTop": "한 번 더 들이쉬어요",
     "note.dismiss": "오늘은 넘기기",
     "closeDay.ask": "오늘 하루를 닫으러 갈까요?",
@@ -1067,6 +1068,7 @@
     "welcome.restoreSub": "예전 폰에서 저장한 파일로 이어서 써요."
   },
   "en": {
+    "letgo.empty": "Write your line first.",
     "breath.inTop": "One more sip in",
     "note.dismiss": "Not today",
     "closeDay.ask": "Close the day now?",
@@ -2134,6 +2136,7 @@
     "welcome.restoreSub": "Continue from a file you saved on your old phone."
   },
   "ja": {
+    "letgo.empty": "先にひとことを書いてください。",
     "breath.inTop": "もうひと息吸って",
     "note.dismiss": "今日はやめておく",
     "closeDay.ask": "今日を閉じに行きますか？",
@@ -3201,6 +3204,7 @@
     "welcome.restoreSub": "前のスマホで保存したファイルから続けます。"
   },
   "zh-TW": {
+    "letgo.empty": "請先寫下一句話。",
     "breath.inTop": "再吸一小口",
     "note.dismiss": "今天先不要",
     "closeDay.ask": "要去為今天收尾嗎？",

@@ -185,7 +185,8 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
         if (ok) { state.draftPhoto = true; state.photoKick++ } else state.say(photoFail)
     } }
     fun send() {
-        if (text.isBlank()) return
+        // 비어 있으면 그냥 지나치지 않고: 한 줄을 먼저 적어 달라고 말하고 쓰는 칸으로
+        if (text.isBlank()) { state.say(ctx.getString(R.string.letgo_empty)); runCatching { focusBox.requestFocus() }; return }
         // 남기지 못했으면 (자정이 지나 고칠 수 없거나 그날이 이미 찼으면) 쓰던 글은 그대로
         if (editing) {
             if (state.editToday(text, feeling, today)) {
@@ -334,13 +335,13 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
                         val hasToday = remember(state.photoKick, today) { io.github.graviton94.carpediem.data.Photos.has(ctx, today) }
                         val kept = editing && !dropPhoto && hasToday
                         if (kept && !state.draftPhoto) {
-                            WeatheredPhoto(state, today, today, u * 56f)
+                            WeatheredPhoto(state, today, today, u * 56f, dated = false)
                             TokenText(stringResource(R.string.photo_change), Tokens.TypeScale.footnote,
                                 Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { pickDraft() }.padding(Tokens.Space.sp3), color = p.olive, weight = FontWeight.SemiBold)
                             TokenText(stringResource(R.string.photo_remove), Tokens.TypeScale.footnote,
                                 Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { dropPhoto = true }.padding(vertical = Tokens.Space.sp3), color = p.secondary)
                         } else if (state.draftPhoto) {
-                            WeatheredPhoto(state, day ?: today, today, u * 56f, pending = true)
+                            WeatheredPhoto(state, day ?: today, today, u * 56f, pending = true, dated = false)
                             TokenText(stringResource(R.string.photo_remove), Tokens.TypeScale.footnote,
                                 Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { io.github.graviton94.carpediem.data.Photos.dropPending(ctx); state.draftPhoto = false }.padding(Tokens.Space.sp3), color = p.secondary)
                         } else GardenChip(stringResource(R.string.photo_add), false, 969) { pickDraft() }
@@ -542,12 +543,12 @@ internal fun PastLineSheet(state: AppState, line: DayLine, today: LocalDate, onC
             Row(verticalAlignment = Alignment.CenterVertically) {
                 when {
                     newPhoto -> {
-                        WeatheredPhoto(state, line.date, today, u * 56f, pending = true, edit = true)
+                        WeatheredPhoto(state, line.date, today, u * 56f, pending = true, edit = true, dated = false)
                         TokenText(stringResource(R.string.photo_remove), Tokens.TypeScale.footnote,
                             Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { io.github.graviton94.carpediem.data.Photos.dropPending(ctx, edit = true); newPhoto = false; state.photoKick++ }.padding(Tokens.Space.sp3), color = p.secondary)
                     }
                     has && !dropPhoto -> {
-                        WeatheredPhoto(state, line.date, today, u * 56f)
+                        WeatheredPhoto(state, line.date, today, u * 56f, dated = false)
                         TokenText(stringResource(R.string.photo_change), Tokens.TypeScale.footnote,
                             Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { pick() }.padding(Tokens.Space.sp3), color = p.olive, weight = FontWeight.SemiBold)
                         TokenText(stringResource(R.string.photo_remove), Tokens.TypeScale.footnote,
@@ -557,7 +558,7 @@ internal fun PastLineSheet(state: AppState, line: DayLine, today: LocalDate, onC
                 }
             }
             Action(stringResource(R.string.edit_save), filled = text.isNotBlank(), seed = 1286) {
-                if (text.isBlank()) return@Action
+                if (text.isBlank()) { state.say(ctx.getString(R.string.letgo_empty)); return@Action }
                 if (state.editLine(line.date, text, feeling)) {
                     if (newPhoto) { io.github.graviton94.carpediem.data.Photos.commitPending(ctx, line.date, edit = true); newPhoto = false }
                     else if (dropPhoto) io.github.graviton94.carpediem.data.Photos.remove(ctx, line.date)
