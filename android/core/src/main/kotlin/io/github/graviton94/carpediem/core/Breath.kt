@@ -58,39 +58,29 @@ object Breath {
     }
 
     /**
-     * 하루의 숨결 (손끝으로, 05): from 부터 끝까지의 떨림 모양. slice ms 마다 세기 (0 ~ 255) 하나.
-     * 들이쉼은 약하게 시작해 차오르고, 머묾은 고요, 내쉼은 길게 잦아든다. 같은 세기가 이어지면 하나로 묶는다.
-     */
-    /**
      * 하루의 숨결 (손끝으로, 05): from 부터 끝까지의 떨림 (길이 ms, 세기 0 ~ 255; 세기 0 = 쉼).
-     * 빠르게 떨지 않고 아주 느리고 여리게 톡톡 (1.1.4): 들이쉼엔 [inEvery] ms 마다 조금씩 또렷하게, 내쉼엔 [outEvery] ms 마다 잦아들게, 머묾은 고요.
+     * 톡톡 두드리지 않고, 잠든 아기나 작은 강아지의 가슴처럼 (1.1.4): 들이쉼에 아주 여리게 부풀었다가 내쉼에 스르르 잦아들고, 머묾은 고요.
+     * [step] ms 마다 세기를 조금씩 바꿔 이음매 없이. [low] 보다 여려지면 쉼.
      */
-    fun touchWave(plan: List<Phase>, from: Long, pulse: Long = 40, inEvery: Long = 1500, outEvery: Long = 2500, low: Int = 18, high: Int = 80): Pair<LongArray, IntArray> {
+    fun touchWave(plan: List<Phase>, from: Long, step: Long = 120, low: Int = 4, high: Int = 34): Pair<LongArray, IntArray> {
         val times = ArrayList<Long>(); val amps = ArrayList<Int>()
         fun add(len: Long, a: Int) { if (len <= 0) return; if (amps.isNotEmpty() && amps.last() == a) times[times.size - 1] = times.last() + len else { times.add(len); amps.add(a.coerceIn(0, 255)) } }
         var t = from.coerceAtLeast(0)
         plan.forEach { ph ->
             val end = ph.startMs + ph.lengthMs
             if (end <= t) return@forEach
-            val every = when (ph.step) { BreathStep.IN -> inEvery; BreathStep.OUT -> outEvery; else -> 0L }
-            if (every == 0L) { add(end - t, 0); t = end; return@forEach }
-            // 이 단계 안의 톡: 단계 시작에서 every 마다
-            var k = ph.startMs
-            while (k < end) {
-                val pEnd = minOf(k + pulse, end)
-                if (pEnd > t) {
-                    if (k > t) add(k - t, 0)
-                    val f = ((k - ph.startMs).toFloat() / ph.lengthMs).coerceIn(0f, 1f)
-                    val a = if (ph.step == BreathStep.IN) (low + (high - low) * (ph.lo + (ph.hi - ph.lo) * f)).toInt() else (high - (high - low) * f).toInt()
-                    add(pEnd - maxOf(k, t), a); t = pEnd
-                }
-                val next = minOf(k + every, end)
-                if (next > t) { add(next - t, 0); t = next }
-                k += every
+            if (ph.step != BreathStep.IN && ph.step != BreathStep.OUT) { add(end - t, 0); t = end; return@forEach }
+            while (t < end) {
+                val next = minOf(t + step - (t - ph.startMs) % step, end)
+                val full = fullness(ph, ((t + next) / 2 - ph.startMs).toFloat() / ph.lengthMs)
+                // 내쉼은 조금 낮은 데서 시작해 (머묾 뒤 갑자기 세지 않게) 스르르
+                val a = if (ph.step == BreathStep.IN) low + (high - low) * full else high * OUT_FROM * full
+                add(next - t, if (a < low) 0 else a.toInt()); t = next
             }
         }
         return times.toLongArray() to amps.toIntArray()
     }
+    private const val OUT_FROM = 0.85f
 
     /** 지금 몇 번째 단계, 그 단계에서 얼마나 지났는지 (0 ~ 1). 끝났으면 null. */
     fun at(plan: List<Phase>, elapsedMs: Long): Pair<Phase, Float>? {

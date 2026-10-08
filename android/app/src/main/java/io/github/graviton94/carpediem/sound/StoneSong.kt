@@ -29,8 +29,8 @@ object StoneSong {
 
     /** 별자리 연주: 마음마다 한 음 (가벼운 마음은 높고 맑게, 무거운 마음은 낮고 부드럽게). 마음이 없으면 가운데. */
     fun feelingPitch(f: io.github.graviton94.carpediem.core.Feeling?): Double = SCALE[when (f) {
-        io.github.graviton94.carpediem.core.Feeling.JOY -> 9; io.github.graviton94.carpediem.core.Feeling.HOPE -> 8; io.github.graviton94.carpediem.core.Feeling.THANKS -> 7
-        io.github.graviton94.carpediem.core.Feeling.CALM -> 5; io.github.graviton94.carpediem.core.Feeling.DISAPPOINT -> 3
+        io.github.graviton94.carpediem.core.Feeling.JOY -> 9; io.github.graviton94.carpediem.core.Feeling.HOPE -> 8; io.github.graviton94.carpediem.core.Feeling.PROUD -> 8; io.github.graviton94.carpediem.core.Feeling.THANKS -> 7
+        io.github.graviton94.carpediem.core.Feeling.CALM -> 5; io.github.graviton94.carpediem.core.Feeling.DISAPPOINT -> 3; io.github.graviton94.carpediem.core.Feeling.UNSETTLED -> 3
         io.github.graviton94.carpediem.core.Feeling.WORRY -> 2; io.github.graviton94.carpediem.core.Feeling.SAD -> 0
         else -> 4 }]
 

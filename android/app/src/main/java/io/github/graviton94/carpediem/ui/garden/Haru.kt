@@ -346,14 +346,14 @@ fun HaruFigure(art: HaruArt, scale: Dp, modifier: Modifier = Modifier, blinkKick
         LaunchedEffect(blinkKick) { if (blinkKick > 0) blinkOnce() }
     }
     fun tick() { if (tc.haptic > 0f) view.performHapticFeedback(android.view.HapticFeedbackConstants.CLOCK_TICK) }
-    /** 숨처럼 느린 진동 한 번 (올랐다 잦아듦). 세기 조절이 안 되는 폰은 짧게 한 번. */
+    /** 잠든 작은 숨결처럼 여린 떨림 한 번 (스르르 부풀었다 잦아듦). 세기 조절이 안 되는 폰은 짧게 한 번. */
     fun slowPulse() {
         if (tc.haptic <= 0f) return
         runCatching {
             val v = ctx.getSystemService(android.os.Vibrator::class.java) ?: return
             if (!v.hasVibrator()) return
-            val e = if (v.hasAmplitudeControl()) android.os.VibrationEffect.createWaveform(longArrayOf(0, 180, 180, 220, 220, 260), intArrayOf(0, 12, 28, 45, 25, 8), -1)
-                else android.os.VibrationEffect.createOneShot(25, android.os.VibrationEffect.DEFAULT_AMPLITUDE)
+            val e = if (v.hasAmplitudeControl()) android.os.VibrationEffect.createWaveform(longArrayOf(0, 220, 220, 240, 260, 320), intArrayOf(0, 5, 12, 18, 10, 4), -1)
+                else android.os.VibrationEffect.createOneShot(14, android.os.VibrationEffect.DEFAULT_AMPLITUDE)
             v.vibrate(e)
         }
     }

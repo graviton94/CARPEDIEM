@@ -553,6 +553,9 @@ object Tokens {
                 val disappoint = Color(0xFFB9B4A8)
                 val sad = Color(0xFF8C9AB0)
                 val worry = Color(0xFF9C8FA6)
+                val proud = Color(0xFFE3A866)
+                val meh = Color(0xFFC9C6B5)
+                val unsettled = Color(0xFFAEBFC0)
                 val none = Color(0xFFE6DFCF)
             }
         }

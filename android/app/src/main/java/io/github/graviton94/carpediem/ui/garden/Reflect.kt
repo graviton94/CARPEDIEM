@@ -87,6 +87,7 @@ internal fun QuestionBlock(state: AppState, q: Question, sent: Boolean, onAnswer
 
 internal fun moodColor(f: Feeling?): Color = when (f) {
     Feeling.JOY -> G.Mood.Colors.joy; Feeling.HOPE -> G.Mood.Colors.hope; Feeling.CALM -> G.Mood.Colors.calm; Feeling.THANKS -> G.Mood.Colors.thanks
+    Feeling.PROUD -> G.Mood.Colors.proud; Feeling.MEH -> G.Mood.Colors.meh; Feeling.UNSETTLED -> G.Mood.Colors.unsettled
     Feeling.DISAPPOINT -> G.Mood.Colors.disappoint; Feeling.SAD -> G.Mood.Colors.sad; Feeling.WORRY -> G.Mood.Colors.worry; null -> G.Mood.Colors.none
 }
 

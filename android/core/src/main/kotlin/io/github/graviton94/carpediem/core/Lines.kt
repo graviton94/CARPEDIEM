@@ -3,7 +3,19 @@ package io.github.graviton94.carpediem.core
 import java.time.LocalDate
 
 /** 오늘의 한 줄에 실어 보내는 마음 (고르지 않아도 된다). */
-enum class Feeling { JOY, HOPE, CALM, THANKS, DISAPPOINT, SAD, WORRY }
+/**
+ * 마음 열 가지 (고르는 순서 그대로): 밝은 다섯 · 가운데 둘 · 무거운 셋. 저장은 이름으로라 순서를 바꿔도 지난 한 줄은 그대로.
+ * HOPE = 설렘, WORRY = 불안, DISAPPOINT = 속상함 (이름만 바뀜).
+ */
+enum class Feeling {
+    JOY, HOPE, PROUD, THANKS, CALM, MEH, UNSETTLED, WORRY, DISAPPOINT, SAD;
+    companion object {
+        /** 밝은 마음 (해 · 하루가 깡충). 평온은 따로 (구름). */
+        val BRIGHT = setOf(JOY, HOPE, PROUD, THANKS)
+        /** 한 줄에 다섯 칸씩 두 줄 */
+        const val PER_ROW = 5
+    }
+}
 
 /** 하루에 한 줄. 떠나보낸 뒤에는 화면에 다시 보이지 않고, 기기 안에만 남는다. text 가 비었으면 ‘기록 남기지 않기’로 날짜만 남긴 것. */
 data class DayLine(val date: LocalDate, val text: String, val feeling: Feeling?, val to: String? = null, val question: Int? = null)

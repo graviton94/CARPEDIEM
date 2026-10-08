@@ -223,7 +223,7 @@ internal fun YearTiles(state: AppState, y: Int, today: LocalDate, night: Boolean
     }
 }
 
-/** 마음의 날씨 한 칸: 기쁨 · 희망 · 고마움 = 해, 고요 = 구름, 실망 · 슬픔 · 걱정 = 구름과 빗방울. 색은 그 마음의 색. */
+/** 마음의 날씨 한 칸: 밝은 마음 = 해, 평온 · 덤덤 · 싱숭생숭 = 구름, 불안 · 속상함 · 슬픔 = 구름과 빗방울. 색은 그 마음의 색. */
 @Composable
 internal fun MoodSky(f: Feeling) {
     val ctx = LocalContext.current
@@ -233,14 +233,14 @@ internal fun MoodSky(f: Feeling) {
     androidx.compose.foundation.Canvas(Modifier.size(Theme.unit * 12).semantics { contentDescription = label }) {
         val w = size.width; val h = size.height
         when (f) {
-            Feeling.JOY, Feeling.HOPE, Feeling.THANKS -> {
+            in Feeling.BRIGHT -> {
                 drawCircle(c, w * 0.26f, center)
                 repeat(8) { k -> val a = k * Math.PI / 4; val r1 = w * 0.36f; val r2 = w * 0.48f
                     drawLine(c, androidx.compose.ui.geometry.Offset(center.x + (r1 * kotlin.math.cos(a)).toFloat(), center.y + (r1 * kotlin.math.sin(a)).toFloat()),
                         androidx.compose.ui.geometry.Offset(center.x + (r2 * kotlin.math.cos(a)).toFloat(), center.y + (r2 * kotlin.math.sin(a)).toFloat()), strokeWidth = w * 0.07f) }
             }
             else -> {
-                val heavy = f != Feeling.CALM
+                val heavy = f in io.github.graviton94.carpediem.core.Letters.HEAVY
                 val cy = if (heavy) h * 0.38f else h * 0.5f
                 drawCircle(c, w * 0.2f, androidx.compose.ui.geometry.Offset(w * 0.34f, cy + h * 0.04f))
                 drawCircle(c, w * 0.25f, androidx.compose.ui.geometry.Offset(w * 0.58f, cy - h * 0.04f))
@@ -277,7 +277,7 @@ internal fun RecordSearch(state: AppState, today: LocalDate, onOpen: (RecordView
     if (found.isEmpty()) {
         TokenText(stringResource(R.string.search_none), Tokens.TypeScale.footnote, color = p.secondary)
         // 마음으로 찾아보기: 누르면 그 마음 이름으로
-        androidx.compose.foundation.layout.FlowRow(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
+        androidx.compose.foundation.layout.FlowRow(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2), maxItemsInEachRow = Feeling.PER_ROW) {
             Feeling.entries.forEachIndexed { i, f -> val n = stringResource(feelingName(f)); GardenChip(n, false, 1500 + i) { q = n } }
         }
     } else {

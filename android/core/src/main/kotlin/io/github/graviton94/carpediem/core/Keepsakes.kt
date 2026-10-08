@@ -63,7 +63,7 @@ object Rings {
             val a = start.plusMonths(i.toLong()); val b = start.plusMonths(i + 1L)
             top(inside.filter { !it.date.isBefore(a) && it.date.isBefore(b) })
         }
-        val warm = inside.filter { it.text.isNotBlank() && it.feeling in setOf(Feeling.JOY, Feeling.THANKS, Feeling.HOPE, Feeling.CALM) }
+        val warm = inside.filter { it.text.isNotBlank() && it.feeling in Feeling.BRIGHT + Feeling.CALM }
         val pick = (warm.ifEmpty { inside.filter { it.text.isNotBlank() } }).let { if (it.isEmpty()) null else it[Math.floorMod(seed + age, it.size.toLong()).toInt()] }
         return Ring(age, start, end, months, inside.size, inside.count { it.feeling == Feeling.THANKS }, top(inside), pick)
     }
@@ -172,7 +172,7 @@ object Credits {
 
     private fun pickLines(list: List<CreditItem>, n: Int): List<CreditItem> {
         if (n <= 0) return emptyList()
-        val warm = setOf(Feeling.THANKS, Feeling.JOY, Feeling.HOPE)
+        val warm = Feeling.BRIGHT
         val first = even(list.filter { it.line?.feeling in warm }, n / 2 + n % 2)
         val chosen = (first + even(list.filterNot { it in first }, n - first.size)).distinct().sortedBy { it.date }.toMutableList()
         var i = 1

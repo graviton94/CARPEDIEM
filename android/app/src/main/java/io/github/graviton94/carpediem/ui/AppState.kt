@@ -374,7 +374,7 @@ class AppState(private val context: Context) {
         // 기록 남기지 않기: 날짜만 (이어 쓰기 흔적은 이어 간다)
         val line = if (keepLines) DayLine(today, t, feeling, to, q) else DayLine(today, "", null, to)
         val person = people.firstOrNull { it.id == to }
-        toastTitle = if (person != null && feeling in setOf(Feeling.JOY, Feeling.THANKS, Feeling.HOPE)) context.getString(R.string.letgo_modalTo, person.name) else null
+        toastTitle = if (person != null && feeling in Feeling.BRIGHT) context.getString(R.string.letgo_modalTo, person.name) else null
         val moment = Chances.onLine(lines, today)
         val next = Lines.add(lines, line)
         store.lines = next; lines = next
@@ -463,8 +463,9 @@ class AppState(private val context: Context) {
             // 밤에는 잠드는 명상, 아침의 슬픔엔 맑은 숨으로
             Feeling.SAD -> if (breathed) null else if (night) Care.SLEEP_BREATH else if (morning) Care.MORNING_BREATH else Care.CALM_BREATH
             Feeling.WORRY -> if (breathed) null else if (night) Care.SLEEP_BREATH else Care.BOX_BREATH
+            Feeling.UNSETTLED -> if (breathed) null else if (night) Care.SLEEP_BREATH else Care.CALM_BREATH
             Feeling.DISAPPOINT -> Care.LOOK
-            Feeling.JOY, Feeling.THANKS -> if (people.isNotEmpty() && to == null && keepLines) Care.SEND_TO else null
+            Feeling.JOY, Feeling.THANKS, Feeling.PROUD -> if (people.isNotEmpty() && to == null && keepLines) Care.SEND_TO else null
             else -> null
         }
     }

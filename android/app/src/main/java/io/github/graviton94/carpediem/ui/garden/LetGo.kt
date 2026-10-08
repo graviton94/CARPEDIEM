@@ -84,6 +84,7 @@ import kotlin.math.sin
 
 internal fun feelingName(f: Feeling) = when (f) {
     Feeling.JOY -> R.string.feeling_joy; Feeling.HOPE -> R.string.feeling_hope; Feeling.CALM -> R.string.feeling_calm; Feeling.THANKS -> R.string.feeling_thanks
+    Feeling.PROUD -> R.string.feeling_proud; Feeling.MEH -> R.string.feeling_meh; Feeling.UNSETTLED -> R.string.feeling_unsettled
     Feeling.DISAPPOINT -> R.string.feeling_disappoint; Feeling.SAD -> R.string.feeling_sad; Feeling.WORRY -> R.string.feeling_worry
 }
 
@@ -295,7 +296,7 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
                     }
                 }
                 TokenText(stringResource(R.string.letgo_feeling), Tokens.TypeScale.footnote, color = p.secondary)
-                FlowRow(Modifier.guideTarget(guide, "write.feeling"), horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
+                FlowRow(Modifier.guideTarget(guide, "write.feeling"), horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2), maxItemsInEachRow = Feeling.PER_ROW) {
                     Feeling.entries.forEachIndexed { i, f ->
                         Chip(stringResource(feelingName(f)), feeling == f, seed = 970 + i) { feeling = if (feeling == f) null else f }
                     }
@@ -529,7 +530,7 @@ internal fun PastLineSheet(state: AppState, line: DayLine, today: LocalDate, onC
         Column(Modifier.fillMaxWidth().imePadding().verticalScroll(rememberScrollState()).padding(horizontal = Theme.deviceClass.pageMargin).padding(bottom = Tokens.Space.sp8),
             verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
             TokenText(stringResource(R.string.edit_pastTitle, RecordText.day(ctx, line.date)), Tokens.TypeScale.title3)
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2), maxItemsInEachRow = Feeling.PER_ROW) {
                 Feeling.entries.forEachIndexed { i, f -> Chip(stringResource(feelingName(f)), feeling == f, seed = 1270 + i) { feeling = if (feeling == f) null else f } }
             }
             BasicTextField(

@@ -558,6 +558,9 @@ enum Tokens {
                 static let disappoint: UInt32 = 0xB9B4A8FF
                 static let sad: UInt32 = 0x8C9AB0FF
                 static let worry: UInt32 = 0x9C8FA6FF
+                static let proud: UInt32 = 0xE3A866FF
+                static let meh: UInt32 = 0xC9C6B5FF
+                static let unsettled: UInt32 = 0xAEBFC0FF
                 static let none: UInt32 = 0xE6DFCFFF
             }
         }

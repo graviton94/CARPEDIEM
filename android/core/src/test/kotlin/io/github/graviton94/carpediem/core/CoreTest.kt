@@ -597,10 +597,14 @@ class ChancesTest {
         val (times, amps) = Breath.touchWave(plan, 0)
         assertEquals(38_000L, times.sum()); assertEquals(times.size, amps.size)
         assertTrue(amps.all { it in 0..255 })
-        // 들이쉼은 톡톡 차오르고 (처음 < 끝), 머묾은 고요, 톡 사이는 쉼 (빠르게 떨지 않음)
-        val first = amps.first(); assertTrue(amps.take(6).max() > first)
+        // 들이쉼은 여리게 부풀고 (처음 < 끝), 머묾은 고요, 내쉼은 잦아들어 쉼으로
+        val first = amps.first(); assertTrue(amps.take(20).max() > first)
         assertEquals(0, Breath.touchWave(plan, 5_000).second.first())
-        val pulses = amps.count { it > 0 }; assertTrue(pulses in 10..20, "1.5–2.5초에 한 번: $pulses"); assertTrue(amps.max() <= 80, "여리게")
+        assertEquals(0, amps.last()); assertTrue(amps.max() <= 34, "여리게")
+        // 톡톡 두드리지 않음: 쉼에서 떨림으로 넘어가는 건 숨마다 (들이쉼 · 내쉼) 두 번까지
+        val starts = amps.indices.count { i -> amps[i] > 0 && (i == 0 || amps[i - 1] == 0) }; assertTrue(starts <= 4, "숨결: $starts")
+        // 세기는 한 칸씩 이어서 (갑자기 튀지 않음)
+        assertTrue(amps.indices.drop(1).all { i -> amps[i] == 0 || amps[i - 1] == 0 || kotlin.math.abs(amps[i] - amps[i - 1]) <= 6 })
         // 한숨 호흡: 첫 들이쉼 0 → 0.75, 한 번 더 0.75 → 1, 그다음 내쉼
         val sigh = Breath.cycles(Breath.Rhythm(2.0, 0.0, 6.0, 0.0, topS = 1.0), 1)
         assertEquals(listOf(BreathStep.IN, BreathStep.IN, BreathStep.OUT), sigh.map { it.step }); assertEquals(9_000L, sigh.last().let { it.startMs + it.lengthMs })

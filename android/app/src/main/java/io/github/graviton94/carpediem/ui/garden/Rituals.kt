@@ -318,7 +318,7 @@ private fun LineStep(state: AppState, today: LocalDate, now: LocalDateTime, onNe
         } else {
             TokenText(stringResource(R.string.closeDay_lineTitle), Tokens.TypeScale.title3.serif())
             TokenText(stringResource(R.string.letgo_feeling), Tokens.TypeScale.footnote, color = p.secondary)
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2), maxItemsInEachRow = Feeling.PER_ROW) {
                 Feeling.entries.forEachIndexed { i, f -> GardenChip(stringResource(feelingName(f)), feeling == f, 1451 + i) { feeling = if (feeling == f) null else f } }
             }
             BasicTextField(
@@ -446,19 +446,22 @@ private fun DarkStep(onDone: () -> Unit) {
 
 // ───────────────────────── 하루의 숨결을 손끝으로 ─────────────────────────
 
-/** 숨을 떨림으로 (05). 세기를 조절할 수 있는 폰은 차오르고 잦아드는 떨림, 아니면 짧은 박동. */
+/** 숨을 떨림으로 (05). 세기를 조절할 수 있는 폰은 잠든 작은 숨결처럼 부풀고 잦아드는 떨림, 아니면 들이쉼마다 아주 짧게 한 번. */
 /** 세기 조절이 없는 폰의 톡 길이 (ms): 짧을수록 여리게 느껴짐. */
-private const val TOUCH_PULSE_PLAIN = 22L
+private const val TOUCH_PULSE_PLAIN = 14L
 internal class TouchBreath(private val vib: Vibrator) {
     fun play(plan: List<Breath.Phase>, from: Long) {
         if (!vib.hasVibrator()) return
-        // 맥박보다 느린 톡톡 (들이쉼 1초 · 내쉼 1.5초에 한 번), 빠르게 떨지 않음
-        val (t, a) = Breath.touchWave(plan, from)
-        if (t.isEmpty()) return
-        val effect = if (vib.hasAmplitudeControl()) VibrationEffect.createWaveform(t, a, -1) else {
-            // 세기 조절이 없으면: 같은 박자로 짧게 한 번씩 (조용한 때는 쉼)
-            val times = ArrayList<Long>(); var wait = 0L
-            t.indices.forEach { i -> if (a[i] > 0) { val on = minOf(t[i], TOUCH_PULSE_PLAIN); times.add(wait); times.add(on); wait = t[i] - on } else wait += t[i] }
+        val effect = if (vib.hasAmplitudeControl()) {
+            val (t, a) = Breath.touchWave(plan, from)
+            if (t.isEmpty()) return
+            VibrationEffect.createWaveform(t, a, -1)
+        } else {
+            // 세기 조절이 없으면: 들이쉼이 시작될 때만 아주 짧게 (나머지는 고요)
+            val times = ArrayList<Long>(); var at = from
+            plan.filter { it.step == io.github.graviton94.carpediem.core.BreathStep.IN && it.startMs >= from }.forEach { ph ->
+                times.add(ph.startMs - at); times.add(TOUCH_PULSE_PLAIN); at = ph.startMs + TOUCH_PULSE_PLAIN
+            }
             if (times.isEmpty()) return
             VibrationEffect.createWaveform(times.toLongArray(), -1)
         }

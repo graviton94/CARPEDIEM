@@ -559,7 +559,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                         // 내 하루는 오늘을 앎: 보낸 한 줄의 마음 · 밤
                         mood = if (sl.id != null || bare) HaruMood.CALM else when (todayLine?.feeling) {
                             in io.github.graviton94.carpediem.core.Letters.HEAVY -> HaruMood.HEAVY
-                            io.github.graviton94.carpediem.core.Feeling.JOY, io.github.graviton94.carpediem.core.Feeling.HOPE, io.github.graviton94.carpediem.core.Feeling.THANKS -> HaruMood.JOY
+                            in io.github.graviton94.carpediem.core.Feeling.BRIGHT -> HaruMood.JOY
                             else -> HaruMood.CALM },
                         sleepy = sl.id == null && !bare && isNight(now),
                         onPet = if (sl.id == null && !bare) ({ state.pettedHaru(day0) }) else null)

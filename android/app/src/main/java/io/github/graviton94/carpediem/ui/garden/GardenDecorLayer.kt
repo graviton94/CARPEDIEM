@@ -246,7 +246,7 @@ private fun kiteTail(): List<Offset> {
     return out
 }
 
-internal fun feelingColor(f: Feeling?): Color { val m = Tokens.Garden.Mood.Colors; return when (f) { Feeling.JOY -> m.joy; Feeling.HOPE -> m.hope; Feeling.CALM -> m.calm; Feeling.THANKS -> m.thanks; Feeling.DISAPPOINT -> m.disappoint; Feeling.SAD -> m.sad; Feeling.WORRY -> m.worry; null -> m.none } }
+internal fun feelingColor(f: Feeling?): Color { val m = Tokens.Garden.Mood.Colors; return when (f) { Feeling.JOY -> m.joy; Feeling.HOPE -> m.hope; Feeling.CALM -> m.calm; Feeling.THANKS -> m.thanks; Feeling.PROUD -> m.proud; Feeling.MEH -> m.meh; Feeling.UNSETTLED -> m.unsettled; Feeling.DISAPPOINT -> m.disappoint; Feeling.SAD -> m.sad; Feeling.WORRY -> m.worry; null -> m.none } }
 
 /** ④ 하루의 자리: 하루 밑의 이끼 방석 (봉오리 0 ~ 5, 계절마다 꽃 · 토끼풀 · 버섯 · 눈). width = 하루의 폭. */
 @Composable
