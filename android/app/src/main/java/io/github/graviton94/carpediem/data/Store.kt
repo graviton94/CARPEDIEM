@@ -273,6 +273,23 @@ class Store(context: Context) {
     /** 보내기 전 쓰던 한 줄 (그날 안에서만 되살림). */
     fun draftFor(today: LocalDate): String = if (prefs.getLong("draftDay", Long.MIN_VALUE) == today.toEpochDay()) prefs.getString("draft", "").orEmpty() else ""
     fun saveDraft(today: LocalDate, text: String) = prefs.edit().putString("draft", text).putLong("draftDay", today.toEpochDay()).apply()
+    /** 쓰던 한 줄의 날 (적어 둔 날) · 마음 · 받는 사람: 앱이 닫혀도 글과 함께 이어서. */
+    val draftDay: LocalDate? get() = prefs.getLong("draftDay", Long.MIN_VALUE).takeIf { it != Long.MIN_VALUE }?.let { LocalDate.ofEpochDay(it) }
+    val draftText: String get() = prefs.getString("draft", "").orEmpty()
+    var draftFeeling: String?
+        get() = prefs.getString("draftFeeling", null)
+        set(v) = prefs.edit().putString("draftFeeling", v).apply()
+    var draftTo: String?
+        get() = prefs.getString("draftTo", null)
+        set(v) = prefs.edit().putString("draftTo", v).apply()
+    /** 쓰는 칸에 골라 둔 사진을 고른 날 (다른 날로 넘어가면 오래된 사진이 다음 한 줄에 붙지 않게). */
+    var pendingOn: LocalDate?
+        get() = prefs.getLong("pendingOn", Long.MIN_VALUE).takeIf { it != Long.MIN_VALUE }?.let { LocalDate.ofEpochDay(it) }
+        set(v) = prefs.edit().putLong("pendingOn", v?.toEpochDay() ?: Long.MIN_VALUE).apply()
+    /** 미래 편지 쓰던 글 (묻기 전에 시트를 닫거나 앱이 닫혀도 남게). */
+    var letterDraft: String
+        get() = prefs.getString("letterDraft", "").orEmpty()
+        set(v) = prefs.edit().putString("letterDraft", v).apply()
     /** 다른 날의 한 줄을 쓰던 중이면 그날 (고른 날 당일에만 유효, 앱이 닫혔다 열려도 같은 날에 쓰게). */
     fun writeDayFor(today: LocalDate): LocalDate? = if (prefs.getLong("writeDayOn", Long.MIN_VALUE) == today.toEpochDay())
         prefs.getLong("writeDay", Long.MIN_VALUE).takeIf { it != Long.MIN_VALUE }?.let { LocalDate.ofEpochDay(it) } else null

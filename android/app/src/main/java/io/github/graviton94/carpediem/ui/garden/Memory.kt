@@ -1,5 +1,6 @@
 package io.github.graviton94.carpediem.ui.garden
 
+import io.github.graviton94.carpediem.ui.AlertButton
 import androidx.compose.ui.graphics.graphicsLayer
 import io.github.graviton94.carpediem.ui.GardenAlert
 import androidx.activity.compose.BackHandler
@@ -199,8 +200,8 @@ private fun MemoryStone(state: AppState, m: Person, today: LocalDate, seed: Int)
     if (confirmRemove) GardenAlert(
         onDismissRequest = { confirmRemove = false },
         title = { Text(stringResource(R.string.memory_removeConfirm, m.name)) },
-        confirmButton = { TextButton(onClick = { confirmRemove = false; state.removeMemory(m.id) }) { Text(stringResource(R.string.stone_removeAction), color = p.danger) } },
-        dismissButton = { TextButton(onClick = { confirmRemove = false }) { Text(stringResource(R.string.cancel)) } },
+        confirmButton = { AlertButton(stringResource(R.string.stone_removeAction), { confirmRemove = false; state.removeMemory(m.id) }) },
+        dismissButton = { AlertButton(stringResource(R.string.cancel), { confirmRemove = false }, quiet = true) },
     )
 }
 

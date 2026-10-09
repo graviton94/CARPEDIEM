@@ -1,5 +1,6 @@
 package io.github.graviton94.carpediem
 
+import io.github.graviton94.carpediem.ui.AlertButton
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
@@ -238,13 +239,13 @@ class MainActivity : ComponentActivity() {
                         onDismissRequest = { crash = null; io.github.graviton94.carpediem.data.Feedback.clearCrash(this@MainActivity) },
                         title = { androidx.compose.material3.Text(getString(R.string.feedback_crashTitle)) },
                         text = { androidx.compose.material3.Text(getString(R.string.feedback_crashBody)) },
-                        confirmButton = { androidx.compose.material3.TextButton(onClick = {
+                        confirmButton = { AlertButton(getString(R.string.feedback_crashSend), {
                             crash = null
                             // 메일 앱이 열렸을 때만 지움 (없으면 클립보드에 복사했다고 알림)
                             if (io.github.graviton94.carpediem.data.Feedback.send(this@MainActivity, c)) io.github.graviton94.carpediem.data.Feedback.clearCrash(this@MainActivity)
                             else state.say(getString(R.string.feedback_copied))
-                        }) { androidx.compose.material3.Text(getString(R.string.feedback_crashSend)) } },
-                        dismissButton = { androidx.compose.material3.TextButton(onClick = { crash = null; io.github.graviton94.carpediem.data.Feedback.clearCrash(this@MainActivity) }) { androidx.compose.material3.Text(getString(R.string.feedback_crashSkip), color = io.github.graviton94.carpediem.design.Theme.palette.secondary) } },
+                        }) },
+                        dismissButton = { AlertButton(getString(R.string.feedback_crashSkip), { crash = null; io.github.graviton94.carpediem.data.Feedback.clearCrash(this@MainActivity) }, quiet = true) },
                     ) }
                     // 업데이트 뒤 처음 열었을 때: 새로워진 점 (첫 화면 · 둘러보기 · 다른 물음이 끝난 뒤, 한 번)
                     state.whatsNew?.let { v -> if (screen == Screen.Main && state.profile != null && !state.touring && !notifyNote && crash == null && !title)
@@ -253,8 +254,8 @@ class MainActivity : ComponentActivity() {
                         onDismissRequest = { notifyNote = false; state.notifyAsked(false) },
                         title = { androidx.compose.material3.Text(getString(R.string.notify_askTitle)) },
                         text = { androidx.compose.material3.Text(getString(R.string.notify_askBody)) },
-                        confirmButton = { androidx.compose.material3.TextButton(onClick = { notifyNote = false; askNotify.launch(android.Manifest.permission.POST_NOTIFICATIONS) }) { androidx.compose.material3.Text(getString(R.string.notify_askYes)) } },
-                        dismissButton = { androidx.compose.material3.TextButton(onClick = { notifyNote = false; state.notifyAsked(false) }) { androidx.compose.material3.Text(getString(R.string.notify_askLater), color = io.github.graviton94.carpediem.design.Theme.palette.secondary) } },
+                        confirmButton = { AlertButton(getString(R.string.notify_askYes), { notifyNote = false; askNotify.launch(android.Manifest.permission.POST_NOTIFICATIONS) }) },
+                        dismissButton = { AlertButton(getString(R.string.notify_askLater), { notifyNote = false; state.notifyAsked(false) }, quiet = true) },
                     )
 
                     // 돌의 페이지로는 돌이 다가오듯 부드럽게 (옅어지며 조금 커짐)

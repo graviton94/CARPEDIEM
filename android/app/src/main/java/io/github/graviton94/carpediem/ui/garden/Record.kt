@@ -1,5 +1,6 @@
 package io.github.graviton94.carpediem.ui.garden
 
+import io.github.graviton94.carpediem.ui.AlertButton
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.clickable
@@ -96,8 +97,8 @@ internal fun RecordPanel(state: AppState, view: RecordView, onView: (RecordView)
             onDismissRequest = { deleting = null },
             title = { androidx.compose.material3.Text(stringResource(R.string.edit_deleteDayAsk, RecordText.day(ctx, d))) },
             text = { androidx.compose.material3.Text(stringResource(R.string.edit_deleteHelp)) },
-            confirmButton = { androidx.compose.material3.TextButton(onClick = { deleting = null; picked = null; state.deleteLine(d) }) { androidx.compose.material3.Text(stringResource(R.string.edit_delete), color = p.danger) } },
-            dismissButton = { androidx.compose.material3.TextButton(onClick = { deleting = null }) { androidx.compose.material3.Text(stringResource(R.string.cancel)) } },
+            confirmButton = { AlertButton(stringResource(R.string.edit_delete), { deleting = null; picked = null; state.deleteLine(d) }) },
+            dismissButton = { AlertButton(stringResource(R.string.cancel), { deleting = null }, quiet = true) },
         )
     }
     val first = remember(state.lines) { state.lines.minOfOrNull { it.date } ?: today }

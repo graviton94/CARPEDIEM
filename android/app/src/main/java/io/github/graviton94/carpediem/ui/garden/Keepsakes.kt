@@ -85,7 +85,8 @@ internal fun WhenChips(selected: CapsuleWhen, seasonLabel: Int = R.string.capsul
 internal fun FutureLetterSheet(state: AppState, start: CapsuleWhen, today: LocalDate, onDismiss: () -> Unit) {
     val p = Theme.palette
     val ctx = LocalContext.current
-    var text by rememberSaveable { mutableStateOf("") }
+    // 쓰던 편지는 폰에 적어 둠: 시트를 내리거나 앱이 닫혀도 다시 열면 이어서 (묻지 않고 조용히)
+    var text by rememberSaveable { mutableStateOf(state.store.letterDraft) }
     var w by rememberSaveable { mutableStateOf(start) }
     ModalBottomSheet(onDismissRequest = onDismiss, containerColor = Theme.gc.paper, sheetState = androidx.compose.material3.rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
         Column(Modifier.fillMaxWidth().imePadding().verticalScroll(rememberScrollState()).padding(horizontal = Theme.deviceClass.pageMargin).navigationBarsPadding().padding(bottom = Tokens.Space.sp6),
@@ -93,7 +94,7 @@ internal fun FutureLetterSheet(state: AppState, start: CapsuleWhen, today: Local
             TokenText(stringResource(R.string.capsule_title), Tokens.TypeScale.title3.serif())
             TokenText(stringResource(R.string.capsule_sub), Tokens.TypeScale.footnote, color = p.secondary)
             BasicTextField(
-                value = text, onValueChange = { v -> if (v.codePointCount(0, v.length) <= Capsules.MAX_CHARS && v.count { it == '\n' } < Lines.MAX_LINES) text = v },
+                value = text, onValueChange = { v -> if (v.codePointCount(0, v.length) <= Capsules.MAX_CHARS && v.count { it == '\n' } < Lines.MAX_LINES) { text = v; state.store.letterDraft = v } },
                 minLines = 3, maxLines = Lines.MAX_LINES, textStyle = Tokens.TypeScale.callout.style().copy(color = p.foreground), cursorBrush = SolidColor(p.foreground),
                 modifier = Modifier.fillMaxWidth().keepAboveKeyboard().crayonBox(null, G.Radius.box, G.Stroke.chip, 1510).padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3),
                 decorationBox = { inner -> Box { if (text.isEmpty()) TokenText(stringResource(R.string.capsule_hint), Tokens.TypeScale.callout, color = p.secondary); inner() } },
@@ -102,7 +103,7 @@ internal fun FutureLetterSheet(state: AppState, start: CapsuleWhen, today: Local
             val opens = Capsules.opensOn(w, today, state.profile?.birthDate)
             TokenText(stringResource(R.string.capsule_opensOn, RecordText.day(ctx, opens)), Tokens.TypeScale.footnote, color = p.secondary)
             GardenButton(stringResource(R.string.capsule_bury), {
-                if (text.isNotBlank()) state.bury(text, w, today)?.let { d -> state.say(ctx.getString(R.string.capsule_buried, RecordText.day(ctx, d))); onDismiss() }
+                if (text.isNotBlank()) state.bury(text, w, today)?.let { d -> state.store.letterDraft = ""; state.say(ctx.getString(R.string.capsule_buried, RecordText.day(ctx, d))); onDismiss() }
             }, filled = text.isNotBlank(), seed = 1511)
         }
     }

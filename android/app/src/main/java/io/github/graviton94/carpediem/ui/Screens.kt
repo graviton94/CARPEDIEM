@@ -197,15 +197,15 @@ fun ProfileFields(state: AppState, draft: LifeProfile, onChange: (LifeProfile) -
         DatePickerDialog(
             onDismissRequest = { picking = false },
             confirmButton = {
-                TextButton(onClick = {
+                AlertButton(stringResource(R.string.done), {
                     dp.selectedDateMillis?.let { ms ->
                         val d = Instant.ofEpochMilli(ms).atZone(ZoneOffset.UTC).toLocalDate()
                         if (!d.isAfter(LocalDate.now())) { onChange(draft.copy(birthDate = d)); onBirthPicked() }
                     }
                     picking = false
-                }) { Text(stringResource(R.string.done)) }
+                })
             },
-            dismissButton = { TextButton(onClick = { picking = false }) { Text(stringResource(R.string.cancel)) } },
+            dismissButton = { AlertButton(stringResource(R.string.cancel), { picking = false }, quiet = true) },
         ) { DatePicker(state = dp) }
     }
 }
@@ -454,23 +454,23 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
                 onDismissRequest = { confirmKeepOff = false },
                 title = { Text(stringResource(R.string.lines_keepOffConfirm)) },
                 text = { Text(stringResource(R.string.backup_before)) },
-                confirmButton = { TextButton(onClick = { confirmKeepOff = false; state.changeKeepLines(false) }) { Text(stringResource(R.string.lines_keepOffAction), color = p.danger) } },
-                dismissButton = { TextButton(onClick = { confirmKeepOff = false; backupNow() }) { Text(stringResource(R.string.backup_first)) } },
+                confirmButton = { AlertButton(stringResource(R.string.lines_keepOffAction), { confirmKeepOff = false; state.changeKeepLines(false) }) },
+                dismissButton = { AlertButton(stringResource(R.string.backup_first), { confirmKeepOff = false; backupNow() }, quiet = true) },
             )
             if (confirmClear) GardenAlert(
                 onDismissRequest = { confirmClear = false },
                 title = { Text(stringResource(R.string.lines_clearConfirm)) },
                 text = { Text(stringResource(R.string.backup_before)) },
-                confirmButton = { TextButton(onClick = { confirmClear = false; state.clearLines() }) { Text(stringResource(R.string.lines_clearAction), color = p.danger) } },
-                dismissButton = { TextButton(onClick = { confirmClear = false; backupNow() }) { Text(stringResource(R.string.backup_first)) } },
+                confirmButton = { AlertButton(stringResource(R.string.lines_clearAction), { confirmClear = false; state.clearLines() }) },
+                dismissButton = { AlertButton(stringResource(R.string.backup_first), { confirmClear = false; backupNow() }, quiet = true) },
             )
             // 들여오기 전에: 어떤 파일을 골라야 하는지 한 번 알려 줌 (저장할 때의 이름 ‘haru-garden-날짜.json’)
             if (pickHelp) GardenAlert(
                 onDismissRequest = { pickHelp = false },
                 title = { Text(stringResource(R.string.backup_pickTitle)) },
                 text = { Text(stringResource(R.string.backup_pickHelp)) },
-                confirmButton = { TextButton(onClick = { pickHelp = false; deviceCheck { openFile.launch(arrayOf("application/json", "text/plain", "application/octet-stream")) } }) { Text(stringResource(R.string.backup_pickGo)) } },
-                dismissButton = { TextButton(onClick = { pickHelp = false }) { Text(stringResource(R.string.cancel)) } },
+                confirmButton = { AlertButton(stringResource(R.string.backup_pickGo), { pickHelp = false; deviceCheck { openFile.launch(arrayOf("application/json", "text/plain", "application/octet-stream")) } }) },
+                dismissButton = { AlertButton(stringResource(R.string.cancel), { pickHelp = false }, quiet = true) },
             )
             restoreFrom?.let { uri ->
                 val name = remember(uri) { fileName(ctx, uri) }
@@ -478,7 +478,7 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
                     onDismissRequest = { restoreFrom = null },
                     title = { Text(stringResource(R.string.backup_importConfirm)) },
                     text = { Text(listOfNotNull(name?.let { stringResource(R.string.backup_picked, it) }, stringResource(R.string.backup_notOurs).takeIf { name != null && !name.startsWith("haru") }).joinToString("\n\n")) },
-                    confirmButton = { TextButton(onClick = {
+                    confirmButton = { AlertButton(stringResource(R.string.backup_importAction), {
                         restoreFrom = null
                         settingsScope.launch {
                             val ok = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { runCatching { ctx.contentResolver.openInputStream(uri)?.use { state.store.restore(it) } }.getOrNull() == true }
@@ -490,8 +490,8 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
                                 android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({ (ctx as? android.app.Activity)?.takeIf { !it.isFinishing && !it.isDestroyed }?.recreate() }, (Tokens.Garden.Motion.noteMs / 2).toLong())
                             } else state.say(ctx.getString(R.string.backup_fail))
                         }
-                    }) { Text(stringResource(R.string.backup_importAction), color = p.danger) } },
-                    dismissButton = { TextButton(onClick = { restoreFrom = null }) { Text(stringResource(R.string.cancel)) } },
+                    }) },
+                    dismissButton = { AlertButton(stringResource(R.string.cancel), { restoreFrom = null }, quiet = true) },
                 )
             }
             // ── 정원: 디자인 · 내 하루 · 가족 · 정원이 건네는 것 (질문 · 씨앗 · 돌봄) · 문장 언어 ──
@@ -587,27 +587,27 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
             onDismissRequest = { confirmErase = false },
             title = { Text(stringResource(R.string.erase_confirm)) },
             text = { Text(stringResource(R.string.backup_before)) },
-            confirmButton = { TextButton(onClick = { confirmErase = false; state.eraseAll(); onClose()
+            confirmButton = { AlertButton(stringResource(R.string.erase_action), { confirmErase = false; state.eraseAll(); onClose()
                 // 지운 뒤에는 화면을 새로 지어, 메모리에 남은 지난 값 (묻어 둔 편지 · 씨앗 등) 이 다시 저장되지 않게
-                (ctx as? android.app.Activity)?.takeIf { !it.isFinishing && !it.isDestroyed }?.recreate() }) { Text(stringResource(R.string.erase_action), color = p.danger) } },
-            dismissButton = { TextButton(onClick = { confirmErase = false; backupNow() }) { Text(stringResource(R.string.backup_first)) } },
+                (ctx as? android.app.Activity)?.takeIf { !it.isFinishing && !it.isDestroyed }?.recreate() }) },
+            dismissButton = { AlertButton(stringResource(R.string.backup_first), { confirmErase = false; backupNow() }, quiet = true) },
         )
     }
     if (askSave) GardenAlert(
         onDismissRequest = { askSave = false },
         title = { Text(stringResource(R.string.settings_saveAsk)) },
-        confirmButton = { TextButton(onClick = { askSave = false; state.save(draft); state.draft = null; onClose() }) { Text(stringResource(R.string.settings_save)) } },
-        dismissButton = { TextButton(onClick = { askSave = false; state.draft = null; onClose() }) { Text(stringResource(R.string.settings_discard), color = p.secondary) } },
+        confirmButton = { AlertButton(stringResource(R.string.settings_save), { askSave = false; state.save(draft); state.draft = null; onClose() }) },
+        dismissButton = { AlertButton(stringResource(R.string.settings_discard), { askSave = false; state.draft = null; onClose() }, quiet = true) },
     )
     if (blocked) GardenAlert(
         onDismissRequest = { blocked = false },
         title = { Text(stringResource(R.string.notify_blockedTitle)) },
         text = { Text(stringResource(R.string.notify_blocked)) },
-        confirmButton = { TextButton(onClick = {
+        confirmButton = { AlertButton(stringResource(R.string.notify_openSettings), {
             blocked = false
             runCatching { ctx.startActivity(android.content.Intent(android.provider.Settings.ACTION_APP_NOTIFICATION_SETTINGS).putExtra(android.provider.Settings.EXTRA_APP_PACKAGE, ctx.packageName)) }
-        }) { Text(stringResource(R.string.notify_openSettings)) } },
-        dismissButton = { TextButton(onClick = { blocked = false }) { Text(stringResource(R.string.garden_close), color = p.secondary) } },
+        }) },
+        dismissButton = { AlertButton(stringResource(R.string.garden_close), { blocked = false }, quiet = true) },
     )
 }
 
@@ -701,12 +701,12 @@ private fun SettingsFooter(onVersionTap: () -> Unit) {
                 })
             },
             confirmButton = {
-                if (pg == FooterPage.CONTACT && email.isNotBlank()) TextButton(onClick = {
+                if (pg == FooterPage.CONTACT && email.isNotBlank()) AlertButton(stringResource(R.string.contact_send), {
                     page = null; io.github.graviton94.carpediem.data.Feedback.send(ctx)
-                }) { Text(stringResource(R.string.contact_send)) }
-                else TextButton(onClick = { page = null }) { Text(stringResource(R.string.garden_close)) }
+                })
+                else AlertButton(stringResource(R.string.garden_close), { page = null })
             },
-            dismissButton = if (pg == FooterPage.CONTACT && email.isNotBlank()) ({ TextButton(onClick = { page = null }) { Text(stringResource(R.string.garden_close)) } }) else null,
+            dismissButton = if (pg == FooterPage.CONTACT && email.isNotBlank()) ({ AlertButton(stringResource(R.string.garden_close), { page = null }, quiet = true) }) else null,
         )
     }
 }

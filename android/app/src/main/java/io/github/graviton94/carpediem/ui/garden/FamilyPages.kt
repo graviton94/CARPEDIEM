@@ -1,5 +1,6 @@
 package io.github.graviton94.carpediem.ui.garden
 
+import io.github.graviton94.carpediem.ui.AlertButton
 import io.github.graviton94.carpediem.ui.GardenAlert
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
@@ -157,8 +158,8 @@ fun StoneScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, id: S
                             Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { pickLine++ }.padding(vertical = Tokens.Space.sp3), color = p.olive, weight = FontWeight.SemiBold)
                     }
                 },
-                confirmButton = { androidx.compose.material3.TextButton(onClick = { cardAsk = false; sendCard(sentLines[pickLine % sentLines.size].text) }) { androidx.compose.material3.Text(stringResource(R.string.bday_cardWith)) } },
-                dismissButton = { androidx.compose.material3.TextButton(onClick = { cardAsk = false; sendCard(null) }) { androidx.compose.material3.Text(stringResource(R.string.bday_cardPlain), color = p.secondary) } },
+                confirmButton = { AlertButton(stringResource(R.string.bday_cardWith), { cardAsk = false; sendCard(sentLines[pickLine % sentLines.size].text) }) },
+                dismissButton = { AlertButton(stringResource(R.string.bday_cardPlain), { cardAsk = false; sendCard(null) }, quiet = true) },
             )
             // 함께한 날 · 다음 생일
             Row(Modifier.guideTarget(guide, "stone.info"), horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
@@ -257,7 +258,11 @@ fun AddPersonScreen(state: AppState, profile: LifeProfile, editId: String?, onDo
     var until by rememberSaveable { mutableStateOf<Long?>(null) }
     var pickingUntil by remember { mutableStateOf(false) }
     var confirmMemory by remember { mutableStateOf(false) }
-    val back = { if (editing == null && step > 0) step-- else onBack() }
+    // 돌을 고치다가 바꾼 게 있는데 뒤로 가면: 저장할지 한 번 물음 (내 정보 고치기와 같게)
+    val changed = editing != null && (kind != editing.kind || (kind == Kind.PET && species != editing.species) || Family.cleanName(name) != editing.name ||
+        birth != editing.birth?.toEpochDay() || sex != editing.sex || together != editing.together?.toEpochDay() || seed != editing.seed)
+    var askSave by remember { mutableStateOf(false) }
+    val back: () -> Unit = { if (editing == null && step > 0) { step-- } else if (changed) { askSave = true } else { onBack() } }
     BackHandler { back() }
     fun person() = Person(editing?.id ?: state.newPersonId(), Family.cleanName(name), kind, if (kind == Kind.PET) species else null, birth?.let { LocalDate.ofEpochDay(it) },
         sex, editing?.country ?: profile.countryCode, seed, rerolls, editing?.metOn ?: (state.fixedNow ?: LocalDateTime.now()).toLocalDate(), editing?.showAhead ?: false,
@@ -377,12 +382,12 @@ fun AddPersonScreen(state: AppState, profile: LifeProfile, editId: String?, onDo
         DatePickerDialog(
             onDismissRequest = { pickingTogether = false },
             confirmButton = {
-                TextButton(onClick = {
+                AlertButton(stringResource(R.string.done), {
                     dp.selectedDateMillis?.let { ms -> val d = Instant.ofEpochMilli(ms).atZone(ZoneOffset.UTC).toLocalDate(); if (!d.isAfter(LocalDate.now()) && (until == null || d.toEpochDay() <= until!!)) together = d.toEpochDay() }
                     pickingTogether = false
-                }) { Text(stringResource(R.string.done)) }
+                })
             },
-            dismissButton = { TextButton(onClick = { pickingTogether = false }) { Text(stringResource(R.string.cancel)) } },
+            dismissButton = { AlertButton(stringResource(R.string.cancel), { pickingTogether = false }, quiet = true) },
         ) { DatePicker(state = dp) }
     }
     if (picking) {
@@ -391,12 +396,12 @@ fun AddPersonScreen(state: AppState, profile: LifeProfile, editId: String?, onDo
         DatePickerDialog(
             onDismissRequest = { picking = false },
             confirmButton = {
-                TextButton(onClick = {
+                AlertButton(stringResource(R.string.done), {
                     dp.selectedDateMillis?.let { ms -> val d = Instant.ofEpochMilli(ms).atZone(ZoneOffset.UTC).toLocalDate(); if (!d.isAfter(LocalDate.now())) birth = d.toEpochDay() }
                     picking = false
-                }) { Text(stringResource(R.string.done)) }
+                })
             },
-            dismissButton = { TextButton(onClick = { picking = false }) { Text(stringResource(R.string.cancel)) } },
+            dismissButton = { AlertButton(stringResource(R.string.cancel), { picking = false }, quiet = true) },
         ) { DatePicker(state = dp) }
     }
     if (pickingUntil) {
@@ -405,28 +410,34 @@ fun AddPersonScreen(state: AppState, profile: LifeProfile, editId: String?, onDo
         DatePickerDialog(
             onDismissRequest = { pickingUntil = false },
             confirmButton = {
-                TextButton(onClick = {
+                AlertButton(stringResource(R.string.done), {
                     dp.selectedDateMillis?.let { ms -> val d = Instant.ofEpochMilli(ms).atZone(ZoneOffset.UTC).toLocalDate(); if (!d.isAfter(LocalDate.now()) && (together == null || d.toEpochDay() >= together!!)) until = d.toEpochDay() }
                     pickingUntil = false
-                }) { Text(stringResource(R.string.done)) }
+                })
             },
-            dismissButton = { TextButton(onClick = { pickingUntil = false }) { Text(stringResource(R.string.cancel)) } },
+            dismissButton = { AlertButton(stringResource(R.string.cancel), { pickingUntil = false }, quiet = true) },
         ) { DatePicker(state = dp) }
     }
+    if (askSave && editing != null) GardenAlert(
+        onDismissRequest = { askSave = false },
+        title = { Text(stringResource(R.string.settings_saveAsk)) },
+        confirmButton = { AlertButton(stringResource(R.string.settings_save), { askSave = false; if (name.isNotBlank()) { state.savePerson(person()); onDone(editing.id) } else state.say(ctx.getString(R.string.add_needName)) }) },
+        dismissButton = { AlertButton(stringResource(R.string.settings_discard), { askSave = false; onBack() }, quiet = true) },
+    )
     if (confirmMemory && editing != null) {
         GardenAlert(
             onDismissRequest = { confirmMemory = false },
             text = { Text(stringResource(R.string.memory_toMemoryConfirm, editing.name)) },
-            confirmButton = { TextButton(onClick = { confirmMemory = false; if (state.toMemory(editing.id)) onMovedToMemory() else state.say(ctx.getString(R.string.memory_full)) }) { Text(stringResource(R.string.memory_toMemoryAction)) } },
-            dismissButton = { TextButton(onClick = { confirmMemory = false }) { Text(stringResource(R.string.cancel)) } },
+            confirmButton = { AlertButton(stringResource(R.string.memory_toMemoryAction), { confirmMemory = false; if (state.toMemory(editing.id)) onMovedToMemory() else state.say(ctx.getString(R.string.memory_full)) }) },
+            dismissButton = { AlertButton(stringResource(R.string.cancel), { confirmMemory = false }, quiet = true) },
         )
     }
     if (confirmRemove && editing != null) {
         GardenAlert(
             onDismissRequest = { confirmRemove = false },
             title = { Text(stringResource(R.string.stone_removeConfirm, editing.name)) },
-            confirmButton = { TextButton(onClick = { confirmRemove = false; state.removePerson(editing.id); onDone(null) }) { Text(stringResource(R.string.stone_removeAction), color = p.danger) } },
-            dismissButton = { TextButton(onClick = { confirmRemove = false }) { Text(stringResource(R.string.cancel)) } },
+            confirmButton = { AlertButton(stringResource(R.string.stone_removeAction), { confirmRemove = false; state.removePerson(editing.id); onDone(null) }) },
+            dismissButton = { AlertButton(stringResource(R.string.cancel), { confirmRemove = false }, quiet = true) },
         )
     }
 }

@@ -836,6 +836,7 @@
     <string name="edit_deleteDayAsk">要刪除 %1$s 的話嗎？</string>
     <string name="edit_pastTitle">修改 %1$s 的話</string>
     <string name="edit_pastDone">已修改那天的話。</string>
+    <string name="edit_askSave">要儲存修改的內容嗎？</string>
     <string name="feedback_row">傳送意見</string>
     <string name="feedback_footer">郵件裡只會先填好 App 版本和裝置資訊，不會附上紀錄。</string>
     <string name="feedback_subject">［小日的庭院］意見</string>
@@ -893,6 +894,10 @@
     <string name="closeDay_lineDoneSub">那我們來想一件感謝的事吧？</string>
     <string name="closeDay_next">下一步</string>
     <string name="closeDay_skip">今天先跳過</string>
+    <string name="closeDay_leaveAsk">寫到一半的那句話，要怎麼辦？</string>
+    <string name="closeDay_leaveSend">留下並結束</string>
+    <string name="closeDay_leaveStay">繼續寫</string>
+    <string name="closeDay_leaveDrop">刪掉並離開</string>
     <string name="closeDay_thanksTitle">每次吐氣，想起今天一件感謝的事</string>
     <string name="closeDay_lanternTitle">在燈籠下呼吸兩次</string>
     <string name="closeDay_end">今天也走到這裡了。</string>

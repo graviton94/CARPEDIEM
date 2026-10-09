@@ -1,5 +1,6 @@
 package io.github.graviton94.carpediem.ui.garden
 
+import io.github.graviton94.carpediem.ui.AlertButton
 import androidx.compose.foundation.layout.imePadding
 import io.github.graviton94.carpediem.ui.GardenAlert
 import androidx.compose.foundation.Canvas
@@ -345,8 +346,8 @@ internal fun SpecialDaysRow(state: AppState, birth: LocalDate) {
         GardenAlert(
             onDismissRequest = { removing = null },
             title = { androidx.compose.material3.Text(stringResource(R.string.special_removeConfirm, d.name)) },
-            confirmButton = { androidx.compose.material3.TextButton(onClick = { state.removeSpecialDay(d); removing = null }) { androidx.compose.material3.Text(stringResource(R.string.special_remove)) } },
-            dismissButton = { androidx.compose.material3.TextButton(onClick = { removing = null }) { androidx.compose.material3.Text(stringResource(R.string.cancel)) } },
+            confirmButton = { AlertButton(stringResource(R.string.special_remove), { state.removeSpecialDay(d); removing = null }) },
+            dismissButton = { AlertButton(stringResource(R.string.cancel), { removing = null }, quiet = true) },
         )
     }
 }
@@ -383,13 +384,13 @@ private fun SpecialDaySheet(state: AppState, birth: LocalDate, onClose: () -> Un
         androidx.compose.material3.DatePickerDialog(
             onDismissRequest = { picking = false },
             confirmButton = {
-                androidx.compose.material3.TextButton(onClick = {
+                AlertButton(stringResource(R.string.done), {
                     // 태어난 날부터 오늘까지만
                     dp.selectedDateMillis?.let { ms -> val d = java.time.Instant.ofEpochMilli(ms).atZone(java.time.ZoneOffset.UTC).toLocalDate(); if (!d.isAfter(LocalDate.now()) && !d.isBefore(birth)) date = d.toEpochDay() }
                     picking = false
-                }) { androidx.compose.material3.Text(stringResource(R.string.done)) }
+                })
             },
-            dismissButton = { androidx.compose.material3.TextButton(onClick = { picking = false }) { androidx.compose.material3.Text(stringResource(R.string.cancel)) } },
+            dismissButton = { AlertButton(stringResource(R.string.cancel), { picking = false }, quiet = true) },
         ) { androidx.compose.material3.DatePicker(state = dp) }
     }
 }

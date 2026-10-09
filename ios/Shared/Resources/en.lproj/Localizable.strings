@@ -834,6 +834,7 @@
 "edit.deleteDayAsk" = "Delete the line from %1$@?";
 "edit.pastTitle" = "Edit the line of %1$@";
 "edit.pastDone" = "That day’s line is updated.";
+"edit.askSave" = "Save your edits?";
 "feedback.row" = "Send feedback";
 "feedback.footer" = "Your mail starts with the app version and device details only. Your records are never included.";
 "feedback.subject" = "[Carpe Diem] Feedback";
@@ -891,6 +892,10 @@
 "closeDay.lineDoneSub" = "Shall we move on to one thing you're thankful for?";
 "closeDay.next" = "Next";
 "closeDay.skip" = "Skip for today";
+"closeDay.leaveAsk" = "What about the line you were writing?";
+"closeDay.leaveSend" = "Keep it and finish";
+"closeDay.leaveStay" = "Keep writing";
+"closeDay.leaveDrop" = "Discard and leave";
 "closeDay.thanksTitle" = "With each breath out, recall one thing you were thankful for today";
 "closeDay.lanternTitle" = "Two breaths under the lantern";
 "closeDay.end" = "You made it through today.";

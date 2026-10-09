@@ -1,5 +1,6 @@
 package io.github.graviton94.carpediem.ui.garden
 
+import io.github.graviton94.carpediem.ui.AlertButton
 import android.graphics.Bitmap
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -64,8 +65,8 @@ internal fun GardenYearSheet(state: AppState, profile: LifeProfile, now: LocalDa
     }
     GardenAlert(
         onDismissRequest = onDismiss,
-        confirmButton = { TextButton(onClick = { bmp?.let { ShareCards.send(ctx, it, "garden-year-$year") } }, enabled = bmp != null) { Text(stringResource(R.string.share_image)) } },
-        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.done)) } },
+        confirmButton = { io.github.graviton94.carpediem.ui.AlertButton(stringResource(R.string.share_image), { bmp?.let { ShareCards.send(ctx, it, "garden-year-$year") } }, enabled = bmp != null) },
+        dismissButton = { AlertButton(stringResource(R.string.done), onDismiss, quiet = true) },
         text = {
             val ratio = Tokens.Garden.Share.lineW / Tokens.Garden.Share.lineH
             // 그리는 동안은 빈 상자 대신 가운데에 작은 기다림 표시

@@ -836,6 +836,7 @@
     <string name="edit_deleteDayAsk">Delete the line from %1$s?</string>
     <string name="edit_pastTitle">Edit the line of %1$s</string>
     <string name="edit_pastDone">That day’s line is updated.</string>
+    <string name="edit_askSave">Save your edits?</string>
     <string name="feedback_row">Send feedback</string>
     <string name="feedback_footer">Your mail starts with the app version and device details only. Your records are never included.</string>
     <string name="feedback_subject">[Carpe Diem] Feedback</string>
@@ -893,6 +894,10 @@
     <string name="closeDay_lineDoneSub">Shall we move on to one thing you\'re thankful for?</string>
     <string name="closeDay_next">Next</string>
     <string name="closeDay_skip">Skip for today</string>
+    <string name="closeDay_leaveAsk">What about the line you were writing?</string>
+    <string name="closeDay_leaveSend">Keep it and finish</string>
+    <string name="closeDay_leaveStay">Keep writing</string>
+    <string name="closeDay_leaveDrop">Discard and leave</string>
     <string name="closeDay_thanksTitle">With each breath out, recall one thing you were thankful for today</string>
     <string name="closeDay_lanternTitle">Two breaths under the lantern</string>
     <string name="closeDay_end">You made it through today.</string>

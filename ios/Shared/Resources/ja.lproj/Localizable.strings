@@ -834,6 +834,7 @@
 "edit.deleteDayAsk" = "%1$@のひとことを消しますか？";
 "edit.pastTitle" = "%1$@のひとことを直す";
 "edit.pastDone" = "その日のひとことを直しました。";
+"edit.askSave" = "直した内容を保存しますか？";
 "feedback.row" = "ご意見を送る";
 "feedback.footer" = "メールにはアプリのバージョンと端末情報だけを書いておきます。記録は含みません。";
 "feedback.subject" = "［ハルの庭］ご意見";
@@ -891,6 +892,10 @@
 "closeDay.lineDoneSub" = "では、ありがたかったことをひとつ。";
 "closeDay.next" = "次へ";
 "closeDay.skip" = "今日は飛ばします";
+"closeDay.leaveAsk" = "書きかけのひとことは、どうしますか？";
+"closeDay.leaveSend" = "残して終える";
+"closeDay.leaveStay" = "続けて書く";
+"closeDay.leaveDrop" = "消して出る";
 "closeDay.thanksTitle" = "吐くたびに、今日ありがたかったことをひとつ思い浮かべて";
 "closeDay.lanternTitle" = "灯りの下で、ふたつの呼吸";
 "closeDay.end" = "今日もここまで来ました。";

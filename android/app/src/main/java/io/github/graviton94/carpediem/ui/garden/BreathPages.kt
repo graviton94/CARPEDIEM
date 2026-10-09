@@ -445,8 +445,8 @@ fun GazeScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, onBack
             onDismissRequest = { ask = false },
             containerColor = Theme.gc.paper,
             text = { TokenText(stringResource(R.string.gaze_ask), Tokens.TypeScale.callout.serif()) },
-            confirmButton = { androidx.compose.material3.TextButton(onClick = { ask = false; onBack() }) { TokenText(stringResource(R.string.gaze_back), Tokens.TypeScale.subhead, weight = FontWeight.SemiBold) } },
-            dismissButton = { androidx.compose.material3.TextButton(onClick = { ask = false }) { TokenText(stringResource(R.string.gaze_stay), Tokens.TypeScale.subhead, color = p.secondary) } },
+            confirmButton = { io.github.graviton94.carpediem.ui.AlertButton(stringResource(R.string.gaze_back), { ask = false; onBack() }) },
+            dismissButton = { io.github.graviton94.carpediem.ui.AlertButton(stringResource(R.string.gaze_stay), { ask = false }, quiet = true) },
         )
     }
 }

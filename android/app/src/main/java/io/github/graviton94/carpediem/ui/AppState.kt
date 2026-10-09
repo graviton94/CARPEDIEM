@@ -142,7 +142,41 @@ class AppState(private val context: Context) {
     /** 오늘의 한 줄에 쓰던 글 · 고른 마음 (보내기 전까지, 앱을 켜 둔 동안). */
     // 앱이 잠깐 내려갔다 (사진 고르기 · 메모리 부족) 다시 떠도 이어 쓰게: 폰에 살짝 적어 둠 (오늘 것만)
     val draftText = mutableStateOf(store.draftFor(nowDate()))
-    val draftFeeling = mutableStateOf<Feeling?>(null)
+    val draftFeeling = mutableStateOf(store.draftFeeling?.takeIf { store.draftDay == nowDate() }?.let { n -> Feeling.entries.firstOrNull { it.name == n } })
+    /** 쓰던 한 줄을 보낼 사람 (선택). */
+    val draftTo = mutableStateOf(store.draftTo?.takeIf { store.draftDay == nowDate() })
+    /** 쓰던 한 줄 (글 · 마음 · 받는 사람) 을 폰에 적어 둠. */
+    fun keepDraft(today: LocalDate = nowDate()) {
+        store.saveDraft(today, draftText.value); store.draftFeeling = draftFeeling.value?.name; store.draftTo = draftTo.value
+    }
+    /** 보냈거나 지웠으면 쓰던 한 줄을 비움 (사진은 따로). */
+    fun clearDraft() { draftText.value = ""; draftFeeling.value = null; draftTo.value = null; keepDraft() }
+    /**
+     * 날이 바뀌었을 때 (앱을 켜 둔 채 자정이 지나거나, 다음 날 열었을 때): 쓰던 글이 있으면 그 글을 쓰던 날의 한 줄로 이어 쓰게 하고
+     * (그날이 아직 비어 있을 때), 아니면 비움. 사진은 그 글과 함께 가거나, 고른 날이 지났으면 정리 (며칠 전 사진이 오늘 줄에 붙지 않게).
+     */
+    fun carryDraft(today: LocalDate = nowDate()) {
+        val d = store.draftDay
+        var carried = false
+        if (d != null && d.isBefore(today)) {
+            val text = draftText.value.ifBlank { store.draftText }
+            val target = store.writeDayFor(d) ?: d
+            if (text.isNotBlank() && writeDay == null && canWriteOn(target, today)) {
+                draftText.value = text
+                if (draftFeeling.value == null) draftFeeling.value = store.draftFeeling?.let { n -> Feeling.entries.firstOrNull { it.name == n } }
+                if (draftTo.value == null) draftTo.value = store.draftTo
+                writeDay = target; carried = true
+            } else { draftText.value = ""; draftFeeling.value = null; draftTo.value = null }
+            keepDraft(today)
+        }
+        val on = store.pendingOn
+        if (draftPhoto && on != today) {
+            if (carried && on == d) store.pendingOn = today
+            else { io.github.graviton94.carpediem.data.Photos.dropPending(context); draftPhoto = false; store.pendingOn = null; photoKick++ }
+        }
+    }
+    /** 쓰는 칸에 사진을 골랐을 때 (고른 날을 적어 둠). */
+    fun draftPhotoPicked(today: LocalDate = nowDate()) { draftPhoto = true; store.pendingOn = today; photoKick++ }
     /** 위젯 · 둘러보기에서 ‘한 줄 쓰러’ 왔을 때: 기록 페이지의 쓰는 칸에 바로 커서 (한 번). */
     var focusWrite by mutableStateOf(false)
     /** 둘러보기가 화면에 떠 있는 동안 (알림 한마디는 기다리고, 페이지는 넘어가지 않음). */
@@ -158,7 +192,7 @@ class AppState(private val context: Context) {
     }
     fun changeDesign(v: Design) { store.design = v; design = v; Widgets.refresh(context) }
     fun changePreviewAll(v: Boolean) { store.previewAll = v; previewAll = v }
-    fun opened() { store.markOpened(); checkRandomRecall(); guest = store.guestToday(nowDate()) }
+    fun opened() { store.markOpened(); carryDraft(); checkRandomRecall(); guest = store.guestToday(nowDate()) }
     /** 돌아온 날의 손님 (09): 오늘 하루 정원에 머묾. */
     var guest by mutableStateOf(store.guestToday(nowDate()))
         private set

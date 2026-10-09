@@ -1,5 +1,6 @@
 package io.github.graviton94.carpediem.ui.garden
 
+import io.github.graviton94.carpediem.ui.AlertButton
 import kotlinx.coroutines.flow.collectLatest
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.animation.core.Animatable
@@ -143,14 +144,19 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
     val px = with(LocalDensity.current) { u.toPx() }
     val focus = LocalFocusManager.current
     val max = G.LetGo.maxChars.toInt()
-    // 쓰던 글 · 고른 마음은 state 에 (알림 · 위젯으로 정원이 다시 그려져도 남게)
-    var text by state.draftText
-    var feeling by state.draftFeeling
+    // 오늘 보낸 한 줄 고치기 (그날 안에만) · 지우기. 고치는 글은 쓰던 글과 따로 (고치다 나가도 옛 글이 쓰던 글로 남지 않게)
+    var editing by rememberSaveable { mutableStateOf(false) }
+    val editText = rememberSaveable { mutableStateOf("") }
+    val editFeeling = remember { mutableStateOf<Feeling?>(null) }
+    // 쓰던 글 · 고른 마음 · 받는 사람은 state 에 (알림 · 위젯으로 정원이 다시 그려져도, 하루 닫기에서도 이어서)
+    var text by (if (editing) editText else state.draftText)
+    var feeling by (if (editing) editFeeling else state.draftFeeling)
     // 쓰는 동안 잠깐 멈출 때마다 폰에 적어 둠 (보내면 빈 글로)
-    LaunchedEffect(Unit) { snapshotFlow { text }.collectLatest { t -> kotlinx.coroutines.delay(400); state.store.saveDraft((state.fixedNow ?: java.time.LocalDateTime.now()).toLocalDate(), t) } }
+    DraftSaver(state)
     // 누구에게 (선택): 생일인 사람이 있으면 먼저 골라 둠
     val birthdayId = state.people.firstOrNull { io.github.graviton94.carpediem.core.Family.isBirthday(it.birth, today) }?.id
-    var to by rememberSaveable(birthdayId) { mutableStateOf(birthdayId) }
+    var to by state.draftTo
+    LaunchedEffect(birthdayId) { if (birthdayId != null && to == null) to = birthdayId }
     var flying by remember { mutableStateOf<String?>(null) }
     val fly = remember { Animatable(0f) }
     LaunchedEffect(flying) {
@@ -161,14 +167,14 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
     val day = state.writeDay
     var picking by remember { mutableStateOf(false) }
     val sent = if (day == null) state.sentOn(today) else false
-    // 오늘 보낸 한 줄 고치기 (그날 안에만) · 지우기
-    var editing by rememberSaveable { mutableStateOf(false) }
     var confirmDelete by remember { mutableStateOf(false) }
     // 고치는 중에 오늘의 사진을 빼기로 했는지 (저장할 때 반영, 그만두면 그대로)
     var dropPhoto by rememberSaveable { mutableStateOf(false) }
+    // 고치는 중에 새로 고른 사진 (고치기 칸, 쓰던 글의 사진과 따로)
+    var editPhoto by rememberSaveable { mutableStateOf(false) }
     fun stopEditing() {
-        editing = false; text = ""; feeling = null; dropPhoto = false
-        if (state.draftPhoto) { io.github.graviton94.carpediem.data.Photos.dropPending(ctx); state.draftPhoto = false; state.photoKick++ }
+        editing = false; editText.value = ""; editFeeling.value = null; dropPhoto = false
+        if (editPhoto) { io.github.graviton94.carpediem.data.Photos.dropPending(ctx, edit = true); editPhoto = false; state.photoKick++ }
     }
     // 고치는 중에 날이 바뀌었거나 다른 날로 가면 고치기를 그만두고 칸을 비움 (어제 글이 오늘 칸에 남지 않게)
     if (editing && (!sent || day != null)) stopEditing()
@@ -183,8 +189,9 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
     // 한 줄에 사진 한 장 (11): 쓰는 중에 골라 두면 보낼 때 그날의 사진으로 · 그날 안에는 고치기에서 바꾸거나 뺄 수 있음
     val photoFail = stringResource(R.string.photo_fail)
     val pickDraft = rememberPhotoPicker { uri -> scope.launch {
-        val ok = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { io.github.graviton94.carpediem.data.Photos.importPending(ctx, uri) }
-        if (ok) { state.draftPhoto = true; state.photoKick++ } else state.say(photoFail)
+        val forEdit = editing
+        val ok = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { io.github.graviton94.carpediem.data.Photos.importPending(ctx, uri, edit = forEdit) }
+        if (!ok) state.say(photoFail) else if (forEdit) { editPhoto = true; state.photoKick++ } else state.draftPhotoPicked()
     } }
     fun send() {
         // 비어 있으면 그냥 지나치지 않고: 한 줄을 먼저 적어 달라고 말하고 쓰는 칸으로
@@ -193,9 +200,9 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
         if (editing) {
             if (state.editToday(text, feeling, today)) {
                 // 사진: 새로 골랐으면 바꾸고, 빼기로 했으면 뺌
-                if (state.draftPhoto) state.commitPhoto(today)
+                if (editPhoto) { io.github.graviton94.carpediem.data.Photos.commitPending(ctx, today, edit = true); editPhoto = false; state.photoKick++ }
                 else if (dropPhoto) { io.github.graviton94.carpediem.data.Photos.remove(ctx, today); state.photoKick++ }
-                editing = false; text = ""; feeling = null; dropPhoto = false; focus.clearFocus()
+                editing = false; editText.value = ""; editFeeling.value = null; dropPhoto = false; focus.clearFocus()
             }
             return
         }
@@ -205,7 +212,7 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
         if (day != null) { if (!state.letGoOn(day, text, feeling, who)) return } else state.letGo(text, feeling, who, on)
         flying = text.trim()
         state.commitPhoto(on)
-        text = ""; feeling = null; focus.clearFocus()
+        state.clearDraft(); focus.clearFocus()
     }
 
     Column(modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
@@ -264,7 +271,7 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
                     if (mine != null) Row(verticalAlignment = Alignment.CenterVertically) {
                         if (state.keepLines && mine.text.isNotBlank()) {
                             TokenText(stringResource(R.string.edit_action), Tokens.TypeScale.footnote,
-                                Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { text = mine.text; feeling = mine.feeling; editing = true }.padding(end = Tokens.Space.sp3, top = Tokens.Space.sp3, bottom = Tokens.Space.sp3),
+                                Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { editText.value = mine.text; editFeeling.value = mine.feeling; editing = true }.padding(end = Tokens.Space.sp3, top = Tokens.Space.sp3, bottom = Tokens.Space.sp3),
                                 color = p.olive, weight = FontWeight.SemiBold)
                             TokenText("·", Tokens.TypeScale.footnote, color = p.secondary)
                         }
@@ -336,16 +343,20 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
                         // 고치는 중: 오늘 붙인 사진이 있으면 바꾸거나 뺄 수 있음 (저장할 때 반영)
                         val hasToday = remember(state.photoKick, today) { io.github.graviton94.carpediem.data.Photos.has(ctx, today) }
                         val kept = editing && !dropPhoto && hasToday
-                        if (kept && !state.draftPhoto) {
+                        if (kept && !editPhoto) {
                             WeatheredPhoto(state, today, today, u * 56f, dated = false)
                             TokenText(stringResource(R.string.photo_change), Tokens.TypeScale.footnote,
                                 Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { pickDraft() }.padding(Tokens.Space.sp3), color = p.olive, weight = FontWeight.SemiBold)
                             TokenText(stringResource(R.string.photo_remove), Tokens.TypeScale.footnote,
                                 Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { dropPhoto = true }.padding(vertical = Tokens.Space.sp3), color = p.secondary)
-                        } else if (state.draftPhoto) {
-                            WeatheredPhoto(state, day ?: today, today, u * 56f, pending = true, dated = false)
+                        } else if (if (editing) editPhoto else state.draftPhoto) {
+                            WeatheredPhoto(state, day ?: today, today, u * 56f, pending = true, edit = editing, dated = false)
                             TokenText(stringResource(R.string.photo_remove), Tokens.TypeScale.footnote,
-                                Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { io.github.graviton94.carpediem.data.Photos.dropPending(ctx); state.draftPhoto = false }.padding(Tokens.Space.sp3), color = p.secondary)
+                                Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable {
+                                    if (editing) { io.github.graviton94.carpediem.data.Photos.dropPending(ctx, edit = true); editPhoto = false }
+                                    else { io.github.graviton94.carpediem.data.Photos.dropPending(ctx); state.draftPhoto = false }
+                                    state.photoKick++
+                                }.padding(Tokens.Space.sp3), color = p.secondary)
                         } else GardenChip(stringResource(R.string.photo_add), false, 969) { pickDraft() }
                     }
                     Spacer(Modifier.weight(1f))
@@ -375,8 +386,8 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
         onDismissRequest = { confirmDelete = false },
         title = { androidx.compose.material3.Text(stringResource(R.string.edit_deleteAsk)) },
         text = { androidx.compose.material3.Text(stringResource(R.string.edit_deleteHelp)) },
-        confirmButton = { androidx.compose.material3.TextButton(onClick = { confirmDelete = false; state.deleteLine(today) }) { androidx.compose.material3.Text(stringResource(R.string.edit_delete), color = p.danger) } },
-        dismissButton = { androidx.compose.material3.TextButton(onClick = { confirmDelete = false }) { androidx.compose.material3.Text(stringResource(R.string.cancel)) } },
+        confirmButton = { AlertButton(stringResource(R.string.edit_delete), { confirmDelete = false; state.deleteLine(today) }) },
+        dismissButton = { AlertButton(stringResource(R.string.cancel), { confirmDelete = false }, quiet = true) },
     )
     // 날짜 고르기: 생일부터 어제까지, 이미 한 줄이 있는 날은 고를 수 없음 (하루에 한 줄)
     if (picking) {
@@ -395,12 +406,12 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
         androidx.compose.material3.DatePickerDialog(
             onDismissRequest = { picking = false },
             confirmButton = {
-                androidx.compose.material3.TextButton(onClick = {
+                AlertButton(stringResource(R.string.done), {
                     dp.selectedDateMillis?.let { ms -> val d = java.time.Instant.ofEpochMilli(ms).atZone(zone).toLocalDate(); if (state.canWriteOn(d, today)) state.writeDay = d }
                     picking = false
-                }) { androidx.compose.material3.Text(stringResource(R.string.done)) }
+                })
             },
-            dismissButton = { androidx.compose.material3.TextButton(onClick = { picking = false }) { androidx.compose.material3.Text(stringResource(R.string.cancel)) } },
+            dismissButton = { AlertButton(stringResource(R.string.cancel), { picking = false }, quiet = true) },
         ) { androidx.compose.material3.DatePicker(state = dp) }
     }
 }
@@ -529,8 +540,29 @@ internal fun PastLineSheet(state: AppState, line: DayLine, today: LocalDate, onC
         if (ok) { newPhoto = true; dropPhoto = false; state.photoKick++ } else state.say(photoFail)
     } }
     fun close() { if (newPhoto) io.github.graviton94.carpediem.data.Photos.dropPending(ctx, edit = true); state.photoKick++; onClose() }
-    androidx.compose.material3.ModalBottomSheet(onDismissRequest = { close() }, containerColor = Theme.gc.paper,
-        sheetState = androidx.compose.material3.rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
+    fun save() {
+        if (text.isBlank()) { state.say(ctx.getString(R.string.letgo_empty)); return }
+        if (state.editLine(line.date, text, feeling)) {
+            if (newPhoto) { io.github.graviton94.carpediem.data.Photos.commitPending(ctx, line.date, edit = true); newPhoto = false }
+            else if (dropPhoto) io.github.graviton94.carpediem.data.Photos.remove(ctx, line.date)
+            state.photoKick++
+            onClose()
+        }
+    }
+    // 고친 게 있는데 뒤로 가기 · 시트를 내리면: 저장할지 한 번 물음 (‘취소’ 를 직접 누르면 묻지 않고 그대로)
+    val dirty = text != line.text || feeling != line.feeling || newPhoto || dropPhoto
+    val dirtyNow by androidx.compose.runtime.rememberUpdatedState(dirty)
+    var askSave by remember { mutableStateOf(false) }
+    val sheet = androidx.compose.material3.rememberModalBottomSheetState(skipPartiallyExpanded = true,
+        confirmValueChange = { v -> if (v == androidx.compose.material3.SheetValue.Hidden && dirtyNow) { askSave = true; false } else true })
+    if (askSave) io.github.graviton94.carpediem.ui.GardenAlert(
+        onDismissRequest = { askSave = false },
+        title = { androidx.compose.material3.Text(stringResource(R.string.edit_askSave)) },
+        confirmButton = { AlertButton(stringResource(R.string.settings_save), { askSave = false; save() }) },
+        dismissButton = { AlertButton(stringResource(R.string.settings_discard), { askSave = false; close() }, quiet = true) },
+    )
+    androidx.compose.material3.ModalBottomSheet(onDismissRequest = { if (dirty) { askSave = true; scope.launch { sheet.show() } } else close() }, containerColor = Theme.gc.paper,
+        sheetState = sheet) {
         Column(Modifier.fillMaxWidth().imePadding().verticalScroll(rememberScrollState()).padding(horizontal = Theme.deviceClass.pageMargin).padding(bottom = Tokens.Space.sp8),
             verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
             TokenText(stringResource(R.string.edit_pastTitle, RecordText.day(ctx, line.date)), Tokens.TypeScale.title3)
@@ -562,17 +594,17 @@ internal fun PastLineSheet(state: AppState, line: DayLine, today: LocalDate, onC
                     else -> GardenChip(stringResource(R.string.photo_add), false, 1285) { pick() }
                 }
             }
-            Action(stringResource(R.string.edit_save), filled = text.isNotBlank(), seed = 1286) {
-                if (text.isBlank()) { state.say(ctx.getString(R.string.letgo_empty)); return@Action }
-                if (state.editLine(line.date, text, feeling)) {
-                    if (newPhoto) { io.github.graviton94.carpediem.data.Photos.commitPending(ctx, line.date, edit = true); newPhoto = false }
-                    else if (dropPhoto) io.github.graviton94.carpediem.data.Photos.remove(ctx, line.date)
-                    state.photoKick++
-                    onClose()
-                }
-            }
+            Action(stringResource(R.string.edit_save), filled = text.isNotBlank(), seed = 1286) { save() }
             TokenText(stringResource(R.string.cancel), Tokens.TypeScale.footnote,
                 Modifier.fillMaxWidth().heightIn(min = Tokens.Layout.tapTarget).clickable { close() }.padding(vertical = Tokens.Space.sp3), color = p.secondary, align = TextAlign.Center)
         }
+    }
+}
+
+/** 쓰던 한 줄 (글 · 마음 · 받는 사람) 을 잠깐 멈출 때마다 폰에 적어 둠 (오늘의 한 줄 칸 · 하루 닫기가 같은 글을 씀). */
+@Composable
+internal fun DraftSaver(state: AppState) {
+    LaunchedEffect(Unit) {
+        snapshotFlow { Triple(state.draftText.value, state.draftFeeling.value, state.draftTo.value) }.collectLatest { kotlinx.coroutines.delay(400); state.keepDraft() }
     }
 }

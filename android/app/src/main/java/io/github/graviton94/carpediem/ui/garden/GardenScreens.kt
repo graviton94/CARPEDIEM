@@ -1,5 +1,6 @@
 package io.github.graviton94.carpediem.ui.garden
 
+import io.github.graviton94.carpediem.ui.AlertButton
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -452,11 +453,11 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                             onDismissRequest = { state.goAsk = null },
                             title = { Text(if (go == "close") stringResource(R.string.closeDay_ask) else stringResource(R.string.breath_ask, title)) },
                             text = help,
-                            confirmButton = { androidx.compose.material3.TextButton(onClick = {
+                            confirmButton = { AlertButton(stringResource(R.string.breath_askGo), {
                                 state.goAsk = null
                                 if (go == "close") onCloseDay() else if (go == "gaze") onGaze() else onBreath(if (go == "breath" && night) BreathKind.SLEEP else BreathKind.CALM, 1, state.sound)
-                            }) { Text(stringResource(R.string.breath_askGo)) } },
-                            dismissButton = { androidx.compose.material3.TextButton(onClick = { state.goAsk = null }) { Text(stringResource(R.string.breath_askStay), color = p.secondary) } },
+                            }) },
+                            dismissButton = { AlertButton(stringResource(R.string.breath_askStay), { state.goAsk = null }, quiet = true) },
                         )
                     }
                     askBreath?.let { (kind, name) ->
@@ -464,8 +465,8 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                             onDismissRequest = { askBreath = null },
                             title = { Text(stringResource(R.string.breath_ask, stringResource(name))) },
                             text = { Text(stringResource(R.string.breath_askHelp, "${planMinutes(kind)}")) },
-                            confirmButton = { androidx.compose.material3.TextButton(onClick = { askBreath = null; onBreath(kind, 1, state.sound) }) { Text(stringResource(R.string.breath_askGo)) } },
-                            dismissButton = { androidx.compose.material3.TextButton(onClick = { askBreath = null }) { Text(stringResource(R.string.breath_askStay), color = p.secondary) } },
+                            confirmButton = { AlertButton(stringResource(R.string.breath_askGo), { askBreath = null; onBreath(kind, 1, state.sound) }) },
+                            dismissButton = { AlertButton(stringResource(R.string.breath_askStay), { askBreath = null }, quiet = true) },
                         )
                     }
                 }

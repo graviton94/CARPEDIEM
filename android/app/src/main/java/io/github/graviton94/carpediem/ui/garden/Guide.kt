@@ -1,5 +1,6 @@
 package io.github.graviton94.carpediem.ui.garden
 
+import io.github.graviton94.carpediem.ui.AlertButton
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.verticalScroll
@@ -349,8 +350,8 @@ fun WelcomeScreen(state: AppState, onStart: () -> Unit) {
         onDismissRequest = { pickHelp = false },
         title = { androidx.compose.material3.Text(stringResource(R.string.backup_pickTitle)) },
         text = { androidx.compose.material3.Text(stringResource(R.string.backup_pickHelp)) },
-        confirmButton = { androidx.compose.material3.TextButton(onClick = { pickHelp = false; openFile.launch(arrayOf("application/json", "text/plain", "application/octet-stream")) }) { androidx.compose.material3.Text(stringResource(R.string.backup_pickGo)) } },
-        dismissButton = { androidx.compose.material3.TextButton(onClick = { pickHelp = false }) { androidx.compose.material3.Text(stringResource(R.string.cancel)) } },
+        confirmButton = { AlertButton(stringResource(R.string.backup_pickGo), { pickHelp = false; openFile.launch(arrayOf("application/json", "text/plain", "application/octet-stream")) }) },
+        dismissButton = { AlertButton(stringResource(R.string.cancel), { pickHelp = false }, quiet = true) },
     )
     restoreFrom?.let { uri ->
         val name = remember(uri) { io.github.graviton94.carpediem.ui.fileName(ctx, uri) }
@@ -358,7 +359,7 @@ fun WelcomeScreen(state: AppState, onStart: () -> Unit) {
             onDismissRequest = { restoreFrom = null },
             title = { androidx.compose.material3.Text(stringResource(R.string.welcome_restore)) },
             text = { androidx.compose.material3.Text(listOfNotNull(name?.let { stringResource(R.string.backup_picked, it) }, stringResource(R.string.backup_notOurs).takeIf { name != null && !name.startsWith("haru") }).joinToString("\n\n")) },
-            confirmButton = { androidx.compose.material3.TextButton(onClick = {
+            confirmButton = { AlertButton(stringResource(R.string.backup_pickGo), {
                 restoreFrom = null
                 scope.launch {
                     val ok = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { runCatching { ctx.contentResolver.openInputStream(uri)?.use { state.store.restore(it) } }.getOrNull() == true }
@@ -368,8 +369,8 @@ fun WelcomeScreen(state: AppState, onStart: () -> Unit) {
                         android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({ (ctx as? android.app.Activity)?.takeIf { !it.isFinishing && !it.isDestroyed }?.recreate() }, (Tokens.Garden.Motion.noteMs / 2).toLong())
                     } else state.say(ctx.getString(R.string.backup_fail))
                 }
-            }) { androidx.compose.material3.Text(stringResource(R.string.backup_pickGo)) } },
-            dismissButton = { androidx.compose.material3.TextButton(onClick = { restoreFrom = null }) { androidx.compose.material3.Text(stringResource(R.string.cancel)) } },
+            }) },
+            dismissButton = { AlertButton(stringResource(R.string.cancel), { restoreFrom = null }, quiet = true) },
         )
     }
 }

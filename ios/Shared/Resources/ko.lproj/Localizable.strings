@@ -834,6 +834,7 @@
 "edit.deleteDayAsk" = "%1$@의 한 줄을 지울까요?";
 "edit.pastTitle" = "%1$@의 한 줄 고치기";
 "edit.pastDone" = "그날의 한 줄을 고쳤어요.";
+"edit.askSave" = "고친 내용을 저장할까요?";
 "feedback.row" = "의견 보내기";
 "feedback.footer" = "메일에 앱 버전과 기기 정보만 미리 적어 둬요. 기록은 담지 않아요.";
 "feedback.subject" = "[하루의 정원] 의견";
@@ -891,6 +892,10 @@
 "closeDay.lineDoneSub" = "그럼 고마운 것 하나로 가 볼까요?";
 "closeDay.next" = "다음";
 "closeDay.skip" = "오늘은 건너뛸게요";
+"closeDay.leaveAsk" = "쓰던 한 줄은 어떻게 할까요?";
+"closeDay.leaveSend" = "남기고 마치기";
+"closeDay.leaveStay" = "이어서 쓰기";
+"closeDay.leaveDrop" = "지우고 나가기";
 "closeDay.thanksTitle" = "내쉴 때마다 오늘 고마웠던 것 하나를 떠올려요";
 "closeDay.lanternTitle" = "등불 아래에서 숨 두 번";
 "closeDay.end" = "오늘도 여기까지 왔어요.";
