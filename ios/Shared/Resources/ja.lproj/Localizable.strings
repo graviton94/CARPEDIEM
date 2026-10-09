@@ -343,7 +343,7 @@
 "breath.done.sleep.3" = "ハルもそばで眠ります。";
 "breath.night" = "一日をしめくくる瞑想";
 "breath.ask" = "%1$@、してみませんか？";
-"breath.askHelp" = "1分だけで大丈夫です。";
+"breath.askHelp" = "%1$@分で大丈夫です。";
 "breath.askGo" = "はじめる";
 "breath.askStay" = "また今度";
 "breath.bells" = "澄んだ鐘の音で吸って、\n低い鐘の音で吐きます。";
@@ -390,8 +390,8 @@
 "contact.soon" = "お問い合わせ先は、公開のときにお知らせします。";
 "contact.send" = "メールを送る";
 "notices.privacy" = "個人情報：何も集めません。記録はすべて、ここにだけ残ります。";
-"care.calm" = "1分だけ、いっしょに呼吸しませんか？";
-"care.box" = "こころの散歩で、1分だけ休みませんか？";
+"care.calm" = "少し、いっしょに呼吸しませんか？（%1$@分）";
+"care.box" = "こころの散歩で、少し休みませんか？（%1$@分）";
 "care.look" = "30秒だけ、遠くを眺めませんか？";
 "care.sendTo" = "この気持ち、だれに届くといいでしょう？";
 "care.setting" = "小さなおすすめ";
@@ -452,14 +452,14 @@
 "letgo.msg.none.morning.1" = "今日最初の気持ちを送りました。\n軽やかな一日になりますように。";
 "letgo.msg.none.evening.1" = "今日一日を、ひとことにのせて送りました。\n今夜は、ゆったりと。";
 "letgo.msg.none.night.1" = "今日のひとことが、夜風にのっていきました。\nおやすみなさい。";
-"care.sleep" = "眠りの瞑想を、1分いっしょにしませんか？";
-"care.morning" = "1分、澄んだ呼吸で朝をひらきませんか？";
+"care.sleep" = "眠りの瞑想を、少しいっしょにしませんか？（%1$@分）";
+"care.morning" = "少し、澄んだ呼吸で朝をひらきませんか？（%1$@分）";
 "look.done.morning" = "すっきり眺められましたね。";
 "look.done.night" = "窓の外の夜を、ゆっくり眺めました。";
 "notify.evening" = "今日のひとこと";
 "notify.eveningText" = "今日一日を、ひとことで残してみませんか？";
 "notify.eveningRow" = "一日のしめくくりの通知";
-"notify.morningBreath" = "朝の通知に触れると、一日をひらく1分の呼吸へ";
+"notify.morningBreath" = "朝の通知に触れると、一日をひらく呼吸へ（%1$@分）";
 "haru.state.rest" = "目を閉じて休んでいます";
 "haru.state.smile" = "笑っています";
 "haru.state.down" = "少し下を向いています";
@@ -726,7 +726,7 @@
 "notify.evening.3" = "眠る前に、ひとこと残しましょう。";
 "notify.evening.4" = "今日一日、ひとことで残してみませんか？";
 "breathTile.label" = "ひと息";
-"breathTile.sub" = "1分";
+"breathTile.sub" = "%1$@分";
 "gardenYear.ask" = "今年の庭を、一枚で見てみませんか？";
 "gardenYear.open" = "見る";
 "gardenYear.title" = "%1$@年、ハルの庭";
@@ -747,7 +747,7 @@
 "intro.title1" = "残りの時間を、静かに";
 "intro.body1" = "生年月日と国の平均寿命から、\n残りの日を数えます。\n急かすための数字ではなく、\n今日を大切にするための小さな庭です。";
 "intro.title2" = "一日にひとこと、ひと呼吸";
-"intro.body2" = "今日をひとことにのせて手放し、\n1分だけ、ゆっくり呼吸します。\nそうして過ぎた日々が、\n庭に花や星として積もっていきます。";
+"intro.body2" = "今日をひとことにのせて手放し、\n少しだけ、ゆっくり呼吸します。\nそうして過ぎた日々が、\n庭に花や星として積もっていきます。";
 "intro.title3" = "わたしの石「ハル」に会いましょう";
 "intro.body3" = "生年月日と国を教えてくれたら、\n世界にひとつだけの石に会えます。\n記録はすべて、このスマホの中だけに。";
 "intro.start" = "はじめる";
@@ -766,7 +766,7 @@
 "guide.pathTitle" = "地面の線は人生の道";
 "guide.path" = "左のはしは生まれた日、右のはしは平均寿命です。\nハルはいまの場所に座って、\n毎年すこしずつ右へ歩いていきます。";
 "guide.actionsTitle" = "庭でひと休み";
-"guide.actions" = "ひと息 — 1分間いっしょに呼吸します。\n石ながめ — ただ静かに庭を眺めます。\n＋ 石 — 家族やペットを庭に迎えます。";
+"guide.actions" = "ひと息 — 少しのあいだ、いっしょに呼吸します。\n石ながめ — ただ静かに庭を眺めます。\n＋ 石 — 家族やペットを庭に迎えます。";
 "guide.tabsTitle" = "4つのページ";
 "guide.tabs" = "横にめくるか、下の名前をタップします。\n「記録」には今日のひとこと、\n「思い出」には集めたもの、\n「流れ」には人生カレンダーがあります。";
 "guide.settingsTitle" = "設定";
@@ -848,7 +848,7 @@
 "widgets.name.line" = "残りの日数 · 今日のひとこと";
 "widget.lineWrite" = "＋ 今日のひとことを残す";
 "widget.lineDone" = "今日のひとことを残しました";
-"nudge.breath" = "1分だけ、いっしょに呼吸してみませんか？";
+"nudge.breath" = "少し、いっしょに呼吸してみませんか？";
 "nudge.stone" = "大切な人やペットを庭に迎えてみませんか？";
 "nudge.gaze" = "今日は少し石ながめをしてみませんか？";
 "nudge.special" = "覚えておきたい日を、人生カレンダーに花として置いてみませんか？";
@@ -877,7 +877,7 @@
 "reply.felt" = "「%1$@」の気持ちも一緒に置きました";
 "reply.night" = "今日もおつかれさまでした。";
 "shortcut.write" = "今日のひとこと";
-"shortcut.breath" = "1分の呼吸";
+"shortcut.breath" = "ひと息";
 "shortcut.gaze" = "石をぼんやり眺める";
 "shortcut.close" = "一日を閉じる";
 "closeDay.entry" = "一日を閉じる・1分";

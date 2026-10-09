@@ -345,7 +345,7 @@
     <string name="breath_done_sleep_3">ハルもそばで眠ります。</string>
     <string name="breath_night">一日をしめくくる瞑想</string>
     <string name="breath_ask">%1$s、してみませんか？</string>
-    <string name="breath_askHelp">1分だけで大丈夫です。</string>
+    <string name="breath_askHelp">%1$s分で大丈夫です。</string>
     <string name="breath_askGo">はじめる</string>
     <string name="breath_askStay">また今度</string>
     <string name="breath_bells">澄んだ鐘の音で吸って、\n低い鐘の音で吐きます。</string>
@@ -392,8 +392,8 @@
     <string name="contact_soon">お問い合わせ先は、公開のときにお知らせします。</string>
     <string name="contact_send">メールを送る</string>
     <string name="notices_privacy">個人情報：何も集めません。記録はすべて、ここにだけ残ります。</string>
-    <string name="care_calm">1分だけ、いっしょに呼吸しませんか？</string>
-    <string name="care_box">こころの散歩で、1分だけ休みませんか？</string>
+    <string name="care_calm">少し、いっしょに呼吸しませんか？（%1$s分）</string>
+    <string name="care_box">こころの散歩で、少し休みませんか？（%1$s分）</string>
     <string name="care_look">30秒だけ、遠くを眺めませんか？</string>
     <string name="care_sendTo">この気持ち、だれに届くといいでしょう？</string>
     <string name="care_setting">小さなおすすめ</string>
@@ -454,14 +454,14 @@
     <string name="letgo_msg_none_morning_1">今日最初の気持ちを送りました。\n軽やかな一日になりますように。</string>
     <string name="letgo_msg_none_evening_1">今日一日を、ひとことにのせて送りました。\n今夜は、ゆったりと。</string>
     <string name="letgo_msg_none_night_1">今日のひとことが、夜風にのっていきました。\nおやすみなさい。</string>
-    <string name="care_sleep">眠りの瞑想を、1分いっしょにしませんか？</string>
-    <string name="care_morning">1分、澄んだ呼吸で朝をひらきませんか？</string>
+    <string name="care_sleep">眠りの瞑想を、少しいっしょにしませんか？（%1$s分）</string>
+    <string name="care_morning">少し、澄んだ呼吸で朝をひらきませんか？（%1$s分）</string>
     <string name="look_done_morning">すっきり眺められましたね。</string>
     <string name="look_done_night">窓の外の夜を、ゆっくり眺めました。</string>
     <string name="notify_evening">今日のひとこと</string>
     <string name="notify_eveningText">今日一日を、ひとことで残してみませんか？</string>
     <string name="notify_eveningRow">一日のしめくくりの通知</string>
-    <string name="notify_morningBreath">朝の通知に触れると、一日をひらく1分の呼吸へ</string>
+    <string name="notify_morningBreath">朝の通知に触れると、一日をひらく呼吸へ（%1$s分）</string>
     <string name="haru_state_rest">目を閉じて休んでいます</string>
     <string name="haru_state_smile">笑っています</string>
     <string name="haru_state_down">少し下を向いています</string>
@@ -728,7 +728,7 @@
     <string name="notify_evening_3">眠る前に、ひとこと残しましょう。</string>
     <string name="notify_evening_4">今日一日、ひとことで残してみませんか？</string>
     <string name="breathTile_label">ひと息</string>
-    <string name="breathTile_sub">1分</string>
+    <string name="breathTile_sub">%1$s分</string>
     <string name="gardenYear_ask">今年の庭を、一枚で見てみませんか？</string>
     <string name="gardenYear_open">見る</string>
     <string name="gardenYear_title">%1$s年、ハルの庭</string>
@@ -749,7 +749,7 @@
     <string name="intro_title1">残りの時間を、静かに</string>
     <string name="intro_body1">生年月日と国の平均寿命から、\n残りの日を数えます。\n急かすための数字ではなく、\n今日を大切にするための小さな庭です。</string>
     <string name="intro_title2">一日にひとこと、ひと呼吸</string>
-    <string name="intro_body2">今日をひとことにのせて手放し、\n1分だけ、ゆっくり呼吸します。\nそうして過ぎた日々が、\n庭に花や星として積もっていきます。</string>
+    <string name="intro_body2">今日をひとことにのせて手放し、\n少しだけ、ゆっくり呼吸します。\nそうして過ぎた日々が、\n庭に花や星として積もっていきます。</string>
     <string name="intro_title3">わたしの石「ハル」に会いましょう</string>
     <string name="intro_body3">生年月日と国を教えてくれたら、\n世界にひとつだけの石に会えます。\n記録はすべて、このスマホの中だけに。</string>
     <string name="intro_start">はじめる</string>
@@ -768,7 +768,7 @@
     <string name="guide_pathTitle">地面の線は人生の道</string>
     <string name="guide_path">左のはしは生まれた日、右のはしは平均寿命です。\nハルはいまの場所に座って、\n毎年すこしずつ右へ歩いていきます。</string>
     <string name="guide_actionsTitle">庭でひと休み</string>
-    <string name="guide_actions">ひと息 — 1分間いっしょに呼吸します。\n石ながめ — ただ静かに庭を眺めます。\n＋ 石 — 家族やペットを庭に迎えます。</string>
+    <string name="guide_actions">ひと息 — 少しのあいだ、いっしょに呼吸します。\n石ながめ — ただ静かに庭を眺めます。\n＋ 石 — 家族やペットを庭に迎えます。</string>
     <string name="guide_tabsTitle">4つのページ</string>
     <string name="guide_tabs">横にめくるか、下の名前をタップします。\n「記録」には今日のひとこと、\n「思い出」には集めたもの、\n「流れ」には人生カレンダーがあります。</string>
     <string name="guide_settingsTitle">設定</string>
@@ -850,7 +850,7 @@
     <string name="widgets_name_line">残りの日数 · 今日のひとこと</string>
     <string name="widget_lineWrite">＋ 今日のひとことを残す</string>
     <string name="widget_lineDone">今日のひとことを残しました</string>
-    <string name="nudge_breath">1分だけ、いっしょに呼吸してみませんか？</string>
+    <string name="nudge_breath">少し、いっしょに呼吸してみませんか？</string>
     <string name="nudge_stone">大切な人やペットを庭に迎えてみませんか？</string>
     <string name="nudge_gaze">今日は少し石ながめをしてみませんか？</string>
     <string name="nudge_special">覚えておきたい日を、人生カレンダーに花として置いてみませんか？</string>
@@ -879,7 +879,7 @@
     <string name="reply_felt">「%1$s」の気持ちも一緒に置きました</string>
     <string name="reply_night">今日もおつかれさまでした。</string>
     <string name="shortcut_write">今日のひとこと</string>
-    <string name="shortcut_breath">1分の呼吸</string>
+    <string name="shortcut_breath">ひと息</string>
     <string name="shortcut_gaze">石をぼんやり眺める</string>
     <string name="shortcut_close">一日を閉じる</string>
     <string name="closeDay_entry">一日を閉じる・1分</string>

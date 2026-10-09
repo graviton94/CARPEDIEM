@@ -345,7 +345,7 @@
     <string name="breath_done_sleep_3">小日也會在旁邊一起睡。</string>
     <string name="breath_night">結束一天的冥想</string>
     <string name="breath_ask">要不要來一次%1$s？</string>
-    <string name="breath_askHelp">一分鐘就好。</string>
+    <string name="breath_askHelp">%1$s 分鐘就好。</string>
     <string name="breath_askGo">好啊</string>
     <string name="breath_askStay">下次吧</string>
     <string name="breath_bells">清亮的鐘聲時吸氣，\n低沉的鐘聲時吐氣。</string>
@@ -392,8 +392,8 @@
     <string name="contact_soon">聯絡信箱會在上架時開放。</string>
     <string name="contact_send">寄信</string>
     <string name="notices_privacy">隱私：不蒐集任何資料。所有紀錄都只留在這裡。</string>
-    <string name="care_calm">要一起喘口氣一分鐘嗎？</string>
-    <string name="care_box">用心之散步，休息一分鐘好嗎？</string>
+    <string name="care_calm">要一起呼吸一會兒嗎？（%1$s 分鐘）</string>
+    <string name="care_box">用心之散步，休息一會兒好嗎？（%1$s 分鐘）</string>
     <string name="care_look">花三十秒，望望遠方好嗎？</string>
     <string name="care_sendTo">這份心情，想傳給誰呢？</string>
     <string name="care_setting">小小的提議</string>
@@ -454,14 +454,14 @@
     <string name="letgo_msg_none_morning_1">放下了今天的第一份心情。\n願今天過得輕鬆。</string>
     <string name="letgo_msg_none_evening_1">把今天寫進一句話，放下了。\n剩下的夜晚，好好休息。</string>
     <string name="letgo_msg_none_night_1">今天的一句話，隨著夜風飄走了。\n晚安。</string>
-    <string name="care_sleep">來一分鐘入睡冥想好嗎？</string>
-    <string name="care_morning">用一分鐘清澈的呼吸，開啟早晨好嗎？</string>
+    <string name="care_sleep">一起做一會兒入睡冥想好嗎？（%1$s 分鐘）</string>
+    <string name="care_morning">用清澈的呼吸開啟早晨好嗎？（%1$s 分鐘）</string>
     <string name="look_done_morning">清清爽爽地望了一會兒。</string>
     <string name="look_done_night">好好望了窗外的夜。</string>
     <string name="notify_evening">今天的一句話</string>
     <string name="notify_eveningText">要用一句話留下今天嗎？</string>
     <string name="notify_eveningRow">一天收尾的通知</string>
-    <string name="notify_morningBreath">點一下早晨的通知，就能做一分鐘開啟一天的呼吸</string>
+    <string name="notify_morningBreath">點一下早晨的通知，就能做開啟一天的呼吸（%1$s 分鐘）</string>
     <string name="haru_state_rest">閉著眼睛休息</string>
     <string name="haru_state_smile">正在微笑</string>
     <string name="haru_state_down">微微往下看</string>
@@ -728,7 +728,7 @@
     <string name="notify_evening_3">睡前，留下一句話。</string>
     <string name="notify_evening_4">要用一句話留下今天嗎？</string>
     <string name="breathTile_label">喘口氣</string>
-    <string name="breathTile_sub">1 分鐘</string>
+    <string name="breathTile_sub">%1$s 分鐘</string>
     <string name="gardenYear_ask">要把今年的庭院收在一頁裡看嗎？</string>
     <string name="gardenYear_open">看看</string>
     <string name="gardenYear_title">%1$s 年，小日的庭院</string>
@@ -749,7 +749,7 @@
     <string name="intro_title1">安靜地看見剩下的時間</string>
     <string name="intro_body1">用生日和國家的平均壽命，\n算一算剩下的日子。\n不是催促你的數字，\n而是提醒你珍惜今天的小庭院。</string>
     <string name="intro_title2">一天一句話，一次呼吸</string>
-    <string name="intro_body2">把今天寫成一句話放下，\n再慢慢呼吸一分鐘。\n這樣走過的日子，\n會在庭院裡化成花和星星。</string>
+    <string name="intro_body2">把今天寫成一句話放下，\n再慢慢呼吸一會兒。\n這樣走過的日子，\n會在庭院裡化成花和星星。</string>
     <string name="intro_title3">來見見你的石頭「小日」</string>
     <string name="intro_body3">告訴我們你的生日和國家，\n就能遇見獨一無二的石頭。\n所有紀錄都只留在這支手機裡。</string>
     <string name="intro_start">開始</string>
@@ -768,7 +768,7 @@
     <string name="guide_pathTitle">地上的線是人生的路</string>
     <string name="guide_path">左邊是出生的那天，右邊是平均壽命。\n小日坐在你現在的位置，\n每年往右走一點點。</string>
     <string name="guide_actionsTitle">在庭院裡歇一歇</string>
-    <string name="guide_actions">喘口氣 — 一起呼吸一分鐘。\n看石發呆 — 靜靜看著庭院。\n＋ 石頭 — 把家人和寵物請進庭院。</string>
+    <string name="guide_actions">喘口氣 — 一起呼吸一會兒。\n看石發呆 — 靜靜看著庭院。\n＋ 石頭 — 把家人和寵物請進庭院。</string>
     <string name="guide_tabsTitle">四個頁面</string>
     <string name="guide_tabs">左右滑動，或點下面的名稱。\n「紀錄」裡有今天的一句話，\n「回憶」裡有收集的小物，\n「流轉」裡有人生月曆。</string>
     <string name="guide_settingsTitle">設定</string>
@@ -850,7 +850,7 @@
     <string name="widgets_name_line">剩下的日子 · 今天的一句話</string>
     <string name="widget_lineWrite">＋ 留下今天的一句話</string>
     <string name="widget_lineDone">已留下今天的一句話</string>
-    <string name="nudge_breath">要不要一起呼吸一分鐘？</string>
+    <string name="nudge_breath">要不要一起呼吸一會兒？</string>
     <string name="nudge_stone">要把重要的人或寵物請進庭院嗎？</string>
     <string name="nudge_gaze">今天要不要看石發呆一下？</string>
     <string name="nudge_special">要在人生月曆上，為想記住的日子放一朵花嗎？</string>
@@ -879,7 +879,7 @@
     <string name="reply_felt">也放下了「%1$s」的心情</string>
     <string name="reply_night">今天也辛苦了。</string>
     <string name="shortcut_write">今天的一句話</string>
-    <string name="shortcut_breath">呼吸一分鐘</string>
+    <string name="shortcut_breath">喘口氣</string>
     <string name="shortcut_gaze">看石發呆</string>
     <string name="shortcut_close">結束這一天</string>
     <string name="closeDay_entry">結束這一天・1 分鐘</string>

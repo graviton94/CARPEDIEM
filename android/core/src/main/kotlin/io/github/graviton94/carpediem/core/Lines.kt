@@ -14,6 +14,9 @@ enum class Feeling {
         val BRIGHT = setOf(JOY, HOPE, PROUD, THANKS)
         /** 한 줄에 다섯 칸씩 두 줄 */
         const val PER_ROW = 5
+        /** 같은 수일 때 앞서는 차례: 1.1.3 까지의 순서 그대로 (지난 리본 · 계절 조각 색이 바뀌지 않게), 새 마음은 그 뒤. */
+        fun tieRank(f: Feeling): Int = LEGACY.indexOf(f).let { if (it >= 0) it else LEGACY.size + f.ordinal }
+        private val LEGACY = listOf(JOY, HOPE, CALM, THANKS, DISAPPOINT, SAD, WORRY)
     }
 }
 

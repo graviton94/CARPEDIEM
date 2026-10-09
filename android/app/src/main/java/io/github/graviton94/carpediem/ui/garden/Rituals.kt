@@ -255,7 +255,7 @@ private enum class CloseStep { LINE, THANKS, LANTERN, END, DARK }
 @Composable
 fun CloseDayScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, onDone: () -> Unit) {
     // 끝까지 갔거나 ‘여기까지’ 로 마쳤으면 오늘은 정원에 ‘하루 닫기’ 를 다시 권하지 않음
-    val finish = { state.closeDayDone(now.toLocalDate()); onDone() }
+    val finish = { state.closeDayDone(closeDayOf(now)); onDone() }
     val p = Theme.palette
     val today = now.toLocalDate()
     var step by rememberSaveable { mutableStateOf(CloseStep.LINE) }
@@ -381,6 +381,8 @@ private fun ShortBreath(state: AppState, kind: BreathKind, cycles: Int, title: I
         delay(1200); onDone()
     }
     val step by remember(plan) { androidx.compose.runtime.derivedStateOf { Breath.at(plan, elapsed)?.first?.step } }
+    // 한숨 호흡의 두 번째 들이쉼: ‘한 번 더’
+    val topUp by remember(plan) { androidx.compose.runtime.derivedStateOf { (Breath.at(plan, elapsed)?.first?.lo ?: 0f) > 0f } }
     LaunchedEffect(step) {
         if (state.sound != Sound.NONE) when (step) { BreathStep.IN -> Soundscape.bowl(G.Sound.bowlInHz.toDouble()); BreathStep.OUT -> Soundscape.bowl(G.Sound.bowlOutHz.toDouble()); else -> {} }
         if (touch == null && step == BreathStep.IN) view.performHapticFeedback(android.view.HapticFeedbackConstants.CLOCK_TICK)
@@ -405,7 +407,7 @@ private fun ShortBreath(state: AppState, kind: BreathKind, cycles: Int, title: I
             TokenText(stringResource(title), Tokens.TypeScale.footnote.serif(), color = p.secondary, align = TextAlign.Center)
             Spacer(Modifier.height(Tokens.Space.sp3))
             Box(Modifier.heightIn(min = Tokens.Space.sp10 * 2), contentAlignment = Alignment.Center) {
-                step?.let { BreathCue(stringResource(cueName(kind, it)), p.secondary) }
+                step?.let { BreathCue(stringResource(if (topUp && it == BreathStep.IN) R.string.breath_inTop else cueName(kind, it)), p.secondary) }
             }
         }
     }
@@ -457,9 +459,9 @@ internal class TouchBreath(private val vib: Vibrator) {
             if (t.isEmpty()) return
             VibrationEffect.createWaveform(t, a, -1)
         } else {
-            // 세기 조절이 없으면: 들이쉼이 시작될 때만 아주 짧게 (나머지는 고요)
+            // 세기 조절이 없으면: 들이쉼이 시작될 때만 아주 짧게 (한숨 호흡의 ‘한 번 더’ 는 빼고, 나머지는 고요)
             val times = ArrayList<Long>(); var at = from
-            plan.filter { it.step == io.github.graviton94.carpediem.core.BreathStep.IN && it.startMs >= from }.forEach { ph ->
+            plan.filter { it.step == io.github.graviton94.carpediem.core.BreathStep.IN && it.lo == 0f && it.startMs >= from }.forEach { ph ->
                 times.add(ph.startMs - at); times.add(TOUCH_PULSE_PLAIN); at = ph.startMs + TOUCH_PULSE_PLAIN
             }
             if (times.isEmpty()) return

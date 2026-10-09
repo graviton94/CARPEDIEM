@@ -81,6 +81,7 @@ import io.github.graviton94.carpediem.sound.Soundscape
 import io.github.graviton94.carpediem.ui.AppState
 import io.github.graviton94.carpediem.ui.TokenText
 import kotlinx.coroutines.delay
+import java.time.LocalDate
 import java.time.LocalDateTime
 import kotlin.math.sin
 
@@ -120,6 +121,8 @@ private fun stepName(s: BreathStep) = when (s) { BreathStep.IN -> R.string.breat
 private const val TOUCH_DIM_AFTER = 6000L
 
 internal fun isNight(now: LocalDateTime) = now.hour >= G.Breath.nightFrom.toInt() || now.hour < G.Motion.sunrise.toInt()
+/** 하루 닫기의 그날: 해 뜨기 전 (자정 넘어) 은 아직 어젯밤. */
+internal fun closeDayOf(now: LocalDateTime): LocalDate = now.toLocalDate().let { if (now.hour < G.Motion.sunrise.toInt()) it.minusDays(1) else it }
 
 // ───────────────────────── 숨 고르기 창 ─────────────────────────
 

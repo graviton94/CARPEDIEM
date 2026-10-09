@@ -32,6 +32,7 @@ import kotlinx.coroutines.delay
 import java.time.format.FormatStyle
 import java.time.format.DateTimeFormatter
 import io.github.graviton94.carpediem.core.Lines
+import io.github.graviton94.carpediem.core.BreathKind
 import io.github.graviton94.carpediem.core.DayLine
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.liveRegion
@@ -499,7 +500,10 @@ private fun CareLine(state: AppState, c: Care, onGo: () -> Unit) {
         }
         return
     }
-    val text = stringResource(when (c) { Care.CALM_BREATH -> R.string.care_calm; Care.BOX_BREATH -> R.string.care_box; Care.SLEEP_BREATH -> R.string.care_sleep; Care.MORNING_BREATH -> R.string.care_morning; else -> R.string.care_look })
+    // 권하는 숨은 그 호흡법의 정해진 길이 그대로 (몇 분인지 적어 둠)
+    val mins = when (c) { Care.BOX_BREATH -> planMinutes(BreathKind.BOX); Care.SLEEP_BREATH -> planMinutes(BreathKind.SLEEP); else -> planMinutes(BreathKind.CALM) }
+    val text = when (c) { Care.CALM_BREATH -> stringResource(R.string.care_calm, "$mins"); Care.BOX_BREATH -> stringResource(R.string.care_box, "$mins")
+        Care.SLEEP_BREATH -> stringResource(R.string.care_sleep, "$mins"); Care.MORNING_BREATH -> stringResource(R.string.care_morning, "$mins"); else -> stringResource(R.string.care_look) }
     TokenText(text, Tokens.TypeScale.footnote, Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable(onClick = onGo).padding(horizontal = Tokens.Space.sp3, vertical = Tokens.Space.sp3), color = p.olive, weight = FontWeight.SemiBold, align = TextAlign.Center)
 }
 

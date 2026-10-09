@@ -60,7 +60,7 @@ object GardenDecor {
 
     fun seasonLines(lines: List<DayLine>, country: String?): Map<Pair<Int, Season>, SeasonLines> =
         lines.filter { it.text.isNotBlank() }.groupBy { albumYear(it.date) to realSeason(it.date, country) }.mapValues { (_, l) ->
-            SeasonLines(l.size, l.mapNotNull { it.feeling }.groupingBy { it }.eachCount().maxWithOrNull(compareBy<Map.Entry<Feeling, Int>> { it.value }.thenByDescending { it.key.ordinal })?.key)
+            SeasonLines(l.size, l.mapNotNull { it.feeling }.groupingBy { it }.eachCount().maxWithOrNull(compareBy<Map.Entry<Feeling, Int>> { it.value }.thenByDescending { Feeling.tieRank(it.key) })?.key)
         }
 
     class Rules(
@@ -87,7 +87,7 @@ object GardenDecor {
         val written = lines.filter { it.text.isNotBlank() }.sortedBy { it.date }
         if (written.size < r.kiteLines) return emptyList()
         return written.chunked(r.ribbonLines).filter { it.size == r.ribbonLines }.map { chunk ->
-            chunk.mapNotNull { it.feeling }.groupingBy { it }.eachCount().maxWithOrNull(compareBy<Map.Entry<Feeling, Int>> { it.value }.thenByDescending { it.key.ordinal })?.key
+            chunk.mapNotNull { it.feeling }.groupingBy { it }.eachCount().maxWithOrNull(compareBy<Map.Entry<Feeling, Int>> { it.value }.thenByDescending { Feeling.tieRank(it.key) })?.key
         }.takeLast(r.ribbonMax)
     }
 

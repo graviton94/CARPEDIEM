@@ -600,7 +600,7 @@ class ChancesTest {
         // 들이쉼은 여리게 부풀고 (처음 < 끝), 머묾은 고요, 내쉼은 잦아들어 쉼으로
         val first = amps.first(); assertTrue(amps.take(20).max() > first)
         assertEquals(0, Breath.touchWave(plan, 5_000).second.first())
-        assertEquals(0, amps.last()); assertTrue(amps.max() <= 34, "여리게")
+        assertEquals(0, amps.last()); assertTrue(amps.max() <= 60, "여리게"); assertTrue(amps.filter { it > 0 }.min() >= 18, "느껴지는 바닥")
         // 톡톡 두드리지 않음: 쉼에서 떨림으로 넘어가는 건 숨마다 (들이쉼 · 내쉼) 두 번까지
         val starts = amps.indices.count { i -> amps[i] > 0 && (i == 0 || amps[i - 1] == 0) }; assertTrue(starts <= 4, "숨결: $starts")
         // 세기는 한 칸씩 이어서 (갑자기 튀지 않음)

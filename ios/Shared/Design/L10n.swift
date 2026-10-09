@@ -346,7 +346,7 @@ enum L10n {
     static var breathDoneSleep3: String { tr("breath.done.sleep.3") }
     static var breathNight: String { tr("breath.night") }
     static func breathAsk(_ name: String) -> String { tr("breath.ask", name) }
-    static var breathAskHelp: String { tr("breath.askHelp") }
+    static func breathAskHelp(_ min: String) -> String { tr("breath.askHelp", min) }
     static var breathAskGo: String { tr("breath.askGo") }
     static var breathAskStay: String { tr("breath.askStay") }
     static var breathBells: String { tr("breath.bells") }
@@ -394,8 +394,8 @@ enum L10n {
     static var contactSend: String { tr("contact.send") }
     static var contactEmail: String { tr("contact.email") }
     static var noticesPrivacy: String { tr("notices.privacy") }
-    static var careCalm: String { tr("care.calm") }
-    static var careBox: String { tr("care.box") }
+    static func careCalm(_ min: String) -> String { tr("care.calm", min) }
+    static func careBox(_ min: String) -> String { tr("care.box", min) }
     static var careLook: String { tr("care.look") }
     static var careSendTo: String { tr("care.sendTo") }
     static var careSetting: String { tr("care.setting") }
@@ -456,14 +456,14 @@ enum L10n {
     static var letgoMsgNoneMorning1: String { tr("letgo.msg.none.morning.1") }
     static var letgoMsgNoneEvening1: String { tr("letgo.msg.none.evening.1") }
     static var letgoMsgNoneNight1: String { tr("letgo.msg.none.night.1") }
-    static var careSleep: String { tr("care.sleep") }
-    static var careMorning: String { tr("care.morning") }
+    static func careSleep(_ min: String) -> String { tr("care.sleep", min) }
+    static func careMorning(_ min: String) -> String { tr("care.morning", min) }
     static var lookDoneMorning: String { tr("look.done.morning") }
     static var lookDoneNight: String { tr("look.done.night") }
     static var notifyEvening: String { tr("notify.evening") }
     static var notifyEveningText: String { tr("notify.eveningText") }
     static var notifyEveningRow: String { tr("notify.eveningRow") }
-    static var notifyMorningBreath: String { tr("notify.morningBreath") }
+    static func notifyMorningBreath(_ min: String) -> String { tr("notify.morningBreath", min) }
     static var haruStateRest: String { tr("haru.state.rest") }
     static var haruStateSmile: String { tr("haru.state.smile") }
     static var haruStateDown: String { tr("haru.state.down") }
@@ -730,7 +730,7 @@ enum L10n {
     static var notifyEvening3: String { tr("notify.evening.3") }
     static var notifyEvening4: String { tr("notify.evening.4") }
     static var breathTileLabel: String { tr("breathTile.label") }
-    static var breathTileSub: String { tr("breathTile.sub") }
+    static func breathTileSub(_ min: String) -> String { tr("breathTile.sub", min) }
     static var gardenYearAsk: String { tr("gardenYear.ask") }
     static var gardenYearOpen: String { tr("gardenYear.open") }
     static func gardenYearTitle(_ year: String) -> String { tr("gardenYear.title", year) }

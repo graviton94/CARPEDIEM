@@ -342,7 +342,7 @@
 "breath.done.sleep.3" = "Haru will sleep beside you.";
 "breath.night" = "A meditation to close the day";
 "breath.ask" = "%1$@ — shall we?";
-"breath.askHelp" = "Just one minute.";
+"breath.askHelp" = "Just %1$@ min.";
 "breath.askGo" = "Let's go";
 "breath.askStay" = "Later";
 "breath.bells" = "Breathe in with the bright bell,\nout with the low one.";
@@ -390,8 +390,8 @@
 "contact.send" = "Send an email";
 "contact.email" = "ruahn49@gmail.com";
 "notices.privacy" = "Privacy: nothing is collected. Everything stays here.";
-"care.calm" = "Breathe together for a minute?";
-"care.box" = "Rest a minute with a walk for the mind?";
+"care.calm" = "Breathe together for a while? (%1$@ min)";
+"care.box" = "Rest a while with a walk for the mind? (%1$@ min)";
 "care.look" = "Look at something far away for 30 seconds?";
 "care.sendTo" = "Who should this feeling reach?";
 "care.setting" = "Gentle suggestions";
@@ -452,14 +452,14 @@
 "letgo.msg.none.morning.1" = "You sent today’s first feeling.\nMay the day be light.";
 "letgo.msg.none.evening.1" = "You sent today off in a line.\nRest easy this evening.";
 "letgo.msg.none.night.1" = "Today’s line drifted off on the night wind.\nSleep well.";
-"care.sleep" = "A minute of meditation for sleep?";
-"care.morning" = "Open the morning with a minute of clear breath?";
+"care.sleep" = "Meditate for sleep together for a while? (%1$@ min)";
+"care.morning" = "Open the morning with a clear breath? (%1$@ min)";
 "look.done.morning" = "A clear, long look.";
 "look.done.night" = "A good long look at the night.";
 "notify.evening" = "Today’s line";
 "notify.eveningText" = "Leave today in a line?";
 "notify.eveningRow" = "End-of-day note";
-"notify.morningBreath" = "Morning reminder opens a minute of breath";
+"notify.morningBreath" = "Morning reminder opens a breath to start the day (%1$@ min)";
 "haru.state.rest" = "resting with eyes closed";
 "haru.state.smile" = "smiling";
 "haru.state.down" = "looking down a little";
@@ -726,7 +726,7 @@
 "notify.evening.3" = "A line before sleep.";
 "notify.evening.4" = "Leave today in a line?";
 "breathTile.label" = "Breathe";
-"breathTile.sub" = "1 min";
+"breathTile.sub" = "%1$@ min";
 "gardenYear.ask" = "See this year’s garden on one page?";
 "gardenYear.open" = "See it";
 "gardenYear.title" = "%1$@ in the garden";
@@ -747,7 +747,7 @@
 "intro.title1" = "Your time, quietly";
 "intro.body1" = "We count the days ahead from your birthday\nand your country’s average life expectancy.\nNot a number to rush you —\na small garden to help you treasure today.";
 "intro.title2" = "One line, one breath a day";
-"intro.body2" = "Let today go in a single line,\nthen breathe slowly for a minute.\nThe days you pass this way\ngather in the garden as flowers and stars.";
+"intro.body2" = "Let today go in a single line,\nthen breathe slowly for a while.\nThe days you pass this way\ngather in the garden as flowers and stars.";
 "intro.title3" = "Meet your stone, Haru";
 "intro.body3" = "Tell us your birthday and country,\nand you’ll meet a stone like no other.\nEverything you write stays on this phone.";
 "intro.start" = "Get started";
@@ -766,7 +766,7 @@
 "guide.pathTitle" = "The ground is your path";
 "guide.path" = "The left end is the day you were born, the right end your life expectancy.\nHaru sits where you are now\nand walks a little to the right each year.";
 "guide.actionsTitle" = "Resting in the garden";
-"guide.actions" = "Breathe, rest — breathe together for a minute.\nStone gazing — simply watch the garden.\n＋ Stone — bring family and pets into your garden.";
+"guide.actions" = "Breathe, rest — breathe together for a while.\nStone gazing — simply watch the garden.\n＋ Stone — bring family and pets into your garden.";
 "guide.tabsTitle" = "Four pages";
 "guide.tabs" = "Swipe sideways or tap a label below.\nJournal holds today’s line,\nMemories your keepsakes,\nand Time your life calendar.";
 "guide.settingsTitle" = "Settings";
@@ -848,7 +848,7 @@
 "widgets.name.line" = "Days left · Today’s line";
 "widget.lineWrite" = "＋ Write today’s line";
 "widget.lineDone" = "Today’s line is kept";
-"nudge.breath" = "Shall we breathe together for a minute?";
+"nudge.breath" = "Shall we breathe together for a while?";
 "nudge.stone" = "Bring someone dear, or a pet, into your garden?";
 "nudge.gaze" = "How about a little stone gazing today?";
 "nudge.special" = "Place a flower on a day worth remembering?";
@@ -877,7 +877,7 @@
 "reply.felt" = "Placed with ‘%1$@’";
 "reply.night" = "You did well today.";
 "shortcut.write" = "Today's line";
-"shortcut.breath" = "Breathe for a minute";
+"shortcut.breath" = "Breathe";
 "shortcut.gaze" = "Stone gazing";
 "shortcut.close" = "Close the day";
 "closeDay.entry" = "Close the day · 1 min";

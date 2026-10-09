@@ -343,7 +343,7 @@
 "breath.done.sleep.3" = "小日也會在旁邊一起睡。";
 "breath.night" = "結束一天的冥想";
 "breath.ask" = "要不要來一次%1$@？";
-"breath.askHelp" = "一分鐘就好。";
+"breath.askHelp" = "%1$@ 分鐘就好。";
 "breath.askGo" = "好啊";
 "breath.askStay" = "下次吧";
 "breath.bells" = "清亮的鐘聲時吸氣，\n低沉的鐘聲時吐氣。";
@@ -390,8 +390,8 @@
 "contact.soon" = "聯絡信箱會在上架時開放。";
 "contact.send" = "寄信";
 "notices.privacy" = "隱私：不蒐集任何資料。所有紀錄都只留在這裡。";
-"care.calm" = "要一起喘口氣一分鐘嗎？";
-"care.box" = "用心之散步，休息一分鐘好嗎？";
+"care.calm" = "要一起呼吸一會兒嗎？（%1$@ 分鐘）";
+"care.box" = "用心之散步，休息一會兒好嗎？（%1$@ 分鐘）";
 "care.look" = "花三十秒，望望遠方好嗎？";
 "care.sendTo" = "這份心情，想傳給誰呢？";
 "care.setting" = "小小的提議";
@@ -452,14 +452,14 @@
 "letgo.msg.none.morning.1" = "放下了今天的第一份心情。\n願今天過得輕鬆。";
 "letgo.msg.none.evening.1" = "把今天寫進一句話，放下了。\n剩下的夜晚，好好休息。";
 "letgo.msg.none.night.1" = "今天的一句話，隨著夜風飄走了。\n晚安。";
-"care.sleep" = "來一分鐘入睡冥想好嗎？";
-"care.morning" = "用一分鐘清澈的呼吸，開啟早晨好嗎？";
+"care.sleep" = "一起做一會兒入睡冥想好嗎？（%1$@ 分鐘）";
+"care.morning" = "用清澈的呼吸開啟早晨好嗎？（%1$@ 分鐘）";
 "look.done.morning" = "清清爽爽地望了一會兒。";
 "look.done.night" = "好好望了窗外的夜。";
 "notify.evening" = "今天的一句話";
 "notify.eveningText" = "要用一句話留下今天嗎？";
 "notify.eveningRow" = "一天收尾的通知";
-"notify.morningBreath" = "點一下早晨的通知，就能做一分鐘開啟一天的呼吸";
+"notify.morningBreath" = "點一下早晨的通知，就能做開啟一天的呼吸（%1$@ 分鐘）";
 "haru.state.rest" = "閉著眼睛休息";
 "haru.state.smile" = "正在微笑";
 "haru.state.down" = "微微往下看";
@@ -726,7 +726,7 @@
 "notify.evening.3" = "睡前，留下一句話。";
 "notify.evening.4" = "要用一句話留下今天嗎？";
 "breathTile.label" = "喘口氣";
-"breathTile.sub" = "1 分鐘";
+"breathTile.sub" = "%1$@ 分鐘";
 "gardenYear.ask" = "要把今年的庭院收在一頁裡看嗎？";
 "gardenYear.open" = "看看";
 "gardenYear.title" = "%1$@ 年，小日的庭院";
@@ -747,7 +747,7 @@
 "intro.title1" = "安靜地看見剩下的時間";
 "intro.body1" = "用生日和國家的平均壽命，\n算一算剩下的日子。\n不是催促你的數字，\n而是提醒你珍惜今天的小庭院。";
 "intro.title2" = "一天一句話，一次呼吸";
-"intro.body2" = "把今天寫成一句話放下，\n再慢慢呼吸一分鐘。\n這樣走過的日子，\n會在庭院裡化成花和星星。";
+"intro.body2" = "把今天寫成一句話放下，\n再慢慢呼吸一會兒。\n這樣走過的日子，\n會在庭院裡化成花和星星。";
 "intro.title3" = "來見見你的石頭「小日」";
 "intro.body3" = "告訴我們你的生日和國家，\n就能遇見獨一無二的石頭。\n所有紀錄都只留在這支手機裡。";
 "intro.start" = "開始";
@@ -766,7 +766,7 @@
 "guide.pathTitle" = "地上的線是人生的路";
 "guide.path" = "左邊是出生的那天，右邊是平均壽命。\n小日坐在你現在的位置，\n每年往右走一點點。";
 "guide.actionsTitle" = "在庭院裡歇一歇";
-"guide.actions" = "喘口氣 — 一起呼吸一分鐘。\n看石發呆 — 靜靜看著庭院。\n＋ 石頭 — 把家人和寵物請進庭院。";
+"guide.actions" = "喘口氣 — 一起呼吸一會兒。\n看石發呆 — 靜靜看著庭院。\n＋ 石頭 — 把家人和寵物請進庭院。";
 "guide.tabsTitle" = "四個頁面";
 "guide.tabs" = "左右滑動，或點下面的名稱。\n「紀錄」裡有今天的一句話，\n「回憶」裡有收集的小物，\n「流轉」裡有人生月曆。";
 "guide.settingsTitle" = "設定";
@@ -848,7 +848,7 @@
 "widgets.name.line" = "剩下的日子 · 今天的一句話";
 "widget.lineWrite" = "＋ 留下今天的一句話";
 "widget.lineDone" = "已留下今天的一句話";
-"nudge.breath" = "要不要一起呼吸一分鐘？";
+"nudge.breath" = "要不要一起呼吸一會兒？";
 "nudge.stone" = "要把重要的人或寵物請進庭院嗎？";
 "nudge.gaze" = "今天要不要看石發呆一下？";
 "nudge.special" = "要在人生月曆上，為想記住的日子放一朵花嗎？";
@@ -877,7 +877,7 @@
 "reply.felt" = "也放下了「%1$@」的心情";
 "reply.night" = "今天也辛苦了。";
 "shortcut.write" = "今天的一句話";
-"shortcut.breath" = "呼吸一分鐘";
+"shortcut.breath" = "喘口氣";
 "shortcut.gaze" = "看石發呆";
 "shortcut.close" = "結束這一天";
 "closeDay.entry" = "結束這一天・1 分鐘";

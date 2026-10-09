@@ -380,7 +380,7 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
                     }
                     if (Theme.garden) {
                         RowDivider()
-                        FormRow(stringResource(R.string.notify_morningBreath), onClick = { state.changeMorningBreath(!state.morningBreath) }) { Switch(state.morningBreath, { state.changeMorningBreath(it) }, colors = sw) }
+                        FormRow(stringResource(R.string.notify_morningBreath, "${io.github.graviton94.carpediem.ui.garden.planMinutes(io.github.graviton94.carpediem.core.BreathKind.CALM)}"), onClick = { state.changeMorningBreath(!state.morningBreath) }) { Switch(state.morningBreath, { state.changeMorningBreath(it) }, colors = sw) }
                     }
                 }
                 RowDivider()

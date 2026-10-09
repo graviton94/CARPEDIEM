@@ -184,14 +184,17 @@ object Soundscape {
                 for (v in vF.indices) {
                     if (vAt[v] == Long.MIN_VALUE || n < vAt[v]) continue
                     val tt = (n - vAt[v]).toDouble() / sr
-                    if (tt > 7.0) { vAt[v] = Long.MIN_VALUE; continue }
-                    val a = if (tt < attackS) tt / attackS else 1.0
+                    if (tt > SONG_END_S) { vAt[v] = Long.MIN_VALUE; continue }
+                    // 끝은 살며시 (7초에 뚝 끊기면 조용한 데서 ‘틱’)
+                    val a = (if (tt < attackS) tt / attackS else 1.0) * (if (tt > SONG_END_S - SONG_RELEASE_S) (SONG_END_S - tt) / SONG_RELEASE_S else 1.0)
                     for (j in parts.indices) out += amps[j] * exp(-tt / taus[j]) * sin(two * vF[v] * parts[j] * tt) * a
                 }
                 return (out * 0.12 * T.songVolume).toFloat()
             }
             // 숨 소리 (1.1.4): 숨이 곧 소리. 들이쉬면 부드러운 바람 소리가 차오르고 (거르개가 열림), 머금으면 머물고, 내쉬면 잦아듦
             var gLp = 0f
+            // 숨 화면의 섞임 (0 = 바탕만 · 1 = 바탕은 낮게 + 숨 소리): 숨이 시작될 때 뚝 바뀌지 않고 1초쯤에 걸쳐
+            var mix = 0f
             fun guide(pink: Float): Float {
                 gLp += (pink - gLp) * (0.06f + 0.30f * smooth)
                 return gLp * (0.03f + 0.97f * smooth * kotlin.math.sqrt(smooth)) * 2.2f * T.guide
@@ -231,8 +234,11 @@ object Soundscape {
                             // 돌멍하기: 바탕은 조금 낮추고 계절 한 겹 + 노래
                             gaze -> bed * T.gazeBed + layer(t, w, pink) + song()
                             // 숨 화면: 숨 소리가 주인공, 바탕은 그 아래로
-                            breath >= 0f -> bed * T.bed + guide(pink)
-                            else -> bed
+                            else -> {
+                                mix += ((if (breath >= 0f) 1f else 0f) - mix) * MIX_GLIDE
+                                val g = guide(pink)
+                                bed * (1f - mix * (1f - T.bed)) + g * mix
+                            }
                         }
                     }
                     gain = if (stopping || my != gen) (gain - fadeOut).coerceAtLeast(0f) else (gain + fadeIn).coerceAtMost(1f)
@@ -312,3 +318,9 @@ object Soundscape {
         }, "chime").apply { isDaemon = true; start() }
     }
 }
+
+/** 돌멍하기 노래 한 음의 길이 · 끝에서 잦아드는 시간 (초). */
+private const val SONG_END_S = 7.0
+private const val SONG_RELEASE_S = 0.4
+/** 숨 화면 섞임이 따라가는 빠르기 (표본마다, 48kHz 에서 약 1초). */
+private const val MIX_GLIDE = 0.00004f

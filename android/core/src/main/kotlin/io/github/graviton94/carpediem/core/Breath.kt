@@ -60,9 +60,9 @@ object Breath {
     /**
      * 하루의 숨결 (손끝으로, 05): from 부터 끝까지의 떨림 (길이 ms, 세기 0 ~ 255; 세기 0 = 쉼).
      * 톡톡 두드리지 않고, 잠든 아기나 작은 강아지의 가슴처럼 (1.1.4): 들이쉼에 아주 여리게 부풀었다가 내쉼에 스르르 잦아들고, 머묾은 고요.
-     * [step] ms 마다 세기를 조금씩 바꿔 이음매 없이. [low] 보다 여려지면 쉼.
+     * [step] ms 마다 세기를 조금씩 바꿔 이음매 없이. [low] 보다 여려지면 쉼 (대부분의 폰이 겨우 느끼는 바닥, 그 밑은 느껴지지 않음).
      */
-    fun touchWave(plan: List<Phase>, from: Long, step: Long = 120, low: Int = 4, high: Int = 34): Pair<LongArray, IntArray> {
+    fun touchWave(plan: List<Phase>, from: Long, step: Long = 120, low: Int = 18, high: Int = 60): Pair<LongArray, IntArray> {
         val times = ArrayList<Long>(); val amps = ArrayList<Int>()
         fun add(len: Long, a: Int) { if (len <= 0) return; if (amps.isNotEmpty() && amps.last() == a) times[times.size - 1] = times.last() + len else { times.add(len); amps.add(a.coerceIn(0, 255)) } }
         var t = from.coerceAtLeast(0)

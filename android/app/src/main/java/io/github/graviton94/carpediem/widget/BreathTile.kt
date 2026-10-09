@@ -21,10 +21,10 @@ internal fun breathName(context: Context, now: LocalDateTime): String = context.
     DayPart.EVENING -> R.string.breath_part_evening; DayPart.NIGHT -> R.string.breath_part_night
 })
 
-/** 빠른 설정 타일 ‘숨, 쉼’ (C1): 누르면 알림 창이 접히며 숨 1분이 바로. */
+/** 빠른 설정 타일 ‘숨, 쉼’ (C1): 누르면 알림 창이 접히며 숨이 바로 (그 호흡법의 길이). */
 class BreathTile : TileService() {
     override fun onStartListening() {
-        qsTile?.apply { state = Tile.STATE_INACTIVE; label = getString(R.string.breathTile_label); if (Build.VERSION.SDK_INT >= 29) subtitle = getString(R.string.breathTile_sub); updateTile() }
+        qsTile?.apply { state = Tile.STATE_INACTIVE; label = getString(R.string.breathTile_label); if (Build.VERSION.SDK_INT >= 29) subtitle = getString(R.string.breathTile_sub, "${io.github.graviton94.carpediem.ui.garden.planMinutes(if (DayPart.of(java.time.LocalDateTime.now().hour) == DayPart.NIGHT) io.github.graviton94.carpediem.core.BreathKind.SLEEP else io.github.graviton94.carpediem.core.BreathKind.CALM)}"); updateTile() }
     }
 
     @Suppress("DEPRECATION")

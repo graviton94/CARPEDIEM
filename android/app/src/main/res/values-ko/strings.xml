@@ -344,7 +344,7 @@
     <string name="breath_done_sleep_3">하루도 곁에서 잘게요.</string>
     <string name="breath_night">하루를 마무리하는 명상</string>
     <string name="breath_ask">%1$s, 하러 갈까요?</string>
-    <string name="breath_askHelp">1분이면 돼요.</string>
+    <string name="breath_askHelp">%1$s분이면 돼요.</string>
     <string name="breath_askGo">갈게요</string>
     <string name="breath_askStay">다음에</string>
     <string name="breath_bells">맑은 종에 들이쉬고,\n낮은 종에 내쉬어요.</string>
@@ -392,8 +392,8 @@
     <string name="contact_send">메일 보내기</string>
     <string name="contact_email">ruahn49@gmail.com</string>
     <string name="notices_privacy">개인정보: 아무것도 모으지 않아요. 모든 기록은 여기에만 머물러요.</string>
-    <string name="care_calm">1분만 함께 호흡할까요?</string>
-    <string name="care_box">마음 산책으로 1분만 쉬어 갈까요?</string>
+    <string name="care_calm">잠깐 함께 호흡할까요? (%1$s분)</string>
+    <string name="care_box">마음 산책으로 잠깐 쉬어 갈까요? (%1$s분)</string>
     <string name="care_look">30초만 먼 곳을 바라볼까요?</string>
     <string name="care_sendTo">이 마음, 누구에게 닿으면 좋을까요?</string>
     <string name="care_setting">작은 권유</string>
@@ -454,14 +454,14 @@
     <string name="letgo_msg_none_morning_1">오늘의 첫 마음을 보냈어요.\n가벼운 하루 되기를.</string>
     <string name="letgo_msg_none_evening_1">오늘 하루를 한 줄에 실어 보냈어요.\n남은 저녁은 편히.</string>
     <string name="letgo_msg_none_night_1">오늘의 한 줄이 밤바람에 실려 갔어요.\n잘 자요.</string>
-    <string name="care_sleep">잠드는 명상으로 1분 함께할까요?</string>
-    <string name="care_morning">1분, 맑은 숨으로 아침을 열까요?</string>
+    <string name="care_sleep">잠드는 명상으로 잠깐 함께할까요? (%1$s분)</string>
+    <string name="care_morning">잠깐, 맑은 숨으로 아침을 열까요? (%1$s분)</string>
     <string name="look_done_morning">맑게 바라봤어요.</string>
     <string name="look_done_night">창밖의 밤을 잘 바라봤어요.</string>
     <string name="notify_evening">오늘의 한 줄</string>
     <string name="notify_eveningText">오늘 하루, 한 줄로 남겨 볼까요?</string>
     <string name="notify_eveningRow">하루 정리 알림</string>
-    <string name="notify_morningBreath">아침 알림을 누르면 1분, 하루를 여는 숨</string>
+    <string name="notify_morningBreath">아침 알림을 누르면 하루를 여는 숨 (%1$s분)</string>
     <string name="haru_state_rest">눈을 감고 쉬고 있어요</string>
     <string name="haru_state_smile">웃고 있어요</string>
     <string name="haru_state_down">살짝 아래를 보고 있어요</string>
@@ -728,7 +728,7 @@
     <string name="notify_evening_3">잠들기 전, 한 줄 남겨요.</string>
     <string name="notify_evening_4">오늘 하루, 한 줄로 남겨 볼까요?</string>
     <string name="breathTile_label">숨, 쉼</string>
-    <string name="breathTile_sub">1분</string>
+    <string name="breathTile_sub">%1$s분</string>
     <string name="gardenYear_ask">올해의 정원을 한 장으로 볼까요?</string>
     <string name="gardenYear_open">보기</string>
     <string name="gardenYear_title">%1$s년, 하루의 정원</string>
@@ -749,7 +749,7 @@
     <string name="intro_title1">남은 시간을 조용히</string>
     <string name="intro_body1">생년월일과 나라의 평균 기대수명으로\n남은 날을 세어 볼게요.\n다그치는 숫자가 아니라,\n오늘을 아끼자는 작은 정원이에요.</string>
     <string name="intro_title2">하루에 한 줄, 숨 한 번</string>
-    <string name="intro_body2">오늘을 한 줄에 실어 떠나보내고,\n1분 동안 천천히 숨을 쉬어요.\n그렇게 지나간 날들이\n정원에 꽃과 별로 쌓여요.</string>
+    <string name="intro_body2">오늘을 한 줄에 실어 떠나보내고,\n잠깐 천천히 숨을 쉬어요.\n그렇게 지나간 날들이\n정원에 꽃과 별로 쌓여요.</string>
     <string name="intro_title3">내 돌, ‘하루’를 만나요</string>
     <string name="intro_body3">생년월일과 나라를 알려 주면\n세상에 하나뿐인 내 돌을 만나요.\n모든 기록은 이 폰 안에만 머물러요.</string>
     <string name="intro_start">시작하기</string>
@@ -768,7 +768,7 @@
     <string name="guide_pathTitle">땅 한 줄은 인생의 길</string>
     <string name="guide_path">왼쪽 끝은 태어난 날, 오른쪽 끝은 기대수명이에요.\n하루는 지금 자리에 앉아\n해마다 조금씩 오른쪽으로 걸어가요.</string>
     <string name="guide_actionsTitle">정원에서 쉬어 가기</string>
-    <string name="guide_actions">숨, 쉼 — 1분 동안 함께 숨 쉬어요.\n돌멍하기 — 가만히 정원을 바라봐요.\n＋ 돌 — 가족과 반려동물을 정원에 모셔요.</string>
+    <string name="guide_actions">숨, 쉼 — 잠깐 함께 숨 쉬어요.\n돌멍하기 — 가만히 정원을 바라봐요.\n＋ 돌 — 가족과 반려동물을 정원에 모셔요.</string>
     <string name="guide_tabsTitle">네 장의 페이지</string>
     <string name="guide_tabs">옆으로 넘기거나 아래 이름표를 눌러요.\n기록에는 오늘의 한 줄이,\n추억에는 모아 둔 것들이,\n흐름에는 인생 달력이 있어요.</string>
     <string name="guide_settingsTitle">설정</string>
@@ -850,7 +850,7 @@
     <string name="widgets_name_line">남은 날 · 오늘의 한 줄</string>
     <string name="widget_lineWrite">＋ 오늘의 한 줄 남기기</string>
     <string name="widget_lineDone">오늘의 한 줄을 남겼어요</string>
-    <string name="nudge_breath">1분만 함께 숨 쉬어 볼까요?</string>
+    <string name="nudge_breath">잠깐 함께 숨 쉬어 볼까요?</string>
     <string name="nudge_stone">소중한 사람이나 반려동물을 정원에 모셔 볼까요?</string>
     <string name="nudge_gaze">오늘은 잠깐 돌멍하기를 해 볼까요?</string>
     <string name="nudge_special">기억하고 싶은 날을 인생 달력에 꽃으로 놓아 볼까요?</string>
@@ -879,7 +879,7 @@
     <string name="reply_felt">‘%1$s’ 마음도 함께 두었어요</string>
     <string name="reply_night">오늘도 수고했어요.</string>
     <string name="shortcut_write">오늘의 한 줄</string>
-    <string name="shortcut_breath">숨, 쉼 1분</string>
+    <string name="shortcut_breath">숨, 쉼</string>
     <string name="shortcut_gaze">돌멍하기</string>
     <string name="shortcut_close">하루 닫기</string>
     <string name="closeDay_entry">하루 닫기 · 1분</string>
