@@ -34,6 +34,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
@@ -141,11 +142,18 @@ fun TitleScreen(state: AppState, now: LocalDateTime, onDone: () -> Unit) {
             val hello = remember(now.hour) { if (state.profile == null) ctx.getString(R.string.title_helloFirst) else Labels.timed(ctx, "title_hello", Labels.part(now)) ?: ctx.getString(R.string.title_hello) }
             TokenText(hello, Tokens.TypeScale.callout.serif(), color = ink.copy(alpha = 0.8f), align = TextAlign.Center)
         }
-        // 아래: 눌러서 정원으로 (숨처럼 아주 천천히 옅어졌다 짙어짐, 상자 없이)
-        val glow = if (still) 0.8f else 0.45f + 0.35f * (sin(b * 6.2832f) * 0.5f + 0.5f)
+        // 아래: 눌러서 정원으로 (숨처럼 아주 천천히 옅어졌다 짙어짐, 상자 없이). 모래 땅 위에서도 읽히게 뒤에 종이빛 번짐 · 조금 굵게
+        val glow = if (still) 1f else ENTER_GLOW_MIN + (1f - ENTER_GLOW_MIN) * (sin(b * 6.2832f) * 0.5f + 0.5f)
+        val halo = if (night) Color(0xFF1C2233) else Theme.gc.paper
         TokenText(enterLabel, Tokens.TypeScale.callout.serif(),
-            Modifier.align(Alignment.BottomCenter).navigationBarsPadding().padding(bottom = u * 56f).graphicsLayer { alpha = tap.value * glow },
-            color = ink)
+            Modifier.align(Alignment.BottomCenter).navigationBarsPadding().padding(bottom = u * 56f).graphicsLayer { alpha = tap.value * glow }
+                .drawBehind {
+                    val r = size.width * 0.75f
+                    drawOval(androidx.compose.ui.graphics.Brush.radialGradient(listOf(halo.copy(alpha = ENTER_HALO), Color.Transparent), center, r),
+                        Offset(center.x - r, center.y - size.height * 1.6f), androidx.compose.ui.geometry.Size(r * 2, size.height * 3.2f))
+                }
+                .padding(horizontal = u * 12f, vertical = u * 4f),
+            color = ink, weight = androidx.compose.ui.text.font.FontWeight.SemiBold)
     }
 }
 
@@ -158,3 +166,6 @@ private const val TITLE_WORDS_MS = 1600
 private const val TITLE_TAP_DELAY_MS = 500L
 private const val TITLE_WORDS_OUT_MS = 600
 private const val TITLE_FADE_MS = 1400
+/** 들어가기 글씨: 가장 옅을 때 (1 = 늘 또렷) · 뒤 번짐의 짙기 */
+private const val ENTER_GLOW_MIN = 0.72f
+private const val ENTER_HALO = 0.8f

@@ -100,8 +100,13 @@ fun IntroScreen(state: AppState, onDone: () -> Unit) {
         ) {
             // 건너뛰기 (오른쪽 위, 마지막 장에는 없음)
             Box(Modifier.fillMaxWidth().heightIn(min = Tokens.Layout.tapTarget), contentAlignment = Alignment.CenterEnd) {
-                if (!last) TokenText(stringResource(R.string.guide_skip), Tokens.TypeScale.subhead,
-                    Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable(onClick = onDone).padding(horizontal = Tokens.Space.sp3, vertical = Tokens.Space.sp3), color = p.secondary)
+                // 구름 위에서도 보이게 종이 칩으로, 누르는 자리는 넉넉히
+                if (!last) Box(Modifier.heightIn(min = Tokens.Layout.tapTarget).widthIn(min = Tokens.Layout.tapTarget * 1.5f)
+                    .clickable(role = androidx.compose.ui.semantics.Role.Button, onClick = onDone), contentAlignment = Alignment.Center) {
+                    Box(Modifier.crayonBox(Theme.gc.paper, G.Radius.chip, G.Stroke.chip, 1099).padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp2)) {
+                        TokenText(stringResource(R.string.guide_skip), Tokens.TypeScale.subhead, color = Theme.gc.ink, weight = FontWeight.SemiBold)
+                    }
+                }
             }
             // 가운데 (그림 · 제목 · 설명): 큰 글씨 · 가로 화면이면 이 부분만 스크롤
             val a = rememberPop(page)
