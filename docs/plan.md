@@ -285,6 +285,12 @@ design/tokens.json, design/strings.json, data/*.csv   ← 유일한 원본
 ### 출시 전 마지막 할 일
 - [ ] 테스트가 끝나면 개발자 모드 (버전 누르기 → 시험 알림 · 시험 기록) 를 디버그 빌드에서만 켜지게 막기 — `docs/release.md` 5번 체크리스트
 
+### 정식 릴리즈 뒤 첫 우선순위: 언어 늘리기
+테스터 요청 (2026-10): 프랑스어 · 포르투갈어 · 스페인어. 테스트 기간에는 보류하고 정식 릴리즈 뒤 가장 먼저.
+- [ ] 순서: 스페인어 → 포르투갈어 (브라질) → 프랑스어. 그 말을 하는 테스터에게 결 (차분 · 다정) 검수 부탁
+- [ ] 한 언어마다: 화면 글 `design/strings.json` (약 1,080개) · 명언 `quotes.csv` · 질문 `questions.csv` · 별자리 `constellations.csv` · Play 등록정보 · 출시 노트 (`design/changelog.json`, 500자)
+- [ ] 코드: `core/Langs.kt` (ALL · COLUMNS) · `scripts/generate.py` (values-xx · 출시 노트) · 글꼴 (`scripts/build_fonts.py`, 라틴 확장 글자)
+
 ### 2.1 정원 오브젝트 · 알림 다듬기 — 개발 완료, 폰 확인 전
 | 항목 | 상태 | 어디 |
 |---|---|---|
