@@ -892,9 +892,7 @@
 "closeDay.lineDoneSub" = "그럼 고마운 것 하나로 가 볼까요?";
 "closeDay.next" = "다음";
 "closeDay.skip" = "오늘은 건너뛸게요";
-"closeDay.leaveAsk" = "쓰던 한 줄은 어떻게 할까요?";
-"closeDay.leaveSend" = "남기고 마치기";
-"closeDay.leaveStay" = "이어서 쓰기";
+"closeDay.leaveAsk" = "쓰던 한 줄을 지우고 나갈까요?";
 "closeDay.leaveDrop" = "지우고 나가기";
 "closeDay.thanksTitle" = "내쉴 때마다 오늘 고마웠던 것 하나를 떠올려요";
 "closeDay.lanternTitle" = "등불 아래에서 숨 두 번";

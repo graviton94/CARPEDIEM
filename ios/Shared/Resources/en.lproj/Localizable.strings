@@ -892,9 +892,7 @@
 "closeDay.lineDoneSub" = "Shall we move on to one thing you're thankful for?";
 "closeDay.next" = "Next";
 "closeDay.skip" = "Skip for today";
-"closeDay.leaveAsk" = "What about the line you were writing?";
-"closeDay.leaveSend" = "Keep it and finish";
-"closeDay.leaveStay" = "Keep writing";
+"closeDay.leaveAsk" = "Discard the line you were writing and leave?";
 "closeDay.leaveDrop" = "Discard and leave";
 "closeDay.thanksTitle" = "With each breath out, recall one thing you were thankful for today";
 "closeDay.lanternTitle" = "Two breaths under the lantern";

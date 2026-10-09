@@ -892,9 +892,7 @@
 "closeDay.lineDoneSub" = "那我們來想一件感謝的事吧？";
 "closeDay.next" = "下一步";
 "closeDay.skip" = "今天先跳過";
-"closeDay.leaveAsk" = "寫到一半的那句話，要怎麼辦？";
-"closeDay.leaveSend" = "留下並結束";
-"closeDay.leaveStay" = "繼續寫";
+"closeDay.leaveAsk" = "要刪掉寫到一半的那句話並離開嗎？";
 "closeDay.leaveDrop" = "刪掉並離開";
 "closeDay.thanksTitle" = "每次吐氣，想起今天一件感謝的事";
 "closeDay.lanternTitle" = "在燈籠下呼吸兩次";

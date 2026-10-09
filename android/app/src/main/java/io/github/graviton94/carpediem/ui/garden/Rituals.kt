@@ -262,33 +262,33 @@ fun CloseDayScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, on
     val today = now.toLocalDate()
     var step by rememberSaveable { mutableStateOf(CloseStep.LINE) }
     var stopped by remember { mutableStateOf(false) }
-    // 한 줄: 오늘의 한 줄 칸에 쓰던 글을 그대로 이어서 (같은 글 · 마음 · 사진). 기록 칸에서 지난 날을 쓰는 중이었으면 그 글은 두고 여기서는 따로
+    // 한 줄: 오늘의 한 줄 칸에 쓰던 글 · 마음 · 사진을 옮겨 와서 이어 씀 (기록 칸에서 지난 날을 쓰는 중이었으면 빈 칸으로).
+    // 여기서 쓴 것은 이 화면 안에서만: 지우고 나가도 오늘의 한 줄 칸의 글은 그대로, 보내면 (오늘 한 줄이 생겼으니) 그 칸도 비움
     val shared = remember { state.writeDay == null }
-    val ownText = rememberSaveable { mutableStateOf("") }
-    val ownFeeling = remember { mutableStateOf<Feeling?>(null) }
-    val textState = if (shared) state.draftText else ownText
-    val feelingState = if (shared) state.draftFeeling else ownFeeling
-    if (shared) DraftSaver(state)
+    val textState = rememberSaveable { mutableStateOf(if (shared) state.draftText.value else "") }
+    val feelingState = remember { mutableStateOf(if (shared) state.draftFeeling.value else null) }
+    val photoOn = rememberSaveable { mutableStateOf(shared) }
     // 끝까지 갔거나 한 줄 다음 걸음까지 왔으면 오늘은 정원에 ‘하루 닫기’ 를 다시 권하지 않음 (한 줄에서 그만두면 나중에 다시 할 수 있게)
     val finish: () -> Unit = { if (step != CloseStep.LINE || state.sentOn(today)) state.closeDayDone(closeDayOf(now)); onDone() }
     // 쓰다 만 한 줄이 있는데 나가려 하면: 한 번 물음
-    val unsent = step == CloseStep.LINE && !state.sentOn(today) && (textState.value.isNotBlank() || (shared && state.draftPhoto))
+    val unsent = step == CloseStep.LINE && !state.sentOn(today) && (textState.value.isNotBlank() || (photoOn.value && state.draftPhoto))
     var askLeave by remember { mutableStateOf(false) }
     val leave: () -> Unit = { if (unsent) { stopped = false; askLeave = true } else { finish() } }
     fun sendLine(): Boolean {
         if (textState.value.isBlank()) { state.say(ctx.getString(R.string.letgo_empty)); return false }
         state.letGo(textState.value, feelingState.value, today = today)
-        if (shared && state.draftPhoto) state.commitPhoto(today)
+        if (photoOn.value && state.draftPhoto) state.commitPhoto(today)
         // 하루 닫기 안에서는 한마디 창 · 권하기 없이 (정원의 바람은 돌아가면)
         state.toast = null; state.toastTitle = null; state.care = null
-        if (shared) state.clearDraft() else { ownText.value = ""; ownFeeling.value = null }
+        if (shared) state.clearDraft()
+        textState.value = ""; feelingState.value = null
         return true
     }
     KeepScreenOn(step != CloseStep.DARK)
     BackHandler { if (step == CloseStep.DARK || stopped) leave() else if (unsent) askLeave = true else stopped = true }
     Box(Modifier.fillMaxSize().paperBackground()) {
         when (step) {
-            CloseStep.LINE -> LineStep(state, today, now, textState, feelingState, photo = shared, onSend = { sendLine() }, onNext = { step = CloseStep.THANKS })
+            CloseStep.LINE -> LineStep(state, today, now, textState, feelingState, photoOn, onSend = { sendLine() }, onNext = { step = CloseStep.THANKS })
             CloseStep.THANKS -> ShortBreath(state, BreathKind.THANKS, 3, R.string.closeDay_thanksTitle) { step = CloseStep.LANTERN }
             CloseStep.LANTERN -> ShortBreath(state, BreathKind.SLEEP, 2, R.string.closeDay_lanternTitle) { state.recordBreath(BreathKind.SLEEP, today); step = CloseStep.END }
             CloseStep.END -> EndStep { step = CloseStep.DARK }
@@ -317,26 +317,19 @@ fun CloseDayScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, on
             }
         }
     }
+    // 지우고 나가기 = 이 화면에서 쓴 것만 버림 (오늘의 한 줄 칸에 쓰던 글 · 사진은 그대로)
     if (askLeave) io.github.graviton94.carpediem.ui.GardenAlert(
         onDismissRequest = { askLeave = false },
         title = { Text(stringResource(R.string.closeDay_leaveAsk)) },
-        confirmButton = { AlertButton(stringResource(R.string.closeDay_leaveSend), { askLeave = false; if (sendLine()) finish() }) },
-        dismissButton = {
-            AlertButton(stringResource(R.string.closeDay_leaveDrop), {
-                askLeave = false
-                if (shared) { state.clearDraft(); if (state.draftPhoto) { io.github.graviton94.carpediem.data.Photos.dropPending(ctx); state.draftPhoto = false; state.photoKick++ } }
-                else { ownText.value = ""; ownFeeling.value = null }
-                finish()
-            }, quiet = true)
-            AlertButton(stringResource(R.string.closeDay_leaveStay), { askLeave = false }, quiet = true)
-        },
+        confirmButton = { AlertButton(stringResource(R.string.closeDay_leaveDrop), { askLeave = false; finish() }) },
+        dismissButton = { AlertButton(stringResource(R.string.cancel), { askLeave = false }, quiet = true) },
     )
 }
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun LineStep(state: AppState, today: LocalDate, now: LocalDateTime, textState: androidx.compose.runtime.MutableState<String>,
-                     feelingState: androidx.compose.runtime.MutableState<Feeling?>, photo: Boolean, onSend: () -> Unit, onNext: () -> Unit) {
+                     feelingState: androidx.compose.runtime.MutableState<Feeling?>, photoOn: androidx.compose.runtime.MutableState<Boolean>, onSend: () -> Unit, onNext: () -> Unit) {
     val p = Theme.palette
     var text by textState
     var feeling by feelingState
@@ -366,19 +359,20 @@ private fun LineStep(state: AppState, today: LocalDate, now: LocalDateTime, text
                 decorationBox = { inner -> Box { if (text.isEmpty()) TokenText(stringResource(R.string.letgo_hint), Tokens.TypeScale.callout, color = p.secondary); inner() } },
             )
             // 사진 한 장 (오늘의 한 줄 쓰는 칸과 같이): 기록을 남길 때만
-            if (state.keepLines && photo) {
+            if (state.keepLines && (state.writeDay == null)) {
                 val ctx = LocalContext.current
                 val scope = androidx.compose.runtime.rememberCoroutineScope()
                 val photoFail = stringResource(R.string.photo_fail)
                 val pick = rememberPhotoPicker { uri -> scope.launch {
                     val ok = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { io.github.graviton94.carpediem.data.Photos.importPending(ctx, uri) }
-                    if (ok) state.draftPhotoPicked(today) else state.say(photoFail)
+                    if (ok) { state.draftPhotoPicked(today); photoOn.value = true } else state.say(photoFail)
                 } }
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    if (state.draftPhoto) {
+                    if (photoOn.value && state.draftPhoto) {
                         WeatheredPhoto(state, today, today, Theme.unit * 56f, pending = true, dated = false)
+                        // 빼기: 이 한 줄에서만 뺌 (오늘의 한 줄 칸에 골라 둔 사진은 그대로)
                         TokenText(stringResource(R.string.photo_remove), Tokens.TypeScale.footnote,
-                            Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { io.github.graviton94.carpediem.data.Photos.dropPending(ctx); state.draftPhoto = false; state.photoKick++ }.padding(Tokens.Space.sp3), color = p.secondary)
+                            Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { photoOn.value = false }.padding(Tokens.Space.sp3), color = p.secondary)
                     } else GardenChip(stringResource(R.string.photo_add), false, 1462) { pick() }
                 }
             }

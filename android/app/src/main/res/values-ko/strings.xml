@@ -894,9 +894,7 @@
     <string name="closeDay_lineDoneSub">그럼 고마운 것 하나로 가 볼까요?</string>
     <string name="closeDay_next">다음</string>
     <string name="closeDay_skip">오늘은 건너뛸게요</string>
-    <string name="closeDay_leaveAsk">쓰던 한 줄은 어떻게 할까요?</string>
-    <string name="closeDay_leaveSend">남기고 마치기</string>
-    <string name="closeDay_leaveStay">이어서 쓰기</string>
+    <string name="closeDay_leaveAsk">쓰던 한 줄을 지우고 나갈까요?</string>
     <string name="closeDay_leaveDrop">지우고 나가기</string>
     <string name="closeDay_thanksTitle">내쉴 때마다 오늘 고마웠던 것 하나를 떠올려요</string>
     <string name="closeDay_lanternTitle">등불 아래에서 숨 두 번</string>

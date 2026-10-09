@@ -894,9 +894,7 @@
     <string name="closeDay_lineDoneSub">Shall we move on to one thing you\'re thankful for?</string>
     <string name="closeDay_next">Next</string>
     <string name="closeDay_skip">Skip for today</string>
-    <string name="closeDay_leaveAsk">What about the line you were writing?</string>
-    <string name="closeDay_leaveSend">Keep it and finish</string>
-    <string name="closeDay_leaveStay">Keep writing</string>
+    <string name="closeDay_leaveAsk">Discard the line you were writing and leave?</string>
     <string name="closeDay_leaveDrop">Discard and leave</string>
     <string name="closeDay_thanksTitle">With each breath out, recall one thing you were thankful for today</string>
     <string name="closeDay_lanternTitle">Two breaths under the lantern</string>

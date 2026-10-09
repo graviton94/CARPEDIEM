@@ -894,9 +894,7 @@
     <string name="closeDay_lineDoneSub">那我們來想一件感謝的事吧？</string>
     <string name="closeDay_next">下一步</string>
     <string name="closeDay_skip">今天先跳過</string>
-    <string name="closeDay_leaveAsk">寫到一半的那句話，要怎麼辦？</string>
-    <string name="closeDay_leaveSend">留下並結束</string>
-    <string name="closeDay_leaveStay">繼續寫</string>
+    <string name="closeDay_leaveAsk">要刪掉寫到一半的那句話並離開嗎？</string>
     <string name="closeDay_leaveDrop">刪掉並離開</string>
     <string name="closeDay_thanksTitle">每次吐氣，想起今天一件感謝的事</string>
     <string name="closeDay_lanternTitle">在燈籠下呼吸兩次</string>
