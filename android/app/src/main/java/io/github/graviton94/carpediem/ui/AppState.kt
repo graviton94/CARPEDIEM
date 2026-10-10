@@ -268,6 +268,8 @@ class AppState(private val context: Context) {
         if (day !in pebbles) { val v = (pebbles + day).sorted(); store.pebbles = v; pebbles = v }
     }
     var debugAdornSheet = false
+    /** 캡처용: 돌멍하기를 열면 잠들기 시트부터. */
+    var debugSleepSheet = false
     /** 지금 정원에 있는 돌의 꾸밈만 (내려놓은 돌의 것은 손으로). */
     fun adornmentsShown(): Map<String, String> = io.github.graviton94.carpediem.core.Adornments.prune(adornments, people.map { it.id }.toSet())
     /** 가진 꾸밈 (새것이 앞): 모은 계절 조각 · 응원 · 조약돌. */

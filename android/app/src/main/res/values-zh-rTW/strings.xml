@@ -351,6 +351,14 @@
     <string name="breath_bells">清亮的鐘聲時吸氣，\n低沉的鐘聲時吐氣。</string>
     <string name="gaze">看石發呆</string>
     <string name="gaze_soundOn">開啟聲音</string>
+    <string name="gaze_sleep">入睡</string>
+    <string name="gaze_sleepLeft">☾ %1$s 分鐘</string>
+    <string name="gaze_sleepFading">☾ 漸漸入睡</string>
+    <string name="sleep_guide">%1$s 分鐘後慢慢變小，%2$s 分鐘後完全關掉。</string>
+    <string name="sleep_minutes">分鐘</string>
+    <string name="sleep_start">開始</string>
+    <string name="sleep_off">關閉</string>
+    <string name="sleep_a11y">距離入睡 %1$s 分鐘</string>
     <string name="gaze_soundOff">關閉聲音</string>
     <string name="gaze_exit">點空白處或按返回鍵就能回去</string>
     <string name="obj_windchime">小風鈴</string>

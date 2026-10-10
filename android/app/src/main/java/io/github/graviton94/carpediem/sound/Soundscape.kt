@@ -29,6 +29,8 @@ object Soundscape {
     class Player(private val sound: Sound, private val season: Season = Season.SPRING, private val gaze: Boolean = false, private val songNotes: DoubleArray = DoubleArray(0)) {
         private val timbre = kotlin.random.Random.nextInt(3)
         @Volatile var breath: Float = -1f
+        /** 전체 크기 (0 ~ 1): 잠들기에서 천천히 줄임. 소리 안에서 아주 느리게 따라가 뚝 바뀌지 않음. */
+        @Volatile var level: Float = 1f
         @Volatile private var stopping = false
         private var thread: Thread? = null
 
@@ -51,7 +53,7 @@ object Soundscape {
             track.play()
             val buf = ShortArray(sr / 20)
             val fadeIn = 1f / (T.fadeInMs / 1000f * sr); val fadeOut = 1f / (T.fadeOutMs / 1000f * sr)
-            var gain = 0f
+            var gain = 0f; var lvl = level
             // 잡음 만드는 상태 (xorshift, 분홍 · 갈색 필터, 바람 필터, 빗방울)
             var seed = 0x2545F491
             fun white(): Float { seed = seed xor (seed shl 13); seed = seed xor (seed ushr 17); seed = seed xor (seed shl 5); return (seed % 10000) / 10000f }
@@ -242,7 +244,8 @@ object Soundscape {
                         }
                     }
                     gain = if (stopping || my != gen) (gain - fadeOut).coerceAtLeast(0f) else (gain + fadeIn).coerceAtMost(1f)
-                    buf[i] = (v * gain * T.volume * Short.MAX_VALUE).coerceIn(-32767f, 32767f).toInt().toShort()
+                    lvl += (level - lvl) * LEVEL_GLIDE
+                    buf[i] = (v * gain * lvl * T.volume * Short.MAX_VALUE).coerceIn(-32767f, 32767f).toInt().toShort()
                 }
                 track.write(buf, 0, buf.size)
                 if ((stopping || my != gen) && gain <= 0f) break
@@ -324,3 +327,5 @@ private const val SONG_END_S = 7.0
 private const val SONG_RELEASE_S = 0.4
 /** 숨 화면 섞임이 따라가는 빠르기 (표본마다, 48kHz 에서 약 1초). */
 private const val MIX_GLIDE = 0.00004f
+/** 잠들기 크기가 따라가는 빠르기 (표본마다, 48kHz 에서 약 2초). */
+private const val LEVEL_GLIDE = 0.00001f

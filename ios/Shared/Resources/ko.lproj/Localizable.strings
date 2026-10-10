@@ -348,6 +348,14 @@
 "breath.bells" = "맑은 종에 들이쉬고,\n낮은 종에 내쉬어요.";
 "gaze" = "돌멍하기";
 "gaze.soundOn" = "소리 켜기";
+"gaze.sleep" = "잠들기";
+"gaze.sleepLeft" = "☾ %1$@분";
+"gaze.sleepFading" = "☾ 잠드는 중";
+"sleep.guide" = "%1$@분 후부터 서서히 잦아들며, %2$@분 후 완전히 꺼져요.";
+"sleep.minutes" = "분";
+"sleep.start" = "시작";
+"sleep.off" = "끄기";
+"sleep.a11y" = "잠들기까지 %1$@분";
 "gaze.soundOff" = "소리 끄기";
 "gaze.exit" = "빈 곳을 누르거나 뒤로 가기로 돌아가요";
 "obj.windchime" = "작은 풍경";

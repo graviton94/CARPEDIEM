@@ -348,6 +348,14 @@
 "breath.bells" = "Breathe in with the bright bell,\nout with the low one.";
 "gaze" = "Stone gazing";
 "gaze.soundOn" = "Sound on";
+"gaze.sleep" = "Sleep";
+"gaze.sleepLeft" = "☾ %1$@ min";
+"gaze.sleepFading" = "☾ Drifting off";
+"sleep.guide" = "Fades gently after %1$@ min and goes fully quiet after %2$@ min.";
+"sleep.minutes" = "min";
+"sleep.start" = "Start";
+"sleep.off" = "Turn off";
+"sleep.a11y" = "%1$@ minutes until sleep";
 "gaze.soundOff" = "Sound off";
 "gaze.exit" = "Tap an empty spot or go back to return";
 "obj.windchime" = "Wind chime";

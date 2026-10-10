@@ -16,7 +16,7 @@ open() { adb shell am force-stop $P; adb shell am start -W -n $P/.MainActivity "
 wantany() { local n; for n in "$@"; do want "$n" && return 0; done; return 1; }
 want() { [ -z "${ONLY:-}" ] && return 0; case " $ONLY " in *" ${1%%_*} "*) return 0;; esac; return 1; }
 # 보기만 바꾸는 옵션 (폰에 남는 상태가 없음): ONLY 로 고른 장면이 아니면 이런 장면은 열지도 않고 건너뜀 (앱을 껐다 켜는 시간 · 느린 에뮬레이터 멈춤을 아낌)
-VIEW=" cd.now cd.screen cd.page cd.stoneId cd.chance cd.term cd.title cd.openMonth cd.openYear cd.openLetter cd.adornSheet cd.care cd.guest cd.news cd.update cd.creditsYear cd.slip "
+VIEW=" cd.now cd.screen cd.page cd.stoneId cd.chance cd.term cd.title cd.openMonth cd.openYear cd.openLetter cd.adornSheet cd.care cd.guest cd.news cd.update cd.creditsYear cd.slip cd.sleepSheet "
 # s 장면 기다릴초 [열기 옵션…]: 고른 장면이면 열고 찍음. 아니면 상태를 바꾸는 옵션이 있을 때만 열어 두고 (다음 장면이 기대니까), 보기만 하는 장면은 건너뜀
 s() { local n=$1 w=$2 a; shift 2
   if want "$n"; then open "$@"; shot "$n" "$w"; return; fi
@@ -56,6 +56,8 @@ s q17_gaze_autumn 8 --es cd.screen gaze --es cd.now 2026-10-02T15:00
 s q18_gaze_autumn_night 8 --es cd.screen gaze --es cd.now 2026-10-02T22:40
 s q19_gaze_spring 8 --es cd.screen gaze --es cd.now 2026-04-15T15:00
 s q20_gaze_summer_night 8 --es cd.screen gaze --es cd.now 2026-07-20T22:40
+# 잠들기 (1.1.5): 분 바퀴 시트
+s q38_gaze_sleep 8 --es cd.screen gaze --ez cd.sleepSheet true --es cd.now 2026-10-02T22:40
 s q21_breath_intro 2 --es cd.screen breath --es cd.now 2026-10-03T07:30
 s q22_breath_ripple 9 --es cd.screen ripple --es cd.now 2026-10-03T15:00
 s q23_breath_walk 10 --es cd.screen walk --es cd.now 2026-10-03T15:00

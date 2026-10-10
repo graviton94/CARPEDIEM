@@ -349,6 +349,14 @@
 "breath.bells" = "澄んだ鐘の音で吸って、\n低い鐘の音で吐きます。";
 "gaze" = "石ながめ";
 "gaze.soundOn" = "音をオン";
+"gaze.sleep" = "おやすみ";
+"gaze.sleepLeft" = "☾ %1$@分";
+"gaze.sleepFading" = "☾ おやすみ中";
+"sleep.guide" = "%1$@分後からゆっくり静まり、%2$@分後にすっかり消えます。";
+"sleep.minutes" = "分";
+"sleep.start" = "はじめる";
+"sleep.off" = "オフ";
+"sleep.a11y" = "おやすみまで%1$@分";
 "gaze.soundOff" = "音をオフ";
 "gaze.exit" = "空いている所をタップするか、戻るボタンで戻ります";
 "obj.windchime" = "小さな風鈴";

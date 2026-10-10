@@ -351,6 +351,14 @@
     <string name="breath_bells">澄んだ鐘の音で吸って、\n低い鐘の音で吐きます。</string>
     <string name="gaze">石ながめ</string>
     <string name="gaze_soundOn">音をオン</string>
+    <string name="gaze_sleep">おやすみ</string>
+    <string name="gaze_sleepLeft">☾ %1$s分</string>
+    <string name="gaze_sleepFading">☾ おやすみ中</string>
+    <string name="sleep_guide">%1$s分後からゆっくり静まり、%2$s分後にすっかり消えます。</string>
+    <string name="sleep_minutes">分</string>
+    <string name="sleep_start">はじめる</string>
+    <string name="sleep_off">オフ</string>
+    <string name="sleep_a11y">おやすみまで%1$s分</string>
     <string name="gaze_soundOff">音をオフ</string>
     <string name="gaze_exit">空いている所をタップするか、戻るボタンで戻ります</string>
     <string name="obj_windchime">小さな風鈴</string>

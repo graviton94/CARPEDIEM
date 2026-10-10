@@ -349,6 +349,14 @@
 "breath.bells" = "清亮的鐘聲時吸氣，\n低沉的鐘聲時吐氣。";
 "gaze" = "看石發呆";
 "gaze.soundOn" = "開啟聲音";
+"gaze.sleep" = "入睡";
+"gaze.sleepLeft" = "☾ %1$@ 分鐘";
+"gaze.sleepFading" = "☾ 漸漸入睡";
+"sleep.guide" = "%1$@ 分鐘後慢慢變小，%2$@ 分鐘後完全關掉。";
+"sleep.minutes" = "分鐘";
+"sleep.start" = "開始";
+"sleep.off" = "關閉";
+"sleep.a11y" = "距離入睡 %1$@ 分鐘";
 "gaze.soundOff" = "關閉聲音";
 "gaze.exit" = "點空白處或按返回鍵就能回去";
 "obj.windchime" = "小風鈴";

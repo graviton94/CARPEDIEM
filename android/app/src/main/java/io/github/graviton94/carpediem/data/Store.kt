@@ -286,6 +286,10 @@ class Store(context: Context) {
     var pendingOn: LocalDate?
         get() = prefs.getLong("pendingOn", Long.MIN_VALUE).takeIf { it != Long.MIN_VALUE }?.let { LocalDate.ofEpochDay(it) }
         set(v) = prefs.edit().putLong("pendingOn", v?.toEpochDay() ?: Long.MIN_VALUE).apply()
+    /** 돌멍하기 잠들기: 마지막에 고른 분 (처음엔 20분). */
+    var sleepMinutes: Int
+        get() = prefs.getInt("sleepMinutes", 20)
+        set(v) = prefs.edit().putInt("sleepMinutes", v).apply()
     /** 미래 편지 쓰던 글 (묻기 전에 시트를 닫거나 앱이 닫혀도 남게). */
     var letterDraft: String
         get() = prefs.getString("letterDraft", "").orEmpty()

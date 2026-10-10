@@ -382,6 +382,7 @@ private fun MainActivity.debugSetup(state: AppState): Screen {
     // 캡처용: 새로워진 점 · 새 버전 쪽지
     x.getStringExtra("cd.supported")?.split(',')?.forEach { state.supported(it) }
     state.debugAdornSheet = x.getBooleanExtra("cd.adornSheet", false)
+    state.debugSleepSheet = x.getBooleanExtra("cd.sleepSheet", false)
     if (x.getBooleanExtra("cd.news", false)) state.whatsNew = io.github.graviton94.carpediem.ui.Changelog.entries.first().first
     x.getStringExtra("cd.update")?.let { u -> state.update = when (u) { "ready" -> AppState.UpdateState.READY; "downloading" -> AppState.UpdateState.DOWNLOADING; else -> AppState.UpdateState.AVAILABLE }; state.updateVersion = 999 }
     state.debugSlip = x.getBooleanExtra("cd.slip", false)

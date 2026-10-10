@@ -84,6 +84,9 @@ import kotlinx.coroutines.delay
 import java.time.LocalDate
 import java.time.LocalDateTime
 import kotlin.math.sin
+import androidx.compose.ui.semantics.customActions
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.foundation.layout.Row
 
 internal fun rhythm(k: BreathKind): Breath.Rhythm {
     val b = G.Breath
@@ -403,14 +406,36 @@ fun GazeScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, onBack
     var soundOn by remember { mutableStateOf(state.sound != Sound.NONE) }
     val player = remember(soundOn) { Soundscape.Player(if (soundOn) state.sound else Sound.NONE, io.github.graviton94.carpediem.core.GardenDecor.realSeason(now.toLocalDate(), profile.countryCode), gaze = true,
         songNotes = io.github.graviton94.carpediem.sound.StoneSong.gardenNotes(state.store.haruSeed, state.people.map { it.seed })) }
-    // 돌멍하기 소리: 앱을 떠나면 스르르 꺼지고, 돌아오면 다시
+    // 잠들기 (1.1.5): 고른 n분이 되면 소리를 반으로 줄이고 화면을 서서히 어둡게 끈 뒤, 2n분에 소리도 완전히 멈춤
+    var sleepPicking by remember { mutableStateOf(state.debugSleepSheet) }
+    var sleepMin by remember { androidx.compose.runtime.mutableIntStateOf(state.store.sleepMinutes) }
+    var sleepFrom by remember { mutableStateOf<Long?>(null) }   // 시작한 때 (벽시계), null = 꺼짐
+    var sleeping by remember { mutableStateOf(false) }           // n분이 지나 잦아드는 중
+    var slept by remember { mutableStateOf(false) }              // 2n분이 지나 소리까지 멈춤
+    var sleepLeft by remember { androidx.compose.runtime.mutableIntStateOf(0) }
+    val sleepOnNow by androidx.compose.runtime.rememberUpdatedState(sleepFrom != null || slept)
+    val sleptNow by androidx.compose.runtime.rememberUpdatedState(slept)
+    // 돌멍하기 소리: 앱을 떠나면 스르르 꺼지고, 돌아오면 다시 (잠들기 중이면 화면이 꺼져도 그대로 이어짐)
     val gazeOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
     DisposableEffect(player, gazeOwner) {
         player.start()
         val obs = androidx.lifecycle.LifecycleEventObserver { _, e ->
-            if (e == androidx.lifecycle.Lifecycle.Event.ON_STOP) player.stop() else if (e == androidx.lifecycle.Lifecycle.Event.ON_START) player.start()
+            if (e == androidx.lifecycle.Lifecycle.Event.ON_STOP) { if (!sleepOnNow) player.stop() }
+            else if (e == androidx.lifecycle.Lifecycle.Event.ON_START) { if (!sleptNow) player.start() }
         }
         gazeOwner.lifecycle.addObserver(obs); onDispose { gazeOwner.lifecycle.removeObserver(obs); player.stop() }
+    }
+    LaunchedEffect(sleepFrom, player) {
+        val from = sleepFrom ?: run { player.level = 1f; sleeping = false; return@LaunchedEffect }
+        val n = sleepMin * 60_000L
+        while (true) {
+            val e = wallNow() - from
+            sleepLeft = ((n - e + 59_999) / 60_000).toInt().coerceAtLeast(0)
+            if (e < n) { player.level = 1f; sleeping = false }
+            else if (e < 2 * n) { sleeping = true; player.level = SLEEP_HALF * (1f - (e - n).toFloat() / n) }
+            else { player.level = 0f; player.stop(); slept = true; sleeping = false; sleepFrom = null; break }
+            delay(1000)
+        }
     }
     var screenOn by remember { mutableStateOf(true) }
     KeepScreenOn(screenOn)
@@ -421,8 +446,12 @@ fun GazeScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, onBack
     LaunchedEffect(Unit) { delay(Tokens.Garden.Decor.gazeCountMs.toLong()); state.recordGaze() }
     // 누를 때마다 처음부터: 밝게 → 조금 뒤 스르르 어두워짐 → 더 지나면 화면을 놓아 줌
     var idleKick by remember { androidx.compose.runtime.mutableIntStateOf(0) }
-    LaunchedEffect(idleKick) {
+    LaunchedEffect(idleKick, sleeping, slept, sleepFrom != null) {
+        // 잠들기: 잦아드는 중이면 2분에 걸쳐 까맣게 어두워진 뒤 화면을 놓아 줌 (폰이 스스로 잠듦), 다 잠들었으면 어둠 그대로
+        if (slept) { dim.snapTo(1f); screenOn = false; return@LaunchedEffect }
         dim.snapTo(0f); screenOn = true
+        if (sleeping) { dim.animateTo(1f, tween(SLEEP_DIM_MS, easing = LinearEasing)); screenOn = false; return@LaunchedEffect }
+        if (sleepFrom != null) return@LaunchedEffect   // 정한 시간까지는 밝은 그대로
         delay((z.dimAfter * 1000).toLong()); dim.animateTo(z.dimAlpha, tween(z.dimMs.toInt(), easing = LinearEasing))
         delay(((z.releaseAfter - z.dimAfter) * 1000).toLong() - z.dimMs.toLong()); screenOn = false
     }
@@ -431,7 +460,10 @@ fun GazeScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, onBack
     var ask by remember { mutableStateOf(false) }
     BackHandler { if (ask) onBack() else ask = true }
     Box(Modifier.fillMaxSize().pointerInput(Unit) {
-        awaitPointerEventScope { while (true) { val e = awaitPointerEvent(androidx.compose.ui.input.pointer.PointerEventPass.Initial); if (e.type == androidx.compose.ui.input.pointer.PointerEventType.Press) idleKick++ } }
+        awaitPointerEventScope { while (true) { val e = awaitPointerEvent(androidx.compose.ui.input.pointer.PointerEventPass.Initial); if (e.type == androidx.compose.ui.input.pointer.PointerEventType.Press) {
+            // 다 잠든 뒤 다시 누르면: 정원이 밝아지고 소리도 처음 크기로
+            if (slept) { slept = false; player.level = 1f; player.start() }
+            idleKick++ } } }
     }.pointerInput(Unit) { detectTapGestures { ask = true } }) {
         // 홈의 정원 그대로 (하늘 · 해와 달 · 땅 · 돌 · 놓인 것 · 밤빛), 글자만 없이
         GardenHome(state, profile, now, onSettings = {}, onCollection = {}, onSupport = {}, onStone = {}, onAddPerson = {}, bare = true)
@@ -443,9 +475,20 @@ fun GazeScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, onBack
         TokenText(stringResource(R.string.breath_home), Tokens.TypeScale.footnote,
             Modifier.align(Alignment.TopStart).statusBarsPadding().heightIn(min = Tokens.Layout.tapTarget).clickable { ask = true }.padding(Tokens.Space.sp4),
             color = p.secondary.copy(alpha = 0.8f), weight = FontWeight.Normal)
-        TokenText(stringResource(if (soundOn) R.string.gaze_soundOff else R.string.gaze_soundOn), Tokens.TypeScale.footnote,
-            Modifier.align(Alignment.TopEnd).statusBarsPadding().heightIn(min = Tokens.Layout.tapTarget).clickable { soundOn = !soundOn; if (soundOn && state.sound == Sound.NONE) state.changeSound(Sound.WAVES) }.padding(Tokens.Space.sp4),
-            color = p.secondary.copy(alpha = 0.7f), weight = FontWeight.Normal)
+        Row(Modifier.align(Alignment.TopEnd).statusBarsPadding(), verticalAlignment = Alignment.CenterVertically) {
+            // 잠들기: 꺼져 있으면 ‘잠들기’, 켜져 있으면 작은 달과 남은 분 (밤엔 조금 더 또렷이)
+            val sleepLabel = when { sleeping -> stringResource(R.string.gaze_sleepFading); sleepFrom != null -> stringResource(R.string.gaze_sleepLeft, "$sleepLeft"); else -> stringResource(R.string.gaze_sleep) }
+            TokenText(sleepLabel, Tokens.TypeScale.footnote,
+                Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { sleepPicking = true }.padding(vertical = Tokens.Space.sp4, horizontal = Tokens.Space.sp3),
+                color = if (sleepFrom != null) Color(0xFFFFD796).copy(alpha = 0.85f) else p.secondary.copy(alpha = if (isNight(now)) 0.9f else 0.7f), weight = FontWeight.Normal)
+            TokenText(stringResource(if (soundOn) R.string.gaze_soundOff else R.string.gaze_soundOn), Tokens.TypeScale.footnote,
+                Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { soundOn = !soundOn; if (soundOn && state.sound == Sound.NONE) state.changeSound(Sound.WAVES) }.padding(Tokens.Space.sp4),
+                color = p.secondary.copy(alpha = 0.7f), weight = FontWeight.Normal)
+        }
+        if (sleepPicking) SleepSheet(sleepMin, on = sleepFrom != null,
+            onStart = { m -> sleepMin = m; state.store.sleepMinutes = m; slept = false; sleepFrom = wallNow(); sleepPicking = false; idleKick++ },
+            onOff = { sleepFrom = null; sleeping = false; sleepPicking = false; idleKick++ },
+            onClose = { sleepPicking = false })
         if (hint) TokenText(stringResource(R.string.gaze_exit), Tokens.TypeScale.caption1, Modifier.align(Alignment.BottomCenter).navigationBarsPadding().padding(bottom = Tokens.Space.sp6), color = p.secondary)
         if (ask) GardenAlert(
             onDismissRequest = { ask = false },
@@ -516,5 +559,78 @@ private fun ThanksAfter(state: AppState, today: java.time.LocalDate) {
         GardenButton(stringResource(R.string.breath_thanksKeep), {
             if (text.isNotBlank()) { state.letGo(text, io.github.graviton94.carpediem.core.Feeling.THANKS); state.toast = null; state.care = null; kept = true }
         }, filled = text.isNotBlank(), seed = 1026)
+    }
+}
+
+/** 잠들기: 고른 시간의 소리 크기 (그다음 0 까지 천천히) · 화면이 까맣게 되기까지. */
+private const val SLEEP_HALF = 0.5f
+private const val SLEEP_DIM_MS = 120_000
+
+/**
+ * 잠들기 시트: 알람 맞추듯 위아래로 굴려 1분 단위로 고름 (1 ~ 180분). 고르는 대로 아래 안내가 바뀜.
+ * ‘시작’ · (켜져 있으면) ‘끄기’. 버튼은 다른 창과 같은 모양.
+ */
+@OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
+@Composable
+private fun SleepSheet(initial: Int, on: Boolean, onStart: (Int) -> Unit, onOff: () -> Unit, onClose: () -> Unit) {
+    val p = Theme.palette
+    var m by remember { androidx.compose.runtime.mutableIntStateOf(initial.coerceIn(SLEEP_RANGE)) }
+    androidx.compose.material3.ModalBottomSheet(onDismissRequest = onClose, containerColor = Theme.gc.paper,
+        sheetState = androidx.compose.material3.rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
+        Column(Modifier.fillMaxWidth().padding(horizontal = Theme.deviceClass.pageMargin).navigationBarsPadding().padding(bottom = Tokens.Space.sp6),
+            verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
+            TokenText(stringResource(R.string.gaze_sleep), Tokens.TypeScale.title3.serif())
+            MinuteWheel(m, SLEEP_RANGE, stringResource(R.string.sleep_minutes)) { m = it }
+            TokenText(stringResource(R.string.sleep_guide, "$m", "${m * 2}"), Tokens.TypeScale.footnote, Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.Center)
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2, Alignment.End)) {
+                if (on) io.github.graviton94.carpediem.ui.AlertButton(stringResource(R.string.sleep_off), onOff, quiet = true)
+                io.github.graviton94.carpediem.ui.AlertButton(stringResource(R.string.sleep_start), { onStart(m) })
+            }
+        }
+    }
+}
+private val SLEEP_RANGE = 1..180
+
+/**
+ * 숫자 바퀴 (알람 시간 맞추기처럼): 세 칸이 보이고 가운데가 고른 값. 굴리면 한 칸씩 착 멈춤.
+ * 화면 읽기: ‘잠들기까지 n분’, 위 · 아래로 한 칸씩 (늘리기 · 줄이기).
+ */
+@Composable
+internal fun MinuteWheel(value: Int, range: IntRange, unit: String, onValue: (Int) -> Unit) {
+    val p = Theme.palette
+    val itemH = Tokens.Layout.tapTarget
+    // 앞뒤에 빈 칸 하나씩: 맨 위 칸이 j 면 가운데 값은 range.first + j
+    val list = androidx.compose.foundation.lazy.rememberLazyListState(initialFirstVisibleItemIndex = value - range.first)
+    val fling = androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior(list)
+    val itemPx = with(androidx.compose.ui.platform.LocalDensity.current) { itemH.toPx() }
+    val lensW = with(androidx.compose.ui.platform.LocalDensity.current) { (Theme.unit * 0.4f).toPx() }
+    val idx by remember { androidx.compose.runtime.derivedStateOf { (list.firstVisibleItemIndex + if (list.firstVisibleItemScrollOffset > itemPx / 2) 1 else 0).coerceIn(0, range.count() - 1) } }
+    LaunchedEffect(idx) { onValue(range.first + idx) }
+    val scope = rememberCoroutineScope()
+    val a11y = stringResource(R.string.sleep_a11y, "${range.first + idx}")
+    Box(Modifier.fillMaxWidth().height(itemH * 3).semantics(mergeDescendants = true) {
+        contentDescription = a11y
+        customActions = listOf(
+            androidx.compose.ui.semantics.CustomAccessibilityAction("+1") { scope.launch { list.animateScrollToItem((idx + 1).coerceAtMost(range.count() - 1)) }; true },
+            androidx.compose.ui.semantics.CustomAccessibilityAction("-1") { scope.launch { list.animateScrollToItem((idx - 1).coerceAtLeast(0)) }; true })
+    }, contentAlignment = Alignment.Center) {
+        // 가운데 칸 위아래 가는 선 (고르는 자리)
+        Box(Modifier.fillMaxWidth(0.5f).height(itemH).drawBehind {
+            val sw = lensW; val c = p.foreground.copy(alpha = 0.5f)
+            drawLine(c, androidx.compose.ui.geometry.Offset(0f, 0f), androidx.compose.ui.geometry.Offset(size.width, 0f), sw)
+            drawLine(c, androidx.compose.ui.geometry.Offset(0f, size.height), androidx.compose.ui.geometry.Offset(size.width, size.height), sw)
+        })
+        androidx.compose.foundation.lazy.LazyColumn(Modifier.fillMaxWidth().height(itemH * 3), state = list, flingBehavior = fling) {
+            item { Spacer(Modifier.height(itemH)) }
+            items(range.count()) { i ->
+                val on = i == idx
+                Box(Modifier.fillMaxWidth().height(itemH), contentAlignment = Alignment.Center) {
+                    TokenText("${range.first + i}", if (on) Tokens.TypeScale.title2.serif() else Tokens.TypeScale.callout.serif(),
+                        color = if (on) p.foreground else p.secondary.copy(alpha = 0.6f), weight = if (on) FontWeight.SemiBold else FontWeight.Normal)
+                }
+            }
+            item { Spacer(Modifier.height(itemH)) }
+        }
+        TokenText(unit, Tokens.TypeScale.callout.serif(), Modifier.align(Alignment.CenterEnd).padding(end = Theme.unit * 18f), color = p.foreground)
     }
 }

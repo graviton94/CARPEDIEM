@@ -350,6 +350,14 @@
     <string name="breath_bells">Breathe in with the bright bell,\nout with the low one.</string>
     <string name="gaze">Stone gazing</string>
     <string name="gaze_soundOn">Sound on</string>
+    <string name="gaze_sleep">Sleep</string>
+    <string name="gaze_sleepLeft">☾ %1$s min</string>
+    <string name="gaze_sleepFading">☾ Drifting off</string>
+    <string name="sleep_guide">Fades gently after %1$s min and goes fully quiet after %2$s min.</string>
+    <string name="sleep_minutes">min</string>
+    <string name="sleep_start">Start</string>
+    <string name="sleep_off">Turn off</string>
+    <string name="sleep_a11y">%1$s minutes until sleep</string>
     <string name="gaze_soundOff">Sound off</string>
     <string name="gaze_exit">Tap an empty spot or go back to return</string>
     <string name="obj_windchime">Wind chime</string>
