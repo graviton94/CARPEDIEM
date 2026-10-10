@@ -260,7 +260,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
     var breathSheet by remember { mutableStateOf(false) }
     var askBreath by remember { mutableStateOf<Pair<BreathKind, Int>?>(null) }
     var slipOpen by remember { mutableStateOf<String?>(null) }   // 쪽지를 물고 온 손님 (펼친 동안)
-    var letterOpen by remember { mutableStateOf(state.debugLetter) }   // 기념일 편지 (펼친 동안: "100" · "year")
+    var annivOpen by remember { mutableStateOf(state.debugLetter) }   // 기념일 편지 (펼친 동안: "100" · "year")
     if (state.debugSlip) LaunchedEffect(Unit) { kotlinx.coroutines.delay(2500); slipOpen = state.carrier(now.toLocalDate()) }
     val sleepy = !bare && isNight(now)
     // 캡처용: 이번 달 편지를 바로 펼침. 고르기만 그리기 중에, ‘연 편지’로 남기기는 그 뒤에
@@ -707,7 +707,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                         state.anniversaryDue(today) != null && !state.noteHidden("letter", today) -> {
                             val which = state.anniversaryDue(today) ?: "100"
                             LaunchedEffect(which, today) { state.nudged(today) }
-                            RecallNote(stringResource(R.string.anniv_note), onDismiss = { state.anniversaryRead(which); state.hideNote("letter", today) }) { letterOpen = which }
+                            RecallNote(stringResource(R.string.anniv_note), onDismiss = { state.anniversaryRead(which); state.hideNote("letter", today) }) { annivOpen = which }
                         }
                         // 한 줄 30 · 60 · 90… 번째를 남긴 날: 응원 권유 한 줄 (그날만, 응원한 뒤로는 없음)
                         state.supportInviteDue(today) != null && !state.noteHidden("support", today) -> {
@@ -781,7 +781,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
             androidx.compose.runtime.key(pageKey) { GuideTour(state, pageKey, guide, PageGuideSteps.getValue(pageKey)) { state.pageHintSeen(pageKey) } }
     }
 
-    letterOpen?.let { which -> AnniversarySheet(state, which, onSupport = { state.anniversaryRead(which); letterOpen = null; onSupport() }) { state.anniversaryRead(which); letterOpen = null } }
+    annivOpen?.let { which -> AnniversarySheet(state, which, onSupport = { state.anniversaryRead(which); annivOpen = null; onSupport() }) { state.anniversaryRead(which); annivOpen = null } }
     slipOpen?.let { g -> state.carriedLine(now.toLocalDate())?.let { line ->
         SlipSheet(state, line, g, now.toLocalDate(), onRecord = { state.openSlip(now.toLocalDate()); slipOpen = null; toRecord(RecordView(line.date.year, line.date.monthValue, line.date)) }) { state.openSlip(now.toLocalDate()); slipOpen = null }
     } ?: run { slipOpen = null } }
