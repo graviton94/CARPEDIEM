@@ -118,7 +118,9 @@ private fun stepName(s: BreathStep) = when (s) { BreathStep.IN -> R.string.breat
 
 /** 밤(nightFrom ~ 새벽)에는 잠드는 명상을 먼저. */
 /** 손끝 숨에서 화면이 어두워지기까지 (ms). */
-private const val TOUCH_DIM_AFTER = 30_000L
+/** 말로 안내하는 숨 (처음 세 숨, 그다음은 종소리와 하루의 움직임만) · 마지막 말이 스르르 사라지는 시간. */
+private const val CUE_BREATHS = 3
+private const val CUE_OUT_MS = 1500
 
 internal fun isNight(now: LocalDateTime) = now.hour >= G.Breath.nightFrom.toInt() || now.hour < G.Motion.sunrise.toInt()
 /** 하루 닫기의 그날: 해 뜨기 전 (자정 넘어) 은 아직 어젯밤. */
@@ -222,10 +224,7 @@ fun BreathScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, kind
     }
     // 하루의 숨결을 손끝으로 (05): 숨을 떨림으로. 화면은 곧 아주 어두워지고, 한 번 누르면 잠깐 밝아짐 (멈춤은 길게 누르기)
     val touch = rememberTouchBreath(state.breathTouch)
-    var dimKick by remember { androidx.compose.runtime.mutableIntStateOf(0) }
-    var dim by remember { mutableStateOf(false) }
-    LaunchedEffect(dimKick, paused, done, intro) { dim = false; if (touch == null || paused || done || intro) return@LaunchedEffect; delay(TOUCH_DIM_AFTER); dim = true }
-    DimWindow(dim)
+    // 화면은 숨이 끝날 때까지 그대로 켜 둠 (어둡게 하지 않음: 손끝 숨에서도 눈을 뜨면 하루가 보이게)
     // 시계: 멈춘 동안은 흐르지 않음. 손끝 숨은 벽시계로 (화면이 잠깐 꺼졌다 와도 떨림과 같은 자리)
     LaunchedEffect(paused, done, intro) {
         if (paused || done || intro) { touch?.stop(); return@LaunchedEffect }
@@ -243,7 +242,9 @@ fun BreathScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, kind
     }
     // 매 프레임 바뀌는 값 (elapsed) 은 그리는 단계에서만 읽음: 화면은 단계가 바뀔 때만 다시 짜임
     val step by remember(plan) { androidx.compose.runtime.derivedStateOf { Breath.at(plan, elapsed)?.first?.step } }
-    val cueOn by remember { androidx.compose.runtime.derivedStateOf { elapsed < b.cueSeconds * 1000 } }
+    // 말 안내는 처음 세 숨까지 (네 번째 숨이 시작되면 말 없이)
+    val cueUntil = remember(plan) { plan.filter { it.step == BreathStep.IN && it.lo == 0f }.getOrNull(CUE_BREATHS)?.startMs ?: Long.MAX_VALUE }
+    val cueOn by remember { androidx.compose.runtime.derivedStateOf { elapsed < cueUntil } }
     // 한숨 호흡의 두 번째 들이쉼 (“한 번 더 들이쉬어요”)
     val topUp by remember(plan) { androidx.compose.runtime.derivedStateOf { (Breath.at(plan, elapsed)?.first?.lo ?: 0f) > 0f } }
     // 단계가 바뀌면 들이쉼에만 아주 짧게 한 번 (내쉼은 고요히)
@@ -264,7 +265,7 @@ fun BreathScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, kind
 
     BoxWithConstraints(Modifier.fillMaxSize().paperBackground().pointerInput(touch != null, done) {
         // 손끝 숨: 주머니 속 누름에 멈추지 않게 한 번 누르면 잠깐 밝아지기만, 길게 누르면 멈춤
-        detectTapGestures(onTap = { if (!done) { if (touch != null) dimKick++ else paused = true } }, onLongPress = { if (!done) paused = true })
+        detectTapGestures(onTap = { if (!done && touch == null) paused = true }, onLongPress = { if (!done) paused = true })
     }) {
         val u = Theme.unit
         val screenW = maxWidth
@@ -300,8 +301,16 @@ fun BreathScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, kind
             val cue = if (done) null else step?.takeIf { cueOn }
             // 두 줄이 되어도 잘리지 않게 (높이는 최소만 정함)
             Box(Modifier.heightIn(min = Tokens.Space.sp10 * 2), contentAlignment = Alignment.Center) {
-                if (intro) BreathCue(stringResource(R.string.breath_bells), p.secondary)
-                else if (cue != null) BreathCue(stringResource(if (topUp && cue == BreathStep.IN) R.string.breath_inTop else cueName(kind, cue)), p.secondary)
+                val cueText = when {
+                    intro -> stringResource(R.string.breath_bells)
+                    cue != null -> stringResource(if (topUp && cue == BreathStep.IN) R.string.breath_inTop else cueName(kind, cue))
+                    else -> null
+                }
+                // 세 숨이 지나면 마지막 말이 스르르 사라짐 (뚝 끊기지 않게)
+                val lastCue = remember { arrayOfNulls<String>(1) }
+                if (cueText != null) lastCue[0] = cueText
+                androidx.compose.animation.AnimatedVisibility(visible = cueText != null, enter = androidx.compose.animation.EnterTransition.None,
+                    exit = androidx.compose.animation.fadeOut(tween(CUE_OUT_MS))) { lastCue[0]?.let { BreathCue(it, p.secondary) } }
             }
             if (kind == BreathKind.BOX && cue != null && animate) WalkCount(plan, { elapsed }, Modifier.size(u * 44f, u * 4f))
             if (done) {
@@ -326,10 +335,6 @@ fun BreathScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, kind
             // 어둠 속 아주 옅은 한 줄: 누르면 정원으로
             if (blackout.value >= 1f) TokenText(stringResource(R.string.breath_sleepBack), Tokens.TypeScale.footnote,
                 Modifier.navigationBarsPadding().padding(bottom = Tokens.Space.sp10), color = Color.White.copy(alpha = 0.35f))
-        }
-        // 손끝 숨: 화면을 거의 까맣게 (아주 옅은 한 줄만)
-        if (dim) Box(Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.96f)), contentAlignment = Alignment.BottomCenter) {
-            TokenText(stringResource(R.string.breath_touchHold), Tokens.TypeScale.caption1, Modifier.navigationBarsPadding().padding(bottom = Tokens.Space.sp10), color = Color.White.copy(alpha = 0.22f))
         }
         if (paused && !done) PauseCard(onKeep = { paused = false }, onStop = { paused = false; done = true; player.stop(); onDone() })
     }

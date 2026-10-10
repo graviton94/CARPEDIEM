@@ -512,16 +512,6 @@ internal fun rememberTouchBreath(on: Boolean): TouchBreath? {
     return t
 }
 
-/** 손끝 숨 동안 화면을 아주 어둡게 (켜 둔 채). 화면을 떠나면 원래대로. */
-@Composable
-internal fun DimWindow(on: Boolean) {
-    val ctx = LocalContext.current
-    DisposableEffect(on) {
-        val w = (ctx as? Activity)?.window
-        if (on && w != null) { val lp = w.attributes; lp.screenBrightness = 0.01f; w.attributes = lp }
-        onDispose { if (w != null) { val lp = w.attributes; lp.screenBrightness = WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE; w.attributes = lp } }
-    }
-}
 
 /** 손끝 숨에서 쓰는 벽시계 (화면이 잠깐 꺼졌다 와도 떨림과 같은 자리). */
 internal fun wallNow(): Long = SystemClock.elapsedRealtime()
