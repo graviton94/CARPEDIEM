@@ -1078,12 +1078,13 @@
 "welcome.start" = "Start fresh";
 "welcome.restore" = "Bring back my records";
 "welcome.restoreSub" = "Continue from a file you saved on your old phone.";
-"news.v1_1_4.1" = "Each breath has its own method: Ripple (resonance), Mind walk (box), Lantern (4-7-8), Flower bed (cyclic sighing).";
-"news.v1_1_4.2" = "The breath is the sound now, with a breath ring at Haru’s feet. Vibration swells gently, like a sleeping breath.";
+"news.v1_1_4.1" = "Four breaths, four methods: resonance, box, 4-7-8 and cyclic sighing.";
+"news.v1_1_4.2" = "The breath is the sound now, with a ring at Haru’s feet; vibration swells like a sleeping breath.";
 "news.v1_1_4.3" = "Stone gazing plays a slow song of your garden’s stones. New cricket sounds.";
 "news.v1_1_4.4" = "Close the day takes a photo and won’t reappear once done.";
-"news.v1_1_4.5" = "An empty line asks you to write first; photos no longer hide the date.";
+"news.v1_1_4.5" = "An empty line asks you to write first; photos don’t hide the date.";
 "news.v1_1_4.6" = "Ten feelings now, with Proud, So-so and Unsettled.";
+"news.v1_1_4.7" = "Drafts stay if the app closes; unsaved edits ask first.";
 "news.v1_1_3.1" = "Decorate each stone with one piece: season pieces, support gifts or pebbles.";
 "news.v1_1_3.2" = "Notes brought by guests now open as a hanji letter.";
 "news.v1_1_3.3" = "The garden quietly tells you when a new version is out. See what’s new in Settings › Help & support.";

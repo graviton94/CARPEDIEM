@@ -1080,12 +1080,13 @@
     <string name="welcome_start">Start fresh</string>
     <string name="welcome_restore">Bring back my records</string>
     <string name="welcome_restoreSub">Continue from a file you saved on your old phone.</string>
-    <string name="news_v1_1_4_1">Each breath has its own method: Ripple (resonance), Mind walk (box), Lantern (4-7-8), Flower bed (cyclic sighing).</string>
-    <string name="news_v1_1_4_2">The breath is the sound now, with a breath ring at Haru’s feet. Vibration swells gently, like a sleeping breath.</string>
+    <string name="news_v1_1_4_1">Four breaths, four methods: resonance, box, 4-7-8 and cyclic sighing.</string>
+    <string name="news_v1_1_4_2">The breath is the sound now, with a ring at Haru’s feet; vibration swells like a sleeping breath.</string>
     <string name="news_v1_1_4_3">Stone gazing plays a slow song of your garden’s stones. New cricket sounds.</string>
     <string name="news_v1_1_4_4">Close the day takes a photo and won’t reappear once done.</string>
-    <string name="news_v1_1_4_5">An empty line asks you to write first; photos no longer hide the date.</string>
+    <string name="news_v1_1_4_5">An empty line asks you to write first; photos don’t hide the date.</string>
     <string name="news_v1_1_4_6">Ten feelings now, with Proud, So-so and Unsettled.</string>
+    <string name="news_v1_1_4_7">Drafts stay if the app closes; unsaved edits ask first.</string>
     <string name="news_v1_1_3_1">Decorate each stone with one piece: season pieces, support gifts or pebbles.</string>
     <string name="news_v1_1_3_2">Notes brought by guests now open as a hanji letter.</string>
     <string name="news_v1_1_3_3">The garden quietly tells you when a new version is out. See what’s new in Settings › Help &amp; support.</string>
