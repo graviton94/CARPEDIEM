@@ -311,7 +311,7 @@
     <string name="breath_kind_calm">Ripple</string>
     <string name="breath_kind_box">Mind walk</string>
     <string name="breath_kind_sleep">Lantern</string>
-    <string name="breath_kindDesc_calm">Calm · resonance breathing: in for 4, out for 6 (six breaths a minute). 5 min.</string>
+    <string name="breath_kindDesc_calm">Calm · resonance breathing: in for 5, out for 7 (five breaths a minute). 5 min.</string>
     <string name="breath_kindDesc_box">Focus · box breathing: four steps in, hold, out, rest. 4 min.</string>
     <string name="breath_kindDesc_sleep">Sleep · 4-7-8 breathing: in for 4, hold for 7, out for 8. Eight rounds (about 2.5 min).</string>
     <string name="breath_minutes">%1$s min</string>

@@ -312,7 +312,7 @@
     <string name="breath_kind_calm">こころの波紋</string>
     <string name="breath_kind_box">こころの散歩</string>
     <string name="breath_kind_sleep">こころの灯り</string>
-    <string name="breath_kindDesc_calm">落ち着き · 共鳴呼吸：4秒吸って6秒吐きます（1分に6回）。5分。</string>
+    <string name="breath_kindDesc_calm">落ち着き · 共鳴呼吸：5秒吸って7秒吐きます（1分に5回）。5分。</string>
     <string name="breath_kindDesc_box">集中 · ボックス呼吸：四歩ずつ吸って・とめて・吐いて・休みます。4分。</string>
     <string name="breath_kindDesc_sleep">眠り · 4-7-8呼吸：4秒吸って7秒とめて8秒吐きます。8回（約2分30秒）。</string>
     <string name="breath_minutes">%1$s分</string>

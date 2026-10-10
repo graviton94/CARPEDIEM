@@ -309,7 +309,7 @@
 "breath.kind.calm" = "Ripple";
 "breath.kind.box" = "Mind walk";
 "breath.kind.sleep" = "Lantern";
-"breath.kindDesc.calm" = "Calm · resonance breathing: in for 4, out for 6 (six breaths a minute). 5 min.";
+"breath.kindDesc.calm" = "Calm · resonance breathing: in for 5, out for 7 (five breaths a minute). 5 min.";
 "breath.kindDesc.box" = "Focus · box breathing: four steps in, hold, out, rest. 4 min.";
 "breath.kindDesc.sleep" = "Sleep · 4-7-8 breathing: in for 4, hold for 7, out for 8. Eight rounds (about 2.5 min).";
 "breath.minutes" = "%1$@ min";

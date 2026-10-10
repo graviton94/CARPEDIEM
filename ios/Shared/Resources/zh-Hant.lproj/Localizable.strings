@@ -310,7 +310,7 @@
 "breath.kind.calm" = "心之漣漪";
 "breath.kind.box" = "心之散步";
 "breath.kind.sleep" = "心之燈火";
-"breath.kindDesc.calm" = "平靜 · 共振呼吸：吸氣 4 秒，吐氣 6 秒（每分鐘 6 次）。5 分鐘。";
+"breath.kindDesc.calm" = "平靜 · 共振呼吸：吸氣 5 秒，吐氣 7 秒（每分鐘 5 次）。5 分鐘。";
 "breath.kindDesc.box" = "專注 · 方塊呼吸：四步吸氣、停住、吐氣、休息。4 分鐘。";
 "breath.kindDesc.sleep" = "入睡 · 4-7-8 呼吸：吸氣 4 秒，停 7 秒，吐氣 8 秒。八次（約 2 分 30 秒）。";
 "breath.minutes" = "%1$@ 分鐘";

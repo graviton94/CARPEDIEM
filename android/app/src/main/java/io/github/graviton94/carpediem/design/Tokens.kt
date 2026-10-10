@@ -416,15 +416,15 @@ object Tokens {
             const val card = 0.2f
         }
         object Breath {
-            const val calmIn = 4.0f
-            const val calmOut = 6.0f
+            const val calmIn = 5.0f
+            const val calmOut = 7.0f
             const val boxIn = 4.0f
             const val boxHold = 4.0f
             const val boxOut = 4.0f
             const val boxRest = 4.0f
-            const val thanksIn = 2.0f
-            const val thanksTop = 1.0f
-            const val thanksOut = 6.0f
+            const val thanksIn = 3.0f
+            const val thanksTop = 1.5f
+            const val thanksOut = 8.0f
             const val calmMinutes = 5.0f
             const val boxMinutes = 4.0f
             const val sleepCycles = 8.0f
@@ -501,7 +501,7 @@ object Tokens {
             const val bowlRing = 8.0f
             const val bowlAttackMs = 35.0f
             const val bowlBeat = 0.7f
-            const val introMs = 6000.0f
+            const val introMs = 9000.0f
             const val layer = 0.4f
             const val layerMin = 18.0f
             const val layerMax = 40.0f

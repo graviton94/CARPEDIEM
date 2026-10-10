@@ -309,7 +309,7 @@
 "breath.kind.calm" = "마음 물결";
 "breath.kind.box" = "마음 산책";
 "breath.kind.sleep" = "마음 등불";
-"breath.kindDesc.calm" = "평정 · 공명 호흡: 4초 들이쉬고 6초 내쉬어요 (분당 6번). 5분.";
+"breath.kindDesc.calm" = "평정 · 공명 호흡: 5초 들이쉬고 7초 내쉬어요 (분당 5번). 5분.";
 "breath.kindDesc.box" = "집중 · 상자 호흡: 네 걸음씩 들이쉬고 · 머금고 · 내쉬고 · 쉬어요. 4분.";
 "breath.kindDesc.sleep" = "잠들기 · 4-7-8 호흡: 4초 들이쉬고 7초 머금고 8초 내쉬어요. 여덟 번 (약 2분 30초).";
 "breath.minutes" = "%1$@분";

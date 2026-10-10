@@ -421,15 +421,15 @@ enum Tokens {
             static let card: CGFloat = 0.2
         }
         enum Breath {
-            static let calmIn: CGFloat = 4.0
-            static let calmOut: CGFloat = 6.0
+            static let calmIn: CGFloat = 5.0
+            static let calmOut: CGFloat = 7.0
             static let boxIn: CGFloat = 4.0
             static let boxHold: CGFloat = 4.0
             static let boxOut: CGFloat = 4.0
             static let boxRest: CGFloat = 4.0
-            static let thanksIn: CGFloat = 2.0
-            static let thanksTop: CGFloat = 1.0
-            static let thanksOut: CGFloat = 6.0
+            static let thanksIn: CGFloat = 3.0
+            static let thanksTop: CGFloat = 1.5
+            static let thanksOut: CGFloat = 8.0
             static let calmMinutes: CGFloat = 5.0
             static let boxMinutes: CGFloat = 4.0
             static let sleepCycles: CGFloat = 8.0
@@ -506,7 +506,7 @@ enum Tokens {
             static let bowlRing: CGFloat = 8.0
             static let bowlAttackMs: CGFloat = 35.0
             static let bowlBeat: CGFloat = 0.7
-            static let introMs: CGFloat = 6000.0
+            static let introMs: CGFloat = 9000.0
             static let layer: CGFloat = 0.4
             static let layerMin: CGFloat = 18.0
             static let layerMax: CGFloat = 40.0

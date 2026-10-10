@@ -118,7 +118,7 @@ private fun stepName(s: BreathStep) = when (s) { BreathStep.IN -> R.string.breat
 
 /** 밤(nightFrom ~ 새벽)에는 잠드는 명상을 먼저. */
 /** 손끝 숨에서 화면이 어두워지기까지 (ms). */
-private const val TOUCH_DIM_AFTER = 6000L
+private const val TOUCH_DIM_AFTER = 30_000L
 
 internal fun isNight(now: LocalDateTime) = now.hour >= G.Breath.nightFrom.toInt() || now.hour < G.Motion.sunrise.toInt()
 /** 하루 닫기의 그날: 해 뜨기 전 (자정 넘어) 은 아직 어젯밤. */
@@ -335,15 +335,16 @@ fun BreathScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, kind
     }
 }
 
-/** 숨의 말: 단계가 바뀌면 한 글자씩 (오늘의 문장과 같은 빠르기 · 크기). 움직임을 끈 기기면 한 번에. */
+/** 숨의 말: 단계가 바뀌면 한 번에 천천히 스며 나옴 (한 글자씩 치면 짧은 숨에선 휙휙 지나가서). 움직임을 끈 기기면 바로. */
 @Composable
 internal fun BreathCue(text: String, color: Color) {
     val ctx = LocalContext.current
     val still = remember { reducedMotion(ctx) }
-    var n by remember(text) { androidx.compose.runtime.mutableIntStateOf(if (still) text.length else 0) }
-    LaunchedEffect(text) { while (n < text.length) { delay(G.Motion.typeMs.toLong()); n++ } }
-    TypedText(text, n, Tokens.TypeScale.headline.serif(), color, Modifier.fillMaxWidth())
+    val a = remember(text) { Animatable(if (still) 1f else 0f) }
+    LaunchedEffect(text) { a.animateTo(1f, tween(CUE_FADE_MS)) }
+    TypedText(text, text.length, Tokens.TypeScale.headline.serif(), color, Modifier.fillMaxWidth().graphicsLayer { alpha = a.value })
 }
+private const val CUE_FADE_MS = 1200
 
 /** 단계의 말. 마음 산책은 걸음으로 (네 걸음 들이쉬고 · 네 걸음 내쉬고), 마음 꽃밭은 내쉴 때 “고마운 것 하나”. */
 internal fun cueName(kind: BreathKind, s: BreathStep): Int = when {
