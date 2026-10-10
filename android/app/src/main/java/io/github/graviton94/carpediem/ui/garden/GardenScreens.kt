@@ -543,6 +543,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                     scope.launch { song.snapTo(0f); song.animateTo(total, androidx.compose.animation.core.tween(total.toInt(), easing = androidx.compose.animation.core.LinearEasing)); song.snapTo(-1f) }
                 }
                 val hopPx = with(density) { (u * S.hop).toPx() }
+                val minis = remember(state.lines, day0, state.keepLines) { if (state.keepLines) io.github.graviton94.carpediem.core.Lines.recentFeelings(state.lines, day0) else emptyList() }
                 val gazeClock = rememberGardenClock(bare && remember { !reducedMotion(ctx) })
                 // 왼쪽부터 그려, 겹쳐 앉으면 오른쪽 돌이 앞 (누름도 앞 돌이 먼저 받음)
                 slots.indices.sortedBy { xs[it].value }.forEach { i -> val sl = slots[i]; androidx.compose.runtime.key(sl.id ?: "me") {
@@ -564,6 +565,8 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                             else -> HaruMood.CALM },
                         sleepy = sl.id == null && !bare && isNight(now),
                         onPet = if (sl.id == null && !bare) ({ state.pettedHaru(day0) }) else null)
+                    // 미니 하루 (1.1.5): 요즘 자주 머문 마음, 내 하루 발치 가운데 ~ 오른쪽 (기록을 남길 때만)
+                    if (sl.id == null && !bare) MiniHarus(state, minis, xs[i], gy, (widths[i].toFloat()).dp)
                     // 생일 당일: 돌 앞에 작은 케이크 (전날 저녁엔 모자만)
                     if (sl.soon == 0) {
                         val cw = u * Tokens.Garden.Party.cakeWidth

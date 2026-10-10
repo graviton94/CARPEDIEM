@@ -230,6 +230,8 @@ s g66_guest_rare 5 --es cd.guest owl --es cd.now 2026-10-05T10:00
 s g67_photo_today 5 --ez cd.photos true --ei cd.page 1 --es cd.now 2026-10-06T21:00
 # 어젯밤 쓰던 한 줄이 남은 아침: 어제의 한 줄로 이어 쓰기 (칸 위 한 줄 안내)
 s g82_carried_draft 5 --es cd.draftYesterday walk --ei cd.page 1 --es cd.now 2026-10-08T08:00
+# 미니 하루 (1.1.5): 지난 7일 마음 셋이 하루 발치에 · 가족과 옹기종기
+s g83_mini_haru 6 --ez cd.family true --ez cd.months true --es cd.now 2026-09-28T15:00
 swipe_up; shot g68_photo_more 3
 # 한 해의 엔딩 크레딧 (08): 인트로 · 봄 · 끝 (아웃트로)
 open --ez cd.family true --ez cd.special true --es cd.now 2026-12-28T20:00; sleep 3

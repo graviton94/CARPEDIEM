@@ -872,6 +872,9 @@
     <string name="search_none">찾는 한 줄이 없어요.</string>
     <string name="search_count">%1$s줄을 찾았어요. 누르면 그날로 가요.</string>
     <string name="mood_weatherA11y">이 달의 마음: %1$s</string>
+    <string name="mini_note">이번 주엔 %1$s이 자주 머물렀어요.</string>
+    <string name="mini_noteHeavy">이번 주엔 %1$s의 날이 있었네요. 잘 지나왔어요.</string>
+    <string name="mini_a11y">이번 주의 마음: %1$s</string>
     <string name="garden_pathA11y">인생의 길. 하루는 만 %1$s세 자리에, 길 끝은 기대수명 %2$s세</string>
     <string name="edit_late">날이 바뀌어서 고치지 못했어요. 오늘의 한 줄은 오늘 안에만 고칠 수 있어요.</string>
     <string name="edit_restored">되돌렸어요.</string>

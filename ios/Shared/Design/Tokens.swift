@@ -341,9 +341,9 @@ enum Tokens {
         enum Family {
             static let max: CGFloat = 9.0
             static let oneRow: CGFloat = 5.0
-            static let gap: CGFloat = 10.0
+            static let gap: CGFloat = 4.0
             static let minGap: CGFloat = 6.0
-            static let overlap: CGFloat = 0.22
+            static let overlap: CGFloat = 0.3
             static let nameChars: CGFloat = 4.0
             static let petScale: CGFloat = 0.72
             static let dogYears: CGFloat = 13.0

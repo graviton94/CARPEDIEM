@@ -872,6 +872,9 @@
     <string name="search_none">找不到。</string>
     <string name="search_count">找到 %1$s 句，點一下就到那天。</string>
     <string name="mood_weatherA11y">這個月的心情：%1$s</string>
+    <string name="mini_note">這週最常來的是「%1$s」。</string>
+    <string name="mini_noteHeavy">這週有些「%1$s」的日子，你都走過來了。</string>
+    <string name="mini_a11y">這週的心情：%1$s</string>
     <string name="garden_pathA11y">人生的路。小日在 %1$s 歲的位置，路的盡頭是平均壽命 %2$s 歲</string>
     <string name="edit_late">日期已經換了，所以沒有修改。一句話只能在當天修改。</string>
     <string name="edit_restored">已復原。</string>

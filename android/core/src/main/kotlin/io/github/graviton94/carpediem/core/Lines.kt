@@ -81,6 +81,16 @@ object Lines {
      * 몇 해 전 오늘 보낸 한 줄 (가까운 해부터). 글 없이 날짜만 남긴 날은 빼고,
      * 2월 29일에 보낸 줄은 평년엔 2월 28일에 돌아온다.
      */
+    /**
+     * 요즘의 마음 (정원의 미니 하루, 1.1.5): 오늘까지 days 일 동안 한 줄에 고른 마음을 자주 머문 것부터 max 개.
+     * 같은 수면 더 최근에 고른 것 먼저. 마음을 고르지 않은 줄은 세지 않음.
+     */
+    fun recentFeelings(list: List<DayLine>, today: LocalDate, days: Int = 7, max: Int = 3): List<Feeling> =
+        list.filter { it.feeling != null && !it.date.isAfter(today) && it.date.isAfter(today.minusDays(days.toLong())) }
+            .groupBy { it.feeling!! }.entries
+            .sortedWith(compareByDescending<Map.Entry<Feeling, List<DayLine>>> { it.value.size }.thenByDescending { e -> e.value.maxOf { it.date } })
+            .take(max).map { it.key }
+
     fun yearsAgo(list: List<DayLine>, today: LocalDate): List<Pair<Int, DayLine>> =
         list.filter { it.text.isNotBlank() && it.date.year < today.year }.mapNotNull { l ->
             val md = if (l.date.monthValue == 2 && l.date.dayOfMonth == 29 && !today.isLeapYear) java.time.MonthDay.of(2, 28) else java.time.MonthDay.from(l.date)

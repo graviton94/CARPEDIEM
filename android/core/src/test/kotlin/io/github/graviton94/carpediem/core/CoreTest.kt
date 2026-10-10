@@ -693,4 +693,15 @@ class ChancesTest {
         assertEquals(CreditPart.INTRO, Credits.at(full, 0)?.part); assertEquals(null, Credits.at(full, Credits.total(full)))
         assertTrue(Credits.milestone(1000)); assertTrue(Credits.milestone(100)); assertEquals(false, Credits.milestone(400))
     }
+
+    @Test fun recentFeelingsForMiniHaru() {
+        val today = d(2026, 10, 10)
+        val l = listOf(DayLine(d(2026, 10, 3), "8일 전", Feeling.SAD), DayLine(d(2026, 10, 4), "a", Feeling.CALM), DayLine(d(2026, 10, 5), "b", Feeling.JOY),
+            DayLine(d(2026, 10, 6), "c", Feeling.CALM), DayLine(d(2026, 10, 7), "d", Feeling.WORRY), DayLine(d(2026, 10, 8), "e", null),
+            DayLine(d(2026, 10, 9), "f", Feeling.THANKS), DayLine(d(2026, 10, 11), "내일", Feeling.HOPE))
+        // 평온 둘이 먼저, 그다음 같은 하나씩은 최근 것부터 (고마움 9일 · 불안 7일), 기쁨은 넷째라 빠짐 · 일주일 전 · 내일 · 마음 없는 줄은 세지 않음
+        assertEquals(listOf(Feeling.CALM, Feeling.THANKS, Feeling.WORRY), Lines.recentFeelings(l, today))
+        assertEquals(emptyList<Feeling>(), Lines.recentFeelings(emptyList(), today))
+    }
+
 }

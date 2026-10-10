@@ -872,6 +872,9 @@
     <string name="search_none">No lines found.</string>
     <string name="search_count">%1$s found. Tap one to go to that day.</string>
     <string name="mood_weatherA11y">This month’s mood: %1$s</string>
+    <string name="mini_note">“%1$s” came by most often this week.</string>
+    <string name="mini_noteHeavy">This week held some “%1$s” days. You came through.</string>
+    <string name="mini_a11y">This week’s feelings: %1$s</string>
     <string name="garden_pathA11y">Life path. Haru sits at age %1$s; the path ends at %2$s</string>
     <string name="edit_late">The day has changed, so it wasn’t edited. A line can only be edited on its own day.</string>
     <string name="edit_restored">Restored.</string>

@@ -870,6 +870,9 @@
 "search.none" = "No lines found.";
 "search.count" = "%1$@ found. Tap one to go to that day.";
 "mood.weatherA11y" = "This month’s mood: %1$@";
+"mini.note" = "“%1$@” came by most often this week.";
+"mini.noteHeavy" = "This week held some “%1$@” days. You came through.";
+"mini.a11y" = "This week’s feelings: %1$@";
 "garden.pathA11y" = "Life path. Haru sits at age %1$@; the path ends at %2$@";
 "edit.late" = "The day has changed, so it wasn’t edited. A line can only be edited on its own day.";
 "edit.restored" = "Restored.";

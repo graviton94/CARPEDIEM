@@ -872,6 +872,9 @@
     <string name="search_none">見つかりませんでした。</string>
     <string name="search_count">%1$s件見つかりました。タップするとその日へ。</string>
     <string name="mood_weatherA11y">この月の気持ち：%1$s</string>
+    <string name="mini_note">今週は「%1$s」がよく訪れました。</string>
+    <string name="mini_noteHeavy">今週は「%1$s」の日もありましたね。よく過ごしました。</string>
+    <string name="mini_a11y">今週の気持ち：%1$s</string>
     <string name="garden_pathA11y">人生の道。ハルは%1$s歳の場所に、道の終わりは平均寿命%2$s歳</string>
     <string name="edit_late">日付が変わったため直せませんでした。ひとことはその日のうちだけ直せます。</string>
     <string name="edit_restored">元に戻しました。</string>

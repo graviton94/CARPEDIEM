@@ -336,9 +336,9 @@ object Tokens {
         object Family {
             const val max = 9.0f
             const val oneRow = 5.0f
-            const val gap = 10.0f
+            const val gap = 4.0f
             const val minGap = 6.0f
-            const val overlap = 0.22f
+            const val overlap = 0.3f
             const val nameChars = 4.0f
             const val petScale = 0.72f
             const val dogYears = 13.0f
