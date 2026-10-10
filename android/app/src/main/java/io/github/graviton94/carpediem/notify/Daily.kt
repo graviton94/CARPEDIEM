@@ -46,15 +46,19 @@ object Daily {
         val wm = WorkManager.getInstance(context)
         if (!on) { wm.cancelUniqueWork(WORK); return }
         val now = LocalDateTime.now()
-        val work = PeriodicWorkRequestBuilder<DailyWorker>(1, TimeUnit.DAYS).setInitialDelay(delayTo(Tokens.Notify.hour.toInt(), Tokens.Notify.minute.toInt()), TimeUnit.MINUTES).build()
-        wm.enqueueUniquePeriodicWork(WORK, ExistingPeriodicWorkPolicy.UPDATE, work)
+        val at = Store(context).morningMinute
+        val work = PeriodicWorkRequestBuilder<DailyWorker>(1, TimeUnit.DAYS).setInitialDelay(delayTo(at / 60, at % 60), TimeUnit.MINUTES).build()
+        // 시각을 바꾸거나 서머타임이 바뀌어도 새 시각부터 다시 (UPDATE 는 처음 정한 주기를 그대로 둠)
+        wm.enqueueUniquePeriodicWork(WORK, ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE, work)
     }
 
     /** 지금부터 다음 hour:minute 까지 (분). */
     internal fun delayTo(hour: Int, minute: Int): Long {
-        val now = LocalDateTime.now()
-        var next = now.toLocalDate().atTime(LocalTime.of(hour.coerceIn(0, 23), minute.coerceIn(0, 59)))
-        if (!next.isAfter(now)) next = next.plusDays(1)
+        // 시간대를 붙여 계산 (서머타임이 바뀌는 날에도 벽시계 시각에 맞게)
+        val now = java.time.ZonedDateTime.now()
+        val at = LocalTime.of(hour.coerceIn(0, 23), minute.coerceIn(0, 59))
+        var next = now.toLocalDate().atTime(at).atZone(now.zone)
+        if (!next.isAfter(now)) next = now.toLocalDate().plusDays(1).atTime(at).atZone(now.zone)
         return Duration.between(now, next).toMinutes()
     }
 
@@ -112,9 +116,9 @@ object Daily {
         }
         // 몇 해 전 오늘 보낸 한 줄이 있으면 그것을 알린다 (잠금 화면에는 글을 보이지 않음)
         var body = text
-        val yearAgo = Lines.yearsAgo(store.lines, LocalDate.now()).firstOrNull()
-        if (yearAgo != null) { title = context.getString(R.string.recall_notify, "${yearAgo.first}"); body = context.getString(R.string.recall_notifyText); openAt = "write" }
-        else if (store.keepLines && store.randomRecall() != null) { title = context.getString(R.string.recall_randomNotify); body = context.getString(R.string.recall_notifyText); openAt = "write" }
+        val yearAgo = store.yearsAgoSlip(LocalDate.now())
+        if (yearAgo != null) { title = context.getString(R.string.recall_notify, "${yearAgo.first}"); body = context.getString(R.string.recall_notifyText); openAt = "garden" }
+        else if (store.keepLines && store.randomRecall() != null) { title = context.getString(R.string.recall_randomNotify); body = context.getString(R.string.recall_notifyText); openAt = "garden" }
         if (store.design == Design.GARDEN) {
             val today = LocalDate.now()
             // 지난 달 · 지난 해의 정원이 핀 날 (달의 첫날 · 1월 1일, 그때 한 줄이 있었으면)
@@ -136,8 +140,12 @@ object Daily {
                     }
             }
         }
+        // 나무 밑 항아리가 열리는 날 (10): 무엇보다 먼저, 잠금 화면엔 글 없이
+        if (store.design == Design.GARDEN && io.github.graviton94.carpediem.core.Capsules.due(store.capsules, LocalDate.now()) != null) {
+            title = context.getString(R.string.capsule_opened); body = context.getString(R.string.capsule_notifyText); openAt = "garden"
+        }
         // 아침 알림을 누르면 (정원 디자인 · 켜 두었을 때) 하루를 여는 숨 1분으로
-        val tap = Intent(context, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        val tap = Intent(context, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
         // 편지 · 정원 소식이면 그곳으로, 아니면 (켜 두었을 때) 아침의 숨
         if (store.design == Design.GARDEN && openAt != null) tap.putExtra(MainActivity.EXTRA_OPEN, openAt)
         else if (store.design == Design.GARDEN && store.morningBreath) tap.putExtra(MainActivity.EXTRA_MORNING_BREATH, true)
@@ -159,13 +167,15 @@ class DailyWorker(context: Context, params: WorkerParameters) : CoroutineWorker(
 /** 하루 정리 알림: 밤에 한 번, 그날 한 줄을 아직 보내지 않았을 때만. 기본 꺼짐. */
 object Evening {
     private const val WORK = "evening-notify"
-    private const val ID = 2
+    internal const val ID = 2
 
     fun schedule(context: Context, on: Boolean) {
         val wm = WorkManager.getInstance(context)
         if (!on) { wm.cancelUniqueWork(WORK); return }
-        val work = PeriodicWorkRequestBuilder<EveningWorker>(1, TimeUnit.DAYS).setInitialDelay(Daily.delayTo(Tokens.Notify.eveningHour.toInt(), 0), TimeUnit.MINUTES).build()
-        wm.enqueueUniquePeriodicWork(WORK, ExistingPeriodicWorkPolicy.UPDATE, work)
+        val at = Store(context).eveningMinute
+        val work = PeriodicWorkRequestBuilder<EveningWorker>(1, TimeUnit.DAYS).setInitialDelay(Daily.delayTo(at / 60, at % 60), TimeUnit.MINUTES).build()
+        // 시각을 바꾸거나 서머타임이 바뀌어도 새 시각부터 다시 (UPDATE 는 처음 정한 주기를 그대로 둠)
+        wm.enqueueUniquePeriodicWork(WORK, ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE, work)
     }
 
     fun post(context: Context, force: Boolean = false) {
@@ -176,11 +186,14 @@ object Evening {
         if (!Daily.allowed(context)) return
         val nm = context.getSystemService(NotificationManager::class.java)
         Daily.eveningChannel(context)
-        val open = PendingIntent.getActivity(context, 1, Intent(context, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK).putExtra(MainActivity.EXTRA_OPEN, "write"),
+        // 누르면: 정원은 하루 닫기 (한 줄 → 고마움 → 등불), 유리 버전은 오늘의 한 줄
+        val open = PendingIntent.getActivity(context, 1, Intent(context, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            .putExtra(MainActivity.EXTRA_OPEN, if (store.design == Design.GARDEN) "close" else "write"),
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
+        // 알림을 내려 바로 한 줄 (01): 보내면 앱을 열지 않아도 오늘의 한 줄로
         val n = NotificationCompat.Builder(context, "evening").setSmallIcon(R.mipmap.ic_launcher_monochrome)
             .setContentTitle(context.getString(R.string.notify_evening)).setContentText(Daily.line(context, "notify_evening_", today, 2).ifEmpty { context.getString(R.string.notify_eveningText) })
-            .setContentIntent(open).setAutoCancel(true).build()
+            .setContentIntent(open).setAutoCancel(true).addAction(LineReply.replyAction(context)).build()
         NotificationManagerCompat.from(context).notify(ID, n)
     }
 }
@@ -229,7 +242,7 @@ object Tomorrow {
         Daily.daysChannel(context)
         // 생일이면 그 사람의 돌 페이지 (내 생일이면 내 돌), 특별한 날이면 흐름 (인생 달력의 꽃)
         val target = if (mine) "stone:" else who.firstOrNull()?.let { "stone:${it.id}" } ?: "flow"
-        val open = PendingIntent.getActivity(context, 2 + ahead * 10, Intent(context, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK).putExtra(MainActivity.EXTRA_OPEN, target),
+        val open = PendingIntent.getActivity(context, 2 + ahead * 10, Intent(context, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP).putExtra(MainActivity.EXTRA_OPEN, target),
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
         val n = NotificationCompat.Builder(context, "days").setSmallIcon(R.mipmap.ic_launcher_monochrome)
             .setContentTitle(title).setContentText(body).setContentIntent(open).setAutoCancel(true).build()
@@ -268,7 +281,7 @@ object MemoryWeekNote {
         val key = "${m.id}:${io.github.graviton94.carpediem.core.MemoryWeek.of(m, today)}"
         if (key in store.memoryWeekSent) return
         Daily.daysChannel(context)
-        val open = PendingIntent.getActivity(context, 6, Intent(context, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK).putExtra(MainActivity.EXTRA_OPEN, "memory"),
+        val open = PendingIntent.getActivity(context, 6, Intent(context, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP).putExtra(MainActivity.EXTRA_OPEN, "memory"),
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
         val n = NotificationCompat.Builder(context, "days").setSmallIcon(R.mipmap.ic_launcher_monochrome)
             .setContentTitle(context.getString(R.string.memory_weekNotify, m.name, Daily.subject(m.name, context))).setContentIntent(open).setAutoCancel(true).build()

@@ -70,8 +70,132 @@ object Offerings {
         list.filter { same(it.card, now) }.associateBy { it.personId }
 }
 
+/**
+ * 돌 별 꾸밈 (1.1.3): 돌마다 꾸밈 하나, 같은 꾸밈은 한 곳에만 (다른 돌로 옮기면 먼저 있던 돌에선 빠짐).
+ * 돌 = [ME] (내 하루) 또는 가족 id. 꾸밈 = "card:<SeasonCard.id>" (모은 계절 조각) · "support:<상품 id>" (응원) · "pebble:<날짜>" (하루가 준 조약돌).
+ */
+object Adornments {
+    const val ME = "me"
+    fun encode(m: Map<String, String>) = m.entries.joinToString("\n") { "${it.key}\t${it.value}" }
+    fun decode(s: String?): Map<String, String> = s.orEmpty().lineSequence().mapNotNull { r ->
+        val f = r.split('\t'); if (f.size < 2 || f[0].isEmpty() || f[1].isEmpty()) null else f[0] to f[1]
+    }.toMap()
+    /** 놓기: 그 돌에 있던 것은 손으로, 다른 돌에 있던 같은 꾸밈은 이리로 옮겨 옴. */
+    fun put(m: Map<String, String>, stone: String, item: String): Map<String, String> = m.filterValues { it != item } - stone + (stone to item)
+    fun remove(m: Map<String, String>, stone: String): Map<String, String> = m - stone
+    /** 그 꾸밈이 놓인 돌 (없으면 null). */
+    fun stoneOf(m: Map<String, String>, item: String): String? = m.entries.firstOrNull { it.value == item }?.key
+    /** 예전 ‘이번 계절의 조각’ (같은 조각을 여러 돌에) 을 옮겨 옴: 조각마다 처음 놓은 돌 하나에만, 이미 꾸밈이 있는 돌은 그대로. */
+    fun fromOfferings(list: List<Offering>, m: Map<String, String>): Map<String, String> = list.sortedBy { it.date }.fold(m) { acc, o ->
+        val item = "card:${o.card.id}"; if (o.personId in acc || acc.containsValue(item)) acc else acc + (o.personId to item)
+    }
+    /** 내려놓은 돌의 꾸밈은 다시 손으로. */
+    fun prune(m: Map<String, String>, stones: Set<String>): Map<String, String> = m.filterKeys { it == ME || it in stones }
+}
+
 /** 정원의 한 해 (S2): 12월 마지막 주 (25 ~ 31일) 에 그해의 정원을 한 장으로 볼까 묻는다. */
 object YearCard {
     const val FROM_DAY = 25
     fun due(today: LocalDate): Int? = if (today.monthValue == 12 && today.dayOfMonth >= FROM_DAY) today.year else null
+}
+
+/**
+ * 걱정한 밤 다음 아침 (06): 어제 남긴 한 줄이 무거운 마음 (걱정 · 슬픔 · 실망) 이었으면, 오늘 처음 정원을 열 때 하루가 위로 한마디만.
+ * 묻지도 세지도 않는다. shown = 이미 보여 준 날 (하루에 한 번).
+ */
+object Comfort {
+    fun due(lines: List<DayLine>, today: LocalDate, shown: LocalDate?): Boolean =
+        Pace.gap(shown, today, Pace.COMFORT_GAP) && lines.any { it.date == today.minusDays(1) && it.feeling in Letters.HEAVY }
+}
+
+/**
+ * 고요한 빈도: 정원이 먼저 건네는 말 (권유 · 한마디) 이 날마다 되풀이되거나 부담이 되지 않게.
+ * 기능은 그대로 두고, 얼마나 자주 말을 거는지만 여기서 정한다. 사람이 먼저 하는 일 (쓰기 · 숨 · 돌멍) 은 언제든.
+ */
+object Pace {
+    /** 걱정한 밤 다음 아침의 한마디: 사흘에 한 번까지. */
+    const val COMFORT_GAP = 3
+    /** 한 줄 뒤 권유 (숨 · 바라보기 · 보내기): 사흘에 한 번까지. */
+    const val CARE_GAP = 3
+    /** 아침 씨앗: 권한 날로부터 사흘 뒤에 다시, 그때 심지 않았으면 일주일 쉼. */
+    const val SEED_GAP = 3
+    const val SEED_REST = 7
+    /** 아침 숨 한 줄 권유: 사흘에 하루. */
+    const val BREATH_EVERY = 3
+
+    fun gap(last: LocalDate?, today: LocalDate, days: Int): Boolean = last == null || ChronoUnit.DAYS.between(last, today) >= days
+    fun seed(today: LocalDate, lastOffered: LocalDate?, plantedThen: Boolean): Boolean = gap(lastOffered, today, if (plantedThen) SEED_GAP else SEED_REST)
+    fun morningBreath(today: LocalDate): Boolean = Math.floorMod(today.toEpochDay(), BREATH_EVERY.toLong()) == 0L
+}
+
+/** 아침 씨앗 (04): 오늘 마음에 심는 작은 다짐 하나. 저녁에 ‘싹이 텄나요?’ — 텄으면 꽃, 아니면 흙 속에서 쉼 (실패로 남지 않음). */
+enum class SeedState { PLANTED, BLOOMED, RESTING }
+
+data class Seed(val date: LocalDate, val text: String, val state: SeedState = SeedState.PLANTED)
+
+object Seeds {
+    const val MAX_CHARS = 24
+    /** 오래된 것부터 버리는 개수 (꽃은 추억에 남기려 넉넉히). */
+    const val KEEP = 400
+
+    fun encode(list: List<Seed>): String = list.joinToString("\n") { "${it.date.toEpochDay()}\t${it.state.name}\t${Lines.clean(it.text, MAX_CHARS)}" }
+    fun decode(s: String?): List<Seed> = s.orEmpty().lineSequence().mapNotNull { r ->
+        val p = r.split('\t', limit = 3); if (p.size < 3) return@mapNotNull null
+        val d = p[0].toLongOrNull() ?: return@mapNotNull null
+        val st = SeedState.entries.firstOrNull { it.name == p[1] } ?: return@mapNotNull null
+        p[2].takeIf { it.isNotBlank() }?.let { Seed(LocalDate.ofEpochDay(d), it, st) }
+    }.toList()
+
+    fun of(list: List<Seed>, day: LocalDate): Seed? = list.lastOrNull { it.date == day }
+
+    /** 하루에 하나: 같은 날이면 바꿔 심음 (글만, 상태는 처음으로). */
+    fun plant(list: List<Seed>, day: LocalDate, text: String): List<Seed> {
+        val t = Lines.clean(text, MAX_CHARS); if (t.isEmpty()) return list
+        return (list.filterNot { it.date == day } + Seed(day, t)).sortedBy { it.date }.takeLast(KEEP)
+    }
+
+    fun answer(list: List<Seed>, day: LocalDate, bloomed: Boolean): List<Seed> =
+        list.map { if (it.date == day && it.state == SeedState.PLANTED) it.copy(state = if (bloomed) SeedState.BLOOMED else SeedState.RESTING) else it }
+
+    /** 저녁에 물어볼 씨앗: 오늘 심었고 아직 답하지 않은 것. */
+    fun toAsk(list: List<Seed>, today: LocalDate): Seed? = of(list, today)?.takeIf { it.state == SeedState.PLANTED }
+
+    fun bloomed(list: List<Seed>): List<Seed> = list.filter { it.state == SeedState.BLOOMED }.sortedByDescending { it.date }
+
+    /** 오늘 보여 줄 고르기 몇 개 (n 개 중 날마다 돌아가며 k 개). */
+    fun choices(n: Int, today: LocalDate, k: Int): List<Int> = if (n <= 0) emptyList() else (0 until minOf(k, n)).map { Math.floorMod(today.toEpochDay() * k + it, n.toLong()).toInt() }.distinct()
+}
+
+/**
+ * 정원 손님: 앱을 열든 안 열든 날마다 정해지는 우연 (평균 일주일에 한 번, 사람마다 다른 날).
+ * 쉬었다고 더 오거나 매일 열었다고 덜 오지 않는다. 다섯 중 하나쯤은 드문 손님 (토끼 · 부엉이).
+ */
+object Guests {
+    val COMMON = listOf("tit", "squirrel", "hedgehog")
+    val RARE = listOf("rabbit", "owl")
+    /**
+     * 손님은 지난 한 줄이 돌아오는 날 (5–20일에 한 번쯤) 쪽지를 물고 온다. 아직 돌아올 한 줄이 없는 처음엔
+     * 빈손으로 평균 EVERY 일에 한 번 (같은 박자).
+     */
+    const val EVERY = 12
+
+    /** 쪽지 없는 날의 손님 (처음 한 달 남짓, 없으면 null). seed = 사람마다 다른 수. */
+    fun on(today: LocalDate, seed: Long): String? {
+        val h = mix(seed * 1_000_003L + today.toEpochDay())
+        if (Math.floorMod(h, EVERY.toLong()) != 0L) return null
+        return pick(today, seed)
+    }
+
+    /** 그날 올 손님 (열에 둘은 드문 손님). 같은 날은 늘 같은 손님. */
+    fun pick(today: LocalDate, seed: Long): String {
+        val k = Math.floorMod(mix(seed * 1_000_003L + today.toEpochDay()) ushr 16, 10L).toInt()
+        return if (k < RARE.size) RARE[k] else COMMON[k % COMMON.size]
+    }
+
+    private fun mix(x: Long): Long {
+        var z = x + -0x61c8864680b583ebL
+        z = (z xor (z ushr 30)) * -0x40a7b892e31b1a47L
+        z = (z xor (z ushr 27)) * -0x6b2fb644ecceee15L
+        return z xor (z ushr 31)
+    }
 }

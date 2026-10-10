@@ -301,6 +301,12 @@ fun rememberTilt(enabled: Boolean): Offset {
     return if (enabled) tilt else Offset.Zero
 }
 
+/** 하루가 아는 오늘: 보낸 한 줄의 마음 (무거움 · 기쁨) 에 따라 쓰다듬기 반응이 조금 달라진다. */
+enum class HaruMood { CALM, HEAVY, JOY }
+private const val LEAN_DEG = 8f
+private const val JOY_HOP = 1.45f
+private const val DROWSY_LID = 0.6f
+
 /** 폴짝 한 번의 모양 (h = 0 … 1): (가로 배율, 세로 배율, 뜬 높이 0 … 1). */
 internal fun hopShape(h: Float): Triple<Float, Float, Float> = when {
     h <= 0f || h >= 1f -> Triple(1f, 1f, 0f)
@@ -316,7 +322,8 @@ internal fun hopShape(h: Float): Triple<Float, Float, Float> = when {
  */
 @Composable
 fun HaruFigure(art: HaruArt, scale: Dp, modifier: Modifier = Modifier, blinkKick: Int = 0, hat: Boolean = false, a11y: String? = null, onOpen: (() -> Unit)? = null,
-               onLongPress: (() -> Unit)? = null, lid: Float? = null, tiltOn: Boolean = true, lookDown: Float = 0f) {
+               onLongPress: (() -> Unit)? = null, lid: Float? = null, tiltOn: Boolean = true, lookDown: Float = 0f,
+               mood: HaruMood = HaruMood.CALM, sleepy: Boolean = false, onPet: (() -> Unit)? = null) {
     val ctx = LocalContext.current
     val fiber = remember { GardenArt.fiber(ctx) }
     val view = androidx.compose.ui.platform.LocalView.current
@@ -328,6 +335,8 @@ fun HaruFigure(art: HaruArt, scale: Dp, modifier: Modifier = Modifier, blinkKick
     val blush = remember { Animatable(0f) }
     val hop = remember { Animatable(0f) }
     val rest = remember { Animatable(0f) }
+    val lean = remember { Animatable(0f) }     // 무거운 날: 내 쪽으로 살짝 기댐
+    val drowsy = remember { Animatable(0f) }   // 밤: 반쯤 감기는 눈 (하품)
     val scope = androidx.compose.runtime.rememberCoroutineScope()
     val taps = remember { ArrayList<Long>() }
     suspend fun blinkOnce() { blink.animateTo(1f, tween((m.blinkMs / 2).roundToInt())); blink.animateTo(0f, tween((m.blinkMs / 2).roundToInt())) }
@@ -337,6 +346,17 @@ fun HaruFigure(art: HaruArt, scale: Dp, modifier: Modifier = Modifier, blinkKick
         LaunchedEffect(blinkKick) { if (blinkKick > 0) blinkOnce() }
     }
     fun tick() { if (tc.haptic > 0f) view.performHapticFeedback(android.view.HapticFeedbackConstants.CLOCK_TICK) }
+    /** 잠든 작은 숨결처럼 여린 떨림 한 번 (스르르 부풀었다 잦아듦). 세기 조절이 안 되는 폰은 짧게 한 번. */
+    fun slowPulse() {
+        if (tc.haptic <= 0f) return
+        runCatching {
+            val v = ctx.getSystemService(android.os.Vibrator::class.java) ?: return
+            if (!v.hasVibrator()) return
+            val e = if (v.hasAmplitudeControl()) android.os.VibrationEffect.createWaveform(longArrayOf(0, 220, 220, 240, 260, 320), intArrayOf(0, 18, 28, 40, 28, 18), -1)
+                else android.os.VibrationEffect.createOneShot(14, android.os.VibrationEffect.DEFAULT_AMPLITUDE)
+            v.vibrate(e)
+        }
+    }
     fun pet() {
         if (rest.value > 0f) return
         val now = System.currentTimeMillis()
@@ -349,15 +369,30 @@ fun HaruFigure(art: HaruArt, scale: Dp, modifier: Modifier = Modifier, blinkKick
             scope.launch { rest.snapTo(1f); delay(tc.restMs.toLong()); rest.snapTo(0f) }
             return
         }
+        onPet?.invoke()
+        // 오늘이 묻어나는 쓰다듬기: 무거운 날은 웃지 않고 기대 옴 · 밤엔 하품 · 기쁜 날은 더 일찍 · 더 높이 뜀 (글은 없음)
+        if (mood == HaruMood.HEAVY) {
+            if (animate) scope.launch { lean.animateTo(1f, tween(700)); delay(700); lean.animateTo(0f, tween(900)) }
+            slowPulse()
+            return
+        }
+        if (sleepy) {
+            scope.launch { drowsy.animateTo(1f, tween(500)); delay(tc.petMs.toLong()); drowsy.animateTo(0f, tween(700)) }
+            if (animate) scope.launch { wiggle.snapTo(0f); wiggle.animateTo(1f, tween(tc.petMs.toInt() * 2)) }
+            return
+        }
         scope.launch { smile.snapTo(1f); delay(tc.petMs.toLong()); smile.snapTo(0f) }
         if (animate) scope.launch { wiggle.snapTo(0f); wiggle.animateTo(1f, tween(tc.petMs.toInt())) }
         if (recent == 2) scope.launch { blush.snapTo(1f); blush.animateTo(0f, tween(tc.blushMs.toInt())) }
-        if (recent >= 3 && animate) scope.launch { hop.snapTo(0f); hop.animateTo(1f, tween(tc.hopMs.toInt(), easing = androidx.compose.animation.core.LinearEasing)); hop.snapTo(0f) }
+        val hopFrom = if (mood == HaruMood.JOY) 2 else 3
+        if (recent >= hopFrom && animate) scope.launch { hop.snapTo(0f); hop.animateTo(1f, tween(tc.hopMs.toInt(), easing = androidx.compose.animation.core.LinearEasing)); hop.snapTo(0f) }
     }
     // 눈동자 굴림(기울기 센서)은 내 하루만: 돌마다 센서를 따로 들으면 돌이 많을 때 무거워진다
     val tilt = rememberTilt(animate && tiltOn)
     val open by androidx.compose.runtime.rememberUpdatedState(onOpen)
     val hold by androidx.compose.runtime.rememberUpdatedState(onLongPress)
+    // 쓰다듬기는 지금의 기분 · 졸림 · 날짜로 (켜 둔 사이 한 줄이 오거나 밤이 되거나 자정을 넘겨도)
+    val petNow by androidx.compose.runtime.rememberUpdatedState({ pet() })
     // 그림 칸은 넉넉하지만 누르는 자리는 돌 둘레 + touchPad 까지만 (바로 아래 이끼 · 옆 돌을 누를 수 있게)
     androidx.compose.foundation.layout.Box(modifier.size(scale * art.meta.box)) {
     Canvas(
@@ -366,15 +401,15 @@ fun HaruFigure(art: HaruArt, scale: Dp, modifier: Modifier = Modifier, blinkKick
                 transformOrigin = androidx.compose.ui.graphics.TransformOrigin(0.5f, art.meta.ground / art.meta.box)
                 // 갸웃: 바닥을 축으로 흔들리다 잦아듦
                 val w = wiggle.value
-                rotationZ = if (w in 0.001f..0.999f) kotlin.math.exp(-3.2f * w) * kotlin.math.sin(w * Math.PI.toFloat() * 4f) * tc.wiggleDeg * 1.4f else 0f
+                rotationZ = (if (w in 0.001f..0.999f) kotlin.math.exp(-3.2f * w) * kotlin.math.sin(w * Math.PI.toFloat() * 4f) * tc.wiggleDeg * 1.4f else 0f) + lean.value * LEAN_DEG
                 val sq = if (w in 0.001f..0.999f) kotlin.math.sin(w * Math.PI.toFloat()) * tc.squash else 0f
                 // 폴짝: 살짝 웅크렸다 → 늘어나며 뛰어 (무게 있는 포물선) → 납작하게 내려앉았다 돌아옴
                 val (hx, hy, lift) = hopShape(hop.value)
                 scaleX = (1f + sq) * hx; scaleY = (1f - sq) * hy
-                translationY = -lift * tc.hop * size.width / art.meta.box   // hop = 칸 좌표
+                translationY = -lift * tc.hop * (if (mood == HaruMood.JOY) JOY_HOP else 1f) * size.width / art.meta.box   // hop = 칸 좌표
             }
     ) {
-        drawHaru(art, size.width / art.meta.box, lid ?: maxOf(blink.value, rest.value), if (lookDown > 0f) Offset(tilt.x, (tilt.y + lookDown).coerceAtMost(1f)) else tilt, smile = if (lid != null) 0f else smile.value, blush = blush.value, hat = hat, fiber = fiber)
+        drawHaru(art, size.width / art.meta.box, lid ?: maxOf(blink.value, rest.value, drowsy.value * DROWSY_LID), if (lookDown > 0f) Offset(tilt.x, (tilt.y + lookDown).coerceAtMost(1f)) else tilt, smile = if (lid != null) 0f else smile.value, blush = blush.value, hat = hat, fiber = fiber)
     }
     val bb = art.meta.bbox; val pad = tc.touchPad.dp
     androidx.compose.foundation.layout.Box(Modifier.offset(scale * bb.left - pad, scale * bb.top - pad).size(scale * bb.width + pad * 2, scale * bb.height + pad * 2)
@@ -387,6 +422,8 @@ fun HaruFigure(art: HaruArt, scale: Dp, modifier: Modifier = Modifier, blinkKick
                 ).joinToString(", ")
                 customActions = listOfNotNull(
                     androidx.compose.ui.semantics.CustomAccessibilityAction(ctx.getString(io.github.graviton94.carpediem.R.string.garden_pet)) { pet(); true },
+                    // 길게 누르기 (노래) 도 TalkBack 동작으로
+                    if (onLongPress != null) androidx.compose.ui.semantics.CustomAccessibilityAction(ctx.getString(io.github.graviton94.carpediem.R.string.a11y_sing)) { onLongPress(); true } else null,
                 )
                 if (onOpen != null) onClick { onOpen(); true }
             }
@@ -401,7 +438,7 @@ fun HaruFigure(art: HaruArt, scale: Dp, modifier: Modifier = Modifier, blinkKick
                         if (!released) { tick(); h(); waitForUpOrCancellation(); return@awaitEachGesture }
                         up ?: return@awaitEachGesture
                     } else waitForUpOrCancellation() ?: return@awaitEachGesture
-                    pet()   // 첫 누름에 바로 반응
+                    petNow()   // 첫 누름에 바로 반응
                     val o = open ?: return@awaitEachGesture
                     val second = withTimeoutOrNull(tc.doubleMs.toLong()) { awaitFirstDown(requireUnconsumed = false) }
                     if (second != null) { tick(); o() }

@@ -1,5 +1,6 @@
 package io.github.graviton94.carpediem.ui.garden
 
+import io.github.graviton94.carpediem.ui.AlertButton
 import androidx.compose.ui.graphics.graphicsLayer
 import io.github.graviton94.carpediem.ui.GardenAlert
 import androidx.activity.compose.BackHandler
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.size
@@ -156,7 +158,7 @@ private fun MemoryStone(state: AppState, m: Person, today: LocalDate, seed: Int)
                     value = text, onValueChange = { v -> val one = v.replace('\n', ' '); if (one.codePointCount(0, one.length) <= G.LetGo.maxChars.toInt()) text = one },
                     singleLine = true, textStyle = Tokens.TypeScale.callout.style().copy(color = p.foreground), cursorBrush = SolidColor(p.foreground),
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send), keyboardActions = KeyboardActions(onSend = { send() }),
-                    modifier = Modifier.fillMaxWidth().crayonBox(null, G.Radius.box, G.Stroke.chip, seed + 2).padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3),
+                    modifier = Modifier.fillMaxWidth().keepAboveKeyboard().crayonBox(null, G.Radius.box, G.Stroke.chip, seed + 2).padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3),
                     decorationBox = { inner -> Box { if (text.isEmpty()) TokenText(stringResource(R.string.memory_sendHint), Tokens.TypeScale.callout, color = p.secondary); inner() } },
                 )
                 GardenButton(stringResource(R.string.memory_send, m.name), { send() }, filled = text.isNotBlank(), seed = seed + 3)
@@ -184,22 +186,22 @@ private fun MemoryStone(state: AppState, m: Person, today: LocalDate, seed: Int)
         if (m.until != null) Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
                 TokenText(stringResource(R.string.memory_weekRow), Tokens.TypeScale.subhead)
-                TokenText(stringResource(R.string.memory_weekHelp), Tokens.TypeScale.caption1, color = p.secondary)
+                TokenText(stringResource(R.string.memory_weekHelp), Tokens.TypeScale.footnote, color = p.secondary)
             }
             Switch(m.id in state.memoryWeekOn, { state.setMemoryWeek(m.id, it) }, colors = SwitchDefaults.colors(checkedTrackColor = p.olive))
         }
         Row(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2), verticalAlignment = Alignment.CenterVertically) {
-            TokenText(stringResource(R.string.memory_back), Tokens.TypeScale.footnote, Modifier.clickable { if (!state.backToGarden(m.id)) full = true }.padding(Tokens.Space.sp2), color = p.secondary)
+            TokenText(stringResource(R.string.memory_back), Tokens.TypeScale.footnote, Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { if (!state.backToGarden(m.id)) full = true }.padding(Tokens.Space.sp3), color = p.secondary)
             TokenText("·", Tokens.TypeScale.footnote, color = p.secondary)
-            TokenText(stringResource(R.string.stone_removeAction), Tokens.TypeScale.footnote, Modifier.clickable { confirmRemove = true }.padding(Tokens.Space.sp2), color = p.secondary)
+            TokenText(stringResource(R.string.stone_removeAction), Tokens.TypeScale.footnote, Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { confirmRemove = true }.padding(Tokens.Space.sp3), color = p.secondary)
         }
         if (full) TokenText(stringResource(R.string.memory_backFull), Tokens.TypeScale.caption1, color = p.secondary)
     }
     if (confirmRemove) GardenAlert(
         onDismissRequest = { confirmRemove = false },
         title = { Text(stringResource(R.string.memory_removeConfirm, m.name)) },
-        confirmButton = { TextButton(onClick = { confirmRemove = false; state.removeMemory(m.id) }) { Text(stringResource(R.string.stone_removeAction), color = p.danger) } },
-        dismissButton = { TextButton(onClick = { confirmRemove = false }) { Text(stringResource(R.string.cancel)) } },
+        confirmButton = { AlertButton(stringResource(R.string.stone_removeAction), { confirmRemove = false; state.removeMemory(m.id) }) },
+        dismissButton = { AlertButton(stringResource(R.string.cancel), { confirmRemove = false }, quiet = true) },
     )
 }
 
@@ -223,7 +225,10 @@ internal fun MemoryStars(state: AppState, width: Dp, top: Dp, bottom: Dp, night:
         val r = Crayon.Rng(m.id.hashCode())
         val x = width * (0.14f + 0.72f * r.next()); val y = top + (bottom - top) * r.next()
         val a11y = stringResource(R.string.memory_starNote, m.name)
-        Canvas(Modifier.offset(x - size / 2, y - size / 2).size(size).semantics { contentDescription = a11y }.clickable { shown = m.id }.graphicsLayer()) {
+        val tt = Tokens.Layout.tapTarget
+        Box(Modifier.offset(x - tt / 2, y - tt / 2).size(tt).semantics { contentDescription = a11y }
+            .clickable(interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }, indication = null) { shown = m.id })
+        Canvas(Modifier.offset(x - size / 2, y - size / 2).size(size).graphicsLayer()) {
             val c = Offset(this.size.width / 2, this.size.height / 2); val k = this.size.width / 22f
             val warm = G.Night.Colors.firefly
             // 그 주엔 빛이 넓고 밝게, 6초에 한 번 숨 쉬듯

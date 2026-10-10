@@ -3,20 +3,51 @@ package io.github.graviton94.carpediem.core
 import java.time.LocalDate
 
 /** 오늘의 한 줄에 실어 보내는 마음 (고르지 않아도 된다). */
-enum class Feeling { JOY, HOPE, CALM, THANKS, DISAPPOINT, SAD, WORRY }
+/**
+ * 마음 열 가지 (고르는 순서 그대로): 밝은 다섯 · 가운데 둘 · 무거운 셋. 저장은 이름으로라 순서를 바꿔도 지난 한 줄은 그대로.
+ * HOPE = 설렘, WORRY = 불안, DISAPPOINT = 속상함 (이름만 바뀜).
+ */
+enum class Feeling {
+    JOY, HOPE, PROUD, THANKS, CALM, MEH, UNSETTLED, WORRY, DISAPPOINT, SAD;
+    companion object {
+        /** 밝은 마음 (해 · 하루가 깡충). 평온은 따로 (구름). */
+        val BRIGHT = setOf(JOY, HOPE, PROUD, THANKS)
+        /** 한 줄에 다섯 칸씩 두 줄 */
+        const val PER_ROW = 5
+        /** 같은 수일 때 앞서는 차례: 1.1.3 까지의 순서 그대로 (지난 리본 · 계절 조각 색이 바뀌지 않게), 새 마음은 그 뒤. */
+        fun tieRank(f: Feeling): Int = LEGACY.indexOf(f).let { if (it >= 0) it else LEGACY.size + f.ordinal }
+        private val LEGACY = listOf(JOY, HOPE, CALM, THANKS, DISAPPOINT, SAD, WORRY)
+    }
+}
 
 /** 하루에 한 줄. 떠나보낸 뒤에는 화면에 다시 보이지 않고, 기기 안에만 남는다. text 가 비었으면 ‘기록 남기지 않기’로 날짜만 남긴 것. */
 data class DayLine(val date: LocalDate, val text: String, val feeling: Feeling?, val to: String? = null, val question: Int? = null)
 
 object Lines {
-    /** 한 줄로 다듬기: 줄바꿈 · 탭을 빈칸으로, 앞뒤 빈칸 없이, 최대 max 글자. */
-    fun clean(text: String, max: Int): String =
-        text.replace(Regex("[\\t\\r\\n]+"), " ").trim().let { if (it.codePointCount(0, it.length) <= max) it else it.substring(0, it.offsetByCodePoints(0, max)) }
+    /** 오늘의 한 줄은 이름은 ‘한 줄’이지만 이만큼 줄을 나눠 쓸 수 있다 (빈 줄 포함). */
+    const val MAX_LINES = 5
+    /** 저장할 때 글 안의 줄바꿈 자리 (기록 하나가 한 줄이라 줄바꿈 대신 U+2028 줄 구분 문자로 둔다). */
+    private const val LS = '\u2028'
 
-    /** 저장 형식: 한 줄에 하나, `epochDay<TAB>FEELING(없으면 -)<TAB>글[<TAB>받는 돌 id(없으면 빈칸)[<TAB>질문 번호]]`. 예전 기록(칸 3 · 4개)도 그대로 읽힌다. */
+    /**
+     * 다듬기: 앞뒤 빈칸 없이, 최대 max 글자. lines = 1 이면 줄바꿈 · 탭을 빈칸으로 (한 줄).
+     * lines > 1 이면 줄바꿈은 남기되 탭은 빈칸, 줄 끝 빈칸은 지우고, 빈 줄이 여럿 이어지면 하나로, 최대 lines 줄.
+     */
+    fun clean(text: String, max: Int, lines: Int = 1): String {
+        val t = if (lines <= 1) text.replace(Regex("[\\t\\r\\n$LS]+"), " ").trim()
+        else text.replace("\r\n", "\n").replace('\r', '\n').replace(LS, '\n').replace('\t', ' ')
+            .split('\n').joinToString("\n") { it.trimEnd() }.replace(Regex("\n{3,}"), "\n\n").trim()
+            .split('\n').take(lines).joinToString("\n").trimEnd()
+        return if (t.codePointCount(0, t.length) <= max) t else t.substring(0, t.offsetByCodePoints(0, max)).trimEnd()
+    }
+
+    /**
+     * 저장 형식: 한 줄에 하나, `epochDay<TAB>FEELING(없으면 -)<TAB>글[<TAB>받는 돌 id(없으면 빈칸)[<TAB>질문 번호]]`. 예전 기록(칸 3 · 4개)도 그대로 읽힌다.
+     * 글 안의 줄바꿈은 U+2028 로 바꿔 둔다 (예전 기록에는 줄바꿈이 없어 그대로 읽힘).
+     */
     fun encode(list: List<DayLine>): String =
         list.joinToString("\n") {
-            "${it.date.toEpochDay()}\t${it.feeling?.name ?: "-"}\t${clean(it.text, Int.MAX_VALUE)}" +
+            "${it.date.toEpochDay()}\t${it.feeling?.name ?: "-"}\t${clean(it.text, Int.MAX_VALUE, Int.MAX_VALUE).replace('\n', LS)}" +
                 (if (it.to != null || it.question != null) "\t${it.to.orEmpty()}" else "") + (it.question?.let { q -> "\t$q" } ?: "")
         }
 
@@ -25,7 +56,7 @@ object Lines {
             val p = row.split('\t', limit = 5)
             if (p.size < 3) return@mapNotNull null
             val day = p[0].toLongOrNull() ?: return@mapNotNull null
-            DayLine(LocalDate.ofEpochDay(day), p[2], Feeling.entries.firstOrNull { it.name == p[1] }, p.getOrNull(3)?.takeIf { it.isNotBlank() }, p.getOrNull(4)?.toIntOrNull())
+            DayLine(LocalDate.ofEpochDay(day), p[2].replace(LS, '\n'), Feeling.entries.firstOrNull { it.name == p[1] }, p.getOrNull(3)?.takeIf { it.isNotBlank() }, p.getOrNull(4)?.toIntOrNull())
         }.toList()
 
     /** 이어 쓰기 흔적: 7 · 30 · 100일 (정원에 바람개비 · 종이배 · 연). */
@@ -50,6 +81,16 @@ object Lines {
      * 몇 해 전 오늘 보낸 한 줄 (가까운 해부터). 글 없이 날짜만 남긴 날은 빼고,
      * 2월 29일에 보낸 줄은 평년엔 2월 28일에 돌아온다.
      */
+    /**
+     * 요즘의 마음 (정원의 미니 하루, 1.1.5): 오늘까지 days 일 동안 한 줄에 고른 마음을 자주 머문 것부터 max 개.
+     * 같은 수면 더 최근에 고른 것 먼저. 마음을 고르지 않은 줄은 세지 않음.
+     */
+    fun recentFeelings(list: List<DayLine>, today: LocalDate, days: Int = 7, max: Int = 3): List<Feeling> =
+        list.filter { it.feeling != null && !it.date.isAfter(today) && it.date.isAfter(today.minusDays(days.toLong())) }
+            .groupBy { it.feeling!! }.entries
+            .sortedWith(compareByDescending<Map.Entry<Feeling, List<DayLine>>> { it.value.size }.thenByDescending { e -> e.value.maxOf { it.date } })
+            .take(max).map { it.key }
+
     fun yearsAgo(list: List<DayLine>, today: LocalDate): List<Pair<Int, DayLine>> =
         list.filter { it.text.isNotBlank() && it.date.year < today.year }.mapNotNull { l ->
             val md = if (l.date.monthValue == 2 && l.date.dayOfMonth == 29 && !today.isLeapYear) java.time.MonthDay.of(2, 28) else java.time.MonthDay.from(l.date)
@@ -73,7 +114,7 @@ object Lines {
 
     /** 내보내기용 글 (한 줄에 하나: 날짜 · 마음 · 글). 마음 이름은 부르는 쪽이 정한다. */
     fun export(list: List<DayLine>, feelingName: (Feeling) -> String): String =
-        list.filter { it.text.isNotBlank() }.joinToString("\n") { l -> listOfNotNull(l.date.toString(), l.feeling?.let(feelingName), l.text).joinToString(" · ") }
+        list.filter { it.text.isNotBlank() }.joinToString("\n") { l -> listOfNotNull(l.date.toString(), l.feeling?.let(feelingName), l.text.replace("\n", " / ")).joinToString(" · ") }
 
     /** 마음의 하늘: 오늘까지 n일 (오래된 날부터), 날마다 보낸 한 줄 또는 null (쉰 날). */
     fun lastDays(list: List<DayLine>, today: LocalDate, n: Int): List<Pair<LocalDate, DayLine?>> {
@@ -99,6 +140,27 @@ object Lines {
     fun wishDue(today: LocalDate): String? =
         if (today.monthValue in listOf(3, 6, 9, 12) && today.dayOfMonth <= 14) "%04d-%02d".format(today.year, today.monthValue) else null
 
+    /** 마음의 날씨: 그 달에 가장 많이 고른 마음 (같으면 나중에 고른 것). 고른 마음이 없으면 null. */
+    fun monthMood(list: List<DayLine>, year: Int, month: Int): Feeling? =
+        list.filter { it.date.year == year && it.date.monthValue == month && it.feeling != null }
+            .groupBy { it.feeling!! }.maxWithOrNull(compareBy<Map.Entry<Feeling, List<DayLine>>> { it.value.size }.thenBy { e -> e.value.maxOf { it.date } })?.key
+
+    /** 기록 찾기: 글 · 마음 이름 · 받는 사람 이름에 낱말이 든 줄 (최근 것부터, 오늘 것은 빼고). */
+    fun search(list: List<DayLine>, query: String, today: LocalDate, feelingName: (Feeling) -> String, personName: (String) -> String?): List<DayLine> {
+        val q = query.trim(); if (q.isEmpty()) return emptyList()
+        return list.filter { l ->
+            l.date != today && (l.text.contains(q, ignoreCase = true) || l.feeling?.let { feelingName(it).contains(q, ignoreCase = true) } == true ||
+                l.to?.let(personName)?.contains(q, ignoreCase = true) == true)
+        }.sortedByDescending { it.date }
+    }
+
+    /** 그날의 한 줄을 고침: 글 · 마음만 바꾸고 받는 돌 · 질문은 그대로. 그날 줄이 없으면 그대로. */
+    fun edit(list: List<DayLine>, day: LocalDate, text: String, feeling: Feeling?): List<DayLine> =
+        list.map { if (it.date == day) it.copy(text = text, feeling = feeling) else it }
+
+    /** 그날의 한 줄을 지움 (그날은 다시 쓸 수 있는 빈 날이 됨). */
+    fun remove(list: List<DayLine>, day: LocalDate): List<DayLine> = list.filterNot { it.date == day }
+
     /** 같은 날에 이미 보냈으면 그대로 (하루에 한 줄). 날짜순. */
     fun add(list: List<DayLine>, line: DayLine): List<DayLine> =
         if (list.any { it.date == line.date }) list else (list + line).sortedBy { it.date }
@@ -120,5 +182,20 @@ object SpecialDays {
         list.filter { it.date.year < day.year && Family.birthdayIn(it.date, day.year) == day }.map { it to day.year - it.date.year }
 
     /** 같은 날은 하나만 (이름을 바꿈), 날짜순, 최대 MAX. */
-    fun put(list: List<SpecialDay>, day: SpecialDay): List<SpecialDay> = (list.filterNot { it.date == day.date } + day).sortedBy { it.date }.takeLast(MAX)
+    /** 같은 날에도 여럿 (같은 날 · 같은 이름은 한 번만). 날짜순, 최대 MAX. */
+    fun put(list: List<SpecialDay>, day: SpecialDay): List<SpecialDay> = (list.filterNot { it == day } + day).sortedBy { it.date }.takeLast(MAX)
+}
+
+/**
+ * 첫 일주일 길잡이: 둘러보기 다음 날부터 하루에 하나씩, 정원 아래 조용한 권유 한 줄.
+ * 이미 해 본 것 (done) 은 건너뛰고, 놓친 것은 다음 날로 넘어감. 둘째 주가 끝나면 더 권하지 않음. 점수 · 체크 표시는 없음.
+ */
+object FirstWeek {
+    /** 권하는 차례: 키와 처음 권하는 날 (만난 날 = 0). */
+    /** 이틀에 하나씩 (날마다 권하지 않게). */
+    val STEPS = listOf("breath" to 1, "stone" to 3, "gaze" to 5, "special" to 7, "backup" to 9)
+    const val LAST_DAY = 13
+
+    fun next(daysSinceMet: Long, done: Set<String>): String? =
+        if (daysSinceMet !in 1..LAST_DAY) null else STEPS.firstOrNull { (k, d) -> d <= daysSinceMet && k !in done }?.first
 }

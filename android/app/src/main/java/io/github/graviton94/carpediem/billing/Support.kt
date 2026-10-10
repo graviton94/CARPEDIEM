@@ -29,6 +29,10 @@ class Support(context: Context) {
         private set
     /** 방금 응원이 끝났을 때 true (화면이 고마움 한마디를 보이고 다시 false 로). */
     var thanked by mutableStateOf(false)
+    /** 응원이 끝난 상품 id (고마움의 흔적을 남기려고). 화면 스레드에서 부름. */
+    var onSupported: ((String) -> Unit)? = null
+    /** 방금 응원한 상품 id (고마움 한마디에 무엇이 놓였는지). */
+    var lastId by mutableStateOf<String?>(null)
     val ready: Boolean get() = details.isNotEmpty()
 
     private var details: Map<String, ProductDetails> = emptyMap()
@@ -73,7 +77,11 @@ class Support(context: Context) {
     /** 소모성: 받자마자 써서 다음에 또 응원할 수 있게. 보상은 없고 고마움 한마디만. */
     private fun consume(p: Purchase) {
         if (p.purchaseState != Purchase.PurchaseState.PURCHASED) return
-        client.consumeAsync(ConsumeParams.newBuilder().setPurchaseToken(p.purchaseToken).build()) { r, _ -> if (r.responseCode == BillingClient.BillingResponseCode.OK) thanked = true }
+        client.consumeAsync(ConsumeParams.newBuilder().setPurchaseToken(p.purchaseToken).build()) { r, _ ->
+            if (r.responseCode != BillingClient.BillingResponseCode.OK) return@consumeAsync
+            val id = p.products.firstOrNull()
+            android.os.Handler(android.os.Looper.getMainLooper()).post { lastId = id; thanked = true; id?.let { onSupported?.invoke(it) } }
+        }
     }
 
     fun close() = runCatching { client.endConnection() }

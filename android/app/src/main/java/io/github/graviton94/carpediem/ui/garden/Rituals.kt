@@ -1,0 +1,659 @@
+package io.github.graviton94.carpediem.ui.garden
+
+import io.github.graviton94.carpediem.ui.AlertButton
+import android.app.Activity
+import android.content.Context
+import android.os.Build
+import android.os.SystemClock
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.os.VibratorManager
+import android.view.WindowManager
+import androidx.activity.compose.BackHandler
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.withFrameMillis
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.Text
+import io.github.graviton94.carpediem.R
+import io.github.graviton94.carpediem.core.Breath
+import io.github.graviton94.carpediem.core.BreathKind
+import io.github.graviton94.carpediem.core.BreathStep
+import io.github.graviton94.carpediem.core.DayPart
+import io.github.graviton94.carpediem.core.Feeling
+import io.github.graviton94.carpediem.core.LifeProfile
+import io.github.graviton94.carpediem.core.Lines
+import io.github.graviton94.carpediem.core.SeedState
+import io.github.graviton94.carpediem.core.Seeds
+import io.github.graviton94.carpediem.core.Sound
+import io.github.graviton94.carpediem.design.Theme
+import io.github.graviton94.carpediem.design.Tokens
+import io.github.graviton94.carpediem.design.Tokens.Garden as G
+import io.github.graviton94.carpediem.sound.Soundscape
+import io.github.graviton94.carpediem.ui.AppState
+import io.github.graviton94.carpediem.ui.Labels
+import io.github.graviton94.carpediem.ui.TokenText
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.LocalDateTime
+
+/*
+ * 하루를 열고 닫는 작은 의식들.
+ *   아침 씨앗 (04): 아침 정원 위쪽에 작은 다짐 하나 → 저녁에 ‘싹이 텄나요?’ (텄으면 꽃, 아니면 흙 속에서 쉼)
+ *   걱정한 밤 다음 아침 (06): 하루가 위로 한마디만 (묻지도 세지도 않음)
+ *   하루 닫기 (03): 한 줄 → 고마운 것 하나 (숨 세 번) → 등불 아래 숨 두 번 → 등불 끄기
+ *   하루의 숨결을 손끝으로 (05): 숨을 떨림으로 (화면은 어둡게)
+ */
+
+private const val SEED_CHOICES = 3
+
+/** res 의 seed_choice_0 … 고르기 글들. */
+private fun seedChoices(ctx: Context): List<String> =
+    generateSequence(0) { it + 1 }.map { ctx.resources.getIdentifier("seed_choice_$it", "string", ctx.packageName) }.takeWhile { it != 0 }.map { ctx.getString(it) }.toList()
+
+/** prefix_0 … 가운데 오늘의 것 (날마다 다음 것). */
+internal fun dayLine(ctx: Context, prefix: String, day: LocalDate, salt: Int = 0): String? {
+    val ids = generateSequence(0) { it + 1 }.map { ctx.resources.getIdentifier("$prefix$it", "string", ctx.packageName) }.takeWhile { it != 0 }.toList()
+    return if (ids.isEmpty()) null else ctx.getString(ids[io.github.graviton94.carpediem.core.Nudges.pick(day, ids.size, salt)])
+}
+
+// ───────────────────────── 아침 씨앗 ─────────────────────────
+
+@OptIn(ExperimentalLayoutApi::class, androidx.compose.material3.ExperimentalMaterial3Api::class)
+@Composable
+internal fun SeedSheet(state: AppState, today: LocalDate, onDismiss: () -> Unit) {
+    val p = Theme.palette
+    val ctx = LocalContext.current
+    val all = remember { seedChoices(ctx) }
+    val picks = remember(today, all) { Seeds.choices(all.size, today, SEED_CHOICES).map { all[it] } }
+    var pick by remember(today) { mutableStateOf<String?>(null) }
+    var own by remember(today) { mutableStateOf(false) }
+    var text by remember(today) { mutableStateOf("") }
+    val chosen = if (own) text.takeIf { it.isNotBlank() } else pick
+    androidx.compose.material3.ModalBottomSheet(onDismissRequest = onDismiss, containerColor = Theme.gc.paper, sheetState = androidx.compose.material3.rememberModalBottomSheetState(skipPartiallyExpanded = true)) { Column(
+        Modifier.fillMaxWidth().imePadding().verticalScroll(rememberScrollState()).padding(horizontal = Theme.deviceClass.pageMargin).navigationBarsPadding().padding(bottom = Tokens.Space.sp6),
+        verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3),
+    ) {
+        TokenText(stringResource(R.string.seed_title), Tokens.TypeScale.title3.serif())
+        TokenText(stringResource(R.string.seed_settingFooter), Tokens.TypeScale.footnote, color = p.secondary)
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
+            picks.forEachIndexed { i, c -> GardenChip(c, !own && pick == c, 1401 + i) { own = false; pick = if (pick == c) null else c } }
+            GardenChip(stringResource(R.string.seed_own), own, 1405) { own = !own; pick = null }
+        }
+        if (own) BasicTextField(
+            value = text, onValueChange = { v -> val one = v.replace('\n', ' '); if (one.codePointCount(0, one.length) <= Seeds.MAX_CHARS) text = one },
+            singleLine = true, textStyle = Tokens.TypeScale.callout.style().copy(color = p.foreground), cursorBrush = SolidColor(p.foreground),
+            modifier = Modifier.fillMaxWidth().keepAboveKeyboard().crayonBox(null, G.Radius.box, G.Stroke.chip, 1406).padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3),
+            decorationBox = { inner -> Box { if (text.isEmpty()) TokenText(stringResource(R.string.seed_hint), Tokens.TypeScale.callout, color = p.secondary); inner() } },
+        )
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
+            GardenButton(stringResource(R.string.seed_plant), { chosen?.let { state.plantSeed(it, today); state.say(ctx.getString(R.string.seed_planted)); onDismiss() } },
+                filled = chosen != null, seed = 1407, modifier = Modifier.weight(1f))
+            TokenText(stringResource(R.string.seed_later), Tokens.TypeScale.footnote,
+                Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { state.skipSeed(today); onDismiss() }.padding(Tokens.Space.sp3), color = p.secondary)
+        }
+    } }
+}
+
+/** 저녁 (한 줄을 보낸 뒤 · 하루 닫기): ‘아침에 심은 ○○, 싹이 텄나요?’ 아니라고 답할 칸은 없음. */
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+internal fun SeedAsk(state: AppState, today: LocalDate, now: LocalDateTime) {
+    val seed = state.seedToAsk(today) ?: return
+    if (Labels.part(now) != DayPart.EVENING && Labels.part(now) != DayPart.NIGHT) return
+    val p = Theme.palette
+    Column(
+        Modifier.fillMaxWidth().crayonBox(Theme.gc.chip, G.Radius.box, G.Stroke.chip, 1410).padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3),
+        verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1),
+    ) {
+        // 무엇을 심었는지가 먼저 크게 보이게: ‘아침에 심은 다짐’ → ‘평정심’ → 싹이 텄나요?
+        TokenText(stringResource(R.string.seed_askFrom), Tokens.TypeScale.footnote, color = p.secondary)
+        TokenText("‘${seed.text}’", Tokens.TypeScale.headline.serif())
+        TokenText(stringResource(R.string.seed_ask), Tokens.TypeScale.subhead, color = p.secondary)
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
+            GardenChip(stringResource(R.string.seed_yes), false, 1411) { state.answerSeed(true, today) }
+            GardenChip(stringResource(R.string.seed_no), false, 1412) { state.answerSeed(false, today) }
+        }
+    }
+}
+
+/** 정원 흙의 오늘 씨앗: 심었으면 새싹, 피었으면 작은 꽃 (그날만). x = 줄기 자리, gy = 땅. */
+@Composable
+internal fun SeedSprout(state: AppState, today: LocalDate, x: Dp, gy: Dp) {
+    val s = Seeds.of(state.seeds, today)?.takeIf { state.seedsOn } ?: return
+    if (s.state == SeedState.RESTING) return
+    val u = Theme.unit
+    val w = u * 10f
+    val ink = Theme.gc.ink
+    Canvas(Modifier.offset(x - w / 2, gy - w).size(w)) {
+        val k = size.width / 10f
+        val stem = Offset(5f * k, 9.6f * k)
+        val top = Offset(5f * k, if (s.state == SeedState.BLOOMED) 3.6f * k else 5.4f * k)
+        drawLine(Color(0xFF5F7236), stem, top, k * 0.7f)
+        // 잎 둘
+        drawOval(Color(0xFF8FA25A), Offset(2.2f * k, 6.2f * k), Size(2.8f * k, 1.4f * k))
+        drawOval(Color(0xFF8FA25A), Offset(5f * k, 5.6f * k), Size(2.8f * k, 1.4f * k))
+        if (s.state == SeedState.BLOOMED) {
+            for (i in 0 until 5) { val a = i * 1.2566f; drawCircle(Color(0xFFF2B35A), 1.1f * k, Offset(top.x + 1.4f * k * kotlin.math.cos(a), top.y + 1.4f * k * kotlin.math.sin(a))) }
+            drawCircle(Color(0xFFB5651D), 0.8f * k, top)
+        }
+        drawCircle(ink.copy(alpha = 0.18f), 1.4f * k, Offset(5f * k, 9.8f * k), style = Stroke(k * 0.4f))
+    }
+}
+
+// ───────────────────────── 걱정한 밤 다음 아침 ─────────────────────────
+
+/** 하루의 한마디 (06): 고를 것도 답할 것도 없이. 누르거나 조금 지나면 사라짐. */
+@Composable
+internal fun ComfortWords(text: String, onDone: () -> Unit) {
+    val p = Theme.palette
+    LaunchedEffect(text) { delay(COMFORT_MS); onDone() }
+    Column(
+        Modifier.fillMaxWidth().crayonBox(Theme.gc.paper, G.Radius.box, G.Stroke.chip, 1420).clickable(onClick = onDone)
+            .padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3).semantics { liveRegion = LiveRegionMode.Polite },
+        horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1),
+    ) {
+        TokenText(stringResource(R.string.comfort_from), Tokens.TypeScale.caption1, color = p.secondary)
+        TokenText(text, Tokens.TypeScale.callout.serif(), Modifier.fillMaxWidth(), align = TextAlign.Center)
+    }
+}
+
+private const val COMFORT_MS = 12_000L
+
+// ───────────────────────── 하루 닫기 ─────────────────────────
+
+/** 저녁 · 밤 정원의 입구: 작은 등 + ‘하루 닫기 · 1분’. */
+@Composable
+internal fun CloseDayEntry(sent: Boolean, onOpen: () -> Unit) {
+    val p = Theme.palette
+    Row(
+        Modifier.crayonBox(Theme.gc.paper.copy(alpha = 0.85f), G.Radius.button, G.Stroke.chip, 1430).clickable(onClick = onOpen)
+            .padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp2),
+        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp3),
+    ) {
+        Lantern(Theme.unit * 9f)
+        Column {
+            TokenText(stringResource(R.string.closeDay_entry), Tokens.TypeScale.subhead.serif(), weight = FontWeight.SemiBold)
+            TokenText(stringResource(if (sent) R.string.closeDay_entrySent else R.string.closeDay_entrySub), Tokens.TypeScale.caption1, color = p.secondary)
+        }
+    }
+}
+
+/** 작은 한지 등 (손그림 느낌의 단순한 꼴). */
+@Composable
+private fun Lantern(size: Dp, glow: Float = 1f) {
+    val ink = Theme.gc.ink
+    Canvas(Modifier.size(size)) {
+        val k = this.size.width / 10f
+        drawLine(ink.copy(alpha = 0.6f), Offset(5f * k, 0f), Offset(5f * k, 2f * k), k * 0.4f)
+        if (glow > 0f) drawCircle(Color(0xFFF5B45C).copy(alpha = 0.25f * glow), 5f * k, Offset(5f * k, 6f * k))
+        drawRoundRect(Color(0xFFF2B35A).copy(alpha = 0.35f + 0.65f * glow), Offset(2.6f * k, 2f * k), Size(4.8f * k, 7f * k), androidx.compose.ui.geometry.CornerRadius(1.6f * k))
+        drawRoundRect(Color(0xFFFFE2A8).copy(alpha = 0.3f + 0.7f * glow), Offset(3.5f * k, 3f * k), Size(3f * k, 5f * k), androidx.compose.ui.geometry.CornerRadius(1f * k))
+        drawRoundRect(ink, Offset(2.6f * k, 2f * k), Size(4.8f * k, 7f * k), androidx.compose.ui.geometry.CornerRadius(1.6f * k), style = Stroke(k * 0.45f))
+    }
+}
+
+private enum class CloseStep { LINE, THANKS, LANTERN, END, DARK }
+
+/**
+ * 하루 닫기 (03). 위에 걸음 셋 (한 줄 · 고마움 · 등불), 어느 걸음에서든 ‘여기까지’로 끝낼 수 있다 (그래도 ‘여기까지도 좋아요’).
+ * 한 줄을 이미 남겼으면 ✓ 로 지나가고, 등불 숨을 마치면 숨의 흔적 (마음 등불) 을 남긴다. 몇 번 했는지는 세지 않는다.
+ */
+@Composable
+fun CloseDayScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, onDone: () -> Unit) {
+    val p = Theme.palette
+    val ctx = LocalContext.current
+    val today = now.toLocalDate()
+    var step by rememberSaveable { mutableStateOf(CloseStep.LINE) }
+    var stopped by remember { mutableStateOf(false) }
+    // 한 줄: 오늘의 한 줄 칸에 쓰던 글 · 마음 · 사진을 옮겨 와서 이어 씀 (기록 칸에서 지난 날을 쓰는 중이었으면 빈 칸으로).
+    // 여기서 쓴 것은 이 화면 안에서만: 지우고 나가도 오늘의 한 줄 칸의 글은 그대로, 보내면 (오늘 한 줄이 생겼으니) 그 칸도 비움
+    val shared = remember { state.writeDay == null }
+    val textState = rememberSaveable { mutableStateOf(if (shared) state.draftText.value else "") }
+    val feelingState = remember { mutableStateOf(if (shared) state.draftFeeling.value else null) }
+    val photoOn = rememberSaveable { mutableStateOf(shared) }
+    // 끝까지 갔거나 한 줄 다음 걸음까지 왔으면 오늘은 정원에 ‘하루 닫기’ 를 다시 권하지 않음 (한 줄에서 그만두면 나중에 다시 할 수 있게)
+    val finish: () -> Unit = { if (step != CloseStep.LINE || state.sentOn(today)) state.closeDayDone(closeDayOf(now)); onDone() }
+    // 쓰다 만 한 줄이 있는데 나가려 하면: 한 번 물음
+    val unsent = step == CloseStep.LINE && !state.sentOn(today) && (textState.value.isNotBlank() || (photoOn.value && state.draftPhoto))
+    var askLeave by remember { mutableStateOf(false) }
+    val leave: () -> Unit = { if (unsent) { stopped = false; askLeave = true } else { finish() } }
+    fun sendLine(): Boolean {
+        if (textState.value.isBlank()) { state.say(ctx.getString(R.string.letgo_empty)); return false }
+        state.letGo(textState.value, feelingState.value, today = today)
+        if (photoOn.value && state.draftPhoto) state.commitPhoto(today)
+        // 하루 닫기 안에서는 한마디 창 · 권하기 없이 (정원의 바람은 돌아가면)
+        state.toast = null; state.toastTitle = null; state.care = null
+        if (shared) state.clearDraft()
+        textState.value = ""; feelingState.value = null
+        return true
+    }
+    KeepScreenOn(step != CloseStep.DARK)
+    BackHandler { if (step == CloseStep.DARK || stopped) leave() else if (unsent) askLeave = true else stopped = true }
+    Box(Modifier.fillMaxSize().paperBackground()) {
+        when (step) {
+            CloseStep.LINE -> LineStep(state, today, now, textState, feelingState, photoOn, onSend = { sendLine() }, onNext = { step = CloseStep.THANKS })
+            CloseStep.THANKS -> ShortBreath(state, BreathKind.THANKS, 3, R.string.closeDay_thanksTitle) { step = CloseStep.LANTERN }
+            CloseStep.LANTERN -> ShortBreath(state, BreathKind.SLEEP, 2, R.string.closeDay_lanternTitle) { state.recordBreath(BreathKind.SLEEP, today); step = CloseStep.END }
+            CloseStep.END -> EndStep { step = CloseStep.DARK }
+            CloseStep.DARK -> DarkStep { state.maybeAskReview(today); finish() }
+        }
+        // 걸음 셋 + 여기까지
+        if (step.ordinal <= CloseStep.LANTERN.ordinal) Row(
+            Modifier.fillMaxWidth().statusBarsPadding().padding(horizontal = Tokens.Space.sp2), verticalAlignment = Alignment.CenterVertically,
+        ) {
+            TokenText(stringResource(R.string.closeDay_stop), Tokens.TypeScale.footnote,
+                Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { stopped = true }.padding(Tokens.Space.sp3), color = p.secondary)
+            Spacer(Modifier.weight(1f))
+            Row(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
+                for (i in 0 until 3) Box(Modifier.size(Theme.unit * 7f, Theme.unit * 1.2f)
+                    .background(if (i <= step.ordinal) Color(0xFFF5B45C) else p.secondary.copy(alpha = 0.25f), androidx.compose.foundation.shape.RoundedCornerShape(Theme.unit)))
+            }
+            Spacer(Modifier.weight(1f))
+            Spacer(Modifier.size(Tokens.Layout.tapTarget))
+        }
+        if (stopped) Box(Modifier.fillMaxSize().background(Theme.gc.scrim).clickable { stopped = false }, contentAlignment = Alignment.Center) {
+            Column(Modifier.padding(horizontal = Theme.deviceClass.pageMargin).crayonBox(Theme.gc.paper, G.Radius.box, G.Stroke.box, 1440).padding(Tokens.Space.sp6),
+                horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
+                TokenText(stringResource(R.string.closeDay_enough), Tokens.TypeScale.title3.serif(), align = TextAlign.Center)
+                GardenButton(stringResource(R.string.breath_home), leave, filled = true, seed = 1441)
+                GardenButton(stringResource(R.string.closeDay_keep), { stopped = false }, filled = false, seed = 1442)
+            }
+        }
+    }
+    // 지우고 나가기 = 이 화면에서 쓴 것만 버림 (오늘의 한 줄 칸에 쓰던 글 · 사진은 그대로)
+    if (askLeave) io.github.graviton94.carpediem.ui.GardenAlert(
+        onDismissRequest = { askLeave = false },
+        title = { Text(stringResource(R.string.closeDay_leaveAsk)) },
+        confirmButton = { AlertButton(stringResource(R.string.closeDay_leaveDrop), { askLeave = false; finish() }) },
+        dismissButton = { AlertButton(stringResource(R.string.cancel), { askLeave = false }, quiet = true) },
+    )
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun LineStep(state: AppState, today: LocalDate, now: LocalDateTime, textState: androidx.compose.runtime.MutableState<String>,
+                     feelingState: androidx.compose.runtime.MutableState<Feeling?>, photoOn: androidx.compose.runtime.MutableState<Boolean>, onSend: () -> Unit, onNext: () -> Unit) {
+    val p = Theme.palette
+    var text by textState
+    var feeling by feelingState
+    val sent = state.sentOn(today)
+    val max = G.LetGo.maxChars.toInt()
+    Column(
+        Modifier.fillMaxSize().imePadding().verticalScroll(rememberScrollState()).statusBarsPadding().navigationBarsPadding()
+            .padding(horizontal = Theme.deviceClass.pageMargin).padding(top = Tokens.Layout.tapTarget + Tokens.Space.sp6, bottom = Tokens.Space.sp6),
+        verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3),
+    ) {
+        if (sent) {
+            TokenText(stringResource(R.string.closeDay_lineDone), Tokens.TypeScale.title3.serif())
+            TokenText(stringResource(R.string.closeDay_lineDoneSub), Tokens.TypeScale.callout, color = p.secondary)
+            SeedAsk(state, today, now)
+            Spacer(Modifier.height(Tokens.Space.sp4))
+            GardenButton(stringResource(R.string.closeDay_next), onNext, filled = true, seed = 1450)
+        } else {
+            TokenText(stringResource(R.string.closeDay_lineTitle), Tokens.TypeScale.title3.serif())
+            TokenText(stringResource(R.string.letgo_feeling), Tokens.TypeScale.footnote, color = p.secondary)
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2), maxItemsInEachRow = Feeling.PER_ROW) {
+                Feeling.entries.forEachIndexed { i, f -> GardenChip(stringResource(feelingName(f)), feeling == f, 1451 + i) { feeling = if (feeling == f) null else f } }
+            }
+            BasicTextField(
+                value = text, onValueChange = { v -> if (v.codePointCount(0, v.length) <= max && v.count { it == '\n' } < Lines.MAX_LINES) text = v },
+                minLines = 2, maxLines = Lines.MAX_LINES, textStyle = Tokens.TypeScale.callout.style().copy(color = p.foreground), cursorBrush = SolidColor(p.foreground),
+                modifier = Modifier.fillMaxWidth().keepAboveKeyboard().crayonBox(null, G.Radius.box, G.Stroke.chip, 1460).padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3),
+                decorationBox = { inner -> Box { if (text.isEmpty()) TokenText(stringResource(R.string.letgo_hint), Tokens.TypeScale.callout, color = p.secondary); inner() } },
+            )
+            // 사진 한 장 (오늘의 한 줄 쓰는 칸과 같이): 기록을 남길 때만
+            if (state.keepLines && (state.writeDay == null)) {
+                val ctx = LocalContext.current
+                val scope = androidx.compose.runtime.rememberCoroutineScope()
+                val photoFail = stringResource(R.string.photo_fail)
+                val pick = rememberPhotoPicker { uri -> scope.launch {
+                    val ok = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { io.github.graviton94.carpediem.data.Photos.importPending(ctx, uri) }
+                    if (ok) { state.draftPhotoPicked(today); photoOn.value = true } else state.say(photoFail)
+                } }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    if (photoOn.value && state.draftPhoto) {
+                        WeatheredPhoto(state, today, today, Theme.unit * 56f, pending = true, dated = false)
+                        // 빼기: 이 한 줄에서만 뺌 (오늘의 한 줄 칸에 골라 둔 사진은 그대로)
+                        TokenText(stringResource(R.string.photo_remove), Tokens.TypeScale.footnote,
+                            Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { photoOn.value = false }.padding(Tokens.Space.sp3), color = p.secondary)
+                    } else GardenChip(stringResource(R.string.photo_add), false, 1462) { pick() }
+                }
+            }
+            // 보내면 같은 걸음에서 ‘남겼어요’ 로 바뀜 (한 줄이 생겼으니)
+            GardenButton(stringResource(R.string.letgo_send), onSend, filled = text.isNotBlank(), seed = 1461)
+            TokenText(stringResource(R.string.closeDay_skip), Tokens.TypeScale.footnote,
+                Modifier.fillMaxWidth().heightIn(min = Tokens.Layout.tapTarget).clickable(onClick = onNext).padding(vertical = Tokens.Space.sp3), color = p.secondary, align = TextAlign.Center)
+        }
+    }
+}
+
+/** 짧은 숨 (숨 n 번): 하루와 숨의 그림 · 말, 끝나면 조금 머물렀다가 다음 걸음으로. */
+@Composable
+private fun ShortBreath(state: AppState, kind: BreathKind, cycles: Int, title: Int, onDone: () -> Unit) {
+    val p = Theme.palette
+    val ctx = LocalContext.current
+    val view = LocalView.current
+    val plan = remember(kind, cycles) { Breath.cycles(rhythm(kind), cycles) }
+    val total = plan.last().let { it.startMs + it.lengthMs }
+    var elapsed by remember(kind) { mutableLongStateOf(0L) }
+    val animate = remember { !reducedMotion(ctx) }
+    val touch = rememberTouchBreath(state.breathTouch)
+    LaunchedEffect(kind) {
+        touch?.play(plan, 0)
+        var last = withFrameMillis { it }
+        while (elapsed < total) {
+            val t = withFrameMillis { it }
+            if (t - last < 33) continue
+            elapsed += t - last; last = t
+        }
+        delay(1200); onDone()
+    }
+    val step by remember(plan) { androidx.compose.runtime.derivedStateOf { Breath.at(plan, elapsed)?.first?.step } }
+    // 한숨 호흡의 두 번째 들이쉼: ‘한 번 더’
+    val topUp by remember(plan) { androidx.compose.runtime.derivedStateOf { (Breath.at(plan, elapsed)?.first?.lo ?: 0f) > 0f } }
+    LaunchedEffect(step) {
+        if (state.sound != Sound.NONE) when (step) { BreathStep.IN -> Soundscape.bowl(G.Sound.bowlInHz.toDouble()); BreathStep.OUT -> Soundscape.bowl(G.Sound.bowlOutHz.toDouble()); else -> {} }
+        if (touch == null && step == BreathStep.IN) view.performHapticFeedback(android.view.HapticFeedbackConstants.CLOCK_TICK)
+    }
+    BoxWithConstraints(Modifier.fillMaxSize()) {
+        val u = Theme.unit
+        val b = G.Breath
+        val screenW = maxWidth
+        val groundY = maxHeight * b.haruAt
+        val art = remember { HaruArt.of(state.store.haruSeed, false) }
+        val scale = u * (b.haruWidth / G.Layout.haruArtWidth)
+        val k = with(androidx.compose.ui.platform.LocalDensity.current) { scale.toPx() }
+        BreathScene(kind, art, scale, groundY, animate, plan, { elapsed }, { fullAt(plan, elapsed) })
+        val boxH = scale * (G.Layout.haruGround - art.meta.bbox.top + G.Layout.sparkle)
+        Column(Modifier.align(Alignment.TopCenter).offset(y = groundY - boxH).fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+            Box(Modifier.graphicsLayer {
+                if (animate) { transformOrigin = androidx.compose.ui.graphics.TransformOrigin(0.5f, 1f); val f = fullAt(plan, elapsed); val s = 1f + b.swell * f; scaleX = s; scaleY = s; translationY = -b.rise * k * f }
+            }) { BigStoneOnly(art, scale, if (elapsed > 2500) 1f else 0f) }
+            if (kind != BreathKind.CALM) CrayonRule(Modifier.padding(horizontal = screenW * b.ruleInset), seed = 1470)
+        }
+        Column(Modifier.align(Alignment.Center).fillMaxWidth().padding(horizontal = Theme.deviceClass.pageMargin), horizontalAlignment = Alignment.CenterHorizontally) {
+            TokenText(stringResource(title), Tokens.TypeScale.footnote.serif(), color = p.secondary, align = TextAlign.Center)
+            Spacer(Modifier.height(Tokens.Space.sp3))
+            Box(Modifier.heightIn(min = Tokens.Space.sp10 * 2), contentAlignment = Alignment.Center) {
+                step?.let { BreathCue(stringResource(if (topUp && it == BreathStep.IN) R.string.breath_inTop else cueName(kind, it)), p.secondary) }
+            }
+        }
+    }
+}
+
+@Composable
+private fun EndStep(onOff: () -> Unit) {
+    val p = Theme.palette
+    val shown = remember { Animatable(0f) }
+    LaunchedEffect(Unit) { shown.animateTo(1f, tween(1400)) }
+    Column(Modifier.fillMaxSize().statusBarsPadding().navigationBarsPadding().padding(horizontal = Theme.deviceClass.pageMargin).graphicsLayer { alpha = shown.value },
+        horizontalAlignment = Alignment.CenterHorizontally) {
+        Spacer(Modifier.weight(1f))
+        Lantern(Theme.unit * 40f)
+        Spacer(Modifier.height(Tokens.Space.sp8))
+        TokenText(stringResource(R.string.closeDay_end), Tokens.TypeScale.title3.serif(), Modifier.fillMaxWidth().semantics { liveRegion = LiveRegionMode.Polite }, align = TextAlign.Center)
+        Spacer(Modifier.height(Tokens.Space.sp2))
+        TokenText(stringResource(R.string.closeDay_endSub), Tokens.TypeScale.callout, Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.Center)
+        Spacer(Modifier.height(Tokens.Space.sp8))
+        GardenButton(stringResource(R.string.closeDay_off), onOff, filled = true, seed = 1480)
+        Spacer(Modifier.weight(1f))
+    }
+}
+
+/** 등불을 끈 뒤: 천천히 어두워지고 ‘잘 자요’. 누르면 정원으로. */
+@Composable
+private fun DarkStep(onDone: () -> Unit) {
+    val dark = remember { Animatable(0f) }
+    LaunchedEffect(Unit) { dark.animateTo(1f, tween(2600)) }
+    Box(Modifier.fillMaxSize().graphicsLayer { alpha = dark.value }.background(Color.Black).pointerInput(Unit) { detectTapGestures { onDone() } }, contentAlignment = Alignment.Center) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            TokenText(stringResource(R.string.closeDay_goodnight), Tokens.TypeScale.headline.serif(), color = Color.White.copy(alpha = 0.55f))
+            Spacer(Modifier.height(Tokens.Space.sp10))
+            TokenText(stringResource(R.string.breath_sleepBack), Tokens.TypeScale.footnote, color = Color.White.copy(alpha = 0.3f))
+        }
+    }
+}
+
+// ───────────────────────── 하루의 숨결을 손끝으로 ─────────────────────────
+
+/** 숨을 떨림으로 (05). 세기를 조절할 수 있는 폰은 잠든 작은 숨결처럼 부풀고 잦아드는 떨림, 아니면 들이쉼마다 아주 짧게 한 번. */
+/** 세기 조절이 없는 폰의 톡 길이 (ms): 짧을수록 여리게 느껴짐. */
+private const val TOUCH_PULSE_PLAIN = 14L
+internal class TouchBreath(private val vib: Vibrator) {
+    fun play(plan: List<Breath.Phase>, from: Long) {
+        if (!vib.hasVibrator()) return
+        val effect = if (vib.hasAmplitudeControl()) {
+            val (t, a) = Breath.touchWave(plan, from)
+            if (t.isEmpty()) return
+            VibrationEffect.createWaveform(t, a, -1)
+        } else {
+            // 세기 조절이 없으면: 들이쉼이 시작될 때만 아주 짧게 (한숨 호흡의 ‘한 번 더’ 는 빼고, 나머지는 고요)
+            val times = ArrayList<Long>(); var at = from
+            plan.filter { it.step == io.github.graviton94.carpediem.core.BreathStep.IN && it.lo == 0f && it.startMs >= from }.forEach { ph ->
+                times.add(ph.startMs - at); times.add(TOUCH_PULSE_PLAIN); at = ph.startMs + TOUCH_PULSE_PLAIN
+            }
+            if (times.isEmpty()) return
+            VibrationEffect.createWaveform(times.toLongArray(), -1)
+        }
+        runCatching { vib.vibrate(effect) }
+    }
+    fun stop() { runCatching { vib.cancel() } }
+}
+
+private fun vibrator(ctx: Context): Vibrator? =
+    if (Build.VERSION.SDK_INT >= 31) ctx.getSystemService(VibratorManager::class.java)?.defaultVibrator
+    else @Suppress("DEPRECATION") (ctx.getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator)
+
+internal fun canTouch(ctx: Context): Boolean = vibrator(ctx)?.hasVibrator() == true
+
+/** on 이면 떨림 하나 (화면을 떠나면 멈춤). */
+@Composable
+internal fun rememberTouchBreath(on: Boolean): TouchBreath? {
+    val ctx = LocalContext.current
+    val t = remember(on) { if (on) vibrator(ctx)?.takeIf { it.hasVibrator() }?.let { TouchBreath(it) } else null }
+    DisposableEffect(t) { onDispose { t?.stop() } }
+    return t
+}
+
+
+/** 손끝 숨에서 쓰는 벽시계 (화면이 잠깐 꺼졌다 와도 떨림과 같은 자리). */
+internal fun wallNow(): Long = SystemClock.elapsedRealtime()
+
+/** 추억: 피어난 씨앗 (04). 핀 것만, 최근 것부터. 쉰 씨앗 · 개수 비교는 두지 않는다. */
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+internal fun BloomedSeeds(state: AppState) {
+    val bloomed = remember(state.seeds) { Seeds.bloomed(state.seeds) }
+    if (bloomed.isEmpty() || !state.seedsOn) return
+    val p = Theme.palette
+    val ctx = LocalContext.current
+    Spacer(Modifier.height(Tokens.Space.sp4))
+    TokenText(stringResource(R.string.seed_garden), Tokens.TypeScale.title3)
+    TokenText(stringResource(R.string.seed_gardenSub), Tokens.TypeScale.footnote, color = p.secondary)
+    FlowRow(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
+        bloomed.take(BLOOMED_SHOWN).forEachIndexed { i, s ->
+            Row(Modifier.crayonBox(Theme.gc.paper, G.Radius.chip, G.Stroke.chip, 1490 + i % 7).padding(horizontal = Tokens.Space.sp3, vertical = Tokens.Space.sp1),
+                verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
+                Canvas(Modifier.size(Theme.unit * 4f)) {
+                    val r = size.width / 2
+                    for (k in 0 until 5) { val a = k * 1.2566f; drawCircle(Color(0xFFF2B35A), r * 0.42f, Offset(r + r * 0.5f * kotlin.math.cos(a), r + r * 0.5f * kotlin.math.sin(a))) }
+                    drawCircle(Color(0xFFB5651D), r * 0.3f, Offset(r, r))
+                }
+                TokenText(RecordText.day(ctx, s.date) + " · " + s.text, Tokens.TypeScale.footnote)
+            }
+        }
+    }
+}
+
+private const val BLOOMED_SHOWN = 60
+
+// ───────────────────────── 정원 손님 ─────────────────────────
+
+private const val GUEST_SIZE = 40f
+private const val GUEST_NAME_MS = 1800L
+
+/** 손님 그림 (하루와 같은 그림체, guest_*.webp 40 × 40 상자, 발 = 아래에서 3/40). x = 발 자리, gy = 땅.
+ *  누르면 살짝 뛰고, 머리 위에 이름만 잠깐 (상자 · 다른 말 없이, 2초 남짓 뒤 사라짐). */
+@Composable
+internal fun GuestFigure(guest: String, x: Dp, gy: Dp, screenW: Dp, letter: Boolean = false, onLetter: () -> Unit = {}) {
+    val ctx = LocalContext.current
+    val u = Theme.unit
+    val w = u * GUEST_SIZE
+    val label = remember(guest) { ctx.resources.getIdentifier("chance_guest_$guest", "string", ctx.packageName).takeIf { it != 0 }?.let { ctx.getString(it) }.orEmpty() }
+    var kick by remember { mutableStateOf(0) }
+    val hop = remember { androidx.compose.animation.core.Animatable(0f) }
+    val name = remember { androidx.compose.animation.core.Animatable(0f) }
+    LaunchedEffect(kick) {
+        if (kick == 0) return@LaunchedEffect
+        kotlinx.coroutines.coroutineScope {
+            launch { hop.animateTo(1f, androidx.compose.animation.core.tween(180)); hop.animateTo(0f, androidx.compose.animation.core.tween(260)) }
+            launch { name.animateTo(1f, androidx.compose.animation.core.tween(400)); delay(GUEST_NAME_MS); name.animateTo(0f, androidx.compose.animation.core.tween(700)) }
+        }
+    }
+    val top = gy - w * (37f / 40f)
+    // 쪽지를 물고 왔으면 TalkBack 에도 ‘누르면 펼쳐요’ 로 (버튼으로 읽힘)
+    val a11y = if (letter) stringResource(io.github.graviton94.carpediem.R.string.slip_a11y, label) else label
+    Image(GardenArt.image(ctx, "guest_$guest.webp"), a11y, Modifier.offset(x - w / 2, top).size(w)
+        .graphicsLayer { translationY = -hop.value * w.toPx() * 0.18f }
+        .clickable(interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }, indication = null,
+            role = if (letter) androidx.compose.ui.semantics.Role.Button else null) { if (letter) onLetter() else kick++ })
+    // 지난 한 줄을 물고 온 날: 부리 앞에 작게 접힌 한지 쪽지 (누르면 펼침)
+    if (letter) {
+        // 한지 쪽지 (계절 조각과 같은 한지 그림): 부리 앞에 작게, 손님과 같이 뜀
+        val bw = w * 0.8f; val bh = bw * (G.Decor.cardBoxH / G.Decor.cardBoxW)
+        Image(GardenArt.card(ctx, "slip"), null, Modifier.offset(x + w * 0.36f - bw * 0.5f, top + w * 0.46f - bh * 0.7f).size(bw, bh)
+            .graphicsLayer { rotationZ = -10f; translationY = -hop.value * w.toPx() * 0.18f })
+    }
+    if (name.value > 0f) {
+        val tw = u * 120f
+        val left = (x - tw / 2).coerceIn(u * 8f, screenW - tw - u * 8f)
+        TokenText(label, Tokens.TypeScale.caption1.serif(), Modifier.offset(left, top - u * 16f).width(tw).graphicsLayer { alpha = name.value }, color = Theme.gc.ink, align = TextAlign.Center)
+    }
+}
+
+/** 손님이 물고 온 쪽지를 펼침: 몇 날 (해) 전 오늘 · 그날의 마음 · 한 줄 · 사진. ‘그날 기록 보기’ 는 기록 페이지로. */
+@OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
+@Composable
+internal fun SlipSheet(state: AppState, line: io.github.graviton94.carpediem.core.DayLine, guest: String, today: LocalDate, onRecord: () -> Unit, onClose: () -> Unit) {
+    val ctx = LocalContext.current
+    val p = Theme.palette
+    val days = java.time.temporal.ChronoUnit.DAYS.between(line.date, today)
+    // 몇 해 전 오늘 (2월 29일의 한 줄은 평년엔 2월 28일에 ‘1년 전’ 으로)
+    val years = io.github.graviton94.carpediem.core.Lines.yearsAgo(listOf(line), today).firstOrNull()?.first ?: 0
+    val ago = if (years > 0) stringResource(io.github.graviton94.carpediem.R.string.slip_yearsAgo, "$years") else stringResource(io.github.graviton94.carpediem.R.string.slip_daysAgo, "$days")
+    val name = remember(guest) { ctx.resources.getIdentifier("chance_guest_$guest", "string", ctx.packageName).takeIf { it != 0 }?.let { ctx.getString(it) }.orEmpty() }
+    // 한지 편지처럼 (계절 편지와 같은 종이 · 글꼴): 쪽지 그림 · 언제 · 누가 → 그날의 한 줄 · 사진 → 그날 기록 보기
+    androidx.compose.material3.ModalBottomSheet(onDismissRequest = onClose, containerColor = Theme.gc.paper,
+        sheetState = androidx.compose.material3.rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
+        Column(
+            Modifier.fillMaxWidth().verticalScroll(androidx.compose.foundation.rememberScrollState()).padding(horizontal = Theme.deviceClass.pageMargin)
+                .navigationBarsPadding().padding(bottom = Tokens.Space.sp8),
+            verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3),
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
+                PieceImage(GardenArt.card(ctx, "slip"), Theme.unit * 52f)
+                Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
+                    TokenText(listOfNotNull(ago, line.feeling?.let { Labels.feeling(ctx, it) }).joinToString(" · "), Tokens.TypeScale.title3.serif())
+                    TokenText(stringResource(io.github.graviton94.carpediem.R.string.slip_from, name) + " · " + RecordText.day(ctx, line.date), Tokens.TypeScale.footnote, color = p.secondary)
+                }
+            }
+            CrayonRule(seed = 1430)
+            TokenText(line.text, Tokens.TypeScale.headline.serif())
+            Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) { WeatheredPhoto(state, line.date, today, Theme.unit * 160f) }
+            GardenButton(stringResource(io.github.graviton94.carpediem.R.string.slip_record), onRecord, filled = false, seed = 1431, paper = true)
+            TokenText(stringResource(io.github.graviton94.carpediem.R.string.collect_close), Tokens.TypeScale.footnote,
+                Modifier.fillMaxWidth().heightIn(min = Tokens.Layout.tapTarget).clickable(onClick = onClose).padding(vertical = Tokens.Space.sp3), color = p.secondary, align = TextAlign.Center)
+        }
+    }
+}
+
+
+/**
+ * 기념일 편지 (1.1.5, 평생 두 번): 만든 사람이 건네는 짧은 감사. 손님 쪽지와 같은 한지 · 글꼴.
+ * 응원은 끝에 한 줄 링크로만 (이미 응원했으면 ‘늘 고마워요.’ 로 끝나고 링크 없음).
+ */
+@OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
+@Composable
+internal fun AnniversarySheet(state: AppState, which: String, onSupport: () -> Unit, onClose: () -> Unit) {
+    val ctx = LocalContext.current
+    val p = Theme.palette
+    val year = which == "year"
+    androidx.compose.material3.ModalBottomSheet(onDismissRequest = onClose, containerColor = Theme.gc.paper,
+        sheetState = androidx.compose.material3.rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
+        Column(
+            Modifier.fillMaxWidth().verticalScroll(androidx.compose.foundation.rememberScrollState()).padding(horizontal = Theme.deviceClass.pageMargin)
+                .navigationBarsPadding().padding(bottom = Tokens.Space.sp8),
+            verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3),
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
+                PieceImage(GardenArt.card(ctx, "slip"), Theme.unit * 52f)
+                TokenText(stringResource(if (year) io.github.graviton94.carpediem.R.string.anniv_titleYear else io.github.graviton94.carpediem.R.string.anniv_title100), Tokens.TypeScale.title3.serif())
+            }
+            CrayonRule(seed = 1470)
+            TokenText(stringResource(if (year) io.github.graviton94.carpediem.R.string.anniv_bodyYear else io.github.graviton94.carpediem.R.string.anniv_body100), Tokens.TypeScale.callout.serif())
+            TokenText(stringResource(io.github.graviton94.carpediem.R.string.anniv_sign), Tokens.TypeScale.footnote.serif(), Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.End)
+            if (state.supportMarks.isEmpty()) TokenText(stringResource(io.github.graviton94.carpediem.R.string.anniv_support), Tokens.TypeScale.footnote,
+                Modifier.fillMaxWidth().heightIn(min = Tokens.Layout.tapTarget).clickable(onClick = onSupport).padding(vertical = Tokens.Space.sp3), color = p.olive, weight = FontWeight.SemiBold, align = TextAlign.Center)
+            else TokenText(stringResource(io.github.graviton94.carpediem.R.string.anniv_thanks), Tokens.TypeScale.footnote.serif(), Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.Center)
+            TokenText(stringResource(io.github.graviton94.carpediem.R.string.collect_close), Tokens.TypeScale.footnote,
+                Modifier.fillMaxWidth().heightIn(min = Tokens.Layout.tapTarget).clickable(onClick = onClose).padding(vertical = Tokens.Space.sp3), color = p.secondary, align = TextAlign.Center)
+        }
+    }
+}

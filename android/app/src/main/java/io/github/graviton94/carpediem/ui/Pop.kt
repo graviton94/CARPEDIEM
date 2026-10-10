@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -89,6 +90,7 @@ fun Modifier.noteBox(): Modifier {
 
 /** 묻는 창 (Material AlertDialog 대신, 같은 자리 · 같은 이름의 인자). 바깥을 누르면 닫힘. */
 @Composable
+@OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
 fun GardenAlert(
     onDismissRequest: () -> Unit, confirmButton: @Composable () -> Unit, modifier: Modifier = Modifier,
     dismissButton: (@Composable () -> Unit)? = null, title: (@Composable () -> Unit)? = null, text: (@Composable () -> Unit)? = null,
@@ -112,7 +114,8 @@ fun GardenAlert(
                 CompositionLocalProvider(LocalContentColor provides Theme.palette.foreground) {
                     title?.let { ProvideTextStyle(Tokens.TypeScale.headline.style("가").copy(textAlign = TextAlign.Start)) { it() } }
                     text?.let { ProvideTextStyle(Tokens.TypeScale.callout.style("가")) { it() } }
-                    Row(Modifier.align(Alignment.End), horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
+                    // 버튼은 오른쪽에 나란히, 셋이라 한 줄에 안 들어가면 다음 줄로 (오른쪽 정렬 그대로)
+                    androidx.compose.foundation.layout.FlowRow(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2, Alignment.End)) {
                         dismissButton?.invoke(); confirmButton()
                     }
                 }
@@ -137,5 +140,17 @@ fun NoteHost(note: Pair<String, Long>?, onDone: () -> Unit) {
         TokenText(text, Tokens.TypeScale.subhead, Modifier.padding(top = maxHeight * M.noteAt).padding(horizontal = Theme.deviceClass.pageMargin).semantics { liveRegion = LiveRegionMode.Polite }
             .graphicsLayer { if (leaving.value) translationY = (1f - a.value) * drop.toPx() }.pop(a).noteBox()
             .padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3), align = TextAlign.Center)
+    }
+}
+
+/**
+ * 묻는 창의 버튼 (모든 창이 같은 모양): 하려는 일은 올리브 · 굵게, 그만두기 · 나중에 · 지우기 같은 물러서는 쪽은 옅게 (quiet).
+ * GardenAlert 의 confirmButton · dismissButton 에, 날짜 고르기 창의 버튼에도.
+ */
+@Composable
+fun AlertButton(text: String, onClick: () -> Unit, quiet: Boolean = false, enabled: Boolean = true) {
+    androidx.compose.material3.TextButton(onClick = onClick, enabled = enabled, modifier = Modifier.heightIn(min = Tokens.Layout.tapTarget)) {
+        androidx.compose.material3.Text(text, color = if (quiet) Theme.palette.secondary else Theme.palette.olive,
+            fontWeight = if (quiet) androidx.compose.ui.text.font.FontWeight.Normal else androidx.compose.ui.text.font.FontWeight.SemiBold)
     }
 }

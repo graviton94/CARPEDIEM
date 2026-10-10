@@ -1,5 +1,6 @@
 package io.github.graviton94.carpediem.ui.garden
 
+import io.github.graviton94.carpediem.ui.AlertButton
 import io.github.graviton94.carpediem.ui.GardenAlert
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
@@ -112,16 +113,21 @@ fun StoneScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, id: S
     val soon = Family.birthdaySoon(birth, now, Tokens.Notify.birthdayFrom.toInt())
     val birthday = soon != null
     var breathSheet by remember { mutableStateOf(false) }
+    // 돌의 페이지를 처음 열면 짧은 둘러보기
+    val guide = remember { GuideTargets() }
     BackHandler(onBack = onBack)
     SkyBackground {
         Column(
-            Modifier.fillMaxSize().verticalScroll(rememberScrollState()).statusBarsPadding().navigationBarsPadding()
+            Modifier.fillMaxSize().imePadding().verticalScroll(rememberScrollState()).statusBarsPadding().navigationBarsPadding()
                 .padding(horizontal = Theme.deviceClass.pageMargin).padding(bottom = Tokens.Space.sp10),
             verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp4),
         ) {
-            PageBar(name, onBack)
-            BigStone(art, person?.kind == Kind.PET, birthday, size = G.Family.pageStone)
-            Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
+            Box(Modifier.fillMaxWidth()) {
+                PageBar(name, onBack)
+                if (state.guideDone) HelpButton({ state.replayTour("stone") }, Modifier.align(Alignment.CenterEnd))
+            }
+            Box(Modifier.fillMaxWidth().guideTarget(guide, "stone.big"), contentAlignment = Alignment.Center) { BigStone(art, person?.kind == Kind.PET, birthday, size = G.Family.pageStone) }
+            Column(Modifier.fillMaxWidth().guideTarget(guide, "stone.big.name"), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
                 TokenText(name, Tokens.TypeScale.title3.serif(), align = TextAlign.Center)
                 TokenText(stringResource(R.string.garden_metOn, dateText(metOn), Labels.stone(ctx, art.meta.stone)), Tokens.TypeScale.footnote, color = p.secondary, align = TextAlign.Center)
                 if (birth != null) {
@@ -132,11 +138,31 @@ fun StoneScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, id: S
             // 가족의 생일 (전날 저녁부터 그날까지): 나와 그 사람의 돌이 나란히 앉은 카드 한 장
             if (birthday) TokenText(if (me) stringResource(if (soon == 0) R.string.bday_mineToday else R.string.bday_mineTomorrow) else stringResource(if (soon == 0) R.string.bday_today else R.string.bday_tomorrow, name),
                 Tokens.TypeScale.callout.serif(), Modifier.fillMaxWidth(), align = TextAlign.Center)
-            if (birthday && !me) GardenButton(stringResource(R.string.bday_card), {
-                io.github.graviton94.carpediem.share.ShareCards.send(ctx, io.github.graviton94.carpediem.share.ShareCards.birthday(ctx, name, person!!.seed, person.kind == Kind.PET, state.store.haruSeed, SkyTime.isDark(now)), "birthday-${person.id}-$today")
-            }, filled = true, seed = 873)
+            // 생일 카드: 올해 그 사람에게 보낸 한 줄이 있으면 넣을지 한 번 물음 (고르거나 빼고 보낼 수 있게)
+            val sentLines = remember(state.lines, id, today) { person?.let { pp -> state.lines.filter { it.to == pp.id && it.date.year == today.year && it.text.isNotBlank() }.reversed() }.orEmpty() }
+            var cardAsk by remember { mutableStateOf(false) }
+            var pickLine by remember { mutableStateOf(0) }
+            fun sendCard(with: String?) {
+                val pp = person ?: return
+                val sent = with?.let { sentLines.size to it }
+                io.github.graviton94.carpediem.share.ShareCards.send(ctx, "birthday-${pp.id}-$today") { io.github.graviton94.carpediem.share.ShareCards.birthday(ctx, name, pp.seed, pp.kind == Kind.PET, state.store.haruSeed, SkyTime.isDark(now), sent) }
+            }
+            if (birthday && !me) GardenButton(stringResource(R.string.bday_card), { if (sentLines.isEmpty()) sendCard(null) else cardAsk = true }, filled = true, seed = 873)
+            if (cardAsk) io.github.graviton94.carpediem.ui.GardenAlert(
+                onDismissRequest = { cardAsk = false },
+                title = { androidx.compose.material3.Text(stringResource(R.string.bday_cardAsk, name)) },
+                text = {
+                    Column(verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
+                        TokenText("“${sentLines[pickLine % sentLines.size].text}”", Tokens.TypeScale.callout.serif())
+                        if (sentLines.size > 1) TokenText(stringResource(R.string.bday_cardOther), Tokens.TypeScale.footnote,
+                            Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { pickLine++ }.padding(vertical = Tokens.Space.sp3), color = p.olive, weight = FontWeight.SemiBold)
+                    }
+                },
+                confirmButton = { AlertButton(stringResource(R.string.bday_cardWith), { cardAsk = false; sendCard(sentLines[pickLine % sentLines.size].text) }) },
+                dismissButton = { AlertButton(stringResource(R.string.bday_cardPlain), { cardAsk = false; sendCard(null) }, quiet = true) },
+            )
             // 함께한 날 · 다음 생일
-            Row(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
+            Row(Modifier.guideTarget(guide, "stone.info"), horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
                 val since = metOn
                 Info(stringResource(if (me) R.string.stone_sinceMet else R.string.stone_together), stringResource(R.string.stone_days, Labels.number(Family.daysUntil(today, since).toInt().coerceAtLeast(0))), 870, Modifier.weight(1f))
                 if (birth != null) {
@@ -155,7 +181,7 @@ fun StoneScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, id: S
                 }
                 val cols = when (grid) { GridScale.WEEKS -> Tokens.Grid.weeksColumns; GridScale.MONTHS -> Tokens.Grid.monthsColumns; GridScale.YEARS -> Tokens.Grid.yearsColumns }
                 val shared = if (me) Int.MAX_VALUE else LifeSnapshot(birth, exp, Family.togetherSince(profile.birthDate, person!!).atStartOfDay()).lived(grid.unit)
-                CrayonCalendar(snap.total(grid.unit), snap.lived(grid.unit), cols, androidx.compose.ui.Modifier.fillMaxWidth(), sharedFrom = shared, showAhead = me || person!!.showAhead)
+                CrayonCalendar(snap.total(grid.unit), snap.lived(grid.unit), cols, androidx.compose.ui.Modifier.fillMaxWidth().guideTarget(guide, "stone.calendar"), sharedFrom = shared, showAhead = me || person!!.showAhead)
                 if (!me) {
                     TokenText(stringResource(R.string.stone_calendarLegend), Tokens.TypeScale.caption1, color = p.secondary)
                     Row(Modifier.fillMaxWidth().clickable { state.savePerson(person!!.copy(showAhead = !person.showAhead)) }, verticalAlignment = Alignment.CenterVertically) {
@@ -164,8 +190,13 @@ fun StoneScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, id: S
                     }
                 }
             }
+            // 돌 별 꾸밈 (1.1.3): 곁에 둔 것 하나 (모은 계절 조각 · 응원 · 조약돌 가운데서)
+            var adornOpen by rememberSaveable { mutableStateOf(state.debugAdornSheet.also { state.debugAdornSheet = false }) }
+            val stoneKey = if (me) io.github.graviton94.carpediem.core.Adornments.ME else id!!
+            AdornRow(state, stoneKey, name) { adornOpen = true }
+            if (adornOpen) AdornSheet(state, stoneKey, name) { adornOpen = false }
             // 내 돌: 하루와 숨 쉬기
-            if (me) GardenButton(stringResource(R.string.breath), { breathSheet = true }, filled = false, seed = 879)
+            if (me) GardenButton(stringResource(R.string.breath), { breathSheet = true }, filled = false, seed = 879, modifier = Modifier.guideTarget(guide, "stone.action"))
             // 이 돌에게 보낸 마음
             if (!me) {
                 val sent = state.lines.filter { it.to == id && it.text.isNotBlank() }
@@ -181,19 +212,10 @@ fun StoneScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, id: S
                         }
                     }
                 }
-                // 이번 계절의 조각 놓기 (R1): 내 나무의 이번 계절 조각을 그 사람 돌 곁에, 계절마다 한 번
-                val nowCard = remember(today) { state.decor(profile, LifeSnapshot(profile.birthDate, profile.expectancy(state.store.table), now), today).card }
-                val given = state.offerings.firstOrNull { it.personId == id && it.card.year == nowCard.year && it.card.season == nowCard.season }
-                if (given == null) {
-                    val piece = cardName(ctx, nowCard.key)
-                    ActionNote(stringResource(R.string.offer_action, piece), stringResource(R.string.offer_ask), 881) {
-                        state.offer(id!!, nowCard, today); state.say(ctx.getString(R.string.offer_done, name))
-                    }
-                } else TokenText(stringResource(R.string.offer_label, Labels.season(ctx, given.card.season), name, cardName(ctx, given.card.key)), Tokens.TypeScale.footnote,
-                    Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.Center)
-                GardenButton(stringResource(R.string.stone_edit), { onEdit(id!!) }, filled = false, seed = 880)
+                GardenButton(stringResource(R.string.stone_edit), { onEdit(id!!) }, filled = false, seed = 880, modifier = Modifier.guideTarget(guide, "stone.action"))
             }
         }
+        if ("stone" !in state.pageHints && state.guideDone && !breathSheet) GuideTour(state, "stone", guide, PageGuideSteps.getValue("stone")) { state.pageHintSeen("stone") }
     }
     if (breathSheet) BreathSheet(state, now, { k, m, snd -> breathSheet = false; onBreath(k, m, snd) }) { breathSheet = false }
 }
@@ -236,7 +258,11 @@ fun AddPersonScreen(state: AppState, profile: LifeProfile, editId: String?, onDo
     var until by rememberSaveable { mutableStateOf<Long?>(null) }
     var pickingUntil by remember { mutableStateOf(false) }
     var confirmMemory by remember { mutableStateOf(false) }
-    val back = { if (editing == null && step > 0) step-- else onBack() }
+    // 돌을 고치다가 바꾼 게 있는데 뒤로 가면: 저장할지 한 번 물음 (내 정보 고치기와 같게)
+    val changed = editing != null && (kind != editing.kind || (kind == Kind.PET && species != editing.species) || Family.cleanName(name) != editing.name ||
+        birth != editing.birth?.toEpochDay() || sex != editing.sex || together != editing.together?.toEpochDay() || seed != editing.seed)
+    var askSave by remember { mutableStateOf(false) }
+    val back: () -> Unit = { if (editing == null && step > 0) { step-- } else if (changed) { askSave = true } else { onBack() } }
     BackHandler { back() }
     fun person() = Person(editing?.id ?: state.newPersonId(), Family.cleanName(name), kind, if (kind == Kind.PET) species else null, birth?.let { LocalDate.ofEpochDay(it) },
         sex, editing?.country ?: profile.countryCode, seed, rerolls, editing?.metOn ?: (state.fixedNow ?: LocalDateTime.now()).toLocalDate(), editing?.showAhead ?: false,
@@ -255,9 +281,9 @@ fun AddPersonScreen(state: AppState, profile: LifeProfile, editId: String?, onDo
     @Composable fun NameField() {
         TokenText(stringResource(R.string.add_name), Tokens.TypeScale.title3.serif())
         BasicTextField(
-            value = name, onValueChange = { v -> name = v.replace('\n', ' ').take(Family.NAME_MAX * 2).let { if (it.codePointCount(0, it.length) <= Family.NAME_MAX) it else name } },
+            value = name, onValueChange = { v -> name = v.replace('\n', ' ').let { if (it.codePointCount(0, it.length) <= Family.NAME_MAX) it else it.substring(0, it.offsetByCodePoints(0, Family.NAME_MAX)) } },
             singleLine = true, textStyle = Tokens.TypeScale.headline.style().copy(color = p.foreground), cursorBrush = SolidColor(p.foreground),
-            modifier = Modifier.fillMaxWidth().crayonBox(Theme.gc.paper, G.Radius.box, G.Stroke.chip, 896).padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3),
+            modifier = Modifier.fillMaxWidth().keepAboveKeyboard().crayonBox(Theme.gc.paper, G.Radius.box, G.Stroke.chip, 896).padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3),
             decorationBox = { inner -> Box { if (name.isEmpty()) TokenText(stringResource(R.string.add_nameHint), Tokens.TypeScale.headline, color = p.secondary); inner() } },
         )
     }
@@ -304,7 +330,7 @@ fun AddPersonScreen(state: AppState, profile: LifeProfile, editId: String?, onDo
             if (memory) when (step) {
                 // 기억의 돌 더하기: 누구 · 이름 · 날 (모두 선택) · 눈 감은 돌
                 0 -> { KindPicker(); GardenButton(stringResource(R.string.add_next), { step = 1 }, filled = true, seed = 915) }
-                1 -> { NameField(); GardenButton(stringResource(R.string.add_next), { if (name.isNotBlank()) step = 2 }, filled = name.isNotBlank(), seed = 916) }
+                1 -> { NameField(); GardenButton(stringResource(R.string.add_next), { if (name.isNotBlank()) step = 2 else state.say(ctx.getString(R.string.add_needName)) }, filled = name.isNotBlank(), seed = 916) }
                 2 -> { MemoryDates(); GardenButton(stringResource(R.string.add_next), { step = 3 }, filled = true, seed = 917) }
                 else -> {
                     val art = HaruArt.of(seed, false)
@@ -323,7 +349,7 @@ fun AddPersonScreen(state: AppState, profile: LifeProfile, editId: String?, onDo
             } else if (editing != null) {
                 KindPicker(); NameField(); BirthField()
                 Spacer(Modifier.height(Tokens.Space.sp2))
-                GardenButton(stringResource(R.string.stone_save), { if (name.isNotBlank()) { state.savePerson(person()); onDone(editing.id) } }, filled = name.isNotBlank(), seed = 905)
+                GardenButton(stringResource(R.string.stone_save), { if (name.isNotBlank()) { state.savePerson(person()); onDone(editing.id) } else state.say(ctx.getString(R.string.add_needName)) }, filled = name.isNotBlank(), seed = 905)
                 // 이 돌 정리하기: 무엇이 되는지 이름과 설명 한 줄로 (둘 다 한 번 더 묻는다)
                 Spacer(Modifier.height(Tokens.Space.sp4))
                 TokenText(stringResource(R.string.stone_tidy), Tokens.TypeScale.caption1, color = p.secondary)
@@ -334,7 +360,7 @@ fun AddPersonScreen(state: AppState, profile: LifeProfile, editId: String?, onDo
                     KindPicker(); GardenButton(stringResource(R.string.add_next), { step = 1 }, filled = true, seed = 907)
                     // 곁을 떠난 가족 · 반려동물은 여기서 더하지 않고, 정원의 돌을 다듬기에서 기억의 자리로 옮긴다
                 }
-                1 -> { NameField(); GardenButton(stringResource(R.string.add_next), { if (name.isNotBlank()) step = 2 }, filled = name.isNotBlank(), seed = 908) }
+                1 -> { NameField(); GardenButton(stringResource(R.string.add_next), { if (name.isNotBlank()) step = 2 else state.say(ctx.getString(R.string.add_needName)) }, filled = name.isNotBlank(), seed = 908) }
                 2 -> { BirthField(); GardenButton(stringResource(R.string.add_next), { step = 3 }, filled = true, seed = 909) }
                 else -> {
                     // 만남: 첫 만남에만 반짝이
@@ -351,59 +377,67 @@ fun AddPersonScreen(state: AppState, profile: LifeProfile, editId: String?, onDo
     }
 
     if (pickingTogether) {
-        val dp = rememberDatePickerState(initialSelectedDateMillis = (together?.let { LocalDate.ofEpochDay(it) } ?: LocalDate.now()).atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli())
+        val dp = rememberDatePickerState(initialSelectedDateMillis = (together?.let { LocalDate.ofEpochDay(it) } ?: LocalDate.now()).atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli(),
+            selectableDates = io.github.graviton94.carpediem.ui.pastDates(until = until?.let { LocalDate.ofEpochDay(it) } ?: LocalDate.now()))
         DatePickerDialog(
             onDismissRequest = { pickingTogether = false },
             confirmButton = {
-                TextButton(onClick = {
-                    dp.selectedDateMillis?.let { ms -> val d = Instant.ofEpochMilli(ms).atZone(ZoneOffset.UTC).toLocalDate(); if (!d.isAfter(LocalDate.now())) together = d.toEpochDay() }
+                AlertButton(stringResource(R.string.done), {
+                    dp.selectedDateMillis?.let { ms -> val d = Instant.ofEpochMilli(ms).atZone(ZoneOffset.UTC).toLocalDate(); if (!d.isAfter(LocalDate.now()) && (until == null || d.toEpochDay() <= until!!)) together = d.toEpochDay() }
                     pickingTogether = false
-                }) { Text(stringResource(R.string.done)) }
+                })
             },
-            dismissButton = { TextButton(onClick = { pickingTogether = false }) { Text(stringResource(R.string.cancel)) } },
+            dismissButton = { AlertButton(stringResource(R.string.cancel), { pickingTogether = false }, quiet = true) },
         ) { DatePicker(state = dp) }
     }
     if (picking) {
         val init = (birth?.let { LocalDate.ofEpochDay(it) } ?: LocalDate.now().minusYears(if (kind == Kind.PET) 3 else 30)).atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli()
-        val dp = rememberDatePickerState(initialSelectedDateMillis = init)
+        val dp = rememberDatePickerState(initialSelectedDateMillis = init, selectableDates = io.github.graviton94.carpediem.ui.pastDates())
         DatePickerDialog(
             onDismissRequest = { picking = false },
             confirmButton = {
-                TextButton(onClick = {
+                AlertButton(stringResource(R.string.done), {
                     dp.selectedDateMillis?.let { ms -> val d = Instant.ofEpochMilli(ms).atZone(ZoneOffset.UTC).toLocalDate(); if (!d.isAfter(LocalDate.now())) birth = d.toEpochDay() }
                     picking = false
-                }) { Text(stringResource(R.string.done)) }
+                })
             },
-            dismissButton = { TextButton(onClick = { picking = false }) { Text(stringResource(R.string.cancel)) } },
+            dismissButton = { AlertButton(stringResource(R.string.cancel), { picking = false }, quiet = true) },
         ) { DatePicker(state = dp) }
     }
     if (pickingUntil) {
-        val dp = rememberDatePickerState(initialSelectedDateMillis = (until?.let { LocalDate.ofEpochDay(it) } ?: LocalDate.now()).atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli())
+        val dp = rememberDatePickerState(initialSelectedDateMillis = (until?.let { LocalDate.ofEpochDay(it) } ?: LocalDate.now()).atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli(),
+            selectableDates = io.github.graviton94.carpediem.ui.pastDates(from = together?.let { LocalDate.ofEpochDay(it) }))
         DatePickerDialog(
             onDismissRequest = { pickingUntil = false },
             confirmButton = {
-                TextButton(onClick = {
-                    dp.selectedDateMillis?.let { ms -> val d = Instant.ofEpochMilli(ms).atZone(ZoneOffset.UTC).toLocalDate(); if (!d.isAfter(LocalDate.now())) until = d.toEpochDay() }
+                AlertButton(stringResource(R.string.done), {
+                    dp.selectedDateMillis?.let { ms -> val d = Instant.ofEpochMilli(ms).atZone(ZoneOffset.UTC).toLocalDate(); if (!d.isAfter(LocalDate.now()) && (together == null || d.toEpochDay() >= together!!)) until = d.toEpochDay() }
                     pickingUntil = false
-                }) { Text(stringResource(R.string.done)) }
+                })
             },
-            dismissButton = { TextButton(onClick = { pickingUntil = false }) { Text(stringResource(R.string.cancel)) } },
+            dismissButton = { AlertButton(stringResource(R.string.cancel), { pickingUntil = false }, quiet = true) },
         ) { DatePicker(state = dp) }
     }
+    if (askSave && editing != null) GardenAlert(
+        onDismissRequest = { askSave = false },
+        title = { Text(stringResource(R.string.settings_saveAsk)) },
+        confirmButton = { AlertButton(stringResource(R.string.settings_save), { askSave = false; if (name.isNotBlank()) { state.savePerson(person()); onDone(editing.id) } else state.say(ctx.getString(R.string.add_needName)) }) },
+        dismissButton = { AlertButton(stringResource(R.string.settings_discard), { askSave = false; onBack() }, quiet = true) },
+    )
     if (confirmMemory && editing != null) {
         GardenAlert(
             onDismissRequest = { confirmMemory = false },
             text = { Text(stringResource(R.string.memory_toMemoryConfirm, editing.name)) },
-            confirmButton = { TextButton(onClick = { confirmMemory = false; if (state.toMemory(editing.id)) onMovedToMemory() else state.say(ctx.getString(R.string.memory_full)) }) { Text(stringResource(R.string.memory_toMemoryAction)) } },
-            dismissButton = { TextButton(onClick = { confirmMemory = false }) { Text(stringResource(R.string.cancel)) } },
+            confirmButton = { AlertButton(stringResource(R.string.memory_toMemoryAction), { confirmMemory = false; if (state.toMemory(editing.id)) onMovedToMemory() else state.say(ctx.getString(R.string.memory_full)) }) },
+            dismissButton = { AlertButton(stringResource(R.string.cancel), { confirmMemory = false }, quiet = true) },
         )
     }
     if (confirmRemove && editing != null) {
         GardenAlert(
             onDismissRequest = { confirmRemove = false },
             title = { Text(stringResource(R.string.stone_removeConfirm, editing.name)) },
-            confirmButton = { TextButton(onClick = { confirmRemove = false; state.removePerson(editing.id); onDone(null) }) { Text(stringResource(R.string.stone_removeAction), color = p.danger) } },
-            dismissButton = { TextButton(onClick = { confirmRemove = false }) { Text(stringResource(R.string.cancel)) } },
+            confirmButton = { AlertButton(stringResource(R.string.stone_removeAction), { confirmRemove = false; state.removePerson(editing.id); onDone(null) }) },
+            dismissButton = { AlertButton(stringResource(R.string.cancel), { confirmRemove = false }, quiet = true) },
         )
     }
 }

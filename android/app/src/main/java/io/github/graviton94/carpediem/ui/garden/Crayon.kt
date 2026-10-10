@@ -220,7 +220,8 @@ fun CrayonCalendar(total: Int, filled: Int, columns: Int, modifier: Modifier = M
             if (i in 0 until total) cb?.invoke(i, Offset((i % columns + 0.5f) * cell, (i / columns + 0.5f) * cell))
         }
     }
-    Spacer(modifier.fillMaxWidth().aspectRatio(columns / rows.toFloat()).then(tap).drawWithCache {
+    // 조약돌 수천 개의 모양은 값이 바뀔 때만 다시 만듦 (1분마다 · 누를 때마다 정원이 다시 짜여도 그대로)
+    val draw = androidx.compose.runtime.remember(total, filled, columns, rows, sharedFrom, showAhead, flowers, inkC, futureC, mask, u) { Modifier.drawWithCache {
         val cell = min(size.width / columns, size.height / rows)
         val r = Crayon.Rng(860)
         val season = List(4) { Path() }; val now = Path(); val ahead = Path(); val shared = Path()
@@ -272,7 +273,8 @@ fun CrayonCalendar(total: Int, filled: Int, columns: Int, modifier: Modifier = M
                 }
             }
         }
-    })
+    } }
+    Spacer(modifier.fillMaxWidth().aspectRatio(columns / rows.toFloat()).then(tap).then(draw))
 }
 
 /** 종이 바탕 (정원 디자인의 모든 화면 뒤). */

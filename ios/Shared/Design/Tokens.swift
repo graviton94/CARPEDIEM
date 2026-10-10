@@ -341,9 +341,9 @@ enum Tokens {
         enum Family {
             static let max: CGFloat = 9.0
             static let oneRow: CGFloat = 5.0
-            static let gap: CGFloat = 10.0
+            static let gap: CGFloat = 4.0
             static let minGap: CGFloat = 6.0
-            static let overlap: CGFloat = 0.22
+            static let overlap: CGFloat = 0.3
             static let nameChars: CGFloat = 4.0
             static let petScale: CGFloat = 0.72
             static let dogYears: CGFloat = 13.0
@@ -421,12 +421,21 @@ enum Tokens {
             static let card: CGFloat = 0.2
         }
         enum Breath {
-            static let calmIn: CGFloat = 4.0
-            static let calmOut: CGFloat = 6.0
+            static let calmIn: CGFloat = 5.0
+            static let calmOut: CGFloat = 7.0
             static let boxIn: CGFloat = 4.0
-            static let boxHold: CGFloat = 0.0
+            static let boxHold: CGFloat = 4.0
             static let boxOut: CGFloat = 4.0
-            static let boxRest: CGFloat = 0.0
+            static let boxRest: CGFloat = 4.0
+            static let thanksIn: CGFloat = 3.0
+            static let thanksTop: CGFloat = 1.5
+            static let thanksOut: CGFloat = 8.0
+            static let calmMinutes: CGFloat = 5.0
+            static let boxMinutes: CGFloat = 4.0
+            static let sleepCycles: CGFloat = 8.0
+            static let thanksMinutes: CGFloat = 5.0
+            static let ringWidth: CGFloat = 1.5
+            static let ringStroke: CGFloat = 1.6
             static let sleepIn: CGFloat = 4.0
             static let sleepHold: CGFloat = 7.0
             static let sleepOut: CGFloat = 8.0
@@ -485,13 +494,19 @@ enum Tokens {
             static let fadeInMs: CGFloat = 2500.0
             static let fadeOutMs: CGFloat = 1800.0
             static let waveSeconds: CGFloat = 9.0
-            static let bowl: CGFloat = 0.55
+            static let bowl: CGFloat = 0.22
+            static let guide: CGFloat = 1.1
+            static let bed: CGFloat = 0.32
+            static let gazeBed: CGFloat = 0.6
+            static let noteMin: CGFloat = 4.0
+            static let noteMax: CGFloat = 14.0
+            static let songVolume: CGFloat = 0.5
             static let bowlInHz: CGFloat = 220.0
             static let bowlOutHz: CGFloat = 164.8
             static let bowlRing: CGFloat = 8.0
             static let bowlAttackMs: CGFloat = 35.0
             static let bowlBeat: CGFloat = 0.7
-            static let introMs: CGFloat = 6000.0
+            static let introMs: CGFloat = 9000.0
             static let layer: CGFloat = 0.4
             static let layerMin: CGFloat = 18.0
             static let layerMax: CGFloat = 40.0
@@ -543,6 +558,9 @@ enum Tokens {
                 static let disappoint: UInt32 = 0xB9B4A8FF
                 static let sad: UInt32 = 0x8C9AB0FF
                 static let worry: UInt32 = 0x9C8FA6FF
+                static let proud: UInt32 = 0xE3A866FF
+                static let meh: UInt32 = 0xC9C6B5FF
+                static let unsettled: UInt32 = 0xAEBFC0FF
                 static let none: UInt32 = 0xE6DFCFFF
             }
         }

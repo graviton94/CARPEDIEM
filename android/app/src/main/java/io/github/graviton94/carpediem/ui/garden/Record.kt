@@ -1,5 +1,8 @@
 package io.github.graviton94.carpediem.ui.garden
 
+import io.github.graviton94.carpediem.ui.AlertButton
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -48,7 +51,7 @@ import java.time.format.TextStyle
 import java.util.Locale
 
 /** 마음의 기록 시트가 여는 곳: 한 달 (month) 또는 한 해 (month = null). */
-data class RecordView(val year: Int, val month: Int?)
+data class RecordView(val year: Int, val month: Int?, val pick: LocalDate? = null)
 
 internal object RecordText {
     private fun locale(ctx: android.content.Context): Locale = ctx.resources.configuration.locales[0]
@@ -66,7 +69,7 @@ internal fun RecordSheet(state: AppState, start: RecordView, today: LocalDate, o
     var view by remember { mutableStateOf(start) }
     ModalBottomSheet(onDismissRequest = onClose, containerColor = Theme.gc.paper, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
         Column(
-            Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(horizontal = Theme.deviceClass.pageMargin).navigationBarsPadding().padding(bottom = Tokens.Space.sp8),
+            Modifier.fillMaxWidth().imePadding().verticalScroll(rememberScrollState()).padding(horizontal = Theme.deviceClass.pageMargin).navigationBarsPadding().padding(bottom = Tokens.Space.sp8),
             verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3),
         ) {
             RecordPanel(state, view, { view = it }, today)
@@ -85,7 +88,19 @@ internal fun RecordPanel(state: AppState, view: RecordView, onView: (RecordView)
     val ctx = LocalContext.current
     val night = Theme.gc.night
     val book = state.store.constellations
-    var picked by remember(view) { mutableStateOf<LocalDate?>(null) }
+    var picked by remember(view) { mutableStateOf(view.pick) }
+    var deleting by remember { mutableStateOf<LocalDate?>(null) }
+    var editingPast by remember { mutableStateOf<io.github.graviton94.carpediem.core.DayLine?>(null) }
+    editingPast?.let { PastLineSheet(state, it, today) { editingPast = null } }
+    deleting?.let { d ->
+        io.github.graviton94.carpediem.ui.GardenAlert(
+            onDismissRequest = { deleting = null },
+            title = { androidx.compose.material3.Text(stringResource(R.string.edit_deleteDayAsk, RecordText.day(ctx, d))) },
+            text = { androidx.compose.material3.Text(stringResource(R.string.edit_deleteHelp)) },
+            confirmButton = { AlertButton(stringResource(R.string.edit_delete), { deleting = null; picked = null; state.deleteLine(d) }) },
+            dismissButton = { AlertButton(stringResource(R.string.cancel), { deleting = null }, quiet = true) },
+        )
+    }
     val first = remember(state.lines) { state.lines.minOfOrNull { it.date } ?: today }
     Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
         Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
@@ -104,20 +119,35 @@ internal fun RecordPanel(state: AppState, view: RecordView, onView: (RecordView)
                 val shown = if (view.year == today.year) title else "${view.year} · $title"
                 val sub = RecordText.constellation(ctx, state, m) + " · " + stringResource(R.string.year_count, "$sent", "$thanks")
                 PanelHead(shown, sub, canPrev, canNext, { onView(RecordView(prev.year, prev.monthValue)) }, { onView(RecordView(next.year, next.monthValue)) })
-                MonthGarden(book, days, state.store.haruSeed, night, today, Modifier.fillMaxWidth(), picked = picked) { d -> picked = if (picked == d.date) null else d.date }
+                MonthGarden(book, days, state.store.haruSeed, night, today, Modifier.fillMaxWidth(), picked = picked,
+                    sound = state.sound != io.github.graviton94.carpediem.core.Sound.NONE, playable = true) { d -> picked = if (picked == d.date) null else d.date }
                 val pickedLine = picked?.let { d -> days.firstOrNull { it.first == d } }
                 if (pickedLine != null) {
                     Column(Modifier.fillMaxWidth().padding(horizontal = Tokens.Space.sp2), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
                         TokenText(RecordText.day(ctx, pickedLine.first), Tokens.TypeScale.caption1, color = p.secondary)
                         val l = pickedLine.second
-                        TokenText(when { l == null -> stringResource(R.string.record_rest); l.text.isBlank() -> stringResource(R.string.record_noText); else -> l.text }, Tokens.TypeScale.callout.serif())
+                        // 오늘 보낸 한 줄은 떠나보낸 그대로 두고, 내일부터 여기서 다시 볼 수 있음
+                        TokenText(when { l == null -> stringResource(R.string.record_rest); pickedLine.first == today -> stringResource(R.string.record_todayHidden); l.text.isBlank() -> stringResource(R.string.record_noText); else -> l.text },
+                            Tokens.TypeScale.callout.serif(), color = if (l != null && pickedLine.first == today) p.secondary else p.foreground)
+                        // 그날의 사진 (11): 지난 날만 (오늘은 한 줄처럼 내일부터)
+                        if (l != null && pickedLine.first != today) WeatheredPhoto(state, pickedLine.first, today, Theme.unit * 150f, modifier = Modifier.padding(vertical = Tokens.Space.sp2))
                         // 빈 지난 날: 그날의 한 줄을 바로 (기록 페이지로)
                         if (l == null && state.canWriteOn(pickedLine.first, today)) TokenText(stringResource(R.string.record_writeDay), Tokens.TypeScale.footnote,
-                            Modifier.clickable { state.writeDay = pickedLine.first }.padding(vertical = Tokens.Space.sp1), color = p.olive, weight = FontWeight.SemiBold)
+                            Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { state.writeDay = pickedLine.first }.padding(vertical = Tokens.Space.sp3), color = p.olive, weight = FontWeight.SemiBold)
+                        // 방금 지운 날이면 되돌리기 (앱을 켜 둔 동안)
+                        if (l == null && state.lastDeleted?.date == pickedLine.first) TokenText(stringResource(R.string.edit_undo), Tokens.TypeScale.footnote,
+                            Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { state.undoDelete() }.padding(vertical = Tokens.Space.sp3), color = p.olive, weight = FontWeight.SemiBold)
+                        // 지난 날의 한 줄 고치기 · 지우기 (오늘 것은 위 쓰는 칸에서)
+                        if (l != null && pickedLine.first != today) Row(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp4)) {
+                            if (state.keepLines) TokenText(stringResource(R.string.edit_action), Tokens.TypeScale.footnote,
+                                Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { editingPast = l }.padding(vertical = Tokens.Space.sp3), color = p.olive, weight = FontWeight.SemiBold)
+                            TokenText(stringResource(R.string.edit_deleteDay), Tokens.TypeScale.footnote,
+                                Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { deleting = pickedLine.first }.padding(vertical = Tokens.Space.sp3), color = p.secondary)
+                        }
                     }
-                } else TokenText(stringResource(R.string.record_hint), Tokens.TypeScale.caption1, Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.Center)
+                } else TokenText(stringResource(R.string.record_hint), Tokens.TypeScale.footnote, Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.Center)
                 GardenButton(stringResource(R.string.share_image), {
-                    io.github.graviton94.carpediem.share.ShareCards.send(ctx, io.github.graviton94.carpediem.share.ShareCards.month(ctx, book, days, state.store.haruSeed, night, today, shown, sub), "month-${view.year}-$m")
+                    io.github.graviton94.carpediem.share.ShareCards.send(ctx, "month-${view.year}-$m") { io.github.graviton94.carpediem.share.ShareCards.month(ctx, book, days, state.store.haruSeed, night, today, shown, sub) }
                 }, filled = false, seed = 1173)
             } else {
                 val y = view.year
@@ -128,12 +158,12 @@ internal fun RecordPanel(state: AppState, view: RecordView, onView: (RecordView)
                 val title = stringResource(R.string.year_title, "$y"); val count = stringResource(R.string.year_count, "$sent", "${thanksAll.size}")
                 PanelHead(title, count, y > first.year, y < today.year, { onView(RecordView(y - 1, null)) }, { onView(RecordView(y + 1, null)) })
                 YearTiles(state, y, today, night) { mo -> onView(RecordView(y, mo)) }
-                TokenText(stringResource(R.string.record_yearHint), Tokens.TypeScale.caption1, Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.Center)
+                TokenText(stringResource(R.string.record_yearHint), Tokens.TypeScale.footnote, Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.Center)
                 thanks.forEach { TokenText("“$it”", Tokens.TypeScale.callout.serif(), Modifier.padding(horizontal = Tokens.Space.sp2)) }
                 if (y < today.year || (today.monthValue == 12 && today.dayOfMonth == 31))
                     TokenText(stringResource(R.string.year_end), Tokens.TypeScale.callout.serif(), Modifier.fillMaxWidth(), align = TextAlign.Center)
                 GardenButton(stringResource(R.string.share_image), {
-                    io.github.graviton94.carpediem.share.ShareCards.send(ctx, io.github.graviton94.carpediem.share.ShareCards.year(ctx, book, days, state.store.haruSeed, night, today, title, count, thanks), "year-$y")
+                    io.github.graviton94.carpediem.share.ShareCards.send(ctx, "year-$y") { io.github.graviton94.carpediem.share.ShareCards.year(ctx, book, days, state.store.haruSeed, night, today, title, count, thanks) }
                 }, filled = false, seed = 1181)
             }
         }
@@ -157,6 +187,13 @@ private fun PanelHead(title: String, sub: String, canPrev: Boolean, canNext: Boo
     }
 }
 
+/** 열두 달 칸의 얇은 테두리: 크레용 층 대신 가벼운 선 (한 해에 열두 칸, 여러 해가 한꺼번에 그려져도 가볍게). */
+@Composable
+private fun Modifier.tileEdge(weight: Float): Modifier {
+    val u = Theme.unit
+    return this.border(u * G.Stroke.chip * 0.6f * weight, Theme.gc.ink.copy(alpha = 0.45f * weight + 0.15f), androidx.compose.foundation.shape.RoundedCornerShape(u * G.Radius.chip))
+}
+
 /** 한 해: 열두 달의 무늬를 4 × 3 칸에 (지나간 달만, 오지 않은 달은 빈 칸). 누르면 그 달. */
 @Composable
 internal fun YearTiles(state: AppState, y: Int, today: LocalDate, night: Boolean, onMonth: (Int) -> Unit) {
@@ -172,12 +209,86 @@ internal fun YearTiles(state: AppState, y: Int, today: LocalDate, night: Boolean
                         if (passed) {
                             val days = remember(state.lines, y, m) { Constellations.monthDays(state.lines, y, m) }
                             MonthGarden(state.store.constellations, days, state.store.haruSeed, night, today,
-                                Modifier.fillMaxWidth().crayonBox(null, G.Radius.chip, G.Stroke.chip, 1190 + m).clickable(role = Role.Button) { onMonth(m) },
+                                Modifier.fillMaxWidth().tileEdge(1f).clickable(role = Role.Button) { onMonth(m) },
                                 animate = false, sizes = TILE_SIZES)
-                        } else Spacer(Modifier.fillMaxWidth().aspectRatio(G.Year.monthAspect).crayonBox(null, G.Radius.chip, G.Stroke.chip * 0.5f, 1190 + m))
-                        TokenText(RecordText.month(ctx, m), Tokens.TypeScale.caption1, color = if (passed) p.foreground else p.secondary)
+                        } else Spacer(Modifier.fillMaxWidth().aspectRatio(G.Year.monthAspect).tileEdge(0.5f))
+                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
+                            TokenText(RecordText.month(ctx, m), Tokens.TypeScale.caption1, color = if (passed) p.foreground else p.secondary)
+                            // 마음의 날씨: 그 달에 가장 많았던 마음을 작은 하늘로 (숫자 없이)
+                            if (passed) remember(state.lines, y, m) { Lines.monthMood(state.lines, y, m) }?.let { MoodSky(it) }
+                        }
                     }
                 }
+            }
+        }
+    }
+}
+
+/** 마음의 날씨 한 칸: 밝은 마음 = 해, 평온 · 덤덤 · 싱숭생숭 = 구름, 불안 · 속상함 · 슬픔 = 구름과 빗방울. 색은 그 마음의 색. */
+@Composable
+internal fun MoodSky(f: Feeling) {
+    val ctx = LocalContext.current
+    val c = moodColor(f)
+    val name = stringResource(feelingName(f))
+    val label = stringResource(R.string.mood_weatherA11y, name)
+    androidx.compose.foundation.Canvas(Modifier.size(Theme.unit * 12).semantics { contentDescription = label }) {
+        val w = size.width; val h = size.height
+        when (f) {
+            in Feeling.BRIGHT -> {
+                drawCircle(c, w * 0.26f, center)
+                repeat(8) { k -> val a = k * Math.PI / 4; val r1 = w * 0.36f; val r2 = w * 0.48f
+                    drawLine(c, androidx.compose.ui.geometry.Offset(center.x + (r1 * kotlin.math.cos(a)).toFloat(), center.y + (r1 * kotlin.math.sin(a)).toFloat()),
+                        androidx.compose.ui.geometry.Offset(center.x + (r2 * kotlin.math.cos(a)).toFloat(), center.y + (r2 * kotlin.math.sin(a)).toFloat()), strokeWidth = w * 0.07f) }
+            }
+            else -> {
+                val heavy = f in io.github.graviton94.carpediem.core.Letters.HEAVY
+                val cy = if (heavy) h * 0.38f else h * 0.5f
+                drawCircle(c, w * 0.2f, androidx.compose.ui.geometry.Offset(w * 0.34f, cy + h * 0.04f))
+                drawCircle(c, w * 0.25f, androidx.compose.ui.geometry.Offset(w * 0.58f, cy - h * 0.04f))
+                drawRect(c, androidx.compose.ui.geometry.Offset(w * 0.18f, cy), androidx.compose.ui.geometry.Size(w * 0.62f, h * 0.18f))
+                if (heavy) listOf(0.32f, 0.52f, 0.72f).forEach { x ->
+                    drawLine(c, androidx.compose.ui.geometry.Offset(w * x, h * 0.72f), androidx.compose.ui.geometry.Offset(w * (x - 0.05f), h * 0.92f), strokeWidth = w * 0.07f)
+                }
+            }
+        }
+    }
+}
+
+/**
+ * 기록 찾기: 마음의 기록 위의 작은 칸. 낱말 · 마음 이름 · 보낸 사람으로 찾고, 누르면 그 달 판의 그날로.
+ * 오늘 보낸 글은 내일부터 찾아짐 (떠나보낸 그대로).
+ */
+@OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
+@Composable
+internal fun RecordSearch(state: AppState, today: LocalDate, onOpen: (RecordView) -> Unit) {
+    val p = Theme.palette
+    val ctx = LocalContext.current
+    var q by androidx.compose.runtime.saveable.rememberSaveable { mutableStateOf("") }
+    androidx.compose.foundation.text.BasicTextField(
+        value = q, onValueChange = { q = it.replace('\n', ' ').take(40) }, singleLine = true,
+        textStyle = Tokens.TypeScale.callout.style().copy(color = p.foreground), cursorBrush = androidx.compose.ui.graphics.SolidColor(p.foreground),
+        modifier = Modifier.fillMaxWidth().keepAboveKeyboard().crayonBox(null, G.Radius.chip, G.Stroke.chip, 1195).padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3),
+        decorationBox = { inner -> Box { if (q.isEmpty()) TokenText(stringResource(R.string.search_hint), Tokens.TypeScale.callout, color = p.secondary); inner() } },
+    )
+    if (q.isBlank()) return
+    fun open(v: RecordView) { q = ""; onOpen(v) }
+    val found = remember(state.lines, q, today) {
+        Lines.search(state.lines, q, today, { ctx.getString(feelingName(it)) }, { id -> state.people.firstOrNull { it.id == id }?.name ?: state.memories.firstOrNull { it.id == id }?.name })
+    }
+    if (found.isEmpty()) {
+        TokenText(stringResource(R.string.search_none), Tokens.TypeScale.footnote, color = p.secondary)
+        // 마음으로 찾아보기: 누르면 그 마음 이름으로
+        androidx.compose.foundation.layout.FlowRow(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2), maxItemsInEachRow = Feeling.PER_ROW) {
+            Feeling.entries.forEachIndexed { i, f -> val n = stringResource(feelingName(f)); GardenChip(n, false, 1500 + i) { q = n } }
+        }
+    } else {
+        TokenText(stringResource(R.string.search_count, "${found.size}"), Tokens.TypeScale.footnote, color = p.secondary)
+        found.take(30).forEach { l ->
+            Column(Modifier.fillMaxWidth().heightIn(min = Tokens.Layout.tapTarget).clickable { open(RecordView(l.date.year, l.date.monthValue, l.date)) }.padding(vertical = Tokens.Space.sp2),
+                verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
+                val meta = listOfNotNull(RecordText.day(ctx, l.date).let { if (l.date.year != today.year) "${l.date.year} · $it" else it }, l.feeling?.let { ctx.getString(feelingName(it)) }).joinToString(" · ")
+                TokenText(meta, Tokens.TypeScale.caption1, color = p.secondary)
+                TokenText(l.text.ifBlank { stringResource(R.string.record_noText) }, Tokens.TypeScale.callout.serif(), maxLines = 3, color = if (l.text.isBlank()) p.secondary else p.foreground)
             }
         }
     }

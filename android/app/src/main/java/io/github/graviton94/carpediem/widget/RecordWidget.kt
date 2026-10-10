@@ -54,18 +54,19 @@ class RecordWidget : GlanceAppWidget() {
     override val sizeMode = SizeMode.Exact
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
-        val store = Store(context)
-        val now = LocalDateTime.now(); val today = now.toLocalDate()
-        SkyTime.useCountry(context, store.profile?.countryCode)
-        val night = SkyTime.isDark(now)
-        val days = Constellations.monthDays(store.lines, today.year, today.monthValue)
-        val locale = context.resources.configuration.locales[0]
-        val month = today.month.getDisplayName(MonthStyle.FULL_STANDALONE, locale)
-        val cons = store.constellations.of(today.monthValue)?.name(io.github.graviton94.carpediem.data.Words.lang(context)).orEmpty()
-        val open = Intent(context, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-            .putExtra(MainActivity.EXTRA_OPEN, "record:${today.year}-${today.monthValue}")
-        val ink = if (night) Tokens.Garden.Year.Colors.plain else Tokens.Garden.Colors.ink
+        // 다시 그릴 때마다 새로 읽음 (위젯이 떠 있는 동안 고쳐 그려도 예전 값이 남지 않게)
         provideContent {
+            val store = Store(context)
+            val now = LocalDateTime.now(); val today = now.toLocalDate()
+            SkyTime.useCountry(context, store.profile?.countryCode)
+            val night = SkyTime.isDark(now)
+            val days = Constellations.monthDays(store.lines, today.year, today.monthValue)
+            val locale = context.resources.configuration.locales[0]
+            val month = today.month.getDisplayName(MonthStyle.FULL_STANDALONE, locale)
+            val cons = store.constellations.of(today.monthValue)?.name(io.github.graviton94.carpediem.data.Words.lang(context)).orEmpty()
+            val open = Intent(context, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                .putExtra(MainActivity.EXTRA_OPEN, "record:${today.year}-${today.monthValue}")
+            val ink = if (night) Tokens.Garden.Year.Colors.plain else Tokens.Garden.Colors.ink
             val size = LocalSize.current
             val bmp = recordBitmap(context, size.width, size.height, if (store.keepLines) StarGarden.month(store.constellations, days, store.haruSeed) else emptyList(), night, today)
             Box(GlanceModifier.fillMaxSize().clickable(actionStartActivity(open))) {

@@ -122,6 +122,23 @@ class RhythmTest {
         assertTrue(Offerings.shown(list, SeasonCard(2026, Season.WINTER, Tree.ZELKOVA)).isEmpty())
     }
 
+    @Test fun adornments() {
+        val a = Adornments.put(emptyMap(), Adornments.ME, "support:support_tea")
+        val b = Adornments.put(a, "mom", "card:2026-AUTUMN-ginkgo")
+        // 같은 꾸밈을 다른 돌에: 옮겨 감 (두 곳에 있지 않음)
+        val c = Adornments.put(b, "dad", "card:2026-AUTUMN-ginkgo")
+        assertEquals(mapOf(Adornments.ME to "support:support_tea", "dad" to "card:2026-AUTUMN-ginkgo"), c)
+        // 돌마다 하나: 새로 놓으면 바뀜
+        assertEquals("pebble:20000", Adornments.put(c, "dad", "pebble:20000")["dad"])
+        assertEquals("dad", Adornments.stoneOf(c, "card:2026-AUTUMN-ginkgo"))
+        assertEquals(c, Adornments.decode(Adornments.encode(c)))
+        assertEquals(mapOf(Adornments.ME to "support:support_tea"), Adornments.prune(c, setOf("mom")))
+        // 예전 조각: 같은 조각을 둘에 놓았으면 먼저 놓은 돌 하나에만
+        val now = SeasonCard(2026, Season.AUTUMN, Tree.GINKGO)
+        val old = listOf(Offering("b", now, day(2026, 10, 2)), Offering("a", now, day(2026, 10, 1)))
+        assertEquals(mapOf("a" to "card:${now.id}"), Adornments.fromOfferings(old, emptyMap()))
+    }
+
     @Test fun yearCard() {
         assertEquals(2026, YearCard.due(day(2026, 12, 25)))
         assertNull(YearCard.due(day(2026, 12, 24)))

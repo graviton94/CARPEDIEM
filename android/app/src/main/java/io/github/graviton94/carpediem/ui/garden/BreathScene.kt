@@ -59,6 +59,14 @@ internal fun BreathScene(kind: BreathKind, art: HaruArt, scale: Dp, groundY: Dp,
         val u = size.width / Tokens.Garden.unitWidth
         val ms = elapsed(); val t = ms / 1000f; val f = full()
         val gy = groundY.toPx(); val cx = size.width / 2; val k = scale.toPx()
+        // 숨 고리 (마음 물결만): 하루 발치의 가는 원, 들숨에 위에서부터 차고 머금에 머물고 날숨에 비워짐.
+        // 물 위의 물결과 같은 결이라 물결에만 (산책의 지평선 · 등불 · 꽃밭에서는 하루가 부풀고 떠오르는 것으로 숨을 보여 줌)
+        if (kind == BreathKind.CALM) run {
+            val rw = k * art.meta.bbox.width * Tokens.Garden.Breath.ringWidth; val rh = rw * 0.22f
+            val tl = Offset(cx - rw / 2, gy - rh / 2); val sz = Size(rw, rh); val sw = u * Tokens.Garden.Breath.ringStroke
+            drawOval((if (night) Color(0xFFF4EBDA) else ink).copy(alpha = if (night) 0.16f else 0.12f), tl, sz, style = Stroke(sw))
+            if (f > 0.005f) drawArc(if (night) Color(0xFFFFD796) else Color(0xFF5F7236), -90f, 360f * f.coerceIn(0f, 1f), false, tl, sz, style = Stroke(sw, cap = StrokeCap.Round))
+        }
         when (kind) {
             BreathKind.CALM -> {
                 // 들이쉬면 하루 둘레에 빛이 모임

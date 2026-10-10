@@ -336,9 +336,9 @@ object Tokens {
         object Family {
             const val max = 9.0f
             const val oneRow = 5.0f
-            const val gap = 10.0f
+            const val gap = 4.0f
             const val minGap = 6.0f
-            const val overlap = 0.22f
+            const val overlap = 0.3f
             const val nameChars = 4.0f
             const val petScale = 0.72f
             const val dogYears = 13.0f
@@ -416,12 +416,21 @@ object Tokens {
             const val card = 0.2f
         }
         object Breath {
-            const val calmIn = 4.0f
-            const val calmOut = 6.0f
+            const val calmIn = 5.0f
+            const val calmOut = 7.0f
             const val boxIn = 4.0f
-            const val boxHold = 0.0f
+            const val boxHold = 4.0f
             const val boxOut = 4.0f
-            const val boxRest = 0.0f
+            const val boxRest = 4.0f
+            const val thanksIn = 3.0f
+            const val thanksTop = 1.5f
+            const val thanksOut = 8.0f
+            const val calmMinutes = 5.0f
+            const val boxMinutes = 4.0f
+            const val sleepCycles = 8.0f
+            const val thanksMinutes = 5.0f
+            const val ringWidth = 1.5f
+            const val ringStroke = 1.6f
             const val sleepIn = 4.0f
             const val sleepHold = 7.0f
             const val sleepOut = 8.0f
@@ -480,13 +489,19 @@ object Tokens {
             const val fadeInMs = 2500.0f
             const val fadeOutMs = 1800.0f
             const val waveSeconds = 9.0f
-            const val bowl = 0.55f
+            const val bowl = 0.22f
+            const val guide = 1.1f
+            const val bed = 0.32f
+            const val gazeBed = 0.6f
+            const val noteMin = 4.0f
+            const val noteMax = 14.0f
+            const val songVolume = 0.5f
             const val bowlInHz = 220.0f
             const val bowlOutHz = 164.8f
             const val bowlRing = 8.0f
             const val bowlAttackMs = 35.0f
             const val bowlBeat = 0.7f
-            const val introMs = 6000.0f
+            const val introMs = 9000.0f
             const val layer = 0.4f
             const val layerMin = 18.0f
             const val layerMax = 40.0f
@@ -538,6 +553,9 @@ object Tokens {
                 val disappoint = Color(0xFFB9B4A8)
                 val sad = Color(0xFF8C9AB0)
                 val worry = Color(0xFF9C8FA6)
+                val proud = Color(0xFFE3A866)
+                val meh = Color(0xFFC9C6B5)
+                val unsettled = Color(0xFFAEBFC0)
                 val none = Color(0xFFE6DFCF)
             }
         }

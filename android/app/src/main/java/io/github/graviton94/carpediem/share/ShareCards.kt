@@ -1,5 +1,6 @@
 package io.github.graviton94.carpediem.share
 
+import kotlinx.coroutines.launch
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
@@ -66,7 +67,7 @@ object ShareCards {
     private fun measure(s: String, tp: TextPaint, width: Int): Float =
         StaticLayout.Builder.obtain(s, 0, s.length, tp, width).setLineSpacing(0f, 1.25f).build().height.toFloat()
 
-    private fun haru(c: Canvas, seed: Long, cx: Float, groundY: Float, widthPx: Float) {
+    private fun haru(c: Canvas, seed: Long, cx: Float, groundY: Float, widthPx: Float, line: Boolean = true) {
         val art = HaruArt.of(seed, false)
         val k = widthPx / art.meta.bbox.width
         c.save(); c.translate(cx - art.meta.bbox.center.x * k, groundY - art.meta.ground * k)
@@ -75,6 +76,7 @@ object ShareCards {
             androidx.compose.ui.geometry.Size(art.meta.box * k, art.meta.box * k),
         ) { drawHaru(art, k, smile = 1f) }
         c.restore()
+        if (!line) return
         val p = Paint(Paint.ANTI_ALIAS_FLAG).apply { strokeWidth = 5f; color = ink; strokeCap = Paint.Cap.ROUND }
         c.drawLine(cx - widthPx * 1.4f, groundY, cx + widthPx * 1.4f, groundY, p)
     }
@@ -114,6 +116,8 @@ object ShareCards {
         return b to c
     }
     private val Y = Tokens.Garden.Year.Colors
+    /** 생일 카드의 돌 크기 (예전 대비). */
+    private const val CARD_STONE = 0.58f
 
     /** 한 달의 정원: 그 달의 별자리 (보내는 때가 밤이면 별, 낮이면 꽃), 별자리 이름 · 한 줄 수. */
     fun month(ctx: Context, book: io.github.graviton94.carpediem.core.ConstellationBook, days: List<Pair<LocalDate, DayLine?>>, install: Long, night: Boolean, today: LocalDate, title: String, sub: String): Bitmap {
@@ -176,9 +180,16 @@ object ShareCards {
      * 생일 카드: 나와 그 사람의 돌이 작게 나란히, 사이에 케이크와 작은 하트. 그 사람만 고깔, 둘 다 웃는 눈 · 발그레한 볼.
      * 낮엔 종이에 깃발 줄, 밤 (보내는 때가 어두우면) 엔 남색에 작은 전구 줄과 별, 촛불 빛.
      */
-    fun birthday(ctx: Context, name: String, seed: Long, pet: Boolean, mySeed: Long, night: Boolean): Bitmap {
+    /** sent = (올해 그 사람에게 보낸 한 줄 수, 고른 한 줄): 있으면 인사말 대신 ‘올해 보낸 마음’ 과 그 한 줄. */
+    @Suppress("UNUSED_PARAMETER")
+    fun birthday(ctx: Context, name: String, seed: Long, pet: Boolean, mySeed: Long, dark: Boolean, sent: Pair<Int, String>? = null): Bitmap {
+        // 생일 카드는 늘 ‘밤의 촛불’: 별 뜬 밤하늘 · 전구 줄 · 촛불 빛 안의 작은 두 돌과 케이크
+        val night = true
         val w = S.lineW.toInt(); val h = S.lineH.toInt(); val pad = S.pad
         val (b, c) = board(w, h, night)
+        drawCompose(c, 0f, 0f, w.toFloat(), h.toFloat()) {
+            drawRect(androidx.compose.ui.graphics.Brush.verticalGradient(listOf(Y.skyTop, Y.skyBottom)), size = size)
+        }
         val fg = if (night) Y.plain.toArgb() else ink; val soft = if (night) Y.plain.copy(alpha = 0.7f).toArgb() else inkSoft
         val P = Tokens.Garden.Party
         // 깃발 줄 · 전구 줄 (위), 밤엔 별 몇 개
@@ -200,14 +211,19 @@ object ShareCards {
                     drawPath(flag, cols[k % cols.size])
                 }
             }
-            if (night) { val r = Crayon.Rng(5); repeat(18) { drawCircle(Y.core, 1.5f + 2f * r.next(), androidx.compose.ui.geometry.Offset(w * (0.08f + 0.84f * r.next()), h * (0.32f + 0.25f * r.next())), 0.2f + 0.4f * r.next()) } }
+            if (night) { val r = Crayon.Rng(5); repeat(60) { drawCircle(Y.core, 1.2f + 2.2f * r.next(), androidx.compose.ui.geometry.Offset(w * (0.05f + 0.9f * r.next()), h * (0.05f + 0.6f * r.next())), 0.2f + 0.5f * r.next()) } }
         }
         val tp = paint(ctx, S.text, fg)
         text(c, ctx.getString(R.string.bday_cardTitle, name), tp, pad, h * 0.17f, (w - pad * 2).toInt())
-        text(c, ctx.getString(R.string.bday_cardSub), paint(ctx, S.small, soft), pad, h * 0.17f + S.text * 1.8f, (w - pad * 2).toInt())
-        val gy = h * 0.72f; val cx = w / 2f
+        if (sent == null) text(c, ctx.getString(R.string.bday_cardSub), paint(ctx, S.small, soft), pad, h * 0.17f + S.text * 1.8f, (w - pad * 2).toInt())
+        else {
+            val y1 = h * 0.17f + S.text * 1.8f
+            val sh = text(c, ctx.getString(R.string.bday_cardSent, name, "${sent.first}"), paint(ctx, S.small * 0.9f, soft), pad, y1, (w - pad * 2).toInt())
+            text(c, "“${sent.second.replace('\n', ' ')}”", paint(ctx, S.small * 1.15f, fg), pad, y1 + sh + S.small * 0.5f, (w - pad * 2).toInt())
+        }
+        val gy = h * 0.78f; val cx = w / 2f
         val myArt = HaruArt.of(mySeed, false); val art = HaruArt.of(seed, false)
-        val sw = w * P.card
+        val sw = w * P.card * CARD_STONE   // 돌은 작게: 글과 밤하늘이 주인공
         fun stone(a: HaruArt, x: Float, width: Float, hat: Boolean) {
             val k = width / a.meta.bbox.width
             c.save(); c.translate(x - a.meta.bbox.center.x * k, gy - a.meta.ground * k)
@@ -215,12 +231,13 @@ object ShareCards {
                 androidx.compose.ui.graphics.Canvas(c), androidx.compose.ui.geometry.Size(a.meta.box * k, a.meta.box * k)) { drawHaru(a, k, smile = 1f, blush = 0.8f, hat = hat) }
             c.restore()
         }
-        // 촛불 빛 (밤): 두 돌을 비춤
-        if (night) drawCompose(c, 0f, 0f, w.toFloat(), h.toFloat()) {
-            val o = androidx.compose.ui.geometry.Offset(cx, gy - sw * 0.5f)
-            drawCircle(androidx.compose.ui.graphics.Brush.radialGradient(listOf(Tokens.Garden.Party.Colors.glow.copy(alpha = 0.22f), androidx.compose.ui.graphics.Color.Transparent), o, sw * 1.6f), sw * 1.6f, o)
+        // 촛불 빛: 케이크에서 퍼져 두 돌을 비춤 · 아래는 어두운 땅
+        drawCompose(c, 0f, 0f, w.toFloat(), h.toFloat()) {
+            val o = androidx.compose.ui.geometry.Offset(cx, gy - sw * 0.4f)
+            drawCircle(androidx.compose.ui.graphics.Brush.radialGradient(listOf(Tokens.Garden.Party.Colors.glow.copy(alpha = 0.34f), androidx.compose.ui.graphics.Color.Transparent), o, sw * 3.6f), sw * 3.6f, o)
+            drawRect(Y.skyBottom.copy(alpha = 0.55f), androidx.compose.ui.geometry.Offset(0f, gy), androidx.compose.ui.geometry.Size(size.width, size.height - gy))
         }
-        val gap = sw * 0.95f
+        val gap = sw * 1.2f
         stone(myArt, cx - gap, sw, false)
         stone(art, cx + gap, sw * (if (pet) 0.78f else 1f), true)
         val cw = sw * 0.62f
@@ -233,7 +250,7 @@ object ShareCards {
         val hx = cx; val hy = gy - cw * 1.35f; val hs = sw * 0.07f
         c.drawPath(android.graphics.Path().apply { moveTo(hx, hy + hs); cubicTo(hx - hs * 2f, hy - hs * 0.6f, hx - hs, hy - hs * 2.2f, hx, hy - hs); cubicTo(hx + hs, hy - hs * 2.2f, hx + hs * 2f, hy - hs * 0.6f, hx, hy + hs); close() }, hp)
         val lp = Paint(Paint.ANTI_ALIAS_FLAG).apply { strokeWidth = 5f; color = fg; strokeCap = Paint.Cap.ROUND }
-        c.drawLine(cx - sw * 2.1f, gy, cx + sw * 2.1f, gy, lp)
+        lp.alpha = 110; c.drawLine(pad, gy, w - pad, gy, lp)
         text(c, ctx.getString(R.string.share_footer), paint(ctx, S.small * 0.8f, soft), pad, h - pad * 1.25f, (w - pad * 2).toInt())
         return b
     }
@@ -248,69 +265,77 @@ object ShareCards {
     }
 
     /**
-     * 정원의 한 해 (S2): 그해의 계절 조각 넷 (받지 못한 계절은 빈 자리) · 말뚝에 걸린 것 · 연 리본 · 만난 순간들 · 작은 하루.
-     * 숫자는 쓰지 않고 그림으로만. cards = 그해에 받은 조각, met = 그해에 처음 만난 순간의 키.
+     * 정원의 한 해 (S2): 테두리 없는 한 장의 포스터. 그 계절 하늘이 화면 가득, 아래쪽에 땅 · 나무 · 말뚝 · 연 · 하루,
+     * 그해 받은 계절 조각은 하루 곁 땅 위에 놓임 (받지 못한 계절은 그리지 않음). 위에 큰 해 숫자와 ‘하루의 정원’. 숫자 통계는 쓰지 않음.
      */
-    fun gardenYear(ctx: Context, title: String, cards: List<io.github.graviton94.carpediem.core.SeasonCard>, hang: io.github.graviton94.carpediem.core.Hang,
-                   ribbons: List<Feeling?>, met: List<String>, season: io.github.graviton94.carpediem.core.Season, seed: Long): Bitmap {
-        val w = S.lineW.toInt(); val h = S.lineH.toInt(); val pad = S.pad
-        val (b, c) = base(w, h)
-        val tw = (w - pad * 2).toInt()
-        var y = pad * 1.3f
-        y += text(c, title, paint(ctx, S.text * 0.9f, ink), pad, y, tw) + pad * 0.7f
-        // 계절 조각 넷: 봄 · 여름 · 가을 · 겨울 순서로 한 줄
-        val cell = (w - pad * 2) / 4f; val ch = cell * 0.8f
-        val dash = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE; strokeWidth = 3f; color = inkSoft; pathEffect = android.graphics.DashPathEffect(floatArrayOf(10f, 10f), 0f) }
-        io.github.graviton94.carpediem.core.Season.entries.forEachIndexed { i, s ->
-            val cx = pad + cell * (i + 0.5f); val bottom = y + ch
-            val card = cards.firstOrNull { it.season == s }
-            if (card != null) put(c, art(ctx, "card_${card.key}.webp"), cx, bottom, ch * 0.92f)
-            else c.drawCircle(cx, bottom - ch / 2, ch * 0.28f, dash)
+    fun gardenYear(ctx: Context, year: Int, cards: List<io.github.graviton94.carpediem.core.SeasonCard>, hang: io.github.graviton94.carpediem.core.Hang,
+                   ribbons: List<Feeling?>, season: io.github.graviton94.carpediem.core.Season, seed: Long,
+                   tree: io.github.graviton94.carpediem.core.Tree? = null, stage: Int = 2, kite: Boolean = false): Bitmap {
+        val w = S.yearW.toInt(); val h = S.yearH.toInt(); val pad = S.pad
+        val b = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888); val c = Canvas(b)
+        c.drawColor(paper)
+        val key = season.name.lowercase()
+        val f = Paint(Paint.FILTER_BITMAP_FLAG)
+        // 하늘: 화면 가득 (위를 맞춰 채움)
+        art(ctx, "sky_$key.jpg")?.let { sky -> val sh = w.toFloat() * sky.height / sky.width; c.drawBitmap(sky, null, RectF(0f, 0f, w.toFloat(), maxOf(sh, h.toFloat())), f) }
+        // 땅: 앱과 같은 띠, 땅선은 아래 30% 위에. 띠 아래는 끝까지 늘여 채움
+        val gy = h * 0.70f
+        art(ctx, "strip_$key.webp")?.let { st ->
+            val L = Tokens.Garden.Layout; val sh = w * L.stripHeight / Tokens.Garden.unitWidth; val top = gy - sh * L.stripLineY / L.stripHeight
+            c.drawBitmap(st, null, RectF(0f, top, w.toFloat(), maxOf(top + sh, h.toFloat())), f)
         }
-        y += ch + pad * 0.6f
-        // 말뚝에 걸린 것 · 연 리본 (가운데 한 줄)
-        val midH = (h - y - pad * 4.2f).coerceAtLeast(pad) * 0.42f
+        // 나무 (왼쪽) · 말뚝과 걸린 것 (오른쪽) · 연과 리본
+        val foot = h * 0.012f
+        tree?.let { t -> put(c, art(ctx, "tree_${t.key}_${key}_${stage.coerceIn(0, 3)}.webp"), w * 0.15f, gy + foot, h * 0.36f) }
+        val postX = w * 0.87f; val postH = h * 0.22f
+        put(c, art(ctx, "post_$key.webp"), postX, gy + foot, postH)
         val hangName = when (hang) { io.github.graviton94.carpediem.core.Hang.CHIME -> "post_chime.webp"; io.github.graviton94.carpediem.core.Hang.BELL -> "post_bell.webp"; io.github.graviton94.carpediem.core.Hang.LANTERN -> "post_lantern.webp"; else -> null }
-        val key = when (season) { io.github.graviton94.carpediem.core.Season.SPRING -> "spring"; io.github.graviton94.carpediem.core.Season.SUMMER -> "summer"; io.github.graviton94.carpediem.core.Season.AUTUMN -> "autumn"; io.github.graviton94.carpediem.core.Season.WINTER -> "winter" }
-        put(c, art(ctx, "post_$key.webp"), w * 0.3f, y + midH, midH)
-        hangName?.let { put(c, art(ctx, it), w * 0.3f, y + midH, midH) }
-        if (ribbons.isNotEmpty()) {
-            val rp = Paint(Paint.ANTI_ALIAS_FLAG).apply { strokeWidth = 9f; strokeCap = Paint.Cap.ROUND }
-            put(c, art(ctx, "kite.webp"), w * 0.68f, y + midH * 0.55f, midH * 0.55f)
-            ribbons.forEachIndexed { i, f ->
-                rp.color = io.github.graviton94.carpediem.ui.garden.feelingColor(f).toArgb()
-                val x = w * 0.68f + (i - (ribbons.size - 1) / 2f) * 22f; val top = y + midH * 0.58f
-                c.drawLine(x, top, x + 6f, top + midH * 0.36f, rp)
+        hangName?.let { put(c, art(ctx, it), postX, gy + foot, postH) }
+        if (kite) {
+            val kx = w * 0.66f; val ky = h * 0.47f; val kh = h * 0.08f
+            val string = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = inkSoft; alpha = 120; strokeWidth = 2.5f; style = Paint.Style.STROKE }
+            c.drawPath(android.graphics.Path().apply { moveTo(kx, ky); quadTo(kx + kh * 0.8f, ky + kh * 1.8f, postX - pad * 0.1f, gy - postH * 0.85f) }, string)
+            put(c, art(ctx, "kite.webp"), kx, ky, kh)
+            val rp = Paint(Paint.ANTI_ALIAS_FLAG).apply { strokeWidth = 6f; strokeCap = Paint.Cap.ROUND; style = Paint.Style.STROKE }
+            ribbons.take(8).forEachIndexed { i, fe ->
+                rp.color = io.github.graviton94.carpediem.ui.garden.feelingColor(fe).toArgb()
+                val sx = kx + (i - (ribbons.size.coerceAtMost(8) - 1) / 2f) * 7f; val len = kh * (0.6f + 0.08f * (i % 3))
+                c.drawPath(android.graphics.Path().apply { moveTo(sx, ky - kh * 0.05f); quadTo(sx - len * 0.35f, ky + len * 0.45f, sx - len * 0.15f + (i % 2) * 8f, ky + len) }, rp)
             }
         }
-        y += midH + pad * 0.5f
-        // 만난 순간들: 그림이 있는 것은 그림으로, 나머지는 작은 빛으로
-        if (met.isNotEmpty()) {
-            val mh = pad * 1.1f; val step = minOf((w - pad * 2) / met.size, mh * 1.4f); val x0 = w / 2f - step * (met.size - 1) / 2f
-            met.forEachIndexed { i, k ->
-                val cx = x0 + step * i
-                val img = when (k) { "rainbow" -> art(ctx, "moment_rainbow.webp"); "aurora" -> art(ctx, "moment_aurora.webp"); "snail" -> art(ctx, "moment_snail.webp"); "wind" -> art(ctx, "wind_$key.webp"); "butterflies" -> art(ctx, "fly_body.webp"); else -> null }
-                if (img != null) put(c, img, cx, y + mh, mh * (if (k == "butterflies") 0.6f else 0.9f))
-                else {
-                    val col = if (k == "fireflies") Tokens.Garden.Night.Colors.firefly else Tokens.Garden.Colors.inkSoft
-                    val gp = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = col.toArgb(); alpha = if (k == "fireflies") 230 else 120; style = if (k == "bubbles") Paint.Style.STROKE else Paint.Style.FILL; strokeWidth = 3f }
-                    c.drawCircle(cx - mh * 0.15f, y + mh * 0.55f, mh * 0.13f, gp); c.drawCircle(cx + mh * 0.18f, y + mh * 0.4f, mh * 0.09f, gp)
-                }
-            }
-            y += mh + pad * 0.4f
-        }
-        // 작은 하루
-        haru(c, seed, w / 2f, h - pad * 2.3f, w * 0.14f)
-        text(c, ctx.getString(R.string.share_footer), paint(ctx, S.small * 0.8f, inkSoft), pad, h - pad * 1.25f, tw)
+        // 하루 (가운데) 와 그해 받은 계절 조각 (하루 양옆 땅 위, 계절 순서대로)
+        haru(c, seed, w * 0.5f, gy, w * 0.17f, line = false)
+        val got = io.github.graviton94.carpediem.core.Season.entries.mapNotNull { s -> cards.firstOrNull { it.season == s } }
+        val spots = listOf(0.33f, 0.68f, 0.26f, 0.75f)
+        got.take(4).forEachIndexed { i, card -> put(c, art(ctx, "card_${card.key}.webp"), w * spots[i], gy + foot, h * 0.075f) }
+        // 글자: 위에 큰 해 숫자 · 이름, 아래 땅 위에 작은 꼬리말 (아래를 살짝 어둡게 해 읽히게)
+        val yh = text(c, "$year", paint(ctx, S.text * 2.6f, ink), pad, pad * 1.0f, w - (pad * 2).toInt())
+        text(c, ctx.getString(R.string.title_name), paint(ctx, S.small * 1.1f, inkSoft), pad, pad * 1.0f + yh + S.small * 0.2f, w - (pad * 2).toInt())
+        c.drawRect(0f, h * 0.84f, w.toFloat(), h.toFloat(), Paint().apply { shader = android.graphics.LinearGradient(0f, h * 0.84f, 0f, h.toFloat(), 0x00000000, 0x33000000, android.graphics.Shader.TileMode.CLAMP) })
+        text(c, ctx.getString(R.string.share_footer), paint(ctx, S.small * 0.8f, 0xF2FBF4E6.toInt()), pad, h - pad * 0.95f, w - (pad * 2).toInt())
         return b
     }
 
-    /** 그림을 캐시에 두고 폰의 ‘보내기’ 창을 연다. */
-    fun send(ctx: Context, bmp: Bitmap, name: String) {
+    /** 그림을 화면 스레드 밖에서 그리고 저장한 뒤 ‘보내기’ 창을 연다 (느린 폰에서 누른 순간 멈추지 않게). */
+    fun send(ctx: Context, name: String, draw: () -> Bitmap) {
+        kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.Default).launch {
+            val f = runCatching { save(ctx, draw(), name) }.getOrNull() ?: return@launch
+            kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) { open(ctx, f) }
+        }
+    }
+
+    /** 이미 그린 그림을 보냄 (저장도 화면 스레드 밖에서). */
+    fun send(ctx: Context, bmp: Bitmap, name: String) = send(ctx, name) { bmp }
+
+    private fun save(ctx: Context, bmp: Bitmap, name: String): File {
+        val dir = File(ctx.cacheDir, "share").apply { mkdirs() }
+        val f = File(dir, "$name.png")
+        f.outputStream().use { bmp.compress(Bitmap.CompressFormat.PNG, 100, it) }
+        return f
+    }
+
+    private fun open(ctx: Context, f: File) {
         runCatching {
-            val dir = File(ctx.cacheDir, "share").apply { mkdirs() }
-            val f = File(dir, "$name.png")
-            f.outputStream().use { bmp.compress(Bitmap.CompressFormat.PNG, 100, it) }
             val uri = FileProvider.getUriForFile(ctx, "${ctx.packageName}.share", f)
             val send = Intent(Intent.ACTION_SEND).setType("image/png").putExtra(Intent.EXTRA_STREAM, uri).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             ctx.startActivity(Intent.createChooser(send, ctx.getString(R.string.share_chooser)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))

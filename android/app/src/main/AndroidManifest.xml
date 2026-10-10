@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- 하루의 숨결을 손끝으로 (숨 쉬는 동안의 떨림) -->
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
         android:name=".CarpeDiemApplication"
@@ -26,52 +28,30 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
+            android:launchMode="singleTop"
+            android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboard|keyboardHidden|navigation|uiMode|fontScale|density"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <!-- 아이콘을 길게 누르면: 오늘의 한 줄 · 숨, 쉼 · 돌멍하기 · 하루 닫기 (02) -->
+            <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts" />
         </activity>
 
-        <receiver android:name=".widget.DaysLeftReceiver" android:exported="false" android:label="@string/widget_daysLeft_glass">
-            <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
-            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_days_left_glass" />
-        </receiver>
-        <receiver android:name=".widget.TodayReceiver" android:exported="false" android:label="@string/widget_today_glass">
-            <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
-            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_today_glass" />
-        </receiver>
-        <receiver android:name=".widget.LifeCalendarReceiver" android:exported="false" android:label="@string/widget_calendar_glass">
-            <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
-            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_calendar_glass" />
-        </receiver>
-        <receiver android:name=".widget.DaysLeftGardenReceiver" android:exported="false" android:label="@string/widget_daysLeft_garden">
-            <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
-            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_days_left_garden" />
-        </receiver>
-        <receiver android:name=".widget.TodayGardenReceiver" android:exported="false" android:label="@string/widget_today_garden">
-            <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
-            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_today_garden" />
-        </receiver>
-        <receiver android:name=".widget.LifeCalendarGardenReceiver" android:exported="false" android:label="@string/widget_calendar_garden">
-            <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
-            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_calendar_garden" />
-        </receiver>
         <receiver android:name=".widget.RecordReceiver" android:exported="false" android:label="@string/widget_record_garden">
             <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
             <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_record_garden" />
         </receiver>
-        <receiver android:name=".widget.BreathReceiver" android:exported="false" android:label="@string/widget_breath_garden">
+        <receiver android:name=".widget.LineGardenReceiver" android:exported="false" android:label="@string/widget_line_garden">
             <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
-            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_breath_garden" />
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_line_garden" />
         </receiver>
+        <!-- 하루 정리 알림에서 바로 한 줄 (01) -->
+        <receiver android:name=".notify.LineReplyReceiver" android:exported="false" />
         <service android:name=".widget.BreathTile" android:exported="true" android:label="@string/breathTile_label" android:icon="@drawable/ic_tile_breath"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
             <intent-filter><action android:name="android.service.quicksettings.action.QS_TILE" /></intent-filter>
         </service>
-        <receiver android:name=".widget.FamilyGardenReceiver" android:exported="false" android:label="@string/widget_family_garden">
-            <intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter>
-            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_family_garden" />
-        </receiver>
     </application>
 </manifest>

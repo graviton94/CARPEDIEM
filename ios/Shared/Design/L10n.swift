@@ -3,6 +3,55 @@
 import Foundation
 
 enum L10n {
+    static var letgoEmpty: String { tr("letgo.empty") }
+    static var breathInTop: String { tr("breath.inTop") }
+    static var noteDismiss: String { tr("note.dismiss") }
+    static var closeDayAsk: String { tr("closeDay.ask") }
+    static func adornCard(_ season: String, _ piece: String) -> String { tr("adorn.card", season, piece) }
+    static var adornPebble: String { tr("adorn.pebble") }
+    static func adornFromSupport(_ date: String) -> String { tr("adorn.fromSupport", date) }
+    static func adornFromPebble(_ date: String) -> String { tr("adorn.fromPebble", date) }
+    static func adornTitle(_ name: String) -> String { tr("adorn.title", name) }
+    static var adornNone: String { tr("adorn.none") }
+    static var adornEmpty: String { tr("adorn.empty") }
+    static var adornChange: String { tr("adorn.change") }
+    static var adornPick: String { tr("adorn.pick") }
+    static func adornSheetTitle(_ name: String) -> String { tr("adorn.sheetTitle", name) }
+    static var adornSheetHelp: String { tr("adorn.sheetHelp") }
+    static func adornAtOther(_ name: String) -> String { tr("adorn.atOther", name) }
+    static func adornDone(_ name: String, _ item: String) -> String { tr("adorn.done", name, item) }
+    static var adornRemove: String { tr("adorn.remove") }
+    static func adornLabel(_ name: String, _ item: String) -> String { tr("adorn.label", name, item) }
+    static func supportInvite(_ n: String) -> String { tr("support.invite", n) }
+    static func supportThanksItem(_ item: String) -> String { tr("support.thanksItem", item) }
+    static func supportPreview(_ item: String) -> String { tr("support.preview", item) }
+    static func supportPreviewMore(_ name: String, _ item: String) -> String { tr("support.previewMore", name, item) }
+    static var annivNote: String { tr("anniv.note") }
+    static var annivTitle100: String { tr("anniv.title100") }
+    static var annivTitleYear: String { tr("anniv.titleYear") }
+    static var annivBody100: String { tr("anniv.body100") }
+    static var annivBodyYear: String { tr("anniv.bodyYear") }
+    static var annivSign: String { tr("anniv.sign") }
+    static var annivSupport: String { tr("anniv.support") }
+    static var annivThanks: String { tr("anniv.thanks") }
+    static func supportMarkLabel(_ date: String, _ item: String) -> String { tr("support.markLabel", date, item) }
+    static var supportMark1: String { tr("support.mark1") }
+    static var supportMark2: String { tr("support.mark2") }
+    static var supportMark3: String { tr("support.mark3") }
+    static var supportTier1Note: String { tr("support.tier1.note") }
+    static var supportTier2Note: String { tr("support.tier2.note") }
+    static var supportTier3Note: String { tr("support.tier3.note") }
+    static func supportCta(_ item: String, _ price: String) -> String { tr("support.cta", item, price) }
+    static var supportUse: String { tr("support.use") }
+    static var supportRow: String { tr("support.row") }
+    static var newsTitle: String { tr("news.title") }
+    static func newsVersion(_ v: String) -> String { tr("news.version", v) }
+    static var newsOk: String { tr("news.ok") }
+    static var updateAvailable: String { tr("update.available") }
+    static var updateDownloading: String { tr("update.downloading") }
+    static var updateReady: String { tr("update.ready") }
+    static var updateGetRow: String { tr("update.getRow") }
+    static var updateRestartRow: String { tr("update.restartRow") }
     static var tagline: String { tr("tagline") }
     static var you: String { tr("you") }
     static var birthday: String { tr("birthday") }
@@ -57,41 +106,16 @@ enum L10n {
     static var wordsEnglish: String { tr("words.english") }
     static var wordsBoth: String { tr("words.both") }
     static var widgets: String { tr("widgets") }
-    static var widgetsList: String { tr("widgets.list") }
-    static var widgetsNameDaysLeft: String { tr("widgets.name.daysLeft") }
-    static var widgetsNameToday: String { tr("widgets.name.today") }
-    static var widgetsNameCalendar: String { tr("widgets.name.calendar") }
-    static var widgetsNameFamily: String { tr("widgets.name.family") }
     static var widgetsNameRecord: String { tr("widgets.name.record") }
-    static var widgetsHelp1: String { tr("widgets.help1") }
-    static var widgetsHelp2: String { tr("widgets.help2") }
-    static var widgetsHelp3: String { tr("widgets.help3") }
-    static var widgetsHelp4: String { tr("widgets.help4") }
     static var erase: String { tr("erase") }
     static var countrySearch: String { tr("country.search") }
     static var countrySource: String { tr("country.source") }
     static var widgetDaysLeft: String { tr("widget.daysLeft") }
-    static var widgetToday: String { tr("widget.today") }
-    static func widgetTodayLeft(_ n: String) -> String { tr("widget.todayLeft", n) }
-    static var widgetTodaySub: String { tr("widget.todaySub") }
-    static var widgetYearsLeft: String { tr("widget.yearsLeft") }
-    static func widgetMonthsLeft(_ n: String) -> String { tr("widget.monthsLeft", n) }
-    static func lockInline(_ n: String) -> String { tr("lock.inline", n) }
-    static func lockRectSub(_ n: String) -> String { tr("lock.rect.sub", n) }
-    static var androidNotification: String { tr("android.notification") }
-    static var widgetUnit: String { tr("widget.unit") }
-    static var widgetUnitDesc: String { tr("widget.unit.desc") }
-    static var widgetDaysLeftDesc: String { tr("widget.daysLeft.desc") }
-    static var widgetTodayDesc: String { tr("widget.today.desc") }
-    static var widgetCalendarDesc: String { tr("widget.calendar.desc") }
     static var widgetEmpty: String { tr("widget.empty") }
     static var eraseConfirm: String { tr("erase.confirm") }
     static var eraseAction: String { tr("erase.action") }
     static func expectancyValue(_ years: String) -> String { tr("expectancy.value", years) }
     static var countryWorld: String { tr("country.world") }
-    static var widgetsAndroid1: String { tr("widgets.android1") }
-    static var widgetsAndroid2: String { tr("widgets.android2") }
-    static var widgetsAndroid3: String { tr("widgets.android3") }
     static var back: String { tr("back") }
     static var design: String { tr("design") }
     static var designGlass: String { tr("design.glass") }
@@ -161,7 +185,6 @@ enum L10n {
     static var notifyMineBirthdayText: String { tr("notify.mineBirthdayText") }
     static func notifyKeepsake(_ name: String) -> String { tr("notify.keepsake", name) }
     static var notifyRow: String { tr("notify.row") }
-    static var notifyFooter: String { tr("notify.footer") }
     static var devUnlocked: String { tr("dev.unlocked") }
     static func gardenHaruA11y(_ stone: String) -> String { tr("garden.haruA11y", stone) }
     static var collection: String { tr("collection") }
@@ -191,6 +214,9 @@ enum L10n {
     static var feelingWorry: String { tr("feeling.worry") }
     static var feelingHope: String { tr("feeling.hope") }
     static var feelingDisappoint: String { tr("feeling.disappoint") }
+    static var feelingProud: String { tr("feeling.proud") }
+    static var feelingMeh: String { tr("feeling.meh") }
+    static var feelingUnsettled: String { tr("feeling.unsettled") }
     static var letgoMsgJoy1: String { tr("letgo.msg.joy.1") }
     static var letgoMsgJoy2: String { tr("letgo.msg.joy.2") }
     static var letgoMsgJoy3: String { tr("letgo.msg.joy.3") }
@@ -212,6 +238,13 @@ enum L10n {
     static var letgoMsgWorry1: String { tr("letgo.msg.worry.1") }
     static var letgoMsgWorry2: String { tr("letgo.msg.worry.2") }
     static var letgoMsgWorry3: String { tr("letgo.msg.worry.3") }
+    static var letgoMsgProud1: String { tr("letgo.msg.proud.1") }
+    static var letgoMsgProud2: String { tr("letgo.msg.proud.2") }
+    static var letgoMsgProud3: String { tr("letgo.msg.proud.3") }
+    static var letgoMsgMeh1: String { tr("letgo.msg.meh.1") }
+    static var letgoMsgMeh2: String { tr("letgo.msg.meh.2") }
+    static var letgoMsgUnsettled1: String { tr("letgo.msg.unsettled.1") }
+    static var letgoMsgUnsettled2: String { tr("letgo.msg.unsettled.2") }
     static var letgoMsgNone1: String { tr("letgo.msg.none.1") }
     static var letgoMsgNone2: String { tr("letgo.msg.none.2") }
     static func recallTitle(_ years: String) -> String { tr("recall.title", years) }
@@ -221,9 +254,9 @@ enum L10n {
     static var recallNotifyText: String { tr("recall.notifyText") }
     static var recallSample: String { tr("recall.sample") }
     static var recallAddSample: String { tr("recall.addSample") }
-    static var lines: String { tr("lines") }
     static var linesKeep: String { tr("lines.keep") }
-    static var linesKeepFooter: String { tr("lines.keepFooter") }
+    static var linesKeepOffConfirm: String { tr("lines.keepOffConfirm") }
+    static var linesKeepOffAction: String { tr("lines.keepOffAction") }
     static var linesExport: String { tr("lines.export") }
     static var linesExportEmpty: String { tr("lines.exportEmpty") }
     static var linesExportTitle: String { tr("lines.exportTitle") }
@@ -240,16 +273,6 @@ enum L10n {
     static var objKite: String { tr("obj.kite") }
     static var objKiteWhen: String { tr("obj.kite.when") }
     static var objKiteLine: String { tr("obj.kite.line") }
-    static var defaults: String { tr("defaults") }
-    static var defaultsUnit: String { tr("defaults.unit") }
-    static var defaultsGrid: String { tr("defaults.grid") }
-    static var defaultsFooter: String { tr("defaults.footer") }
-    static var widgetDaysLeftGlass: String { tr("widget.daysLeft.glass") }
-    static var widgetDaysLeftGarden: String { tr("widget.daysLeft.garden") }
-    static var widgetTodayGlass: String { tr("widget.today.glass") }
-    static var widgetTodayGarden: String { tr("widget.today.garden") }
-    static var widgetCalendarGlass: String { tr("widget.calendar.glass") }
-    static var widgetCalendarGarden: String { tr("widget.calendar.garden") }
     static var letgoModalTitle: String { tr("letgo.modalTitle") }
     static var letgoOk: String { tr("letgo.ok") }
     static func recallRandom(_ date: String) -> String { tr("recall.random", date) }
@@ -257,10 +280,8 @@ enum L10n {
     static var recallAddRandom: String { tr("recall.addRandom") }
     static var recallSampleOld: String { tr("recall.sampleOld") }
     static func gardenMetOn(_ date: String, _ stone: String) -> String { tr("garden.metOn", date, stone) }
-    static var family: String { tr("family") }
     static var familyAdd: String { tr("family.add") }
     static var familyFull: String { tr("family.full") }
-    static var familyGlassNote: String { tr("family.glassNote") }
     static var familyMe: String { tr("family.me") }
     static var addKind: String { tr("add.kind") }
     static var kindPerson: String { tr("kind.person") }
@@ -298,8 +319,6 @@ enum L10n {
     static func letgoModalTo(_ name: String) -> String { tr("letgo.modalTo", name) }
     static func gardenStoneA11y(_ name: String, _ stone: String) -> String { tr("garden.stoneA11y", name, stone) }
     static var gardenPet: String { tr("garden.pet") }
-    static var widgetFamilyGarden: String { tr("widget.family.garden") }
-    static var widgetFamilyDesc: String { tr("widget.family.desc") }
     static var breath: String { tr("breath") }
     static var breathKindCalm: String { tr("breath.kind.calm") }
     static var breathKindBox: String { tr("breath.kind.box") }
@@ -337,12 +356,20 @@ enum L10n {
     static var breathDoneSleep3: String { tr("breath.done.sleep.3") }
     static var breathNight: String { tr("breath.night") }
     static func breathAsk(_ name: String) -> String { tr("breath.ask", name) }
-    static var breathAskHelp: String { tr("breath.askHelp") }
+    static func breathAskHelp(_ min: String) -> String { tr("breath.askHelp", min) }
     static var breathAskGo: String { tr("breath.askGo") }
     static var breathAskStay: String { tr("breath.askStay") }
     static var breathBells: String { tr("breath.bells") }
     static var gaze: String { tr("gaze") }
     static var gazeSoundOn: String { tr("gaze.soundOn") }
+    static var gazeSleep: String { tr("gaze.sleep") }
+    static func gazeSleepLeft(_ n: String) -> String { tr("gaze.sleepLeft", n) }
+    static var gazeSleepFading: String { tr("gaze.sleepFading") }
+    static func sleepGuide(_ n: String, _ m: String) -> String { tr("sleep.guide", n, m) }
+    static var sleepMinutes: String { tr("sleep.minutes") }
+    static var sleepStart: String { tr("sleep.start") }
+    static var sleepOff: String { tr("sleep.off") }
+    static func sleepA11y(_ n: String) -> String { tr("sleep.a11y", n) }
     static var gazeSoundOff: String { tr("gaze.soundOff") }
     static var gazeExit: String { tr("gaze.exit") }
     static var objWindchime: String { tr("obj.windchime") }
@@ -385,8 +412,8 @@ enum L10n {
     static var contactSend: String { tr("contact.send") }
     static var contactEmail: String { tr("contact.email") }
     static var noticesPrivacy: String { tr("notices.privacy") }
-    static var careCalm: String { tr("care.calm") }
-    static var careBox: String { tr("care.box") }
+    static func careCalm(_ min: String) -> String { tr("care.calm", min) }
+    static func careBox(_ min: String) -> String { tr("care.box", min) }
     static var careLook: String { tr("care.look") }
     static var careSendTo: String { tr("care.sendTo") }
     static var careSetting: String { tr("care.setting") }
@@ -447,15 +474,14 @@ enum L10n {
     static var letgoMsgNoneMorning1: String { tr("letgo.msg.none.morning.1") }
     static var letgoMsgNoneEvening1: String { tr("letgo.msg.none.evening.1") }
     static var letgoMsgNoneNight1: String { tr("letgo.msg.none.night.1") }
-    static var careSleep: String { tr("care.sleep") }
-    static var careMorning: String { tr("care.morning") }
+    static func careSleep(_ min: String) -> String { tr("care.sleep", min) }
+    static func careMorning(_ min: String) -> String { tr("care.morning", min) }
     static var lookDoneMorning: String { tr("look.done.morning") }
     static var lookDoneNight: String { tr("look.done.night") }
     static var notifyEvening: String { tr("notify.evening") }
     static var notifyEveningText: String { tr("notify.eveningText") }
     static var notifyEveningRow: String { tr("notify.eveningRow") }
-    static var notifyEveningFooter: String { tr("notify.eveningFooter") }
-    static var notifyMorningBreath: String { tr("notify.morningBreath") }
+    static func notifyMorningBreath(_ min: String) -> String { tr("notify.morningBreath", min) }
     static var haruStateRest: String { tr("haru.state.rest") }
     static var haruStateSmile: String { tr("haru.state.smile") }
     static var haruStateDown: String { tr("haru.state.down") }
@@ -513,7 +539,6 @@ enum L10n {
     static func recordCardNight(_ month: String) -> String { tr("record.cardNight", month) }
     static var recordDayPattern: String { tr("record.dayPattern") }
     static var notifyTomorrowRow: String { tr("notify.tomorrowRow") }
-    static var notifyTomorrowFooter: String { tr("notify.tomorrowFooter") }
     static func notifyTomorrowBirthday(_ names: String) -> String { tr("notify.tomorrowBirthday", names) }
     static var notifyTomorrowBirthdayText: String { tr("notify.tomorrowBirthdayText") }
     static func notifyTomorrowSpecial(_ name: String, _ years: String) -> String { tr("notify.tomorrowSpecial", name, years) }
@@ -558,7 +583,6 @@ enum L10n {
     static var decorStage2: String { tr("decor.stage.2") }
     static var decorStage3: String { tr("decor.stage.3") }
     static func decorTreeLine(_ days: String, _ stage: String) -> String { tr("decor.tree.line", days, stage) }
-    static func decorTreeNext(_ days: String) -> String { tr("decor.tree.next", days) }
     static var decorTreeHelp: String { tr("decor.tree.help") }
     static var decorPost: String { tr("decor.post") }
     static var decorHangChime: String { tr("decor.hang.chime") }
@@ -566,7 +590,6 @@ enum L10n {
     static var decorHangLantern: String { tr("decor.hang.lantern") }
     static var decorPostNone: String { tr("decor.post.none") }
     static func decorPostLine(_ n: String) -> String { tr("decor.post.line", n) }
-    static func decorPostNext(_ n: String) -> String { tr("decor.post.next", n) }
     static var decorPostHelp: String { tr("decor.post.help") }
     static var decorPostLetter: String { tr("decor.post.letter") }
     static var decorKite: String { tr("decor.kite") }
@@ -604,6 +627,67 @@ enum L10n {
     static var decorNewBud: String { tr("decor.new.bud") }
     static var decorNewCard: String { tr("decor.new.card") }
     static var decorNewLetter: String { tr("decor.new.letter") }
+    static var collectionGrown: String { tr("collection.grown") }
+    static var collectionGrownSub: String { tr("collection.grownSub") }
+    static var lookbackTitle: String { tr("lookback.title") }
+    static var lookbackSub: String { tr("lookback.sub") }
+    static var collectionEmpty: String { tr("collection.empty") }
+    static func collectMore(_ n: String) -> String { tr("collect.more", n) }
+    static var collectLess: String { tr("collect.less") }
+    static var collectHow: String { tr("collect.how") }
+    static var collectMeet: String { tr("collect.meet") }
+    static var collectBefore: String { tr("collect.before") }
+    static var collectClose: String { tr("collect.close") }
+    static var collectKindGrown: String { tr("collect.kindGrown") }
+    static var collectKindHang: String { tr("collect.kindHang") }
+    static var collectKindCard: String { tr("collect.kindCard") }
+    static var collectKindGuest: String { tr("collect.kindGuest") }
+    static var collectKindMoment: String { tr("collect.kindMoment") }
+    static func collectFirstMet(_ date: String) -> String { tr("collect.firstMet", date) }
+    static func collectVisits(_ n: String) -> String { tr("collect.visits", n) }
+    static var collectChime: String { tr("collect.chime") }
+    static var collectBell: String { tr("collect.bell") }
+    static var collectLantern: String { tr("collect.lantern") }
+    static var collectKite: String { tr("collect.kite") }
+    static func collectRibbon(_ n: String) -> String { tr("collect.ribbon", n) }
+    static func collectBud(_ n: String) -> String { tr("collect.bud", n) }
+    static var collectDescTree: String { tr("collect.descTree") }
+    static var collectHowTree: String { tr("collect.howTree") }
+    static func collectChipDays(_ n: String) -> String { tr("collect.chipDays", n) }
+    static var collectDescChime: String { tr("collect.descChime") }
+    static var collectDescBell: String { tr("collect.descBell") }
+    static var collectDescLantern: String { tr("collect.descLantern") }
+    static var collectHowHang: String { tr("collect.howHang") }
+    static func collectChipHang(_ n: String, _ name: String) -> String { tr("collect.chipHang", n, name) }
+    static var collectDescKite: String { tr("collect.descKite") }
+    static func collectHowKite(_ n: String) -> String { tr("collect.howKite", n) }
+    static var collectDescRibbon: String { tr("collect.descRibbon") }
+    static func collectHowRibbon(_ n: String, _ max: String) -> String { tr("collect.howRibbon", n, max) }
+    static var collectDescBud: String { tr("collect.descBud") }
+    static func collectHowBud(_ n: String, _ max: String) -> String { tr("collect.howBud", n, max) }
+    static var collectDescCard: String { tr("collect.descCard") }
+    static var collectHowCard: String { tr("collect.howCard") }
+    static var collectDescGuestTit: String { tr("collect.desc_guest_tit") }
+    static var collectDescGuestSquirrel: String { tr("collect.desc_guest_squirrel") }
+    static var collectDescGuestHedgehog: String { tr("collect.desc_guest_hedgehog") }
+    static var collectDescGuestRabbit: String { tr("collect.desc_guest_rabbit") }
+    static var collectDescGuestOwl: String { tr("collect.desc_guest_owl") }
+    static var collectHowGuest: String { tr("collect.howGuest") }
+    static var collectHowGuestRare: String { tr("collect.howGuestRare") }
+    static var collectDescWind: String { tr("collect.desc_wind") }
+    static var collectHowWind: String { tr("collect.how_wind") }
+    static var collectDescRainbow: String { tr("collect.desc_rainbow") }
+    static var collectHowRainbow: String { tr("collect.how_rainbow") }
+    static var collectDescFireflies: String { tr("collect.desc_fireflies") }
+    static var collectHowFireflies: String { tr("collect.how_fireflies") }
+    static var collectDescAurora: String { tr("collect.desc_aurora") }
+    static var collectHowAurora: String { tr("collect.how_aurora") }
+    static var collectDescSnail: String { tr("collect.desc_snail") }
+    static var collectHowSnail: String { tr("collect.how_snail") }
+    static var collectDescBubbles: String { tr("collect.desc_bubbles") }
+    static var collectHowBubbles: String { tr("collect.how_bubbles") }
+    static var collectDescButterflies: String { tr("collect.desc_butterflies") }
+    static var collectHowButterflies: String { tr("collect.how_butterflies") }
     static var decorHint: String { tr("decor.hint") }
     static var album: String { tr("album") }
     static func albumLines(_ n: String) -> String { tr("album.lines", n) }
@@ -664,11 +748,7 @@ enum L10n {
     static var notifyEvening3: String { tr("notify.evening.3") }
     static var notifyEvening4: String { tr("notify.evening.4") }
     static var breathTileLabel: String { tr("breathTile.label") }
-    static var breathTileSub: String { tr("breathTile.sub") }
-    static var widgetsNameBreath: String { tr("widgets.name.breath") }
-    static var widgetBreathGarden: String { tr("widget.breath.garden") }
-    static var widgetBreathDesc: String { tr("widget.breath.desc") }
-    static func widgetBreathMinute(_ name: String) -> String { tr("widget.breath.minute", name) }
+    static func breathTileSub(_ min: String) -> String { tr("breathTile.sub", min) }
     static var gardenYearAsk: String { tr("gardenYear.ask") }
     static var gardenYearOpen: String { tr("gardenYear.open") }
     static func gardenYearTitle(_ year: String) -> String { tr("gardenYear.title", year) }
@@ -680,14 +760,371 @@ enum L10n {
     static var letgoToday: String { tr("letgo.today") }
     static var letgoOther: String { tr("letgo.other") }
     static func letgoDayTitle(_ date: String) -> String { tr("letgo.dayTitle", date) }
+    static var letgoCarriedLastNight: String { tr("letgo.carriedLastNight") }
+    static func letgoCarriedDay(_ date: String) -> String { tr("letgo.carriedDay", date) }
     static var letgoDayHint: String { tr("letgo.dayHint") }
     static var letgoDaySend: String { tr("letgo.daySend") }
     static var letgoBackToday: String { tr("letgo.backToday") }
     static func letgoDayDone(_ date: String) -> String { tr("letgo.dayDone", date) }
     static var letgoDayTaken: String { tr("letgo.dayTaken") }
     static var recordWriteDay: String { tr("record.writeDay") }
+    static var introTitle1: String { tr("intro.title1") }
+    static var introBody1: String { tr("intro.body1") }
+    static var introTitle2: String { tr("intro.title2") }
+    static var introBody2: String { tr("intro.body2") }
+    static var introTitle3: String { tr("intro.title3") }
+    static var introBody3: String { tr("intro.body3") }
+    static var introStart: String { tr("intro.start") }
+    static var guideSkip: String { tr("guide.skip") }
+    static var guideNext: String { tr("guide.next") }
+    static var guideOk: String { tr("guide.ok") }
+    static var guideAgain: String { tr("guide.again") }
+    static var guideWelcomeTitle: String { tr("guide.welcomeTitle") }
+    static var guideWelcome: String { tr("guide.welcome") }
+    static var guideNumberTitle: String { tr("guide.numberTitle") }
+    static var guideNumber: String { tr("guide.number") }
+    static var guideWordsTitle: String { tr("guide.wordsTitle") }
+    static var guideWords: String { tr("guide.words") }
+    static var guideHaruTitle: String { tr("guide.haruTitle") }
+    static var guideHaru: String { tr("guide.haru") }
+    static var guidePathTitle: String { tr("guide.pathTitle") }
+    static var guidePath: String { tr("guide.path") }
+    static var guideActionsTitle: String { tr("guide.actionsTitle") }
+    static var guideActions: String { tr("guide.actions") }
+    static var guideTabsTitle: String { tr("guide.tabsTitle") }
+    static var guideTabs: String { tr("guide.tabs") }
+    static var guideSettingsTitle: String { tr("guide.settingsTitle") }
+    static var guideSettings: String { tr("guide.settings") }
+    static var guideEndTitle: String { tr("guide.endTitle") }
+    static var guideEnd: String { tr("guide.end") }
+    static var guideWrite: String { tr("guide.write") }
+    static var guideLook: String { tr("guide.look") }
+    static var notifyAskTitle: String { tr("notify.askTitle") }
+    static var notifyAskBody: String { tr("notify.askBody") }
+    static var notifyAskYes: String { tr("notify.askYes") }
+    static var notifyAskLater: String { tr("notify.askLater") }
+    static var notifyBlockedTitle: String { tr("notify.blockedTitle") }
+    static var notifyBlocked: String { tr("notify.blocked") }
+    static var notifyOpenSettings: String { tr("notify.openSettings") }
+    static var recordTodayHidden: String { tr("record.todayHidden") }
+    static func letgoTotal(_ n: String) -> String { tr("letgo.total", n) }
+    static var letgoSeeBelow: String { tr("letgo.seeBelow") }
+    static var letgoYesterday: String { tr("letgo.yesterday") }
+    static var backupSaveFail: String { tr("backup.saveFail") }
+    static var backupBefore: String { tr("backup.before") }
+    static var backupFirst: String { tr("backup.first") }
+    static var settingsSaveAsk: String { tr("settings.saveAsk") }
+    static var settingsSave: String { tr("settings.save") }
+    static var settingsDiscard: String { tr("settings.discard") }
+    static var onboardNeedBirth: String { tr("onboard.needBirth") }
+    static var onboardPickBirth: String { tr("onboard.pickBirth") }
+    static var breathSleepBack: String { tr("breath.sleepBack") }
+    static var addNeedName: String { tr("add.needName") }
+    static var tourWriteBoxTitle: String { tr("tour.writeBoxTitle") }
+    static var tourWriteBox: String { tr("tour.writeBox") }
+    static var tourWriteFeelingTitle: String { tr("tour.writeFeelingTitle") }
+    static var tourWriteFeeling: String { tr("tour.writeFeeling") }
+    static var tourWriteDaysTitle: String { tr("tour.writeDaysTitle") }
+    static var tourWriteDays: String { tr("tour.writeDays") }
+    static var tourWriteRecordTitle: String { tr("tour.writeRecordTitle") }
+    static var tourWriteRecord: String { tr("tour.writeRecord") }
+    static var tourMemAlbumTitle: String { tr("tour.memAlbumTitle") }
+    static var tourMemAlbum: String { tr("tour.memAlbum") }
+    static var tourFlowBarsTitle: String { tr("tour.flowBarsTitle") }
+    static var tourFlowBars: String { tr("tour.flowBars") }
+    static var tourFlowCalendarTitle: String { tr("tour.flowCalendarTitle") }
+    static var tourFlowCalendar: String { tr("tour.flowCalendar") }
+    static var tourFlowSpecialTitle: String { tr("tour.flowSpecialTitle") }
+    static var tourFlowSpecial: String { tr("tour.flowSpecial") }
+    static var tourStoneTitle: String { tr("tour.stoneTitle") }
+    static var tourStone: String { tr("tour.stone") }
+    static var tourStoneInfoTitle: String { tr("tour.stoneInfoTitle") }
+    static var tourStoneInfo: String { tr("tour.stoneInfo") }
+    static var tourStoneCalendarTitle: String { tr("tour.stoneCalendarTitle") }
+    static var tourStoneCalendar: String { tr("tour.stoneCalendar") }
+    static var tourStoneActionTitle: String { tr("tour.stoneActionTitle") }
+    static var tourStoneAction: String { tr("tour.stoneAction") }
+    static var onboardRestore: String { tr("onboard.restore") }
+    static var lockTitle: String { tr("lock.title") }
+    static var lockBody: String { tr("lock.body") }
+    static var editAction: String { tr("edit.action") }
+    static var editSave: String { tr("edit.save") }
+    static var editDone: String { tr("edit.done") }
+    static var editDelete: String { tr("edit.delete") }
+    static var editDeleted: String { tr("edit.deleted") }
+    static var editDeleteAsk: String { tr("edit.deleteAsk") }
+    static var editDeleteHelp: String { tr("edit.deleteHelp") }
+    static var editDeleteDay: String { tr("edit.deleteDay") }
+    static func editDeleteDayAsk(_ day: String) -> String { tr("edit.deleteDayAsk", day) }
+    static func editPastTitle(_ day: String) -> String { tr("edit.pastTitle", day) }
+    static var editPastDone: String { tr("edit.pastDone") }
+    static var editAskSave: String { tr("edit.askSave") }
+    static var feedbackRow: String { tr("feedback.row") }
+    static var feedbackFooter: String { tr("feedback.footer") }
+    static var feedbackSubject: String { tr("feedback.subject") }
+    static var feedbackCrashSubject: String { tr("feedback.crashSubject") }
+    static var feedbackCrashTitle: String { tr("feedback.crashTitle") }
+    static var feedbackCrashBody: String { tr("feedback.crashBody") }
+    static var feedbackCrashSend: String { tr("feedback.crashSend") }
+    static var feedbackCrashSkip: String { tr("feedback.crashSkip") }
+    static var notifyTime: String { tr("notify.time") }
+    static var widgetLineGarden: String { tr("widget.line.garden") }
+    static var widgetLineDesc: String { tr("widget.line.desc") }
+    static var widgetsNameLine: String { tr("widgets.name.line") }
+    static var widgetLineWrite: String { tr("widget.lineWrite") }
+    static var widgetLineDone: String { tr("widget.lineDone") }
+    static var nudgeBreath: String { tr("nudge.breath") }
+    static var nudgeStone: String { tr("nudge.stone") }
+    static var nudgeGaze: String { tr("nudge.gaze") }
+    static var nudgeSpecial: String { tr("nudge.special") }
+    static var nudgeWidget: String { tr("nudge.widget") }
+    static var nudgeWidgetHow: String { tr("nudge.widgetHow") }
+    static var nudgeBackup: String { tr("nudge.backup") }
+    static var searchHint: String { tr("search.hint") }
+    static var searchNone: String { tr("search.none") }
+    static func searchCount(_ n: String) -> String { tr("search.count", n) }
+    static func moodWeatherA11y(_ name: String) -> String { tr("mood.weatherA11y", name) }
+    static func miniNote(_ feeling: String) -> String { tr("mini.note", feeling) }
+    static func miniNoteHeavy(_ feeling: String) -> String { tr("mini.noteHeavy", feeling) }
+    static func miniA11y(_ list: String) -> String { tr("mini.a11y", list) }
+    static func gardenPathA11y(_ age: String, _ years: String) -> String { tr("garden.pathA11y", age, years) }
+    static var editLate: String { tr("edit.late") }
+    static var editRestored: String { tr("edit.restored") }
+    static var editUndo: String { tr("edit.undo") }
+    static var editUntil: String { tr("edit.until") }
+    static var letgoPrivacyOff: String { tr("letgo.privacyOff") }
+    static var letgoPrivacyPlain: String { tr("letgo.privacyPlain") }
+    static var recordOffHow: String { tr("record.offHow") }
+    static func backupLast(_ date: String) -> String { tr("backup.last", date) }
+    static var widgetPin: String { tr("widget.pin") }
+    static var feedbackCopied: String { tr("feedback.copied") }
+    static var replyAction: String { tr("reply.action") }
+    static var replyHint: String { tr("reply.hint") }
+    static var replyDone: String { tr("reply.done") }
+    static var replyFeel: String { tr("reply.feel") }
+    static func replyFelt(_ feeling: String) -> String { tr("reply.felt", feeling) }
+    static var replyNight: String { tr("reply.night") }
+    static var shortcutWrite: String { tr("shortcut.write") }
+    static var shortcutBreath: String { tr("shortcut.breath") }
+    static var shortcutGaze: String { tr("shortcut.gaze") }
+    static var shortcutClose: String { tr("shortcut.close") }
+    static var closeDayEntry: String { tr("closeDay.entry") }
+    static var closeDayEntrySub: String { tr("closeDay.entrySub") }
+    static var closeDayEntrySent: String { tr("closeDay.entrySent") }
+    static var closeDayStop: String { tr("closeDay.stop") }
+    static var closeDayEnough: String { tr("closeDay.enough") }
+    static var closeDayKeep: String { tr("closeDay.keep") }
+    static var closeDayLineTitle: String { tr("closeDay.lineTitle") }
+    static var closeDayLineDone: String { tr("closeDay.lineDone") }
+    static var closeDayLineDoneSub: String { tr("closeDay.lineDoneSub") }
+    static var closeDayNext: String { tr("closeDay.next") }
+    static var closeDaySkip: String { tr("closeDay.skip") }
+    static var closeDayLeaveAsk: String { tr("closeDay.leaveAsk") }
+    static var closeDayLeaveDrop: String { tr("closeDay.leaveDrop") }
+    static var closeDayThanksTitle: String { tr("closeDay.thanksTitle") }
+    static var closeDayLanternTitle: String { tr("closeDay.lanternTitle") }
+    static var closeDayEnd: String { tr("closeDay.end") }
+    static var closeDayEndSub: String { tr("closeDay.endSub") }
+    static var closeDayOff: String { tr("closeDay.off") }
+    static var closeDayGoodnight: String { tr("closeDay.goodnight") }
+    static var seedTitle: String { tr("seed.title") }
+    static var seedOwn: String { tr("seed.own") }
+    static var seedHint: String { tr("seed.hint") }
+    static var seedPlant: String { tr("seed.plant") }
+    static var seedLater: String { tr("seed.later") }
+    static var seedPlanted: String { tr("seed.planted") }
+    static var seedAskFrom: String { tr("seed.askFrom") }
+    static var seedAsk: String { tr("seed.ask") }
+    static var seedYes: String { tr("seed.yes") }
+    static var seedNo: String { tr("seed.no") }
+    static var seedBloomed: String { tr("seed.bloomed") }
+    static var seedRest: String { tr("seed.rest") }
+    static var seedGarden: String { tr("seed.garden") }
+    static var seedGardenSub: String { tr("seed.gardenSub") }
+    static var seedSetting: String { tr("seed.setting") }
+    static var seedSettingFooter: String { tr("seed.settingFooter") }
+    static var seedChoice0: String { tr("seed.choice.0") }
+    static var seedChoice1: String { tr("seed.choice.1") }
+    static var seedChoice2: String { tr("seed.choice.2") }
+    static var seedChoice3: String { tr("seed.choice.3") }
+    static var seedChoice4: String { tr("seed.choice.4") }
+    static var seedChoice5: String { tr("seed.choice.5") }
+    static var seedChoice6: String { tr("seed.choice.6") }
+    static var seedChoice7: String { tr("seed.choice.7") }
+    static var seedChoice8: String { tr("seed.choice.8") }
+    static var seedChoice9: String { tr("seed.choice.9") }
+    static var seedChoice10: String { tr("seed.choice.10") }
+    static var seedChoice11: String { tr("seed.choice.11") }
+    static var breathWay: String { tr("breath.way") }
+    static var breathWayEyes: String { tr("breath.wayEyes") }
+    static var breathWayTouch: String { tr("breath.wayTouch") }
+    static var breathWayTouchHelp: String { tr("breath.wayTouchHelp") }
+    static var breathTouchTitle: String { tr("breath.touchTitle") }
+    static var breathTouchSub: String { tr("breath.touchSub") }
+    static var breathTouchHold: String { tr("breath.touchHold") }
+    static var breathTouchDone: String { tr("breath.touchDone") }
+    static var comfortFrom: String { tr("comfort.from") }
+    static var comfort0: String { tr("comfort.0") }
+    static var comfort1: String { tr("comfort.1") }
+    static var comfort2: String { tr("comfort.2") }
+    static var comfort3: String { tr("comfort.3") }
+    static var comfort4: String { tr("comfort.4") }
+    static var capsuleWhen: String { tr("capsule.when") }
+    static var capsuleSeason: String { tr("capsule.season") }
+    static var capsuleSeasonPlain: String { tr("capsule.seasonPlain") }
+    static var capsuleBirthday: String { tr("capsule.birthday") }
+    static var capsuleYear: String { tr("capsule.year") }
+    static var capsuleTitle: String { tr("capsule.title") }
+    static var capsuleSub: String { tr("capsule.sub") }
+    static var capsuleHint: String { tr("capsule.hint") }
+    static func capsuleOpensOn(_ date: String) -> String { tr("capsule.opensOn", date) }
+    static var capsuleBury: String { tr("capsule.bury") }
+    static func capsuleBuried(_ date: String) -> String { tr("capsule.buried", date) }
+    static func capsuleFrom(_ date: String) -> String { tr("capsule.from", date) }
+    static var capsuleReceived: String { tr("capsule.received") }
+    static func capsuleMound(_ date: String) -> String { tr("capsule.mound", date) }
+    static var capsuleOpened: String { tr("capsule.opened") }
+    static var capsuleNotifyText: String { tr("capsule.notifyText") }
+    static var capsuleSection: String { tr("capsule.section") }
+    static var capsuleSectionSub: String { tr("capsule.sectionSub") }
+    static func capsuleSealed(_ n: String, _ date: String) -> String { tr("capsule.sealed", n, date) }
+    static var capsuleWrite: String { tr("capsule.write") }
+    static func capsuleOpenedRow(_ written: String, _ opened: String) -> String { tr("capsule.openedRow", written, opened) }
+    static var capsuleSample: String { tr("capsule.sample") }
+    static func ringNew(_ n: String) -> String { tr("ring.new", n) }
+    static func ringTitle(_ n: String) -> String { tr("ring.title", n) }
+    static func ringCount(_ lines: String, _ thanks: String) -> String { tr("ring.count", lines, thanks) }
+    static func ringTop(_ feeling: String) -> String { tr("ring.top", feeling) }
+    static var ringWalk: String { tr("ring.walk") }
+    static var ringWalkClose: String { tr("ring.walkClose") }
+    static var ringLetter: String { tr("ring.letter") }
+    static var ringSection: String { tr("ring.section") }
+    static var ringSectionSub: String { tr("ring.sectionSub") }
+    static func ringChip(_ n: String) -> String { tr("ring.chip", n) }
+    static var recallKeepCard: String { tr("recall.keepCard") }
+    static var recallContinue: String { tr("recall.continue") }
+    static func recallContinueLabel(_ date: String) -> String { tr("recall.continueLabel", date) }
+    static var returnTitle: String { tr("return.title") }
+    static var guestTitStory: String { tr("guest.tit.story") }
+    static var guestSquirrelStory: String { tr("guest.squirrel.story") }
+    static var guestHedgehogStory: String { tr("guest.hedgehog.story") }
+    static var guestRabbitStory: String { tr("guest.rabbit.story") }
+    static var guestOwlStory: String { tr("guest.owl.story") }
+    static var chanceGuestTit: String { tr("chance.guest_tit") }
+    static var chanceGuestSquirrel: String { tr("chance.guest_squirrel") }
+    static var chanceGuestHedgehog: String { tr("chance.guest_hedgehog") }
+    static var chanceGuestRabbit: String { tr("chance.guest_rabbit") }
+    static var chanceGuestOwl: String { tr("chance.guest_owl") }
+    static var photoAdd: String { tr("photo.add") }
+    static var photoAddToday: String { tr("photo.addToday") }
+    static var photoRemove: String { tr("photo.remove") }
+    static var photoChange: String { tr("photo.change") }
+    static var photoFail: String { tr("photo.fail") }
+    static var creditsSection: String { tr("credits.section") }
+    static var creditsSectionSub: String { tr("credits.sectionSub") }
+    static func creditsChip(_ year: String) -> String { tr("credits.chip", year) }
+    static var creditsReady: String { tr("credits.ready") }
+    static var creditsSkip: String { tr("credits.skip") }
+    static var creditsPaused: String { tr("credits.paused") }
+    static var creditsGarden: String { tr("credits.garden") }
+    static var creditsIntro: String { tr("credits.intro") }
+    static var creditsSpring: String { tr("credits.spring") }
+    static var creditsSummer: String { tr("credits.summer") }
+    static var creditsAutumn: String { tr("credits.autumn") }
+    static var creditsWinter: String { tr("credits.winter") }
+    static var creditsQuiet: String { tr("credits.quiet") }
+    static var creditsStarring: String { tr("credits.starring") }
+    static var creditsStone: String { tr("credits.stone") }
+    static var creditsHaru: String { tr("credits.haru") }
+    static var creditsPeople: String { tr("credits.people") }
+    static var creditsKept: String { tr("credits.kept") }
+    static var creditsMood: String { tr("credits.mood") }
+    static func creditsNext(_ year: String) -> String { tr("credits.next", year) }
+    static var seedNote: String { tr("seed.note") }
+    static var creditsCountLines: String { tr("credits.countLines") }
+    static var creditsCountThanks: String { tr("credits.countThanks") }
+    static var creditsCountBreaths: String { tr("credits.countBreaths") }
+    static func creditsMyBirthday(_ n: String) -> String { tr("credits.myBirthday", n) }
+    static func creditsBirthday(_ name: String) -> String { tr("credits.birthday", name) }
+    static func creditsTogetherDays(_ name: String, _ n: String) -> String { tr("credits.togetherDays", name, n) }
+    static func creditsTogetherYears(_ name: String, _ n: String) -> String { tr("credits.togetherYears", name, n) }
+    static func creditsSpecial(_ name: String, _ n: String) -> String { tr("credits.special", name, n) }
+    static func creditsMoment(_ name: String) -> String { tr("credits.moment", name) }
+    static func creditsSeed(_ text: String) -> String { tr("credits.seed", text) }
+    static func creditsCapsule(_ year: String) -> String { tr("credits.capsule", year) }
+    static var creditsFirst: String { tr("credits.first") }
+    static func creditsPersonDays(_ name: String, _ n: String) -> String { tr("credits.personDays", name, n) }
+    static var creditsGuests: String { tr("credits.guests") }
+    static func creditsBloomed(_ n: String) -> String { tr("credits.bloomed", n) }
+    static var creditsMade: String { tr("credits.made") }
+    static var creditsMadeBy: String { tr("credits.madeBy") }
+    static func creditsSLines(_ n: String) -> String { tr("credits.sLines", n) }
+    static func creditsSThanks(_ n: String) -> String { tr("credits.sThanks", n) }
+    static func creditsSBreaths(_ n: String) -> String { tr("credits.sBreaths", n) }
+    static var titleName: String { tr("title.name") }
+    static var titleEnter: String { tr("title.enter") }
+    static var titleHello: String { tr("title.hello") }
+    static var titleHelloMorning: String { tr("title.hello.morning") }
+    static var titleHelloEvening: String { tr("title.hello.evening") }
+    static var titleHelloNight: String { tr("title.hello.night") }
+    static var titleSetting: String { tr("title.setting") }
+    static var titleHelloFirst: String { tr("title.helloFirst") }
+    static var moodReadSub: String { tr("mood.readSub") }
+    static var settingsNotify: String { tr("settings.notify") }
+    static var settingsGarden: String { tr("settings.garden") }
+    static var settingsHelp: String { tr("settings.help") }
+    static var tourMemFutureTitle: String { tr("tour.memFutureTitle") }
+    static var tourMemFuture: String { tr("tour.memFuture") }
+    static var tourMemLookTitle: String { tr("tour.memLookTitle") }
+    static var tourMemLook: String { tr("tour.memLook") }
+    static var backupPickTitle: String { tr("backup.pickTitle") }
+    static var backupPickHelp: String { tr("backup.pickHelp") }
+    static var backupPickGo: String { tr("backup.pickGo") }
+    static func backupPicked(_ name: String) -> String { tr("backup.picked", name) }
+    static var backupNotOurs: String { tr("backup.notOurs") }
+    static var settingsNotifyFooter: String { tr("settings.notifyFooter") }
+    static var settingsRecords: String { tr("settings.records") }
+    static var settingsRecordsFooter: String { tr("settings.recordsFooter") }
+    static func slipDaysAgo(_ n: String) -> String { tr("slip.daysAgo", n) }
+    static func slipYearsAgo(_ n: String) -> String { tr("slip.yearsAgo", n) }
+    static func slipFrom(_ guest: String) -> String { tr("slip.from", guest) }
+    static var slipRecord: String { tr("slip.record") }
+    static func slipA11y(_ guest: String) -> String { tr("slip.a11y", guest) }
+    static var a11ySing: String { tr("a11y.sing") }
+    static var a11yPlayStars: String { tr("a11y.playStars") }
+    static var pebbleName: String { tr("pebble.name") }
+    static var pebbleDesc: String { tr("pebble.desc") }
+    static var pebbleHow: String { tr("pebble.how") }
+    static var pebbleA11y: String { tr("pebble.a11y") }
+    static var pebbleTaken: String { tr("pebble.taken") }
+    static func bdayCardSent(_ name: String, _ n: String) -> String { tr("bday.cardSent", name, n) }
+    static func bdayCardAsk(_ name: String) -> String { tr("bday.cardAsk", name) }
+    static var bdayCardOther: String { tr("bday.cardOther") }
+    static var bdayCardWith: String { tr("bday.cardWith") }
+    static var bdayCardPlain: String { tr("bday.cardPlain") }
+    static var welcomeStart: String { tr("welcome.start") }
+    static var welcomeRestore: String { tr("welcome.restore") }
+    static var welcomeRestoreSub: String { tr("welcome.restoreSub") }
+    static var newsV1141: String { tr("news.v1_1_4.1") }
+    static var newsV1142: String { tr("news.v1_1_4.2") }
+    static var newsV1143: String { tr("news.v1_1_4.3") }
+    static var newsV1144: String { tr("news.v1_1_4.4") }
+    static var newsV1145: String { tr("news.v1_1_4.5") }
+    static var newsV1146: String { tr("news.v1_1_4.6") }
+    static var newsV1147: String { tr("news.v1_1_4.7") }
+    static var newsV1131: String { tr("news.v1_1_3.1") }
+    static var newsV1132: String { tr("news.v1_1_3.2") }
+    static var newsV1133: String { tr("news.v1_1_3.3") }
+    static var newsV1134: String { tr("news.v1_1_3.4") }
+    static var newsV1135: String { tr("news.v1_1_3.5") }
+    static var newsV1136: String { tr("news.v1_1_3.6") }
+    static var newsV1121: String { tr("news.v1_1_2.1") }
+    static var newsV1122: String { tr("news.v1_1_2.2") }
+    static var newsV1123: String { tr("news.v1_1_2.3") }
+    static var newsV1124: String { tr("news.v1_1_2.4") }
+    static var newsV1125: String { tr("news.v1_1_2.5") }
 
-    static let allKeys: [String] = ["tagline", "you", "birthday", "country", "sex", "sex.other", "sex.male", "sex.female", "lifeExpectancy", "auto", "custom", "lifeExpectancy.footer", "begin", "privacy", "timeLeft", "timeLeft.days", "timeLeft.weeks", "timeLeft.months", "timeLeft.years", "unit.days", "unit.weeks", "unit.months", "unit.years", "words", "words.next", "path", "path.age", "path.expected", "flow", "flow.today", "flow.week", "flow.month", "flow.year", "left.hours", "left.minutes", "left.days", "lastDay", "calendar", "calendar.per.weeks", "calendar.per.months", "calendar.per.years", "calendar.legend", "season.spring", "season.summer", "season.autumn", "season.winter", "settings", "cancel", "done", "words.language", "words.korean", "words.english", "words.both", "widgets", "widgets.list", "widgets.name.daysLeft", "widgets.name.today", "widgets.name.calendar", "widgets.name.family", "widgets.name.record", "widgets.help1", "widgets.help2", "widgets.help3", "widgets.help4", "erase", "country.search", "country.source", "widget.daysLeft", "widget.today", "widget.todayLeft", "widget.todaySub", "widget.yearsLeft", "widget.monthsLeft", "lock.inline", "lock.rect.sub", "android.notification", "widget.unit", "widget.unit.desc", "widget.daysLeft.desc", "widget.today.desc", "widget.calendar.desc", "widget.empty", "erase.confirm", "erase.action", "expectancy.value", "country.world", "widgets.android1", "widgets.android2", "widgets.android3", "back", "design", "design.glass", "design.garden", "garden.meet.title", "garden.meet.sub", "garden.meet.go", "garden.drawing", "garden.haru", "garden.age0", "garden.close", "garden.preview", "garden.itemDate", "stone.basalt", "stone.granite", "stone.pinkgranite", "stone.sand", "stone.ochre", "stone.speckle", "stone.slate", "stone.gneiss", "stone.jasper", "stone.serpentine", "stone.jade", "stone.marble", "stone.quartz", "stone.ring", "obj.moss", "obj.moss.when", "obj.moss.line", "obj.teacup", "obj.teacup.when", "obj.teacup.line", "obj.cairn", "obj.cairn.when", "obj.cairn.line", "obj.pine", "obj.pine.when", "obj.pine.line", "obj.flower", "obj.flower.when", "obj.flower.line", "obj.pond", "obj.pond.when", "obj.pond.line", "obj.leaf", "obj.leaf.when", "obj.leaf.line", "obj.candle", "obj.candle.when", "obj.candle.line", "obj.dandelion", "obj.dandelion.when", "obj.dandelion.line", "obj.bookmark", "obj.bookmark.when", "obj.bookmark.line", "obj.snail", "obj.snail.when", "obj.snail.line", "obj.acorn", "obj.acorn.when", "obj.acorn.line", "notify.channel", "notify.channelEvening", "notify.channelDays", "notify.mineBirthdayText", "notify.keepsake", "notify.row", "notify.footer", "dev.unlocked", "garden.haruA11y", "collection", "collection.sub", "support", "support.title", "support.body", "support.tier1", "support.tier1.price", "support.tier2", "support.tier2.price", "support.tier3", "support.tier3.price", "support.once", "support.soon", "letgo.title", "letgo.sub", "letgo.feeling", "letgo.hint", "letgo.send", "letgo.done", "letgo.privacy", "feeling.joy", "feeling.thanks", "feeling.calm", "feeling.sad", "feeling.worry", "feeling.hope", "feeling.disappoint", "letgo.msg.joy.1", "letgo.msg.joy.2", "letgo.msg.joy.3", "letgo.msg.hope.1", "letgo.msg.hope.2", "letgo.msg.hope.3", "letgo.msg.calm.1", "letgo.msg.calm.2", "letgo.msg.calm.3", "letgo.msg.thanks.1", "letgo.msg.thanks.2", "letgo.msg.thanks.3", "letgo.msg.disappoint.1", "letgo.msg.disappoint.2", "letgo.msg.disappoint.3", "letgo.msg.sad.1", "letgo.msg.sad.2", "letgo.msg.sad.3", "letgo.msg.worry.1", "letgo.msg.worry.2", "letgo.msg.worry.3", "letgo.msg.none.1", "letgo.msg.none.2", "recall.title", "recall.open", "recall.close", "recall.notify", "recall.notifyText", "recall.sample", "recall.addSample", "lines", "lines.keep", "lines.keepFooter", "lines.export", "lines.exportEmpty", "lines.exportTitle", "lines.clear", "lines.clearConfirm", "lines.clearAction", "lines.count", "obj.pinwheel", "obj.pinwheel.when", "obj.pinwheel.line", "obj.paperboat", "obj.paperboat.when", "obj.paperboat.line", "obj.kite", "obj.kite.when", "obj.kite.line", "defaults", "defaults.unit", "defaults.grid", "defaults.footer", "widget.daysLeft.glass", "widget.daysLeft.garden", "widget.today.glass", "widget.today.garden", "widget.calendar.glass", "widget.calendar.garden", "letgo.modalTitle", "letgo.ok", "recall.random", "recall.randomNotify", "recall.addRandom", "recall.sampleOld", "garden.metOn", "family", "family.add", "family.full", "family.glassNote", "family.me", "add.kind", "kind.person", "kind.pet", "species.dog", "species.cat", "species.other", "add.name", "add.nameHint", "add.birth", "add.birthPet", "add.birthUnknown", "add.birthPick", "add.next", "add.meet", "add.reroll", "stone.together", "stone.sinceMet", "stone.days", "stone.nextBirthday", "stone.birthdayToday", "stone.calendar", "stone.calendarLegend", "stone.showAhead", "stone.lines", "stone.linesCount", "stone.edit", "stone.save", "stone.remove", "stone.removeConfirm", "stone.removeAction", "stone.age", "stone.petAge", "letgo.to", "letgo.modalTo", "garden.stoneA11y", "garden.pet", "widget.family.garden", "widget.family.desc", "breath", "breath.kind.calm", "breath.kind.box", "breath.kind.sleep", "breath.kindDesc.calm", "breath.kindDesc.box", "breath.kindDesc.sleep", "breath.minutes", "breath.sound", "sound.none", "sound.waves", "sound.wind", "sound.rain", "sound.tone", "breath.start", "breath.in", "breath.hold", "breath.out", "breath.rest", "breath.walk.in", "breath.walk.out", "breath.pause", "breath.keep", "breath.stop", "breath.startA11y", "breath.home", "breath.done.calm.1", "breath.done.calm.2", "breath.done.calm.3", "breath.done.box.1", "breath.done.box.2", "breath.done.box.3", "breath.done.sleep.1", "breath.done.sleep.2", "breath.done.sleep.3", "breath.night", "breath.ask", "breath.askHelp", "breath.askGo", "breath.askStay", "breath.bells", "gaze", "gaze.soundOn", "gaze.soundOff", "gaze.exit", "obj.windchime", "obj.windchime.when", "obj.windchime.line", "add.together", "add.togetherAuto", "add.togetherHelp", "question.label", "question.answer", "question.skip", "question.answered", "mood.title", "mood.sub", "mood.a11y", "letter.arrived", "letter.title", "letter.range", "letter.heavy", "letter.showHeavy", "letter.end", "letter.fold", "letters", "letters.sub", "notify.letter", "notify.letterText", "letter.sample1", "letter.sample2", "letter.sample3", "letter.sample4", "letter.sample5", "dev.letter", "licenses.body", "footer.about", "footer.contact", "footer.notices", "about.body", "contact.body", "contact.soon", "contact.send", "contact.email", "notices.privacy", "care.calm", "care.box", "care.look", "care.sendTo", "care.setting", "care.footer", "look.cue", "look.done", "thanks.book", "thanks.sub", "thanks.end", "thanks.page", "letgo.count", "memory", "memory.sub", "memory.season", "memory.range", "memory.from", "memory.until", "memory.star", "memory.starHelp", "memory.starNote", "memory.send", "memory.sendHint", "memory.sent", "memory.sentToday", "memory.count", "memory.open", "memory.back", "memory.backFull", "memory.removeConfirm", "memory.add", "memory.addMore", "memory.full", "memory.toMemory", "memory.toMemoryConfirm", "memory.toMemoryAction", "memory.addUntil", "memory.meet", "memory.a11y", "memory.sampleName", "sound.season", "breath.part.morning", "breath.part.day", "breath.part.evening", "breath.part.night", "breath.done.morning.1", "breath.done.morning.2", "breath.done.morning.3", "breath.done.evening.1", "breath.done.evening.2", "breath.done.evening.3", "breath.done.night.1", "breath.done.night.2", "breath.done.night.3", "breath.morning", "letgo.sub.morning", "letgo.sub.evening", "letgo.sub.night", "letgo.msg.none.morning.1", "letgo.msg.none.evening.1", "letgo.msg.none.night.1", "care.sleep", "care.morning", "look.done.morning", "look.done.night", "notify.evening", "notify.eveningText", "notify.eveningRow", "notify.eveningFooter", "notify.morningBreath", "haru.state.rest", "haru.state.smile", "haru.state.down", "haru.state.hat", "haru.state.calm", "breath.kind.thanks", "breath.kindDesc.thanks", "breath.out.thanks", "breath.done.thanks.1", "breath.done.thanks.2", "breath.done.thanks.3", "breath.thanksAsk", "breath.thanksHint", "breath.thanksKeep", "breath.thanksKept", "wish.title", "wish.sub", "wish.hint", "wish.keep", "wish.later", "wish.kept", "wish.back", "year.card", "year.title", "year.count", "year.end", "year.list", "share.image", "share.chooser", "share.footer", "dev.year", "wish.sample", "support.thanks", "bday.card", "bday.cardTitle", "bday.cardSub", "special.add", "special.title", "special.name", "special.nameHint", "special.save", "special.remove", "special.removeConfirm", "special.full", "year.cardNight", "record.month", "record.year", "record.monthTitle", "record.prev", "record.next", "record.rest", "record.noText", "record.hint", "record.card", "record.cardNight", "record.dayPattern", "notify.tomorrowRow", "notify.tomorrowFooter", "notify.tomorrowBirthday", "notify.tomorrowBirthdayText", "notify.tomorrowSpecial", "notify.tomorrowSpecialText", "notify.gardenText", "bday.tomorrow", "bday.today", "bday.mineTomorrow", "bday.mineToday", "stone.birthdayTomorrow", "notify.todayBirthdayText", "notify.todaySpecial", "dev.notify", "tab.garden", "tab.write", "tab.memories", "tab.flow", "family.addShort", "stone.removeHelp", "stone.tidy", "memory.toMemoryHelp", "record.off", "record.yearHint", "gaze.ask", "gaze.back", "gaze.stay", "widget.record.garden", "widget.record.desc", "backup.export", "backup.import", "backup.importConfirm", "backup.importAction", "backup.saved", "backup.done", "backup.fail", "decor.tree.cherry", "decor.tree.zelkova", "decor.tree.ginkgo", "decor.tree.pine", "decor.stage.0", "decor.stage.1", "decor.stage.2", "decor.stage.3", "decor.tree.line", "decor.tree.next", "decor.tree.help", "decor.post", "decor.hang.chime", "decor.hang.bell", "decor.hang.lantern", "decor.post.none", "decor.post.line", "decor.post.next", "decor.post.help", "decor.post.letter", "decor.kite", "decor.kite.line", "decor.kite.none", "decor.kite.help", "decor.moss.line", "decor.moss.help", "decor.card", "decor.card.line", "decor.card.help", "decor.card.cherry_spring", "decor.card.cherry_summer", "decor.card.cherry_autumn", "decor.card.cherry_winter", "decor.card.zelkova_spring", "decor.card.zelkova_summer", "decor.card.zelkova_autumn", "decor.card.zelkova_winter", "decor.card.ginkgo_spring", "decor.card.ginkgo_summer", "decor.card.ginkgo_autumn", "decor.card.ginkgo_winter", "decor.card.pine_spring", "decor.card.pine_summer", "decor.card.pine_autumn", "decor.card.pine_winter", "decor.new.tree", "decor.new.stage", "decor.new.chime", "decor.new.bell", "decor.new.lantern", "decor.new.kite", "decor.new.ribbon", "decor.new.bud", "decor.new.card", "decor.new.letter", "decor.hint", "album", "album.lines", "album.when", "album.cell", "album.first", "album.firstSub", "chance.bubbles", "chance.fireflies", "chance.rainbow", "chance.butterflies", "chance.snail", "chance.aurora", "chance.wind", "album.met", "album.metSub", "term.sohan", "term.daehan", "term.ipchun", "term.usu", "term.gyeongchip", "term.chunbun", "term.cheongmyeong", "term.gogu", "term.ipha", "term.soman", "term.mangjong", "term.haji", "term.soseo", "term.daeseo", "term.ipchu", "term.cheoseo", "term.baengno", "term.chubun", "term.hallo", "term.sanggang", "term.ipdong", "term.soseol", "term.daeseol", "term.dongji", "offer.button", "offer.ask", "offer.action", "offer.label", "offer.done", "offer.given", "memory.weekNotify", "memory.weekRow", "memory.weekHelp", "notify.morning.0", "notify.morning.1", "notify.morning.2", "notify.morning.3", "notify.morning.4", "notify.evening.0", "notify.evening.1", "notify.evening.2", "notify.evening.3", "notify.evening.4", "breathTile.label", "breathTile.sub", "widgets.name.breath", "widget.breath.garden", "widget.breath.desc", "widget.breath.minute", "gardenYear.ask", "gardenYear.open", "gardenYear.title", "gardenYear.album", "gardenYear.met", "gardenYear.empty", "question.on", "question.onFooter", "letgo.today", "letgo.other", "letgo.dayTitle", "letgo.dayHint", "letgo.daySend", "letgo.backToday", "letgo.dayDone", "letgo.dayTaken", "record.writeDay"]
+    static let allKeys: [String] = ["letgo.empty", "breath.inTop", "note.dismiss", "closeDay.ask", "adorn.card", "adorn.pebble", "adorn.fromSupport", "adorn.fromPebble", "adorn.title", "adorn.none", "adorn.empty", "adorn.change", "adorn.pick", "adorn.sheetTitle", "adorn.sheetHelp", "adorn.atOther", "adorn.done", "adorn.remove", "adorn.label", "support.invite", "support.thanksItem", "support.preview", "support.previewMore", "anniv.note", "anniv.title100", "anniv.titleYear", "anniv.body100", "anniv.bodyYear", "anniv.sign", "anniv.support", "anniv.thanks", "support.markLabel", "support.mark1", "support.mark2", "support.mark3", "support.tier1.note", "support.tier2.note", "support.tier3.note", "support.cta", "support.use", "support.row", "news.title", "news.version", "news.ok", "update.available", "update.downloading", "update.ready", "update.getRow", "update.restartRow", "tagline", "you", "birthday", "country", "sex", "sex.other", "sex.male", "sex.female", "lifeExpectancy", "auto", "custom", "lifeExpectancy.footer", "begin", "privacy", "timeLeft", "timeLeft.days", "timeLeft.weeks", "timeLeft.months", "timeLeft.years", "unit.days", "unit.weeks", "unit.months", "unit.years", "words", "words.next", "path", "path.age", "path.expected", "flow", "flow.today", "flow.week", "flow.month", "flow.year", "left.hours", "left.minutes", "left.days", "lastDay", "calendar", "calendar.per.weeks", "calendar.per.months", "calendar.per.years", "calendar.legend", "season.spring", "season.summer", "season.autumn", "season.winter", "settings", "cancel", "done", "words.language", "words.korean", "words.english", "words.both", "widgets", "widgets.name.record", "erase", "country.search", "country.source", "widget.daysLeft", "widget.empty", "erase.confirm", "erase.action", "expectancy.value", "country.world", "back", "design", "design.glass", "design.garden", "garden.meet.title", "garden.meet.sub", "garden.meet.go", "garden.drawing", "garden.haru", "garden.age0", "garden.close", "garden.preview", "garden.itemDate", "stone.basalt", "stone.granite", "stone.pinkgranite", "stone.sand", "stone.ochre", "stone.speckle", "stone.slate", "stone.gneiss", "stone.jasper", "stone.serpentine", "stone.jade", "stone.marble", "stone.quartz", "stone.ring", "obj.moss", "obj.moss.when", "obj.moss.line", "obj.teacup", "obj.teacup.when", "obj.teacup.line", "obj.cairn", "obj.cairn.when", "obj.cairn.line", "obj.pine", "obj.pine.when", "obj.pine.line", "obj.flower", "obj.flower.when", "obj.flower.line", "obj.pond", "obj.pond.when", "obj.pond.line", "obj.leaf", "obj.leaf.when", "obj.leaf.line", "obj.candle", "obj.candle.when", "obj.candle.line", "obj.dandelion", "obj.dandelion.when", "obj.dandelion.line", "obj.bookmark", "obj.bookmark.when", "obj.bookmark.line", "obj.snail", "obj.snail.when", "obj.snail.line", "obj.acorn", "obj.acorn.when", "obj.acorn.line", "notify.channel", "notify.channelEvening", "notify.channelDays", "notify.mineBirthdayText", "notify.keepsake", "notify.row", "dev.unlocked", "garden.haruA11y", "collection", "collection.sub", "support", "support.title", "support.body", "support.tier1", "support.tier1.price", "support.tier2", "support.tier2.price", "support.tier3", "support.tier3.price", "support.once", "support.soon", "letgo.title", "letgo.sub", "letgo.feeling", "letgo.hint", "letgo.send", "letgo.done", "letgo.privacy", "feeling.joy", "feeling.thanks", "feeling.calm", "feeling.sad", "feeling.worry", "feeling.hope", "feeling.disappoint", "feeling.proud", "feeling.meh", "feeling.unsettled", "letgo.msg.joy.1", "letgo.msg.joy.2", "letgo.msg.joy.3", "letgo.msg.hope.1", "letgo.msg.hope.2", "letgo.msg.hope.3", "letgo.msg.calm.1", "letgo.msg.calm.2", "letgo.msg.calm.3", "letgo.msg.thanks.1", "letgo.msg.thanks.2", "letgo.msg.thanks.3", "letgo.msg.disappoint.1", "letgo.msg.disappoint.2", "letgo.msg.disappoint.3", "letgo.msg.sad.1", "letgo.msg.sad.2", "letgo.msg.sad.3", "letgo.msg.worry.1", "letgo.msg.worry.2", "letgo.msg.worry.3", "letgo.msg.proud.1", "letgo.msg.proud.2", "letgo.msg.proud.3", "letgo.msg.meh.1", "letgo.msg.meh.2", "letgo.msg.unsettled.1", "letgo.msg.unsettled.2", "letgo.msg.none.1", "letgo.msg.none.2", "recall.title", "recall.open", "recall.close", "recall.notify", "recall.notifyText", "recall.sample", "recall.addSample", "lines.keep", "lines.keepOffConfirm", "lines.keepOffAction", "lines.export", "lines.exportEmpty", "lines.exportTitle", "lines.clear", "lines.clearConfirm", "lines.clearAction", "lines.count", "obj.pinwheel", "obj.pinwheel.when", "obj.pinwheel.line", "obj.paperboat", "obj.paperboat.when", "obj.paperboat.line", "obj.kite", "obj.kite.when", "obj.kite.line", "letgo.modalTitle", "letgo.ok", "recall.random", "recall.randomNotify", "recall.addRandom", "recall.sampleOld", "garden.metOn", "family.add", "family.full", "family.me", "add.kind", "kind.person", "kind.pet", "species.dog", "species.cat", "species.other", "add.name", "add.nameHint", "add.birth", "add.birthPet", "add.birthUnknown", "add.birthPick", "add.next", "add.meet", "add.reroll", "stone.together", "stone.sinceMet", "stone.days", "stone.nextBirthday", "stone.birthdayToday", "stone.calendar", "stone.calendarLegend", "stone.showAhead", "stone.lines", "stone.linesCount", "stone.edit", "stone.save", "stone.remove", "stone.removeConfirm", "stone.removeAction", "stone.age", "stone.petAge", "letgo.to", "letgo.modalTo", "garden.stoneA11y", "garden.pet", "breath", "breath.kind.calm", "breath.kind.box", "breath.kind.sleep", "breath.kindDesc.calm", "breath.kindDesc.box", "breath.kindDesc.sleep", "breath.minutes", "breath.sound", "sound.none", "sound.waves", "sound.wind", "sound.rain", "sound.tone", "breath.start", "breath.in", "breath.hold", "breath.out", "breath.rest", "breath.walk.in", "breath.walk.out", "breath.pause", "breath.keep", "breath.stop", "breath.startA11y", "breath.home", "breath.done.calm.1", "breath.done.calm.2", "breath.done.calm.3", "breath.done.box.1", "breath.done.box.2", "breath.done.box.3", "breath.done.sleep.1", "breath.done.sleep.2", "breath.done.sleep.3", "breath.night", "breath.ask", "breath.askHelp", "breath.askGo", "breath.askStay", "breath.bells", "gaze", "gaze.soundOn", "gaze.sleep", "gaze.sleepLeft", "gaze.sleepFading", "sleep.guide", "sleep.minutes", "sleep.start", "sleep.off", "sleep.a11y", "gaze.soundOff", "gaze.exit", "obj.windchime", "obj.windchime.when", "obj.windchime.line", "add.together", "add.togetherAuto", "add.togetherHelp", "question.label", "question.answer", "question.skip", "question.answered", "mood.title", "mood.sub", "mood.a11y", "letter.arrived", "letter.title", "letter.range", "letter.heavy", "letter.showHeavy", "letter.end", "letter.fold", "letters", "letters.sub", "notify.letter", "notify.letterText", "letter.sample1", "letter.sample2", "letter.sample3", "letter.sample4", "letter.sample5", "dev.letter", "licenses.body", "footer.about", "footer.contact", "footer.notices", "about.body", "contact.body", "contact.soon", "contact.send", "contact.email", "notices.privacy", "care.calm", "care.box", "care.look", "care.sendTo", "care.setting", "care.footer", "look.cue", "look.done", "thanks.book", "thanks.sub", "thanks.end", "thanks.page", "letgo.count", "memory", "memory.sub", "memory.season", "memory.range", "memory.from", "memory.until", "memory.star", "memory.starHelp", "memory.starNote", "memory.send", "memory.sendHint", "memory.sent", "memory.sentToday", "memory.count", "memory.open", "memory.back", "memory.backFull", "memory.removeConfirm", "memory.add", "memory.addMore", "memory.full", "memory.toMemory", "memory.toMemoryConfirm", "memory.toMemoryAction", "memory.addUntil", "memory.meet", "memory.a11y", "memory.sampleName", "sound.season", "breath.part.morning", "breath.part.day", "breath.part.evening", "breath.part.night", "breath.done.morning.1", "breath.done.morning.2", "breath.done.morning.3", "breath.done.evening.1", "breath.done.evening.2", "breath.done.evening.3", "breath.done.night.1", "breath.done.night.2", "breath.done.night.3", "breath.morning", "letgo.sub.morning", "letgo.sub.evening", "letgo.sub.night", "letgo.msg.none.morning.1", "letgo.msg.none.evening.1", "letgo.msg.none.night.1", "care.sleep", "care.morning", "look.done.morning", "look.done.night", "notify.evening", "notify.eveningText", "notify.eveningRow", "notify.morningBreath", "haru.state.rest", "haru.state.smile", "haru.state.down", "haru.state.hat", "haru.state.calm", "breath.kind.thanks", "breath.kindDesc.thanks", "breath.out.thanks", "breath.done.thanks.1", "breath.done.thanks.2", "breath.done.thanks.3", "breath.thanksAsk", "breath.thanksHint", "breath.thanksKeep", "breath.thanksKept", "wish.title", "wish.sub", "wish.hint", "wish.keep", "wish.later", "wish.kept", "wish.back", "year.card", "year.title", "year.count", "year.end", "year.list", "share.image", "share.chooser", "share.footer", "dev.year", "wish.sample", "support.thanks", "bday.card", "bday.cardTitle", "bday.cardSub", "special.add", "special.title", "special.name", "special.nameHint", "special.save", "special.remove", "special.removeConfirm", "special.full", "year.cardNight", "record.month", "record.year", "record.monthTitle", "record.prev", "record.next", "record.rest", "record.noText", "record.hint", "record.card", "record.cardNight", "record.dayPattern", "notify.tomorrowRow", "notify.tomorrowBirthday", "notify.tomorrowBirthdayText", "notify.tomorrowSpecial", "notify.tomorrowSpecialText", "notify.gardenText", "bday.tomorrow", "bday.today", "bday.mineTomorrow", "bday.mineToday", "stone.birthdayTomorrow", "notify.todayBirthdayText", "notify.todaySpecial", "dev.notify", "tab.garden", "tab.write", "tab.memories", "tab.flow", "family.addShort", "stone.removeHelp", "stone.tidy", "memory.toMemoryHelp", "record.off", "record.yearHint", "gaze.ask", "gaze.back", "gaze.stay", "widget.record.garden", "widget.record.desc", "backup.export", "backup.import", "backup.importConfirm", "backup.importAction", "backup.saved", "backup.done", "backup.fail", "decor.tree.cherry", "decor.tree.zelkova", "decor.tree.ginkgo", "decor.tree.pine", "decor.stage.0", "decor.stage.1", "decor.stage.2", "decor.stage.3", "decor.tree.line", "decor.tree.help", "decor.post", "decor.hang.chime", "decor.hang.bell", "decor.hang.lantern", "decor.post.none", "decor.post.line", "decor.post.help", "decor.post.letter", "decor.kite", "decor.kite.line", "decor.kite.none", "decor.kite.help", "decor.moss.line", "decor.moss.help", "decor.card", "decor.card.line", "decor.card.help", "decor.card.cherry_spring", "decor.card.cherry_summer", "decor.card.cherry_autumn", "decor.card.cherry_winter", "decor.card.zelkova_spring", "decor.card.zelkova_summer", "decor.card.zelkova_autumn", "decor.card.zelkova_winter", "decor.card.ginkgo_spring", "decor.card.ginkgo_summer", "decor.card.ginkgo_autumn", "decor.card.ginkgo_winter", "decor.card.pine_spring", "decor.card.pine_summer", "decor.card.pine_autumn", "decor.card.pine_winter", "decor.new.tree", "decor.new.stage", "decor.new.chime", "decor.new.bell", "decor.new.lantern", "decor.new.kite", "decor.new.ribbon", "decor.new.bud", "decor.new.card", "decor.new.letter", "collection.grown", "collection.grownSub", "lookback.title", "lookback.sub", "collection.empty", "collect.more", "collect.less", "collect.how", "collect.meet", "collect.before", "collect.close", "collect.kindGrown", "collect.kindHang", "collect.kindCard", "collect.kindGuest", "collect.kindMoment", "collect.firstMet", "collect.visits", "collect.chime", "collect.bell", "collect.lantern", "collect.kite", "collect.ribbon", "collect.bud", "collect.descTree", "collect.howTree", "collect.chipDays", "collect.descChime", "collect.descBell", "collect.descLantern", "collect.howHang", "collect.chipHang", "collect.descKite", "collect.howKite", "collect.descRibbon", "collect.howRibbon", "collect.descBud", "collect.howBud", "collect.descCard", "collect.howCard", "collect.desc_guest_tit", "collect.desc_guest_squirrel", "collect.desc_guest_hedgehog", "collect.desc_guest_rabbit", "collect.desc_guest_owl", "collect.howGuest", "collect.howGuestRare", "collect.desc_wind", "collect.how_wind", "collect.desc_rainbow", "collect.how_rainbow", "collect.desc_fireflies", "collect.how_fireflies", "collect.desc_aurora", "collect.how_aurora", "collect.desc_snail", "collect.how_snail", "collect.desc_bubbles", "collect.how_bubbles", "collect.desc_butterflies", "collect.how_butterflies", "decor.hint", "album", "album.lines", "album.when", "album.cell", "album.first", "album.firstSub", "chance.bubbles", "chance.fireflies", "chance.rainbow", "chance.butterflies", "chance.snail", "chance.aurora", "chance.wind", "album.met", "album.metSub", "term.sohan", "term.daehan", "term.ipchun", "term.usu", "term.gyeongchip", "term.chunbun", "term.cheongmyeong", "term.gogu", "term.ipha", "term.soman", "term.mangjong", "term.haji", "term.soseo", "term.daeseo", "term.ipchu", "term.cheoseo", "term.baengno", "term.chubun", "term.hallo", "term.sanggang", "term.ipdong", "term.soseol", "term.daeseol", "term.dongji", "offer.button", "offer.ask", "offer.action", "offer.label", "offer.done", "offer.given", "memory.weekNotify", "memory.weekRow", "memory.weekHelp", "notify.morning.0", "notify.morning.1", "notify.morning.2", "notify.morning.3", "notify.morning.4", "notify.evening.0", "notify.evening.1", "notify.evening.2", "notify.evening.3", "notify.evening.4", "breathTile.label", "breathTile.sub", "gardenYear.ask", "gardenYear.open", "gardenYear.title", "gardenYear.album", "gardenYear.met", "gardenYear.empty", "question.on", "question.onFooter", "letgo.today", "letgo.other", "letgo.dayTitle", "letgo.carriedLastNight", "letgo.carriedDay", "letgo.dayHint", "letgo.daySend", "letgo.backToday", "letgo.dayDone", "letgo.dayTaken", "record.writeDay", "intro.title1", "intro.body1", "intro.title2", "intro.body2", "intro.title3", "intro.body3", "intro.start", "guide.skip", "guide.next", "guide.ok", "guide.again", "guide.welcomeTitle", "guide.welcome", "guide.numberTitle", "guide.number", "guide.wordsTitle", "guide.words", "guide.haruTitle", "guide.haru", "guide.pathTitle", "guide.path", "guide.actionsTitle", "guide.actions", "guide.tabsTitle", "guide.tabs", "guide.settingsTitle", "guide.settings", "guide.endTitle", "guide.end", "guide.write", "guide.look", "notify.askTitle", "notify.askBody", "notify.askYes", "notify.askLater", "notify.blockedTitle", "notify.blocked", "notify.openSettings", "record.todayHidden", "letgo.total", "letgo.seeBelow", "letgo.yesterday", "backup.saveFail", "backup.before", "backup.first", "settings.saveAsk", "settings.save", "settings.discard", "onboard.needBirth", "onboard.pickBirth", "breath.sleepBack", "add.needName", "tour.writeBoxTitle", "tour.writeBox", "tour.writeFeelingTitle", "tour.writeFeeling", "tour.writeDaysTitle", "tour.writeDays", "tour.writeRecordTitle", "tour.writeRecord", "tour.memAlbumTitle", "tour.memAlbum", "tour.flowBarsTitle", "tour.flowBars", "tour.flowCalendarTitle", "tour.flowCalendar", "tour.flowSpecialTitle", "tour.flowSpecial", "tour.stoneTitle", "tour.stone", "tour.stoneInfoTitle", "tour.stoneInfo", "tour.stoneCalendarTitle", "tour.stoneCalendar", "tour.stoneActionTitle", "tour.stoneAction", "onboard.restore", "lock.title", "lock.body", "edit.action", "edit.save", "edit.done", "edit.delete", "edit.deleted", "edit.deleteAsk", "edit.deleteHelp", "edit.deleteDay", "edit.deleteDayAsk", "edit.pastTitle", "edit.pastDone", "edit.askSave", "feedback.row", "feedback.footer", "feedback.subject", "feedback.crashSubject", "feedback.crashTitle", "feedback.crashBody", "feedback.crashSend", "feedback.crashSkip", "notify.time", "widget.line.garden", "widget.line.desc", "widgets.name.line", "widget.lineWrite", "widget.lineDone", "nudge.breath", "nudge.stone", "nudge.gaze", "nudge.special", "nudge.widget", "nudge.widgetHow", "nudge.backup", "search.hint", "search.none", "search.count", "mood.weatherA11y", "mini.note", "mini.noteHeavy", "mini.a11y", "garden.pathA11y", "edit.late", "edit.restored", "edit.undo", "edit.until", "letgo.privacyOff", "letgo.privacyPlain", "record.offHow", "backup.last", "widget.pin", "feedback.copied", "reply.action", "reply.hint", "reply.done", "reply.feel", "reply.felt", "reply.night", "shortcut.write", "shortcut.breath", "shortcut.gaze", "shortcut.close", "closeDay.entry", "closeDay.entrySub", "closeDay.entrySent", "closeDay.stop", "closeDay.enough", "closeDay.keep", "closeDay.lineTitle", "closeDay.lineDone", "closeDay.lineDoneSub", "closeDay.next", "closeDay.skip", "closeDay.leaveAsk", "closeDay.leaveDrop", "closeDay.thanksTitle", "closeDay.lanternTitle", "closeDay.end", "closeDay.endSub", "closeDay.off", "closeDay.goodnight", "seed.title", "seed.own", "seed.hint", "seed.plant", "seed.later", "seed.planted", "seed.askFrom", "seed.ask", "seed.yes", "seed.no", "seed.bloomed", "seed.rest", "seed.garden", "seed.gardenSub", "seed.setting", "seed.settingFooter", "seed.choice.0", "seed.choice.1", "seed.choice.2", "seed.choice.3", "seed.choice.4", "seed.choice.5", "seed.choice.6", "seed.choice.7", "seed.choice.8", "seed.choice.9", "seed.choice.10", "seed.choice.11", "breath.way", "breath.wayEyes", "breath.wayTouch", "breath.wayTouchHelp", "breath.touchTitle", "breath.touchSub", "breath.touchHold", "breath.touchDone", "comfort.from", "comfort.0", "comfort.1", "comfort.2", "comfort.3", "comfort.4", "capsule.when", "capsule.season", "capsule.seasonPlain", "capsule.birthday", "capsule.year", "capsule.title", "capsule.sub", "capsule.hint", "capsule.opensOn", "capsule.bury", "capsule.buried", "capsule.from", "capsule.received", "capsule.mound", "capsule.opened", "capsule.notifyText", "capsule.section", "capsule.sectionSub", "capsule.sealed", "capsule.write", "capsule.openedRow", "capsule.sample", "ring.new", "ring.title", "ring.count", "ring.top", "ring.walk", "ring.walkClose", "ring.letter", "ring.section", "ring.sectionSub", "ring.chip", "recall.keepCard", "recall.continue", "recall.continueLabel", "return.title", "guest.tit.story", "guest.squirrel.story", "guest.hedgehog.story", "guest.rabbit.story", "guest.owl.story", "chance.guest_tit", "chance.guest_squirrel", "chance.guest_hedgehog", "chance.guest_rabbit", "chance.guest_owl", "photo.add", "photo.addToday", "photo.remove", "photo.change", "photo.fail", "credits.section", "credits.sectionSub", "credits.chip", "credits.ready", "credits.skip", "credits.paused", "credits.garden", "credits.intro", "credits.spring", "credits.summer", "credits.autumn", "credits.winter", "credits.quiet", "credits.starring", "credits.stone", "credits.haru", "credits.people", "credits.kept", "credits.mood", "credits.next", "seed.note", "credits.countLines", "credits.countThanks", "credits.countBreaths", "credits.myBirthday", "credits.birthday", "credits.togetherDays", "credits.togetherYears", "credits.special", "credits.moment", "credits.seed", "credits.capsule", "credits.first", "credits.personDays", "credits.guests", "credits.bloomed", "credits.made", "credits.madeBy", "credits.sLines", "credits.sThanks", "credits.sBreaths", "title.name", "title.enter", "title.hello", "title.hello.morning", "title.hello.evening", "title.hello.night", "title.setting", "title.helloFirst", "mood.readSub", "settings.notify", "settings.garden", "settings.help", "tour.memFutureTitle", "tour.memFuture", "tour.memLookTitle", "tour.memLook", "backup.pickTitle", "backup.pickHelp", "backup.pickGo", "backup.picked", "backup.notOurs", "settings.notifyFooter", "settings.records", "settings.recordsFooter", "slip.daysAgo", "slip.yearsAgo", "slip.from", "slip.record", "slip.a11y", "a11y.sing", "a11y.playStars", "pebble.name", "pebble.desc", "pebble.how", "pebble.a11y", "pebble.taken", "bday.cardSent", "bday.cardAsk", "bday.cardOther", "bday.cardWith", "bday.cardPlain", "welcome.start", "welcome.restore", "welcome.restoreSub", "news.v1_1_4.1", "news.v1_1_4.2", "news.v1_1_4.3", "news.v1_1_4.4", "news.v1_1_4.5", "news.v1_1_4.6", "news.v1_1_4.7", "news.v1_1_3.1", "news.v1_1_3.2", "news.v1_1_3.3", "news.v1_1_3.4", "news.v1_1_3.5", "news.v1_1_3.6", "news.v1_1_2.1", "news.v1_1_2.2", "news.v1_1_2.3", "news.v1_1_2.4", "news.v1_1_2.5"]
 
     private static func tr(_ key: String, _ args: String...) -> String {
         let format = Bundle.main.localizedString(forKey: key, value: nil, table: nil)

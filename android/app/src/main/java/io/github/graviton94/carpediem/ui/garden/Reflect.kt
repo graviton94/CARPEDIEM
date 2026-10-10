@@ -1,5 +1,7 @@
 package io.github.graviton94.carpediem.ui.garden
 
+import io.github.graviton94.carpediem.ui.AlertButton
+import androidx.compose.foundation.layout.imePadding
 import io.github.graviton94.carpediem.ui.GardenAlert
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
@@ -75,9 +77,9 @@ internal fun QuestionBlock(state: AppState, q: Question, sent: Boolean, onAnswer
         TokenText(io.github.graviton94.carpediem.data.Words.main(q, lang, phone), Tokens.TypeScale.headline.serif(), Modifier.fillMaxWidth(), align = TextAlign.Center)
         io.github.graviton94.carpediem.data.Words.second(q, lang, phone)?.let { TokenText(it, Tokens.TypeScale.footnote.serif(), Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.Center) }
         if (!sent) Row(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2), verticalAlignment = Alignment.CenterVertically) {
-            TokenText(stringResource(R.string.question_answer), Tokens.TypeScale.footnote, Modifier.clickable(onClick = onAnswer).padding(Tokens.Space.sp2), weight = FontWeight.SemiBold)
+            TokenText(stringResource(R.string.question_answer), Tokens.TypeScale.footnote, Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable(onClick = onAnswer).padding(Tokens.Space.sp3), weight = FontWeight.SemiBold)
             TokenText("·", Tokens.TypeScale.footnote, color = p.secondary)
-            TokenText(stringResource(R.string.question_skip), Tokens.TypeScale.footnote, Modifier.clickable { state.skipQuestion() }.padding(Tokens.Space.sp2), color = p.secondary)
+            TokenText(stringResource(R.string.question_skip), Tokens.TypeScale.footnote, Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { state.skipQuestion() }.padding(Tokens.Space.sp3), color = p.secondary)
         }
     }
 }
@@ -86,6 +88,7 @@ internal fun QuestionBlock(state: AppState, q: Question, sent: Boolean, onAnswer
 
 internal fun moodColor(f: Feeling?): Color = when (f) {
     Feeling.JOY -> G.Mood.Colors.joy; Feeling.HOPE -> G.Mood.Colors.hope; Feeling.CALM -> G.Mood.Colors.calm; Feeling.THANKS -> G.Mood.Colors.thanks
+    Feeling.PROUD -> G.Mood.Colors.proud; Feeling.MEH -> G.Mood.Colors.meh; Feeling.UNSETTLED -> G.Mood.Colors.unsettled
     Feeling.DISAPPOINT -> G.Mood.Colors.disappoint; Feeling.SAD -> G.Mood.Colors.sad; Feeling.WORRY -> G.Mood.Colors.worry; null -> G.Mood.Colors.none
 }
 
@@ -154,7 +157,7 @@ internal fun LetterSheet(letter: Letter, wish: String? = null, onClose: () -> Un
     val month = DateTimeFormatter.ofPattern("MMMM", ctx.resources.configuration.locales[0])
     ModalBottomSheet(onDismissRequest = onClose, containerColor = Theme.gc.paper, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
         Column(
-            Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(horizontal = Theme.deviceClass.pageMargin).navigationBarsPadding().padding(bottom = Tokens.Space.sp8),
+            Modifier.fillMaxWidth().imePadding().verticalScroll(rememberScrollState()).padding(horizontal = Theme.deviceClass.pageMargin).navigationBarsPadding().padding(bottom = Tokens.Space.sp8),
             verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3),
         ) {
             TokenText(stringResource(R.string.letter_title, "${letter.arrives.year}", Labels.season(ctx, letter.season)), Tokens.TypeScale.title3.serif())
@@ -262,7 +265,7 @@ private fun ThanksPages(list: List<DayLine>, onClose: () -> Unit) {
     val pages = list.size + 1
     val pager = androidx.compose.foundation.pager.rememberPagerState(initialPage = 0) { pages }
     val date = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
-    Column(Modifier.fillMaxWidth().navigationBarsPadding().padding(bottom = Tokens.Space.sp6), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp4)) {
+    Column(Modifier.fillMaxWidth().imePadding().verticalScroll(rememberScrollState()).navigationBarsPadding().padding(bottom = Tokens.Space.sp6), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp4)) {
         TokenText(stringResource(R.string.thanks_book), Tokens.TypeScale.title3.serif(), Modifier.fillMaxWidth(), align = TextAlign.Center)
         androidx.compose.foundation.pager.HorizontalPager(pager, Modifier.fillMaxWidth(), contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = Theme.deviceClass.pageMargin), pageSpacing = Tokens.Space.sp3) { i ->
             Column(
@@ -289,21 +292,31 @@ internal fun WishCard(state: AppState, id: String, today: LocalDate) {
     val ctx = LocalContext.current
     val focus = LocalFocusManager.current
     var text by rememberSaveable(id) { mutableStateOf("") }
-    var kept by remember(id) { mutableStateOf(false) }
+    var kept by remember(id) { mutableStateOf<String?>(null) }
+    // 언제 열까요 (10): 석 달 뒤 (계절 편지와 함께, 원래대로) · 다음 생일 · 1년 뒤 (나무 밑 항아리)
+    var opensWhen by rememberSaveable(id) { mutableStateOf(io.github.graviton94.carpediem.core.CapsuleWhen.SEASON) }
     val season = io.github.graviton94.carpediem.core.Memories.seasonOf(today)
     Column(Modifier.fillMaxWidth().crayonBox(Theme.gc.paper, G.Radius.box, G.Stroke.chip, 1170).padding(Tokens.Space.sp4), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
-        if (kept) { TokenText(stringResource(R.string.wish_kept), Tokens.TypeScale.subhead.serif()); return@Column }
+        kept?.let { k -> TokenText(k, Tokens.TypeScale.subhead.serif()); return@Column }
         TokenText(stringResource(R.string.wish_title, Labels.season(ctx, season)), Tokens.TypeScale.headline.serif())
         TokenText(stringResource(R.string.wish_sub), Tokens.TypeScale.caption1, color = p.secondary)
         androidx.compose.foundation.text.BasicTextField(
             value = text, onValueChange = { v -> val one = v.replace('\n', ' '); if (one.codePointCount(0, one.length) <= G.LetGo.maxChars.toInt()) text = one },
             singleLine = true, textStyle = Tokens.TypeScale.callout.style().copy(color = p.foreground), cursorBrush = androidx.compose.ui.graphics.SolidColor(p.foreground),
-            modifier = Modifier.fillMaxWidth().crayonBox(null, G.Radius.box, G.Stroke.chip, 1171).padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3),
+            modifier = Modifier.fillMaxWidth().keepAboveKeyboard().crayonBox(null, G.Radius.box, G.Stroke.chip, 1171).padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3),
             decorationBox = { inner -> Box { if (text.isEmpty()) TokenText(stringResource(R.string.wish_hint), Tokens.TypeScale.callout, color = p.secondary); inner() } },
         )
+        WhenChips(opensWhen) { opensWhen = it }
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
-            GardenButton(stringResource(R.string.wish_keep), { if (text.isNotBlank()) { state.saveWish(id, text); kept = true; focus.clearFocus() } }, filled = text.isNotBlank(), seed = 1172, modifier = Modifier.weight(1f))
-            TokenText(stringResource(R.string.wish_later), Tokens.TypeScale.footnote, Modifier.clickable { state.skipWish(id) }.padding(Tokens.Space.sp2), color = p.secondary)
+            GardenButton(stringResource(if (opensWhen == io.github.graviton94.carpediem.core.CapsuleWhen.SEASON) R.string.wish_keep else R.string.capsule_bury), {
+                if (text.isNotBlank()) {
+                    if (opensWhen == io.github.graviton94.carpediem.core.CapsuleWhen.SEASON) { state.saveWish(id, text); kept = ctx.getString(R.string.wish_kept) }
+                    // 길게 보내면 이번 계절의 바람은 건너뛴 것으로 (같은 카드가 다시 뜨지 않게)
+                    else state.bury(text, opensWhen, today)?.let { d -> state.say(ctx.getString(R.string.capsule_buried, RecordText.day(ctx, d))); state.skipWish(id) }
+                    focus.clearFocus()
+                }
+            }, filled = text.isNotBlank(), seed = 1172, modifier = Modifier.weight(1f))
+            TokenText(stringResource(R.string.wish_later), Tokens.TypeScale.footnote, Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { state.skipWish(id) }.padding(Tokens.Space.sp3), color = p.secondary)
         }
     }
 }
@@ -333,8 +346,8 @@ internal fun SpecialDaysRow(state: AppState, birth: LocalDate) {
         GardenAlert(
             onDismissRequest = { removing = null },
             title = { androidx.compose.material3.Text(stringResource(R.string.special_removeConfirm, d.name)) },
-            confirmButton = { androidx.compose.material3.TextButton(onClick = { state.removeSpecialDay(d.date); removing = null }) { androidx.compose.material3.Text(stringResource(R.string.special_remove)) } },
-            dismissButton = { androidx.compose.material3.TextButton(onClick = { removing = null }) { androidx.compose.material3.Text(stringResource(R.string.cancel)) } },
+            confirmButton = { AlertButton(stringResource(R.string.special_remove), { state.removeSpecialDay(d); removing = null }) },
+            dismissButton = { AlertButton(stringResource(R.string.cancel), { removing = null }, quiet = true) },
         )
     }
 }
@@ -347,14 +360,14 @@ private fun SpecialDaySheet(state: AppState, birth: LocalDate, onClose: () -> Un
     var date by rememberSaveable { mutableStateOf<Long?>(null) }
     var picking by remember { mutableStateOf(false) }
     val full = state.specialDays.size >= io.github.graviton94.carpediem.core.SpecialDays.MAX
-    ModalBottomSheet(onDismissRequest = onClose, containerColor = Theme.gc.paper) {
-        Column(Modifier.fillMaxWidth().padding(horizontal = Theme.deviceClass.pageMargin).navigationBarsPadding().padding(bottom = Tokens.Space.sp6),
+    ModalBottomSheet(onDismissRequest = onClose, containerColor = Theme.gc.paper, sheetState = androidx.compose.material3.rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
+        Column(Modifier.fillMaxWidth().imePadding().verticalScroll(rememberScrollState()).padding(horizontal = Theme.deviceClass.pageMargin).navigationBarsPadding().padding(bottom = Tokens.Space.sp6),
             verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
             TokenText(stringResource(R.string.special_name), Tokens.TypeScale.title3.serif())
             androidx.compose.foundation.text.BasicTextField(
                 value = name, onValueChange = { v -> val one = v.replace('\n', ' '); if (one.codePointCount(0, one.length) <= io.github.graviton94.carpediem.core.SpecialDays.NAME_MAX) name = one },
                 singleLine = true, textStyle = Tokens.TypeScale.headline.style().copy(color = p.foreground), cursorBrush = androidx.compose.ui.graphics.SolidColor(p.foreground),
-                modifier = Modifier.fillMaxWidth().crayonBox(null, G.Radius.box, G.Stroke.chip, 1410).padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3),
+                modifier = Modifier.fillMaxWidth().keepAboveKeyboard().crayonBox(null, G.Radius.box, G.Stroke.chip, 1410).padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3),
                 decorationBox = { inner -> Box { if (name.isEmpty()) TokenText(stringResource(R.string.special_nameHint), Tokens.TypeScale.headline, color = p.secondary); inner() } },
             )
             GardenChip(date?.let { LocalDate.ofEpochDay(it).format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)) } ?: stringResource(R.string.add_birthPick), date != null, 1411) { picking = true }
@@ -367,17 +380,17 @@ private fun SpecialDaySheet(state: AppState, birth: LocalDate, onClose: () -> Un
     }
     if (picking) {
         val init = (date?.let { LocalDate.ofEpochDay(it) } ?: LocalDate.now()).atStartOfDay().toInstant(java.time.ZoneOffset.UTC).toEpochMilli()
-        val dp = androidx.compose.material3.rememberDatePickerState(initialSelectedDateMillis = init)
+        val dp = androidx.compose.material3.rememberDatePickerState(initialSelectedDateMillis = init, selectableDates = io.github.graviton94.carpediem.ui.pastDates(from = birth))
         androidx.compose.material3.DatePickerDialog(
             onDismissRequest = { picking = false },
             confirmButton = {
-                androidx.compose.material3.TextButton(onClick = {
+                AlertButton(stringResource(R.string.done), {
                     // 태어난 날부터 오늘까지만
                     dp.selectedDateMillis?.let { ms -> val d = java.time.Instant.ofEpochMilli(ms).atZone(java.time.ZoneOffset.UTC).toLocalDate(); if (!d.isAfter(LocalDate.now()) && !d.isBefore(birth)) date = d.toEpochDay() }
                     picking = false
-                }) { androidx.compose.material3.Text(stringResource(R.string.done)) }
+                })
             },
-            dismissButton = { androidx.compose.material3.TextButton(onClick = { picking = false }) { androidx.compose.material3.Text(stringResource(R.string.cancel)) } },
+            dismissButton = { AlertButton(stringResource(R.string.cancel), { picking = false }, quiet = true) },
         ) { androidx.compose.material3.DatePicker(state = dp) }
     }
 }

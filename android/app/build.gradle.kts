@@ -12,8 +12,10 @@ android {
         applicationId = "io.github.graviton94.carpediem"
         minSdk = 26
         targetSdk = 36
-        // CI 실행 번호로 버전 코드를 올려, 새 APK 가 이전 것을 덮어쓸 수 있게 한다
-        versionCode = (System.getenv("GITHUB_RUN_NUMBER") ?: "1").toInt()
+        // CI 실행 번호로 버전 코드를 올려, 새 APK 가 이전 것을 덮어쓸 수 있게 한다.
+        // 같은 실행을 다시 돌려도 (run attempt) 번호가 겹치지 않게 ×10 + 시도 횟수. CD_VERSION_CODE 로 직접 정할 수도 있음
+        versionCode = System.getenv("CD_VERSION_CODE")?.toInt()
+            ?: ((System.getenv("GITHUB_RUN_NUMBER") ?: "0").toInt() * 10 + (System.getenv("GITHUB_RUN_ATTEMPT") ?: "1").toInt())
         versionName = System.getenv("CD_VERSION_NAME") ?: "1.0.0"
         // 개발자 도구 (설정의 버전을 여러 번 눌러 켜는 시험 기능): 직접 설치 · debug 빌드에만. Play 업로드 키로 만드는 빌드에서는 꺼짐
         buildConfigField("boolean", "DEV_TOOLS", if (System.getenv("CD_UPLOAD_STORE") != null) "false" else "true")
@@ -78,4 +80,16 @@ dependencies {
     implementation("com.android.billingclient:billing-ktx:8.0.0")
     implementation("androidx.glance:glance-appwidget:1.1.1")
     implementation("androidx.work:work-runtime-ktx:2.10.0")
+    // 새 버전 알림 (Play 앱 안 업데이트, 가벼운 방식만)
+    implementation("com.google.android.play:app-update-ktx:2.1.0")
+    // 앱 안에서 별점 남기기 (구글 공식 창, 1.1.5)
+    implementation("com.google.android.play:review-ktx:2.0.2")
+    // app-update 가 끌어오는 오래된 Fragment 대신 (앱 결과 API 를 쓰려면 1.3 이상)
+    implementation("androidx.fragment:fragment-ktx:1.8.5")
+}
+
+// 스토어용 AAB 는 업로드 키로만: 키 없이 bundleRelease 를 돌리면 (debug 키 · 개발자 도구가 켜진 채로 만들어지지 않게) 멈춘다
+gradle.taskGraph.whenReady {
+    if (allTasks.any { it.path == ":app:bundleRelease" } && System.getenv("CD_UPLOAD_STORE") == null)
+        throw GradleException("bundleRelease needs the Play upload key (CD_UPLOAD_STORE). Use the android-release workflow.")
 }

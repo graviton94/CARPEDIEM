@@ -28,6 +28,7 @@ enum class Design { GLASS, GARDEN }
 
 /** 앱과 위젯이 함께 읽는 저장소 (같은 앱 프로세스의 SharedPreferences). */
 class Store(context: Context) {
+    private val app = context.applicationContext
     private val prefs = context.applicationContext.getSharedPreferences("carpediem", Context.MODE_PRIVATE)
     private val assets = context.applicationContext.assets
 
@@ -84,6 +85,36 @@ class Store(context: Context) {
     var meetPending: Boolean
         get() = prefs.getBoolean("meetPending", false)
         set(v) = prefs.edit().putBoolean("meetPending", v).apply()
+
+    /** 아침 문장 · 하루 정리 알림 시각 (하루의 몇째 분). 고르지 않았으면 기본 (토큰: 7시 · 22시). */
+    var morningMinute: Int
+        get() = prefs.getInt("morningMinute", (io.github.graviton94.carpediem.design.Tokens.Notify.hour * 60 + io.github.graviton94.carpediem.design.Tokens.Notify.minute).toInt())
+        set(v) = prefs.edit().putInt("morningMinute", v.coerceIn(0, 24 * 60 - 1)).apply()
+    var eveningMinute: Int
+        get() = prefs.getInt("eveningMinute", (io.github.graviton94.carpediem.design.Tokens.Notify.eveningHour * 60).toInt())
+        set(v) = prefs.edit().putInt("eveningMinute", v.coerceIn(0, 24 * 60 - 1)).apply()
+
+    /** 처음 온 사람의 안내: 첫 화면 앞 소개 몇 장을 봤는지 · 정원 둘러보기를 마쳤는지 · 처음 들어가 본 페이지 (기록 · 추억 · 흐름). */
+    var introSeen: Boolean
+        get() = prefs.getBoolean("introSeen", false)
+        set(v) = prefs.edit().putBoolean("introSeen", v).apply()
+    var guideDone: Boolean
+        get() = prefs.getBoolean("guideDone", false)
+        set(v) = prefs.edit().putBoolean("guideDone", v).apply()
+    /** 첫 일주일 길잡이에서 이미 눌러 본 권유 (core FirstWeek 의 키). */
+    var nudgesSeen: Set<String>
+        get() = prefs.getStringSet("nudgesSeen", emptySet()) ?: emptySet()
+        set(v) = prefs.edit().putStringSet("nudgesSeen", v).apply()
+    var nudgeShown: Set<String>
+        get() = prefs.getStringSet("nudgeShown", emptySet()) ?: emptySet()
+        set(v) = prefs.edit().putStringSet("nudgeShown", v).apply()
+    /** 마지막으로 백업 파일을 저장한 날 (epochDay, 없으면 -1). */
+    var lastBackup: Long
+        get() = prefs.getLong("lastBackup", -1)
+        set(v) = prefs.edit().putLong("lastBackup", v).apply()
+    var pageHints: Set<String>
+        get() = prefs.getStringSet("pageHints", emptySet()) ?: emptySet()
+        set(v) = prefs.edit().putStringSet("pageHints", v).apply()
 
     /** 디버그 빌드 화면 확인용으로만 하루 번호를 정한다. */
     fun overrideHaruSeed(v: Long) = prefs.edit().putLong("haruSeed", v and 0xFFFFFFFFL).apply()
@@ -148,6 +179,27 @@ class Store(context: Context) {
         e.apply()
     }
 
+    /** 오늘 정원에 놀러 온 손님 (날마다 정해진 우연, 앱을 열든 안 열든), 없으면 null. */
+    /**
+     * 오늘 손님: 지난 한 줄이 돌아온 날 (몇 해 전 오늘 · 문득) 에만, 그 쪽지를 물고. 돌아올 한 줄이 아직 없으면 (처음 한 달 남짓)
+     * 빈손으로 같은 박자 (평균 열이틀에 한 번). 쪽지 · 손님이 따로 오지 않게 한 박자로.
+     */
+    fun guestToday(today: LocalDate = LocalDate.now()): String? {
+        prefs.getString("guestForce", null)?.takeIf { prefs.getLong("guestForceDay", Long.MIN_VALUE) == today.toEpochDay() }?.let { return it }
+        val G = io.github.graviton94.carpediem.core.Guests
+        val lines = this.lines
+        val slipDay = prefs.getLong("randomOn", -1) == today.toEpochDay() || yearsAgoSlip(today) != null
+        if (slipDay && keepLines) return G.pick(today, haruSeed)
+        val minAge = io.github.graviton94.carpediem.design.Tokens.Garden.LetGo.randomMinAge.toLong()
+        val canRecall = keepLines && lines.any { it.text.isNotBlank() && java.time.temporal.ChronoUnit.DAYS.between(it.date, today) >= minAge }
+        return if (canRecall) null else G.on(today, haruSeed)
+    }
+    var greetedOn: LocalDate?
+        get() = prefs.getLong("greetedOn", Long.MIN_VALUE).takeIf { it != Long.MIN_VALUE }?.let { LocalDate.ofEpochDay(it) }
+        set(v) = prefs.edit().apply { if (v == null) remove("greetedOn") else putLong("greetedOn", v.toEpochDay()) }.apply()
+    /** 캡처용: 오늘 이 손님이 놀러 온 것으로. */
+    fun pretendGuest(today: LocalDate, guest: String) = prefs.edit().putString("guestForce", guest).putLong("guestForceDay", today.toEpochDay()).remove("greetedOn").apply()
+
     /** 처음 부를 때 무작위 seed 와 시작일을 만든다. */
     fun ensureQuoteSeed(today: LocalDate = LocalDate.now()) {
         if (prefs.contains("quoteSeed")) return
@@ -200,12 +252,148 @@ class Store(context: Context) {
         set(v) = prefs.edit().putString("lines", Lines.encode(v)).apply()
 
     /** 한 줄 기록만 지우기 (이미 정원에 놓인 이어 쓰기 흔적은 남음). */
-    fun clearLines() = prefs.edit().remove("lines").remove("memoryLines").apply()
+    fun clearLines() { prefs.edit().remove("lines").remove("memoryLines").apply(); Photos.clear(app) }
 
     /** 기록 남기지 않기를 켜면 보낸 날짜만 남기고 글 · 마음은 저장하지 않는다. */
     var keepLines: Boolean
         get() = prefs.getBoolean("keepLines", true)
         set(v) = prefs.edit().putBoolean("keepLines", v).apply()
+
+    /** 아침 씨앗 (04): 날마다 하나, 저녁에 꽃 · 쉼. */
+    var seeds: List<io.github.graviton94.carpediem.core.Seed>
+        get() = io.github.graviton94.carpediem.core.Seeds.decode(prefs.getString("seeds", null))
+        set(v) = prefs.edit().putString("seeds", io.github.graviton94.carpediem.core.Seeds.encode(v)).apply()
+    var seedsOn: Boolean
+        get() = prefs.getBoolean("seedsOn", true)
+        set(v) = prefs.edit().putBoolean("seedsOn", v).apply()
+    /** 아침 씨앗을 ‘다음에’ 한 날 (그날은 다시 묻지 않음). */
+    var seedSkipped: LocalDate?
+        get() = prefs.getLong("seedSkip", Long.MIN_VALUE).takeIf { it != Long.MIN_VALUE }?.let { LocalDate.ofEpochDay(it) }
+        set(v) = prefs.edit().apply { if (v == null) remove("seedSkip") else putLong("seedSkip", v.toEpochDay()) }.apply()
+    /** 보내기 전 쓰던 한 줄 (그날 안에서만 되살림). */
+    fun draftFor(today: LocalDate): String = if (prefs.getLong("draftDay", Long.MIN_VALUE) == today.toEpochDay()) prefs.getString("draft", "").orEmpty() else ""
+    fun saveDraft(today: LocalDate, text: String) = prefs.edit().putString("draft", text).putLong("draftDay", today.toEpochDay()).apply()
+    /** 쓰던 한 줄의 날 (적어 둔 날) · 마음 · 받는 사람: 앱이 닫혀도 글과 함께 이어서. */
+    val draftDay: LocalDate? get() = prefs.getLong("draftDay", Long.MIN_VALUE).takeIf { it != Long.MIN_VALUE }?.let { LocalDate.ofEpochDay(it) }
+    val draftText: String get() = prefs.getString("draft", "").orEmpty()
+    var draftFeeling: String?
+        get() = prefs.getString("draftFeeling", null)
+        set(v) = prefs.edit().putString("draftFeeling", v).apply()
+    var draftTo: String?
+        get() = prefs.getString("draftTo", null)
+        set(v) = prefs.edit().putString("draftTo", v).apply()
+    /** 쓰는 칸에 골라 둔 사진을 고른 날 (다른 날로 넘어가면 오래된 사진이 다음 한 줄에 붙지 않게). */
+    var pendingOn: LocalDate?
+        get() = prefs.getLong("pendingOn", Long.MIN_VALUE).takeIf { it != Long.MIN_VALUE }?.let { LocalDate.ofEpochDay(it) }
+        set(v) = prefs.edit().putLong("pendingOn", v?.toEpochDay() ?: Long.MIN_VALUE).apply()
+    /** 권유 (리뷰 · 응원 권유 · 기념일 편지) 를 마지막으로 꺼낸 날: 한 주에 하나만. */
+    var lastNudgeOn: LocalDate?
+        get() = prefs.getLong("lastNudgeOn", Long.MIN_VALUE).takeIf { it != Long.MIN_VALUE }?.let { LocalDate.ofEpochDay(it) }
+        set(v) = prefs.edit().putLong("lastNudgeOn", v?.toEpochDay() ?: Long.MIN_VALUE).apply()
+    /** Play 리뷰 창을 마지막으로 청한 날 (실제로 떴는지는 앱이 알 수 없음). */
+    var reviewAskedOn: LocalDate?
+        get() = prefs.getLong("reviewAskedOn", Long.MIN_VALUE).takeIf { it != Long.MIN_VALUE }?.let { LocalDate.ofEpochDay(it) }
+        set(v) = prefs.edit().putLong("reviewAskedOn", v?.toEpochDay() ?: Long.MIN_VALUE).apply()
+    /** 기념일 편지 (평생 두 번: "100" 백 번째 한 줄 · "year" 만난 지 1년) 를 받은 것. */
+    var lettersGot: Set<String>
+        get() = prefs.getStringSet("anniversaryLetters", emptySet()) ?: emptySet()
+        set(v) = prefs.edit().putStringSet("anniversaryLetters", v).apply()
+    /** 돌멍하기 잠들기: 마지막에 고른 분 (처음엔 20분). */
+    var sleepMinutes: Int
+        get() = prefs.getInt("sleepMinutes", 20)
+        set(v) = prefs.edit().putInt("sleepMinutes", v).apply()
+    /** 미래 편지 쓰던 글 (묻기 전에 시트를 닫거나 앱이 닫혀도 남게). */
+    var letterDraft: String
+        get() = prefs.getString("letterDraft", "").orEmpty()
+        set(v) = prefs.edit().putString("letterDraft", v).apply()
+    /** 다른 날의 한 줄을 쓰던 중이면 그날 (고른 날 당일에만 유효, 앱이 닫혔다 열려도 같은 날에 쓰게). */
+    fun writeDayFor(today: LocalDate): LocalDate? = if (prefs.getLong("writeDayOn", Long.MIN_VALUE) == today.toEpochDay())
+        prefs.getLong("writeDay", Long.MIN_VALUE).takeIf { it != Long.MIN_VALUE }?.let { LocalDate.ofEpochDay(it) } else null
+    fun saveWriteDay(today: LocalDate, day: LocalDate?) = prefs.edit().putLong("writeDayOn", today.toEpochDay()).putLong("writeDay", day?.toEpochDay() ?: Long.MIN_VALUE).apply()
+    /** 손님이 물고 온 쪽지를 펼쳐 본 날 (그날은 다시 물고 오지 않음). */
+    /**
+     * 몇 해 전 오늘의 한 줄이 손님 쪽지 · 아침 알림으로 오는 날: 한 해 넘게 쓰면 거의 날마다 있으니, 손님 박자 (EVERY 일) 에 한 번만.
+     * 처음 온 날을 적어 두고 그날 하루는 그대로. (기록 페이지의 ‘몇 해 전 오늘’ 은 따로, 늘 보임)
+     */
+    fun yearsAgoSlip(today: LocalDate): Pair<Int, io.github.graviton94.carpediem.core.DayLine>? {
+        val hit = Lines.yearsAgo(lines, today).firstOrNull() ?: return null
+        val last = prefs.getLong("yearsSlipOn", Long.MIN_VALUE)
+        if (last == today.toEpochDay()) return hit
+        if (last != Long.MIN_VALUE && today.toEpochDay() - last < io.github.graviton94.carpediem.core.Guests.EVERY) return null
+        prefs.edit().putLong("yearsSlipOn", today.toEpochDay()).apply()
+        return hit
+    }
+    /** 마지막으로 연 앱 버전 (업데이트 뒤 처음 열 때 ‘새로워진 점’ 을 한 번 보여 주려고). */
+    var seenVersion: String?
+        get() = prefs.getString("seenVersion", null)
+        set(v) = prefs.edit().putString("seenVersion", v).apply()
+    /**
+     * 새 버전 쪽지 (Play 에 새 버전이 올라왔을 때): 그 버전을 처음 안 날 하루, 받지 않았으면 사흘 뒤 하루 더. 그 뒤로는 그 버전엔 다시 말하지 않음.
+     */
+    fun updateNoteDue(versionCode: Int, today: LocalDate): Boolean {
+        val d = today.toEpochDay()
+        if (prefs.getInt("updNoteVer", -1) != versionCode) return true
+        val first = prefs.getLong("updNoteDay", d)
+        return d == first || d == first + UPDATE_NOTE_AGAIN
+    }
+    /** 새 버전 쪽지를 처음 보인 날을 적어 둠 (그 버전에 한 번만). */
+    fun updateNoteShown(versionCode: Int, today: LocalDate) {
+        if (prefs.getInt("updNoteVer", -1) != versionCode) prefs.edit().putInt("updNoteVer", versionCode).putLong("updNoteDay", today.toEpochDay()).apply()
+    }
+    /** 고마움의 흔적: 응원한 것 (상품 id → 처음 응원한 날). 정원 하루 돌 곁에 그림으로 남음 (기능 보상은 없음). */
+    var supportMarks: Map<String, LocalDate>
+        get() = prefs.getString("supportMarks", "").orEmpty().split(',').mapNotNull { e ->
+            val k = e.substringBefore(':', ""); val d = e.substringAfter(':', "").toLongOrNull()
+            if (k.isEmpty() || d == null) null else k to LocalDate.ofEpochDay(d)
+        }.toMap()
+        set(v) = prefs.edit().putString("supportMarks", v.entries.joinToString(",") { "${it.key}:${it.value.toEpochDay()}" }).apply()
+    /** 권유 쪽지를 × 로 접은 것 ("key:날짜", 그날 것만 남김). */
+    var notesHidden: Set<String>
+        get() = prefs.getStringSet("notesHidden", emptySet()) ?: emptySet()
+        set(v) = prefs.edit().putStringSet("notesHidden", v).apply()
+    var closedOn: LocalDate?
+        get() = prefs.getLong("closedOn", Long.MIN_VALUE).takeIf { it != Long.MIN_VALUE }?.let { LocalDate.ofEpochDay(it) }
+        set(v) = prefs.edit().putLong("closedOn", v?.toEpochDay() ?: Long.MIN_VALUE).apply()
+    var slipOpened: LocalDate?
+        get() = prefs.getLong("slipOpened", Long.MIN_VALUE).takeIf { it != Long.MIN_VALUE }?.let { LocalDate.ofEpochDay(it) }
+        set(v) = prefs.edit().putLong("slipOpened", v?.toEpochDay() ?: Long.MIN_VALUE).apply()
+    /** 하루가 발치에 굴려 준 조약돌: 받은 날들 · 오늘 굴려 놓은 날 (아직 줍지 않음). */
+    var pebbles: List<LocalDate>
+        get() = prefs.getStringSet("pebbles", emptySet())!!.mapNotNull { it.toLongOrNull()?.let(LocalDate::ofEpochDay) }.sorted()
+        set(v) = prefs.edit().putStringSet("pebbles", v.map { it.toEpochDay().toString() }.toSet()).apply()
+    var pebbleOffered: LocalDate?
+        get() = prefs.getLong("pebbleOffered", Long.MIN_VALUE).takeIf { it != Long.MIN_VALUE }?.let { LocalDate.ofEpochDay(it) }
+        set(v) = prefs.edit().putLong("pebbleOffered", v?.toEpochDay() ?: Long.MIN_VALUE).apply()
+    /** 아침 씨앗 쪽지를 마지막으로 보여 준 날 · 한 줄 뒤 권유를 마지막으로 건넨 날 (고요한 빈도, core Pace). */
+    var seedOffered: LocalDate?
+        get() = prefs.getLong("seedOffered", Long.MIN_VALUE).takeIf { it != Long.MIN_VALUE }?.let { LocalDate.ofEpochDay(it) }
+        set(v) = prefs.edit().apply { if (v == null) remove("seedOffered") else putLong("seedOffered", v.toEpochDay()) }.apply()
+    var careShown: LocalDate?
+        get() = prefs.getLong("careShown", Long.MIN_VALUE).takeIf { it != Long.MIN_VALUE }?.let { LocalDate.ofEpochDay(it) }
+        set(v) = prefs.edit().apply { if (v == null) remove("careShown") else putLong("careShown", v.toEpochDay()) }.apply()
+    /** 걱정한 밤 다음 아침의 한마디 (06) 를 보여 준 날. */
+    var comfortShown: LocalDate?
+        get() = prefs.getLong("comfortShown", Long.MIN_VALUE).takeIf { it != Long.MIN_VALUE }?.let { LocalDate.ofEpochDay(it) }
+        set(v) = prefs.edit().apply { if (v == null) remove("comfortShown") else putLong("comfortShown", v.toEpochDay()) }.apply()
+    /** 엔딩 크레딧을 권한 해 (08). */
+    var creditsShown: Set<Int>
+        get() = prefs.getStringSet("creditsShown", emptySet())?.mapNotNull { it.toIntOrNull() }?.toSet() ?: emptySet()
+        set(v) = prefs.edit().putStringSet("creditsShown", v.map { "$it" }.toSet()).apply()
+    /** 하루의 첫 화면 (그날 처음 열 때 한 번): 켜고 끄기 · 마지막으로 보여 준 날. */
+    var titleOn: Boolean
+        get() = prefs.getBoolean("titleOn", true)
+        set(v) = prefs.edit().putBoolean("titleOn", v).apply()
+    var titleDay: LocalDate?
+        get() = prefs.getLong("titleDay", Long.MIN_VALUE).takeIf { it != Long.MIN_VALUE }?.let { LocalDate.ofEpochDay(it) }
+        set(v) = prefs.edit().apply { if (v == null) remove("titleDay") else putLong("titleDay", v.toEpochDay()) }.apply()
+    /** 미래의 나에게 (10): 나무 밑 항아리들. */
+    var capsules: List<io.github.graviton94.carpediem.core.Capsule>
+        get() = io.github.graviton94.carpediem.core.Capsules.decode(prefs.getString("capsules", null))
+        set(v) = prefs.edit().putString("capsules", io.github.graviton94.carpediem.core.Capsules.encode(v)).apply()
+    /** 하루의 숨결을 손끝으로 (05): 숨 쉬는 동안 떨림으로. */
+    var breathTouch: Boolean
+        get() = prefs.getBoolean("breathTouch", false)
+        set(v) = prefs.edit().putBoolean("breathTouch", v).apply()
 
     /** 이어 쓰기 흔적을 얻은 날 (7 · 30 · 100 → 날짜). 기록을 지워도 남는다. 저장 형식 `7:epochDay,30:epochDay`. */
     var streaks: Map<Int, LocalDate>
@@ -307,6 +495,18 @@ class Store(context: Context) {
     var termNoted: String?
         get() = prefs.getString("termNoted", null)
         set(v) = prefs.edit().putString("termNoted", v).apply()
+    /**
+     * 돌 별 꾸밈 (core Adornments, 1.1.3): 돌 → 꾸밈 하나. 처음 읽을 때 예전 ‘이번 계절의 조각’ 과 응원의 흔적을 옮겨 옴.
+     */
+    var adornments: Map<String, String>
+        get() {
+            prefs.getString("adornments", null)?.let { return io.github.graviton94.carpediem.core.Adornments.decode(it) }
+            var m = io.github.graviton94.carpediem.core.Adornments.fromOfferings(offerings, emptyMap())
+            supportMarks.keys.firstOrNull()?.let { id -> if (io.github.graviton94.carpediem.core.Adornments.ME !in m) m = m + (io.github.graviton94.carpediem.core.Adornments.ME to "support:$id") }
+            prefs.edit().putString("adornments", io.github.graviton94.carpediem.core.Adornments.encode(m)).apply()
+            return m
+        }
+        set(v) = prefs.edit().putString("adornments", io.github.graviton94.carpediem.core.Adornments.encode(v)).apply()
     /** 돌에게 건넨 이번 계절의 조각 (core Offerings, R1). */
     var offerings: List<io.github.graviton94.carpediem.core.Offering>
         get() = io.github.graviton94.carpediem.core.Offerings.decode(prefs.getString("offerings", null))
@@ -331,6 +531,14 @@ class Store(context: Context) {
     var decorSeen: String?
         get() = prefs.getString("decorSeen", null)
         set(v) = prefs.edit().putString("decorSeen", v).apply()
+    /** 정원에 자란 것이 처음 보인 날 (stage · hang · kite · ribbon · bud → 그날). 모은 것의 날짜. 기록 전부터 있던 것은 없음 (‘이전에’). */
+    var decorDates: Map<String, LocalDate>
+        get() = prefs.getString("decorDates", "").orEmpty().split(',').mapNotNull { e -> e.split(':').takeIf { it.size == 2 }?.let { (k, d) -> d.toLongOrNull()?.let { k to LocalDate.ofEpochDay(it) } } }.toMap()
+        set(v) = prefs.edit().putString("decorDates", v.entries.joinToString(",") { "${it.key}:${it.value.toEpochDay()}" }).apply()
+    /** 손님이 놀러 온 날 수 (손님 → 번). */
+    var guestVisits: Map<String, Int>
+        get() = prefs.getString("guestVisits", "").orEmpty().split(',').mapNotNull { e -> e.split(':').takeIf { it.size == 2 }?.let { (k, n) -> n.toIntOrNull()?.let { k to it } } }.toMap()
+        set(v) = prefs.edit().putString("guestVisits", v.entries.joinToString(",") { "${it.key}:${it.value}" }).apply()
 
     // ───── 숨 ─────
     /** 숨 쉰 날과 종류 (시간 · 횟수는 세지 않음). */
@@ -348,52 +556,97 @@ class Store(context: Context) {
         get() = runCatching { Sound.valueOf(prefs.getString("sound", null)!!) }.getOrDefault(Sound.WAVES)
         set(v) = prefs.edit().putString("sound", v.name).apply()
 
-    fun eraseAll() = prefs.edit().clear().apply()
+    fun eraseAll() { prefs.edit().clear().apply(); Photos.clear(app) }
 
     /**
      * 기록 옮기기: 앱 안의 모든 것 (설정 · 한 줄 · 가족 · 기억의 돌 · 특별한 날 …) 을 JSON 한 덩이로.
      * 새 폰에서 [restore] 로 그대로 들여온다. 파일은 사람이 고른 곳에만 저장된다 (앱은 어디로도 보내지 않음).
      */
-    fun backup(): String {
-        val all = org.json.JSONObject()
+    fun backup(out: java.io.OutputStream) {
+        // 사진이 많아도 메모리에 한꺼번에 올리지 않게, 한 칸씩 흘려 씀 (파일 모양은 예전과 같음)
+        val w = android.util.JsonWriter(java.io.BufferedWriter(java.io.OutputStreamWriter(out, Charsets.UTF_8)))
+        w.beginObject().name("app").value(BACKUP_APP).name("v").value(1)
+        w.name("prefs").beginObject()
         prefs.all.forEach { (k, v) ->
-            val e = org.json.JSONObject()
             when (v) {
-                is Boolean -> e.put("t", "b").put("v", v)
-                is Int -> e.put("t", "i").put("v", v)
-                is Long -> e.put("t", "l").put("v", v)
-                is Float -> e.put("t", "f").put("v", v.toDouble())
-                is String -> e.put("t", "s").put("v", v)
-                is Set<*> -> e.put("t", "ss").put("v", org.json.JSONArray(v.filterIsInstance<String>()))
-                else -> return@forEach
+                is Boolean -> { w.name(k).beginObject().name("t").value("b").name("v").value(v).endObject() }
+                is Int -> { w.name(k).beginObject().name("t").value("i").name("v").value(v.toLong()).endObject() }
+                is Long -> { w.name(k).beginObject().name("t").value("l").name("v").value(v).endObject() }
+                is Float -> { w.name(k).beginObject().name("t").value("f").name("v").value(v.toDouble()).endObject() }
+                is String -> { w.name(k).beginObject().name("t").value("s").name("v").value(v).endObject() }
+                is Set<*> -> { w.name(k).beginObject().name("t").value("ss").name("v").beginArray(); v.filterIsInstance<String>().forEach { w.value(it) }; w.endArray().endObject() }
+                else -> {}
             }
-            all.put(k, e)
         }
-        return org.json.JSONObject().put("app", BACKUP_APP).put("v", 1).put("prefs", all).toString()
+        w.endObject()
+        // 한 줄에 붙인 사진 (11) 도 함께 (작은 사본만)
+        w.name("photos").beginObject(); Photos.exportTo(app, w); w.endObject()
+        w.endObject(); w.flush()
     }
 
-    /** [backup] 으로 만든 글을 들여온다. 이 앱의 파일이 아니거나 읽을 수 없으면 아무것도 바꾸지 않고 false. */
-    fun restore(json: String): Boolean {
-        val root = runCatching { org.json.JSONObject(json) }.getOrNull() ?: return false
-        if (root.optString("app") != BACKUP_APP) return false
-        val all = root.optJSONObject("prefs") ?: return false
-        if (!all.has("birth")) return false   // 하루의 정보 (생년월일) 가 없는 파일로는 지금 기록을 지우지 않음
-        val ed = prefs.edit().clear().putBoolean("gridMonths", true)   // 되살린 인생 달력 단위는 그대로
-        for (k in all.keys()) {
-            val e = all.optJSONObject(k) ?: continue
-            when (e.optString("t")) {
-                "b" -> ed.putBoolean(k, e.optBoolean("v"))
-                "i" -> ed.putInt(k, e.optInt("v"))
-                "l" -> ed.putLong(k, e.optLong("v"))
-                "f" -> ed.putFloat(k, e.optDouble("v").toFloat())
-                "s" -> ed.putString(k, e.optString("v"))
-                "ss" -> ed.putStringSet(k, e.optJSONArray("v")?.let { a -> (0 until a.length()).map { a.optString(it) }.toSet() } ?: emptySet())
+    /** [backup] 으로 만든 파일을 들여온다. 이 앱의 파일이 아니거나 읽을 수 없으면 아무것도 바꾸지 않고 false. */
+    fun restore(input: java.io.InputStream): Boolean {
+        val stage = Photos.stage(app)   // 사진은 먼저 따로 두었다가, 설정을 다 들인 뒤에만 옮김
+        val all = HashMap<String, Any>()
+        var appTag: String? = null
+        val ok = runCatching {
+            val r = android.util.JsonReader(java.io.BufferedReader(java.io.InputStreamReader(input, Charsets.UTF_8)))
+            r.beginObject()
+            while (r.hasNext()) when (r.nextName()) {
+                "app" -> appTag = r.nextString()
+                "prefs" -> { r.beginObject(); while (r.hasNext()) { val k = r.nextName(); readPref(r)?.let { all[k] = it } }; r.endObject() }
+                "photos" -> { r.beginObject(); while (r.hasNext()) Photos.stageOne(stage, r.nextName(), r.nextString()); r.endObject() }
+                else -> r.skipValue()
             }
+            r.endObject(); true
+        }.getOrDefault(false)
+        if (!ok || appTag != BACKUP_APP || !all.containsKey("birth")) { stage.deleteRecursively(); return false }   // 하루의 정보 (생년월일) 가 없는 파일로는 지금 기록을 지우지 않음
+        val ed = prefs.edit().clear().putBoolean("gridMonths", true)   // 되살린 인생 달력 단위는 그대로
+        for ((k, v) in all) when (v) {
+            is Boolean -> ed.putBoolean(k, v); is Int -> ed.putInt(k, v); is Long -> ed.putLong(k, v); is Float -> ed.putFloat(k, v); is String -> ed.putString(k, v)
+            is Set<*> -> ed.putStringSet(k, v.filterIsInstance<String>().toSet())
         }
-        return ed.commit()
+        // 기록을 들여온 사람은 처음 온 사람이 아님: 소개 · 둘러보기 · 페이지 안내 · 하루를 만나는 장면은 건너뜀
+        // 알림 허락은 폰마다 다르니 새 폰에서 다시 물음
+        ed.remove("notifyAsked")
+        ed.putBoolean("introSeen", true).putBoolean("guideDone", true).putBoolean("meetPending", false)
+            .putStringSet("pageHints", io.github.graviton94.carpediem.ui.PAGE_HINTS)
+            .putStringSet("nudgesSeen", io.github.graviton94.carpediem.core.FirstWeek.STEPS.map { it.first }.toSet())
+        val done = ed.commit()
+        if (done) Photos.adopt(app, stage) else stage.deleteRecursively()
+        return done
+    }
+
+    /** 설정 한 칸 {"t": 종류, "v": 값}. 모르는 종류면 null. */
+    private fun readPref(r: android.util.JsonReader): Any? {
+        var t: String? = null; var v: Any? = null
+        r.beginObject()
+        while (r.hasNext()) when (r.nextName()) {
+            "t" -> t = r.nextString()
+            "v" -> v = when (r.peek()) {
+                android.util.JsonToken.BOOLEAN -> r.nextBoolean()
+                android.util.JsonToken.BEGIN_ARRAY -> { val l = mutableSetOf<String>(); r.beginArray(); while (r.hasNext()) l += r.nextString(); r.endArray(); l }
+                android.util.JsonToken.NULL -> { r.nextNull(); null }
+                else -> r.nextString()   // 숫자도 글로 읽어 아래에서 종류에 맞게
+            }
+            else -> r.skipValue()
+        }
+        r.endObject()
+        val raw = v ?: return null
+        return when (t) {
+            "b" -> raw as? Boolean ?: raw.toString().toBooleanStrictOrNull()
+            "i" -> raw.toString().toDoubleOrNull()?.toInt()
+            "l" -> raw.toString().toDoubleOrNull()?.toLong()
+            "f" -> raw.toString().toDoubleOrNull()?.toFloat()
+            "s" -> raw as? String
+            "ss" -> raw as? Set<*>
+            else -> null
+        }
     }
 
     companion object {
+        /** 새 버전 쪽지를 받지 않았을 때 한 번 더 말하는 날 (처음 안 날로부터). */
+        const val UPDATE_NOTE_AGAIN = 3L
         /** 기록 옮기기 파일의 표 (다른 앱의 파일을 들여오지 않게). */
         private const val BACKUP_APP = "carpediem-backup"
         /** 이만큼 쉬었다 돌아오면 달팽이가 놓인다. */

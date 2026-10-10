@@ -67,9 +67,10 @@ fun TokenText(
     align: TextAlign? = null,
     maxLines: Int = Int.MAX_VALUE,
     onTextLayout: ((TextLayoutResult) -> Unit)? = null,
+    overflow: androidx.compose.ui.text.style.TextOverflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,   // 줄 수를 넘으면 말없이 잘리지 않고 … 로
 ) {
     val style = token.style(text).let { if (weight != null) it.copy(fontWeight = weight) else it }.copy(lineBreak = WordLineBreak)
-    Text(text, modifier, color = color, style = style, textAlign = align, maxLines = maxLines, onTextLayout = onTextLayout ?: {})
+    Text(text, modifier, color = color, style = style, textAlign = align, maxLines = maxLines, overflow = overflow, onTextLayout = onTextLayout ?: {})
 }
 
 /** 화면 위쪽에서 햇빛처럼 번지는 배경. 정원 디자인은 종이 위 하늘빛. */
@@ -201,8 +202,8 @@ fun FormRow(title: String, onClick: (() -> Unit)? = null, trailing: @Composable 
         Modifier.fillMaxWidth().heightIn(min = Tokens.Layout.tapTarget).let { if (onClick != null) it.clickable(onClick = onClick) else it },
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        TokenText(title, Tokens.TypeScale.body)
-        Spacer(Modifier.weight(1f))
+        // 긴 이름은 줄을 바꿔 (오른쪽 스위치 · 칩이 밀려나지 않게)
+        TokenText(title, Tokens.TypeScale.body, Modifier.weight(1f).padding(end = Tokens.Space.sp3))
         trailing()
     }
 }
@@ -211,9 +212,9 @@ fun FormRow(title: String, onClick: (() -> Unit)? = null, trailing: @Composable 
 fun RowDivider() { if (Theme.garden) CrayonRule() else Box(Modifier.fillMaxWidth().height(Tokens.Stroke.hair).background(Theme.palette.dim)) }
 
 @Composable
-fun FormSection(header: String? = null, footer: String? = null, content: @Composable ColumnScope.() -> Unit) {
+fun FormSection(header: String? = null, footer: String? = null, modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit) {
     val p = Theme.palette
-    Column(verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
+    Column(modifier, verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
         header?.let { TokenText(it, Tokens.TypeScale.footnote, Modifier.padding(horizontal = Tokens.Space.sp4), color = p.secondary) }
         Column(
             Modifier.fillMaxWidth().let { if (Theme.garden) it.crayonBox(seed = (header ?: footer ?: "").length + 3) else it.clip(RoundedCornerShape(Tokens.Radius.md)).background(p.glass)

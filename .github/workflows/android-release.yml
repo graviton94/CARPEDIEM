@@ -25,6 +25,11 @@ jobs:
           P: ${{ secrets.ANDROID_UPLOAD_PASSPHRASE }}
         run: |
           if [ -z "$P" ] || [ ! -f android/keystore/upload.jks.gpg ]; then echo "::error::업로드 키가 없습니다 (Secrets 의 ANDROID_UPLOAD_PASSPHRASE 와 ‘Android signing key’ → upload 실행)"; exit 1; fi
+      - name: Release notes (Play Console, 4 languages)
+        run: |
+          f="docs/release-notes/${{ inputs.version }}.txt"
+          if [ ! -f "$f" ]; then echo "::error::$f 가 없습니다. design/changelog.json 에 ${{ inputs.version }} 을 더하고 scripts/generate.py 를 실행하세요"; exit 1; fi
+          { echo "### Play Console 출시 노트 (${{ inputs.version }}) — 그대로 붙여넣기"; echo '```'; cat "$f"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
       - uses: actions/setup-java@v4
         with:
           distribution: temurin

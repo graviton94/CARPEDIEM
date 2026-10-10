@@ -74,6 +74,9 @@ jobs:
             if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then export QUICK="${{ inputs.quick && '1' || '' }}" STORE="${{ inputs.store && '1' || '' }}" ONLY="${{ inputs.only }}" LOCALES="${{ inputs.locale }}"; else export QUICK="${{ contains(github.event.head_commit.message, '[quick-shots]') && '1' || '' }}" ONLY="$(echo "$MSG" | grep -o '\[only [^]]*\]' | head -1 | sed 's/^\[only //; s/\]$//')" LOCALES="$(echo "$MSG" | grep -o '\[locale [^]]*\]' | head -1 | sed 's/^\[locale //; s/\]$//')"; fi; bash scripts/android_shots.sh shots
       - name: Push to screenshots-android branch
         if: always()
+        # main 이 아닌 가지에서 직접 실행하면 screenshots-android-dev 로 (스토어 그림을 덮지 않게)
+        env:
+          BR: ${{ github.ref_name == 'main' && 'screenshots-android' || 'screenshots-android-dev' }}
         run: |
           mkdir -p shots && cd shots
           git init -q -b screenshots-android
@@ -81,4 +84,4 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           echo "source: ${GITHUB_SHA}" > SOURCE.txt
           git add -A && git commit -qm "android screenshots for ${GITHUB_SHA}"
-          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" screenshots-android
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" "HEAD:refs/heads/$BR"

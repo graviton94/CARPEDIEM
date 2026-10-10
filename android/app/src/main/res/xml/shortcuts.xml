@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 아이콘을 길게 누르면 (02). 누르면 MainActivity 가 carpediem.open 으로 그 자리를 연다 (정원 디자인만, 유리는 첫 화면). -->
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut android:shortcutId="write" android:enabled="true" android:icon="@drawable/ic_shortcut_write"
+        android:shortcutShortLabel="@string/shortcut_write" android:shortcutLongLabel="@string/shortcut_write">
+        <intent android:action="android.intent.action.VIEW" android:targetPackage="io.github.graviton94.carpediem" android:targetClass="io.github.graviton94.carpediem.MainActivity">
+            <extra android:name="carpediem.open" android:value="write" />
+        </intent>
+    </shortcut>
+    <shortcut android:shortcutId="breath" android:enabled="true" android:icon="@drawable/ic_shortcut_breath"
+        android:shortcutShortLabel="@string/shortcut_breath" android:shortcutLongLabel="@string/shortcut_breath">
+        <intent android:action="android.intent.action.VIEW" android:targetPackage="io.github.graviton94.carpediem" android:targetClass="io.github.graviton94.carpediem.MainActivity">
+            <extra android:name="carpediem.open" android:value="breath" />
+        </intent>
+    </shortcut>
+    <shortcut android:shortcutId="gaze" android:enabled="true" android:icon="@drawable/ic_shortcut_gaze"
+        android:shortcutShortLabel="@string/shortcut_gaze" android:shortcutLongLabel="@string/shortcut_gaze">
+        <intent android:action="android.intent.action.VIEW" android:targetPackage="io.github.graviton94.carpediem" android:targetClass="io.github.graviton94.carpediem.MainActivity">
+            <extra android:name="carpediem.open" android:value="gaze" />
+        </intent>
+    </shortcut>
+    <shortcut android:shortcutId="close" android:enabled="true" android:icon="@drawable/ic_shortcut_close"
+        android:shortcutShortLabel="@string/shortcut_close" android:shortcutLongLabel="@string/shortcut_close">
+        <intent android:action="android.intent.action.VIEW" android:targetPackage="io.github.graviton94.carpediem" android:targetClass="io.github.graviton94.carpediem.MainActivity">
+            <extra android:name="carpediem.open" android:value="close" />
+        </intent>
+    </shortcut>
+</shortcuts>

@@ -1,5 +1,6 @@
 package io.github.graviton94.carpediem.ui.garden
 
+import io.github.graviton94.carpediem.ui.AlertButton
 import android.graphics.Bitmap
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -32,6 +33,8 @@ import io.github.graviton94.carpediem.ui.AppState
 import io.github.graviton94.carpediem.ui.GardenAlert
 import io.github.graviton94.carpediem.ui.TokenText
 import java.time.LocalDateTime
+import androidx.compose.foundation.layout.size
+import io.github.graviton94.carpediem.design.Theme
 
 /** 그해에 받은 계절 조각 (앨범과 같은 것). */
 internal fun yearCards(state: AppState, year: Int): List<SeasonCard> = state.seasonCards.mapNotNull { SeasonCard.parse(it) }.filter { it.year == year }
@@ -56,16 +59,20 @@ internal fun GardenYearSheet(state: AppState, profile: LifeProfile, now: LocalDa
         bmp = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Default) {
             // 지난 해는 그때의 말뚝 · 연을 알 수 없어 조각 · 순간만 (올해만 지금 걸린 것 · 리본까지)
             val thisYear = year == now.year
-            ShareCards.gardenYear(ctx, title, cards, if (thisYear) decor.hang else io.github.graviton94.carpediem.core.Hang.NONE, if (thisYear) decor.ribbons else emptyList(), met, decor.season, seed)
+            ShareCards.gardenYear(ctx, year, cards, if (thisYear) decor.hang else io.github.graviton94.carpediem.core.Hang.NONE, if (thisYear) decor.ribbons else emptyList(), decor.season, seed,
+                tree = decor.tree, stage = decor.stage, kite = thisYear && decor.kite)
         }
     }
     GardenAlert(
         onDismissRequest = onDismiss,
-        confirmButton = { TextButton(onClick = { bmp?.let { ShareCards.send(ctx, it, "garden-year-$year") } }, enabled = bmp != null) { Text(stringResource(R.string.share_image)) } },
-        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.done)) } },
+        confirmButton = { io.github.graviton94.carpediem.ui.AlertButton(stringResource(R.string.share_image), { bmp?.let { ShareCards.send(ctx, it, "garden-year-$year") } }, enabled = bmp != null) },
+        dismissButton = { AlertButton(stringResource(R.string.done), onDismiss, quiet = true) },
         text = {
             val ratio = Tokens.Garden.Share.lineW / Tokens.Garden.Share.lineH
-            bmp?.let { Image(it.asImageBitmap(), title, Modifier.fillMaxWidth().aspectRatio(ratio)) } ?: Box(Modifier.fillMaxWidth().aspectRatio(ratio))
+            // 그리는 동안은 빈 상자 대신 가운데에 작은 기다림 표시
+            bmp?.let { Image(it.asImageBitmap(), title, Modifier.fillMaxWidth().aspectRatio(ratio)) } ?: Box(Modifier.fillMaxWidth().aspectRatio(ratio), contentAlignment = androidx.compose.ui.Alignment.Center) {
+                androidx.compose.material3.CircularProgressIndicator(Modifier.size(Theme.unit * 28), color = Theme.palette.olive, strokeWidth = Theme.unit * 2)
+            }
         },
     )
 }

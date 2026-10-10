@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 바로 가기 아이콘 (02): 한지 빛 동그라미 위 먹선 하나 -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp" android:height="48dp" android:viewportWidth="48" android:viewportHeight="48">
+    <path android:fillColor="#FFF6F1E6" android:pathData="M24,2A22,22 0,1 1,23.99,2Z" />
+    <path android:fillColor="#FF8C8A74" android:pathData="M24,15C30.5,15 35,20 35,26C35,31 30.5,34 24,34C17.5,34 13,31 13,26C13,20 17.5,15 24,15Z" />
+    <path android:strokeColor="#FF33281F" android:strokeWidth="1.6" android:strokeLineCap="round" android:fillColor="#00000000"
+        android:pathData="M18.5,25.5Q20,27 21.5,25.5M26.5,25.5Q28,27 29.5,25.5" />
+</vector>

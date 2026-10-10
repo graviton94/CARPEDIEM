@@ -142,11 +142,63 @@ class DataTest {
         val list = Lines.add(Lines.add(emptyList(), a), a.copy(text = "두 번째"))
         assertEquals(1, list.size)
         val back = Lines.decode(Lines.encode(list + DayLine(d(2026, 10, 1), "그냥", null)))
-        assertEquals("오늘은 좋았다 정말", back[0].text)
+        assertEquals("오늘은 좋았다\n정말", back[0].text)   // 줄바꿈은 남고 탭은 빈칸
         assertEquals(Feeling.JOY, back[0].feeling)
         assertEquals(null, back[1].feeling)
         assertEquals("가나다", Lines.clean("  가나다라마  ", 3))
         assertEquals(emptyList(), Lines.decode(null))
+    }
+
+    @Test fun linesMoodAndSearch() {
+        val list = listOf(DayLine(d(2026, 9, 1), "산책", Feeling.CALM), DayLine(d(2026, 9, 2), "비", Feeling.SAD), DayLine(d(2026, 9, 3), "또 산책", Feeling.CALM),
+            DayLine(d(2026, 9, 4), "그냥", null, "mom"), DayLine(d(2026, 10, 1), "새 달", Feeling.JOY), DayLine(d(2026, 10, 4), "오늘 산책", Feeling.JOY))
+        assertEquals(Feeling.CALM, Lines.monthMood(list, 2026, 9))
+        assertEquals(null, Lines.monthMood(list, 2026, 8))
+        // 같은 수면 나중에 고른 마음
+        assertEquals(Feeling.SAD, Lines.monthMood(list.take(2), 2026, 9))
+        val names = mapOf(Feeling.CALM to "고요", Feeling.SAD to "슬픔", Feeling.JOY to "기쁨")
+        val find = { q: String -> Lines.search(list, q, d(2026, 10, 4), { names[it] ?: "" }, { if (it == "mom") "엄마" else null }).map { it.date.dayOfMonth } }
+        assertEquals(listOf(3, 1), find("산책"))     // 최근 것부터, 오늘 것은 빼고
+        assertEquals(listOf(2), find("슬픔"))
+        assertEquals(listOf(4), find("엄마"))
+        assertEquals(emptyList(), find("  "))
+    }
+
+    @Test fun firstWeekNudges() {
+        assertEquals(null, FirstWeek.next(0, emptySet()))            // 만난 날은 둘러보기만
+        assertEquals("breath", FirstWeek.next(1, emptySet()))
+        assertEquals("breath", FirstWeek.next(3, emptySet()))        // 놓친 것은 다음 날로
+        assertEquals("gaze", FirstWeek.next(5, setOf("breath", "stone")))
+        assertEquals(null, FirstWeek.next(4, setOf("breath", "stone")))  // 아직 오지 않은 날의 것은 기다림 (이틀에 하나)
+        assertEquals(null, FirstWeek.next(2, setOf("breath")))
+        assertEquals(null, FirstWeek.next(14, emptySet()))           // 둘째 주가 끝나면 그만
+    }
+
+    @Test fun linesEditAndRemove() {
+        val a = DayLine(d(2026, 10, 3), "어제", Feeling.CALM, "k3f9a2qz", 4); val b = DayLine(d(2026, 10, 4), "오늘", null)
+        val list = listOf(a, b)
+        // 고치면 글 · 마음만 바뀌고 받는 돌 · 질문은 그대로
+        assertEquals(listOf(a.copy(text = "어제는\n비", feeling = Feeling.SAD), b), Lines.edit(list, a.date, "어제는\n비", Feeling.SAD))
+        assertEquals(list, Lines.edit(list, d(2026, 10, 5), "없는 날", null))
+        // 지우면 그날은 빈 날 → 다시 쓸 수 있음
+        assertEquals(listOf(b), Lines.remove(list, a.date))
+        assertEquals(2, Lines.add(Lines.remove(list, a.date), a.copy(text = "다시")).size)
+    }
+
+    @Test fun linesKeepLineBreaks() {
+        // 여러 줄: 빈 줄 여럿은 하나로, 줄 끝 빈칸 없이, 최대 MAX_LINES 줄
+        assertEquals("첫 줄\n\n둘째 줄", Lines.clean("  첫 줄   \r\n\n\n\n둘째 줄\n\n", 60, Lines.MAX_LINES))
+        assertEquals("1\n2\n3\n4\n5", Lines.clean("1\n2\n3\n4\n5\n6\n7", 60, Lines.MAX_LINES))
+        assertEquals("가나\n다", Lines.clean("가나\n다라마", 4, Lines.MAX_LINES))   // 줄바꿈도 한 글자
+        // 한 줄 (기본): 예전처럼 줄바꿈을 빈칸으로
+        assertEquals("가 나", Lines.clean("가\n\u2028나", 60))
+        // 저장 · 읽기: 기록 하나는 한 줄 그대로, 글 안의 줄바꿈은 되살아남. 예전 기록 (줄바꿈 없음) 도 그대로
+        val l = DayLine(d(2026, 10, 4), "아침엔 비\n저녁엔 \\n 해", Feeling.CALM, "k3f9a2qz", 7)
+        val enc = Lines.encode(listOf(l, DayLine(d(2026, 10, 5), "그냥", null)))
+        assertEquals(2, enc.lines().size)
+        assertEquals(listOf(l, DayLine(d(2026, 10, 5), "그냥", null)), Lines.decode(enc))
+        assertEquals("예전 \\n 글", Lines.decode("20000\t-\t예전 \\n 글").single().text)
+        assertEquals("2026-10-04 · 고요 · 아침엔 비 / 저녁엔 \\n 해", Lines.export(listOf(l)) { "고요" })
     }
 
     @Test fun linesStreaksAndYearsAgo() {
@@ -373,7 +425,9 @@ class ReflectTest {
         val list = SpecialDays.put(SpecialDays.put(emptyList(), a), b)
         assertEquals(listOf(b, a), list)
         assertEquals(list, SpecialDays.decode(SpecialDays.encode(list)))
-        assertEquals("결혼", SpecialDays.put(list, a.copy(name = "결혼")).last().name)
+        // 같은 날에 다른 이름은 둘 다 남고, 같은 이름은 한 번만
+        assertEquals(listOf(b, a, a.copy(name = "결혼")), SpecialDays.put(list, a.copy(name = "결혼")))
+        assertEquals(list, SpecialDays.put(list, a))
         // 그 날이 든 달력 칸: 그날까지 지나온 단위 수
         assertEquals(22, LifeSnapshot(LocalDate.of(1998, 1, 15), 80.0, LocalDate.of(2020, 3, 2).atStartOfDay()).lived(LifeUnit.YEARS))
     }
@@ -509,4 +563,145 @@ class ChancesTest {
         assertEquals(Chance.BUTTERFLIES, Chances.onOpen(d(2026, 6, 3), Season.SUMMER, null, null, breaths, emptySet())?.first)
         assertEquals(null, Chances.onOpen(d(2026, 6, 3), Season.AUTUMN, null, null, breaths, emptySet()))
     }
+
+    @Test fun comfortOnlyAfterHeavyYesterdayOncePerDay() {
+        val today = d(2026, 10, 5)
+        val heavy = listOf(DayLine(d(2026, 10, 4), "걱정", Feeling.WORRY))
+        assertTrue(Comfort.due(heavy, today, null))
+        assertEquals(false, Comfort.due(heavy, today, today))
+        assertEquals(false, Comfort.due(heavy, today, today.minusDays(1)))   // 사흘에 한 번까지
+        assertTrue(Comfort.due(heavy, today, today.minusDays(3)))
+        assertEquals(false, Comfort.due(listOf(DayLine(d(2026, 10, 4), "좋아", Feeling.JOY)), today, null))
+        assertEquals(false, Comfort.due(listOf(DayLine(d(2026, 10, 3), "걱정", Feeling.WORRY)), today, null))
+    }
+    @Test fun seedsPlantAnswerAndRoundTrip() {
+        val day = d(2026, 10, 5)
+        var s = Seeds.plant(emptyList(), day, "  한 번 웃기 ")
+        assertEquals("한 번 웃기", Seeds.of(s, day)?.text)
+        s = Seeds.plant(s, day, "하늘 보기")   // 같은 날은 바꿔 심음
+        assertEquals(1, s.size); assertEquals(Seeds.toAsk(s, day)?.text, "하늘 보기")
+        assertEquals(s, Seeds.plant(s, day, "   "))
+        s = Seeds.answer(s, day, bloomed = true)
+        assertEquals(null, Seeds.toAsk(s, day)); assertEquals(1, Seeds.bloomed(s).size)
+        s = Seeds.plant(s, d(2026, 10, 6), "천천히 먹기").let { Seeds.answer(it, d(2026, 10, 6), bloomed = false) }
+        assertEquals(SeedState.RESTING, Seeds.of(s, d(2026, 10, 6))?.state); assertEquals(1, Seeds.bloomed(s).size)
+        assertEquals(s, Seeds.decode(Seeds.encode(s)))
+        assertEquals(24, Seeds.plant(emptyList(), day, "가".repeat(40)).first().text.length)
+        val c = Seeds.choices(10, day, 4); assertEquals(4, c.size); assertTrue(c.all { it in 0 until 10 })
+        assertNotEquals(c, Seeds.choices(10, day.plusDays(1), 4))
+    }
+    @Test fun breathCyclesAndTouchWave() {
+        val r = Breath.Rhythm(4.0, 7.0, 8.0, 0.0)
+        val plan = Breath.cycles(r, 2)
+        assertEquals(6, plan.size); assertEquals(38_000L, plan.last().let { it.startMs + it.lengthMs })
+        val (times, amps) = Breath.touchWave(plan, 0)
+        assertEquals(38_000L, times.sum()); assertEquals(times.size, amps.size)
+        assertTrue(amps.all { it in 0..255 })
+        // 들이쉼은 여리게 부풀고 (처음 < 끝), 머묾은 고요, 내쉼은 잦아들어 쉼으로
+        val first = amps.first(); assertTrue(amps.take(20).max() > first)
+        assertEquals(0, Breath.touchWave(plan, 5_000).second.first())
+        assertEquals(0, amps.last()); assertTrue(amps.max() <= 60, "여리게"); assertTrue(amps.filter { it > 0 }.min() >= 18, "느껴지는 바닥")
+        // 톡톡 두드리지 않음: 쉼에서 떨림으로 넘어가는 건 숨마다 (들이쉼 · 내쉼) 두 번까지
+        val starts = amps.indices.count { i -> amps[i] > 0 && (i == 0 || amps[i - 1] == 0) }; assertTrue(starts <= 4, "숨결: $starts")
+        // 세기는 한 칸씩 이어서 (갑자기 튀지 않음)
+        assertTrue(amps.indices.drop(1).all { i -> amps[i] == 0 || amps[i - 1] == 0 || kotlin.math.abs(amps[i] - amps[i - 1]) <= 6 })
+        // 한숨 호흡: 첫 들이쉼 0 → 0.75, 한 번 더 0.75 → 1, 그다음 내쉼
+        val sigh = Breath.cycles(Breath.Rhythm(2.0, 0.0, 6.0, 0.0, topS = 1.0), 1)
+        assertEquals(listOf(BreathStep.IN, BreathStep.IN, BreathStep.OUT), sigh.map { it.step }); assertEquals(9_000L, sigh.last().let { it.startMs + it.lengthMs })
+        assertEquals(Breath.FIRST_SIP, Breath.fullness(sigh[0], 1f), 1e-4f); assertEquals(1f, Breath.fullness(sigh[1], 1f), 1e-4f)
+        // 중간부터: 남은 길이만큼
+        assertEquals(38_000L - 20_000L, Breath.touchWave(plan, 20_000).first.sum())
+    }
+
+    @Test fun capsulesBuryOpenOnTheDay() {
+        val today = d(2026, 10, 4); val birth = d(2000, 5, 12)
+        assertEquals(d(2027, 5, 12), Capsules.opensOn(CapsuleWhen.BIRTHDAY, today, birth))
+        assertEquals(d(2027, 5, 12), Capsules.opensOn(CapsuleWhen.BIRTHDAY, d(2026, 5, 12), birth))   // 생일 당일이면 내년
+        assertEquals(d(2027, 10, 4), Capsules.opensOn(CapsuleWhen.YEAR, today, birth))
+        var l = Capsules.bury(emptyList(), today, d(2027, 5, 12), "1년 뒤의 너에게\n잘 지내?")
+        assertEquals(l, Capsules.bury(l, today, today, "오늘 열림은 안 됨"))
+        assertEquals(1, Capsules.sealed(l, today).size); assertEquals(null, Capsules.due(l, d(2027, 5, 11)))
+        val c = Capsules.due(l, d(2027, 5, 12))!!
+        assertEquals("1년 뒤의 너에게\n잘 지내?", c.text)
+        l = Capsules.open(l, c)
+        assertEquals(null, Capsules.due(l, d(2027, 6, 1))); assertEquals(1, Capsules.openedOnes(l).size)
+        assertEquals(l, Capsules.decode(Capsules.encode(l)))
+    }
+    @Test fun ringsTwelveMonthsOfMood() {
+        val birth = d(2000, 5, 12)
+        val lines = listOf(DayLine(d(2025, 5, 20), "a", Feeling.JOY), DayLine(d(2025, 5, 21), "b", Feeling.JOY), DayLine(d(2025, 6, 1), "c", Feeling.SAD),
+            DayLine(d(2026, 5, 11), "d", Feeling.THANKS), DayLine(d(2026, 5, 12), "e", Feeling.CALM))
+        val r = Rings.of(birth, 26, lines)
+        assertEquals(d(2025, 5, 12), r.start); assertEquals(d(2026, 5, 11), r.end)
+        assertEquals(12, r.months.size); assertEquals(Feeling.JOY, r.months[0]); assertEquals(Feeling.THANKS, r.months[11])
+        assertEquals(4, r.lines); assertEquals(1, r.thanks); assertEquals(Feeling.JOY, r.top); assertTrue(r.pick?.feeling != Feeling.SAD)
+        assertEquals(26, Rings.newToday(birth, d(2026, 5, 12), lines))
+        assertEquals(null, Rings.newToday(birth, d(2026, 5, 13), lines))
+        assertEquals(listOf(27, 26), Rings.done(birth, d(2027, 6, 1), lines))
+    }
+
+    @Test fun paceKeepsPromptsRare() {
+        val today = d(2026, 10, 10)
+        assertTrue(Pace.seed(today, null, false))
+        assertEquals(false, Pace.seed(today, today.minusDays(2), true))
+        assertTrue(Pace.seed(today, today.minusDays(3), true))
+        assertEquals(false, Pace.seed(today, today.minusDays(5), false))   // 심지 않고 지나갔으면 일주일 쉼
+        assertTrue(Pace.seed(today, today.minusDays(7), false))
+        val month = (0 until 30).count { Pace.morningBreath(today.plusDays(it.toLong())) }
+        assertEquals(10, month)
+        assertEquals(false, Pace.gap(today.minusDays(1), today, Pace.CARE_GAP))
+    }
+
+    @Test fun guestsComeOnRandomDaysNotForBeingAway() {
+        val start = d(2026, 1, 1)
+        val year = (0 until 365).map { Guests.on(start.plusDays(it.toLong()), 42L) }
+        val visits = year.filterNotNull()
+        assertTrue(visits.size in 18..45)                                // 쪽지 없는 날: 평균 열이틀에 한 번쯤
+        assertTrue(visits.all { it in Guests.COMMON || it in Guests.RARE })
+        assertTrue(visits.count { it in Guests.RARE } in 1 until visits.size / 2)
+        assertEquals(year, (0 until 365).map { Guests.on(start.plusDays(it.toLong()), 42L) })   // 같은 날은 늘 같은 손님
+        assertTrue(year != (0 until 365).map { Guests.on(start.plusDays(it.toLong()), 7L) })   // 사람마다 다른 날
+        assertEquals(Guests.pick(start, 42L), Guests.pick(start, 42L))
+    }
+
+    @Test fun creditsFitSixtyToEightySeconds() {
+        val empty = Credits.plan(emptyList(), 2026)
+        assertEquals(7, empty.size); assertTrue(Credits.total(empty) in 60_000L..80_000L)
+        // 달 순서: 1–2월 겨울이 맨 앞, 12월 겨울이 맨 끝
+        assertEquals(listOf(1..2, 3..5, 6..8, 9..11, 12..12), empty.filter { it.part == CreditPart.SEASON }.map { it.months })
+        val many = (0 until 365).map { DayLine(d(2026, 1, 1).plusDays(it.toLong()), "줄 $it", Feeling.entries[it % Feeling.entries.size]) }
+        val mom = Person("m", "엄마", Kind.PERSON, birth = d(1964, 4, 2), seed = 1, metOn = d(2026, 1, 1))
+        val pet = Person("p", "콩이", Kind.PET, Species.DOG, d(2023, 6, 1), seed = 2, metOn = d(2026, 1, 1))
+        val ev = Credits.events(2026, many, d(2000, 5, 12), listOf(mom, pet), listOf(SpecialDay(d(2020, 9, 9), "첫 출근")), listOf("rainbow:2026-07-03", "guest_owl:2026-11-20", "snail:2025-01-01"),
+            listOf(Seed(d(2026, 3, 3), "웃기", SeedState.BLOOMED)), emptyList(), d(2026, 2, 1))
+        assertTrue(ev.any { it.kind == CreditKind.BIRTHDAY && it.a == "엄마" && it.date == d(2026, 4, 2) })
+        assertTrue(ev.any { it.kind == CreditKind.MY_BIRTHDAY && it.b == "26" })
+        assertTrue(ev.any { it.kind == CreditKind.TOGETHER_YEARS && it.a == "콩이" && it.b == "3" && it.date == d(2026, 6, 1) })
+        assertTrue(ev.any { it.kind == CreditKind.TOGETHER_DAYS && it.a == "콩이" && it.b == "1000" })
+        assertTrue(ev.any { it.kind == CreditKind.SPECIAL && it.b == "6" })
+        assertEquals(2, ev.count { it.kind == CreditKind.MOMENT }); assertTrue(ev.any { it.kind == CreditKind.FIRST })
+        val full = Credits.plan(ev, 2026)
+        assertTrue(Credits.total(full) in 60_000L..80_000L)
+        full.filter { it.part == CreditPart.SEASON }.forEach { sc ->
+            assertTrue(sc.items.size <= Credits.PER_SEASON); assertTrue(sc.items.isNotEmpty())
+            assertTrue(sc.items.all { it.date.monthValue in sc.months })
+            assertEquals(sc.items.sortedBy { it.date }, sc.items)
+            assertTrue(sc.items.any { it.kind == CreditKind.LINE })
+            assertEquals(sc.items.first(), sc.itemAt(sc.startMs + Credits.HEADER_MS)?.first); assertEquals(null, sc.itemAt(sc.startMs))
+        }
+        assertTrue(full.first { it.season == Season.SPRING }.items.any { it.kind == CreditKind.BIRTHDAY })
+        assertEquals(CreditPart.INTRO, Credits.at(full, 0)?.part); assertEquals(null, Credits.at(full, Credits.total(full)))
+        assertTrue(Credits.milestone(1000)); assertTrue(Credits.milestone(100)); assertEquals(false, Credits.milestone(400))
+    }
+
+    @Test fun recentFeelingsForMiniHaru() {
+        val today = d(2026, 10, 10)
+        val l = listOf(DayLine(d(2026, 10, 3), "8일 전", Feeling.SAD), DayLine(d(2026, 10, 4), "a", Feeling.CALM), DayLine(d(2026, 10, 5), "b", Feeling.JOY),
+            DayLine(d(2026, 10, 6), "c", Feeling.CALM), DayLine(d(2026, 10, 7), "d", Feeling.WORRY), DayLine(d(2026, 10, 8), "e", null),
+            DayLine(d(2026, 10, 9), "f", Feeling.THANKS), DayLine(d(2026, 10, 11), "내일", Feeling.HOPE))
+        // 평온 둘이 먼저, 그다음 같은 하나씩은 최근 것부터 (고마움 9일 · 불안 7일), 기쁨은 넷째라 빠짐 · 일주일 전 · 내일 · 마음 없는 줄은 세지 않음
+        assertEquals(listOf(Feeling.CALM, Feeling.THANKS, Feeling.WORRY), Lines.recentFeelings(l, today))
+        assertEquals(emptyList<Feeling>(), Lines.recentFeelings(emptyList(), today))
+    }
+
 }
