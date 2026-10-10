@@ -292,7 +292,7 @@ fun CloseDayScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, on
             CloseStep.THANKS -> ShortBreath(state, BreathKind.THANKS, 3, R.string.closeDay_thanksTitle) { step = CloseStep.LANTERN }
             CloseStep.LANTERN -> ShortBreath(state, BreathKind.SLEEP, 2, R.string.closeDay_lanternTitle) { state.recordBreath(BreathKind.SLEEP, today); step = CloseStep.END }
             CloseStep.END -> EndStep { step = CloseStep.DARK }
-            CloseStep.DARK -> DarkStep(finish)
+            CloseStep.DARK -> DarkStep { state.maybeAskReview(today); finish() }
         }
         // 걸음 셋 + 여기까지
         if (step.ordinal <= CloseStep.LANTERN.ordinal) Row(
@@ -618,6 +618,40 @@ internal fun SlipSheet(state: AppState, line: io.github.graviton94.carpediem.cor
             TokenText(line.text, Tokens.TypeScale.headline.serif())
             Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) { WeatheredPhoto(state, line.date, today, Theme.unit * 160f) }
             GardenButton(stringResource(io.github.graviton94.carpediem.R.string.slip_record), onRecord, filled = false, seed = 1431, paper = true)
+            TokenText(stringResource(io.github.graviton94.carpediem.R.string.collect_close), Tokens.TypeScale.footnote,
+                Modifier.fillMaxWidth().heightIn(min = Tokens.Layout.tapTarget).clickable(onClick = onClose).padding(vertical = Tokens.Space.sp3), color = p.secondary, align = TextAlign.Center)
+        }
+    }
+}
+
+
+/**
+ * 기념일 편지 (1.1.5, 평생 두 번): 만든 사람이 건네는 짧은 감사. 손님 쪽지와 같은 한지 · 글꼴.
+ * 응원은 끝에 한 줄 링크로만 (이미 응원했으면 ‘늘 고마워요.’ 로 끝나고 링크 없음).
+ */
+@OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
+@Composable
+internal fun AnniversarySheet(state: AppState, which: String, onSupport: () -> Unit, onClose: () -> Unit) {
+    val ctx = LocalContext.current
+    val p = Theme.palette
+    val year = which == "year"
+    androidx.compose.material3.ModalBottomSheet(onDismissRequest = onClose, containerColor = Theme.gc.paper,
+        sheetState = androidx.compose.material3.rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
+        Column(
+            Modifier.fillMaxWidth().verticalScroll(androidx.compose.foundation.rememberScrollState()).padding(horizontal = Theme.deviceClass.pageMargin)
+                .navigationBarsPadding().padding(bottom = Tokens.Space.sp8),
+            verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3),
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
+                PieceImage(GardenArt.card(ctx, "slip"), Theme.unit * 52f)
+                TokenText(stringResource(if (year) io.github.graviton94.carpediem.R.string.anniv_titleYear else io.github.graviton94.carpediem.R.string.anniv_title100), Tokens.TypeScale.title3.serif())
+            }
+            CrayonRule(seed = 1470)
+            TokenText(stringResource(if (year) io.github.graviton94.carpediem.R.string.anniv_bodyYear else io.github.graviton94.carpediem.R.string.anniv_body100), Tokens.TypeScale.callout.serif())
+            TokenText(stringResource(io.github.graviton94.carpediem.R.string.anniv_sign), Tokens.TypeScale.footnote.serif(), Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.End)
+            if (state.supportMarks.isEmpty()) TokenText(stringResource(io.github.graviton94.carpediem.R.string.anniv_support), Tokens.TypeScale.footnote,
+                Modifier.fillMaxWidth().heightIn(min = Tokens.Layout.tapTarget).clickable(onClick = onSupport).padding(vertical = Tokens.Space.sp3), color = p.olive, weight = FontWeight.SemiBold, align = TextAlign.Center)
+            else TokenText(stringResource(io.github.graviton94.carpediem.R.string.anniv_thanks), Tokens.TypeScale.footnote.serif(), Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.Center)
             TokenText(stringResource(io.github.graviton94.carpediem.R.string.collect_close), Tokens.TypeScale.footnote,
                 Modifier.fillMaxWidth().heightIn(min = Tokens.Layout.tapTarget).clickable(onClick = onClose).padding(vertical = Tokens.Space.sp3), color = p.secondary, align = TextAlign.Center)
         }

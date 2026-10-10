@@ -82,6 +82,8 @@ dependencies {
     implementation("androidx.work:work-runtime-ktx:2.10.0")
     // 새 버전 알림 (Play 앱 안 업데이트, 가벼운 방식만)
     implementation("com.google.android.play:app-update-ktx:2.1.0")
+    // 앱 안에서 별점 남기기 (구글 공식 창, 1.1.5)
+    implementation("com.google.android.play:review-ktx:2.0.2")
     // app-update 가 끌어오는 오래된 Fragment 대신 (앱 결과 API 를 쓰려면 1.3 이상)
     implementation("androidx.fragment:fragment-ktx:1.8.5")
 }

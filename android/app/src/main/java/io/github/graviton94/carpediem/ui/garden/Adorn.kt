@@ -43,9 +43,10 @@ import io.github.graviton94.carpediem.ui.TokenText
 /** 꾸밈 하나의 그림 (계절 조각과 같은 한지 조각, 같은 상자). */
 internal fun adornArt(ctx: Context, item: String): ImageBitmap? = when {
     item.startsWith("card:") -> SeasonCard.parse(item.removePrefix("card:"))?.let { GardenArt.card(ctx, it.key) }
-    item == "support:support_tea" -> GardenArt.card(ctx, "tea")
-    item == "support:support_coffee" -> GardenArt.card(ctx, "coffee")
-    item == "support:support_cake" -> GardenArt.card(ctx, "cake")
+    // 같은 응원을 여러 번 하면 support_coffee#2 처럼 (그림 · 이름은 같음)
+    item.startsWith("support:support_tea") -> GardenArt.card(ctx, "tea")
+    item.startsWith("support:support_coffee") -> GardenArt.card(ctx, "coffee")
+    item.startsWith("support:support_cake") -> GardenArt.card(ctx, "cake")
     item.startsWith("pebble:") -> GardenArt.card(ctx, "pebble")
     else -> null
 }
@@ -66,9 +67,9 @@ private const val PIECE_LIFT = 0.34f
 /** 꾸밈 이름 (예: ‘가을 은행잎’ · ‘커피’ · ‘조약돌’). */
 internal fun adornName(ctx: Context, item: String): String = when {
     item.startsWith("card:") -> SeasonCard.parse(item.removePrefix("card:"))?.let { c -> ctx.getString(R.string.adorn_card, Labels.season(ctx, c.season), cardName(ctx, c.key)) } ?: ""
-    item == "support:support_tea" -> ctx.getString(R.string.support_mark1)
-    item == "support:support_coffee" -> ctx.getString(R.string.support_mark2)
-    item == "support:support_cake" -> ctx.getString(R.string.support_mark3)
+    item.startsWith("support:support_tea") -> ctx.getString(R.string.support_mark1)
+    item.startsWith("support:support_coffee") -> ctx.getString(R.string.support_mark2)
+    item.startsWith("support:support_cake") -> ctx.getString(R.string.support_mark3)
     item.startsWith("pebble:") -> ctx.getString(R.string.adorn_pebble)
     else -> ""
 }

@@ -123,6 +123,8 @@ private fun stepName(s: BreathStep) = when (s) { BreathStep.IN -> R.string.breat
 /** 손끝 숨에서 화면이 어두워지기까지 (ms). */
 /** 말로 안내하는 숨 (처음 세 숨, 그다음은 종소리와 하루의 움직임만) · 마지막 말이 스르르 사라지는 시간. */
 private const val CUE_BREATHS = 3
+/** 숨을 마치고 리뷰 창을 청하기까지 (끝 한마디를 먼저 읽게). */
+private const val REVIEW_AFTER_BREATH_MS = 4000L
 private const val CUE_OUT_MS = 1500
 
 internal fun isNight(now: LocalDateTime) = now.hour >= G.Breath.nightFrom.toInt() || now.hour < G.Motion.sunrise.toInt()
@@ -243,6 +245,8 @@ fun BreathScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, kind
             if (elapsed >= total) { done = true; touch?.stop(); state.recordBreath(kind); if (sound != Sound.NONE) Soundscape.bowl(S.bowlOutHz.toDouble(), 2); player.stop() }
         }
     }
+    // 숨을 끝까지 쉬었으면 (잠드는 밤 숨은 빼고): 조금 머문 뒤 Play 리뷰 창을 청할 수도 (넉 달에 한 번까지)
+    LaunchedEffect(done) { if (done && !sleepAfter && elapsed >= total) { delay(REVIEW_AFTER_BREATH_MS); state.maybeAskReview() } }
     // 매 프레임 바뀌는 값 (elapsed) 은 그리는 단계에서만 읽음: 화면은 단계가 바뀔 때만 다시 짜임
     val step by remember(plan) { androidx.compose.runtime.derivedStateOf { Breath.at(plan, elapsed)?.first?.step } }
     // 말 안내는 처음 세 숨까지 (네 번째 숨이 시작되면 말 없이)

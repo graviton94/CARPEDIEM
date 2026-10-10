@@ -294,16 +294,30 @@ fun SupportScreen(state: AppState, now: LocalDateTime, onBack: () -> Unit) {
             verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp4),
         ) {
             PageBar(stringResource(R.string.support), onBack)
+            // 고르고 → 아래 버튼으로 결제 (누르자마자 결제 창이 뜨지 않게). 처음엔 가운데 (커피)
+            var picked by rememberSaveable { mutableStateOf(1) }
             val img = GardenArt.support(ctx)
+            // 미리 놓아 보기 (1.1.5): 고른 응원이 하루 왼쪽 발치에 놓인 모습 (아직 놓인 건 아니라 살짝 반짝임)
+            val shimmer = androidx.compose.animation.core.rememberInfiniteTransition(label = "preview").animateFloat(PREVIEW_ALPHA_LOW, 1f,
+                androidx.compose.animation.core.infiniteRepeatable(androidx.compose.animation.core.tween(PREVIEW_PULSE_MS), androidx.compose.animation.core.RepeatMode.Reverse), label = "previewAlpha")
             BoxWithConstraints(Modifier.fillMaxWidth().aspectRatio(img.width / img.height.toFloat()).crayonBox(null, G.Radius.box, G.Stroke.box, seed = 910)) {
                 Image(img, null, Modifier.fillMaxSize().padding(G.Stroke.box.let { Theme.unit * it }), contentScale = ContentScale.Crop)
                 val scale = maxWidth * (G.Layout.supportHaru / G.Layout.haruArtWidth)
-                Haru(load, scale, Modifier.offset(maxWidth / 2 - scale * (G.Layout.haruBox / 2), maxHeight * G.Layout.supportGround - scale * G.Layout.haruGround))
+                val groundY = maxHeight * G.Layout.supportGround
+                Haru(load, scale, Modifier.offset(maxWidth / 2 - scale * (G.Layout.haruBox / 2), groundY - scale * G.Layout.haruGround))
+                val pw = maxWidth * PREVIEW_PIECE
+                val haruHalf = scale * ((load.art?.meta?.bbox?.width ?: G.Layout.haruBox) / 2)
+                val pieceImg = remember(picked) { GardenArt.card(ctx, when (picked) { 0 -> "tea"; 1 -> "coffee"; else -> "cake" }) }
+                PieceImage(pieceImg, pw, Modifier.offset(maxWidth / 2 - haruHalf - pw * 0.55f, groundY - pw * 0.8f).graphicsLayer { alpha = shimmer.value })
             }
+            // 미리 보기 한 줄: 처음이면 내 하루 곁에, 이미 같은 응원을 했으면 다른 돌 곁에도 하나 더 둘 수 있다고
+            val pickedId = io.github.graviton94.carpediem.billing.Support.IDS[picked]
+            val itemName = stringResource(when (picked) { 0 -> R.string.support_mark1; 1 -> R.string.support_mark2; else -> R.string.support_mark3 })
+            val other = state.people.firstOrNull()?.name
+            TokenText(if (state.supportCount(pickedId) > 0 && other != null) stringResource(R.string.support_previewMore, other, itemName) else stringResource(R.string.support_preview, itemName),
+                Tokens.TypeScale.footnote, Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.Center)
             TokenText(stringResource(R.string.support_title), Tokens.TypeScale.title3.serif(), Modifier.fillMaxWidth(), align = TextAlign.Center)
             TokenText(stringResource(R.string.support_body), Tokens.TypeScale.callout, Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.Center)
-            // 고르고 → 아래 버튼으로 결제 (누르자마자 결제 창이 뜨지 않게). 처음엔 가운데 (커피)
-            var picked by rememberSaveable { mutableStateOf(1) }
             val tiers = listOf(
                 Triple(R.string.support_tier1, R.string.support_tier1_price, R.string.support_tier1_note),
                 Triple(R.string.support_tier2, R.string.support_tier2_price, R.string.support_tier2_note),
@@ -348,6 +362,11 @@ fun SupportScreen(state: AppState, now: LocalDateTime, onBack: () -> Unit) {
         }
     }
 }
+
+/** 미리 놓아 보기: 조각 크기 (그림 폭에 대한) · 반짝임 (가장 옅을 때 · 한 번 숨). */
+private const val PREVIEW_PIECE = 0.16f
+private const val PREVIEW_ALPHA_LOW = 0.6f
+private const val PREVIEW_PULSE_MS = 1400
 
 /** 응원 한 가지의 그림: 0 차 한 잔 · 1 커피 한 잔 · 2 케이크 한 조각 (정원의 계절 조각과 같은 한지 조각, 돌 곁 꾸밈으로도 쓰임). */
 @Composable

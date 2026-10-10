@@ -22,6 +22,16 @@
     <string name="adorn_label">%1$s身旁的%2$s</string>
     <string name="support_invite">已經和小日累積了%1$s段回憶・支持</string>
     <string name="support_thanksItem">謝謝你。\n%1$s來到了花園，可以放在石頭旁。</string>
+    <string name="support_preview">這是%1$s放在小日身邊的樣子（預覽）</string>
+    <string name="support_previewMore">再一份，就能在%1$s身邊也放上%2$s（預覽）</string>
+    <string name="anniv_note">做這座庭院的人留了一張紙條</string>
+    <string name="anniv_title100">第一百句話</string>
+    <string name="anniv_titleYear">和小日相遇一年</string>
+    <string name="anniv_body100">今天，你和小日留下了一百句話。\n開心的日子、平淡的日子、沉重的日子，\n謝謝你把它們交給這座小小的庭院。\n\n這座庭院由一個人慢慢做著。\n往後也會安靜地、長久地陪在你身邊。</string>
+    <string name="anniv_bodyYear">和小日相遇已經一年了。\n春、夏、秋、冬，我們一起走過。\n庭院的樹和小日，也跟著長大了。\n\n這座庭院由一個人慢慢做著。\n下一年，也會安靜地陪在你身邊。</string>
+    <string name="anniv_sign">— 做這座庭院的人</string>
+    <string name="anniv_support">用一杯茶支持</string>
+    <string name="anniv_thanks">一直都很感謝你。</string>
     <string name="support_markLabel">%1$s，謝意留下的%2$s</string>
     <string name="support_mark1">茶</string>
     <string name="support_mark2">咖啡</string>

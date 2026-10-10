@@ -22,6 +22,16 @@
     <string name="adorn_label">%2$s beside %1$s</string>
     <string name="support_invite">%1$s memories with Haru already · Support</string>
     <string name="support_thanksItem">Thank you.\n%1$s has arrived in the garden. Place it beside a stone.</string>
+    <string name="support_preview">This is how %1$s would sit beside Haru (preview)</string>
+    <string name="support_previewMore">One more and %2$s can sit beside %1$s too (preview)</string>
+    <string name="anniv_note">The person who makes this garden left you a note</string>
+    <string name="anniv_title100">Your hundredth line</string>
+    <string name="anniv_titleYear">A year with Haru</string>
+    <string name="anniv_body100">You have now left a hundred lines with Haru.\nThe happy days, the so-so days, the heavy days —\nthank you for trusting them to this small garden.\n\nOne person is making this garden, slowly.\nIt will stay beside you, quietly, for a long time.</string>
+    <string name="anniv_bodyYear">It has been a year since you met Haru.\nSpring, summer, autumn and winter, together.\nThe garden tree and Haru have grown with you.\n\nOne person is making this garden, slowly.\nIt will stay beside you through the next year too.</string>
+    <string name="anniv_sign">— the person who makes this garden</string>
+    <string name="anniv_support">Support with a cup of tea</string>
+    <string name="anniv_thanks">Thank you, always.</string>
     <string name="support_markLabel">%1$s · %2$s, left with thanks</string>
     <string name="support_mark1">tea</string>
     <string name="support_mark2">coffee</string>

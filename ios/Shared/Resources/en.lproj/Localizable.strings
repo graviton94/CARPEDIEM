@@ -20,6 +20,16 @@
 "adorn.label" = "%2$@ beside %1$@";
 "support.invite" = "%1$@ memories with Haru already · Support";
 "support.thanksItem" = "Thank you.\n%1$@ has arrived in the garden. Place it beside a stone.";
+"support.preview" = "This is how %1$@ would sit beside Haru (preview)";
+"support.previewMore" = "One more and %2$@ can sit beside %1$@ too (preview)";
+"anniv.note" = "The person who makes this garden left you a note";
+"anniv.title100" = "Your hundredth line";
+"anniv.titleYear" = "A year with Haru";
+"anniv.body100" = "You have now left a hundred lines with Haru.\nThe happy days, the so-so days, the heavy days —\nthank you for trusting them to this small garden.\n\nOne person is making this garden, slowly.\nIt will stay beside you, quietly, for a long time.";
+"anniv.bodyYear" = "It has been a year since you met Haru.\nSpring, summer, autumn and winter, together.\nThe garden tree and Haru have grown with you.\n\nOne person is making this garden, slowly.\nIt will stay beside you through the next year too.";
+"anniv.sign" = "— the person who makes this garden";
+"anniv.support" = "Support with a cup of tea";
+"anniv.thanks" = "Thank you, always.";
 "support.markLabel" = "%1$@ · %2$@, left with thanks";
 "support.mark1" = "tea";
 "support.mark2" = "coffee";

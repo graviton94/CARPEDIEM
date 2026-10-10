@@ -16,7 +16,7 @@ open() { adb shell am force-stop $P; adb shell am start -W -n $P/.MainActivity "
 wantany() { local n; for n in "$@"; do want "$n" && return 0; done; return 1; }
 want() { [ -z "${ONLY:-}" ] && return 0; case " $ONLY " in *" ${1%%_*} "*) return 0;; esac; return 1; }
 # 보기만 바꾸는 옵션 (폰에 남는 상태가 없음): ONLY 로 고른 장면이 아니면 이런 장면은 열지도 않고 건너뜀 (앱을 껐다 켜는 시간 · 느린 에뮬레이터 멈춤을 아낌)
-VIEW=" cd.now cd.screen cd.page cd.stoneId cd.chance cd.term cd.title cd.openMonth cd.openYear cd.openLetter cd.adornSheet cd.care cd.guest cd.news cd.update cd.creditsYear cd.slip cd.sleepSheet "
+VIEW=" cd.now cd.screen cd.page cd.stoneId cd.chance cd.term cd.title cd.openMonth cd.openYear cd.openLetter cd.adornSheet cd.care cd.guest cd.news cd.update cd.creditsYear cd.slip cd.sleepSheet cd.letterNote "
 # s 장면 기다릴초 [열기 옵션…]: 고른 장면이면 열고 찍음. 아니면 상태를 바꾸는 옵션이 있을 때만 열어 두고 (다음 장면이 기대니까), 보기만 하는 장면은 건너뜀
 s() { local n=$1 w=$2 a; shift 2
   if want "$n"; then open "$@"; shot "$n" "$w"; return; fi
@@ -142,6 +142,12 @@ s a03_adorn_sheet 5 --es cd.screen stone --es cd.stoneId mom00001 --ez cd.adornS
 open --ez cd.recall true --es cd.now 2026-10-04T10:00; sleep 5
 s a04_slip_letter 8 --ez cd.recall true --ez cd.slip true --es cd.now 2026-10-04T10:00
 s a05_support 5 --es cd.screen support --es cd.now 2026-10-05T15:00
+# 1.1.5 응원: 같은 응원 두 번 → 커피 두 잔 (엄마 곁 고르기에 따로) · 응원 페이지 미리 보기 (이미 커피를 응원한 사람)
+s a07_adorn_two 6 --ez cd.family true --es cd.supported support_coffee,support_coffee --es cd.screen stone --es cd.stoneId mom00001 --ez cd.adornSheet true --es cd.now 2026-10-05T15:00
+s a08_support_preview 5 --es cd.screen support --es cd.now 2026-10-05T15:00
+# 기념일 편지 (백 번째 한 줄 · 만난 지 1년)
+s a09_anniv_100 6 --es cd.letterNote 100 --es cd.now 2026-10-05T10:00
+s a10_anniv_year 6 --es cd.letterNote year --es cd.now 2026-10-05T10:00
 # 화면이 짧은 폰 (세 버튼 내비게이션 등): 땅이 탭 위까지 이어지는지 · 권유 쪽지의 ×
 if wantany a06_short_ground; then adb shell wm size 1080x2100; open --ez cd.reset true --es cd.design garden --el cd.seed 2718281 --es cd.birth 2000-05-12 --es cd.sex female --ez cd.meet false --es cd.update available --es cd.now 2026-10-05T15:00; shot a06_short_ground 8; adb shell wm size reset; fi
 open --ez cd.reset true --es cd.design garden --el cd.seed 2718281 --es cd.birth 2000-05-12 --es cd.sex female --ez cd.meet false --es cd.now $NOW; sleep 6

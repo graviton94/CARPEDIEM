@@ -99,6 +99,13 @@ class MainActivity : ComponentActivity() {
     private var updateInfo: com.google.android.play.core.appupdate.AppUpdateInfo? = null
     private val updateFlow = registerForActivityResult(androidx.activity.result.contract.ActivityResultContracts.StartIntentSenderForResult()) { }
     private var updateListener: com.google.android.play.core.install.InstallStateUpdatedListener? = null
+    /** Play 리뷰 창 (구글 공식, 앞에 묻는 말 없이). 실제로 떴는지 · 남겼는지는 앱이 알 수 없음. */
+    private fun askReview() {
+        runCatching {
+            val m = com.google.android.play.core.review.ReviewManagerFactory.create(this)
+            m.requestReviewFlow().addOnCompleteListener { t -> if (t.isSuccessful && !isFinishing) runCatching { m.launchReviewFlow(this, t.result) } }
+        }
+    }
     private fun checkUpdate(state: AppState) {
         val m = updates ?: return
         runCatching {
@@ -191,6 +198,8 @@ class MainActivity : ComponentActivity() {
                     var homeEpoch by remember { mutableStateOf(0) }
                     var title by remember { mutableStateOf(firstTitle) }
                     androidx.compose.runtime.SideEffect { if (state.titleUp != title) state.titleUp = title; io.github.graviton94.carpediem.ui.garden.GardenPause.on = title }
+                    // 마음이 좋은 순간에 청한 리뷰 창: 한숨 돌린 뒤 (캡처 스크립트에서는 띄우지 않음)
+                    LaunchedEffect(state.reviewAsk) { if (state.reviewAsk) { state.reviewAsk = false; if (!scripted) { delay(REVIEW_DELAY_MS); askReview() } } }
                     LaunchedEffect(newOpen) {
                         val x = newOpen ?: return@LaunchedEffect
                         newOpen = null
@@ -383,6 +392,7 @@ private fun MainActivity.debugSetup(state: AppState): Screen {
     x.getStringExtra("cd.supported")?.split(',')?.forEach { state.supported(it) }
     state.debugAdornSheet = x.getBooleanExtra("cd.adornSheet", false)
     state.debugSleepSheet = x.getBooleanExtra("cd.sleepSheet", false)
+    state.debugLetter = x.getStringExtra("cd.letterNote")
     if (x.getBooleanExtra("cd.news", false)) state.whatsNew = io.github.graviton94.carpediem.ui.Changelog.entries.first().first
     x.getStringExtra("cd.update")?.let { u -> state.update = when (u) { "ready" -> AppState.UpdateState.READY; "downloading" -> AppState.UpdateState.DOWNLOADING; else -> AppState.UpdateState.AVAILABLE }; state.updateVersion = 999 }
     state.debugSlip = x.getBooleanExtra("cd.slip", false)
@@ -467,3 +477,6 @@ private fun openFrom(open: String?, state: AppState): Screen? {
     }
     return null
 }
+
+/** 리뷰 창을 청한 뒤 띄우기까지 (한 줄이 날아가는 모습 · 끝 한마디를 먼저 보게). */
+private const val REVIEW_DELAY_MS = 2500L

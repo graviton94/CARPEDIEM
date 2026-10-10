@@ -286,6 +286,18 @@ class Store(context: Context) {
     var pendingOn: LocalDate?
         get() = prefs.getLong("pendingOn", Long.MIN_VALUE).takeIf { it != Long.MIN_VALUE }?.let { LocalDate.ofEpochDay(it) }
         set(v) = prefs.edit().putLong("pendingOn", v?.toEpochDay() ?: Long.MIN_VALUE).apply()
+    /** 권유 (리뷰 · 응원 권유 · 기념일 편지) 를 마지막으로 꺼낸 날: 한 주에 하나만. */
+    var lastNudgeOn: LocalDate?
+        get() = prefs.getLong("lastNudgeOn", Long.MIN_VALUE).takeIf { it != Long.MIN_VALUE }?.let { LocalDate.ofEpochDay(it) }
+        set(v) = prefs.edit().putLong("lastNudgeOn", v?.toEpochDay() ?: Long.MIN_VALUE).apply()
+    /** Play 리뷰 창을 마지막으로 청한 날 (실제로 떴는지는 앱이 알 수 없음). */
+    var reviewAskedOn: LocalDate?
+        get() = prefs.getLong("reviewAskedOn", Long.MIN_VALUE).takeIf { it != Long.MIN_VALUE }?.let { LocalDate.ofEpochDay(it) }
+        set(v) = prefs.edit().putLong("reviewAskedOn", v?.toEpochDay() ?: Long.MIN_VALUE).apply()
+    /** 기념일 편지 (평생 두 번: "100" 백 번째 한 줄 · "year" 만난 지 1년) 를 받은 것. */
+    var lettersGot: Set<String>
+        get() = prefs.getStringSet("anniversaryLetters", emptySet()) ?: emptySet()
+        set(v) = prefs.edit().putStringSet("anniversaryLetters", v).apply()
     /** 돌멍하기 잠들기: 마지막에 고른 분 (처음엔 20분). */
     var sleepMinutes: Int
         get() = prefs.getInt("sleepMinutes", 20)

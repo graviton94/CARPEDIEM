@@ -22,6 +22,16 @@
     <string name="adorn_label">%1$s 곁의 %2$s</string>
     <string name="support_invite">벌써 하루와 %1$s번의 추억을 쌓았어요 · 응원하기</string>
     <string name="support_thanksItem">고마워요.\n%1$s이 정원에 왔어요. 돌 곁에 둘 수 있어요.</string>
+    <string name="support_preview">하루 곁에 %1$s 하나가 놓이는 모습이에요 (미리 보기)</string>
+    <string name="support_previewMore">하나 더면 %1$s 곁에도 %2$s 하나를 둘 수 있어요 (미리 보기)</string>
+    <string name="anniv_note">정원을 만드는 사람이 쪽지를 남겼어요</string>
+    <string name="anniv_title100">백 번째 한 줄</string>
+    <string name="anniv_titleYear">하루를 만난 지 1년</string>
+    <string name="anniv_body100">오늘로 하루와 백 번의 한 줄을 남겼어요.\n기쁜 날도, 그냥 그런 날도, 무거운 날도\n이 작은 정원에 맡겨 줘서 고마워요.\n\n이 정원은 한 사람이 천천히 만들고 있어요.\n앞으로도 조용히, 오래 곁에 있을게요.</string>
+    <string name="anniv_bodyYear">하루를 만난 지 1년이 되었어요.\n봄, 여름, 가을, 겨울을 함께 지나왔네요.\n정원의 나무도, 하루도 그만큼 자랐어요.\n\n이 정원은 한 사람이 천천히 만들고 있어요.\n다음 한 해도 조용히 곁에 있을게요.</string>
+    <string name="anniv_sign">— 정원을 만드는 사람</string>
+    <string name="anniv_support">차 한 잔으로 응원하기</string>
+    <string name="anniv_thanks">늘 고마워요.</string>
     <string name="support_markLabel">%1$s, 고마운 마음이 남긴 %2$s</string>
     <string name="support_mark1">찻잔</string>
     <string name="support_mark2">커피</string>

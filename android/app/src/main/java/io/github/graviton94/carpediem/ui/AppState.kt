@@ -43,6 +43,12 @@ private const val PEBBLE_GAP = 25L
 private const val PEBBLE_CHANCE = 0.1f
 /** 한 줄이 이만큼 쌓일 때마다 (30 · 60 · 90…), 그날 하루 정원 아래에 응원 권유 한 줄. */
 private const val SUPPORT_INVITE_EVERY = 30
+/** 권유 (리뷰 · 응원 · 기념일 편지) 사이 · Play 리뷰 창 조건. */
+private const val NUDGE_GAP_DAYS = 7L
+private const val REVIEW_MIN_LINES = 10
+private const val REVIEW_AFTER_DAYS = 14L
+private const val REVIEW_EVERY_DAYS = 120L
+private const val REVIEW_AT_LINE = 50
 
 val PAGE_HINTS = setOf("write", "memories", "flow", "stone")
 
@@ -250,13 +256,21 @@ class AppState(private val context: Context) {
     // ───── 응원: 고마움의 흔적 · 한 줄 30번마다 한 번 권유 ─────
     var supportMarks by mutableStateOf(store.supportMarks)
         private set
-    /** 응원이 끝나면: 그 상품의 흔적을 정원에 (같은 것은 처음 날짜 그대로). */
+    /**
+     * 응원이 끝나면: 그 상품의 흔적을 정원에 하나 더 (1.1.5). 같은 응원을 또 하면 조각이 따로 하나씩 생겨 (support_coffee · support_coffee#2 …)
+     * 다른 돌 곁에도 둘 수 있음. 지난 응원 (#없는 것) 은 첫째 조각 그대로.
+     */
     fun supported(id: String, today: LocalDate = nowDate()) {
-        if (id in supportMarks) return
-        val v = supportMarks + (id to today); store.supportMarks = v; supportMarks = v
-        // 처음 받은 응원은 내 하루 곁에 (이미 꾸밈이 있으면 손에 두었다가 돌 페이지에서 고름)
-        if (io.github.graviton94.carpediem.core.Adornments.ME !in adornments) adorn(io.github.graviton94.carpediem.core.Adornments.ME, "support:$id")
+        val mark = generateSequence(1) { it + 1 }.map { k -> if (k == 1) id else "$id#$k" }.first { it !in supportMarks }
+        val v = supportMarks + (mark to today); store.supportMarks = v; supportMarks = v
+        lastSupported = mark
+        // 받은 응원은 내 하루 곁에 (이미 꾸밈이 있으면 손에 두었다가 돌 페이지에서 고름)
+        if (io.github.graviton94.carpediem.core.Adornments.ME !in adornments) adorn(io.github.graviton94.carpediem.core.Adornments.ME, "support:$mark")
     }
+    /** 방금 받은 응원 조각 (응원 페이지의 고마움 한마디 · 미리 놓아 본 자리). */
+    var lastSupported by mutableStateOf<String?>(null)
+    /** 그 응원 (상품) 을 이미 몇 번 했는지. */
+    fun supportCount(id: String): Int = supportMarks.keys.count { it == id || it.startsWith("$id#") }
     // ───── 돌 별 꾸밈: 돌마다 하나, 같은 것은 한 곳에만 ─────
     var adornments by mutableStateOf(store.adornments)
         private set
@@ -268,6 +282,8 @@ class AppState(private val context: Context) {
         if (day !in pebbles) { val v = (pebbles + day).sorted(); store.pebbles = v; pebbles = v }
     }
     var debugAdornSheet = false
+    /** 캡처용: 정원을 열면 기념일 편지부터 ("100" · "year"). */
+    var debugLetter: String? = null
     /** 캡처용: 돌멍하기를 열면 잠들기 시트부터. */
     var debugSleepSheet = false
     /** 지금 정원에 있는 돌의 꾸밈만 (내려놓은 돌의 것은 손으로). */
@@ -277,9 +293,36 @@ class AppState(private val context: Context) {
         supportMarks.entries.sortedByDescending { it.value }.map { "support:${it.key}" } +
             seasonCards.mapNotNull { io.github.graviton94.carpediem.core.SeasonCard.parse(it) }.sortedWith(compareByDescending<io.github.graviton94.carpediem.core.SeasonCard> { it.year }.thenByDescending { it.season.ordinal }).map { "card:${it.id}" } +
             pebbles.sortedDescending().map { "pebble:${it.toEpochDay()}" }
-    /** 오늘 30 · 60 · 90… 번째 한 줄을 남겼으면 그 수 (응원한 적이 있으면 권하지 않음). */
+    // ───── 권유는 한 주에 하나 (1.1.5): 리뷰 창 · 응원 권유 · 기념일 편지가 겹치지 않게, 무거운 마음을 보낸 날엔 아무것도 ─────
+    /** 오늘 권유를 꺼내도 되는지 (오늘 이미 꺼낸 것은 그대로 보여도 됨). */
+    fun nudgeFree(today: LocalDate): Boolean = store.lastNudgeOn.let { it == null || it == today || java.time.temporal.ChronoUnit.DAYS.between(it, today) >= NUDGE_GAP_DAYS } &&
+        lines.none { it.date == today && it.feeling in io.github.graviton94.carpediem.core.Letters.HEAVY }
+    fun nudged(today: LocalDate) { if (store.lastNudgeOn != today) store.lastNudgeOn = today }
+    /** Play 리뷰 창을 청할 때 (MainActivity 가 보고 띄움). */
+    var reviewAsk by mutableStateOf(false)
+    /**
+     * 마음이 좋은 순간 (하루 닫기를 끝까지 · 숨을 끝까지 · 50번째 한 줄) 에 Play 리뷰 창을 청함. 앞에 묻는 말 없이 (구글 정책).
+     * 앱을 쓴 지 14일 · 한 줄 10개부터, 넉 달에 한 번까지, 권유 간격 · 무거운 날은 피함.
+     */
+    fun maybeAskReview(today: LocalDate = nowDate()) {
+        if (design != Design.GARDEN || lines.size < REVIEW_MIN_LINES) return
+        if (java.time.temporal.ChronoUnit.DAYS.between(store.startDate, today) < REVIEW_AFTER_DAYS) return
+        store.reviewAskedOn?.let { if (java.time.temporal.ChronoUnit.DAYS.between(it, today) < REVIEW_EVERY_DAYS) return }
+        if (!nudgeFree(today) || store.lastNudgeOn == today) return
+        store.reviewAskedOn = today; nudged(today); reviewAsk = true
+    }
+    /** 기념일 편지가 온 날이면 그 이름 ("100" · "year"). 평생 한 번씩, 권유 간격을 지킴. */
+    fun anniversaryDue(today: LocalDate): String? {
+        if (design != Design.GARDEN || !nudgeFree(today)) return null
+        val got = store.lettersGot
+        if ("100" !in got) lines.sortedBy { it.date }.getOrNull(99)?.let { if (it.date.isBefore(today)) return "100" }
+        if ("year" !in got && !today.isBefore(store.startDate.plusYears(1))) return "year"
+        return null
+    }
+    fun anniversaryRead(which: String) { store.lettersGot = store.lettersGot + which }
+    /** 오늘 30 · 60 · 90… 번째 한 줄을 남겼으면 그 수 (응원한 적이 있으면 권하지 않음 · 권유 간격). */
     fun supportInviteDue(today: LocalDate): Int? {
-        if (supportMarks.isNotEmpty() || design != Design.GARDEN) return null
+        if (supportMarks.isNotEmpty() || design != Design.GARDEN || !nudgeFree(today)) return null
         val n = lines.size
         return n.takeIf { it > 0 && it % SUPPORT_INVITE_EVERY == 0 && lines.any { l -> l.date == today } }
     }
@@ -428,6 +471,8 @@ class AppState(private val context: Context) {
         // 한 줄마다 ‘확인’을 눌러야 닫히는 창은 무거움: 권유 (사흘에 한 번까지) 나 누군가에게 보낸 날만 창으로, 나머지는 위에 잠깐 떴다 사라지는 한마디로
         if (care != null || toastTitle != null) toast = msg else { toast = null; say(msg.replace('\n', ' ')) }
         Widgets.refresh(context)   // 마음의 기록 위젯에 오늘의 꽃 · 별
+        // 50번째 한 줄: 마음이 좋은 순간이면 Play 리뷰 창 (권하는 창이 없을 때만)
+        if (next.size == REVIEW_AT_LINE && care == null && toastTitle == null) maybeAskReview(today)
     }
     // ───── 고치기 · 지우기 ─────
     /** 오늘의 한 줄 고치기 (그날 안에만): 글 · 마음만 바꿈. */

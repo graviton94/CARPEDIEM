@@ -260,6 +260,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
     var breathSheet by remember { mutableStateOf(false) }
     var askBreath by remember { mutableStateOf<Pair<BreathKind, Int>?>(null) }
     var slipOpen by remember { mutableStateOf<String?>(null) }   // 쪽지를 물고 온 손님 (펼친 동안)
+    var letterOpen by remember { mutableStateOf(state.debugLetter) }   // 기념일 편지 (펼친 동안: "100" · "year")
     if (state.debugSlip) LaunchedEffect(Unit) { kotlinx.coroutines.delay(2500); slipOpen = state.carrier(now.toLocalDate()) }
     val sleepy = !bare && isNight(now)
     // 캡처용: 이번 달 편지를 바로 펼침. 고르기만 그리기 중에, ‘연 편지’로 남기기는 그 뒤에
@@ -702,8 +703,17 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                         // 새 버전을 받는 중 · 다 받음 (Play 앱 안 업데이트): 누르면 새 버전으로 다시 열림
                         state.update == AppState.UpdateState.READY -> RecallNote(stringResource(R.string.update_ready)) { state.finishUpdate() }
                         state.update == AppState.UpdateState.DOWNLOADING -> RecallNote(stringResource(R.string.update_downloading)) {}
+                        // 기념일 편지 (1.1.5, 평생 두 번): 백 번째 한 줄 다음 날 · 만난 지 1년. 한지 쪽지 한 줄 → 누르면 편지
+                        state.anniversaryDue(today) != null && !state.noteHidden("letter", today) -> {
+                            val which = state.anniversaryDue(today) ?: "100"
+                            LaunchedEffect(which, today) { state.nudged(today) }
+                            RecallNote(stringResource(R.string.anniv_note), onDismiss = { state.anniversaryRead(which); state.hideNote("letter", today) }) { letterOpen = which }
+                        }
                         // 한 줄 30 · 60 · 90… 번째를 남긴 날: 응원 권유 한 줄 (그날만, 응원한 뒤로는 없음)
-                        state.supportInviteDue(today) != null && !state.noteHidden("support", today) -> RecallNote(stringResource(R.string.support_invite, "${state.supportInviteDue(today)}"), onDismiss = { state.hideNote("support", today) }) { onSupport() }
+                        state.supportInviteDue(today) != null && !state.noteHidden("support", today) -> {
+                            LaunchedEffect(today) { state.nudged(today) }
+                            RecallNote(stringResource(R.string.support_invite, "${state.supportInviteDue(today)}"), onDismiss = { state.hideNote("support", today) }) { onSupport() }
+                        }
                         topInvite -> Unit
                         // 돌아온 한 줄은 아래 쪽지 대신 손님이 물고 옴 (위)
                         // 첫 일주일 길잡이: 하루에 하나, 해 본 것은 건너뜀 (누르면 그 일로)
@@ -771,6 +781,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
             androidx.compose.runtime.key(pageKey) { GuideTour(state, pageKey, guide, PageGuideSteps.getValue(pageKey)) { state.pageHintSeen(pageKey) } }
     }
 
+    letterOpen?.let { which -> AnniversarySheet(state, which, onSupport = { state.anniversaryRead(which); letterOpen = null; onSupport() }) { state.anniversaryRead(which); letterOpen = null } }
     slipOpen?.let { g -> state.carriedLine(now.toLocalDate())?.let { line ->
         SlipSheet(state, line, g, now.toLocalDate(), onRecord = { state.openSlip(now.toLocalDate()); slipOpen = null; toRecord(RecordView(line.date.year, line.date.monthValue, line.date)) }) { state.openSlip(now.toLocalDate()); slipOpen = null }
     } ?: run { slipOpen = null } }
