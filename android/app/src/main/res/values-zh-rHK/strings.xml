@@ -740,6 +740,8 @@
     <string name="letgo_today">今天</string>
     <string name="letgo_other">其他日子</string>
     <string name="letgo_dayTitle">%1$s的一句話</string>
+    <string name="letgo_carriedLastNight">這是昨晚寫到一半的那句話，會留作昨天的一句話。</string>
+    <string name="letgo_carriedDay">這是 %1$s 寫到一半的那句話，會留作那天的一句話。</string>
     <string name="letgo_dayHint">用一句話記下那天</string>
     <string name="letgo_daySend">留在那天</string>
     <string name="letgo_backToday">回到今天</string>

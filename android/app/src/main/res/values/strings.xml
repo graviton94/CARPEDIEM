@@ -740,6 +740,8 @@
     <string name="letgo_today">Today</string>
     <string name="letgo_other">Another day</string>
     <string name="letgo_dayTitle">A line for %1$s</string>
+    <string name="letgo_carriedLastNight">This is the line you were writing last night. It will be kept for yesterday.</string>
+    <string name="letgo_carriedDay">This is the line you were writing on %1$s. It will be kept for that day.</string>
     <string name="letgo_dayHint">That day, in one line</string>
     <string name="letgo_daySend">Keep it for that day</string>
     <string name="letgo_backToday">Back to today</string>

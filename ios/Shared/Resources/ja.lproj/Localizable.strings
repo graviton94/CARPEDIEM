@@ -738,6 +738,8 @@
 "letgo.today" = "今日";
 "letgo.other" = "ほかの日";
 "letgo.dayTitle" = "%1$@のひとこと";
+"letgo.carriedLastNight" = "ゆうべ書きかけていたひとことです。きのうのひとことにします。";
+"letgo.carriedDay" = "%1$@に書きかけていたひとことです。その日のひとことにします。";
 "letgo.dayHint" = "その日を、ひとことで";
 "letgo.daySend" = "その日に残す";
 "letgo.backToday" = "今日へ戻る";

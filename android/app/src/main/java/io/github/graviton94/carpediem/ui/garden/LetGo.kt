@@ -217,6 +217,12 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
 
     Column(modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
         TokenText(if (day == null) stringResource(R.string.letgo_title) else stringResource(R.string.letgo_dayTitle, RecordText.day(ctx, day)), Tokens.TypeScale.title3)
+        // 자정이 지나 이어 쓰게 된 글: 왜 지난 날짜인지 한 번 알려 줌 (보내거나 다른 날로 가면 사라짐)
+        val carried = state.carriedTo
+        if (carried != null && carried == day) TokenText(
+            if (carried == today.minusDays(1)) stringResource(R.string.letgo_carriedLastNight) else stringResource(R.string.letgo_carriedDay, RecordText.day(ctx, carried)),
+            Tokens.TypeScale.footnote, color = p.olive)
+        else if (carried != null) LaunchedEffect(Unit) { state.carriedTo = null }
         // 오늘 | 다른 날 (기본은 늘 오늘)
         if (Theme.garden && state.profile != null) Row(Modifier.guideTarget(guide, "write.days"), horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
             Chip(stringResource(R.string.letgo_today), day == null, seed = 950) { state.writeDay = null }

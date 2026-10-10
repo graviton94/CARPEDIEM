@@ -738,6 +738,8 @@
 "letgo.today" = "오늘";
 "letgo.other" = "다른 날";
 "letgo.dayTitle" = "%1$@의 한 줄";
+"letgo.carriedLastNight" = "어젯밤 쓰던 한 줄이에요. 어제의 한 줄로 남겨요.";
+"letgo.carriedDay" = "%1$@에 쓰던 한 줄이에요. 그날의 한 줄로 남겨요.";
 "letgo.dayHint" = "그날을 한 줄로";
 "letgo.daySend" = "그날에 남기기";
 "letgo.backToday" = "오늘로 돌아가기";

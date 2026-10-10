@@ -165,7 +165,7 @@ class AppState(private val context: Context) {
                 draftText.value = text
                 if (draftFeeling.value == null) draftFeeling.value = store.draftFeeling?.let { n -> Feeling.entries.firstOrNull { it.name == n } }
                 if (draftTo.value == null) draftTo.value = store.draftTo
-                writeDay = target; carried = true
+                writeDay = target; carried = true; carriedTo = target
             } else { draftText.value = ""; draftFeeling.value = null; draftTo.value = null }
             keepDraft(today)
         }
@@ -175,6 +175,8 @@ class AppState(private val context: Context) {
             else { io.github.graviton94.carpediem.data.Photos.dropPending(context); draftPhoto = false; store.pendingOn = null; photoKick++ }
         }
     }
+    /** 날이 바뀌어 이어 쓰게 된 날 (쓰는 칸 위에 한 번 ‘어젯밤 쓰던 한 줄이에요’). 보내거나 다른 날로 가면 지움. */
+    var carriedTo by mutableStateOf<LocalDate?>(null)
     /** 쓰는 칸에 사진을 골랐을 때 (고른 날을 적어 둠). */
     fun draftPhotoPicked(today: LocalDate = nowDate()) { draftPhoto = true; store.pendingOn = today; photoKick++ }
     /** 위젯 · 둘러보기에서 ‘한 줄 쓰러’ 왔을 때: 기록 페이지의 쓰는 칸에 바로 커서 (한 번). */
@@ -185,6 +187,8 @@ class AppState(private val context: Context) {
     fun tourShown(on: Boolean) { tourCount = (tourCount + if (on) 1 else -1).coerceAtLeast(0) }
     /** 둘러보기 · 페이지마다의 첫 안내를 처음부터 다시. */
     fun restartGuide() { store.guideDone = false; guideDone = false; guideSteps.clear(); store.pageHints = emptySet(); pageHints = emptySet(); homePage = 0 }
+    /** 캡처용: 어젯밤 쓰던 한 줄이 남은 채로 (열면 어제의 한 줄로 이어짐). */
+    fun debugDraftYesterday(text: String, today: LocalDate = nowDate()) { writeDay = null; store.saveDraft(today.minusDays(1), text); draftText.value = ""; carryDraft(today) }
     /** 캡처 스크립트용: 안내를 모두 본 것으로 (show = true 면 소개부터 처음 온 사람처럼). */
     fun debugGuides(show: Boolean) {
         if (show) { store.introSeen = false; introSeen = false; restartGuide() }

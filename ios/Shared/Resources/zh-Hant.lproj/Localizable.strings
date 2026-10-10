@@ -738,6 +738,8 @@
 "letgo.today" = "今天";
 "letgo.other" = "其他日子";
 "letgo.dayTitle" = "%1$@的一句話";
+"letgo.carriedLastNight" = "這是昨晚寫到一半的那句話，會留作昨天的一句話。";
+"letgo.carriedDay" = "這是 %1$@ 寫到一半的那句話，會留作那天的一句話。";
 "letgo.dayHint" = "用一句話記下那天";
 "letgo.daySend" = "留在那天";
 "letgo.backToday" = "回到今天";

@@ -740,6 +740,8 @@
     <string name="letgo_today">今日</string>
     <string name="letgo_other">ほかの日</string>
     <string name="letgo_dayTitle">%1$sのひとこと</string>
+    <string name="letgo_carriedLastNight">ゆうべ書きかけていたひとことです。きのうのひとことにします。</string>
+    <string name="letgo_carriedDay">%1$sに書きかけていたひとことです。その日のひとことにします。</string>
     <string name="letgo_dayHint">その日を、ひとことで</string>
     <string name="letgo_daySend">その日に残す</string>
     <string name="letgo_backToday">今日へ戻る</string>

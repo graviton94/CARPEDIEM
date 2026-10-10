@@ -738,6 +738,8 @@
 "letgo.today" = "Today";
 "letgo.other" = "Another day";
 "letgo.dayTitle" = "A line for %1$@";
+"letgo.carriedLastNight" = "This is the line you were writing last night. It will be kept for yesterday.";
+"letgo.carriedDay" = "This is the line you were writing on %1$@. It will be kept for that day.";
 "letgo.dayHint" = "That day, in one line";
 "letgo.daySend" = "Keep it for that day";
 "letgo.backToday" = "Back to today";
