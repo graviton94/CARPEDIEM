@@ -206,9 +206,9 @@ fun BreathScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, kind
         val obs = androidx.lifecycle.LifecycleEventObserver { _, e -> if (e == androidx.lifecycle.Lifecycle.Event.ON_STOP) paused = true }
         owner.lifecycle.addObserver(obs); onDispose { owner.lifecycle.removeObserver(obs) }
     }
-    // 숨 시작 전: “맑은 종에 들이쉬고, 낮은 종에 내쉬어요” 와 두 종을 한 번씩 (소리가 있을 때만)
+    // 숨 시작 전: “맑은 종에 들이쉬고, 낮은 종에 내쉬어요” 와 두 종을 한 번씩
     val S = Tokens.Garden.Sound
-    var intro by remember { mutableStateOf(sound != Sound.NONE) }
+    var intro by remember { mutableStateOf(true) }
     LaunchedEffect(Unit) {
         if (!intro) return@LaunchedEffect
         delay(300); Soundscape.bowl(S.bowlInHz.toDouble())
@@ -226,7 +226,7 @@ fun BreathScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, kind
             elapsed += t - last
             last = t
             player.breath = fullAt(plan, elapsed)
-            if (elapsed >= total) { done = true; state.recordBreath(kind); if (sound != Sound.NONE) Soundscape.bowl(S.bowlOutHz.toDouble(), 2); player.stop() }
+            if (elapsed >= total) { done = true; state.recordBreath(kind); Soundscape.bowl(S.bowlOutHz.toDouble(), 2); player.stop() }
         }
     }
     // 숨을 끝까지 쉬었으면 (잠드는 밤 숨은 빼고): 조금 머문 뒤 Play 리뷰 창을 청할 수도 (넉 달에 한 번까지)
@@ -238,12 +238,15 @@ fun BreathScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, kind
     val cueOn by remember { androidx.compose.runtime.derivedStateOf { elapsed < cueUntil } }
     // 한숨 호흡의 두 번째 들이쉼 (“한 번 더 들이쉬어요”)
     val topUp by remember(plan) { androidx.compose.runtime.derivedStateOf { (Breath.at(plan, elapsed)?.first?.lo ?: 0f) > 0f } }
-    // 단계가 바뀌면 들이쉼에만 아주 짧게 한 번 (내쉼은 고요히)
+    // 단계가 바뀌면 명상 종: 들이쉴 땐 맑은 종, 머무를 땐 중간 종, 내쉴 땐 낮은 종 (눈 감고도 안내를 따라가게, 1.1.5)
     LaunchedEffect(step, intro) {
         if (intro) return@LaunchedEffect
-        // 숨마다 명상 종: 들이쉴 땐 맑은 종, 내쉴 땐 낮은 종 (머무는 숨에는 없음)
-        if (sound != Sound.NONE) when (step) { BreathStep.IN -> Soundscape.bowl(S.bowlInHz.toDouble()); BreathStep.OUT -> Soundscape.bowl(S.bowlOutHz.toDouble()); else -> {} }
-        // 진동은 손끝 숨에서만 (눈으로 하는 숨은 소리 · 화면만, 1.1.5)
+        when (step) {
+            BreathStep.IN -> Soundscape.bowl(S.bowlInHz.toDouble())
+            BreathStep.HOLD -> Soundscape.bowl(S.bowlHoldHz.toDouble())
+            BreathStep.OUT -> Soundscape.bowl(S.bowlOutHz.toDouble())
+            else -> {}
+        }
     }
     // 눈: 처음 3초는 뜨고, 그다음 지긋이 감고, 끝나면 천천히 뜸
     val lid = remember { Animatable(0f) }

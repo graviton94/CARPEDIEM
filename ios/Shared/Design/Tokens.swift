@@ -502,6 +502,7 @@ enum Tokens {
             static let noteMax: CGFloat = 14.0
             static let songVolume: CGFloat = 0.5
             static let bowlInHz: CGFloat = 220.0
+            static let bowlHoldHz: CGFloat = 185.0
             static let bowlOutHz: CGFloat = 164.8
             static let bowlRing: CGFloat = 8.0
             static let bowlAttackMs: CGFloat = 35.0

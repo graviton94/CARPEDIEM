@@ -497,6 +497,7 @@ object Tokens {
             const val noteMax = 14.0f
             const val songVolume = 0.5f
             const val bowlInHz = 220.0f
+            const val bowlHoldHz = 185.0f
             const val bowlOutHz = 164.8f
             const val bowlRing = 8.0f
             const val bowlAttackMs = 35.0f

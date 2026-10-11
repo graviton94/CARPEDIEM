@@ -1,6 +1,7 @@
 package io.github.graviton94.carpediem.ui.garden
 
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -33,39 +35,57 @@ import io.github.graviton94.carpediem.core.Letters
 import io.github.graviton94.carpediem.design.Tokens
 import io.github.graviton94.carpediem.design.Tokens.Garden as G
 import io.github.graviton94.carpediem.ui.AppState
+import kotlinx.coroutines.launch
+import kotlin.math.PI
+import kotlin.math.sin
 
 /**
  * 미니 하루 (1.1.5): 요즘 (지난 7일) 자주 머문 마음이 아주 작은 하루가 되어, 내 하루 발치 가운데 ~ 오른쪽에 하루와 같은 땅에 나란히 (최대 셋).
  * 그 마음 색으로 물든 조약돌, 눈은 마음 따라 (밝은 마음 웃는 눈 · 가운데 마음 동그란 눈 · 무거운 마음 감긴 눈으로 하루 쪽에 살짝 기댐).
- * 새 마음이 오면 땅에서 퐁. 누르면 아래 한마디 “이번 주엔 평온이 자주 머물렀어요.”
+ * 혼자일 땐 하루 곁에 더 다정하게 밀착해 살짝 기대고, 누르면 조약돌이 살짝 퐁 뛰며 한마디 “이번 주엔 평온이 자주 머물렀어요.”
  */
 @Composable
 internal fun MiniHarus(state: AppState, feelings: List<Feeling>, cx: Dp, gy: Dp, haruW: Dp) {
     if (feelings.isEmpty()) return
     val ctx = LocalContext.current
+    val scope = rememberCoroutineScope()
     val names = feelings.map { ctx.getString(feelingName(it)) }
     val msg = stringResource(if (feelings.first() in Letters.HEAVY) R.string.mini_noteHeavy else R.string.mini_note, names.first())
     val a11y = stringResource(R.string.mini_a11y, names.joinToString(", "))
     val pop = remember(feelings) { Animatable(0f) }
+    val bounce = remember { Animatable(0f) }
     LaunchedEffect(feelings) { pop.animateTo(1f, tween(MINI_POP_MS)) }
     val ink = G.Colors.ink
     var right = cx
+    val solo = feelings.size == 1
+    val startFrom = if (solo) MINI_FROM_SOLO else MINI_FROM
     feelings.forEachIndexed { k, f ->
         val w = haruW * (if (k == 0) MINI_FIRST else MINI_REST)
-        val x = cx + haruW * MINI_FROM + haruW * MINI_STEP * k
+        val x = cx + haruW * startFrom + haruW * MINI_STEP * k
         right = x + w / 2
         val face = when (f) { in Feeling.BRIGHT -> 0; in Letters.HEAVY -> 2; else -> 1 }
         val color = lerp(feelingColor(f), Color(0xFF7F7A71), 0.35f)
+        val bVal = bounce.value
+        val lift = if (bVal in 0.001f..0.999f) sin(bVal * PI.toFloat()) else 0f
         Canvas(Modifier.offset(x - w / 2, gy - w * 0.7f).size(w, w * 0.7f).graphicsLayer {
-            transformOrigin = TransformOrigin(0.5f, 1f); scaleX = pop.value; scaleY = pop.value
-            rotationZ = if (face == 2) -MINI_LEAN else 0f
+            transformOrigin = TransformOrigin(0.5f, 1f)
+            scaleX = pop.value; scaleY = pop.value
+            rotationZ = when {
+                face == 2 -> -MINI_LEAN
+                solo -> -MINI_SOLO_LEAN
+                else -> 0f
+            }
+            translationY = -lift * (haruW * MINI_BOUNCE_LIFT).toPx()
         }) { miniStone(color, ink, face) }
     }
-    // 누르는 자리: 미니 하루들 위만 (하루 몸은 그대로 쓰다듬기)
+    // 누르는 자리: 미니 하루들 위만 (하루 몸은 그대로 쓰다듬기, 누르면 퐁 뛰며 말)
     val tt = Tokens.Layout.tapTarget
-    val left = cx + haruW * MINI_FROM - haruW * MINI_FIRST / 2
+    val left = cx + haruW * startFrom - haruW * MINI_FIRST / 2
     Box(Modifier.offset(left, gy - tt * 0.8f).size(right - left, tt).semantics { contentDescription = a11y }
-        .clickable(interactionSource = remember { MutableInteractionSource() }, indication = null) { state.say(msg) })
+        .clickable(interactionSource = remember { MutableInteractionSource() }, indication = null) {
+            scope.launch { bounce.snapTo(0f); bounce.animateTo(1f, tween(MINI_BOUNCE_MS, easing = LinearEasing)); bounce.snapTo(0f) }
+            state.say(msg)
+        })
 }
 
 /** 하루와 같은 조약돌 모양 (상자 아래 가운데가 땅). face: 0 웃는 눈 · 1 동그란 눈 · 2 감긴 눈. */
@@ -91,10 +111,15 @@ private fun DrawScope.miniStone(fill: Color, ink: Color, face: Int) {
     }
 }
 
-/** 하루 폭에 대한 크기 · 자리: 첫째 (가장 자주) 는 조금 크게, 하루 가운데에서 오른쪽으로 나란히. 무거운 마음은 하루 쪽으로 기댐 (도). */
+/** 하루 폭에 대한 크기 · 자리: 첫째 (가장 자주) 는 조금 크게, 하루 가운데에서 오른쪽으로 나란히. 혼자일 땐 살짝 기대고 (MINI_SOLO_LEAN), 무거운 마음은 하루 쪽으로 기댐 (MINI_LEAN). */
 private const val MINI_FIRST = 0.22f
 private const val MINI_REST = 0.18f
 private const val MINI_FROM = 0.04f
+private const val MINI_FROM_SOLO = 0.01f
 private const val MINI_STEP = 0.2f
 private const val MINI_LEAN = 10f
+private const val MINI_SOLO_LEAN = 7f
 private const val MINI_POP_MS = 600
+private const val MINI_BOUNCE_MS = 360
+private const val MINI_BOUNCE_LIFT = 0.14f
+

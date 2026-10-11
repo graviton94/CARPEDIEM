@@ -1097,6 +1097,12 @@
     <string name="welcome_start">重新開始</string>
     <string name="welcome_restore">載入紀錄</string>
     <string name="welcome_restoreSub">用舊手機儲存的檔案繼續使用。</string>
+    <string name="news_v1_1_5_1">呼吸變得更緩慢深長，文字提示只在前三次呼吸輕柔停留。呼吸期間螢幕保持常亮。</string>
+    <string name="news_v1_1_5_2">即使沒有背景聲音，溫潤的頌缽聲也會引導吸氣、屏息與吐氣。閉上雙眼也能專注呼吸。</string>
+    <string name="news_v1_1_5_3">看石頭發呆新增入眠計時器。時間到了螢幕會漸漸變黑，聲音也會慢慢淡出。</string>
+    <string name="news_v1_1_5_4">過去一週最常出現的心情，會化作小小日來到小日腳邊。單獨一顆時會輕輕依偎，輕觸還會輕輕彈跳。</string>
+    <string name="news_v1_1_5_5">家人的石頭挨得更近了，像並肩依偎在一起。</string>
+    <string name="news_v1_1_5_6">昨晚未寫完的話，隔天早晨可以接著寫完。</string>
     <string name="news_v1_1_4_1">四種呼吸各有方法：漣漪（共振呼吸 5 分鐘）・散步（方塊呼吸 4 分鐘）・燈火（4-7-8 八次）・花田（嘆息呼吸 5 分鐘）。不用再選時間。</string>
     <string name="news_v1_1_4_2">呼吸就是聲音：吸氣時聲音漲起，吐氣時慢慢退去。小日腳邊的呼吸圈也跟著盈滿、清空。</string>
     <string name="news_v1_1_4_3">發呆看石頭時，會有像被風吹散的小日之歌慢慢流過。蟲鳴也重新做了。</string>
