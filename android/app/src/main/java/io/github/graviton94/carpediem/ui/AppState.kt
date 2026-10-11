@@ -606,8 +606,6 @@ class AppState(private val context: Context) {
     fun comfortDue(today: LocalDate): Boolean = design == Design.GARDEN && io.github.graviton94.carpediem.core.Comfort.due(lines, today, comfortShown)
     fun comfortSeen(today: LocalDate) { store.comfortShown = today; comfortShown = today }
 
-    // ───── 하루의 숨결을 손끝으로 (05) ─────
-        private set
     // ───── 미래의 나에게 (10) ─────
     var capsules by mutableStateOf(store.capsules)
         private set
