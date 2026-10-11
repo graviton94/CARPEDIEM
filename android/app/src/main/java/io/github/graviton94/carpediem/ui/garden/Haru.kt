@@ -345,24 +345,11 @@ fun HaruFigure(art: HaruArt, scale: Dp, modifier: Modifier = Modifier, blinkKick
         LaunchedEffect(Unit) { while (true) { delay(Random.nextLong(m.blinkMinMs.toLong(), m.blinkMaxMs.toLong())); if (smile.value == 0f && rest.value == 0f) { blinkOnce(); if (Random.nextFloat() < m.blinkTwice) { delay(140); blinkOnce() } } } }
         LaunchedEffect(blinkKick) { if (blinkKick > 0) blinkOnce() }
     }
-    fun tick() { if (tc.haptic > 0f) view.performHapticFeedback(android.view.HapticFeedbackConstants.CLOCK_TICK) }
-    /** 잠든 작은 숨결처럼 여린 떨림 한 번 (스르르 부풀었다 잦아듦). 세기 조절이 안 되는 폰은 짧게 한 번. */
-    fun slowPulse() {
-        if (tc.haptic <= 0f) return
-        runCatching {
-            val v = ctx.getSystemService(android.os.Vibrator::class.java) ?: return
-            if (!v.hasVibrator()) return
-            val e = if (v.hasAmplitudeControl()) android.os.VibrationEffect.createWaveform(longArrayOf(0, 220, 220, 240, 260, 320), intArrayOf(0, 18, 28, 40, 28, 18), -1)
-                else android.os.VibrationEffect.createOneShot(14, android.os.VibrationEffect.DEFAULT_AMPLITUDE)
-            v.vibrate(e)
-        }
-    }
     fun pet() {
         if (rest.value > 0f) return
         val now = System.currentTimeMillis()
         taps.add(now); taps.removeAll { now - it > tc.restWindowMs }
         val recent = taps.count { now - it <= tc.windowMs }
-        tick()
         if (taps.size > tc.restAfter.toInt()) {
             // 너무 많이 쓰다듬으면 눈을 지긋이 감고 잠깐 쉼 (세지도, 말하지도 않음)
             taps.clear()
@@ -373,7 +360,6 @@ fun HaruFigure(art: HaruArt, scale: Dp, modifier: Modifier = Modifier, blinkKick
         // 오늘이 묻어나는 쓰다듬기: 무거운 날은 웃지 않고 기대 옴 · 밤엔 하품 · 기쁜 날은 더 일찍 · 더 높이 뜀 (글은 없음)
         if (mood == HaruMood.HEAVY) {
             if (animate) scope.launch { lean.animateTo(1f, tween(700)); delay(700); lean.animateTo(0f, tween(900)) }
-            slowPulse()
             return
         }
         if (sleepy) {
@@ -435,13 +421,13 @@ fun HaruFigure(art: HaruArt, scale: Dp, modifier: Modifier = Modifier, blinkKick
                         // 길게 누르기 (숨 쉬기): 정해진 시간 안에 손을 떼지 않으면
                         var released = false
                         val up = withTimeoutOrNull(tc.holdMs.toLong()) { val u = waitForUpOrCancellation(); released = true; u }
-                        if (!released) { tick(); h(); waitForUpOrCancellation(); return@awaitEachGesture }
+                        if (!released) { h(); waitForUpOrCancellation(); return@awaitEachGesture }
                         up ?: return@awaitEachGesture
                     } else waitForUpOrCancellation() ?: return@awaitEachGesture
                     petNow()   // 첫 누름에 바로 반응
                     val o = open ?: return@awaitEachGesture
                     val second = withTimeoutOrNull(tc.doubleMs.toLong()) { awaitFirstDown(requireUnconsumed = false) }
-                    if (second != null) { tick(); o() }
+                    if (second != null) { o() }
                 }
             })
     }

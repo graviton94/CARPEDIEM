@@ -3,6 +3,8 @@
 <resources>
     <string name="letgo_empty">請先寫下一句話。</string>
     <string name="breath_inTop">再吸一小口</string>
+    <string name="breath_left">還有 %1$s 分鐘</string>
+    <string name="breath_leftSoon">快結束了</string>
     <string name="note_dismiss">今天先不要</string>
     <string name="closeDay_ask">要去為今天收尾嗎？</string>
     <string name="adorn_card">%1$s的%2$s</string>
@@ -953,14 +955,6 @@
     <string name="seed_choice_9">問候一個人</string>
     <string name="seed_choice_10">暫時放下螢幕</string>
     <string name="seed_choice_11">早點上床睡覺</string>
-    <string name="breath_way">和小日一起呼吸的方式</string>
-    <string name="breath_wayEyes">用眼睛</string>
-    <string name="breath_wayTouch">用指尖</string>
-    <string name="breath_wayTouchHelp">閉上眼睛，用指尖感受小日的氣息。螢幕很快會變暗，長按可以停下。</string>
-    <string name="breath_touchTitle">和小日慢慢交流</string>
-    <string name="breath_touchSub">螢幕變暗了，小日的氣息仍在繼續</string>
-    <string name="breath_touchHold">長按可以停下</string>
-    <string name="breath_touchDone">你和小日的呼吸合在一起了。</string>
     <string name="comfort_from">小日說</string>
     <string name="comfort_0">昨晚心情很沉重吧。\n我整夜都在你身邊。</string>
     <string name="comfort_1">擔心就讓小日幫你拿一點。\n今天輕鬆一點吧。</string>

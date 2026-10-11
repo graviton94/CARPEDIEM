@@ -1,6 +1,8 @@
 /* 자동 생성 파일 — 직접 고치지 말고 scripts/generate.py 를 실행하세요. */
 "letgo.empty" = "한 줄을 먼저 적어 주세요.";
 "breath.inTop" = "한 번 더 들이쉬어요";
+"breath.left" = "%1$@분 남았어요";
+"breath.leftSoon" = "곧 끝나요";
 "note.dismiss" = "오늘은 넘기기";
 "closeDay.ask" = "오늘 하루를 닫으러 갈까요?";
 "adorn.card" = "%1$@ %2$@";
@@ -951,14 +953,6 @@
 "seed.choice.9" = "누군가에게 안부 묻기";
 "seed.choice.10" = "화면 잠시 내려놓기";
 "seed.choice.11" = "일찍 잠자리에 들기";
-"breath.way" = "하루와 함께하는 방법";
-"breath.wayEyes" = "눈으로";
-"breath.wayTouch" = "손끝으로";
-"breath.wayTouchHelp" = "눈을 감고 하루의 숨결을 손끝으로 느껴요. 화면은 곧 어두워지고, 길게 누르면 멈춰요.";
-"breath.touchTitle" = "하루와 천천히 교감해요";
-"breath.touchSub" = "화면이 어두워져도 하루의 숨결은 이어져요";
-"breath.touchHold" = "길게 누르면 멈춰요";
-"breath.touchDone" = "하루와 숨이 맞았어요.";
 "comfort.from" = "하루가";
 "comfort.0" = "어젯밤 마음이 무거웠죠.\n밤새 곁에 있었어요.";
 "comfort.1" = "걱정은 하루가 조금 들고 있을게요.\n오늘은 가볍게 가요.";

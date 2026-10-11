@@ -207,7 +207,7 @@ s g48_birthday_card 5 --es cd.screen stone --es cd.stoneId mom00001 --es cd.now 
 # 생일 전날 밤: 엄마의 돌이 먼저 고깔을 쓰고 “내일은 엄마 생일이에요”
 s g54_birthday_eve 5 --es cd.now 2026-09-29T21:00
 s g55_birthday_eve_stone 4 --es cd.screen stone --es cd.stoneId mom00001 --es cd.now 2026-09-29T21:00
-# 하루를 열고 닫는 작은 의식: 아침 씨앗 (04) · 걱정한 밤 다음 아침 (06) · 하루 닫기 입구와 첫 걸음 (03) · 저녁의 ‘싹이 텄나요?’ · 손끝 숨 (05)
+# 하루를 열고 닫는 작은 의식: 아침 씨앗 (04) · 걱정한 밤 다음 아침 (06) · 하루 닫기 입구와 첫 걸음 (03) · 저녁의 ‘싹이 텄나요?’
 s g56_seed_card 5 --es cd.now 2026-10-03T07:40
 s g57_comfort 5 --ez cd.comfort true --es cd.now 2026-10-03T08:10
 s g58_closeday_entry 5 --es cd.now 2026-10-03T21:10
@@ -215,8 +215,6 @@ s g59_closeday_line 4 --es cd.screen close --es cd.now 2026-10-03T21:10
 # 하루 닫기에서 한 줄을 쓰다 뒤로: ‘쓰던 한 줄을 지우고 나갈까요?’ (키보드 내리기 → 한 번 더 뒤로)
 if want g59b; then open --es cd.screen close --es cd.now 2026-10-03T21:10; sleep 5; adb shell input tap 540 870; sleep 1; adb shell input text "good"; sleep 1; adb shell input keyevent 4; sleep 1; adb shell input keyevent 4; shot g59b_closeday_leave 2; fi
 s g60_seed_ask 5 --ez cd.morningSeed true --es cd.today CALM --ei cd.page 1 --es cd.now 2026-10-03T20:30
-s g61_breath_touch 4 --ez cd.touch true --es cd.screen breath --es cd.now 2026-10-03T15:00
-open --ez cd.touch false --es cd.now $NOW; sleep 2
 # 미래의 나에게 (10): 오늘 열린 항아리 · 생일 아침의 나이테 (07, 2000-05-12 생 → 2026-05-12 아침) · 추억의 항아리 · 나이테
 s g62_capsule_open 5 --ez cd.capsule true --es cd.now 2026-10-04T09:00
 s g63_ring_note 6 --ez cd.ringYear true --es cd.now 2026-05-12T09:00

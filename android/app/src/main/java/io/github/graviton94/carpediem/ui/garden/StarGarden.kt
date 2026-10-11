@@ -219,7 +219,6 @@ internal fun MonthGarden(
         if (playing.intValue >= 0) return
         val order = dots.indices.filter { dots[it].line != null && !dots[it].date.isAfter(today) }
         if (order.isEmpty()) return
-        view.performHapticFeedback(android.view.HapticFeedbackConstants.LONG_PRESS)
         if (sound) io.github.graviton94.carpediem.sound.StoneSong.play(order.mapIndexed { k, i -> io.github.graviton94.carpediem.sound.StoneSong.feelingPitch(dots[i].line?.feeling) to k * PLAY_STEP_MS })
         scope.launch { try { order.forEach { i -> playing.intValue = i; delay(PLAY_STEP_MS) } } finally { playing.intValue = -1 } }
     }

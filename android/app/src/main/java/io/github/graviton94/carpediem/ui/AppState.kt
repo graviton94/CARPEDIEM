@@ -607,9 +607,7 @@ class AppState(private val context: Context) {
     fun comfortSeen(today: LocalDate) { store.comfortShown = today; comfortShown = today }
 
     // ───── 하루의 숨결을 손끝으로 (05) ─────
-    var breathTouch by mutableStateOf(store.breathTouch)
         private set
-    fun changeBreathTouch(v: Boolean) { store.breathTouch = v; breathTouch = v }
     // ───── 미래의 나에게 (10) ─────
     var capsules by mutableStateOf(store.capsules)
         private set

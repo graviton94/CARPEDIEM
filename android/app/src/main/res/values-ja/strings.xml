@@ -3,6 +3,8 @@
 <resources>
     <string name="letgo_empty">先にひとことを書いてください。</string>
     <string name="breath_inTop">もうひと息吸って</string>
+    <string name="breath_left">あと%1$s分</string>
+    <string name="breath_leftSoon">もうすぐ終わります</string>
     <string name="note_dismiss">今日はやめておく</string>
     <string name="closeDay_ask">今日を閉じに行きますか？</string>
     <string name="adorn_card">%1$sの%2$s</string>
@@ -953,14 +955,6 @@
     <string name="seed_choice_9">誰かに様子を聞く</string>
     <string name="seed_choice_10">少し画面を置く</string>
     <string name="seed_choice_11">早めに寝る</string>
-    <string name="breath_way">ハルと一緒に呼吸する方法</string>
-    <string name="breath_wayEyes">目で</string>
-    <string name="breath_wayTouch">指先で</string>
-    <string name="breath_wayTouchHelp">目を閉じて、ハルの息づかいを指先で感じます。画面はすぐ暗くなり、長押しで止まります。</string>
-    <string name="breath_touchTitle">ハルとゆっくり通じ合う</string>
-    <string name="breath_touchSub">画面が暗くなっても、ハルの息づかいは続きます</string>
-    <string name="breath_touchHold">長押しで止まります</string>
-    <string name="breath_touchDone">ハルと息が合いました。</string>
     <string name="comfort_from">ハルより</string>
     <string name="comfort_0">昨夜は心が重かったですね。\n一晩中そばにいましたよ。</string>
     <string name="comfort_1">心配は少しハルが持っていますね。\n今日は身軽にいきましょう。</string>

@@ -1,6 +1,8 @@
 /* 자동 생성 파일 — 직접 고치지 말고 scripts/generate.py 를 실행하세요. */
 "letgo.empty" = "先にひとことを書いてください。";
 "breath.inTop" = "もうひと息吸って";
+"breath.left" = "あと%1$@分";
+"breath.leftSoon" = "もうすぐ終わります";
 "note.dismiss" = "今日はやめておく";
 "closeDay.ask" = "今日を閉じに行きますか？";
 "adorn.card" = "%1$@の%2$@";
@@ -951,14 +953,6 @@
 "seed.choice.9" = "誰かに様子を聞く";
 "seed.choice.10" = "少し画面を置く";
 "seed.choice.11" = "早めに寝る";
-"breath.way" = "ハルと一緒に呼吸する方法";
-"breath.wayEyes" = "目で";
-"breath.wayTouch" = "指先で";
-"breath.wayTouchHelp" = "目を閉じて、ハルの息づかいを指先で感じます。画面はすぐ暗くなり、長押しで止まります。";
-"breath.touchTitle" = "ハルとゆっくり通じ合う";
-"breath.touchSub" = "画面が暗くなっても、ハルの息づかいは続きます";
-"breath.touchHold" = "長押しで止まります";
-"breath.touchDone" = "ハルと息が合いました。";
 "comfort.from" = "ハルより";
 "comfort.0" = "昨夜は心が重かったですね。\n一晩中そばにいましたよ。";
 "comfort.1" = "心配は少しハルが持っていますね。\n今日は身軽にいきましょう。";

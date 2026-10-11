@@ -390,10 +390,6 @@ class Store(context: Context) {
     var capsules: List<io.github.graviton94.carpediem.core.Capsule>
         get() = io.github.graviton94.carpediem.core.Capsules.decode(prefs.getString("capsules", null))
         set(v) = prefs.edit().putString("capsules", io.github.graviton94.carpediem.core.Capsules.encode(v)).apply()
-    /** 하루의 숨결을 손끝으로 (05): 숨 쉬는 동안 떨림으로. */
-    var breathTouch: Boolean
-        get() = prefs.getBoolean("breathTouch", false)
-        set(v) = prefs.edit().putBoolean("breathTouch", v).apply()
 
     /** 이어 쓰기 흔적을 얻은 날 (7 · 30 · 100 → 날짜). 기록을 지워도 남는다. 저장 형식 `7:epochDay,30:epochDay`. */
     var streaks: Map<Int, LocalDate>

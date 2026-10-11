@@ -1,6 +1,8 @@
 /* 자동 생성 파일 — 직접 고치지 말고 scripts/generate.py 를 실행하세요. */
 "letgo.empty" = "Write your line first.";
 "breath.inTop" = "One more sip in";
+"breath.left" = "%1$@ min left";
+"breath.leftSoon" = "Almost done";
 "note.dismiss" = "Not today";
 "closeDay.ask" = "Close the day now?";
 "adorn.card" = "%1$@ %2$@";
@@ -951,14 +953,6 @@
 "seed.choice.9" = "Check in on someone";
 "seed.choice.10" = "Put the screen down for a bit";
 "seed.choice.11" = "Go to bed early";
-"breath.way" = "How to breathe with Haru";
-"breath.wayEyes" = "With eyes";
-"breath.wayTouch" = "With fingertips";
-"breath.wayTouchHelp" = "Close your eyes and feel Haru's breath at your fingertips. The screen soon dims; press and hold to stop.";
-"breath.touchTitle" = "Slowly in tune with Haru";
-"breath.touchSub" = "Haru's breath goes on even when the screen dims";
-"breath.touchHold" = "Press and hold to stop";
-"breath.touchDone" = "You and Haru breathed as one.";
 "comfort.from" = "From Haru";
 "comfort.0" = "Last night felt heavy.\nI was right here all night.";
 "comfort.1" = "I'll hold a bit of the worry.\nGo lightly today.";

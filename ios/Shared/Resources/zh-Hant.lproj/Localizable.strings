@@ -1,6 +1,8 @@
 /* 자동 생성 파일 — 직접 고치지 말고 scripts/generate.py 를 실행하세요. */
 "letgo.empty" = "請先寫下一句話。";
 "breath.inTop" = "再吸一小口";
+"breath.left" = "還有 %1$@ 分鐘";
+"breath.leftSoon" = "快結束了";
 "note.dismiss" = "今天先不要";
 "closeDay.ask" = "要去為今天收尾嗎？";
 "adorn.card" = "%1$@的%2$@";
@@ -951,14 +953,6 @@
 "seed.choice.9" = "問候一個人";
 "seed.choice.10" = "暫時放下螢幕";
 "seed.choice.11" = "早點上床睡覺";
-"breath.way" = "和小日一起呼吸的方式";
-"breath.wayEyes" = "用眼睛";
-"breath.wayTouch" = "用指尖";
-"breath.wayTouchHelp" = "閉上眼睛，用指尖感受小日的氣息。螢幕很快會變暗，長按可以停下。";
-"breath.touchTitle" = "和小日慢慢交流";
-"breath.touchSub" = "螢幕變暗了，小日的氣息仍在繼續";
-"breath.touchHold" = "長按可以停下";
-"breath.touchDone" = "你和小日的呼吸合在一起了。";
 "comfort.from" = "小日說";
 "comfort.0" = "昨晚心情很沉重吧。\n我整夜都在你身邊。";
 "comfort.1" = "擔心就讓小日幫你拿一點。\n今天輕鬆一點吧。";

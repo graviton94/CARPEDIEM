@@ -140,7 +140,6 @@ fun BreathSheet(state: AppState, now: LocalDateTime, onStart: (BreathKind, Int, 
     val p = Theme.palette
     var kind by remember { mutableStateOf(if (isNight(now)) BreathKind.SLEEP else state.breathKind) }
     var sound by remember { mutableStateOf(state.sound) }
-    var touchOn by remember { mutableStateOf(state.breathTouch) }
     ModalBottomSheet(onDismissRequest = onDismiss, containerColor = Theme.gc.paper, sheetState = androidx.compose.material3.rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
         Column(Modifier.fillMaxWidth().imePadding().verticalScroll(rememberScrollState()).padding(horizontal = Theme.deviceClass.pageMargin).navigationBarsPadding().padding(bottom = Tokens.Space.sp6),
             verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
@@ -152,22 +151,12 @@ fun BreathSheet(state: AppState, now: LocalDateTime, onStart: (BreathKind, Int, 
             }
             // 숨마다 목적 · 호흡법 · 정해진 길이 (시간은 고르지 않음)
             TokenText(stringResource(kindDesc(kind)), Tokens.TypeScale.footnote, color = p.secondary)
-            // 하루와 함께하는 방법: 눈으로 (화면) · 손끝으로 (떨림, 화면은 어둡게)
-            val ctx = androidx.compose.ui.platform.LocalContext.current
-            if (remember { canTouch(ctx) }) {
-                TokenText(stringResource(R.string.breath_way), Tokens.TypeScale.caption1, color = p.secondary)
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
-                    GardenChip(stringResource(R.string.breath_wayEyes), !touchOn, 1030) { touchOn = false }
-                    GardenChip(stringResource(R.string.breath_wayTouch), touchOn, 1031) { touchOn = true }
-                }
-                if (touchOn) TokenText(stringResource(R.string.breath_wayTouchHelp), Tokens.TypeScale.footnote, color = p.secondary)
-            }
             TokenText(stringResource(R.string.breath_sound), Tokens.TypeScale.caption1, color = p.secondary)
             FlowRow(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
                 Sound.entries.forEachIndexed { i, s -> GardenChip(stringResource(soundName(s)), sound == s, 1008 + i) { sound = s } }
             }
             Spacer(Modifier.height(Tokens.Space.sp2))
-            GardenButton(stringResource(R.string.breath_start), { val minutes = planMinutes(kind); state.chooseBreath(if (isNight(now) && kind == BreathKind.SLEEP) state.breathKind else kind, minutes, sound); state.changeBreathTouch(touchOn); onStart(kind, minutes, sound) }, filled = true, seed = 1015)
+            GardenButton(stringResource(R.string.breath_start), { val minutes = planMinutes(kind); state.chooseBreath(if (isNight(now) && kind == BreathKind.SLEEP) state.breathKind else kind, minutes, sound); onStart(kind, minutes, sound) }, filled = true, seed = 1015)
         }
     }
 }
@@ -209,13 +198,12 @@ fun BreathScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, kind
         }
     }
     KeepScreenOn(!done)
-    val touchOn = state.breathTouch
     // 소리는 숨이 흐를 때만: 멈추면 스르르 꺼지고, 이어 하면 다시
     DisposableEffect(player, paused, done) { if (!paused && !done) player.start() else player.stop(); onDispose { player.stop() } }
     // 앱을 떠나면 (홈 · 화면 끔) 멈춤으로: 소리가 혼자 계속 흐르지 않게 (손끝 숨은 주머니 속에서도 이어지므로 그대로)
     val owner = androidx.lifecycle.compose.LocalLifecycleOwner.current
-    DisposableEffect(owner, touchOn) {
-        val obs = androidx.lifecycle.LifecycleEventObserver { _, e -> if (e == androidx.lifecycle.Lifecycle.Event.ON_STOP && !touchOn) paused = true }
+    DisposableEffect(owner) {
+        val obs = androidx.lifecycle.LifecycleEventObserver { _, e -> if (e == androidx.lifecycle.Lifecycle.Event.ON_STOP) paused = true }
         owner.lifecycle.addObserver(obs); onDispose { owner.lifecycle.removeObserver(obs) }
     }
     // 숨 시작 전: “맑은 종에 들이쉬고, 낮은 종에 내쉬어요” 와 두 종을 한 번씩 (소리가 있을 때만)
@@ -227,22 +215,18 @@ fun BreathScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, kind
         delay((S.introMs * 0.42f).toLong()); Soundscape.bowl(S.bowlOutHz.toDouble())
         delay((S.introMs * 0.58f).toLong() - 300); intro = false
     }
-    // 하루의 숨결을 손끝으로 (05): 숨을 떨림으로. 화면은 곧 아주 어두워지고, 한 번 누르면 잠깐 밝아짐 (멈춤은 길게 누르기)
-    val touch = rememberTouchBreath(state.breathTouch)
     // 화면은 숨이 끝날 때까지 그대로 켜 둠 (어둡게 하지 않음: 손끝 숨에서도 눈을 뜨면 하루가 보이게)
     // 시계: 멈춘 동안은 흐르지 않음. 손끝 숨은 벽시계로 (화면이 잠깐 꺼졌다 와도 떨림과 같은 자리)
     LaunchedEffect(paused, done, intro) {
-        if (paused || done || intro) { touch?.stop(); return@LaunchedEffect }
-        touch?.play(plan, elapsed)
-        val wall0 = wallNow() - elapsed
+        if (paused || done || intro) return@LaunchedEffect
         var last = withFrameMillis { it }
         while (!done) {
             val t = withFrameMillis { it }
             if (t - last < 33) continue   // 1초에 30번이면 충분
-            if (touch != null) elapsed = wallNow() - wall0 else elapsed += t - last
+            elapsed += t - last
             last = t
             player.breath = fullAt(plan, elapsed)
-            if (elapsed >= total) { done = true; touch?.stop(); state.recordBreath(kind); if (sound != Sound.NONE) Soundscape.bowl(S.bowlOutHz.toDouble(), 2); player.stop() }
+            if (elapsed >= total) { done = true; state.recordBreath(kind); if (sound != Sound.NONE) Soundscape.bowl(S.bowlOutHz.toDouble(), 2); player.stop() }
         }
     }
     // 숨을 끝까지 쉬었으면 (잠드는 밤 숨은 빼고): 조금 머문 뒤 Play 리뷰 창을 청할 수도 (넉 달에 한 번까지)
@@ -259,9 +243,7 @@ fun BreathScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, kind
         if (intro) return@LaunchedEffect
         // 숨마다 명상 종: 들이쉴 땐 맑은 종, 내쉴 땐 낮은 종 (머무는 숨에는 없음)
         if (sound != Sound.NONE) when (step) { BreathStep.IN -> Soundscape.bowl(S.bowlInHz.toDouble()); BreathStep.OUT -> Soundscape.bowl(S.bowlOutHz.toDouble()); else -> {} }
-        if (touch != null) return@LaunchedEffect   // 손끝 숨은 숨결 떨림이 대신
-        if (step == BreathStep.IN) view.performHapticFeedback(android.view.HapticFeedbackConstants.CLOCK_TICK)
-        // 내쉼에는 떨지 않음 (들이쉼에 아주 짧게 한 번만, 눈으로 할 때)
+        // 진동은 손끝 숨에서만 (눈으로 하는 숨은 소리 · 화면만, 1.1.5)
     }
     // 눈: 처음 3초는 뜨고, 그다음 지긋이 감고, 끝나면 천천히 뜸
     val lid = remember { Animatable(0f) }
@@ -270,9 +252,9 @@ fun BreathScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, kind
     }
     BackHandler { if (done) onDone() else paused = true }
 
-    BoxWithConstraints(Modifier.fillMaxSize().paperBackground().pointerInput(touch != null, done) {
+    BoxWithConstraints(Modifier.fillMaxSize().paperBackground().pointerInput(done) {
         // 손끝 숨: 주머니 속 누름에 멈추지 않게 한 번 누르면 잠깐 밝아지기만, 길게 누르면 멈춤
-        detectTapGestures(onTap = { if (!done && touch == null) paused = true }, onLongPress = { if (!done) paused = true })
+        detectTapGestures(onTap = { if (!done) paused = true }, onLongPress = { if (!done) paused = true })
     }) {
         val u = Theme.unit
         val screenW = maxWidth
@@ -285,11 +267,13 @@ fun BreathScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, kind
         BreathScene(kind, art, scale, groundY, animate, plan, { elapsed }, { fullAt(plan, elapsed) })
         // 위에 아주 옅게 때의 이름 (첫 1분만)
         Box(Modifier.fillMaxWidth().statusBarsPadding().padding(top = Tokens.Space.sp8).height(Tokens.Space.sp8), contentAlignment = Alignment.Center) {
-            if (!done && touch != null) Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                TokenText(stringResource(R.string.breath_touchTitle), Tokens.TypeScale.footnote.serif(), color = p.secondary.copy(alpha = 0.8f))
-                TokenText(stringResource(R.string.breath_touchSub), Tokens.TypeScale.caption2, color = p.secondary.copy(alpha = 0.6f))
-            } else if (!done && cueOn) TokenText(stringResource(partTitle(part)), Tokens.TypeScale.footnote.serif(), color = p.secondary.copy(alpha = 0.7f))
+            if (!done && cueOn) TokenText(stringResource(partTitle(part)), Tokens.TypeScale.footnote.serif(), color = p.secondary.copy(alpha = 0.7f))
         }
+        // 남은 시간 (1.1.5): 말 안내가 사라진 뒤에도 얼마나 남았는지 옅게 (분 단위로만 바뀜, 마지막 1분은 ‘곧 끝나요’)
+        val leftMin by remember(total) { androidx.compose.runtime.derivedStateOf { ((total - elapsed + 59_999) / 60_000).toInt() } }
+        if (!done && !intro) TokenText(if (leftMin <= 1) stringResource(R.string.breath_leftSoon) else stringResource(R.string.breath_left, "$leftMin"),
+            Tokens.TypeScale.caption1, Modifier.fillMaxWidth().statusBarsPadding().padding(top = Tokens.Space.sp8 * 2 + Tokens.Space.sp2),
+            color = p.secondary.copy(alpha = 0.55f), align = TextAlign.Center)
         // 하루와 땅선 (마음 물결은 웅덩이가 땅선)
         val boxH = scale * (G.Layout.haruGround - art.meta.bbox.top + G.Layout.sparkle)
         Column(Modifier.align(Alignment.TopCenter).offset(y = groundY - boxH).fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
@@ -322,7 +306,7 @@ fun BreathScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, kind
             if (kind == BreathKind.BOX && cue != null && animate) WalkCount(plan, { elapsed }, Modifier.size(u * 44f, u * 4f))
             if (done) {
                 // 아침 · 저녁 · 밤은 때의 말, 낮은 숨마다의 말
-                val msg = remember { if (touch != null) ctx.getString(R.string.breath_touchDone) else io.github.graviton94.carpediem.ui.Labels.timed(ctx, "breath_done", part) ?: ctx.getString(ctx.resources.getIdentifier("breath_done_${kind.name.lowercase()}_${(1..3).random()}", "string", ctx.packageName)) }
+                val msg = remember { io.github.graviton94.carpediem.ui.Labels.timed(ctx, "breath_done", part) ?: ctx.getString(ctx.resources.getIdentifier("breath_done_${kind.name.lowercase()}_${(1..3).random()}", "string", ctx.packageName)) }
                 TokenText(msg, Tokens.TypeScale.headline.serif(), Modifier.fillMaxWidth().semantics { liveRegion = LiveRegionMode.Polite }, align = TextAlign.Center)
                 Spacer(Modifier.height(Tokens.Space.sp6))
                 // 고마움 명상 뒤: 떠오른 고마움을 오늘의 한 줄로 (오늘 아직 보내지 않았을 때)

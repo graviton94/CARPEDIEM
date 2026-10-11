@@ -380,7 +380,6 @@ private fun MainActivity.debugSetup(state: AppState): Screen {
     // 캡처용: 걱정한 밤 다음 아침 (06) · 아침 씨앗을 심은 날 (04, 저녁에 ‘싹이 텄나요?’)
     if (x.getBooleanExtra("cd.comfort", false)) state.addSampleWorryYesterday()
     if (x.getBooleanExtra("cd.morningSeed", false)) state.addSampleSeed()
-    if (x.hasExtra("cd.touch")) state.changeBreathTouch(x.getBooleanExtra("cd.touch", false))
     // 캡처용: 오늘 열리는 항아리 (10) · 지난 한 해의 한 줄들 (07 나이테, 생일 아침에)
     if (x.getBooleanExtra("cd.capsule", false)) state.addSampleCapsule()
     if (x.getBooleanExtra("cd.ringYear", false)) state.addSampleRingYear()

@@ -590,27 +590,15 @@ class ChancesTest {
         val c = Seeds.choices(10, day, 4); assertEquals(4, c.size); assertTrue(c.all { it in 0 until 10 })
         assertNotEquals(c, Seeds.choices(10, day.plusDays(1), 4))
     }
-    @Test fun breathCyclesAndTouchWave() {
+    @Test fun breathCycles() {
         val r = Breath.Rhythm(4.0, 7.0, 8.0, 0.0)
         val plan = Breath.cycles(r, 2)
         assertEquals(6, plan.size); assertEquals(38_000L, plan.last().let { it.startMs + it.lengthMs })
-        val (times, amps) = Breath.touchWave(plan, 0)
-        assertEquals(38_000L, times.sum()); assertEquals(times.size, amps.size)
-        assertTrue(amps.all { it in 0..255 })
-        // 들이쉼은 여리게 부풀고 (처음 < 끝), 머묾은 고요, 내쉼은 잦아들어 쉼으로
-        val first = amps.first(); assertTrue(amps.take(20).max() > first)
-        assertEquals(0, Breath.touchWave(plan, 5_000).second.first())
-        assertEquals(0, amps.last()); assertTrue(amps.max() <= 60, "여리게"); assertTrue(amps.filter { it > 0 }.min() >= 18, "느껴지는 바닥")
-        // 톡톡 두드리지 않음: 쉼에서 떨림으로 넘어가는 건 숨마다 (들이쉼 · 내쉼) 두 번까지
-        val starts = amps.indices.count { i -> amps[i] > 0 && (i == 0 || amps[i - 1] == 0) }; assertTrue(starts <= 4, "숨결: $starts")
-        // 세기는 한 칸씩 이어서 (갑자기 튀지 않음)
-        assertTrue(amps.indices.drop(1).all { i -> amps[i] == 0 || amps[i - 1] == 0 || kotlin.math.abs(amps[i] - amps[i - 1]) <= 6 })
         // 한숨 호흡: 첫 들이쉼 0 → 0.75, 한 번 더 0.75 → 1, 그다음 내쉼
         val sigh = Breath.cycles(Breath.Rhythm(2.0, 0.0, 6.0, 0.0, topS = 1.0), 1)
         assertEquals(listOf(BreathStep.IN, BreathStep.IN, BreathStep.OUT), sigh.map { it.step }); assertEquals(9_000L, sigh.last().let { it.startMs + it.lengthMs })
         assertEquals(Breath.FIRST_SIP, Breath.fullness(sigh[0], 1f), 1e-4f); assertEquals(1f, Breath.fullness(sigh[1], 1f), 1e-4f)
         // 중간부터: 남은 길이만큼
-        assertEquals(38_000L - 20_000L, Breath.touchWave(plan, 20_000).first.sum())
     }
 
     @Test fun capsulesBuryOpenOnTheDay() {

@@ -3,6 +3,8 @@
 <resources>
     <string name="letgo_empty">Write your line first.</string>
     <string name="breath_inTop">One more sip in</string>
+    <string name="breath_left">%1$s min left</string>
+    <string name="breath_leftSoon">Almost done</string>
     <string name="note_dismiss">Not today</string>
     <string name="closeDay_ask">Close the day now?</string>
     <string name="adorn_card">%1$s %2$s</string>
@@ -953,14 +955,6 @@
     <string name="seed_choice_9">Check in on someone</string>
     <string name="seed_choice_10">Put the screen down for a bit</string>
     <string name="seed_choice_11">Go to bed early</string>
-    <string name="breath_way">How to breathe with Haru</string>
-    <string name="breath_wayEyes">With eyes</string>
-    <string name="breath_wayTouch">With fingertips</string>
-    <string name="breath_wayTouchHelp">Close your eyes and feel Haru\'s breath at your fingertips. The screen soon dims; press and hold to stop.</string>
-    <string name="breath_touchTitle">Slowly in tune with Haru</string>
-    <string name="breath_touchSub">Haru\'s breath goes on even when the screen dims</string>
-    <string name="breath_touchHold">Press and hold to stop</string>
-    <string name="breath_touchDone">You and Haru breathed as one.</string>
     <string name="comfort_from">From Haru</string>
     <string name="comfort_0">Last night felt heavy.\nI was right here all night.</string>
     <string name="comfort_1">I\'ll hold a bit of the worry.\nGo lightly today.</string>

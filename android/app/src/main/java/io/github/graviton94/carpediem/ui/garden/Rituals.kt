@@ -5,9 +5,6 @@ import android.app.Activity
 import android.content.Context
 import android.os.Build
 import android.os.SystemClock
-import android.os.VibrationEffect
-import android.os.Vibrator
-import android.os.VibratorManager
 import android.view.WindowManager
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.Animatable
@@ -394,9 +391,7 @@ private fun ShortBreath(state: AppState, kind: BreathKind, cycles: Int, title: I
     val total = plan.last().let { it.startMs + it.lengthMs }
     var elapsed by remember(kind) { mutableLongStateOf(0L) }
     val animate = remember { !reducedMotion(ctx) }
-    val touch = rememberTouchBreath(state.breathTouch)
     LaunchedEffect(kind) {
-        touch?.play(plan, 0)
         var last = withFrameMillis { it }
         while (elapsed < total) {
             val t = withFrameMillis { it }
@@ -410,7 +405,6 @@ private fun ShortBreath(state: AppState, kind: BreathKind, cycles: Int, title: I
     val topUp by remember(plan) { androidx.compose.runtime.derivedStateOf { (Breath.at(plan, elapsed)?.first?.lo ?: 0f) > 0f } }
     LaunchedEffect(step) {
         if (state.sound != Sound.NONE) when (step) { BreathStep.IN -> Soundscape.bowl(G.Sound.bowlInHz.toDouble()); BreathStep.OUT -> Soundscape.bowl(G.Sound.bowlOutHz.toDouble()); else -> {} }
-        if (touch == null && step == BreathStep.IN) view.performHapticFeedback(android.view.HapticFeedbackConstants.CLOCK_TICK)
     }
     BoxWithConstraints(Modifier.fillMaxSize()) {
         val u = Theme.unit
@@ -471,49 +465,7 @@ private fun DarkStep(onDone: () -> Unit) {
     }
 }
 
-// ───────────────────────── 하루의 숨결을 손끝으로 ─────────────────────────
-
-/** 숨을 떨림으로 (05). 세기를 조절할 수 있는 폰은 잠든 작은 숨결처럼 부풀고 잦아드는 떨림, 아니면 들이쉼마다 아주 짧게 한 번. */
-/** 세기 조절이 없는 폰의 톡 길이 (ms): 짧을수록 여리게 느껴짐. */
-private const val TOUCH_PULSE_PLAIN = 14L
-internal class TouchBreath(private val vib: Vibrator) {
-    fun play(plan: List<Breath.Phase>, from: Long) {
-        if (!vib.hasVibrator()) return
-        val effect = if (vib.hasAmplitudeControl()) {
-            val (t, a) = Breath.touchWave(plan, from)
-            if (t.isEmpty()) return
-            VibrationEffect.createWaveform(t, a, -1)
-        } else {
-            // 세기 조절이 없으면: 들이쉼이 시작될 때만 아주 짧게 (한숨 호흡의 ‘한 번 더’ 는 빼고, 나머지는 고요)
-            val times = ArrayList<Long>(); var at = from
-            plan.filter { it.step == io.github.graviton94.carpediem.core.BreathStep.IN && it.lo == 0f && it.startMs >= from }.forEach { ph ->
-                times.add(ph.startMs - at); times.add(TOUCH_PULSE_PLAIN); at = ph.startMs + TOUCH_PULSE_PLAIN
-            }
-            if (times.isEmpty()) return
-            VibrationEffect.createWaveform(times.toLongArray(), -1)
-        }
-        runCatching { vib.vibrate(effect) }
-    }
-    fun stop() { runCatching { vib.cancel() } }
-}
-
-private fun vibrator(ctx: Context): Vibrator? =
-    if (Build.VERSION.SDK_INT >= 31) ctx.getSystemService(VibratorManager::class.java)?.defaultVibrator
-    else @Suppress("DEPRECATION") (ctx.getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator)
-
-internal fun canTouch(ctx: Context): Boolean = vibrator(ctx)?.hasVibrator() == true
-
-/** on 이면 떨림 하나 (화면을 떠나면 멈춤). */
-@Composable
-internal fun rememberTouchBreath(on: Boolean): TouchBreath? {
-    val ctx = LocalContext.current
-    val t = remember(on) { if (on) vibrator(ctx)?.takeIf { it.hasVibrator() }?.let { TouchBreath(it) } else null }
-    DisposableEffect(t) { onDispose { t?.stop() } }
-    return t
-}
-
-
-/** 손끝 숨에서 쓰는 벽시계 (화면이 잠깐 꺼졌다 와도 떨림과 같은 자리). */
+/** 벽시계 (화면이 꺼졌다 와도 흐르는 시간, 잠들기 타이머). */
 internal fun wallNow(): Long = SystemClock.elapsedRealtime()
 
 /** 추억: 피어난 씨앗 (04). 핀 것만, 최근 것부터. 쉰 씨앗 · 개수 비교는 두지 않는다. */

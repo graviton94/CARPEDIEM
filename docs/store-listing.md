@@ -23,7 +23,7 @@
 기쁨 · 설렘 · 뿌듯함부터 덤덤함 · 싱숭생숭, 불안 · 속상함 · 슬픔까지. 열 가지 마음 가운데 하나와 함께 오늘을 한 줄에 실어 떠나보내요. 보낸 마음은 그 달의 별자리를 따라 ‘마음의 기록’으로 놓이고 (낮엔 꽃, 밤엔 별), 계절마다 ‘계절의 편지’로 조용히 돌아와요.
 
 숨, 쉼 · 돌멍하기
-네 가지 숨이 저마다의 호흡법이에요. 마음 물결 (공명 호흡 5분) · 마음 산책 (상자 호흡 4분) · 마음 등불 (잠들기 전 4-7-8 호흡) · 마음 꽃밭 (한숨 호흡 5분). 숨이 곧 소리가 되어 따라가기만 하면 되고, 손끝으로는 잠든 숨결 같은 여린 떨림으로 느껴요. 마친 숨은 그날 정원에 발자국 · 꽃 · 따뜻한 등빛으로 남아요. 돌멍하기에선 구름 · 연못 · 화톳불과 계절의 소리, 정원 돌들의 느린 노래를 오래 바라봐요.
+네 가지 숨이 저마다의 호흡법이에요. 마음 물결 (공명 호흡 5분) · 마음 산책 (상자 호흡 4분) · 마음 등불 (잠들기 전 4-7-8 호흡) · 마음 꽃밭 (한숨 호흡 5분). 숨이 곧 소리가 되어 따라가기만 하면 돼요. 마친 숨은 그날 정원에 발자국 · 꽃 · 따뜻한 등빛으로 남아요. 돌멍하기에선 구름 · 연못 · 화톳불과 계절의 소리, 정원 돌들의 느린 노래를 오래 바라봐요.
 
 곁에 있는 사람들
 가족의 생일엔 카드 한 장, 계절마다 돌 곁에 조각 하나. 곁을 떠난 가족은 기억의 돌로, 하늘의 작은 별로 남아요.
@@ -57,7 +57,7 @@ Today's line
 From joy, excitement and pride to so-so and unsettled, to anxious, upset and sad — pick one of ten feelings and send today off in a single line. What you sent settles along the month's constellation — flowers by day, stars by night — and comes back each season as a letter.
 
 Breathe, rest, and gaze
-Four breaths, each its own method: Ripple (resonance breathing, 5 min), Mind walk (box breathing, 4 min), Lantern (4-7-8 before sleep) and Flower bed (cyclic sighing, 5 min). The breath becomes the sound, so you simply follow it, and your fingertips feel a soft swell like a sleeping breath. Each finished breath leaves footprints, flowers or a warmer lantern in the garden that day. Gaze mode lets you watch clouds, a pond or a small fire with the sounds of the season and a slow song of your garden's stones.
+Four breaths, each its own method: Ripple (resonance breathing, 5 min), Mind walk (box breathing, 4 min), Lantern (4-7-8 before sleep) and Flower bed (cyclic sighing, 5 min). The breath becomes the sound, so you simply follow it. Each finished breath leaves footprints, flowers or a warmer lantern in the garden that day. Gaze mode lets you watch clouds, a pond or a small fire with the sounds of the season and a slow song of your garden's stones.
 
 The people beside you
 A card for family birthdays, a seasonal piece left beside a stone. Those who are gone stay as memory stones and small stars in the sky.
@@ -91,7 +91,7 @@ No account, no ads, no server. Everything stays right here.
 よろこび・わくわく・ほこらしいから、たんたん・そわそわ、不安・しょんぼり・かなしみまで。十の気持ちからひとつ選んで、今日をひとことにのせて送ります。送った気持ちはその月の星座をたどって「こころの記録」に置かれ（昼は花、夜は星）、季節ごとに「季節の手紙」として静かに戻ってきます。
 
 ひと息・石ながめ
-四つのひと息は、それぞれの呼吸法です。こころの波紋（共鳴呼吸 5分）・こころの散歩（ボックス呼吸 4分）・こころの灯り（眠る前の4-7-8呼吸）・こころの花畑（ため息呼吸 5分）。息がそのまま音になるので、ついていくだけ。指先には、眠る寝息のようなやわらかな振動。終えたひと息は、その日の庭に足あと・花・あたたかな灯りとして残ります。石ながめでは、雲・池・たき火と季節の音、庭の石たちのゆっくりした歌を、ながめます。
+四つのひと息は、それぞれの呼吸法です。こころの波紋（共鳴呼吸 5分）・こころの散歩（ボックス呼吸 4分）・こころの灯り（眠る前の4-7-8呼吸）・こころの花畑（ため息呼吸 5分）。息がそのまま音になるので、ついていくだけ。終えたひと息は、その日の庭に足あと・花・あたたかな灯りとして残ります。石ながめでは、雲・池・たき火と季節の音、庭の石たちのゆっくりした歌を、ながめます。
 
 そばにいる人たち
 家族の誕生日にはカードを一枚、季節ごとに石のそばにかけらをひとつ。旅立った家族は思い出の石として、空の小さな星として残ります。
@@ -125,7 +125,7 @@ No account, no ads, no server. Everything stays right here.
 從喜悅、心動、有成就感，到淡淡的、心神不寧，再到不安、難過、悲傷——從十種心情裡選一種，把今天寫進一句話裡放下。放下的心情會沿著當月的星座，排進「心情的紀錄」（白天是花，夜裡是星星），每個季節再化作「季節的信」，靜靜回來。
 
 喘口氣、看石發呆
-四種呼吸，各有各的方法：心之漣漪（共振呼吸 5 分鐘）、心之散步（方塊呼吸 4 分鐘）、心之燈火（睡前 4-7-8 呼吸）、心之花田（嘆息呼吸 5 分鐘）。呼吸本身就是聲音，跟著走就好；指尖則感受到像熟睡呼吸般輕柔的震動。完成的呼吸，會在當天的庭院留下腳印、花朵和溫暖的燈光。看石發呆時，靜靜望著雲朵、池塘、營火，聽著季節的聲音，和庭院石頭們緩慢的歌。
+四種呼吸，各有各的方法：心之漣漪（共振呼吸 5 分鐘）、心之散步（方塊呼吸 4 分鐘）、心之燈火（睡前 4-7-8 呼吸）、心之花田（嘆息呼吸 5 分鐘）。呼吸本身就是聲音，跟著走就好。完成的呼吸，會在當天的庭院留下腳印、花朵和溫暖的燈光。看石發呆時，靜靜望著雲朵、池塘、營火，聽著季節的聲音，和庭院石頭們緩慢的歌。
 
 身邊的人
 家人生日時寄一張卡片，每個季節在石頭旁放上一小片。離開身邊的家人，會化作思念之石，成為天上的小星星。
