@@ -23,6 +23,25 @@
   // 생일: 고깔 24 × 36 (머리에 닿는 아래 가운데 = 상자 (12, 33)) · 케이크 32 × 40 (땅 = 상자 (16, 38))
   function hatApp(ctx, W) { hj(ctx, W / 24); ctx.translate(12, 10); partyHat(ctx); }
   function cakeApp(ctx, W) { hj(ctx, W / 32); ctx.translate(16, 14); partyCake(ctx); }
+  // 응원하기 그림 (1.1.5, 한지 세상): 해 질 녘 하늘 · 먼 언덕 · 땅 띠 위에 손그림 촛불과 찻잔. 하루는 앱이 가운데 땅 (높이 × ground) 에 얹음
+  function supportApp(ctx, W, H, ground) { hj(ctx, W / SW); var P = WPAL.autumn, h = H / U, gy = h * ground;
+    var g = ctx.createLinearGradient(0, 0, 0, gy); g.addColorStop(0, P.sky); g.addColorStop(1, P.sky2); ctx.fillStyle = g; ctx.fillRect(0, 0, SW, h);
+    texFill(ctx, TEX.fiber, 0.5, "source-over", 0.4); texFill(ctx, TEX.grain, 0.45, "multiply", 0.5);
+    cloud(ctx, 70, 46, 0.7, P.cloud, 2611); cloud(ctx, 210, 30, 0.5, P.cloud, 2612);
+    sun(ctx, 318, 62, 0.9, "#F6C979");
+    var far = ridgeS(gy - 26, 18, 2620, 0.014), mid = ridgeS(gy - 8, 9, 2621, 0.02), path = []; for (var x = -14; x <= SW + 14; x += 5) path.push([x, gy + Math.sin(x * 0.05) * 1]);
+    [[far, mixHex(P.far, P.sky2, 0.55)], [mid, mixHex(P.mid, P.sky2, 0.25)], [path, P.path]].forEach(function (L, i) { HV.world(ctx, down(L[0]).map(function (q) { return [q[0], Math.min(q[1], h + 30)]; }), L[1], 2630 + i, { kind: "layer", top: L[0] }); });
+    HAND = true;
+    // 촛불: 한지 받침 · 초 · 작은 불꽃 (왼쪽)
+    var cx = 92; paper(ctx, blob(cx, gy - 1, 15, 3.2, 2640, 0.04), "#C9C2B6", 2640, { rim: 0.4 });
+    paper(ctx, [[cx - 5, gy - 2], [cx + 5, gy - 2], [cx + 5, gy - 28], [cx - 5, gy - 28]], "#F3EEE4", 2641, { rim: 0.4, light: 0.9 });
+    paper(ctx, [[cx, gy - 40]].concat(bez([cx, gy - 40, cx + 4.6, gy - 34, cx + 3.4, gy - 29, cx, gy - 28.6], 8), bez([cx, gy - 28.6, cx - 3.4, gy - 29, cx - 4.6, gy - 34, cx, gy - 40], 8)), "#F6C979", 2642, { rim: 0, sh: 0.2, light: 0.9 });
+    // 찻잔 (오른쪽, 계절 조각과 같은 한지 찻잔)
+    piece(ctx, 300, gy - 24 * 1.25, 1.25, "tea");
+    HAND = false; }
+  // 손그림 한지 별 (밤하늘 반짝임) · 깃털 (한 줄을 보낸 돌 곁)
+  function starApp(ctx, W) { hj(ctx, W / 40); handStar(ctx); }
+  function featherApp(ctx, W) { hj(ctx, W / 40); handFeather(ctx); }
   function sunApp(ctx, W) { hj(ctx, W / 60); sun(ctx, 30, 30, 1.2, "#F6C979"); }
   function moonApp(ctx, W) { hj(ctx, W / 60); moon(ctx, 30, 30, 1.2); }
   // 둥근 달 60 × 60, 가운데 (30, 30) 반지름 24 = 상자 반의 0.8 (Night.moonDisk)
@@ -60,13 +79,13 @@
   var GINK = "#33281F", GLINE = 2.1, GEYE = 1.1;
   function gPath(ctx, pts) { var n = pts.length; ctx.beginPath(); for (var i = 0; i < n; i++) { var a = pts[i], b = pts[(i + 1) % n], mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2; i ? ctx.quadraticCurveTo(a[0], a[1], mx, my) : ctx.moveTo(mx, my); } var a0 = pts[0], b0 = pts[1]; ctx.quadraticCurveTo(a0[0], a0[1], (a0[0] + b0[0]) / 2, (a0[1] + b0[1]) / 2); ctx.closePath(); }
   function gOval(cx, cy, rx, ry, rot, squish) { var p = []; for (var i = 0; i < 16; i++) { var t = i / 16 * Math.PI * 2, x = Math.cos(t) * rx, y = Math.sin(t) * ry; if (squish && y > 0) y *= squish; var c = Math.cos(rot || 0), s = Math.sin(rot || 0); p.push([cx + x * c - y * s, cy + x * s + y * c]); } return p; }
-  function gPiece(ctx, pts, col, o) { o = o || {}; ctx.save(); gPath(ctx, pts); ctx.fillStyle = col; ctx.fill(); ctx.clip();
+  function gPiece(ctx, pts, col, o) { o = o || {}; if (HAND) return handOne(ctx, pts, col, 9000 + Math.round(pts[0][0] * 31 + pts[0][1] * 17), { inner: o.inner, lw: 0.55 }); ctx.save(); gPath(ctx, pts); ctx.fillStyle = col; ctx.fill(); ctx.clip();
     var pat = ctx.createPattern(TEX.fiber, "repeat"); if (pat.setTransform) pat.setTransform(new DOMMatrix().scale(0.12)); ctx.globalAlpha = 0.5; ctx.fillStyle = pat; ctx.fillRect(-5, -5, 50, 50); ctx.globalAlpha = 1;
     var xs = pts.map(function (q) { return q[0]; }), ys = pts.map(function (q) { return q[1]; }), l = Math.min.apply(0, xs), r = Math.max.apply(0, xs), t = Math.min.apply(0, ys), b = Math.max.apply(0, ys);
     var g = ctx.createLinearGradient(l, t, l + (r - l) * 0.5, b); g.addColorStop(0, "rgba(255,255,255,.22)"); g.addColorStop(0.5, "rgba(255,255,255,0)"); g.addColorStop(1, "rgba(0,0,0,.12)"); ctx.fillStyle = g; ctx.fillRect(l, t, r - l, b - t);
     if (o.inner) o.inner(ctx);
     ctx.restore(); if (o.line !== 0) { gPath(ctx, pts); ctx.strokeStyle = GINK; ctx.lineWidth = o.line || GLINE; ctx.lineJoin = "round"; ctx.stroke(); } }
-  function gEye(ctx, x, y, r, lx) { ctx.save(); ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fillStyle = "#FFFFFF"; ctx.fill(); ctx.clip(); var pr = r * 0.56, px = x + (lx || 0.25) * (r - pr - r * 0.1), py = y + 0.2 * (r - pr);
+  function gEye(ctx, x, y, r, lx) { if (HAND) return handEye(ctx, x, y, r); ctx.save(); ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fillStyle = "#FFFFFF"; ctx.fill(); ctx.clip(); var pr = r * 0.56, px = x + (lx || 0.25) * (r - pr - r * 0.1), py = y + 0.2 * (r - pr);
     ctx.fillStyle = "#1E1915"; ctx.beginPath(); ctx.arc(px, py, pr, 0, 7); ctx.fill(); ctx.fillStyle = "#FFFFFF"; ctx.beginPath(); ctx.arc(px - pr * 0.36, py - pr * 0.38, pr * 0.28, 0, 7); ctx.fill(); ctx.restore();
     ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.strokeStyle = GINK; ctx.lineWidth = GEYE; ctx.stroke(); }
   function gShadow(ctx, cx, w) { ctx.save(); ctx.fillStyle = "rgba(51,40,31,.13)"; ctx.beginPath(); ctx.ellipse(cx, 37, w / 2, 1.5, 0, 0, 7); ctx.fill(); ctx.restore(); }

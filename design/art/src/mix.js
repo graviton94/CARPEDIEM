@@ -2,20 +2,21 @@
      선이 있는 면: 선에서 살짝 어긋난 파스텔 + 옅은 크레용 결 + 굵은 크레용 선(짙은 갈색, 두 번, 종이 결에 걸림).
      짙은 선(줄기 · 나선 · 잎맥): 굵은 크레용 선. 옅은 선(김 · 물결 · 홀씨): 가는 연필 그대로.
      선이 없는 면(하늘 · 땅 · 불꽃 · 그림자)은 파스텔 그대로. */
-  var CRAYON_LINE = "#33281F";
+  var CRAYON_LINE = "#33281F", INK_SCALE = 1;   // 손그림 한지로 다시 구울 땐 (hanji_hand.js objHand) 선을 갈색 · 가늘게
   var pastelBase = pastel, scribbleBase = scribble;
   function luma(c) { c = C(c); return c[0] * 0.3 + c[1] * 0.59 + c[2] * 0.11; }
   pastel = function (ctx, pts, col, o) {
+    if (PASTEL_HOOK) return PASTEL_HOOK(ctx, pts, col, o);
     o = o || {};
     if (o.line === false) return pastelBase(ctx, pts, col, o);
     FILL.mix(ctx, pts, col, { seed: o.seed });
-    ink(ctx, pts, Math.max(1.8, (o.lw || 1) * 2.6), CRAYON_LINE, { vary: 0.32, press: 0.74, passes: 2, seed: (o.seed || 1) + 3 });
+    ink(ctx, pts, Math.max(1.8, (o.lw || 1) * 2.6) * INK_SCALE, CRAYON_LINE, { vary: 0.32, press: 0.74, passes: 2, seed: (o.seed || 1) + 3 });
   };
   scribble = function (ctx, pts, col, seed, w, o) {
     o = o || {}; w = w || 1;
     if ((o.alpha != null && o.alpha < 0.9) || luma(col) > 150) return scribbleBase(ctx, pts, col, seed, w, o);
     var isDark = luma(col) < 90, lw = w < 2 ? w * (isDark ? 1.9 : 1.3) : w * 1.15, dark = isDark ? CRAYON_LINE : sh(col, -0.25);
-    ink(ctx, pts, lw, dark, { open: true, vary: 0.3, press: 0.76, passes: 2, seed: seed, taper: w >= 2 });
+    ink(ctx, pts, lw * INK_SCALE, dark === CRAYON_LINE || INK_SCALE === 1 ? dark : sh(dark, 0.1), { open: true, vary: 0.3, press: 0.76, passes: 2, seed: seed, taper: w >= 2 });
   };
 
   // 하루 (크레용 파스텔)

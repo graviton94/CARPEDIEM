@@ -43,6 +43,10 @@
     return p;
   }
   var PT = document.createElement("canvas").getContext("2d");
+  // 손그림 한지 (hanji_hand.js) 처럼 옮기고 줄인 자리 위에 그릴 때: 겹을 지금 변환 그대로 얹음 (기본은 화면 좌표)
+  var LAYER_CTM = false;
+  // 손그림 한지로 옛 크레용 그림을 다시 구울 때 (hanji_hand.js objHand): 크레용 칠 대신 한지 조각 + 크레용으로
+  var PASTEL_HOOK = null, PENCIL_HOOK = null;
 
   // 한 겹: 따로 그린 뒤 종이 결로 걸러서 얹음
   function layer(ctx, bb, draw, press, o) {
@@ -54,7 +58,7 @@
     draw(lx);
     lx.setTransform(1, 0, 0, 1, 0, 0);
     if (press < 1) { lx.globalCompositeOperation = "destination-in"; lx.fillStyle = toothPattern(lx, TOOTH.masks[Math.max(0, Math.min(4, Math.round(press * 4)))], -x0, -y0); lx.fillRect(0, 0, w, h); }
-    ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = o.alpha == null ? 1 : o.alpha; if (o.op) ctx.globalCompositeOperation = o.op; ctx.drawImage(L, x0, y0); ctx.restore();
+    ctx.save(); if (LAYER_CTM) { var m = ctx.getTransform(); ctx.setTransform(m.a / U, m.b / U, m.c / U, m.d / U, m.e, m.f); } else ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = o.alpha == null ? 1 : o.alpha; if (o.op) ctx.globalCompositeOperation = o.op; ctx.drawImage(L, x0, y0); ctx.restore();
   }
 
   function bbox(pts) { var a = 1e9, b = 1e9, c = -1e9, d = -1e9; pts.forEach(function (q) { a = Math.min(a, q[0]); b = Math.min(b, q[1]); c = Math.max(c, q[0]); d = Math.max(d, q[1]); }); return [a, b, c - a, d - b]; }
@@ -82,6 +86,7 @@
 
   // 파스텔로 칠하기
   function pastel(ctx, pts, col, o) {
+    if (PASTEL_HOOK) return PASTEL_HOOK(ctx, pts, col, o);
     o = o || {}; col = C(col);
     var path = smoothPath(pts), bb = bbox(pts), r = rng(o.seed || 1);
     var ang = o.ang == null ? -0.62 : o.ang, len = o.len || Math.max(3, Math.min(bb[2], bb[3]) * 0.22), wid = o.wid || Math.max(1.1, len * 0.24);
@@ -109,6 +114,7 @@
 
   // 연필 선: 필압이 변하고, 두 번 긋고, 끊기거나 조금 겹침
   function pencil(ctx, pts, col, seed, w, o) {
+    if (PENCIL_HOOK) { var hk = PENCIL_HOOK; PENCIL_HOOK = null; try { return hk(ctx, pts, col, seed, w, o); } finally { PENCIL_HOOK = hk; } }
     o = o || {}; col = C(col);
     var r = rng((seed || 1) * 13 + 7), closed = !o.open, lw = w || 1, P = pts, bb = bbox(pts), A = o.alpha == null ? 1 : o.alpha;
     layer(ctx, bb, function (x) {

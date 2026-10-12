@@ -5,7 +5,9 @@
   function multi(ctx, polys) { ctx.beginPath(); polys.forEach(function (p) { p.forEach(function (q, i) { i ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1]); }); ctx.closePath(); }); }
   // 한지 한 조각 (또는 한 번에 오린 여러 조각). o.rim = 찢긴 흰 결 폭, o.sh = 그림자 배율, o.fiber, o.light = 흰 결 밝기
   function paper(ctx, polys, col, seed, o) {
-    o = o || {}; if (NIGHT && !o.glow) col = mixHex(col, "#2E3858", 0.42); if (typeof polys[0][0] === "number") polys = [polys]; if (!o.eo) polys = polys.map(orient);
+    // 손그림 한지 (hanji_hand.js): HAND 일 때 물건 · 손님은 크레용 칠 + 손선으로
+    o = o || {}; if (HAND && !o.raw) return handOne(ctx, polys, col, seed, o);
+    if (NIGHT && !o.glow) col = mixHex(col, "#2E3858", 0.42); if (typeof polys[0][0] === "number") polys = [polys]; if (!o.eo) polys = polys.map(orient);
     var rim = o.rim == null ? 1.1 : o.rim, jit = o.jit == null ? Math.min(0.55, rim * 0.5) : o.jit, sh = (o.sh == null ? 1 : o.sh) * DEPTH / 2.3 * 2.3;
     var torn = polys.map(function (p, i) { return offsetRing(p, rim, jit, seed + i * 13); });
     ctx.save(); ctx.shadowColor = "rgba(46,34,24," + Math.min(0.42, 0.18 * sh) + ")"; ctx.shadowBlur = (2 + 2.2 * sh) * SHK(); ctx.shadowOffsetY = (0.5 + 0.8 * sh) * SHK(); ctx.shadowOffsetX = 0.2 * sh * SHK();
