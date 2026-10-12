@@ -245,7 +245,7 @@ s g71_credits_end 45 --ez cd.ringYear true --es cd.screen credits --ei cd.credit
 if wantany g73a g73b g73 g73c; then open --ez cd.title true --es cd.now 2026-10-03T07:40; shot g73a_title_sky 1; shot g73b_title_pan 2; shot g73_title_morning 12; shot g73c_title_hint 8; fi
 s g74_title_night 18 --ez cd.title true --es cd.now 2026-10-03T22:30
 # 1.1.5 첫 화면 → 정원이 차례로 피어남 (첫 화면이 다 걷힌 빈 하늘 · 땅 → 돌들 → 글자 · 버튼)
-if wantany g91a g91b g91c; then open --ez cd.title true --es cd.now 2026-10-03T15:00; sleep 12; adb shell input tap 540 1200; shot g91a_bloom_empty 1.6; shot g91b_bloom_mid 1.2; shot g91c_bloom_done 3; fi
+if wantany g91a g91b g91c g91d g91e; then open --ez cd.title true --es cd.now 2026-10-03T15:00; sleep 12; adb shell input tap 540 1200; shot g91a_bloom_fade 0.8; shot g91d_bloom_empty 0.8; shot g91b_bloom_mid 1.0; shot g91e_bloom_late 1.0; shot g91c_bloom_done 3; fi
 # 1.1.5 아침 이슬: 첫 화면 → 김 서린 유리 → 하루 자리를 닦음 → 걷힘
 if wantany g90a g90b g90c; then open --ez cd.title true --ez cd.dew true --es cd.now 2026-10-03T08:10; sleep 12; adb shell input tap 540 1200; shot g90a_dew_glass 4
   adb shell input swipe 150 900 930 1000 700; adb shell input swipe 930 1100 150 1200 700; shot g90b_dew_wiping 1

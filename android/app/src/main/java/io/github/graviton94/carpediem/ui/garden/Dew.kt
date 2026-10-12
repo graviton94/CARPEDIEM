@@ -45,6 +45,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import io.github.graviton94.carpediem.R
 import io.github.graviton94.carpediem.design.Theme
 import io.github.graviton94.carpediem.design.Tokens
@@ -68,7 +69,8 @@ internal val dewBlurs = android.os.Build.VERSION.SDK_INT >= 31
 internal fun MorningDew(garden: GraphicsLayer, haru: Rect, onHaru: (Float) -> Unit, onClear: (auto: Boolean) -> Unit, onGone: () -> Unit) {
     val g = Theme.gc
     val density = LocalDensity.current
-    val u = with(density) { Theme.unit.toPx() }
+    // 크기는 화면 폭의 1% 를 한 칸으로 (손끝 폭 · 물방울이 폰 크기와 함께 커지게)
+    val u = with(density) { (androidx.compose.ui.platform.LocalConfiguration.current.screenWidthDp.dp / 100f).toPx() }
     val scope = rememberCoroutineScope()
     val fog = remember { Animatable(1f) }          // 김 전체 (걷히면 0)
     val words = remember { Animatable(0f) }        // 유리 위 두 줄
@@ -205,10 +207,10 @@ private const val ROWS = 24
 /** 하루 자리가 이만큼 · 화면이 이만큼 닦이면 남은 김이 스르르. */
 private const val HARU_DONE = 0.5f
 private const val ALL_DONE = 0.4f
-/** 손끝 폭 · 가장자리 번짐 · 흐림 (정원 칸). */
+/** 손끝 폭 · 가장자리 번짐 · 흐림 (화면 폭의 %). */
 private const val WIPE_W = 9f
 private const val WIPE_SOFT = 3f
-private const val BLUR = 4f
+private const val BLUR = 1.5f
 private const val TRAIL_W = 0.7f
 private const val TRAIL_ALPHA = 90
 /** 김의 한지빛 (흐린 정원 위) · 흐림이 없는 폰은 더 짙게. */

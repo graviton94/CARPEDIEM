@@ -228,8 +228,8 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
             Chip(stringResource(R.string.letgo_today), day == null, seed = 950) { state.writeDay = null }
             Chip(day?.let { RecordText.day(ctx, it) } ?: stringResource(R.string.letgo_other), day != null, seed = 951) { picking = true }
         }
-        // 때에 맞는 소개 (아침 · 저녁 · 밤), 낮은 원래 말
-        val sub = remember(today) { io.github.graviton94.carpediem.ui.Labels.timed(ctx, "letgo_sub", io.github.graviton94.carpediem.ui.Labels.part(state.fixedNow ?: java.time.LocalDateTime.now())) }
+        // 때에 맞는 소개 (아침 · 저녁 · 밤), 낮은 원래 말. 다른 날을 쓸 땐 (지금 때와 상관없으니) 원래 말
+        val sub = remember(today, day) { if (day != null) null else io.github.graviton94.carpediem.ui.Labels.timed(ctx, "letgo_sub", io.github.graviton94.carpediem.ui.Labels.part(state.fixedNow ?: java.time.LocalDateTime.now())) }
         TokenText(sub ?: stringResource(R.string.letgo_sub), lineType(Tokens.TypeScale.callout, Theme.garden), color = p.secondary)
         // 몇 해 전 오늘 보낸 한 줄: 먼저 조용히 알리고, 누르면 펼친다
         val recalls = remember(state.lines, today, day) { if (day != null) emptyList() else Lines.yearsAgo(state.lines, today) }
