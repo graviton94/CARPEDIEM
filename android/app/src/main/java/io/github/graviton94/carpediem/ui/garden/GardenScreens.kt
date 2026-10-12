@@ -660,9 +660,12 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                     val pebbleLabel = stringResource(R.string.pebble_a11y)
                     val tookMsg = stringResource(R.string.pebble_taken)
                     val px0 = xs[0] + (widths[0].toFloat() / 2).dp * 0.55f
-                    // 손그림 한지 조약돌 (돌 곁 꾸밈과 같은 그림): 그림 상자의 땅 자리를 정원 땅에
-                    val pbw = pw * PEBBLE_ART
-                    Image(GardenArt.image(ctx, "card_pebble.webp"), pebbleLabel, Modifier.offset(px0 - pbw / 2, gy + u * 1f - pbw * (G.Decor.cardAtY / G.Decor.cardBoxH)).size(pbw))
+                    androidx.compose.foundation.Canvas(Modifier.offset(px0 - pw / 2, gy - pw * 0.25f).size(pw, pw * 0.66f)) {
+                        drawOval(Color(0xFFA29A8B), size = size)
+                        drawOval(G.Colors.ink, size = size, style = androidx.compose.ui.graphics.drawscope.Stroke(size.width * 0.09f))
+                        drawArc(Color.White.copy(alpha = 0.5f), 200f, 70f, false, topLeft = androidx.compose.ui.geometry.Offset(size.width * 0.2f, size.height * 0.18f),
+                            size = androidx.compose.ui.geometry.Size(size.width * 0.5f, size.height * 0.5f), style = androidx.compose.ui.graphics.drawscope.Stroke(size.width * 0.06f))
+                    }
                     // 누르는 자리는 손가락 크기만큼 (조약돌은 작아도)
                     val tt = Tokens.Layout.tapTarget
                     Box(Modifier.offset(px0 - tt / 2, gy + pw * 0.08f - tt / 2).size(tt)
@@ -1215,5 +1218,3 @@ private const val UI_RISE_BOTTOM = 6f
 private const val DEW_WAKE_AUTO_MS = 1600L
 private const val DEW_UI_MS = 600L
 private const val DEW_UI_AUTO_MS = 1600L
-/** 하루가 준 조약돌 그림 (계절 조각 상자) 크기: 조약돌 폭에 대한 배율. */
-private const val PEBBLE_ART = 2.4f

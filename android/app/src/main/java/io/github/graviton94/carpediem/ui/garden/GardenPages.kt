@@ -542,6 +542,14 @@ private fun CollectDetailSheet(d: Detail, onClose: () -> Unit) {
 /** 하루가 준 조약돌 (모은 것 칸 · 상세의 그림): 회갈색 조약돌 하나와 작은 빛. */
 @Composable
 internal fun PebbleArt() {
-    // 손그림 한지 조약돌 (계절 조각 · 돌 곁 꾸밈과 같은 그림)
-    Image(GardenArt.image(LocalContext.current, "card_pebble.webp"), null, Modifier.fillMaxSize())
+    val ink = Theme.gc.ink
+    androidx.compose.foundation.Canvas(Modifier.fillMaxSize().padding(Tokens.Space.sp4)) {
+        val w = size.minDimension; val h = w * 0.66f
+        val tl = androidx.compose.ui.geometry.Offset((size.width - w) / 2, (size.height - h) / 2 + h * 0.15f)
+        val sz = androidx.compose.ui.geometry.Size(w, h)
+        drawOval(androidx.compose.ui.graphics.Color(0xFFA29A8B), tl, sz)
+        drawOval(ink, tl, sz, style = androidx.compose.ui.graphics.drawscope.Stroke(w * 0.05f))
+        drawArc(androidx.compose.ui.graphics.Color.White.copy(alpha = 0.5f), 200f, 70f, false, tl + androidx.compose.ui.geometry.Offset(w * 0.2f, h * 0.18f),
+            androidx.compose.ui.geometry.Size(w * 0.5f, h * 0.5f), style = androidx.compose.ui.graphics.drawscope.Stroke(w * 0.035f))
+    }
 }
