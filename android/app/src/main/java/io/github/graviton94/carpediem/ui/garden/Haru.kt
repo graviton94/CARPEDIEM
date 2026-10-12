@@ -162,9 +162,29 @@ fun DrawScope.drawHaru(art: HaruArt, k: Float, lid: Float = 0f, look: Offset = O
     }
 }
 
+/** 생일 고깔 · 케이크의 한지 그림 (1.1.5, design/art 에서 구움). 앱을 켤 때 한 번 읽어 둠, 없으면 예전 선 그림으로. */
+object PartyArt {
+    @Volatile var hat: androidx.compose.ui.graphics.ImageBitmap? = null
+    @Volatile var cake: androidx.compose.ui.graphics.ImageBitmap? = null
+    fun load(context: android.content.Context) {
+        if (hat == null) hat = runCatching { GardenArt.image(context, "party_hat.webp") }.getOrNull()
+        if (cake == null) cake = runCatching { GardenArt.image(context, "party_cake.webp") }.getOrNull()
+    }
+}
+
 /** 생일 고깔모자: 머리 꼭대기에 돌의 기울기를 따라 살짝 비스듬히. */
 private fun DrawScope.partyHat(art: HaruArt, k: Float) {
     val d = Tokens.Garden.HaruDraw; val pt = Tokens.Garden.Party
+    PartyArt.hat?.let { img ->
+        // 한지 고깔 (상자 24 × 36, 원뿔 밑 폭 18 · 머리에 닿는 아래 가운데 = (12, 33))
+        val top = art.meta.top * k
+        val bw = pt.hatWidth * k * (24f / 18f); val bh = bw * 1.5f
+        rotate(Math.toDegrees(art.shape.traits.rot).toFloat() * 0.5f + pt.tilt, top) {
+            val base = top.y + d.line * k * 0.6f
+            drawImage(img, dstOffset = androidx.compose.ui.unit.IntOffset((top.x - bw / 2).toInt(), (base - bh * (33f / 36f)).toInt()), dstSize = androidx.compose.ui.unit.IntSize(bw.toInt(), bh.toInt()))
+        }
+        return
+    }
     val ink = Tokens.Garden.Colors.ink
     val top = art.meta.top * k
     val w = pt.hatWidth * k; val h = pt.hatHeight * k
@@ -186,6 +206,12 @@ private fun DrawScope.partyHat(art: HaruArt, k: Float) {
 
 /** 생일 케이크 (촛불 하나): 접시 위 2단, 크림이 흘러내리고 딸기 한 알, 줄무늬 초. 정원이 돌 곁에 놓는다. 크기 = size. */
 fun DrawScope.birthdayCake(flame: Float = 1f) {
+    // 한지 케이크 (상자 32 × 40, 땅 = 아래에서 2): 폭을 맞추고 아래 끝을 땅에
+    PartyArt.cake?.let { img ->
+        val bw = size.width; val bh = bw * 1.25f
+        drawImage(img, dstOffset = androidx.compose.ui.unit.IntOffset(0, (size.height - bh * (38f / 40f)).toInt()), dstSize = androidx.compose.ui.unit.IntSize(bw.toInt(), bh.toInt()))
+        return
+    }
     val c = Tokens.Garden.Party.Colors; val ink = Tokens.Garden.Colors.ink
     val w = size.width; val h = size.height
     val line = w * 0.045f

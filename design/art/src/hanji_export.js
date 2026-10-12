@@ -20,6 +20,9 @@
   function mossApp(ctx, W, se, buds, D) { hj(ctx, W / D.mossBoxW); moss(ctx, D.mossAtX, D.mossAtY, 1, se, buds); }
   function kiteApp(ctx, W, D) { hj(ctx, W / D.kiteBoxW); kite(ctx, D.kiteAtX, D.kiteAtY, 1, "gaori", 0); }
   function cardApp(ctx, W, key, D) { hj(ctx, W / D.cardBoxW); piece(ctx, D.cardBoxW / 2, D.cardAtY - 24, 1, key); }
+  // 생일: 고깔 24 × 36 (머리에 닿는 아래 가운데 = 상자 (12, 33)) · 케이크 32 × 40 (땅 = 상자 (16, 38))
+  function hatApp(ctx, W) { hj(ctx, W / 24); ctx.translate(12, 10); partyHat(ctx); }
+  function cakeApp(ctx, W) { hj(ctx, W / 32); ctx.translate(16, 14); partyCake(ctx); }
   function sunApp(ctx, W) { hj(ctx, W / 60); sun(ctx, 30, 30, 1.2, "#F6C979"); }
   function moonApp(ctx, W) { hj(ctx, W / 60); moon(ctx, 30, 30, 1.2); }
   // 둥근 달 60 × 60, 가운데 (30, 30) 반지름 24 = 상자 반의 0.8 (Night.moonDisk)
