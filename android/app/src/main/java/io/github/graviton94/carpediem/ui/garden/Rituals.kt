@@ -403,12 +403,13 @@ private fun ShortBreath(state: AppState, kind: BreathKind, cycles: Int, title: I
     val step by remember(plan) { androidx.compose.runtime.derivedStateOf { Breath.at(plan, elapsed)?.first?.step } }
     // 한숨 호흡의 두 번째 들이쉼: ‘한 번 더’
     val topUp by remember(plan) { androidx.compose.runtime.derivedStateOf { (Breath.at(plan, elapsed)?.first?.lo ?: 0f) > 0f } }
+    val bell = remember { Soundscape.bellFor(state.sound, io.github.graviton94.carpediem.core.Memories.seasonOf(java.time.LocalDate.now())) }
     LaunchedEffect(step) {
         if (state.sound == Sound.NONE) return@LaunchedEffect
         when (step) {
-            BreathStep.IN -> Soundscape.bowl(G.Sound.bowlInHz.toDouble())
-            BreathStep.HOLD -> Soundscape.bowl(G.Sound.bowlHoldHz.toDouble())
-            BreathStep.OUT -> Soundscape.bowl(G.Sound.bowlOutHz.toDouble())
+            BreathStep.IN -> Soundscape.bowl(G.Sound.bowlInHz.toDouble(), bell = bell)
+            BreathStep.HOLD -> Soundscape.bowl(G.Sound.bowlHoldHz.toDouble(), bell = bell)
+            BreathStep.OUT -> Soundscape.bowl(G.Sound.bowlOutHz.toDouble(), bell = bell)
             else -> {}
         }
     }

@@ -261,33 +261,56 @@ object Soundscape {
     }
 
 /**
-     * 명상 종 (싱잉볼) 한 번: 낮은 바탕음에 실제 주발처럼 어긋난 배음 (1 · 2.71 · 5.15 · 8.1 배),
-     * 배음마다 아주 가까운 두 음이 맞물려 천천히 일렁이며 (beat), 부드러운 채로 쳐서 오래 잦아듦. hz = 바탕음, strikes = 치는 횟수.
+     * 숨의 종 (1.1.5): 바탕 소리마다 어울리는 종. hz 는 싱잉볼 기준 (들이쉼 · 머묾 · 내쉼), 종마다 mult 배로 옮김.
+     * partials = 배음 (배수 to 크기) · decay = 배음마다 잦아드는 빠르기 (/초) · attack = 치는 부드러움 · ring = 울리는 길이 (초) · beat = 두 음이 맞물려 일렁이는 Hz.
      */
-    fun bowl(hz: Double, strikes: Int = 1) {
+    enum class Bell(val mult: Double, val partials: List<Pair<Double, Double>>, val decay: List<Double>, val attackMs: Double, val ring: Double, val beat: Double) {
+        /** 싱잉볼: 낮은 바탕음에 실제 주발처럼 어긋난 배음, 부드러운 채로 쳐서 오래 잦아듦 (파도 · 겨울) */
+        BOWL(1.0, listOf(1.0 to 1.0, 2.71 to 0.6, 5.15 to 0.28, 8.1 to 0.1), listOf(0.42, 0.75, 1.4, 2.6), T.bowlAttackMs.toDouble(), T.bowlRing.toDouble(), T.bowlBeat.toDouble()),
+        /** 풍경: 처마 끝 작은 쇠종, 맑고 높게 (바람 · 봄) */
+        CHIME(2.0, listOf(1.0 to 1.0, 2.76 to 0.5, 5.4 to 0.25, 8.9 to 0.08), listOf(0.8, 1.4, 2.4, 4.0), 3.0, 4.5, 0.3),
+        /** 대나무 톡: 낮고 둥글게, 짧게 (빗소리 · 여름) */
+        BAMBOO(2.0, listOf(1.0 to 1.0, 2.4 to 0.35, 4.6 to 0.12), listOf(4.5, 8.0, 13.0), 2.0, 1.4, 0.0),
+        /** 목탁: 속이 빈 나무 소리 (가을) */
+        MOKTAK(1.5, listOf(1.0 to 1.0, 1.58 to 0.4, 2.9 to 0.15), listOf(6.0, 9.0, 15.0), 2.0, 1.2, 0.0),
+        /** 크리스털 볼: 배음이 거의 없이 맑고 길게 (잔잔한 파장) */
+        CRYSTAL(2.0, listOf(1.0 to 1.0, 2.0 to 0.12, 3.0 to 0.04), listOf(0.3, 0.6, 1.2), 60.0, 9.0, 0.4);
+    }
+
+    /** 바탕 소리 (계절의 소리면 그 계절) 에 맞는 숨의 종. */
+    fun bellFor(sound: Sound, season: Season): Bell = when (sound) {
+        Sound.WIND -> Bell.CHIME
+        Sound.RAIN -> Bell.BAMBOO
+        Sound.TONE -> Bell.CRYSTAL
+        Sound.SEASON -> when (season) { Season.SPRING -> Bell.CHIME; Season.SUMMER -> Bell.BAMBOO; Season.AUTUMN -> Bell.MOKTAK; Season.WINTER -> Bell.BOWL }
+        else -> Bell.BOWL
+    }
+
+    /** 숨의 종 한 번 (strikes = 치는 횟수, 두 번째부터 조금 낮게). 종이 울리는 동안 바탕 소리는 살짝 낮아짐. */
+    fun bowl(hz: Double, strikes: Int = 1, bell: Bell = Bell.BOWL) {
         struckAt = android.os.SystemClock.elapsedRealtime() + ((strikes - 1) * 1600L)
         Thread({
             runCatching {
                 val sr = T.sampleRate.toInt()
-                val ring = T.bowlRing.toDouble(); val gapS = 1.6
-                val lenS = ring + gapS * (strikes - 1)
+                val gapS = 1.6
+                val lenS = bell.ring + gapS * (strikes - 1)
                 val mix = FloatArray((sr * lenS).toInt())
-                val partials = listOf(1.0 to 1.0, 2.71 to 0.6, 5.15 to 0.28, 8.1 to 0.1)
-                val decay = listOf(0.42, 0.75, 1.4, 2.6)
-                val attack = T.bowlAttackMs / 1000.0; val beat = T.bowlBeat.toDouble()
+                val attack = bell.attackMs / 1000.0
                 for (k in 0 until strikes) {
-                    val start = (k * gapS * sr).toInt(); val f0 = hz * (if (k == 0) 1.0 else 0.89)
+                    val start = (k * gapS * sr).toInt(); val f0 = hz * bell.mult * (if (k == 0) 1.0 else 0.89)
                     for (i in start until mix.size) {
                         val t = (i - start).toDouble() / sr
                         val a = if (t < attack) sin(PI / 2 * t / attack) else 1.0
                         var v = 0.0
-                        partials.forEachIndexed { j, (r, amp) ->
-                            val f = f0 * r; val d = beat * (j + 1) * 0.5
-                            v += amp * exp(-decay[j] * t) * 0.5 * (sin(2 * PI * (f - d / 2) * t) + sin(2 * PI * (f + d / 2) * t + j))
+                        bell.partials.forEachIndexed { j, (r, amp) ->
+                            val f = f0 * r; val d = bell.beat * (j + 1) * 0.5
+                            v += amp * exp(-bell.decay[j] * t) * 0.5 * (sin(2 * PI * (f - d / 2) * t) + sin(2 * PI * (f + d / 2) * t + j))
                         }
                         mix[i] += (v * a).toFloat()
                     }
                 }
+                // 끝 몇 ms 는 살며시 (짧은 나무 소리가 뚝 끊기며 ‘틱’ 하지 않게)
+                val tail = minOf(mix.size, (sr * 0.05).toInt()); for (i in 0 until tail) mix[mix.size - 1 - i] *= i.toFloat() / tail
                 val peak = mix.maxOf { kotlin.math.abs(it) }.coerceAtLeast(1f)
                 val buf = ShortArray(mix.size) { (mix[it] / peak * T.bowl * 0.8 * Short.MAX_VALUE).toInt().toShort() }
                 val track = AudioTrack.Builder().setAudioAttributes(attributes()).setAudioFormat(format(sr))
