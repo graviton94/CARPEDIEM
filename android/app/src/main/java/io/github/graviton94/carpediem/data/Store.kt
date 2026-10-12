@@ -390,6 +390,12 @@ class Store(context: Context) {
     var shopOpen: Boolean
         get() = prefs.getBoolean("shopOpen", false)
         set(v) = prefs.edit().putBoolean("shopOpen", v).apply()
+    /** 1.1.5 설정 덜어내기: 첫 화면 · 질문 · 씨앗 · 작은 권유 · 아침 숨을 한 번 모두 켬. */
+    fun simplify115() {
+        if (prefs.getBoolean("simple115", false)) return
+        titleOn = true; questionsOn = true; seedsOn = true; care = true; morningBreath = true
+        prefs.edit().putBoolean("simple115", true).apply()
+    }
     /** 아침 이슬을 맺어 준 날 (1.1.5, 하루 한 번). */
     var dewDay: LocalDate?
         get() = prefs.getLong("dewDay", Long.MIN_VALUE).takeIf { it != Long.MIN_VALUE }?.let { LocalDate.ofEpochDay(it) }

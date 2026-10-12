@@ -108,7 +108,7 @@ internal fun MorningDew(garden: GraphicsLayer, haru: Rect, onHaru: (Float) -> Un
         for (cy in 0 until ROWS) for (cx in 0 until COLS) {
             val k = cy * COLS + cx; if (cells[k]) continue
             val c = Offset((cx + 0.5f) * cw, (cy + 0.5f) * ch)
-            if ((c - p).getDistance() <= r + minOf(cw, ch) / 2) cells[k] = true
+            if ((c - p).getDistance() <= r) cells[k] = true
         }
         // 화면 전체 · 하루 자리 각각 닦인 비율
         var all = 0; var hIn = 0; var hAll = 0
@@ -204,11 +204,11 @@ internal fun MorningDew(garden: GraphicsLayer, haru: Rect, onHaru: (Float) -> Un
 }
 
 /** 닦은 칸을 세는 바둑판. */
-private const val COLS = 12
-private const val ROWS = 24
+private const val COLS = 18
+private const val ROWS = 36
 /** 하루 자리가 이만큼 · 화면이 이만큼 닦이면 남은 김이 스르르. */
 private const val HARU_DONE = 0.5f
-private const val ALL_DONE = 0.4f
+private const val ALL_DONE = 0.45f
 /** 손끝 폭 · 가장자리 번짐 · 흐림 (화면 폭의 %). */
 private const val WIPE_W = 9f
 /** 닦은 획 셋 (폭 배율, 짙기): 가장자리가 번진 듯. */

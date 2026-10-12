@@ -258,7 +258,7 @@
     <string name="lines_keep">保留紀錄</string>
     <string name="lines_keepOffConfirm">要停止保留紀錄嗎？\n至今的話與照片會被刪除，只留下日期。</string>
     <string name="lines_keepOffAction">停止並刪除</string>
-    <string name="lines_export">匯出一句話紀錄</string>
+    <string name="lines_export">以文字分享一句話紀錄</string>
     <string name="lines_exportEmpty">還沒有可以匯出的一句話。</string>
     <string name="lines_exportTitle">小日的庭院 · 今天的一句話</string>
     <string name="lines_clear">清除所有一句話紀錄</string>
@@ -567,8 +567,8 @@
     <string name="gaze_stay">再待一會兒</string>
     <string name="widget_record_garden">心情的紀錄</string>
     <string name="widget_record_desc">這個月的心情化作花與星星。點一下，打開心情的紀錄。</string>
-    <string name="backup_export">匯出為檔案</string>
-    <string name="backup_import">從檔案匯入</string>
+    <string name="backup_export">儲存備份檔</string>
+    <string name="backup_import">從備份檔還原</string>
     <string name="backup_importConfirm">要換成這個檔案裡的紀錄嗎？\n現在的紀錄會消失。</string>
     <string name="backup_importAction">匯入</string>
     <string name="backup_saved">已匯出。</string>
@@ -879,7 +879,7 @@
     <string name="nudge_special">要在人生月曆上，為想記住的日子放一朵花嗎？</string>
     <string name="nudge_widget">把庭院放在主畫面，每天都能見到</string>
     <string name="nudge_widgetHow">長按主畫面，在「小工具」裡找到「小日的庭院」。</string>
-    <string name="nudge_backup">紀錄慢慢多了，要在設定裡備份一次嗎？</string>
+    <string name="nudge_backup">紀錄慢慢多了，要「儲存備份檔」一次嗎？</string>
     <string name="search_hint">找一句話（字詞、心情、人）</string>
     <string name="search_none">找不到。</string>
     <string name="search_count">找到 %1$s 句，點一下就到那天。</string>
@@ -1074,9 +1074,9 @@
     <string name="backup_pickGo">選擇檔案</string>
     <string name="backup_picked">選擇的檔案：%1$s</string>
     <string name="backup_notOurs">這個檔案不是以「haru-garden」開頭。請確認是從這個 App 儲存的檔案。</string>
-    <string name="settings_notifyFooter">只有開啟的才會收到。早上是今天的句子，晚上提醒留一句話（已留下的日子就安靜），家人的日子在前一晚和當天早上。</string>
+    <string name="settings_notifyFooter">只有開啟的才會收到。點時間就能修改。點早晨通知會進入開啟一天的呼吸（%1$s 分鐘），晚上提醒留一句話（已留下的日子就安靜），家人的日子在前一晚和當天早上。</string>
     <string name="settings_records">紀錄與備份</string>
-    <string name="settings_recordsFooter">關閉紀錄後只留下日期，文字、心情和照片都會刪除。存成檔案就能搬到新手機。</string>
+    <string name="settings_recordsFooter">關閉紀錄後只留下日期，文字、心情和照片都會刪除。儲存備份檔，就能在新手機還原。</string>
     <string name="slip_daysAgo">%1$s天前的今天</string>
     <string name="slip_yearsAgo">%1$s年前的今天</string>
     <string name="slip_from">%1$s叼來的</string>
@@ -1108,6 +1108,7 @@
     <string name="dew_line">一夜之間，花園結滿了露水</string>
     <string name="dew_hint">用指尖輕輕擦一擦吧</string>
     <string name="dew_a11y">擦去露水</string>
+    <string name="notify_timeA11y">通知時間 %1$s，點一下修改</string>
     <string name="news_v1_1_5_1">每天第一次在早晨打開時，花園會結滿露水。用指尖輕輕擦去，喚醒小日吧。</string>
     <string name="news_v1_1_5_2">呼吸變得更緩慢。文字提示只在前三次呼吸停留，剩餘時間靜靜顯示，呼吸期間螢幕保持常亮。</string>
     <string name="news_v1_1_5_3">移除了震動。開啟聲音時，清亮、中音與低沉的頌缽會提示吸氣、屏息與吐氣。</string>

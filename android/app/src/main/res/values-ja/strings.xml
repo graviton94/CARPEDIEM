@@ -258,7 +258,7 @@
     <string name="lines_keep">記録を残す</string>
     <string name="lines_keepOffConfirm">記録を残すのをやめますか？\nこれまでのひとことと写真が消え、日付だけが残ります。</string>
     <string name="lines_keepOffAction">やめて消す</string>
-    <string name="lines_export">ひとことの記録を書き出す</string>
+    <string name="lines_export">ひとことを文章で送る</string>
     <string name="lines_exportEmpty">書き出せるひとことは、まだありません。</string>
     <string name="lines_exportTitle">Carpe Diem · 今日のひとこと</string>
     <string name="lines_clear">ひとことの記録をすべて消す</string>
@@ -567,8 +567,8 @@
     <string name="gaze_stay">もう少しいる</string>
     <string name="widget_record_garden">こころの記録</string>
     <string name="widget_record_desc">今月のこころが、花と星になって咲きます。触れると、こころの記録へ。</string>
-    <string name="backup_export">ファイルに書き出す</string>
-    <string name="backup_import">ファイルから読み込む</string>
+    <string name="backup_export">バックアップを保存</string>
+    <string name="backup_import">バックアップから戻す</string>
     <string name="backup_importConfirm">このファイルの記録に置きかえますか？\nいまの記録は消えます。</string>
     <string name="backup_importAction">読み込む</string>
     <string name="backup_saved">書き出しました。</string>
@@ -879,7 +879,7 @@
     <string name="nudge_special">覚えておきたい日を、人生カレンダーに花として置いてみませんか？</string>
     <string name="nudge_widget">ホーム画面に庭を置くと、毎日会いやすくなります</string>
     <string name="nudge_widgetHow">ホーム画面を長押しして「ウィジェット」から「ハルの庭」を探します。</string>
-    <string name="nudge_backup">記録がたまってきました。設定で一度バックアップしませんか？</string>
+    <string name="nudge_backup">記録がたまってきました。「バックアップを保存」しておきませんか？</string>
     <string name="search_hint">ひとことを探す（ことば・気持ち・人）</string>
     <string name="search_none">見つかりませんでした。</string>
     <string name="search_count">%1$s件見つかりました。タップするとその日へ。</string>
@@ -1074,9 +1074,9 @@
     <string name="backup_pickGo">ファイルを選ぶ</string>
     <string name="backup_picked">選んだファイル: %1$s</string>
     <string name="backup_notOurs">「haru-garden」で始まるファイルではありません。このアプリで保存したファイルか確かめてください。</string>
-    <string name="settings_notifyFooter">オンにしたものだけ届きます。朝は今日のことば、夜はひとことのお誘い（残した日は静かに）、家族の日は前日の夜とその日の朝。</string>
+    <string name="settings_notifyFooter">オンにしたものだけ届きます。時刻を押すと変えられます。朝の通知を押すと一日をひらく呼吸（%1$s分）へ、夜はひとことのお誘い（残した日は静かに）、家族の日は前日の夜とその日の朝。</string>
     <string name="settings_records">記録とバックアップ</string>
-    <string name="settings_recordsFooter">記録をオフにすると日付だけ残り、ことば・気持ち・写真は消えます。ファイルに保存すると新しいスマホに移せます。</string>
+    <string name="settings_recordsFooter">記録をオフにすると日付だけ残り、ことば・気持ち・写真は消えます。バックアップを保存しておけば新しいスマホで戻せます。</string>
     <string name="slip_daysAgo">%1$s日前の今日</string>
     <string name="slip_yearsAgo">%1$s年前の今日</string>
     <string name="slip_from">%1$sがくわえてきました</string>
@@ -1108,6 +1108,7 @@
     <string name="dew_line">夜のあいだに庭に露が降りました</string>
     <string name="dew_hint">指先でそっと拭いてください</string>
     <string name="dew_a11y">露を拭く</string>
+    <string name="notify_timeA11y">通知の時刻 %1$s、押して変更</string>
     <string name="news_v1_1_5_1">その日最初の朝は庭に露が降ります。指先でそっと拭いてハルを起こしてあげてください。</string>
     <string name="news_v1_1_5_2">呼吸が少しゆっくりになりました。言葉の案内は最初の3息だけ、残り時間は静かに表示され、呼吸の間は画面が消えません。</string>
     <string name="news_v1_1_5_3">振動をなくしました。音をオンにすると、澄んだ鐘・中の鐘・低い鐘が吸う・止める・吐くを知らせます。</string>

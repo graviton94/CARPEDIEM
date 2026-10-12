@@ -257,7 +257,7 @@
     <string name="lines_keep">Keep my lines</string>
     <string name="lines_keepOffConfirm">Stop keeping lines?\nYour lines and photos so far will be erased. Only the dates stay.</string>
     <string name="lines_keepOffAction">Turn off and erase</string>
-    <string name="lines_export">Export my lines</string>
+    <string name="lines_export">Share my lines as text</string>
     <string name="lines_exportEmpty">No lines to export yet.</string>
     <string name="lines_exportTitle">Carpe Diem · Today\'s lines</string>
     <string name="lines_clear">Delete all my lines</string>
@@ -567,8 +567,8 @@
     <string name="gaze_stay">Stay a while</string>
     <string name="widget_record_garden">Heart’s record</string>
     <string name="widget_record_desc">This month\'s heart, in flowers and stars. Tap to open the record.</string>
-    <string name="backup_export">Save to a file</string>
-    <string name="backup_import">Bring in from a file</string>
+    <string name="backup_export">Save a backup file</string>
+    <string name="backup_import">Restore from a backup file</string>
     <string name="backup_importConfirm">Replace with this file?\nWhat’s here now will be gone.</string>
     <string name="backup_importAction">Bring in</string>
     <string name="backup_saved">Saved.</string>
@@ -879,7 +879,7 @@
     <string name="nudge_special">Place a flower on a day worth remembering?</string>
     <string name="nudge_widget">Keep the garden on your home screen to see it daily</string>
     <string name="nudge_widgetHow">Long-press your home screen, open Widgets and find Carpe Diem.</string>
-    <string name="nudge_backup">Your records are growing. Back them up once in Settings?</string>
+    <string name="nudge_backup">Your records are growing. \'Save a backup file\' once?</string>
     <string name="search_hint">Find a line (word, feeling, person)</string>
     <string name="search_none">No lines found.</string>
     <string name="search_count">%1$s found. Tap one to go to that day.</string>
@@ -1074,9 +1074,9 @@
     <string name="backup_pickGo">Choose file</string>
     <string name="backup_picked">Chosen file: %1$s</string>
     <string name="backup_notOurs">This file doesn’t start with ‘haru-garden’. Please check it was saved from this app.</string>
-    <string name="settings_notifyFooter">Only what you turn on. Morning words, an evening nudge (quiet on days you wrote), and family days the evening before and that morning.</string>
+    <string name="settings_notifyFooter">Only what you turn on. Tap a time to change it. The morning reminder opens a %1$s-minute breath; evenings, a gentle nudge (quiet on days you wrote); family days, the evening before and that morning.</string>
     <string name="settings_records">Records &amp; backup</string>
-    <string name="settings_recordsFooter">Turning off records keeps only the dates and erases words, feelings and photos. Save to a file to move to a new phone.</string>
+    <string name="settings_recordsFooter">Turning off records keeps only the dates and erases words, feelings and photos. Save a backup file to restore it on a new phone.</string>
     <string name="slip_daysAgo">From %1$s days ago</string>
     <string name="slip_yearsAgo">This day, %1$s years ago</string>
     <string name="slip_from">Brought by the %1$s</string>
@@ -1108,6 +1108,7 @@
     <string name="dew_line">Dew settled on the garden overnight</string>
     <string name="dew_hint">Wipe it gently with your fingertip</string>
     <string name="dew_a11y">Wipe the dew</string>
+    <string name="notify_timeA11y">Reminder time %1$s, tap to change</string>
     <string name="news_v1_1_5_1">Morning dew: wipe it to wake Haru.</string>
     <string name="news_v1_1_5_2">Slower breaths. Cues for the first three only, time left shown, screen stays on.</string>
     <string name="news_v1_1_5_3">No vibration. With sound on, soft bowls mark each step.</string>

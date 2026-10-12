@@ -256,7 +256,7 @@
 "lines.keep" = "保留紀錄";
 "lines.keepOffConfirm" = "要停止保留紀錄嗎？\n至今的話與照片會被刪除，只留下日期。";
 "lines.keepOffAction" = "停止並刪除";
-"lines.export" = "匯出一句話紀錄";
+"lines.export" = "以文字分享一句話紀錄";
 "lines.exportEmpty" = "還沒有可以匯出的一句話。";
 "lines.exportTitle" = "小日的庭院 · 今天的一句話";
 "lines.clear" = "清除所有一句話紀錄";
@@ -565,8 +565,8 @@
 "gaze.stay" = "再待一會兒";
 "widget.record.garden" = "心情的紀錄";
 "widget.record.desc" = "這個月的心情化作花與星星。點一下，打開心情的紀錄。";
-"backup.export" = "匯出為檔案";
-"backup.import" = "從檔案匯入";
+"backup.export" = "儲存備份檔";
+"backup.import" = "從備份檔還原";
 "backup.importConfirm" = "要換成這個檔案裡的紀錄嗎？\n現在的紀錄會消失。";
 "backup.importAction" = "匯入";
 "backup.saved" = "已匯出。";
@@ -877,7 +877,7 @@
 "nudge.special" = "要在人生月曆上，為想記住的日子放一朵花嗎？";
 "nudge.widget" = "把庭院放在主畫面，每天都能見到";
 "nudge.widgetHow" = "長按主畫面，在「小工具」裡找到「小日的庭院」。";
-"nudge.backup" = "紀錄慢慢多了，要在設定裡備份一次嗎？";
+"nudge.backup" = "紀錄慢慢多了，要「儲存備份檔」一次嗎？";
 "search.hint" = "找一句話（字詞、心情、人）";
 "search.none" = "找不到。";
 "search.count" = "找到 %1$@ 句，點一下就到那天。";
@@ -1072,9 +1072,9 @@
 "backup.pickGo" = "選擇檔案";
 "backup.picked" = "選擇的檔案：%1$@";
 "backup.notOurs" = "這個檔案不是以「haru-garden」開頭。請確認是從這個 App 儲存的檔案。";
-"settings.notifyFooter" = "只有開啟的才會收到。早上是今天的句子，晚上提醒留一句話（已留下的日子就安靜），家人的日子在前一晚和當天早上。";
+"settings.notifyFooter" = "只有開啟的才會收到。點時間就能修改。點早晨通知會進入開啟一天的呼吸（%1$@ 分鐘），晚上提醒留一句話（已留下的日子就安靜），家人的日子在前一晚和當天早上。";
 "settings.records" = "紀錄與備份";
-"settings.recordsFooter" = "關閉紀錄後只留下日期，文字、心情和照片都會刪除。存成檔案就能搬到新手機。";
+"settings.recordsFooter" = "關閉紀錄後只留下日期，文字、心情和照片都會刪除。儲存備份檔，就能在新手機還原。";
 "slip.daysAgo" = "%1$@天前的今天";
 "slip.yearsAgo" = "%1$@年前的今天";
 "slip.from" = "%1$@叼來的";
@@ -1106,6 +1106,7 @@
 "dew.line" = "一夜之間，花園結滿了露水";
 "dew.hint" = "用指尖輕輕擦一擦吧";
 "dew.a11y" = "擦去露水";
+"notify.timeA11y" = "通知時間 %1$@，點一下修改";
 "news.v1_1_5.1" = "每天第一次在早晨打開時，花園會結滿露水。用指尖輕輕擦去，喚醒小日吧。";
 "news.v1_1_5.2" = "呼吸變得更緩慢。文字提示只在前三次呼吸停留，剩餘時間靜靜顯示，呼吸期間螢幕保持常亮。";
 "news.v1_1_5.3" = "移除了震動。開啟聲音時，清亮、中音與低沉的頌缽會提示吸氣、屏息與吐氣。";

@@ -89,6 +89,8 @@ class AppState(private val context: Context) {
     var draft by mutableStateOf<LifeProfile?>(null)
 
     init {
+        // 1.1.5: 설정을 덜어냄. 첫 화면 · 오늘의 질문 · 아침 씨앗 · 작은 권유 · 아침 알림의 숨은 늘 켬 (예전에 꺼 둔 것도 한 번 켬)
+        store.simplify115()
         io.github.graviton94.carpediem.ui.garden.SkyTime.useCountry(context, store.profile?.countryCode)   // 해 · 달의 실제 시각
         store.ensureQuoteSeed(); quote = store.todaysQuote()
         // 알림 시각이 바뀌어도 켜 둔 알림은 새 시각으로 (예전에 맞춘 시각에 머물지 않게)

@@ -309,13 +309,15 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
                         TokenText(io.github.graviton94.carpediem.data.Words.main(q, state.quoteLanguage, io.github.graviton94.carpediem.data.Words.lang(ctx)), lineType(Tokens.TypeScale.headline, Theme.garden))
                     }
                 }
-                TokenText(stringResource(R.string.letgo_feeling), Tokens.TypeScale.footnote, color = p.secondary)
-                FlowRow(Modifier.guideTarget(guide, "write.feeling"), horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2), maxItemsInEachRow = Feeling.PER_ROW) {
+                // 질문에 답할 땐 질문과 대답 (+ 사진) 만: 마음 · 누구에게는 쉼
+                val asking = state.answering != null && day == null
+                if (!asking) TokenText(stringResource(R.string.letgo_feeling), Tokens.TypeScale.footnote, color = p.secondary)
+                if (!asking) FlowRow(Modifier.guideTarget(guide, "write.feeling"), horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2), maxItemsInEachRow = Feeling.PER_ROW) {
                     Feeling.entries.forEachIndexed { i, f ->
                         Chip(stringResource(feelingName(f)), feeling == f, seed = 970 + i) { feeling = if (feeling == f) null else f }
                     }
                 }
-                if (Theme.garden && state.people.isNotEmpty() && !editing) {
+                if (Theme.garden && state.people.isNotEmpty() && !editing && !asking) {
                     TokenText(stringResource(R.string.letgo_to), Tokens.TypeScale.footnote, color = p.secondary)
                     FlowRow(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
                         state.people.forEachIndexed { i, person -> Chip(person.name, to == person.id, seed = 980 + i) { to = if (to == person.id) null else person.id } }

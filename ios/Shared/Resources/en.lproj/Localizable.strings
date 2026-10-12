@@ -255,7 +255,7 @@
 "lines.keep" = "Keep my lines";
 "lines.keepOffConfirm" = "Stop keeping lines?\nYour lines and photos so far will be erased. Only the dates stay.";
 "lines.keepOffAction" = "Turn off and erase";
-"lines.export" = "Export my lines";
+"lines.export" = "Share my lines as text";
 "lines.exportEmpty" = "No lines to export yet.";
 "lines.exportTitle" = "Carpe Diem · Today's lines";
 "lines.clear" = "Delete all my lines";
@@ -565,8 +565,8 @@
 "gaze.stay" = "Stay a while";
 "widget.record.garden" = "Heart’s record";
 "widget.record.desc" = "This month's heart, in flowers and stars. Tap to open the record.";
-"backup.export" = "Save to a file";
-"backup.import" = "Bring in from a file";
+"backup.export" = "Save a backup file";
+"backup.import" = "Restore from a backup file";
 "backup.importConfirm" = "Replace with this file?\nWhat’s here now will be gone.";
 "backup.importAction" = "Bring in";
 "backup.saved" = "Saved.";
@@ -877,7 +877,7 @@
 "nudge.special" = "Place a flower on a day worth remembering?";
 "nudge.widget" = "Keep the garden on your home screen to see it daily";
 "nudge.widgetHow" = "Long-press your home screen, open Widgets and find Carpe Diem.";
-"nudge.backup" = "Your records are growing. Back them up once in Settings?";
+"nudge.backup" = "Your records are growing. 'Save a backup file' once?";
 "search.hint" = "Find a line (word, feeling, person)";
 "search.none" = "No lines found.";
 "search.count" = "%1$@ found. Tap one to go to that day.";
@@ -1072,9 +1072,9 @@
 "backup.pickGo" = "Choose file";
 "backup.picked" = "Chosen file: %1$@";
 "backup.notOurs" = "This file doesn’t start with ‘haru-garden’. Please check it was saved from this app.";
-"settings.notifyFooter" = "Only what you turn on. Morning words, an evening nudge (quiet on days you wrote), and family days the evening before and that morning.";
+"settings.notifyFooter" = "Only what you turn on. Tap a time to change it. The morning reminder opens a %1$@-minute breath; evenings, a gentle nudge (quiet on days you wrote); family days, the evening before and that morning.";
 "settings.records" = "Records & backup";
-"settings.recordsFooter" = "Turning off records keeps only the dates and erases words, feelings and photos. Save to a file to move to a new phone.";
+"settings.recordsFooter" = "Turning off records keeps only the dates and erases words, feelings and photos. Save a backup file to restore it on a new phone.";
 "slip.daysAgo" = "From %1$@ days ago";
 "slip.yearsAgo" = "This day, %1$@ years ago";
 "slip.from" = "Brought by the %1$@";
@@ -1106,6 +1106,7 @@
 "dew.line" = "Dew settled on the garden overnight";
 "dew.hint" = "Wipe it gently with your fingertip";
 "dew.a11y" = "Wipe the dew";
+"notify.timeA11y" = "Reminder time %1$@, tap to change";
 "news.v1_1_5.1" = "Morning dew: wipe it to wake Haru.";
 "news.v1_1_5.2" = "Slower breaths. Cues for the first three only, time left shown, screen stays on.";
 "news.v1_1_5.3" = "No vibration. With sound on, soft bowls mark each step.";
