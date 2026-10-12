@@ -218,10 +218,11 @@ internal fun CollectionBody(state: AppState, profile: LifeProfile, now: LocalDat
                 val art: @Composable () -> Unit = { GhostArt { MetArt(k, sk) } }
                 tiles += Tile(art, ghostName, "", null, Detail(art, ghostTitle, ghostSub, hint("collect_hint_$k"), "", ""), ghost = true)
             }
-            listOf("chime", "bell", "lantern").forEachIndexed { i, part -> if (d.hang.ordinal <= i) {
+            val hangHint = stringResource(R.string.collect_hint_hang)
+            for ((i, part) in listOf("chime", "bell", "lantern").withIndex()) if (d.hang.ordinal <= i) {
                 val art: @Composable () -> Unit = { GhostArt { Box(Modifier.fillMaxSize()) { Image(GardenArt.image(ctx, "post_$sk.webp"), null, Modifier.fillMaxSize()); Image(GardenArt.image(ctx, "post_$part.webp"), null, Modifier.fillMaxSize()) } } }
-                tiles += Tile(art, ghostName, "", null, Detail(art, ghostTitle, ghostSub, stringResource(R.string.collect_hint_hang), "", ""), ghost = true)
-            } }
+                tiles += Tile(art, ghostName, "", null, Detail(art, ghostTitle, ghostSub, hangHint, "", ""), ghost = true)
+            }
             // 하루가 준 조약돌: 받은 날마다 한 장
             state.pebbles.forEach { d ->
                 val art: @Composable () -> Unit = { PebbleArt() }
@@ -453,7 +454,7 @@ private fun MetArt(key: String, season: String) {
 private class Grown(val caption: Int, val art: @Composable () -> Unit)
 
 /** 모은 것 한 칸: 그림 · 이름 · 날짜, 누르면 상세 (옛 꾸밈은 원래의 한 장). date = 줄 세우는 날 (없으면 맨 뒤). */
-private class Tile(val art: @Composable () -> Unit, val title: String, val dateText: String, val date: java.time.LocalDate?, val detail: Detail?, val onClick: (() -> Unit)? = null, val ghost: Boolean = false)
+private class Tile(val art: @Composable () -> Unit, val title: String, val dateText: String, val date: java.time.LocalDate?, val detail: Detail?, val ghost: Boolean = false, val onClick: (() -> Unit)? = null)
 
 /** (?) 상세: 큰 그림 · 이름 · 종류와 날짜 · 설명 · 얻는 방법 (단계가 있으면 지나온 단계 칩, 지금 것만 진하게). 아직 얻지 않은 것은 보이지 않음. */
 private class Detail(val art: @Composable () -> Unit, val name: String, val sub: String, val desc: String, val howTitle: String, val how: String,
