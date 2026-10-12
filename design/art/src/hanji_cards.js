@@ -27,7 +27,14 @@
     cherry_autumn: function (ctx) { one(ctx, maple(0, 4, 15, 0.12), "#D2563C", 5181); thread(ctx, [[0, 10], [1.4, 22]], 0.9, "#8A3E2A"); },
     zelkova_autumn: function (ctx) { one(ctx, blob(0, 10, 12.5, 11, 5191, 0.05), "#E8893A", 5191, { tone: 0.14 }); one(ctx, [0, 1, 2, 3].map(function (k) { return place(leafPts(6.4, 2.4), 0, -0.6, 1, -Math.PI / 4 + k * Math.PI / 2 - Math.PI / 2 * 0.0); }), "#6E7A40", 5192, { rim: 0.25 }); thread(ctx, [[0, -0.6], [0.6, -4.6]], 1, "#5A4A34"); },
     ginkgo_autumn: function (ctx) { one(ctx, fanLeaf(0, 22, 18, 0), "#EFC447", 5201); },
-    pine_autumn: function (ctx) { var p = []; for (var i = 0; i < 40; i++) { var t = i / 40 * Math.PI * 2, x = Math.sin(t) * 12, y = -Math.cos(t) * 13; if (y < 0) { x *= 0.86 + 0.14 * (1 + y / 13); y *= 0.9; } p.push([x, 9 + y]); } one(ctx, p, "#8A5636", 5211, { tone: 0.18 }); one(ctx, [[-11.6, 15], [11.6, 15]].concat(bez([11.6, 15, 9, 22.6, -9, 22.6, -11.6, 15], 10)), "#D9B98C", 5212, { rim: 0, sh: 0.1 }); one(ctx, [[-1.2, -2.4], [1.2, -2.4], [0.4, -5.6], [-0.4, -5.6]], "#5A3A24", 5213, { rim: 0, sh: 0.1 }); one(ctx, blob(-4.6, 4, 2.6, 4, 5214, 0.1, 0.4), "#A8704A", 5214, { rim: 0, sh: 0 }); },
+    // 가을: 알밤 한 톨 (1.1.5): 한 장으로 오린 윤곽 하나, 꼭지는 뾰족, 밑은 넓적. 윤기 (옅은 결 · 빛줄기) 와 밑동 (연한 거친 면) 은 안쪽에 칠함
+    pine_autumn: function (ctx) { var body = bez([0, -4.6, 3, -3.8, 11, 1, 12.4, 9, 13.4, 16, 10.2, 22, 4, 22.6, 1.5, 22.9, -1.5, 22.9, -4, 22.6, -10.2, 22, -13.4, 16, -12.4, 9, -11, 1, -3, -3.8, 0, -4.6], 10);
+      one(ctx, body, "#8A5232", 5211, { tone: 0.16, inner: function (c) {
+        c.strokeStyle = "rgba(60,32,16,.18)"; c.lineWidth = 0.4; c.lineCap = "round"; [[-7, 0.5], [-2.6, 0.9], [2.6, 0.9], [7, 0.5]].forEach(function (g) { c.beginPath(); c.moveTo(0, -3.6); c.quadraticCurveTo(g[0] * 1.6, 7, g[0] * 1.15, 15.6); c.stroke(); });
+        c.fillStyle = "rgba(255,236,210,.32)"; c.beginPath(); c.ellipse(-6, 6.4, 1.5, 4.6, 0.42, 0, 7); c.fill();
+        c.fillStyle = "#D7B98E"; c.beginPath(); c.moveTo(-14, 15.4); c.quadraticCurveTo(-7, 14, -3, 15.2); c.quadraticCurveTo(1, 16.2, 5, 15); c.quadraticCurveTo(9.5, 14, 14, 15.4); c.lineTo(14, 24); c.lineTo(-14, 24); c.fill();
+        c.fillStyle = "rgba(120,88,56,.35)"; [[-8, 18.4], [-4, 20], [0.6, 18], [4.4, 20.4], [8.2, 18.6], [-1.8, 21.6], [6, 21.6]].forEach(function (q) { c.beginPath(); c.arc(q[0], q[1], 0.35, 0, 7); c.fill(); }); } });
+      thread(ctx, [[0, -4.2], [-0.3, -6.6]], 0.7, "rgba(214,190,150,.95)"); thread(ctx, [[0, -4.2], [0.9, -6.2]], 0.5, "rgba(214,190,150,.9)"); thread(ctx, [[0, -4.2], [-1.1, -5.9]], 0.5, "rgba(214,190,150,.85)"); },
     // 겨울: 눈사람
     cherry_winter: function (ctx) { snowman(ctx, 0, 0, 1, 5221); one(ctx, [[-7.4, -6.4]].concat(bez([-7.4, -6.4, -7, -14, 7, -14, 7.4, -6.4], 10)), "#C8553D", 5223, { rim: 0.3 }); one(ctx, blob(0, -13.6, 2.4, 2.4, 5224, 0.1), "#FBF6EC", 5224, { rim: 0.2 }); },
     zelkova_winter: function (ctx) { snowman(ctx, 0, 0, 1, 5231); one(ctx, [rib([[-9, 10], [-13, 5], [-14, 3]], 1.2, 0.7), rib([[9, 10], [13, 6], [14, 4]], 1.2, 0.7)], "#7E5E48", 5233, { rim: 0.2 }); dot(ctx, 0, 9, 0.9, "#3A332C"); dot(ctx, 0, 14, 0.9, "#3A332C"); },
