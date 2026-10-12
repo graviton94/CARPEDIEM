@@ -27,7 +27,9 @@
       if (o.inner) { ctx.save(); multi(ctx, [p]); ctx.clip(); o.inner(ctx); texFill(ctx, TEX.fiber, 0.35, "source-atop", 0.4); ctx.restore(); }
       if (HAND_STYLE === 3 && p.length > 6) { var bb = bbox(p), rr = R(seed + 9); ctx.save(); multi(ctx, [p]); ctx.clip(); ctx.strokeStyle = mixHex(col, "#3A2C20", 0.35); ctx.globalAlpha = 0.22; ctx.lineWidth = 0.35; ctx.lineCap = "round";
         for (var k = 0; k < 7; k++) { var x = bb[0] + bb[2] * (0.55 + rr() * 0.45), y = bb[1] + bb[3] * (0.5 + rr() * 0.5), l = Math.min(bb[2], bb[3]) * 0.22; ctx.beginPath(); ctx.moveTo(x - l / 2, y + l * 0.35); ctx.lineTo(x + l / 2, y - l * 0.35); ctx.stroke(); } ctx.restore(); }
-      if (o.ink !== false && p.length > 3) handLine(ctx, p, mixHex(col, "#2E2218", 0.55), seed + i, HAND_STYLE);
+      // 가는 띠 (줄기 · 끈) · 아주 작은 조각 (꽃술 · 점) 은 선 없이: 양쪽 선이 겹쳐 검게 보이지 않게
+      var bx = bbox(p), thin = Math.min(bx[2], bx[3]) < 3.2 || Math.max(bx[2], bx[3]) < 5;
+      if (o.ink !== false && p.length > 3 && !thin) handLine(ctx, p, mixHex(col, "#2E2218", 0.55), seed + i, HAND_STYLE);
     });
   }
   // 먹 점 눈 (손님)

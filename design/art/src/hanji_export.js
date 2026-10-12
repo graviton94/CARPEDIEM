@@ -23,6 +23,23 @@
   // 생일: 고깔 24 × 36 (머리에 닿는 아래 가운데 = 상자 (12, 33)) · 케이크 32 × 40 (땅 = 상자 (16, 38))
   function hatApp(ctx, W) { hj(ctx, W / 24); ctx.translate(12, 10); partyHat(ctx); }
   function cakeApp(ctx, W) { hj(ctx, W / 32); ctx.translate(16, 14); partyCake(ctx); }
+  // 응원하기 그림 (1.1.5, 한지 세상): 해 질 녘 하늘 · 먼 언덕 · 땅 위에 손그림 한지 촛불과 찻잔. 하루는 앱이 가운데 땅 (높이 × ground) 에 얹음
+  function supportApp(ctx, W, H, ground) { var hand = HAND; HAND = false; hj(ctx, W / SW); var P = WPAL.autumn, h = H / U, gy = h * ground;
+    var g = ctx.createLinearGradient(0, 0, 0, gy); g.addColorStop(0, P.sky); g.addColorStop(1, P.sky2); ctx.fillStyle = g; ctx.fillRect(0, 0, SW, h);
+    texFill(ctx, TEX.fiber, 0.5, "source-over", 0.4); texFill(ctx, TEX.grain, 0.45, "multiply", 0.5);
+    cloud(ctx, 70, 46, 0.7, P.cloud, 2611); cloud(ctx, 210, 30, 0.5, P.cloud, 2612);
+    sun(ctx, 318, 62, 0.9, "#F6C979");
+    var far = ridgeS(gy - 26, 18, 2620, 0.014), mid = ridgeS(gy - 8, 9, 2621, 0.02), path = []; for (var x = -14; x <= SW + 14; x += 5) path.push([x, gy + Math.sin(x * 0.05) * 1]);
+    [[far, mixHex(P.far, P.sky2, 0.55)], [mid, mixHex(P.mid, P.sky2, 0.25)], [path, P.path]].forEach(function (L, i) { HV.world(ctx, down(L[0]).map(function (q) { return [q[0], Math.min(q[1], h + 30)]; }), L[1], 2630 + i, { kind: "layer", top: L[0] }); });
+    setHand(true, 3);
+    var cx = 92; paper(ctx, blob(cx, gy - 1, 15, 3.2, 2640, 0.04), "#C9C2B6", 2640, { rim: 0.4 });
+    paper(ctx, [[cx - 5, gy - 2], [cx + 5, gy - 2], [cx + 5, gy - 28], [cx - 5, gy - 28]], "#F3EEE4", 2641, { rim: 0.4, light: 0.9 });
+    paper(ctx, [[cx, gy - 40]].concat(bez([cx, gy - 40, cx + 4.6, gy - 34, cx + 3.4, gy - 29, cx, gy - 28.6], 8), bez([cx, gy - 28.6, cx - 3.4, gy - 29, cx - 4.6, gy - 34, cx, gy - 40], 8)), "#F6C979", 2642, { rim: 0, sh: 0.2, light: 0.9, ink: false });
+    piece(ctx, 300, gy - 24 * 1.25, 1.25, "tea");
+    HAND = hand; }
+  // 손그림 한지 별 (밤하늘 반짝임) · 깃털 (한 줄을 보낸 돌 곁)
+  function starApp(ctx, W) { hj(ctx, W / 40); handStar(ctx); }
+  function featherApp(ctx, W) { hj(ctx, W / 40); handFeather(ctx); }
   function sunApp(ctx, W) { hj(ctx, W / 60); sun(ctx, 30, 30, 1.2, "#F6C979"); }
   function moonApp(ctx, W) { hj(ctx, W / 60); moon(ctx, 30, 30, 1.2); }
   // 둥근 달 60 × 60, 가운데 (30, 30) 반지름 24 = 상자 반의 0.8 (Night.moonDisk)
