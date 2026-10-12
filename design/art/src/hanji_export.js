@@ -95,12 +95,16 @@
       gPiece(ctx, body, "#C98552", { inner: function (c) { c.fillStyle = "#3B3632"; c.beginPath(); c.ellipse(21, 15, 15, 8.6, 0, 0, 7); c.fill(); c.fillStyle = "#F3E9D6"; c.beginPath(); c.ellipse(24, 21, 6.8, 4.2, -0.15, 0, 7); c.fill(); } });
       gPiece(ctx, [[31.6, 19.4], [36.4, 21], [31.6, 22.6]], "#E3A247", { line: 1.3 });
       gEye(ctx, 21.4, 19.6, 3.5, 0.4); gEye(ctx, 28.4, 19.4, 3.1, 0.4); }
-    else if (kind === "squirrel") {   // 다람쥐: 등 뒤 큰 꼬리 하나, 뾰족 귀 둘
+    else if (kind === "squirrel") {   // 다람쥐 (1.1.5): 도토리를 들고 옆을 보고 앉음, 꼬리는 등 뒤로 S 자로 크게 솟아 끝이 말림
       gShadow(ctx, 22, 22);
-      gPiece(ctx, [[12, 33], [4, 30], [2, 20], [4, 10], [10, 5], [16, 7], [15, 13], [11, 15], [10, 22], [14, 28]], "#A8693D");
-      gPiece(ctx, [[17, 14], [17.5, 6.5], [22.5, 12]], "#BD7D4B", { line: 1.8 }); gPiece(ctx, [[26, 12], [29.5, 5.5], [31, 14]], "#BD7D4B", { line: 1.8 });
-      gPiece(ctx, gOval(24, 24, 11, 12.6, 0, 0.9), "#BD7D4B", { inner: function (c) { c.fillStyle = "#EBD2AC"; c.beginPath(); c.ellipse(25, 31, 6.4, 6, 0, 0, 7); c.fill(); } });
-      gEye(ctx, 20.6, 20, 3.5, 0.3); gEye(ctx, 28, 19.8, 3.2, 0.3); }
+      var outer = bez([17, 35, 4, 34, 0, 22, 3, 12, 5, 4, 15, 0, 21, 4, 25, 8, 22, 14, 17, 12], 10), inner = bez([21, 30, 15, 28, 13, 22, 14, 16, 15, 12, 16, 12, 17, 12, 17, 12, 17, 12, 17, 12], 6);
+      gPiece(ctx, outer.concat(inner.slice().reverse()), "#A8693D");
+      gPiece(ctx, gOval(24, 28, 8, 9, 0.12, 0.9), "#BD7D4B", { inner: function (c) { c.fillStyle = "#EBD2AC"; c.beginPath(); c.ellipse(26.4, 30, 4, 5.6, 0.1, 0, 7); c.fill(); } });
+      gPiece(ctx, [[25.2, 12.6], [26.4, 6.6], [29.4, 11.6]], "#BD7D4B", { line: 1.8 });
+      gPiece(ctx, gOval(28, 17, 6, 5.4, 0.15), "#BD7D4B");
+      gEye(ctx, 30.2, 16.2, 3, 0.4); ctx.fillStyle = GINK; ctx.beginPath(); ctx.arc(33.8, 18, 0.8, 0, 7); ctx.fill();
+      gPiece(ctx, gOval(31.4, 26, 1.7 * 1.2, 2.1 * 1.2, 0), "#B07A4A", { line: 1.2 }); gPiece(ctx, [[28.9, 24.6], [33.9, 24.6], [33.3, 22.8], [29.5, 22.8]], "#7A5A3A", { line: 1.2 });
+      gPiece(ctx, gOval(29.6, 26.4, 2.1, 1.4, -0.3), "#C98A57", { line: 1.2 }); gPiece(ctx, gOval(26, 36, 4.2, 1.5), "#A8693D", { line: 1.2 }); }
     else if (kind === "hedgehog") {   // 고슴도치: 둥근 언덕 몸, 등에 짧은 가시 몇 줄 (먹선), 연한 얼굴 · 까만 코
       gShadow(ctx, 20, 28);
       gPiece(ctx, gOval(19, 27.5, 14.6, 12, 0, 0.62), "#8A6B4C", { inner: function (c) { c.strokeStyle = "rgba(51,40,31,.7)"; c.lineWidth = 1.1; c.lineCap = "round";
