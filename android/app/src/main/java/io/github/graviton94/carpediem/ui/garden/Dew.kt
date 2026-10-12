@@ -37,7 +37,10 @@ import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.compose.ui.graphics.layer.drawLayer
-import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
+import androidx.compose.ui.graphics.asComposePath
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
@@ -85,12 +88,11 @@ internal fun MorningDew(garden: GraphicsLayer, haru: Rect, onHaru: (Float) -> Un
     // 닦은 칸 (화면을 COLS × ROWS 로 나눠, 손끝이 닿은 칸만 셈: 픽셀을 읽지 않음)
     val cells = remember { BooleanArray(COLS * ROWS) }
     val beads = remember { val r = Random(BEAD_SEED); List(BEADS) { floatArrayOf(r.nextFloat(), r.nextFloat(), 0.25f + r.nextFloat() * r.nextFloat() * 1.1f) } }
-    val wipePaint = remember { android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG).apply {
-        style = android.graphics.Paint.Style.STROKE; strokeCap = android.graphics.Paint.Cap.ROUND; strokeJoin = android.graphics.Paint.Join.ROUND
-        xfermode = android.graphics.PorterDuffXfermode(android.graphics.PorterDuff.Mode.DST_OUT); strokeWidth = u * WIPE_W
-        maskFilter = android.graphics.BlurMaskFilter(u * WIPE_SOFT, android.graphics.BlurMaskFilter.Blur.NORMAL)
-    } }
-    val trailPaint = remember { android.graphics.Paint(wipePaint).apply { strokeWidth = u * TRAIL_W; alpha = TRAIL_ALPHA; maskFilter = null } }
+    // 닦은 자리: 경로를 김에서 도려냄 (DstOut). 가장자리는 넓고 옅은 획 → 좁고 짙은 획을 겹쳐 부드럽게
+    val wipePath = remember { path.asComposePath() }
+    val trailPath = remember { trails.asComposePath() }
+    val wipeStrokes = remember(u) { WIPE_PASSES.map { (k, a) -> androidx.compose.ui.graphics.drawscope.Stroke(u * WIPE_W * k, cap = StrokeCap.Round, join = StrokeJoin.Round) to a } }
+    val trailStroke = remember(u) { androidx.compose.ui.graphics.drawscope.Stroke(u * TRAIL_W, cap = StrokeCap.Round) }
     val layerPaint = remember { Paint() }
     garden.renderEffect = if (dewBlurs) androidx.compose.ui.graphics.BlurEffect(u * BLUR, u * BLUR, androidx.compose.ui.graphics.TileMode.Clamp) else null
 
@@ -182,8 +184,8 @@ internal fun MorningDew(garden: GraphicsLayer, haru: Rect, onHaru: (Float) -> Un
                     drawCircle(g.ink.copy(alpha = 0.12f), r * 0.9f, Offset(x + r * 0.25f, y + r * 0.3f))
                     drawCircle(Color.White.copy(alpha = 0.9f), r * 0.3f, Offset(x - r * 0.3f, y - r * 0.3f))
                 }
-                c.nativeCanvas.drawPath(path, wipePaint)
-                c.nativeCanvas.drawPath(trails, trailPaint)
+                wipeStrokes.forEach { (st, a) -> drawPath(wipePath, Color.Black.copy(alpha = a), style = st, blendMode = BlendMode.DstOut) }
+                drawPath(trailPath, Color.Black.copy(alpha = TRAIL_ALPHA), style = trailStroke, blendMode = BlendMode.DstOut)
                 c.restore()
             }
             trickles.forEach { d ->
@@ -209,10 +211,11 @@ private const val HARU_DONE = 0.5f
 private const val ALL_DONE = 0.4f
 /** 손끝 폭 · 가장자리 번짐 · 흐림 (화면 폭의 %). */
 private const val WIPE_W = 9f
-private const val WIPE_SOFT = 3f
+/** 닦은 획 셋 (폭 배율, 짙기): 가장자리가 번진 듯. */
+private val WIPE_PASSES = listOf(1.35f to 0.35f, 1.0f to 0.7f, 0.7f to 1f)
 private const val BLUR = 1.5f
 private const val TRAIL_W = 0.7f
-private const val TRAIL_ALPHA = 90
+private const val TRAIL_ALPHA = 0.35f
 /** 김의 한지빛 (흐린 정원 위) · 흐림이 없는 폰은 더 짙게. */
 private const val VEIL = 0.42f
 private const val VEIL_FLAT = 0.78f
