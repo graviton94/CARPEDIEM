@@ -509,8 +509,8 @@ private const val GHOST_WASH = 0.55f
 /** 모은 것: 한 줄에 넷, 두 줄 (여덟) 까지 보이고 그보다 많으면 ‘전체 보기’. */
 private const val COLLECT_COLS = 4
 private const val COLLECT_FIRST = 8
-private const val COLLECT_TILE_H = 100f
-private const val COLLECT_ART = 50f
+private const val COLLECT_TILE_H = 110f
+private const val COLLECT_ART = 46f
 
 @OptIn(ExperimentalMaterial3Api::class, androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
 @Composable
