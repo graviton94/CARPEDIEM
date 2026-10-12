@@ -404,6 +404,7 @@ private fun ShortBreath(state: AppState, kind: BreathKind, cycles: Int, title: I
     // 한숨 호흡의 두 번째 들이쉼: ‘한 번 더’
     val topUp by remember(plan) { androidx.compose.runtime.derivedStateOf { (Breath.at(plan, elapsed)?.first?.lo ?: 0f) > 0f } }
     LaunchedEffect(step) {
+        if (state.sound == Sound.NONE) return@LaunchedEffect
         when (step) {
             BreathStep.IN -> Soundscape.bowl(G.Sound.bowlInHz.toDouble())
             BreathStep.HOLD -> Soundscape.bowl(G.Sound.bowlHoldHz.toDouble())
