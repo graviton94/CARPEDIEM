@@ -212,7 +212,7 @@ class MainActivity : ComponentActivity() {
                         screen = if (morning) Screen.Main else openFrom(open, state) ?: Screen.Main
                         homeEpoch++
                     }
-                    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { now = clock(); state.refreshQuote(); state.opened(); state.refreshQuestion(); state.recheckNotify(); state.syncFromStore(); if (!scripted) checkUpdate(state) }
+                    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { now = clock(); state.refreshQuote(); state.opened(); state.refreshQuestion(); state.recheckNotify(); state.syncFromStore(); if (!scripted) { checkUpdate(state); state.checkShop() } }
                     // 앱을 다시 열 때(화면에 다시 나올 때) 남은 시간 · 인생 달력 단위를 기본값으로
                     LifecycleEventEffect(Lifecycle.Event.ON_START) {
                         // 30분 넘게 떠났다 돌아오면 다시 첫 화면부터 (resetViewIfAway 보다 먼저 물어야 함)
@@ -392,6 +392,7 @@ private fun MainActivity.debugSetup(state: AppState): Screen {
     state.debugAdornSheet = x.getBooleanExtra("cd.adornSheet", false)
     state.debugSleepSheet = x.getBooleanExtra("cd.sleepSheet", false)
     state.debugDew = x.getBooleanExtra("cd.dew", false)
+    state.debugTimeWheel = x.getStringExtra("cd.timeWheel")?.firstOrNull()
     state.debugLetter = x.getStringExtra("cd.letterNote")
     if (x.getBooleanExtra("cd.news", false)) state.whatsNew = io.github.graviton94.carpediem.ui.Changelog.entries.first().first
     x.getStringExtra("cd.update")?.let { u -> state.update = when (u) { "ready" -> AppState.UpdateState.READY; "downloading" -> AppState.UpdateState.DOWNLOADING; else -> AppState.UpdateState.AVAILABLE }; state.updateVersion = 999 }

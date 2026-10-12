@@ -607,7 +607,7 @@ internal fun AnniversarySheet(state: AppState, which: String, onSupport: () -> U
             CrayonRule(seed = 1470)
             TokenText(stringResource(if (year) io.github.graviton94.carpediem.R.string.anniv_bodyYear else io.github.graviton94.carpediem.R.string.anniv_body100), Tokens.TypeScale.callout.serif())
             TokenText(stringResource(io.github.graviton94.carpediem.R.string.anniv_sign), Tokens.TypeScale.footnote.serif(), Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.End)
-            if (state.supportMarks.isEmpty()) TokenText(stringResource(io.github.graviton94.carpediem.R.string.anniv_support), Tokens.TypeScale.footnote,
+            if (state.supportMarks.isEmpty() && state.shopOpen) TokenText(stringResource(io.github.graviton94.carpediem.R.string.anniv_support), Tokens.TypeScale.footnote,
                 Modifier.fillMaxWidth().heightIn(min = Tokens.Layout.tapTarget).clickable(onClick = onSupport).padding(vertical = Tokens.Space.sp3), color = p.olive, weight = FontWeight.SemiBold, align = TextAlign.Center)
             else TokenText(stringResource(io.github.graviton94.carpediem.R.string.anniv_thanks), Tokens.TypeScale.footnote.serif(), Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.Center)
             TokenText(stringResource(io.github.graviton94.carpediem.R.string.collect_close), Tokens.TypeScale.footnote,

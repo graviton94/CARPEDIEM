@@ -286,7 +286,7 @@ fun SupportScreen(state: AppState, now: LocalDateTime, onBack: () -> Unit) {
     val load = haruArt(state, sprout = false)
     var soon by remember { mutableStateOf(false) }
     val support = remember { io.github.graviton94.carpediem.billing.Support(ctx) }
-    androidx.compose.runtime.DisposableEffect(support) { support.onSupported = { id -> state.supported(id, now.toLocalDate()) }; support.connect(); onDispose { support.onSupported = null; support.close() } }
+    androidx.compose.runtime.DisposableEffect(support) { support.onSupported = { id -> state.supported(id, now.toLocalDate()) }; support.onReady = { state.shopOpened() }; support.connect(); onDispose { support.onSupported = null; support.close() } }
     BackHandler(onBack = onBack)
     SkyBackground {
         Column(

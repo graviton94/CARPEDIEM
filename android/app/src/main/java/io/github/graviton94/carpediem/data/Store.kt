@@ -386,6 +386,10 @@ class Store(context: Context) {
     var titleDay: LocalDate?
         get() = prefs.getLong("titleDay", Long.MIN_VALUE).takeIf { it != Long.MIN_VALUE }?.let { LocalDate.ofEpochDay(it) }
         set(v) = prefs.edit().apply { if (v == null) remove("titleDay") else putLong("titleDay", v.toEpochDay()) }.apply()
+    /** Play 에서 응원 상품을 한 번이라도 받아 왔는지 (결제 프로필이 열린 뒤로 true). */
+    var shopOpen: Boolean
+        get() = prefs.getBoolean("shopOpen", false)
+        set(v) = prefs.edit().putBoolean("shopOpen", v).apply()
     /** 아침 이슬을 맺어 준 날 (1.1.5, 하루 한 번). */
     var dewDay: LocalDate?
         get() = prefs.getLong("dewDay", Long.MIN_VALUE).takeIf { it != Long.MIN_VALUE }?.let { LocalDate.ofEpochDay(it) }

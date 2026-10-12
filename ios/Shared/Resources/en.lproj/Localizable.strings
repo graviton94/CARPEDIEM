@@ -197,7 +197,7 @@
 "support.tier3" = "A slice of cake";
 "support.tier3.price" = "$7.99";
 "support.once" = "One-time. Never a subscription.";
-"support.soon" = "Payments open after the store launch.\nThank you for the thought.";
+"support.soon" = "Support payments aren't open yet. They will be soon.\nYour kind thought already means a lot.";
 "letgo.title" = "Today's line";
 "letgo.sub" = "Joy or sorrow, one line, then let it go.";
 "letgo.feeling" = "How it feels (optional)";

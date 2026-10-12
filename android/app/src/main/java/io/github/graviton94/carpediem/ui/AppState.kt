@@ -321,8 +321,24 @@ class AppState(private val context: Context) {
     }
     fun anniversaryRead(which: String) { store.lettersGot = store.lettersGot + which }
     /** 오늘 30 · 60 · 90… 번째 한 줄을 남겼으면 그 수 (응원한 적이 있으면 권하지 않음 · 권유 간격). */
+    /**
+     * 응원 결제가 열려 있는지 (Play 에서 상품을 받아 온 적이 있음). 열리기 전엔 응원 권유 · 기념일 편지의 응원 한 줄을 띄우지 않음
+     * (판매자 프로필이 막혀 있는 동안 ‘준비 중’ 화면으로 데려가지 않게). 응원하기 화면 자체는 그대로 열림.
+     */
+    var shopOpen by mutableStateOf(store.shopOpen || io.github.graviton94.carpediem.BuildConfig.DEBUG)
+        private set
+    /** 앱을 켤 때 한 번: 아직 열린 걸 못 봤으면 Play 에 상품을 물어봄 (조용히, 결과만 적어 둠). */
+    private var shopAsked = false
+    fun checkShop() {
+        if (shopOpen || shopAsked) return
+        shopAsked = true   // 한 번 켤 때 한 번만 (결제 프로필이 막혀 있으면 답이 없으니 다시 묻지 않음)
+        val s = io.github.graviton94.carpediem.billing.Support(context)
+        s.onReady = { shopOpened(); s.close() }
+        s.connect()
+    }
+    fun shopOpened() { if (!shopOpen) { store.shopOpen = true; shopOpen = true } }
     fun supportInviteDue(today: LocalDate): Int? {
-        if (supportMarks.isNotEmpty() || design != Design.GARDEN || !nudgeFree(today)) return null
+        if (!shopOpen || supportMarks.isNotEmpty() || design != Design.GARDEN || !nudgeFree(today)) return null
         val n = lines.size
         return n.takeIf { it > 0 && it % SUPPORT_INVITE_EVERY == 0 && lines.any { l -> l.date == today } }
     }
@@ -629,6 +645,8 @@ class AppState(private val context: Context) {
      */
     var dewUp by mutableStateOf(false)
         private set
+    /** 캡처용: 설정을 열면 알림 시각 바퀴부터 ('m' 아침 · 'e' 저녁). */
+    var debugTimeWheel: Char? = null
     /** 캡처용: 시각과 상관없이 첫 화면 다음에 이슬. */
     var debugDew = false
     fun beginDew(now: LocalDateTime) {

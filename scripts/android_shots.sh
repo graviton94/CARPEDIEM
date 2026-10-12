@@ -16,7 +16,7 @@ open() { adb shell am force-stop $P; adb shell am start -W -n $P/.MainActivity "
 wantany() { local n; for n in "$@"; do want "$n" && return 0; done; return 1; }
 want() { [ -z "${ONLY:-}" ] && return 0; case " $ONLY " in *" ${1%%_*} "*) return 0;; esac; return 1; }
 # 보기만 바꾸는 옵션 (폰에 남는 상태가 없음): ONLY 로 고른 장면이 아니면 이런 장면은 열지도 않고 건너뜀 (앱을 껐다 켜는 시간 · 느린 에뮬레이터 멈춤을 아낌)
-VIEW=" cd.now cd.screen cd.page cd.stoneId cd.chance cd.term cd.title cd.openMonth cd.openYear cd.openLetter cd.adornSheet cd.care cd.guest cd.news cd.update cd.creditsYear cd.slip cd.sleepSheet cd.letterNote "
+VIEW=" cd.now cd.screen cd.page cd.stoneId cd.chance cd.term cd.title cd.openMonth cd.openYear cd.openLetter cd.adornSheet cd.care cd.guest cd.news cd.update cd.creditsYear cd.slip cd.sleepSheet cd.letterNote cd.dew cd.timeWheel "
 # s 장면 기다릴초 [열기 옵션…]: 고른 장면이면 열고 찍음. 아니면 상태를 바꾸는 옵션이 있을 때만 열어 두고 (다음 장면이 기대니까), 보기만 하는 장면은 건너뜀
 s() { local n=$1 w=$2 a; shift 2
   if want "$n"; then open "$@"; shot "$n" "$w"; return; fi
@@ -244,6 +244,14 @@ s g71_credits_end 45 --ez cd.ringYear true --es cd.screen credits --ei cd.credit
 # 첫 화면은 하늘 → 땅이 오름 (4초 남짓) → 이름 · 인사 → ‘눌러서 정원으로’ 가 마지막에 (느린 에뮬레이터는 더 늦음)
 if wantany g73a g73b g73 g73c; then open --ez cd.title true --es cd.now 2026-10-03T07:40; shot g73a_title_sky 1; shot g73b_title_pan 2; shot g73_title_morning 12; shot g73c_title_hint 8; fi
 s g74_title_night 18 --ez cd.title true --es cd.now 2026-10-03T22:30
+# 1.1.5 첫 화면 → 정원이 차례로 피어남 (첫 화면이 다 걷힌 빈 하늘 · 땅 → 돌들 → 글자 · 버튼)
+if wantany g91a g91b g91c; then open --ez cd.title true --es cd.now 2026-10-03T15:00; sleep 12; adb shell input tap 540 1200; shot g91a_bloom_empty 1.6; shot g91b_bloom_mid 1.2; shot g91c_bloom_done 3; fi
+# 1.1.5 아침 이슬: 첫 화면 → 김 서린 유리 → 하루 자리를 닦음 → 걷힘
+if wantany g90a g90b g90c; then open --ez cd.title true --ez cd.dew true --es cd.now 2026-10-03T08:10; sleep 12; adb shell input tap 540 1200; shot g90a_dew_glass 4
+  adb shell input swipe 150 900 930 1000 700; adb shell input swipe 930 1100 150 1200 700; shot g90b_dew_wiping 1
+  for y in 1250 1330 1410 1490; do adb shell input swipe 300 $y 800 $y 400; done; shot g90c_dew_cleared 4; fi
+# 1.1.5 알림 시각 바퀴 (아침)
+s g92_time_wheel 5 --es cd.screen settings --es cd.timeWheel m --es cd.now $NOW
 # 정원의 한 해 한 장 (S2): 나무 · 말뚝 · 연이 있는 작은 정원
 s g72_garden_year 8 --ez cd.gardenYear true --es cd.now 2026-10-20T15:00
 # 별자리 정원: 마음의 기록 (이번 달 · 낮/밤) · 지난 달의 정원 카드 · 한 해의 띠 (밤) · 지난 정원

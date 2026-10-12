@@ -367,7 +367,7 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
             val permission = androidx.activity.compose.rememberLauncherForActivityResult(androidx.activity.result.contract.ActivityResultContracts.RequestPermission()) { ok -> state.changeNotify(ok); if (!ok) blocked = true }
             val eveningPermission = androidx.activity.compose.rememberLauncherForActivityResult(androidx.activity.result.contract.ActivityResultContracts.RequestPermission()) { ok -> state.changeEvening(ok); if (!ok) blocked = true }
             val tomorrowPermission = androidx.activity.compose.rememberLauncherForActivityResult(androidx.activity.result.contract.ActivityResultContracts.RequestPermission()) { ok -> state.changeTomorrow(ok); if (!ok) blocked = true }
-            var timeFor by remember { mutableStateOf<Char?>(null) }   // 'm' 아침 · 'e' 저녁 시각 바퀴
+            var timeFor by remember { mutableStateOf(state.debugTimeWheel) }   // 'm' 아침 · 'e' 저녁 시각 바퀴
             fun needsAsk() = android.os.Build.VERSION.SDK_INT >= 33 && !io.github.graviton94.carpediem.notify.Daily.allowed(ctx)
             fun toggleNotify(on: Boolean) { if (on && needsAsk()) permission.launch(android.Manifest.permission.POST_NOTIFICATIONS) else state.changeNotify(on) }
             fun toggleEvening(on: Boolean) { if (on && needsAsk()) eveningPermission.launch(android.Manifest.permission.POST_NOTIFICATIONS) else state.changeEvening(on) }
