@@ -60,13 +60,13 @@
   var GINK = "#33281F", GLINE = 2.1, GEYE = 1.1;
   function gPath(ctx, pts) { var n = pts.length; ctx.beginPath(); for (var i = 0; i < n; i++) { var a = pts[i], b = pts[(i + 1) % n], mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2; i ? ctx.quadraticCurveTo(a[0], a[1], mx, my) : ctx.moveTo(mx, my); } var a0 = pts[0], b0 = pts[1]; ctx.quadraticCurveTo(a0[0], a0[1], (a0[0] + b0[0]) / 2, (a0[1] + b0[1]) / 2); ctx.closePath(); }
   function gOval(cx, cy, rx, ry, rot, squish) { var p = []; for (var i = 0; i < 16; i++) { var t = i / 16 * Math.PI * 2, x = Math.cos(t) * rx, y = Math.sin(t) * ry; if (squish && y > 0) y *= squish; var c = Math.cos(rot || 0), s = Math.sin(rot || 0); p.push([cx + x * c - y * s, cy + x * s + y * c]); } return p; }
-  function gPiece(ctx, pts, col, o) { o = o || {}; ctx.save(); gPath(ctx, pts); ctx.fillStyle = col; ctx.fill(); ctx.clip();
+  function gPiece(ctx, pts, col, o) { o = o || {}; if (HAND) return handOne(ctx, pts, col, 9000 + Math.round(pts[0][0] * 31 + pts[0][1] * 17), { inner: o.inner }); ctx.save(); gPath(ctx, pts); ctx.fillStyle = col; ctx.fill(); ctx.clip();
     var pat = ctx.createPattern(TEX.fiber, "repeat"); if (pat.setTransform) pat.setTransform(new DOMMatrix().scale(0.12)); ctx.globalAlpha = 0.5; ctx.fillStyle = pat; ctx.fillRect(-5, -5, 50, 50); ctx.globalAlpha = 1;
     var xs = pts.map(function (q) { return q[0]; }), ys = pts.map(function (q) { return q[1]; }), l = Math.min.apply(0, xs), r = Math.max.apply(0, xs), t = Math.min.apply(0, ys), b = Math.max.apply(0, ys);
     var g = ctx.createLinearGradient(l, t, l + (r - l) * 0.5, b); g.addColorStop(0, "rgba(255,255,255,.22)"); g.addColorStop(0.5, "rgba(255,255,255,0)"); g.addColorStop(1, "rgba(0,0,0,.12)"); ctx.fillStyle = g; ctx.fillRect(l, t, r - l, b - t);
     if (o.inner) o.inner(ctx);
     ctx.restore(); if (o.line !== 0) { gPath(ctx, pts); ctx.strokeStyle = GINK; ctx.lineWidth = o.line || GLINE; ctx.lineJoin = "round"; ctx.stroke(); } }
-  function gEye(ctx, x, y, r, lx) { ctx.save(); ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fillStyle = "#FFFFFF"; ctx.fill(); ctx.clip(); var pr = r * 0.56, px = x + (lx || 0.25) * (r - pr - r * 0.1), py = y + 0.2 * (r - pr);
+  function gEye(ctx, x, y, r, lx) { if (HAND) return handEye(ctx, x, y, r); ctx.save(); ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fillStyle = "#FFFFFF"; ctx.fill(); ctx.clip(); var pr = r * 0.56, px = x + (lx || 0.25) * (r - pr - r * 0.1), py = y + 0.2 * (r - pr);
     ctx.fillStyle = "#1E1915"; ctx.beginPath(); ctx.arc(px, py, pr, 0, 7); ctx.fill(); ctx.fillStyle = "#FFFFFF"; ctx.beginPath(); ctx.arc(px - pr * 0.36, py - pr * 0.38, pr * 0.28, 0, 7); ctx.fill(); ctx.restore();
     ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.strokeStyle = GINK; ctx.lineWidth = GEYE; ctx.stroke(); }
   function gShadow(ctx, cx, w) { ctx.save(); ctx.fillStyle = "rgba(51,40,31,.13)"; ctx.beginPath(); ctx.ellipse(cx, 37, w / 2, 1.5, 0, 0, 7); ctx.fill(); ctx.restore(); }

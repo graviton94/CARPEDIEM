@@ -5,7 +5,7 @@ const fs = require("fs"), path = require("path");
 const root = path.join(__dirname, "..");
 const read = (f) => fs.readFileSync(path.join(root, "design/art/src", f), "utf8");
 const files = ["engine.js", "pastel.js", "objects.js", "scenes.js", "concepts.js", "mix.js", "appexport.js"];
-const hanji = ["hanji_base.js", "hanji_haru.js", "hanji_garden.js", "hanji_cards.js", "hanji_export.js"];
+const hanji = ["hanji_base.js", "hanji_haru.js", "hanji_garden.js", "hanji_cards.js", "hanji_hand.js", "hanji_export.js"];
 const extra = `
   var V = {};
   var _piece = gPiece, _eye = gEye;

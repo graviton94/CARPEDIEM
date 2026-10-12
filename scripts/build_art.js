@@ -15,7 +15,7 @@ const path = require("path");
 const root = path.join(__dirname, "..");
 const files = ["engine.js", "pastel.js", "objects.js", "scenes.js", "concepts.js", "mix.js", "appexport.js"];
 // 한지 그림은 따로 묶음 안에: 옛 크레용 엔진과 이름이 겹쳐도 (paper · sun · ground …) 서로 덮어쓰지 않게
-const hanji = ["hanji_base.js", "hanji_haru.js", "hanji_garden.js", "hanji_cards.js", "hanji_export.js"];
+const hanji = ["hanji_base.js", "hanji_haru.js", "hanji_garden.js", "hanji_cards.js", "hanji_hand.js", "hanji_export.js"];
 const tokens = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "design/tokens.json"), "utf8")).garden;
 const D = Object.assign({}, tokens.decor, { stripLineY: tokens.layout.stripLineY, stripHeight: tokens.layout.stripHeight });
 const read = (f) => fs.readFileSync(path.join(root, "design/art/src", f), "utf8");
