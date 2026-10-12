@@ -1095,6 +1095,17 @@
 "welcome.start" = "重新開始";
 "welcome.restore" = "載入紀錄";
 "welcome.restoreSub" = "用舊手機儲存的檔案繼續使用。";
+"notify.morningTime" = "早晨通知時間";
+"notify.eveningTime" = "一天整理通知時間";
+"notify.wheelMorning" = "每天 %1$@，為你送上今天的句子。";
+"notify.wheelEvening" = "每天 %1$@，輕輕問你今天的一句話。";
+"notify.wheelLate" = "比晚上的通知（%1$@）還晚。沒關係的話就直接儲存。";
+"notify.wheelEarly" = "比早晨的通知（%1$@）還早。沒關係的話就直接儲存。";
+"time.hourA11y" = "%1$@點";
+"time.minuteA11y" = "%1$@分";
+"dew.line" = "一夜之間，花園結滿了露水";
+"dew.hint" = "用指尖輕輕擦一擦吧";
+"dew.a11y" = "擦去露水";
 "news.v1_1_5.1" = "呼吸變得更緩慢。文字提示只在前三次呼吸停留，剩餘時間靜靜顯示，呼吸期間螢幕保持常亮。";
 "news.v1_1_5.2" = "移除了震動。開啟聲音時，清亮、中音與低沉的頌缽會提示吸氣、屏息與吐氣。";
 "news.v1_1_5.3" = "看石頭發呆新增入眠計時器。以分鐘選擇後，聲音會慢慢淡出，螢幕也逐漸變暗。";

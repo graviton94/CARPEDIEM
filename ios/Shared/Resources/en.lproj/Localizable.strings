@@ -1095,6 +1095,17 @@
 "welcome.start" = "Start fresh";
 "welcome.restore" = "Bring back my records";
 "welcome.restoreSub" = "Continue from a file you saved on your old phone.";
+"notify.morningTime" = "Morning reminder time";
+"notify.eveningTime" = "Evening reminder time";
+"notify.wheelMorning" = "Every day at %1$@, I'll bring you today's quote.";
+"notify.wheelEvening" = "Every day at %1$@, I'll gently ask for today's line.";
+"notify.wheelLate" = "That's later than the evening reminder (%1$@). Save anyway if that's fine.";
+"notify.wheelEarly" = "That's earlier than the morning reminder (%1$@). Save anyway if that's fine.";
+"time.hourA11y" = "%1$@ o’clock";
+"time.minuteA11y" = "%1$@ minutes";
+"dew.line" = "Dew settled on the garden overnight";
+"dew.hint" = "Wipe it gently with your fingertip";
+"dew.a11y" = "Wipe the dew";
 "news.v1_1_5.1" = "Slower breaths. Cues for the first three only, time left shown, screen stays on.";
 "news.v1_1_5.2" = "No vibration. With sound on, soft bowls mark each step.";
 "news.v1_1_5.3" = "Stone gazing sleep timer: sound fades out as the screen dims.";

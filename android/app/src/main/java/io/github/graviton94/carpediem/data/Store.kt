@@ -386,6 +386,10 @@ class Store(context: Context) {
     var titleDay: LocalDate?
         get() = prefs.getLong("titleDay", Long.MIN_VALUE).takeIf { it != Long.MIN_VALUE }?.let { LocalDate.ofEpochDay(it) }
         set(v) = prefs.edit().apply { if (v == null) remove("titleDay") else putLong("titleDay", v.toEpochDay()) }.apply()
+    /** 아침 이슬을 맺어 준 날 (1.1.5, 하루 한 번). */
+    var dewDay: LocalDate?
+        get() = prefs.getLong("dewDay", Long.MIN_VALUE).takeIf { it != Long.MIN_VALUE }?.let { LocalDate.ofEpochDay(it) }
+        set(v) = prefs.edit().apply { if (v == null) remove("dewDay") else putLong("dewDay", v.toEpochDay()) }.apply()
     /** 미래의 나에게 (10): 나무 밑 항아리들. */
     var capsules: List<io.github.graviton94.carpediem.core.Capsule>
         get() = io.github.graviton94.carpediem.core.Capsules.decode(prefs.getString("capsules", null))

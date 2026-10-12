@@ -623,6 +623,22 @@ class AppState(private val context: Context) {
     /** 앱 첫 화면 (타이틀): 정원 디자인에서, 앱을 켤 때마다 (꺼 둘 수 있음). */
     fun titleDue(): Boolean = titleOn && design == Design.GARDEN
     fun titleSeen(today: LocalDate) { store.titleDay = today }
+    /**
+     * 아침 이슬 (1.1.5): 하루 한 번, 아침 (아침 알림 시각 ~ 11시) 첫 화면을 지나 정원에 들어올 때. 정원이 김 서린 유리 너머에 있고 손끝으로 닦아 하루를 깨움.
+     * 첫 화면을 끄면 이슬도 없음 · 둘러보기 전 · 움직임을 끈 기기도 없음.
+     */
+    var dewUp by mutableStateOf(false)
+        private set
+    /** 캡처용: 시각과 상관없이 첫 화면 다음에 이슬. */
+    var debugDew = false
+    fun beginDew(now: LocalDateTime) {
+        if (dewUp || !titleDue() || profile == null || !guideDone || io.github.graviton94.carpediem.ui.garden.reducedMotion(context)) return
+        val today = now.toLocalDate()
+        val m = now.hour * 60 + now.minute
+        if (!debugDew && (store.dewDay == today || m < morningMinute.coerceAtMost(DEW_UNTIL - 60) || m >= DEW_UNTIL)) return
+        store.dewDay = today; dewUp = true
+    }
+    fun dewCleared() { dewUp = false }
     // ───── 한 해의 엔딩 크레딧 (08) ─────
     var creditsShown by mutableStateOf(store.creditsShown)
         private set
@@ -1074,3 +1090,6 @@ object Labels {
     fun number(n: Int): String = String.format(Locale.getDefault(), "%,d", n)
     fun percent(v: Double, digits: Int = 1): String = String.format(Locale.getDefault(), "%.${digits}f%%", v * 100)
 }
+
+/** 아침 이슬이 맺히는 끝 시각 (자정부터 분, 11시). */
+private const val DEW_UNTIL = 11 * 60

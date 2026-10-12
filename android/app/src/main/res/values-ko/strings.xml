@@ -1097,6 +1097,17 @@
     <string name="welcome_start">새로 시작하기</string>
     <string name="welcome_restore">기록 불러오기</string>
     <string name="welcome_restoreSub">예전 폰에서 저장한 파일로 이어서 써요.</string>
+    <string name="notify_morningTime">아침 알림 시각</string>
+    <string name="notify_eveningTime">하루 정리 알림 시각</string>
+    <string name="notify_wheelMorning">매일 %1$s에 오늘의 문장을 건넬게요.</string>
+    <string name="notify_wheelEvening">매일 %1$s에 오늘의 한 줄을 살짝 물을게요.</string>
+    <string name="notify_wheelLate">저녁 알림 (%1$s) 보다 늦어요. 괜찮다면 그대로 저장해요.</string>
+    <string name="notify_wheelEarly">아침 알림 (%1$s) 보다 일러요. 괜찮다면 그대로 저장해요.</string>
+    <string name="time_hourA11y">%1$s시</string>
+    <string name="time_minuteA11y">%1$s분</string>
+    <string name="dew_line">밤새 정원에 이슬이 맺혔어요</string>
+    <string name="dew_hint">손끝으로 살살 닦아 주세요</string>
+    <string name="dew_a11y">이슬 닦기</string>
     <string name="news_v1_1_5_1">숨이 조금 더 느려졌어요. 말 안내는 처음 세 숨만 머물고, 남은 시간이 조용히 보여요. 숨 쉬는 동안 화면도 꺼지지 않아요.</string>
     <string name="news_v1_1_5_2">진동을 덜어냈어요. 소리를 켜 두면 맑은 종 · 가운데 종 · 낮은 종이 들숨 · 머금 · 날숨을 알려 줘요.</string>
     <string name="news_v1_1_5_3">돌멍하기에 잠들기 타이머가 생겼어요. 분 단위로 고르면 그때부터 소리가 서서히 잦아들고, 화면도 천천히 어두워져요.</string>

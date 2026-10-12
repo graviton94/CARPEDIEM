@@ -588,40 +588,11 @@ private val SLEEP_RANGE = 1..180
  */
 @Composable
 internal fun MinuteWheel(value: Int, range: IntRange, unit: String, onValue: (Int) -> Unit) {
-    val p = Theme.palette
-    val itemH = Tokens.Layout.tapTarget
-    // 앞뒤에 빈 칸 하나씩: 맨 위 칸이 j 면 가운데 값은 range.first + j
-    val list = androidx.compose.foundation.lazy.rememberLazyListState(initialFirstVisibleItemIndex = value - range.first)
-    val fling = androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior(list)
-    val itemPx = with(androidx.compose.ui.platform.LocalDensity.current) { itemH.toPx() }
-    val lensW = with(androidx.compose.ui.platform.LocalDensity.current) { (Theme.unit * 0.4f).toPx() }
-    val idx by remember { androidx.compose.runtime.derivedStateOf { (list.firstVisibleItemIndex + if (list.firstVisibleItemScrollOffset > itemPx / 2) 1 else 0).coerceIn(0, range.count() - 1) } }
-    LaunchedEffect(idx) { onValue(range.first + idx) }
-    val scope = rememberCoroutineScope()
-    val a11y = stringResource(R.string.sleep_a11y, "${range.first + idx}")
-    Box(Modifier.fillMaxWidth().height(itemH * 3).semantics(mergeDescendants = true) {
-        contentDescription = a11y
-        customActions = listOf(
-            androidx.compose.ui.semantics.CustomAccessibilityAction("+1") { scope.launch { list.animateScrollToItem((idx + 1).coerceAtMost(range.count() - 1)) }; true },
-            androidx.compose.ui.semantics.CustomAccessibilityAction("-1") { scope.launch { list.animateScrollToItem((idx - 1).coerceAtLeast(0)) }; true })
-    }, contentAlignment = Alignment.Center) {
-        // 가운데 칸 위아래 가는 선 (고르는 자리)
-        Box(Modifier.fillMaxWidth(0.5f).height(itemH).drawBehind {
-            val sw = lensW; val c = p.foreground.copy(alpha = 0.5f)
-            drawLine(c, androidx.compose.ui.geometry.Offset(0f, 0f), androidx.compose.ui.geometry.Offset(size.width, 0f), sw)
-            drawLine(c, androidx.compose.ui.geometry.Offset(0f, size.height), androidx.compose.ui.geometry.Offset(size.width, size.height), sw)
-        })
-        androidx.compose.foundation.lazy.LazyColumn(Modifier.fillMaxWidth().height(itemH * 3), state = list, flingBehavior = fling) {
-            item { Spacer(Modifier.height(itemH)) }
-            items(range.count()) { i ->
-                val on = i == idx
-                Box(Modifier.fillMaxWidth().height(itemH), contentAlignment = Alignment.Center) {
-                    TokenText("${range.first + i}", if (on) Tokens.TypeScale.title2.serif() else Tokens.TypeScale.callout.serif(),
-                        color = if (on) p.foreground else p.secondary.copy(alpha = 0.6f), weight = if (on) FontWeight.SemiBold else FontWeight.Normal)
-                }
-            }
-            item { Spacer(Modifier.height(itemH)) }
-        }
-        TokenText(unit, Tokens.TypeScale.callout.serif(), Modifier.align(Alignment.CenterEnd).padding(end = Theme.unit * 18f), color = p.foreground)
+    val ctx = LocalContext.current
+    Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+        io.github.graviton94.carpediem.ui.WheelLens(Modifier.fillMaxWidth(0.5f))
+        io.github.graviton94.carpediem.ui.WheelColumn(range.count(), value - range.first, { "${range.first + it}" }, { ctx.getString(R.string.sleep_a11y, "${range.first + it}") },
+            Modifier.fillMaxWidth()) { onValue(range.first + it) }
+        TokenText(unit, Tokens.TypeScale.callout.serif(), Modifier.align(Alignment.CenterEnd).padding(end = Theme.unit * 18f), color = Theme.palette.foreground)
     }
 }

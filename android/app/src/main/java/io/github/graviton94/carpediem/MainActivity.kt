@@ -333,11 +333,11 @@ class MainActivity : ComponentActivity() {
                     }
                     }
                     // 하루의 첫 화면 (정원 위에 덮어 두었다가, 누르면 하루 자리에서 동그랗게 열림)
-                    if (title && screen == Screen.Main) io.github.graviton94.carpediem.ui.garden.TitleScreen(state, now) {
+                    if (title && screen == Screen.Main) io.github.graviton94.carpediem.ui.garden.TitleScreen(state, now, onLeave = { state.beginDew(clock()) }) {
                         title = false; state.titleSeen(clock().toLocalDate())
                     }
                     // 짧은 알림 한마디: 어느 화면에서든 같은 자리 · 같은 움직임
-                    io.github.graviton94.carpediem.ui.NoteHost(state.note.takeIf { !io.github.graviton94.carpediem.ui.garden.chanceOnScreen.value && !state.touring && !title }) { state.noteDone() }   // 우연한 순간이 끝날 때까지 기다림
+                    io.github.graviton94.carpediem.ui.NoteHost(state.note.takeIf { !io.github.graviton94.carpediem.ui.garden.chanceOnScreen.value && !state.touring && !title && !state.dewUp }) { state.noteDone() }   // 우연한 순간이 끝날 때까지 기다림
                 }
             }
         }
@@ -391,6 +391,7 @@ private fun MainActivity.debugSetup(state: AppState): Screen {
     x.getStringExtra("cd.supported")?.split(',')?.forEach { state.supported(it) }
     state.debugAdornSheet = x.getBooleanExtra("cd.adornSheet", false)
     state.debugSleepSheet = x.getBooleanExtra("cd.sleepSheet", false)
+    state.debugDew = x.getBooleanExtra("cd.dew", false)
     state.debugLetter = x.getStringExtra("cd.letterNote")
     if (x.getBooleanExtra("cd.news", false)) state.whatsNew = io.github.graviton94.carpediem.ui.Changelog.entries.first().first
     x.getStringExtra("cd.update")?.let { u -> state.update = when (u) { "ready" -> AppState.UpdateState.READY; "downloading" -> AppState.UpdateState.DOWNLOADING; else -> AppState.UpdateState.AVAILABLE }; state.updateVersion = 999 }

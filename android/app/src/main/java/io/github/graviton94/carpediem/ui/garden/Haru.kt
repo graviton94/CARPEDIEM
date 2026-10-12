@@ -323,7 +323,7 @@ internal fun hopShape(h: Float): Triple<Float, Float, Float> = when {
 @Composable
 fun HaruFigure(art: HaruArt, scale: Dp, modifier: Modifier = Modifier, blinkKick: Int = 0, hat: Boolean = false, a11y: String? = null, onOpen: (() -> Unit)? = null,
                onLongPress: (() -> Unit)? = null, lid: Float? = null, tiltOn: Boolean = true, lookDown: Float = 0f,
-               mood: HaruMood = HaruMood.CALM, sleepy: Boolean = false, onPet: (() -> Unit)? = null) {
+               mood: HaruMood = HaruMood.CALM, sleepy: Boolean = false, onPet: (() -> Unit)? = null, smileKick: Int = 0) {
     val ctx = LocalContext.current
     val fiber = remember { GardenArt.fiber(ctx) }
     val view = androidx.compose.ui.platform.LocalView.current
@@ -345,6 +345,8 @@ fun HaruFigure(art: HaruArt, scale: Dp, modifier: Modifier = Modifier, blinkKick
         LaunchedEffect(Unit) { while (true) { delay(Random.nextLong(m.blinkMinMs.toLong(), m.blinkMaxMs.toLong())); if (smile.value == 0f && rest.value == 0f) { blinkOnce(); if (Random.nextFloat() < m.blinkTwice) { delay(140); blinkOnce() } } } }
         LaunchedEffect(blinkKick) { if (blinkKick > 0) blinkOnce() }
     }
+    // 밖에서 웃게 (아침 이슬을 다 닦아 준 뒤 뽀득 눈웃음, 1.1.5)
+    LaunchedEffect(smileKick) { if (smileKick > 0) { smile.snapTo(1f); delay(SMILE_KICK_MS); smile.snapTo(0f) } }
     fun pet() {
         if (rest.value > 0f) return
         val now = System.currentTimeMillis()
@@ -432,3 +434,6 @@ fun HaruFigure(art: HaruArt, scale: Dp, modifier: Modifier = Modifier, blinkKick
             })
     }
 }
+
+/** 밖에서 부른 눈웃음이 머무는 시간. */
+private const val SMILE_KICK_MS = 1800L

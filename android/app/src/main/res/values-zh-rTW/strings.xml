@@ -1097,6 +1097,17 @@
     <string name="welcome_start">重新開始</string>
     <string name="welcome_restore">載入紀錄</string>
     <string name="welcome_restoreSub">用舊手機儲存的檔案繼續使用。</string>
+    <string name="notify_morningTime">早晨通知時間</string>
+    <string name="notify_eveningTime">一天整理通知時間</string>
+    <string name="notify_wheelMorning">每天 %1$s，為你送上今天的句子。</string>
+    <string name="notify_wheelEvening">每天 %1$s，輕輕問你今天的一句話。</string>
+    <string name="notify_wheelLate">比晚上的通知（%1$s）還晚。沒關係的話就直接儲存。</string>
+    <string name="notify_wheelEarly">比早晨的通知（%1$s）還早。沒關係的話就直接儲存。</string>
+    <string name="time_hourA11y">%1$s點</string>
+    <string name="time_minuteA11y">%1$s分</string>
+    <string name="dew_line">一夜之間，花園結滿了露水</string>
+    <string name="dew_hint">用指尖輕輕擦一擦吧</string>
+    <string name="dew_a11y">擦去露水</string>
     <string name="news_v1_1_5_1">呼吸變得更緩慢。文字提示只在前三次呼吸停留，剩餘時間靜靜顯示，呼吸期間螢幕保持常亮。</string>
     <string name="news_v1_1_5_2">移除了震動。開啟聲音時，清亮、中音與低沉的頌缽會提示吸氣、屏息與吐氣。</string>
     <string name="news_v1_1_5_3">看石頭發呆新增入眠計時器。以分鐘選擇後，聲音會慢慢淡出，螢幕也逐漸變暗。</string>

@@ -1097,6 +1097,17 @@
     <string name="welcome_start">Start fresh</string>
     <string name="welcome_restore">Bring back my records</string>
     <string name="welcome_restoreSub">Continue from a file you saved on your old phone.</string>
+    <string name="notify_morningTime">Morning reminder time</string>
+    <string name="notify_eveningTime">Evening reminder time</string>
+    <string name="notify_wheelMorning">Every day at %1$s, I\'ll bring you today\'s quote.</string>
+    <string name="notify_wheelEvening">Every day at %1$s, I\'ll gently ask for today\'s line.</string>
+    <string name="notify_wheelLate">That\'s later than the evening reminder (%1$s). Save anyway if that\'s fine.</string>
+    <string name="notify_wheelEarly">That\'s earlier than the morning reminder (%1$s). Save anyway if that\'s fine.</string>
+    <string name="time_hourA11y">%1$s o’clock</string>
+    <string name="time_minuteA11y">%1$s minutes</string>
+    <string name="dew_line">Dew settled on the garden overnight</string>
+    <string name="dew_hint">Wipe it gently with your fingertip</string>
+    <string name="dew_a11y">Wipe the dew</string>
     <string name="news_v1_1_5_1">Slower breaths. Cues for the first three only, time left shown, screen stays on.</string>
     <string name="news_v1_1_5_2">No vibration. With sound on, soft bowls mark each step.</string>
     <string name="news_v1_1_5_3">Stone gazing sleep timer: sound fades out as the screen dims.</string>

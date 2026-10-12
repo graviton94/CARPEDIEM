@@ -1095,7 +1095,18 @@
     "bday.cardPlain": "카드만 보내기",
     "welcome.start": "새로 시작하기",
     "welcome.restore": "기록 불러오기",
-    "welcome.restoreSub": "예전 폰에서 저장한 파일로 이어서 써요."
+    "welcome.restoreSub": "예전 폰에서 저장한 파일로 이어서 써요.",
+    "notify.morningTime": "아침 알림 시각",
+    "notify.eveningTime": "하루 정리 알림 시각",
+    "notify.wheelMorning": "매일 {time}에 오늘의 문장을 건넬게요.",
+    "notify.wheelEvening": "매일 {time}에 오늘의 한 줄을 살짝 물을게요.",
+    "notify.wheelLate": "저녁 알림 ({time}) 보다 늦어요. 괜찮다면 그대로 저장해요.",
+    "notify.wheelEarly": "아침 알림 ({time}) 보다 일러요. 괜찮다면 그대로 저장해요.",
+    "time.hourA11y": "{n}시",
+    "time.minuteA11y": "{n}분",
+    "dew.line": "밤새 정원에 이슬이 맺혔어요",
+    "dew.hint": "손끝으로 살살 닦아 주세요",
+    "dew.a11y": "이슬 닦기"
   },
   "en": {
     "letgo.empty": "Write your line first.",
@@ -2193,7 +2204,18 @@
     "bday.cardPlain": "Card only",
     "welcome.start": "Start fresh",
     "welcome.restore": "Bring back my records",
-    "welcome.restoreSub": "Continue from a file you saved on your old phone."
+    "welcome.restoreSub": "Continue from a file you saved on your old phone.",
+    "notify.morningTime": "Morning reminder time",
+    "notify.eveningTime": "Evening reminder time",
+    "notify.wheelMorning": "Every day at {time}, I'll bring you today's quote.",
+    "notify.wheelEvening": "Every day at {time}, I'll gently ask for today's line.",
+    "notify.wheelLate": "That's later than the evening reminder ({time}). Save anyway if that's fine.",
+    "notify.wheelEarly": "That's earlier than the morning reminder ({time}). Save anyway if that's fine.",
+    "time.hourA11y": "{n} o’clock",
+    "time.minuteA11y": "{n} minutes",
+    "dew.line": "Dew settled on the garden overnight",
+    "dew.hint": "Wipe it gently with your fingertip",
+    "dew.a11y": "Wipe the dew"
   },
   "ja": {
     "letgo.empty": "先にひとことを書いてください。",
@@ -3291,7 +3313,18 @@
     "bday.cardPlain": "カードだけ送る",
     "welcome.start": "はじめから始める",
     "welcome.restore": "記録を読み込む",
-    "welcome.restoreSub": "前のスマホで保存したファイルから続けます。"
+    "welcome.restoreSub": "前のスマホで保存したファイルから続けます。",
+    "notify.morningTime": "朝の通知の時刻",
+    "notify.eveningTime": "一日のまとめ通知の時刻",
+    "notify.wheelMorning": "毎日 {time} に今日の言葉を届けます。",
+    "notify.wheelEvening": "毎日 {time} に今日のひとことをそっと尋ねます。",
+    "notify.wheelLate": "夕方の通知（{time}）より遅い時刻です。よければそのまま保存してください。",
+    "notify.wheelEarly": "朝の通知（{time}）より早い時刻です。よければそのまま保存してください。",
+    "time.hourA11y": "{n}時",
+    "time.minuteA11y": "{n}分",
+    "dew.line": "夜のあいだに庭に露が降りました",
+    "dew.hint": "指先でそっと拭いてください",
+    "dew.a11y": "露を拭く"
   },
   "zh-TW": {
     "letgo.empty": "請先寫下一句話。",
@@ -4389,6 +4422,17 @@
     "bday.cardPlain": "只寄卡片",
     "welcome.start": "重新開始",
     "welcome.restore": "載入紀錄",
-    "welcome.restoreSub": "用舊手機儲存的檔案繼續使用。"
+    "welcome.restoreSub": "用舊手機儲存的檔案繼續使用。",
+    "notify.morningTime": "早晨通知時間",
+    "notify.eveningTime": "一天整理通知時間",
+    "notify.wheelMorning": "每天 {time}，為你送上今天的句子。",
+    "notify.wheelEvening": "每天 {time}，輕輕問你今天的一句話。",
+    "notify.wheelLate": "比晚上的通知（{time}）還晚。沒關係的話就直接儲存。",
+    "notify.wheelEarly": "比早晨的通知（{time}）還早。沒關係的話就直接儲存。",
+    "time.hourA11y": "{n}點",
+    "time.minuteA11y": "{n}分",
+    "dew.line": "一夜之間，花園結滿了露水",
+    "dew.hint": "用指尖輕輕擦一擦吧",
+    "dew.a11y": "擦去露水"
   }
 }
