@@ -250,6 +250,9 @@ if wantany g91a g91b g91c g91d g91e; then open --ez cd.title true --es cd.now 20
 if wantany g90a g90b g90c; then open --ez cd.title true --ez cd.dew true --es cd.now 2026-10-03T08:10; sleep 12; adb shell input tap 540 1200; shot g90a_dew_glass 4
   adb shell input swipe 150 900 930 1000 700; adb shell input swipe 930 1100 150 1200 700; shot g90b_dew_wiping 1
   for y in 1250 1330 1410 1490; do adb shell input swipe 300 $y 800 $y 400; done; shot g90c_dew_cleared 4; fi
+# 1.1.5 간직한 문장 (정원 책갈피 · 추억) · 못 만난 것 실루엣 · 한지 생일 모자 · 케이크
+s g93_kept_garden 6 --ez cd.kept true --es cd.now $NOW
+s g94_kept_memories 4 --ei cd.page 2 --es cd.now $NOW; if want g94b; then swipe_up; shot g94b_kept_list 2; fi
 # 1.1.5 알림 시각 바퀴 (아침)
 s g92_time_wheel 5 --es cd.screen settings --es cd.timeWheel m --es cd.now $NOW
 # 정원의 한 해 한 장 (S2): 나무 · 말뚝 · 연이 있는 작은 정원

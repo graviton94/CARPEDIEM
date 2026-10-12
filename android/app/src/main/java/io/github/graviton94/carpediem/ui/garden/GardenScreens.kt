@@ -15,6 +15,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.background
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -241,7 +242,7 @@ internal fun shortName(n: String): String { val max = G.Family.nameChars.toInt()
 
 // ───────────────────────── 홈 = 정원 ─────────────────────────
 
-@OptIn(ExperimentalMaterial3Api::class, androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
+@OptIn(ExperimentalMaterial3Api::class, androidx.compose.foundation.layout.ExperimentalLayoutApi::class, androidx.compose.foundation.ExperimentalFoundationApi::class)
 @Composable
 fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSettings: () -> Unit, onCollection: () -> Unit, onSupport: () -> Unit, onStone: (String?) -> Unit, onAddPerson: () -> Unit,
                onBreath: (BreathKind, Int, Sound) -> Unit = { _, _, _ -> }, onGaze: () -> Unit = {}, bare: Boolean = false, onLook: () -> Unit = {}, onMemory: () -> Unit = {},
@@ -438,8 +439,13 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                         // 한 줄로 답하기: 기록 페이지의 오늘의 한 줄로
                         state.answer(); turnTo(1)
                     } } else state.quote?.let { q ->
+                        // 누르면 다음 문장, 길게 누르면 간직하기 (1.1.5, 오른쪽 위에 한지 책갈피가 내려옴)
+                        val kept = state.isKept(q.number)
+                        val ribbon by androidx.compose.animation.core.animateFloatAsState(if (kept) 1f else 0f, androidx.compose.animation.core.spring(dampingRatio = 0.5f, stiffness = 300f), label = "keep")
                         Column(
-                            Modifier.fillMaxWidth().padding(top = Tokens.Space.sp4).guideTarget(guide, "words").clickable { state.nextQuote() },
+                            Modifier.fillMaxWidth().padding(top = Tokens.Space.sp4).guideTarget(guide, "words")
+                                .combinedClickable(onLongClickLabel = stringResource(if (kept) R.string.keep_off else R.string.keep_on), onLongClick = { state.toggleKeep(q.number) }) { state.nextQuote() }
+                                .drawWithContent { drawContent(); if (ribbon > 0f) keepRibbon(Offset(size.width - u.toPx() * KEEP_RIBBON_INSET, -u.toPx() * 2f), u.toPx(), ribbon) },
                             horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1),
                         ) {
                             // 새 문장 (누르거나 날이 바뀌어) 은 옛 타자기처럼 한 글자씩. 자리는 처음부터 다 잡아 두어 줄이 흔들리지 않음
@@ -1169,6 +1175,17 @@ fun GardenButton(text: String, onClick: () -> Unit, filled: Boolean, seed: Int, 
     ) { TokenText(text, Tokens.TypeScale.headline) }
 }
 
+
+/** 간직한 문장의 한지 책갈피: at = 위 가운데, k = 정원 칸 (px), drop = 0..1 (위에서 내려옴). */
+internal fun androidx.compose.ui.graphics.drawscope.DrawScope.keepRibbon(at: Offset, k: Float, drop: Float) {
+    val w = k * 5f; val h = k * 11f * drop
+    if (h <= 0f) return
+    val p = androidx.compose.ui.graphics.Path().apply { moveTo(at.x - w / 2, at.y); lineTo(at.x + w / 2, at.y); lineTo(at.x + w / 2, at.y + h); lineTo(at.x, at.y + h * 0.78f); lineTo(at.x - w / 2, at.y + h); close() }
+    drawPath(p, KEEP_RIBBON_COLOR)
+    drawPath(p, Tokens.Garden.Colors.ink.copy(alpha = 0.55f), style = androidx.compose.ui.graphics.drawscope.Stroke(k * 0.5f, join = androidx.compose.ui.graphics.StrokeJoin.Round))
+}
+internal val KEEP_RIBBON_COLOR = Color(0xFFC0614A)
+private const val KEEP_RIBBON_INSET = 10f
 
 /** 오늘의 문장 (타자기처럼). 글자 수는 여기서만 읽어, 바뀌어도 이 문장만 다시 그림. */
 @Composable

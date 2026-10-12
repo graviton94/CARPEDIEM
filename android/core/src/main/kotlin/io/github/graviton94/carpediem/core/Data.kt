@@ -99,6 +99,9 @@ class QuoteBook(csv: String) {
 
     fun quote(day: Int, seed: ULong, offset: Int = 0): Quote? = if (quotes.isEmpty()) null else quotes[index(day + offset, seed)]
 
+    /** 번호로 (간직한 문장 · 다시 띄운 문장). */
+    fun byNumber(n: Int): Quote? = quotes.firstOrNull { it.number == n }
+
     fun order(cycle: Int, seed: ULong): IntArray {
         val result = shuffled(seed + cycle.toULong() * 0x9E3779B97F4A7C15uL)
         if (cycle > 0 && result.size > 1 && result[0] == order(cycle - 1, seed).last()) {

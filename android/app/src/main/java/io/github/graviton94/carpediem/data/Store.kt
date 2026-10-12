@@ -208,6 +208,8 @@ class Store(context: Context) {
 
     /** 오늘의 문장. 앱에서 ‘다음 문장’을 누른 횟수는 그날에만 적용된다. */
     fun todaysQuote(date: LocalDate = LocalDate.now()): Quote? {
+        // 간직한 문장을 오늘 다시 띄웠으면 그 문장 (그날 하루)
+        if (prefs.getLong("quotePinDay", -1) == date.toEpochDay()) book.byNumber(prefs.getInt("quotePinNo", -1))?.let { return it }
         val seed = prefs.getString("quoteSeed", null)?.toULongOrNull() ?: 0x5EEDuL
         val today = date.toEpochDay()
         val start = prefs.getLong("quoteStart", today)
@@ -215,8 +217,16 @@ class Store(context: Context) {
         return book.quote((today - start).toInt(), seed, skip)
     }
 
+    /** 간직한 문장 (1.1.5): 번호와 간직한 날, 새것이 앞. */
+    var keptQuotes: List<Pair<Int, LocalDate>>
+        get() = prefs.getString("keptQuotes", "").orEmpty().split(',').mapNotNull { e -> e.split(':').takeIf { it.size == 2 }?.let { (n, d) -> n.toIntOrNull()?.let { no -> d.toLongOrNull()?.let { no to LocalDate.ofEpochDay(it) } } } }
+        set(v) = prefs.edit().putString("keptQuotes", v.joinToString(",") { "${it.first}:${it.second.toEpochDay()}" }).apply()
+    /** 간직한 문장을 오늘 정원에 다시 띄움 (그날 하루). */
+    fun pinQuote(number: Int, date: LocalDate = LocalDate.now()) = prefs.edit().putLong("quotePinDay", date.toEpochDay()).putInt("quotePinNo", number).apply()
+
     fun skipQuote(date: LocalDate = LocalDate.now()) {
         val today = date.toEpochDay()
+        prefs.edit().remove("quotePinDay").apply()   // 다음 문장을 누르면 다시 띄운 문장은 내려놓음
         val current = if (prefs.getLong("quoteSkipDay", -1) == today) prefs.getInt("quoteSkip", 0) else 0
         val e = prefs.edit().putLong("quoteSkipDay", today).putInt("quoteSkip", current + 1)
         if (!prefs.contains("firstSkip")) e.putLong("firstSkip", today)

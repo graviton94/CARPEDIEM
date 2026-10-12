@@ -424,6 +424,24 @@ class AppState(private val context: Context) {
     fun unlockDev() { if (!io.github.graviton94.carpediem.BuildConfig.DEV_TOOLS) return; store.devMode = true; devMode = true }
     fun nextQuote() { store.skipQuote(); quote = store.todaysQuote(); blinkKick++; Widgets.refresh(context) }
     fun refreshQuote() { quote = store.todaysQuote() }
+    /** 간직한 문장 (1.1.5): 정원의 문장을 길게 눌러 간직 · 다시 길게 눌러 빼기. 추억 페이지에 모이고, 누르면 오늘 정원에 다시 띄움. */
+    var keptQuotes by mutableStateOf(store.keptQuotes)
+        private set
+    fun isKept(number: Int) = keptQuotes.any { it.first == number }
+    fun toggleKeep(number: Int, today: LocalDate = nowDate()): Boolean {
+        val keep = !isKept(number)
+        val v = if (keep) listOf(number to today) + keptQuotes else keptQuotes.filter { it.first != number }
+        store.keptQuotes = v; keptQuotes = v
+        say(context.getString(if (keep) R.string.keep_done else R.string.keep_removed))
+        return keep
+    }
+    fun showKept(number: Int, today: LocalDate = nowDate()) { store.pinQuote(number, today); quote = store.todaysQuote(today); blinkKick++; say(context.getString(R.string.keep_shown)) }
+    fun keptQuote(number: Int) = store.book.byNumber(number)
+    /** 캡처용: 오늘의 문장과 두 문장을 간직한 것으로. */
+    fun addSampleKept(today: LocalDate = nowDate()) {
+        val v = listOfNotNull(quote?.number?.let { it to today }) + store.book.quotes.take(2).mapIndexed { i, q -> q.number to today.minusDays(3L + i * 9) }
+        store.keptQuotes = v; keptQuotes = v
+    }
     /** 타자기처럼 한 글자씩 다 쳐 본 문장 (같은 문장은 정원에 다시 와도 한 번에). */
     var typedQuote: String? = null
     fun changeQuoteLanguage(v: QuoteLanguage) { store.quoteLanguage = v; quoteLanguage = v; Widgets.refresh(context) }

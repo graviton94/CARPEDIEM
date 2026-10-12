@@ -392,6 +392,7 @@ private fun MainActivity.debugSetup(state: AppState): Screen {
     state.debugAdornSheet = x.getBooleanExtra("cd.adornSheet", false)
     state.debugSleepSheet = x.getBooleanExtra("cd.sleepSheet", false)
     state.debugDew = x.getBooleanExtra("cd.dew", false)
+    if (x.getBooleanExtra("cd.kept", false)) state.addSampleKept()
     state.debugTimeWheel = x.getStringExtra("cd.timeWheel")?.firstOrNull()
     state.debugLetter = x.getStringExtra("cd.letterNote")
     if (x.getBooleanExtra("cd.news", false)) state.whatsNew = io.github.graviton94.carpediem.ui.Changelog.entries.first().first
