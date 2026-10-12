@@ -103,8 +103,16 @@
       gPiece(ctx, [[25.2, 12.6], [26.4, 6.6], [29.4, 11.6]], "#BD7D4B", { line: 1.8 });
       gPiece(ctx, gOval(28, 17, 6, 5.4, 0.15), "#BD7D4B");
       gEye(ctx, 30.2, 16.2, 3, 0.4); ctx.fillStyle = GINK; ctx.beginPath(); ctx.arc(33.8, 18, 0.8, 0, 7); ctx.fill();
-      gPiece(ctx, gOval(31.4, 26, 1.7 * 1.2, 2.1 * 1.2, 0), "#B07A4A", { line: 1.2 }); gPiece(ctx, [[28.9, 24.6], [33.9, 24.6], [33.3, 22.8], [29.5, 22.8]], "#7A5A3A", { line: 1.2 });
-      gPiece(ctx, gOval(29.6, 26.4, 2.1, 1.4, -0.3), "#C98A57", { line: 1.2 }); gPiece(ctx, gOval(26, 36, 4.2, 1.5), "#A8693D", { line: 1.2 }); }
+// 도토리: 깍정이 + 열매를 한 장으로 오려 윤곽 하나, 깍정이 (비늘 무늬) 는 안쪽에 칠함 · 꼭지는 먹선
+      var ax = 33.6, at = 21.2, cap = bez([ax - 3.7, at + 3, ax - 3.9, at + 0.6, ax - 2.2, at - 0.8, ax, at - 0.8, ax + 2.2, at - 0.8, ax + 3.9, at + 0.6, ax + 3.7, at + 3], 8);
+      var nut = bez([ax + 3, at + 3.1, ax + 3.3, at + 5.8, ax + 1.6, at + 8.4, ax, at + 9.2, ax - 1.6, at + 8.4, ax - 3.3, at + 5.8, ax - 3, at + 3.1], 8);
+      gPiece(ctx, cap.concat(nut), "#C48543", { line: 1.2, inner: function (c) {
+        c.fillStyle = "rgba(255,244,222,.5)"; c.beginPath(); c.ellipse(ax - 1.4, at + 5.4, 0.6, 1.7, 0.15, 0, 7); c.fill();
+        c.fillStyle = "#6E4E31"; c.beginPath(); cap.forEach(function (q, i) { i ? c.lineTo(q[0], q[1]) : c.moveTo(q[0], q[1]); }); c.quadraticCurveTo(ax, at + 4, ax - 3.7, at + 3); c.fill();
+        c.strokeStyle = "rgba(235,215,185,.35)"; c.lineWidth = 0.3; c.lineCap = "round";
+        for (var y = at - 0.2, r = 0; y < at + 3.2; y += 0.9, r++) for (var x = ax - 3.8 + (r % 2) * 0.55; x < ax + 3.8; x += 1.1) { c.beginPath(); c.moveTo(x - 0.4, y); c.quadraticCurveTo(x, y + 0.5, x + 0.4, y); c.stroke(); } } });
+      ctx.strokeStyle = GINK; ctx.lineWidth = 0.8; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(ax, at - 0.6); ctx.quadraticCurveTo(ax + 0.2, at - 2, ax + 1.1, at - 2.4); ctx.stroke();
+      gPiece(ctx, gOval(30.6, 26.8, 1.8, 1.3, -0.4), "#C98A57", { line: 1.2 }); gPiece(ctx, gOval(26, 36, 4.2, 1.5), "#A8693D", { line: 1.2 }); }
     else if (kind === "hedgehog") {   // 고슴도치: 둥근 언덕 몸, 등에 짧은 가시 몇 줄 (먹선), 연한 얼굴 · 까만 코
       gShadow(ctx, 20, 28);
       gPiece(ctx, gOval(19, 27.5, 14.6, 12, 0, 0.62), "#8A6B4C", { inner: function (c) { c.strokeStyle = "rgba(51,40,31,.7)"; c.lineWidth = 1.1; c.lineCap = "round";
