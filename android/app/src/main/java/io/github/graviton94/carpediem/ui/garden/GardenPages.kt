@@ -381,9 +381,9 @@ internal fun SupportIcon(kind: Int, size: androidx.compose.ui.unit.Dp) {
 /** 세 칸씩 놓는 판 (마지막 줄은 빈칸으로 채움). */
 @Composable
 private fun TileGrid(count: Int, tile: @Composable (Int) -> Unit) {
-    val cols = 3
+    val cols = COLLECT_COLS
     (0 until count).chunked(cols).forEach { row ->
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
             row.forEach { i -> Box(Modifier.weight(1f)) { tile(i) } }
             repeat(cols - row.size) { Spacer(Modifier.weight(1f)) }
         }
@@ -397,8 +397,8 @@ private fun CollectionTile(seed: Int, art: @Composable () -> Unit, title: String
     val p = Theme.palette
     Box(Modifier.fillMaxWidth().height(u * COLLECT_TILE_H).crayonBox(null, G.Radius.box, G.Stroke.chip, seed).clickable(onClick = onClick)) {
         Column(Modifier.fillMaxSize().padding(horizontal = Tokens.Space.sp2, vertical = Tokens.Space.sp2), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
-            Box(Modifier.size(u * 64f), contentAlignment = Alignment.Center) { art() }
-            TokenText(title, Tokens.TypeScale.footnote, Modifier.fillMaxWidth(), weight = FontWeight.SemiBold, align = TextAlign.Center, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
+            Box(Modifier.size(u * COLLECT_ART), contentAlignment = Alignment.Center) { art() }
+            TokenText(title, Tokens.TypeScale.caption1, Modifier.fillMaxWidth(), weight = FontWeight.SemiBold, align = TextAlign.Center, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
             TokenText(date, Tokens.TypeScale.caption2, color = p.secondary, align = TextAlign.Center, maxLines = 1)
         }
         // 크레용 테두리 안쪽으로 넉넉히 (가장자리에 붙지 않게)
@@ -440,8 +440,11 @@ private class Tile(val art: @Composable () -> Unit, val title: String, val dateT
 private class Detail(val art: @Composable () -> Unit, val name: String, val sub: String, val desc: String, val howTitle: String, val how: String,
                      val chips: List<Pair<String, Boolean>> = emptyList(), val note: String? = null)
 
-private const val COLLECT_FIRST = 6
-private const val COLLECT_TILE_H = 120f
+/** 모은 것: 한 줄에 넷, 두 줄 (여덟) 까지 보이고 그보다 많으면 ‘전체 보기’. */
+private const val COLLECT_COLS = 4
+private const val COLLECT_FIRST = 8
+private const val COLLECT_TILE_H = 100f
+private const val COLLECT_ART = 50f
 
 @OptIn(ExperimentalMaterial3Api::class, androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
 @Composable

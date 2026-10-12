@@ -162,12 +162,19 @@ internal fun MorningDew(garden: GraphicsLayer, haru: Rect, onHaru: (Float) -> Un
             var lastUp = 0L; var lastAt = Offset.Zero
             awaitEachGesture {
                 val down = awaitFirstDown()
-                if (down.uptimeMillis - lastUp < DOUBLE_TAP_MS && (down.position - lastAt).getDistance() < u * 12f) { clear(false); return@awaitEachGesture }
                 var prev = down.position; wipe(prev, prev); down.consume()
+                var moved = 0f
                 while (true) {
                     val ev = awaitPointerEvent()
                     val c = ev.changes.firstOrNull { it.id == down.id } ?: break
-                    if (!c.pressed) { lastUp = c.uptimeMillis; lastAt = c.position; break }
+                    if (!c.pressed) {
+                        // 두 번 톡 (둘 다 거의 움직이지 않은 짧은 누름) 이면 한 번에 걷힘. 닦다가 손을 뗐다 다시 대는 건 톡이 아님
+                        val tap = moved < u * TAP_SLOP && c.uptimeMillis - down.uptimeMillis < TAP_MS
+                        if (tap && c.uptimeMillis - lastUp < DOUBLE_TAP_MS && (c.position - lastAt).getDistance() < u * 12f) clear(false)
+                        lastUp = if (tap) c.uptimeMillis else 0L; lastAt = c.position
+                        break
+                    }
+                    moved += (c.position - prev).getDistance()
                     wipe(prev, c.position); prev = c.position; c.consume()
                 }
             }
@@ -227,6 +234,9 @@ private const val FADE_MS = 1400
 private const val AUTO_FADE_MS = 3200
 private const val IDLE_MS = 15_000L
 private const val DOUBLE_TAP_MS = 300L
+/** 톡으로 치는 누름: 이만큼 (화면 폭 %) 안에서 움직이고 이만큼 짧게. */
+private const val TAP_SLOP = 2f
+private const val TAP_MS = 250L
 private const val WORDS_DELAY_MS = 1200L
 private const val WORDS_MS = 1000
 private const val WORDS_AT = 0.4f
