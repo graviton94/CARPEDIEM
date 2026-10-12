@@ -486,7 +486,7 @@ enum Tokens {
         }
         enum Sound {
             static let sampleRate: CGFloat = 22050.0
-            static let volume: CGFloat = 0.35
+            static let volume: CGFloat = 0.26
             static let chime: CGFloat = 0.5
             static let chimeHz: CGFloat = 528.0
             static let toneLow: CGFloat = 174.0
@@ -494,16 +494,18 @@ enum Tokens {
             static let fadeInMs: CGFloat = 2500.0
             static let fadeOutMs: CGFloat = 1800.0
             static let waveSeconds: CGFloat = 9.0
-            static let bowl: CGFloat = 0.22
-            static let guide: CGFloat = 1.1
+            static let bowl: CGFloat = 0.6
+            static let duck: CGFloat = 0.5
+            static let duckHoldMs: CGFloat = 1200.0
+            static let guide: CGFloat = 0.8
             static let bed: CGFloat = 0.32
             static let gazeBed: CGFloat = 0.6
             static let noteMin: CGFloat = 4.0
             static let noteMax: CGFloat = 14.0
             static let songVolume: CGFloat = 0.5
-            static let bowlInHz: CGFloat = 220.0
-            static let bowlHoldHz: CGFloat = 185.0
-            static let bowlOutHz: CGFloat = 164.8
+            static let bowlInHz: CGFloat = 330.0
+            static let bowlHoldHz: CGFloat = 277.2
+            static let bowlOutHz: CGFloat = 247.2
             static let bowlRing: CGFloat = 8.0
             static let bowlAttackMs: CGFloat = 35.0
             static let bowlBeat: CGFloat = 0.7

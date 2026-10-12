@@ -19,6 +19,8 @@ import kotlin.math.sin
  */
 object Soundscape {
     private val T = Tokens.Garden.Sound
+    /** 마지막으로 종을 친 때 (elapsedRealtime). 바탕 소리가 이걸 보고 잠시 낮아짐 (종이 잡음에 묻히지 않게). */
+    @Volatile private var struckAt = Long.MIN_VALUE / 2
 
     private fun attributes() = AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_MEDIA).setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).build()
     private fun format(sr: Int) = AudioFormat.Builder().setSampleRate(sr).setEncoding(AudioFormat.ENCODING_PCM_16BIT).setChannelMask(AudioFormat.CHANNEL_OUT_MONO).build()
@@ -197,11 +199,14 @@ object Soundscape {
             var gLp = 0f
             // 숨 화면의 섞임 (0 = 바탕만 · 1 = 바탕은 낮게 + 숨 소리): 숨이 시작될 때 뚝 바뀌지 않고 1초쯤에 걸쳐
             var mix = 0f
+            // 종이 울리는 동안 바탕을 살짝 낮춤 (빨리 내려가고 천천히 돌아옴)
+            var duck = 1f; val duckDown = 1f / (DUCK_DOWN_S * sr); val duckUp = 1f / (DUCK_UP_S * sr)
             fun guide(pink: Float): Float {
-                gLp += (pink - gLp) * (0.06f + 0.30f * smooth)
+                gLp += (pink - gLp) * (0.04f + 0.14f * smooth)
                 return gLp * (0.03f + 0.97f * smooth * kotlin.math.sqrt(smooth)) * 2.2f * T.guide
             }
             while (true) {
+                val ducked = android.os.SystemClock.elapsedRealtime() - struckAt < T.duckHoldMs
                 for (i in buf.indices) {
                     val t = n.toDouble() / sr; n++
                     val w = white()
@@ -245,7 +250,8 @@ object Soundscape {
                     }
                     gain = if (stopping || my != gen) (gain - fadeOut).coerceAtLeast(0f) else (gain + fadeIn).coerceAtMost(1f)
                     lvl += (level - lvl) * LEVEL_GLIDE
-                    buf[i] = (v * gain * lvl * T.volume * Short.MAX_VALUE).coerceIn(-32767f, 32767f).toInt().toShort()
+                    duck = if (ducked) (duck - duckDown).coerceAtLeast(T.duck) else (duck + duckUp).coerceAtMost(1f)
+                    buf[i] = (v * gain * lvl * duck * T.volume * Short.MAX_VALUE).coerceIn(-32767f, 32767f).toInt().toShort()
                 }
                 track.write(buf, 0, buf.size)
                 if ((stopping || my != gen) && gain <= 0f) break
@@ -259,13 +265,14 @@ object Soundscape {
      * 배음마다 아주 가까운 두 음이 맞물려 천천히 일렁이며 (beat), 부드러운 채로 쳐서 오래 잦아듦. hz = 바탕음, strikes = 치는 횟수.
      */
     fun bowl(hz: Double, strikes: Int = 1) {
+        struckAt = android.os.SystemClock.elapsedRealtime() + ((strikes - 1) * 1600L)
         Thread({
             runCatching {
                 val sr = T.sampleRate.toInt()
                 val ring = T.bowlRing.toDouble(); val gapS = 1.6
                 val lenS = ring + gapS * (strikes - 1)
                 val mix = FloatArray((sr * lenS).toInt())
-                val partials = listOf(1.0 to 1.0, 2.71 to 0.42, 5.15 to 0.16, 8.1 to 0.06)
+                val partials = listOf(1.0 to 1.0, 2.71 to 0.6, 5.15 to 0.28, 8.1 to 0.1)
                 val decay = listOf(0.42, 0.75, 1.4, 2.6)
                 val attack = T.bowlAttackMs / 1000.0; val beat = T.bowlBeat.toDouble()
                 for (k in 0 until strikes) {
@@ -329,3 +336,6 @@ private const val SONG_RELEASE_S = 0.4
 private const val MIX_GLIDE = 0.00004f
 /** 잠들기 크기가 따라가는 빠르기 (표본마다, 48kHz 에서 약 2초). */
 private const val LEVEL_GLIDE = 0.00001f
+/** 종이 울릴 때 바탕이 내려가는 · 돌아오는 시간 (초). */
+private const val DUCK_DOWN_S = 0.12f
+private const val DUCK_UP_S = 2.5f
