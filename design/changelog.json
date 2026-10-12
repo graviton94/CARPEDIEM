@@ -22,7 +22,6 @@
       "Unfinished lines are kept.",
       "Support: preview your piece by Haru, give it to other Harus too.",
       "After a Lantern breath, a lantern glows at night.",
-      "Reminder times on a wheel.",
       "Simpler settings: three reminders, tap a time to change it."
     ],
     "ja": [
@@ -35,7 +34,6 @@
       "一日を閉じるで書きかけのひとことは消えずに残り、あとで続けて書けます。",
       "応援するで選んだかけらをハルのそばで先に見られ、同じかけらを別のハルにも贈れます。",
       "こころの灯りの呼吸を終えた夜は、庭に灯りがひとつともります。",
-      "通知の時刻をアラームのようにくるくる回して選べます。",
       "設定をすっきりさせました。通知は三つ、時刻は横を押してすぐ変えられます。"
     ],
     "zh-TW": [
@@ -48,7 +46,6 @@
       "結束一天時沒寫完的話會保留下來，之後可以接著寫。",
       "在「支持」中可先看到所選的小物放在小日身旁，同一件也能送給其他小日。",
       "完成心之燈火呼吸的夜晚，花園裡會亮起一盞燈。",
-      "通知時間可以像設鬧鐘一樣轉動選擇。",
       "設定變簡單了。通知只剩三項，點旁邊的時間就能修改。"
     ]
   },
