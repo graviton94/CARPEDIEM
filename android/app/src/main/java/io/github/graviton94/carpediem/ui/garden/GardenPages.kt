@@ -478,7 +478,7 @@ private fun KeptQuotes(state: AppState) {
             val text = io.github.graviton94.carpediem.data.Words.main(q, state.quoteLanguage, phone)
             Box(Modifier.fillMaxWidth().crayonBox(null, G.Radius.box, G.Stroke.chip, 1800 + i)
                 .combinedClickable(onLongClickLabel = stringResource(R.string.keep_off), onLongClick = { state.toggleKeep(n) }) { state.showKept(n) }
-                .drawWithContent { drawContent(); keepRibbon(androidx.compose.ui.geometry.Offset(size.width - u.toPx() * 14f, 0f), u.toPx() * 0.8f, 1f) }
+                .drawWithContent { drawContent(); keepRibbon(androidx.compose.ui.geometry.Offset(size.width - u.toPx() * 14f, -u.toPx() * 2f), u.toPx() * 0.65f, 1f) }
                 .padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3)) {
                 Column(Modifier.padding(end = Tokens.Space.sp4), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
                     TokenText(text, Tokens.TypeScale.callout.serif())

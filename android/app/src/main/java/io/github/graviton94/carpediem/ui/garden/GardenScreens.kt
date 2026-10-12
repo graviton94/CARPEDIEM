@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.foundation.background
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -441,11 +442,13 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                     } } else state.quote?.let { q ->
                         // 누르면 다음 문장, 길게 누르면 간직하기 (1.1.5, 오른쪽 위에 한지 책갈피가 내려옴)
                         val kept = state.isKept(q.number)
+                        // 책갈피는 문장 첫 줄 오른쪽 끝에 꽂힘 (글자에 걸치듯)
+                        var quoteEdge by remember { mutableStateOf(-1f) }
                         val ribbon by androidx.compose.animation.core.animateFloatAsState(if (kept) 1f else 0f, androidx.compose.animation.core.spring(dampingRatio = 0.5f, stiffness = 300f), label = "keep")
                         Column(
                             Modifier.fillMaxWidth().padding(top = Tokens.Space.sp4).guideTarget(guide, "words")
                                 .combinedClickable(onLongClickLabel = stringResource(if (kept) R.string.keep_off else R.string.keep_on), onLongClick = { state.toggleKeep(q.number) }) { state.nextQuote() }
-                                .drawWithContent { drawContent(); if (ribbon > 0f) keepRibbon(Offset(size.width - u.toPx() * KEEP_RIBBON_INSET, -u.toPx() * 2f), u.toPx(), ribbon) },
+                                .drawWithContent { drawContent(); if (ribbon > 0f) keepRibbon(Offset(if (quoteEdge >= 0f) quoteEdge + u.toPx() * KEEP_RIBBON_GAP else size.width / 2, -u.toPx() * KEEP_RIBBON_LIFT), u.toPx(), ribbon) },
                             horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1),
                         ) {
                             // 새 문장 (누르거나 날이 바뀌어) 은 옛 타자기처럼 한 글자씩. 자리는 처음부터 다 잡아 두어 줄이 흔들리지 않음
@@ -453,7 +456,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                             val main = io.github.graviton94.carpediem.data.Words.main(q, state.quoteLanguage, phone)
                             val second = if (!sleepy) io.github.graviton94.carpediem.data.Words.second(q, state.quoteLanguage, phone) else null
                             // 한 글자씩 바뀌는 수는 이 작은 묶음 안에서만 읽음 (정원 전체가 글자마다 다시 짜이지 않게)
-                            TypedQuote(state, main, second)
+                            TypedQuote(state, main, second) { quoteEdge = it }
                             // ‘눌러서 다음 문장’ 은 처음 일주일만 (알고 난 뒤엔 문장만 조용히)
                             if (!sleepy && day0.isBefore(state.store.startDate.plusDays(7))) TokenText(stringResource(R.string.words_next), Tokens.TypeScale.caption1, color = p.secondary, weight = FontWeight.Normal)
                         }
@@ -1063,7 +1066,7 @@ internal fun keepWords(text: String): Pair<String, IntArray> {
 }
 
 @Composable
-private fun QuoteText(text: String, shown: Int = Int.MAX_VALUE) {
+private fun QuoteText(text: String, shown: Int = Int.MAX_VALUE, onEdge: (Float) -> Unit = {}) {
     val steps = listOf(Tokens.TypeScale.headline, Tokens.TypeScale.callout, Tokens.TypeScale.subhead)
     var step by remember(text) { mutableStateOf(0) }
     var ready by remember(text) { mutableStateOf(false) }
@@ -1071,7 +1074,7 @@ private fun QuoteText(text: String, shown: Int = Int.MAX_VALUE) {
     TypedText(
         text, shown, steps[step].serif(), Theme.palette.foreground, Modifier.fillMaxWidth().graphicsLayer { alpha = if (ready) 1f else 0f },
         maxLines = if (last) Int.MAX_VALUE else 2,
-        onTextLayout = { r -> if (r.hasVisualOverflow && !last) step++ else ready = true },
+        onTextLayout = { r -> if (r.hasVisualOverflow && !last) step++ else { ready = true; if (r.lineCount > 0) onEdge(r.getLineRight(0)) } },
     )
 }
 
@@ -1178,20 +1181,27 @@ fun GardenButton(text: String, onClick: () -> Unit, filled: Boolean, seed: Int, 
 
 /** 간직한 문장의 한지 책갈피: at = 위 가운데, k = 정원 칸 (px), drop = 0..1 (위에서 내려옴). */
 internal fun androidx.compose.ui.graphics.drawscope.DrawScope.keepRibbon(at: Offset, k: Float, drop: Float) {
-    val w = k * 5f; val h = k * 11f * drop
+    val w = k * KEEP_RIBBON_W; val h = k * KEEP_RIBBON_H * drop
     if (h <= 0f) return
-    val p = androidx.compose.ui.graphics.Path().apply { moveTo(at.x - w / 2, at.y); lineTo(at.x + w / 2, at.y); lineTo(at.x + w / 2, at.y + h); lineTo(at.x, at.y + h * 0.78f); lineTo(at.x - w / 2, at.y + h); close() }
+    val p = androidx.compose.ui.graphics.Path().apply { moveTo(at.x - w / 2, at.y); lineTo(at.x + w / 2, at.y); lineTo(at.x + w / 2, at.y + h); lineTo(at.x, at.y + h * 0.8f); lineTo(at.x - w / 2, at.y + h); close() }
     drawPath(p, KEEP_RIBBON_COLOR)
-    drawPath(p, Tokens.Garden.Colors.ink.copy(alpha = 0.55f), style = androidx.compose.ui.graphics.drawscope.Stroke(k * 0.5f, join = androidx.compose.ui.graphics.StrokeJoin.Round))
+    // 한지를 접은 결: 오른쪽 반을 조금 진하게
+    clipPath(p) { drawRect(KEEP_RIBBON_FOLD, Offset(at.x + w * 0.08f, at.y), androidx.compose.ui.geometry.Size(w, h)) }
+    drawPath(p, Tokens.Garden.Colors.ink.copy(alpha = 0.7f), style = androidx.compose.ui.graphics.drawscope.Stroke(k * 0.8f, join = androidx.compose.ui.graphics.StrokeJoin.Round))
 }
 internal val KEEP_RIBBON_COLOR = Color(0xFFC0614A)
-private const val KEEP_RIBBON_INSET = 10f
+private val KEEP_RIBBON_FOLD = Color(0x22000000)
+/** 책갈피 폭 · 길이 · 문장 끝에서 떨어진 거리 · 문장 위로 올라온 만큼 (정원 칸). */
+private const val KEEP_RIBBON_W = 9f
+private const val KEEP_RIBBON_H = 22f
+private const val KEEP_RIBBON_GAP = 3f
+private const val KEEP_RIBBON_LIFT = 5f
 
 /** 오늘의 문장 (타자기처럼). 글자 수는 여기서만 읽어, 바뀌어도 이 문장만 다시 그림. */
 @Composable
-private fun TypedQuote(state: AppState, main: String, second: String?) {
+private fun TypedQuote(state: AppState, main: String, second: String?, onEdge: (Float) -> Unit = {}) {
     val typed = rememberTyping(state, main, second)
-    QuoteText(main, typed)
+    QuoteText(main, typed, onEdge)
     if (second != null) TypedText(second, typed - main.length, Tokens.TypeScale.footnote.serif(), Theme.palette.secondary, Modifier.fillMaxWidth())
 }
 
