@@ -510,6 +510,8 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 val decorNames = remember(decor) { GardenArt.decorNames(decor) }
                 var decorReady by remember(decorNames) { mutableStateOf(GardenArt.loaded(decorNames)) }
                 LaunchedEffect(decorNames) { if (!decorReady) { kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { decorNames.forEach { GardenArt.opaque(GardenArt.image(ctx, it)) } }; decorReady = true } }   // 누르는 자리 (그림 범위) 도 화면 스레드 밖에서
+                // 꾸밈까지 다 그려지면 ‘다 그렸다’ 고 알림 (adb 의 Fully drawn · Play 의 시작 시간이 이 때를 잼, 앱을 켤 때 한 번)
+                androidx.activity.compose.ReportDrawnWhen { decorReady }
                 if (decorReady) {
                     DecorBack(decor, now, gy, x0, x1, topBottom + u * G.Layout.minSkyGap, gy - haruAbove - u * G.Layout.minSkyGap,
                         if (bare) null else { part -> if (part == DecorPart.LETTER) state.letterDue(day0)?.let { l -> state.openLetter(l.id); letterOpen = l } else decorOpen = part }, warm = BreathKind.SLEEP in trace)

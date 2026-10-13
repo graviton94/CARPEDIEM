@@ -1,5 +1,6 @@
 package io.github.graviton94.carpediem.data
 
+import io.github.graviton94.carpediem.core.Backup
 import io.github.graviton94.carpediem.core.Breath
 import io.github.graviton94.carpediem.core.BreathKind
 import io.github.graviton94.carpediem.core.Sound
@@ -561,18 +562,20 @@ class Store(context: Context) {
     fun backup(out: java.io.OutputStream) {
         // 사진이 많아도 메모리에 한꺼번에 올리지 않게, 한 칸씩 흘려 씀 (파일 모양은 예전과 같음)
         val w = android.util.JsonWriter(java.io.BufferedWriter(java.io.OutputStreamWriter(out, Charsets.UTF_8)))
-        w.beginObject().name("app").value(BACKUP_APP).name("v").value(1)
+        w.beginObject().name("app").value(Backup.APP).name("v").value(Backup.VERSION.toLong())
         w.name("prefs").beginObject()
         prefs.all.forEach { (k, v) ->
+            val t = Backup.typeOf(v) ?: return@forEach
+            w.name(k).beginObject().name("t").value(t).name("v")
             when (v) {
-                is Boolean -> { w.name(k).beginObject().name("t").value("b").name("v").value(v).endObject() }
-                is Int -> { w.name(k).beginObject().name("t").value("i").name("v").value(v.toLong()).endObject() }
-                is Long -> { w.name(k).beginObject().name("t").value("l").name("v").value(v).endObject() }
-                is Float -> { w.name(k).beginObject().name("t").value("f").name("v").value(v.toDouble()).endObject() }
-                is String -> { w.name(k).beginObject().name("t").value("s").name("v").value(v).endObject() }
-                is Set<*> -> { w.name(k).beginObject().name("t").value("ss").name("v").beginArray(); v.filterIsInstance<String>().forEach { w.value(it) }; w.endArray().endObject() }
-                else -> {}
+                is Boolean -> w.value(v)
+                is Int -> w.value(v.toLong())
+                is Long -> w.value(v)
+                is Float -> w.value(v.toString())   // 글로 (소수를 거치며 자릿수가 바뀌지 않게, 읽을 때 종류로 되돌림)
+                is String -> w.value(v)
+                is Set<*> -> { w.beginArray(); v.forEach { w.value(it as String) }; w.endArray() }
             }
+            w.endObject()
         }
         w.endObject()
         // 한 줄에 붙인 사진 (11) 도 함께 (작은 사본만)
@@ -589,14 +592,14 @@ class Store(context: Context) {
             val r = android.util.JsonReader(java.io.BufferedReader(java.io.InputStreamReader(input, Charsets.UTF_8)))
             r.beginObject()
             while (r.hasNext()) when (r.nextName()) {
-                "app" -> appTag = r.nextString()
+                "app" -> appTag = if (r.peek() == android.util.JsonToken.STRING) r.nextString() else { r.skipValue(); null }
                 "prefs" -> { r.beginObject(); while (r.hasNext()) { val k = r.nextName(); readPref(r)?.let { all[k] = it } }; r.endObject() }
                 "photos" -> { r.beginObject(); while (r.hasNext()) Photos.stageOne(stage, r.nextName(), r.nextString()); r.endObject() }
                 else -> r.skipValue()
             }
             r.endObject(); true
         }.getOrDefault(false)
-        if (!ok || appTag != BACKUP_APP || !all.containsKey("birth")) { stage.deleteRecursively(); return false }   // 하루의 정보 (생년월일) 가 없는 파일로는 지금 기록을 지우지 않음
+        if (!ok || !Backup.accepts(appTag, all.keys)) { stage.deleteRecursively(); return false }   // 하루의 정보 (생년월일) 가 없는 파일로는 지금 기록을 지우지 않음
         val ed = prefs.edit().clear().putBoolean("gridMonths", true)   // 되살린 인생 달력 단위는 그대로
         for ((k, v) in all) when (v) {
             is Boolean -> ed.putBoolean(k, v); is Int -> ed.putInt(k, v); is Long -> ed.putLong(k, v); is Float -> ed.putFloat(k, v); is String -> ed.putString(k, v)
@@ -604,7 +607,7 @@ class Store(context: Context) {
         }
         // 기록을 들여온 사람은 처음 온 사람이 아님: 소개 · 둘러보기 · 페이지 안내 · 하루를 만나는 장면은 건너뜀
         // 알림 허락은 폰마다 다르니 새 폰에서 다시 물음
-        ed.remove("notifyAsked")
+        Backup.PER_DEVICE.forEach { ed.remove(it) }
         ed.putBoolean("introSeen", true).putBoolean("guideDone", true).putBoolean("meetPending", false)
             .putStringSet("pageHints", io.github.graviton94.carpediem.ui.PAGE_HINTS)
             .putStringSet("nudgesSeen", io.github.graviton94.carpediem.core.FirstWeek.STEPS.map { it.first }.toSet())
@@ -628,23 +631,13 @@ class Store(context: Context) {
             else -> r.skipValue()
         }
         r.endObject()
-        val raw = v ?: return null
-        return when (t) {
-            "b" -> raw as? Boolean ?: raw.toString().toBooleanStrictOrNull()
-            "i" -> raw.toString().toDoubleOrNull()?.toInt()
-            "l" -> raw.toString().toDoubleOrNull()?.toLong()
-            "f" -> raw.toString().toDoubleOrNull()?.toFloat()
-            "s" -> raw as? String
-            "ss" -> raw as? Set<*>
-            else -> null
-        }
+        return Backup.value(t, v)
     }
 
     companion object {
         /** 새 버전 쪽지를 받지 않았을 때 한 번 더 말하는 날 (처음 안 날로부터). */
         const val UPDATE_NOTE_AGAIN = 3L
         /** 기록 옮기기 파일의 표 (다른 앱의 파일을 들여오지 않게). */
-        private const val BACKUP_APP = "carpediem-backup"
         /** 이만큼 쉬었다 돌아오면 달팽이가 놓인다. */
         const val RETURN_AFTER_DAYS = 30
 
