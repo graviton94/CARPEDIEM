@@ -44,7 +44,11 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            // R8: 코드 줄이기 · 최적화만 (1.1.6). 이름은 그대로 (-dontobfuscate, proguard-rules.pro): 의견 메일의 오류 기록을 그대로 읽고,
+            // 저장된 이름 (enum · 작업 이름) 이 바뀌지 않게. 리소스 줄이기는 끔 (글을 이름으로 찾는 곳이 많아 — getIdentifier)
+            isMinifyEnabled = true
+            isShrinkResources = false
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             // 업로드 키가 있으면 (스토어용 AAB) 그것으로, 없으면 직접 설치용 키로 (둘 다 GitHub Secrets)
             signingConfig = signingConfigs.findByName("upload") ?: signingConfigs.findByName("sideload") ?: signingConfigs.getByName("debug")   // 키가 없으면 (내 컴퓨터 · 키 없는 빌드) 시험용 debug 키
         }

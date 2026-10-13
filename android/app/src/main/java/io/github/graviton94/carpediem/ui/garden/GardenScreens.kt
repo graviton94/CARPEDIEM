@@ -389,7 +389,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                     // 늘 보이는 이름과 한 줄 소개 (첫 화면과 같은 말)
                     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                         Column(Modifier.weight(1f)) {
-                            TokenText("Carpe Diem", Tokens.TypeScale.headline.serif())
+                            TokenText(stringResource(R.string.title_name), Tokens.TypeScale.headline.serif())   // 그 말의 앱 이름 (스토어 · 홈 화면 아이콘과 같게)
                             TokenText(stringResource(R.string.tagline), Tokens.TypeScale.caption1.serif(), color = p.secondary)
                         }
                         if (state.guideDone) HelpButton({ state.replayTour("garden") })
@@ -510,6 +510,8 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 val decorNames = remember(decor) { GardenArt.decorNames(decor) }
                 var decorReady by remember(decorNames) { mutableStateOf(GardenArt.loaded(decorNames)) }
                 LaunchedEffect(decorNames) { if (!decorReady) { kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { decorNames.forEach { GardenArt.opaque(GardenArt.image(ctx, it)) } }; decorReady = true } }   // 누르는 자리 (그림 범위) 도 화면 스레드 밖에서
+                // 꾸밈까지 다 그려지면 ‘다 그렸다’ 고 알림 (adb 의 Fully drawn · Play 의 시작 시간이 이 때를 잼, 앱을 켤 때 한 번)
+                androidx.activity.compose.ReportDrawnWhen { decorReady }
                 if (decorReady) {
                     DecorBack(decor, now, gy, x0, x1, topBottom + u * G.Layout.minSkyGap, gy - haruAbove - u * G.Layout.minSkyGap,
                         if (bare) null else { part -> if (part == DecorPart.LETTER) state.letterDue(day0)?.let { l -> state.openLetter(l.id); letterOpen = l } else decorOpen = part }, warm = BreathKind.SLEEP in trace)
@@ -546,8 +548,24 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 val hopPx = with(density) { (u * S.hop).toPx() }
                 val minis = remember(state.lines, day0, state.keepLines) { if (state.keepLines) io.github.graviton94.carpediem.core.Lines.recentFeelings(state.lines, day0) else emptyList() }
                 val gazeClock = rememberGardenClock(bare && remember { !reducedMotion(ctx) })
+                // 두 돌의 눈맞춤 (1.1.6): 돌이 둘 이상이면 가끔 왼쪽부터 k 번째 · k+1 번째 돌이 서로를 보다가 함께 깜빡 (움직임 줄이기면 쉼)
+                val byX = slots.indices.sortedBy { xs[it].value }
+                val glanceOn = remember { androidx.compose.animation.core.Animatable(0f) }
+                var glanceK by remember { mutableStateOf(-1) }
+                var glanceBlink by remember { mutableStateOf(0) }
+                if (slots.size >= 2) LaunchedEffect(slots.size) {
+                    if (reducedMotion(ctx)) return@LaunchedEffect
+                    while (true) {
+                        delay(kotlin.random.Random.nextLong(G.Family.glanceMinMs.toLong(), G.Family.glanceMaxMs.toLong()))
+                        glanceK = kotlin.random.Random.nextInt(slots.size - 1)
+                        glanceOn.animateTo(1f, tween(500)); delay(G.Family.glanceHoldMs.toLong())
+                        glanceBlink++; delay(300); glanceOn.animateTo(0f, tween(700))
+                    }
+                }
+                val glanceL = byX.getOrNull(glanceK); val glanceR = byX.getOrNull(glanceK + 1)
                 // 왼쪽부터 그려, 겹쳐 앉으면 오른쪽 돌이 앞 (누름도 앞 돌이 먼저 받음)
-                slots.indices.sortedBy { xs[it].value }.forEach { i -> val sl = slots[i]; androidx.compose.runtime.key(sl.id ?: "me") {
+                byX.forEach { i -> val sl = slots[i]; androidx.compose.runtime.key(sl.id ?: "me") {
+                    val inGlance = glanceR != null && (i == glanceL || i == glanceR)
                     val cx = xs[i] - sl.scale * (sl.art.meta.bbox.center.x - sl.art.meta.box / 2)
                     val left = cx - sl.scale * (sl.art.meta.box / 2); val top = gy - sl.scale * G.Layout.haruGround
                     HaruFigure(sl.art, sl.scale, Modifier.offset(left, top).guideTarget(guide.takeIf { sl.id == null && !bare }, "haru").graphicsLayer {
@@ -556,7 +574,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                         // 돌멍하기: 돌마다 조금씩 다른 박자로 숨 쉼 (바닥을 축으로 1.5%)
                         if (bare) { val b = gazeBreath(gazeClock.value * (if (i == 0) 1f else 0.93f + 0.05f * (i % 3)) + i * 1.7f)
                             transformOrigin = androidx.compose.ui.graphics.TransformOrigin(0.5f, sl.art.meta.ground / sl.art.meta.box); scaleY = 1f + Tokens.Garden.Gaze.swell * b; scaleX = 1f + Tokens.Garden.Gaze.swell * 0.4f * b }
-                    }, blinkKick = if (sl.id == null) state.blinkKick else 0, hat = sl.birthday, tiltOn = sl.id == null, lookDown = if (sl.id == null && heavyToday) G.Care.lookDown else 0f,
+                    }, blinkKick = (if (sl.id == null) state.blinkKick else 0) + (if (inGlance) glanceBlink else 0), hat = sl.birthday, tiltOn = sl.id == null, lookDown = if (sl.id == null && heavyToday) G.Care.lookDown else 0f,
                         a11y = stringResource(R.string.garden_stoneA11y, sl.name, Labels.stone(ctx, sl.art.meta.stone)), onOpen = { onStone(sl.id) },
                         onLongPress = if (sl.id == null && !bare) ({ sing() }) else null,
                         // 내 하루는 오늘을 앎: 보낸 한 줄의 마음 · 밤
@@ -565,13 +583,19 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                             in io.github.graviton94.carpediem.core.Feeling.BRIGHT -> HaruMood.JOY
                             else -> HaruMood.CALM },
                         sleepy = sl.id == null && !bare && isNight(now),
-                        onPet = if (sl.id == null && !bare) ({ state.pettedHaru(day0) }) else null)
+                        onPet = if (sl.id == null && !bare) ({ state.pettedHaru(day0) }) else null,
+                        glance = { if (!inGlance) 0f else (if (i == glanceL) 1f else -1f) * G.Family.glanceLook * glanceOn.value })   // 그릴 때만 읽음 (정원 전체를 다시 짜지 않게)
                     // 미니 하루 (1.1.5): 요즘 자주 머문 마음, 내 하루 발치 가운데 ~ 오른쪽 (기록을 남길 때만)
                     if (sl.id == null && !bare) MiniHarus(state, minis, xs[i], gy, (widths[i].toFloat()).dp)
                     // 생일 당일: 돌 앞에 작은 케이크 (전날 저녁엔 모자만)
                     if (sl.soon == 0) {
                         val cw = u * Tokens.Garden.Party.cakeWidth
                         androidx.compose.foundation.Canvas(Modifier.offset(xs[i] + u * widths[i].toFloat() / u.value * 0.18f - cw / 2, gy - cw + u * 1.5f).size(cw)) { birthdayCake() }
+                    }
+                    // 함께한 날의 기념일 (1.1.6): 그 돌 오른쪽 발치에 꽃 한 송이, 그날 하루 (돌 페이지엔 ‘함께한 지 n년이 되는 날’)
+                    if (sl.id != null && state.people.firstOrNull { it.id == sl.id }?.let { io.github.graviton94.carpediem.core.Family.togetherToday(it, day0) } != null) {
+                        val fw = u * G.Family.feather
+                        Image(GardenArt.obj(ctx, "flower"), null, Modifier.offset(xs[i] + u * widths[i].toFloat() / u.value * 0.86f - fw / 2, gy - fw + u * 1.5f).size(fw))
                     }
                     // 오늘 이 돌에게 한 줄을 보냈으면 곁에 깃털이 하루 동안 머묾
                     if (sentTo != null && sentTo == sl.id) {

@@ -74,6 +74,23 @@ object Family {
 
     fun isBirthday(birth: LocalDate?, today: LocalDate) = birth != null && birthdayIn(birth, today.year) == today
 
+    /** 함께한 날의 기념일 (1.1.6): n 과 해 단위인지. */
+    data class Together(val n: Long, val years: Boolean)
+
+    /**
+     * 오늘이 그 사람 · 반려동물과 함께한 날의 기념일이면 [Together], 아니면 null. 한 해 돌아보기 ([Credits]) 와 같은 규칙:
+     * 해마다 (1년, 2년 …), 또는 100 · 200 · 300 · 500 · 1000일과 그 뒤 1000일마다. 같은 날이면 해가 먼저.
+     * 함께한 첫날이 없으면 (사람인데 직접 정하지 않음) null.
+     */
+    fun togetherToday(p: Person, today: LocalDate): Together? {
+        val t = Memories.from(p) ?: return null
+        if (!today.isAfter(t)) return null
+        val years = (today.year - t.year).toLong()
+        if (years >= 1 && birthdayIn(t, today.year) == today) return Together(years, true)
+        val days = java.time.temporal.ChronoUnit.DAYS.between(t, today)
+        return if (Credits.milestone(days)) Together(days, false) else null
+    }
+
     /**
      * 생일이 정원에 머무는 때: 전날 eveHour 시부터 그날 끝까지. 그날이면 0, 전날 저녁이면 1, 아니면 null.
      */

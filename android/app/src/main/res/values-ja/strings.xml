@@ -300,6 +300,8 @@
     <string name="add_meet">%1$sの石に出会いました。</string>
     <string name="add_reroll">ほかの石に出会う · あと%1$s回</string>
     <string name="stone_together">いっしょに過ごして</string>
+    <string name="stone_togetherYearsToday">今日で一緒に%1$s年になります</string>
+    <string name="stone_togetherDaysToday">今日で一緒に%1$s日になります</string>
     <string name="stone_sinceMet">ハルに出会って</string>
     <string name="stone_days">%1$s日</string>
     <string name="stone_nextBirthday">次の誕生日まで</string>
@@ -1097,6 +1099,12 @@
     <string name="welcome_start">はじめから始める</string>
     <string name="welcome_restore">記録を読み込む</string>
     <string name="welcome_restoreSub">前のスマホで保存したファイルから続けます。</string>
+    <string name="news_v1_1_6_1">ホームの上にアプリ名「ハルの庭」が表示されます。最初の案内は5枚に短くなり、そのまま最初のひとことへ。</string>
+    <string name="news_v1_1_6_2">家族の石が2つ以上あると、ときどき隣り合う2つの石が見つめ合い、一緒にまばたきします。</string>
+    <string name="news_v1_1_6_3">一緒に100日・1年などの日には、その石の足もとに花が一輪咲き、石のページにひとこと表示されます。</string>
+    <string name="news_v1_1_6_4">空の思い出の星を押すと、淡い琥珀色の光がゆっくり広がります。</string>
+    <string name="news_v1_1_6_5">クイック設定に「石ながめ」タイルが加わりました。眠る前に通知パネルからすぐ庭へ。</string>
+    <string name="news_v1_1_6_6">記録の引っ越しがより確かになり、アプリが少し軽くなりました。</string>
     <string name="news_v1_1_5_1">呼吸が少しゆっくりになり、言葉の案内は最初の3息だけ静かに留まります。呼吸の間は画面が消えません。</string>
     <string name="news_v1_1_5_2">背景音がなくても、穏やかなシンギングボウルの音が吸う・止める・吐く息を導きます。目を閉じても呼吸に集中できます。</string>
     <string name="news_v1_1_5_3">石ぼんやりに眠りタイマーができました。指定の時間が過ぎると画面が暗くなり、音も徐々に静まります。</string>

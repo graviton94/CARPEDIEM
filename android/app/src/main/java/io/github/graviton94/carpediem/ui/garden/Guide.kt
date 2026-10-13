@@ -167,15 +167,16 @@ fun Modifier.guideTarget(targets: GuideTargets?, key: String): Modifier {
 /** 둘러보기의 한 걸음: 비출 자리 (없으면 가운데 창만) · 제목 · 설명. */
 class GuideStep(val target: String?, val title: Int, val body: Int)
 
-/** 정원 둘러보기의 차례. 오늘의 문장이 질문인 날에도 같은 자리를 비춘다. */
+/**
+ * 정원 둘러보기의 차례: 다섯 장만 지나 첫 한 줄로 (1.1.6).
+ * 오늘의 문장은 화면에 ‘눌러서 다음 문장’ 이 있고, 숨 · 돌멍 · ＋돌은 다음 날부터 하나씩 권하며 (core FirstWeek),
+ * 설정은 (?) 로 다시 볼 수 있어 첫날 둘러보기에서는 뺐다.
+ */
 val GardenGuideSteps = listOf(
     GuideStep(null, R.string.guide_welcomeTitle, R.string.guide_welcome),
     GuideStep("number", R.string.guide_numberTitle, R.string.guide_number),
-    GuideStep("words", R.string.guide_wordsTitle, R.string.guide_words),
     GuideStep("haru", R.string.guide_haruTitle, R.string.guide_haru),
-    GuideStep("actions", R.string.guide_actionsTitle, R.string.guide_actions),
     GuideStep("tabs", R.string.guide_tabsTitle, R.string.guide_tabs),
-    GuideStep("settings", R.string.guide_settingsTitle, R.string.guide_settings),
     GuideStep(null, R.string.guide_endTitle, R.string.guide_end),
 )
 

@@ -352,6 +352,10 @@ enum Tokens {
             static let feather: CGFloat = 16.0
             static let offerSize: CGFloat = 20.0
             static let pageStone: CGFloat = 0.45
+            static let glanceMinMs: CGFloat = 25000.0
+            static let glanceMaxMs: CGFloat = 70000.0
+            static let glanceHoldMs: CGFloat = 1800.0
+            static let glanceLook: CGFloat = 0.8
         }
         enum Touch {
             static let petMs: CGFloat = 900.0

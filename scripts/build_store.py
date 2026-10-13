@@ -13,16 +13,17 @@ ROOT=os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 C=ROOT+'/.cache/'
 OUT=ROOT+'/docs/store'
 PAPER=(243,238,226); INK=(46,42,34); SOFT=(107,100,86)
-SCENES=['g03_home','g02_meet','g36_care','g49_record_month','g26_breath_in','g54_birthday_eve']
+# 첫 장은 숫자보다 정원 · 오늘 (1.1.6): 첫 화면 (앱 이름 + 꾸밈이 다 핀 정원) → 한 줄을 보낸 뒤 → 마음의 기록 → 숨 → 하루 → 가족
+SCENES=['g01_title','g36_care','g49_record_month','g26_breath_in','g02_meet','g54_birthday_eve']
 LANGS={
   'ko':dict(loc='ko-KR',serif='NotoSerifKR-variable.ttf',title='하루의 정원',sub='남은 날을 조용히 세고,\n오늘의 마음을 한 줄로',
-    caps=['남은 날을 조용히 세는 정원','세상에 하나뿐인 돌, 하루','기쁨도 슬픔도 한 줄에 실어 보내요','그 달의 별자리에서 피어나는 마음','하루를 여는 숨, 하루를 마무리하는 명상','가족의 돌과 함께, 밤에는 별빛 아래']),
+    caps=['오늘을 소중히, 한지로 접은 작은 정원','기쁨도 슬픔도 한 줄에 실어 보내요','그 달의 별자리에서 피어나는 마음','하루를 여는 숨, 하루를 마무리하는 명상','세상에 하나뿐인 돌, 하루','가족의 돌과 함께, 밤에는 별빛 아래']),
   'en':dict(loc='en-US',serif='Lora-variable.ttf',title='Carpe Diem',sub='Count the days left, quietly.\nLet today go in a single line.',
-    caps=['A garden that quietly counts your days','Haru, a stone like no other','Joy or sorrow, let it go in one line','Feelings bloom along the month’s stars','A breath to open the day, a calm to close it','Beside your family’s stones, under the stars']),
+    caps=['A small paper garden for living today','Joy or sorrow, let it go in one line','Feelings bloom along the month’s stars','A breath to open the day, a calm to close it','Haru, a stone like no other','Beside your family’s stones, under the stars']),
   'ja':dict(loc='ja-JP',serif='NotoSerifJP-variable.ttf',title='ハルの庭',sub='残りの日々を静かに数え、\n今日の気持ちをひとことに',
-    caps=['残りの日々を静かに数える庭','世界にひとつだけの石、ハル','うれしさも悲しみも、ひとことにのせて','その月の星座にそって咲く気持ち','一日をひらく呼吸、一日をとじる瞑想','家族の石と一緒に、夜は星あかりの下で']),
+    caps=['今日を大切に、和紙で折った小さな庭','うれしさも悲しみも、ひとことにのせて','その月の星座にそって咲く気持ち','一日をひらく呼吸、一日をとじる瞑想','世界にひとつだけの石、ハル','家族の石と一緒に、夜は星あかりの下で']),
   'zh-TW':dict(loc='zh-TW',serif='NotoSerifTC-variable.ttf',title='小日的庭院',sub='靜靜數著剩下的日子，\n把今天的心情寫成一句話',
-    caps=['靜靜數著剩下日子的庭院','世上獨一無二的石頭，小日','喜悅或悲傷，都寫進一句話裡放下','心情沿著當月的星座綻放','開啟一天的呼吸，結束一天的冥想','和家人的石頭一起，夜裡在星光下']),
+    caps=['珍惜今天，一座紙摺的小庭院','喜悅或悲傷，都寫進一句話裡放下','心情沿著當月的星座綻放','開啟一天的呼吸，結束一天的冥想','世上獨一無二的石頭，小日','和家人的石頭一起，夜裡在星光下']),
 }
 def font(name,size,w=500):
     f=ImageFont.truetype(C+name,size)

@@ -299,6 +299,8 @@
     <string name="add_meet">You met %1$s\'s stone.</string>
     <string name="add_reroll">Meet another stone · %1$s left</string>
     <string name="stone_together">Together for</string>
+    <string name="stone_togetherYearsToday">Today marks year %1$s together</string>
+    <string name="stone_togetherDaysToday">Today marks day %1$s together</string>
     <string name="stone_sinceMet">Since you met Haru</string>
     <string name="stone_days">Days: %1$s</string>
     <string name="stone_nextBirthday">Next birthday in</string>
@@ -1097,6 +1099,12 @@
     <string name="welcome_start">Start fresh</string>
     <string name="welcome_restore">Bring back my records</string>
     <string name="welcome_restoreSub">Continue from a file you saved on your old phone.</string>
+    <string name="news_v1_1_6_1">A shorter first tour: five cards, then straight to your first line.</string>
+    <string name="news_v1_1_6_2">With two or more family stones, two neighbours sometimes look at each other and blink together.</string>
+    <string name="news_v1_1_6_3">On days like 100 days or 1 year together, a flower blooms at that stone’s feet, with a line on its page.</string>
+    <string name="news_v1_1_6_4">Tap a memory star and a soft amber glow spreads slowly.</string>
+    <string name="news_v1_1_6_5">New Stone gazing tile in quick settings, for the garden right before sleep.</string>
+    <string name="news_v1_1_6_6">Sturdier record transfer, and a slightly lighter app.</string>
     <string name="news_v1_1_5_1">Slower, deeper breathing. Text cues gently fade after three breaths, and the screen stays awake.</string>
     <string name="news_v1_1_5_2">Gentle singing bowl bells guide your inhale, hold, and exhale, even without background sound.</string>
     <string name="news_v1_1_5_3">Sleep timer for stone gazing: the screen gently dims to black, and sounds fade away.</string>

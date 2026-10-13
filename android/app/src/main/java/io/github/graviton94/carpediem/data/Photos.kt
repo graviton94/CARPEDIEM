@@ -81,7 +81,7 @@ object Photos {
     fun clear(ctx: Context) { dir(ctx).listFiles()?.forEach { it.delete() }; cache.evictAll() }
 
     // ───── 기록 옮기기: 사진도 함께 (이름 → base64) ─────
-    private fun photoName(n: String) = n.endsWith(".jpg") && n.removeSuffix(".jpg").toLongOrNull() != null
+    private fun photoName(n: String) = io.github.graviton94.carpediem.core.Backup.isPhotoName(n)
     fun exportTo(ctx: Context, w: android.util.JsonWriter) {
         dir(ctx).listFiles()?.filter { photoName(it.name) }?.forEach { f -> w.name(f.name).value(Base64.encodeToString(f.readBytes(), Base64.NO_WRAP)) }
     }

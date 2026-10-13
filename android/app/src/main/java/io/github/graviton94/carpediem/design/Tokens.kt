@@ -347,6 +347,10 @@ object Tokens {
             const val feather = 16.0f
             const val offerSize = 20.0f
             const val pageStone = 0.45f
+            const val glanceMinMs = 25000.0f
+            const val glanceMaxMs = 70000.0f
+            const val glanceHoldMs = 1800.0f
+            const val glanceLook = 0.8f
         }
         object Touch {
             const val petMs = 900.0f

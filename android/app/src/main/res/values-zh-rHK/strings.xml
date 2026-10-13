@@ -300,6 +300,8 @@
     <string name="add_meet">遇見%1$s的石頭了。</string>
     <string name="add_reroll">遇見別的石頭 · 還剩 %1$s 次</string>
     <string name="stone_together">相伴</string>
+    <string name="stone_togetherYearsToday">今天是一起滿 %1$s 年的日子</string>
+    <string name="stone_togetherDaysToday">今天是一起滿 %1$s 天的日子</string>
     <string name="stone_sinceMet">遇見小日以來</string>
     <string name="stone_days">%1$s 天</string>
     <string name="stone_nextBirthday">離下次生日還有</string>
@@ -1097,6 +1099,12 @@
     <string name="welcome_start">重新開始</string>
     <string name="welcome_restore">載入紀錄</string>
     <string name="welcome_restoreSub">用舊手機儲存的檔案繼續使用。</string>
+    <string name="news_v1_1_6_1">首頁上方會顯示 App 名稱「小日的庭院」。第一次導覽縮短為五張，接著直接寫下第一句話。</string>
+    <string name="news_v1_1_6_2">家人的石頭有兩顆以上時，相鄰的兩顆偶爾會互相凝望，再一起眨眨眼。</string>
+    <string name="news_v1_1_6_3">在一起滿 100 天、1 年這樣的日子，那顆石頭腳邊會開出一朵花，石頭頁面也會出現一句話。</string>
+    <string name="news_v1_1_6_4">輕觸天上的思念之星，淡淡的琥珀色光芒會慢慢擴散。</string>
+    <string name="news_v1_1_6_5">快速設定新增「看石發呆」圖塊，睡前從通知欄就能直接前往庭院。</string>
+    <string name="news_v1_1_6_6">資料搬移更穩固，App 也稍微變輕了。</string>
     <string name="news_v1_1_5_1">呼吸變得更緩慢深長，文字提示只在前三次呼吸輕柔停留。呼吸期間螢幕保持常亮。</string>
     <string name="news_v1_1_5_2">即使沒有背景聲音，溫潤的頌缽聲也會引導吸氣、屏息與吐氣。閉上雙眼也能專注呼吸。</string>
     <string name="news_v1_1_5_3">看石頭發呆新增入眠計時器。時間到了螢幕會漸漸變黑，聲音也會慢慢淡出。</string>

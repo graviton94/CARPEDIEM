@@ -323,7 +323,7 @@ internal fun hopShape(h: Float): Triple<Float, Float, Float> = when {
 @Composable
 fun HaruFigure(art: HaruArt, scale: Dp, modifier: Modifier = Modifier, blinkKick: Int = 0, hat: Boolean = false, a11y: String? = null, onOpen: (() -> Unit)? = null,
                onLongPress: (() -> Unit)? = null, lid: Float? = null, tiltOn: Boolean = true, lookDown: Float = 0f,
-               mood: HaruMood = HaruMood.CALM, sleepy: Boolean = false, onPet: (() -> Unit)? = null) {
+               mood: HaruMood = HaruMood.CALM, sleepy: Boolean = false, onPet: (() -> Unit)? = null, glance: () -> Float = { 0f }) {
     val ctx = LocalContext.current
     val fiber = remember { GardenArt.fiber(ctx) }
     val view = androidx.compose.ui.platform.LocalView.current
@@ -395,7 +395,7 @@ fun HaruFigure(art: HaruArt, scale: Dp, modifier: Modifier = Modifier, blinkKick
                 translationY = -lift * tc.hop * (if (mood == HaruMood.JOY) JOY_HOP else 1f) * size.width / art.meta.box   // hop = 칸 좌표
             }
     ) {
-        drawHaru(art, size.width / art.meta.box, lid ?: maxOf(blink.value, rest.value, drowsy.value * DROWSY_LID), if (lookDown > 0f) Offset(tilt.x, (tilt.y + lookDown).coerceAtMost(1f)) else tilt, smile = if (lid != null) 0f else smile.value, blush = blush.value, hat = hat, fiber = fiber)
+        drawHaru(art, size.width / art.meta.box, lid ?: maxOf(blink.value, rest.value, drowsy.value * DROWSY_LID), (if (lookDown > 0f) Offset(tilt.x, (tilt.y + lookDown).coerceAtMost(1f)) else tilt) + Offset(glance(), 0f), smile = if (lid != null) 0f else smile.value, blush = blush.value, hat = hat, fiber = fiber)
     }
     val bb = art.meta.bbox; val pad = tc.touchPad.dp
     androidx.compose.foundation.layout.Box(Modifier.offset(scale * bb.left - pad, scale * bb.top - pad).size(scale * bb.width + pad * 2, scale * bb.height + pad * 2)

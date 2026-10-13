@@ -116,11 +116,11 @@ fun OnboardingScreen(state: AppState, onCountry: () -> Unit) {
         Page {
             // 정원: 가운데 정렬, 한 줄 소개는 작게. 유리 버전은 그대로.
             if (Theme.garden) Column(Modifier.fillMaxWidth().padding(top = Tokens.Space.sp10, bottom = Tokens.Space.sp5), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
-                TokenText("Carpe Diem", Tokens.TypeScale.display(Theme.deviceClass), align = TextAlign.Center)
+                TokenText(stringResource(R.string.title_name), Tokens.TypeScale.display(Theme.deviceClass), align = TextAlign.Center)
                 TokenText(stringResource(R.string.tagline), Tokens.TypeScale.callout.serif(), color = p.secondary, align = TextAlign.Center)
             }
             else Column(Modifier.padding(top = Tokens.Space.sp10, start = Tokens.Space.sp2, bottom = Tokens.Space.sp5), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
-                TokenText("Carpe Diem", Tokens.TypeScale.display(Theme.deviceClass))
+                TokenText(stringResource(R.string.title_name), Tokens.TypeScale.display(Theme.deviceClass))
                 TokenText(stringResource(R.string.tagline), Tokens.TypeScale.title3, color = p.secondary)
             }
             ProfileFields(state, draft, { state.draft = it }, onCountry, birthUnset = !picked, onBirthPicked = { state.birthPicked = true })

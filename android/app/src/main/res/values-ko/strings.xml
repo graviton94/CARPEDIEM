@@ -299,6 +299,8 @@
     <string name="add_meet">%1$s의 돌을 만났어요.</string>
     <string name="add_reroll">다른 돌 만나기 · %1$s번 남음</string>
     <string name="stone_together">함께한 지</string>
+    <string name="stone_togetherYearsToday">오늘은 함께한 지 %1$s년이 되는 날이에요</string>
+    <string name="stone_togetherDaysToday">오늘은 함께한 지 %1$s일이 되는 날이에요</string>
     <string name="stone_sinceMet">하루를 만난 지</string>
     <string name="stone_days">%1$s일</string>
     <string name="stone_nextBirthday">다음 생일까지</string>
@@ -1097,6 +1099,12 @@
     <string name="welcome_start">새로 시작하기</string>
     <string name="welcome_restore">기록 불러오기</string>
     <string name="welcome_restoreSub">예전 폰에서 저장한 파일로 이어서 써요.</string>
+    <string name="news_v1_1_6_1">홈 위에 앱 이름 ‘하루의 정원’이 보여요. 처음 둘러보기는 다섯 장으로 짧아지고, 곧장 첫 한 줄로 이어져요.</string>
+    <string name="news_v1_1_6_2">가족 돌이 둘 이상이면 가끔 이웃한 두 돌이 서로를 바라보다 함께 깜빡여요.</string>
+    <string name="news_v1_1_6_3">함께한 지 100일 · 1년 같은 날엔 그 돌 발치에 꽃 한 송이가 피고, 돌 페이지에 한 줄이 보여요.</string>
+    <string name="news_v1_1_6_4">하늘의 기억의 별을 누르면 옅은 호박빛이 천천히 번져요.</string>
+    <string name="news_v1_1_6_5">빠른 설정에 ‘돌멍하기’ 타일이 생겼어요. 잠들기 전 알림 창에서 바로 정원으로 가요.</string>
+    <string name="news_v1_1_6_6">기록 옮기기가 더 단단해지고, 앱이 조금 더 가벼워졌어요.</string>
     <string name="news_v1_1_5_1">숨이 조금 더 느려지고, 말 안내는 처음 세 숨만 조용히 머물러요. 숨 쉬는 동안 화면이 꺼지지 않아요.</string>
     <string name="news_v1_1_5_2">배경 소리가 없어도 은은한 싱잉볼 종소리가 들숨 · 멈춤 · 날숨을 이끌어 줘요. 눈을 감고도 온전히 호흡할 수 있어요.</string>
     <string name="news_v1_1_5_3">돌멍하기에 잠들기 타이머가 생겼어요. 정한 시간이 지나면 화면이 까맣게 어두워지고 소리도 서서히 잦아들어요.</string>

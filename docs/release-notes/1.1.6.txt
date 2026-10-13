@@ -1,0 +1,32 @@
+<ko-KR>
+· 홈 위에 앱 이름 ‘하루의 정원’이 보여요. 처음 둘러보기는 다섯 장으로 짧아지고, 곧장 첫 한 줄로 이어져요.
+· 가족 돌이 둘 이상이면 가끔 이웃한 두 돌이 서로를 바라보다 함께 깜빡여요.
+· 함께한 지 100일 · 1년 같은 날엔 그 돌 발치에 꽃 한 송이가 피고, 돌 페이지에 한 줄이 보여요.
+· 하늘의 기억의 별을 누르면 옅은 호박빛이 천천히 번져요.
+· 빠른 설정에 ‘돌멍하기’ 타일이 생겼어요. 잠들기 전 알림 창에서 바로 정원으로 가요.
+· 기록 옮기기가 더 단단해지고, 앱이 조금 더 가벼워졌어요.
+</ko-KR>
+<en-US>
+· A shorter first tour: five cards, then straight to your first line.
+· With two or more family stones, two neighbours sometimes look at each other and blink together.
+· On days like 100 days or 1 year together, a flower blooms at that stone’s feet, with a line on its page.
+· Tap a memory star and a soft amber glow spreads slowly.
+· New Stone gazing tile in quick settings, for the garden right before sleep.
+· Sturdier record transfer, and a slightly lighter app.
+</en-US>
+<ja-JP>
+· ホームの上にアプリ名「ハルの庭」が表示されます。最初の案内は5枚に短くなり、そのまま最初のひとことへ。
+· 家族の石が2つ以上あると、ときどき隣り合う2つの石が見つめ合い、一緒にまばたきします。
+· 一緒に100日・1年などの日には、その石の足もとに花が一輪咲き、石のページにひとこと表示されます。
+· 空の思い出の星を押すと、淡い琥珀色の光がゆっくり広がります。
+· クイック設定に「石ながめ」タイルが加わりました。眠る前に通知パネルからすぐ庭へ。
+· 記録の引っ越しがより確かになり、アプリが少し軽くなりました。
+</ja-JP>
+<zh-TW>
+· 首頁上方會顯示 App 名稱「小日的庭院」。第一次導覽縮短為五張，接著直接寫下第一句話。
+· 家人的石頭有兩顆以上時，相鄰的兩顆偶爾會互相凝望，再一起眨眨眼。
+· 在一起滿 100 天、1 年這樣的日子，那顆石頭腳邊會開出一朵花，石頭頁面也會出現一句話。
+· 輕觸天上的思念之星，淡淡的琥珀色光芒會慢慢擴散。
+· 快速設定新增「看石發呆」圖塊，睡前從通知欄就能直接前往庭院。
+· 資料搬移更穩固，App 也稍微變輕了。
+</zh-TW>
