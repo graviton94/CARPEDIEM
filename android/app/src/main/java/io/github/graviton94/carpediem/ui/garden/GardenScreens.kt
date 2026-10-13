@@ -389,7 +389,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                     // 늘 보이는 이름과 한 줄 소개 (첫 화면과 같은 말)
                     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                         Column(Modifier.weight(1f)) {
-                            TokenText("Carpe Diem", Tokens.TypeScale.headline.serif())
+                            TokenText(stringResource(R.string.title_name), Tokens.TypeScale.headline.serif())   // 그 말의 앱 이름 (스토어 · 홈 화면 아이콘과 같게)
                             TokenText(stringResource(R.string.tagline), Tokens.TypeScale.caption1.serif(), color = p.secondary)
                         }
                         if (state.guideDone) HelpButton({ state.replayTour("garden") })
