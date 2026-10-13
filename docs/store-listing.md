@@ -29,7 +29,7 @@
 가족의 생일엔 카드 한 장, 계절마다 돌 곁에 조각 하나. 곁을 떠난 가족은 기억의 돌로, 하늘의 작은 별로 남아요.
 
 홈 화면에서도
-남은 날 · 오늘 · 인생 달력 · 가족의 정원 · 마음의 기록 위젯, 누르면 바로 시작하는 숨 바로가기와 빠른 설정 타일.
+‘남은 날 · 오늘의 한 줄’ 과 ‘마음의 기록’ 위젯 두 가지, 아이콘을 길게 누르면 바로 가는 한 줄 · 숨 · 돌멍하기, 빠른 설정 타일 ‘숨, 쉼’.
 
 조용한 앱
 계정도, 광고도, 서버도 없어요. 모든 기록은 여기에만 머물러요.
@@ -63,7 +63,7 @@ The people beside you
 A card for family birthdays, a seasonal piece left beside a stone. Those who are gone stay as memory stones and small stars in the sky.
 
 On your home screen
-Days left, today, life calendar, family garden and mood record widgets, plus a breath shortcut and a quick settings tile that start right away.
+Two widgets (Days left · Today's line, and Heart's record), shortcuts from the app icon to write, breathe or gaze, and a quick settings tile that starts a breath right away.
 
 A quiet app
 No account, no ads, no server. Everything stays right here.
@@ -97,7 +97,7 @@ No account, no ads, no server. Everything stays right here.
 家族の誕生日にはカードを一枚、季節ごとに石のそばにかけらをひとつ。旅立った家族は思い出の石として、空の小さな星として残ります。
 
 ホーム画面にも
-残りの日数・今日・人生カレンダー・家族の庭・こころの記録のウィジェット、触れるとすぐにはじまる「すぐにひと息」と、クイック設定タイル。
+「残りの日数 · 今日のひとこと」と「こころの記録」の2つのウィジェット、アイコン長押しですぐ書く・息をする・眺めるショートカット、クイック設定タイル。
 
 静かなアプリ
 アカウントも、広告も、サーバーもありません。記録はすべて、ここにだけ残ります。
@@ -131,7 +131,7 @@ No account, no ads, no server. Everything stays right here.
 家人生日時寄一張卡片，每個季節在石頭旁放上一小片。離開身邊的家人，會化作思念之石，成為天上的小星星。
 
 主畫面上也有
-剩下的日子、今天、人生月曆、家人的庭院、心情的紀錄小工具，還有點一下就開始的喘口氣捷徑，以及快速設定圖塊。
+「剩下的日子 · 今天的一句話」和「心情的紀錄」兩種小工具，長按圖示就能寫一句、喘口氣、靜靜凝望的捷徑，以及快速設定圖塊。
 
 安靜的 App
 沒有帳號，沒有廣告，也沒有伺服器。所有紀錄都只留在這裡。

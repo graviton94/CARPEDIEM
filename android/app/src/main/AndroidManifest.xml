@@ -2,8 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-    <!-- 하루의 숨결을 손끝으로 (숨 쉬는 동안의 떨림) -->
-    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
         android:name=".CarpeDiemApplication"
