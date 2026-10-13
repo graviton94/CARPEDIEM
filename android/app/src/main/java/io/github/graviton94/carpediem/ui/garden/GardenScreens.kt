@@ -416,8 +416,8 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                             TokenText("Carpe Diem", Tokens.TypeScale.headline.serif())
                             TokenText(stringResource(R.string.tagline), Tokens.TypeScale.caption1.serif(), color = p.secondary)
                         }
-                        if (state.guideDone) HelpButton({ state.replayTour("garden") })
-                        IconButton(onClick = onSettings, modifier = Modifier.guideTarget(guide, "settings").semantics { contentDescription = ctx.getString(R.string.settings) }) { Icon(Icons.Filled.Settings, null, tint = p.secondary) }
+                        // (?) · 설정은 네 탭 모두 오른쪽 위 같은 자리에 고정 (아래 TopBarIcons): 이름 줄은 그 자리만 비워 둠
+                        Spacer(Modifier.width(Tokens.Layout.tapTarget * 2))
                     }
                     // 윗줄 첫 말이 단위 (남은 날 · 주 · 달 · 해): 밤에 단위 버튼이 쉬어도 숫자가 무엇인지 알 수 있게
                     val leftName = stringResource(when (state.unit) { LifeUnit.DAYS -> R.string.timeLeft_days; LifeUnit.WEEKS -> R.string.timeLeft_weeks; LifeUnit.MONTHS -> R.string.timeLeft_months; LifeUnit.YEARS -> R.string.timeLeft_years })
@@ -820,10 +820,17 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 if (auto) { delay(DEW_WAKE_AUTO_MS); dewWake = true; dewBlink++ } else { dewWake = true; dewSmile++ }
                 delay(if (auto) DEW_UI_AUTO_MS else DEW_UI_MS); uiGate.animateTo(1f, tween(UI_IN_MS))
             } }, onGone = { state.dewCleared() })
-        // 기록 · 추억 · 흐름: 오른쪽 위 같은 자리에 (?) (정원은 이름 줄의 설정 옆)
-        val helpKey = listOf(null, "write", "memories", "flow").getOrNull(pager.currentPage)
-        if (!bare && !typing && helpKey != null && state.guideDone && !state.touring && !pager.isScrollInProgress)
-            HelpButton({ state.replayTour(helpKey) }, Modifier.align(Alignment.TopEnd).statusBarsPadding().padding(end = Tokens.Space.sp2).zIndex(4f))
+        // 네 탭 (정원 · 기록 · 추억 · 흐름) 모두 오른쪽 위 같은 자리에 (?) · 설정 (1.1.5): 탭을 넘겨도 움직이지 않음.
+        // (?) 는 지금 페이지의 둘러보기, 넘기는 중엔 (?) 만 잠시 숨김. 정원이 피어날 때는 글자와 함께 스며듦, 아침 이슬이 있는 동안엔 숨김
+        val helpKey = listOf("garden", "write", "memories", "flow").getOrNull(pager.currentPage)
+        if (!bare && !typing && !state.dewUp) Row(
+            Modifier.align(Alignment.TopEnd).statusBarsPadding().padding(end = Theme.deviceClass.pageMargin).zIndex(4f).graphicsLayer { alpha = uiIn() },
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            if (helpKey != null && state.guideDone && !state.touring && !pager.isScrollInProgress) HelpButton({ state.replayTour(helpKey) })
+            else Spacer(Modifier.size(Tokens.Layout.tapTarget))
+            IconButton(onClick = onSettings, modifier = Modifier.guideTarget(guide, "settings").semantics { contentDescription = ctx.getString(R.string.settings) }) { Icon(Icons.Filled.Settings, null, tint = Theme.palette.secondary) }
+        }
         // 한 줄을 보낸 뒤: 깃털이 내려오며 한마디 창
         if (!bare) LetGoModal(state, Modifier.fillMaxSize()) { c ->
             when (c) {
