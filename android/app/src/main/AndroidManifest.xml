@@ -51,5 +51,10 @@
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
             <intent-filter><action android:name="android.service.quicksettings.action.QS_TILE" /></intent-filter>
         </service>
+        <!-- 잠들기 전 돌멍하기 (1.1.6) -->
+        <service android:name=".widget.GazeTile" android:exported="true" android:label="@string/gaze" android:icon="@drawable/ic_tile_gaze"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter><action android:name="android.service.quicksettings.action.QS_TILE" /></intent-filter>
+        </service>
     </application>
 </manifest>

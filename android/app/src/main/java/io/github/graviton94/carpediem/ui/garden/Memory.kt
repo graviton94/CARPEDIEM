@@ -66,6 +66,7 @@ import io.github.graviton94.carpediem.ui.Labels
 import io.github.graviton94.carpediem.ui.SkyBackground
 import io.github.graviton94.carpediem.ui.TokenText
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -221,13 +222,27 @@ internal fun MemoryStars(state: AppState, width: Dp, top: Dp, bottom: Dp, night:
     var shown by remember { mutableStateOf<String?>(null) }
     LaunchedEffect(shown) { if (shown != null) { delay(3200); shown = null } }
     val size = u * 22
-    stars.forEach { m ->
+    val scope = androidx.compose.runtime.rememberCoroutineScope()
+    val still = remember { reducedMotion(ctx) }
+    stars.forEach { m -> androidx.compose.runtime.key(m.id) {
         val r = Crayon.Rng(m.id.hashCode())
         val x = width * (0.14f + 0.72f * r.next()); val y = top + (bottom - top) * r.next()
         val a11y = stringResource(R.string.memory_starNote, m.name)
         val tt = Tokens.Layout.tapTarget
+        // 별의 온기 (1.1.6): 누르면 옅은 호박빛이 한 번 천천히 번짐 (말은 이름뿐 그대로)
+        val glow = remember { androidx.compose.animation.core.Animatable(0f) }
+        val ring = u * 90
+        if (glow.value in 0.001f..0.999f) Canvas(Modifier.offset(x - ring / 2, y - ring / 2).size(ring)) {
+            val g = glow.value; val c = Offset(this.size.width / 2, this.size.height / 2)
+            val rr = this.size.width / 2 * (0.15f + 0.85f * g)
+            val a = (if (night) 0.32f else 0.22f) * kotlin.math.sin(g * Math.PI.toFloat())
+            drawCircle(Brush.radialGradient(listOf(Color.Transparent, G.Night.Colors.firefly.copy(alpha = a), Color.Transparent), c, rr), rr, c)
+        }
         Box(Modifier.offset(x - tt / 2, y - tt / 2).size(tt).semantics { contentDescription = a11y }
-            .clickable(interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }, indication = null) { shown = m.id })
+            .clickable(interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }, indication = null) {
+                shown = m.id
+                if (!still) scope.launch { glow.snapTo(0f); glow.animateTo(1f, androidx.compose.animation.core.tween(2200)); glow.snapTo(0f) }
+            })
         Canvas(Modifier.offset(x - size / 2, y - size / 2).size(size).graphicsLayer()) {
             val c = Offset(this.size.width / 2, this.size.height / 2); val k = this.size.width / 22f
             val warm = G.Night.Colors.firefly
@@ -246,5 +261,5 @@ internal fun MemoryStars(state: AppState, width: Dp, top: Dp, bottom: Dp, night:
             TokenText(stringResource(R.string.memory_starNote, m.name), Tokens.TypeScale.caption1,
                 Modifier.crayonBox(Theme.gc.paper, G.Radius.chip, G.Stroke.chip, 1350).padding(horizontal = Tokens.Space.sp3, vertical = Tokens.Space.sp1))
         }
-    }
+    } }
 }

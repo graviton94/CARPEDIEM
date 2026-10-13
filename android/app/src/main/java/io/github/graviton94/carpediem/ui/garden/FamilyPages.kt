@@ -138,6 +138,10 @@ fun StoneScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, id: S
             // 가족의 생일 (전날 저녁부터 그날까지): 나와 그 사람의 돌이 나란히 앉은 카드 한 장
             if (birthday) TokenText(if (me) stringResource(if (soon == 0) R.string.bday_mineToday else R.string.bday_mineTomorrow) else stringResource(if (soon == 0) R.string.bday_today else R.string.bday_tomorrow, name),
                 Tokens.TypeScale.callout.serif(), Modifier.fillMaxWidth(), align = TextAlign.Center)
+            // 함께한 날의 기념일 (1.1.6): 그날 하루, 이름 아래 한 줄 (정원에선 그 돌 발치에 꽃 한 송이)
+            val together = remember(person, today) { person?.let { Family.togetherToday(it, today) } }
+            if (together != null) TokenText(stringResource(if (together.years) R.string.stone_togetherYearsToday else R.string.stone_togetherDaysToday, Labels.number(together.n.toInt())),
+                Tokens.TypeScale.callout.serif(), Modifier.fillMaxWidth(), align = TextAlign.Center)
             // 생일 카드: 올해 그 사람에게 보낸 한 줄이 있으면 넣을지 한 번 물음 (고르거나 빼고 보낼 수 있게)
             val sentLines = remember(state.lines, id, today) { person?.let { pp -> state.lines.filter { it.to == pp.id && it.date.year == today.year && it.text.isNotBlank() }.reversed() }.orEmpty() }
             var cardAsk by remember { mutableStateOf(false) }

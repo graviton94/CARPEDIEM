@@ -297,6 +297,8 @@
 "add.meet" = "You met %1$@'s stone.";
 "add.reroll" = "Meet another stone · %1$@ left";
 "stone.together" = "Together for";
+"stone.togetherYearsToday" = "Today marks year %1$@ together";
+"stone.togetherDaysToday" = "Today marks day %1$@ together";
 "stone.sinceMet" = "Since you met Haru";
 "stone.days" = "Days: %1$@";
 "stone.nextBirthday" = "Next birthday in";
@@ -1095,6 +1097,12 @@
 "welcome.start" = "Start fresh";
 "welcome.restore" = "Bring back my records";
 "welcome.restoreSub" = "Continue from a file you saved on your old phone.";
+"news.v1_1_6.1" = "A shorter first tour: five cards, then straight to your first line.";
+"news.v1_1_6.2" = "With two or more family stones, two neighbours sometimes look at each other and blink together.";
+"news.v1_1_6.3" = "On days like 100 days or 1 year together, a flower blooms at that stone’s feet, with a line on its page.";
+"news.v1_1_6.4" = "Tap a memory star and a soft amber glow spreads slowly.";
+"news.v1_1_6.5" = "New Stone gazing tile in quick settings, for the garden right before sleep.";
+"news.v1_1_6.6" = "Sturdier record transfer, and a slightly lighter app.";
 "news.v1_1_5.1" = "Slower, deeper breathing. Text cues gently fade after three breaths, and the screen stays awake.";
 "news.v1_1_5.2" = "Gentle singing bowl bells guide your inhale, hold, and exhale, even without background sound.";
 "news.v1_1_5.3" = "Sleep timer for stone gazing: the screen gently dims to black, and sounds fade away.";
