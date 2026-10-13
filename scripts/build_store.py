@@ -13,8 +13,8 @@ ROOT=os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 C=ROOT+'/.cache/'
 OUT=ROOT+'/docs/store'
 PAPER=(243,238,226); INK=(46,42,34); SOFT=(107,100,86)
-# 첫 장은 숫자보다 정원 · 오늘 (1.1.6): 정원 전체 → 한 줄을 보낸 뒤 → 마음의 기록 → 숨 → 하루 → 가족
-SCENES=['g04_home_all','g36_care','g49_record_month','g26_breath_in','g02_meet','g54_birthday_eve']
+# 첫 장은 숫자보다 정원 · 오늘 (1.1.6): 첫 화면 (앱 이름 + 꾸밈이 다 핀 정원) → 한 줄을 보낸 뒤 → 마음의 기록 → 숨 → 하루 → 가족
+SCENES=['g01_title','g36_care','g49_record_month','g26_breath_in','g02_meet','g54_birthday_eve']
 LANGS={
   'ko':dict(loc='ko-KR',serif='NotoSerifKR-variable.ttf',title='하루의 정원',sub='남은 날을 조용히 세고,\n오늘의 마음을 한 줄로',
     caps=['오늘을 소중히, 한지로 접은 작은 정원','기쁨도 슬픔도 한 줄에 실어 보내요','그 달의 별자리에서 피어나는 마음','하루를 여는 숨, 하루를 마무리하는 명상','세상에 하나뿐인 돌, 하루','가족의 돌과 함께, 밤에는 별빛 아래']),

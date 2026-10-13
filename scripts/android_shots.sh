@@ -110,6 +110,8 @@ for loc in ko-KR en-US ja-JP zh-TW; do
   open --ez cd.reset true --es cd.design garden --el cd.seed 2718281 --es cd.birth 2000-05-12 --es cd.sex female --ez cd.meet true --es cd.now $NOW; shot g02_meet 14
   open --ez cd.meet false --ez cd.typed true --es cd.now $NOW;                      shot g03_home 10
   open --ez cd.preview true --ez cd.typed true --es cd.now $NOW;                   shot g04_home_all 8
+  # 스토어 첫 장 (1.1.6): 그날 처음 여는 첫 화면 — 앱 이름 · 인사 위로 꾸밈이 다 핀 정원 (홈의 큰 숫자 대신)
+  open --ez cd.title true --es cd.now ${NOW%T*}T07:40;                             shot g01_title 16
   open --ez cd.preview false --es cd.now $NOW; sleep 3
   open --es cd.screen breath --es cd.now $NOW;                                      shot g26_breath_in 8
   open --es cd.care CALM_BREATH --es cd.now $NOW;                                  shot g36_care 14
