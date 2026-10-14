@@ -17,6 +17,8 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.ui.graphics.drawscope.clipPath
+import androidx.compose.ui.graphics.drawscope.rotate
+import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.foundation.background
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -440,15 +442,15 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                         // 한 줄로 답하기: 기록 페이지의 오늘의 한 줄로
                         state.answer(); turnTo(1)
                     } } else state.quote?.let { q ->
-                        // 누르면 다음 문장, 길게 누르면 간직하기 (1.1.5, 오른쪽 위에 한지 책갈피가 내려옴)
+                        // 누르면 다음 문장, 길게 누르면 간직하기 (1.1.5, 문장 끝에 눌러 말린 잎 하나가 내려앉음)
                         val kept = state.isKept(q.number)
-                        // 책갈피는 문장 첫 줄 오른쪽 끝에 꽂힘 (글자에 걸치듯)
+                        // 잎은 문장 첫 줄 오른쪽 끝 곁에
                         var quoteEdge by remember { mutableStateOf(-1f) }
                         val ribbon by androidx.compose.animation.core.animateFloatAsState(if (kept) 1f else 0f, androidx.compose.animation.core.spring(dampingRatio = 0.5f, stiffness = 300f), label = "keep")
                         Column(
                             Modifier.fillMaxWidth().padding(top = Tokens.Space.sp4).guideTarget(guide, "words")
                                 .combinedClickable(onLongClickLabel = stringResource(if (kept) R.string.keep_off else R.string.keep_on), onLongClick = { state.toggleKeep(q.number) }) { state.nextQuote() }
-                                .drawWithContent { drawContent(); if (ribbon > 0f) keepRibbon(Offset(if (quoteEdge >= 0f) quoteEdge + u.toPx() * KEEP_RIBBON_GAP else size.width / 2, -u.toPx() * KEEP_RIBBON_LIFT), u.toPx(), ribbon) },
+                                .drawWithContent { drawContent(); if (ribbon > 0f) keepLeaf(Offset(if (quoteEdge >= 0f) quoteEdge + u.toPx() * KEEP_LEAF_GAP else size.width / 2, u.toPx() * 4f), u.toPx(), ribbon) },
                             horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1),
                         ) {
                             // 새 문장 (누르거나 날이 바뀌어) 은 옛 타자기처럼 한 글자씩. 자리는 처음부터 다 잡아 두어 줄이 흔들리지 않음
@@ -1215,23 +1217,38 @@ fun GardenButton(text: String, onClick: () -> Unit, filled: Boolean, seed: Int, 
 }
 
 
-/** 간직한 문장의 한지 책갈피: at = 위 가운데, k = 정원 칸 (px), drop = 0..1 (위에서 내려옴). */
-internal fun androidx.compose.ui.graphics.drawscope.DrawScope.keepRibbon(at: Offset, k: Float, drop: Float) {
-    val w = k * KEEP_RIBBON_W; val h = k * KEEP_RIBBON_H * drop
-    if (h <= 0f) return
-    val p = androidx.compose.ui.graphics.Path().apply { moveTo(at.x - w / 2, at.y); lineTo(at.x + w / 2, at.y); lineTo(at.x + w / 2, at.y + h); lineTo(at.x, at.y + h * 0.8f); lineTo(at.x - w / 2, at.y + h); close() }
-    drawPath(p, KEEP_RIBBON_COLOR)
-    // 한지를 접은 결: 오른쪽 반을 조금 진하게
-    clipPath(p) { drawRect(KEEP_RIBBON_FOLD, Offset(at.x + w * 0.08f, at.y), androidx.compose.ui.geometry.Size(w, h)) }
-    drawPath(p, Tokens.Garden.Colors.ink.copy(alpha = 0.7f), style = androidx.compose.ui.graphics.drawscope.Stroke(k * 0.8f, join = androidx.compose.ui.graphics.StrokeJoin.Round))
+/**
+ * 간직한 문장의 표시 (1.1.6): 책 사이에 눌러 말린 잎 하나. 정원의 그림처럼 굵은 먹선 + 호박빛, 잎맥 한 줄 · 짧은 꼭지.
+ * at = 잎 가운데, k = 정원 칸 (px), drop = 0..1 (살짝 돌며 내려앉음).
+ */
+internal fun androidx.compose.ui.graphics.drawscope.DrawScope.keepLeaf(at: Offset, k: Float, drop: Float) {
+    if (drop <= 0f) return
+    val l = k * KEEP_LEAF_L; val w = k * KEEP_LEAF_W
+    val ink = Tokens.Garden.Colors.ink
+    rotate(KEEP_LEAF_TILT - KEEP_LEAF_SWING * (1f - drop), pivot = at) {
+        scale(0.6f + 0.4f * drop, pivot = at) {
+            val tip = Offset(at.x, at.y - l / 2); val base = Offset(at.x, at.y + l / 2)
+            val leaf = androidx.compose.ui.graphics.Path().apply {
+                moveTo(base.x, base.y); quadraticTo(at.x + w, at.y + l * 0.05f, tip.x, tip.y); quadraticTo(at.x - w, at.y - l * 0.05f, base.x, base.y); close()
+            }
+            val a = drop.coerceIn(0f, 1f)
+            drawPath(leaf, KEEP_LEAF_COLOR.copy(alpha = a))
+            // 햇빛 든 쪽을 조금 밝게 (그림의 칠처럼 한쪽만)
+            clipPath(leaf) { drawRect(Color.White.copy(alpha = 0.16f * a), Offset(at.x - w, tip.y), androidx.compose.ui.geometry.Size(w, l)) }
+            drawLine(ink.copy(alpha = 0.5f * a), Offset(base.x, base.y - l * 0.05f), Offset(tip.x, tip.y + l * 0.18f), k * 0.55f, cap = androidx.compose.ui.graphics.StrokeCap.Round)
+            drawPath(leaf, ink.copy(alpha = a), style = androidx.compose.ui.graphics.drawscope.Stroke(k * 1.1f, join = androidx.compose.ui.graphics.StrokeJoin.Round))
+            drawLine(ink.copy(alpha = a), base, Offset(base.x - k * 1.2f, base.y + k * 2.6f), k * 1.0f, cap = androidx.compose.ui.graphics.StrokeCap.Round)
+        }
+    }
 }
-internal val KEEP_RIBBON_COLOR = Color(0xFFC0614A)
-private val KEEP_RIBBON_FOLD = Color(0x22000000)
-/** 책갈피 폭 · 길이 · 문장 끝에서 떨어진 거리 · 문장 위로 올라온 만큼 (정원 칸). */
-private const val KEEP_RIBBON_W = 9f
-private const val KEEP_RIBBON_H = 22f
-private const val KEEP_RIBBON_GAP = 3f
-private const val KEEP_RIBBON_LIFT = 5f
+/** 마른 은행잎 · 단풍의 호박빛 (정원 그림의 잎과 같은 결). */
+private val KEEP_LEAF_COLOR = Color(0xFFCB7D45)
+/** 잎 길이 · 폭 (정원 칸), 기운 각도 · 내려앉을 때 도는 만큼 (도), 문장 끝에서 떨어진 거리. */
+private const val KEEP_LEAF_L = 15f
+private const val KEEP_LEAF_W = 6.5f
+private const val KEEP_LEAF_TILT = 32f
+private const val KEEP_LEAF_SWING = 40f
+internal const val KEEP_LEAF_GAP = 6f
 
 /** 오늘의 문장 (타자기처럼). 글자 수는 여기서만 읽어, 바뀌어도 이 문장만 다시 그림. */
 @Composable
