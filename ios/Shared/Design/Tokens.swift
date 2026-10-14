@@ -581,9 +581,13 @@ enum Tokens {
             static let lookDown: CGFloat = 0.6
         }
         enum Weather {
-            static let seconds: CGFloat = 10.0
-            static let drops: CGFloat = 28.0
-            static let rainAlpha: CGFloat = 0.35
+            static let seconds: CGFloat = 14.0
+            static let drops: CGFloat = 16.0
+            static let rainAlpha: CGFloat = 0.22
+            static let fall: CGFloat = 2.8
+            static let streak: CGFloat = 4.0
+            static let rainWidth: CGFloat = 0.7
+            static let sway: CGFloat = 2.0
             static let sunAlpha: CGFloat = 0.22
         }
         enum SleepGarden {

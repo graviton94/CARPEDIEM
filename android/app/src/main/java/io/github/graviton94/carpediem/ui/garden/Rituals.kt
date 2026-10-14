@@ -123,7 +123,7 @@ internal fun SeedSheet(state: AppState, today: LocalDate, onDismiss: () -> Unit)
     var own by remember(today) { mutableStateOf(false) }
     var text by remember(today) { mutableStateOf("") }
     val chosen = if (own) text.takeIf { it.isNotBlank() } else pick
-    androidx.compose.material3.ModalBottomSheet(onDismissRequest = onDismiss, containerColor = Theme.gc.paper, sheetState = androidx.compose.material3.rememberModalBottomSheetState(skipPartiallyExpanded = true)) { Column(
+    GardenSheet(onDismissRequest = onDismiss, sheetState = androidx.compose.material3.rememberModalBottomSheetState(skipPartiallyExpanded = true)) { Column(
         Modifier.fillMaxWidth().imePadding().verticalScroll(rememberScrollState()).padding(horizontal = Theme.deviceClass.pageMargin).navigationBarsPadding().padding(bottom = Tokens.Space.sp6),
         verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3),
     ) {
@@ -559,7 +559,7 @@ internal fun SlipSheet(state: AppState, line: io.github.graviton94.carpediem.cor
     val ago = if (years > 0) stringResource(io.github.graviton94.carpediem.R.string.slip_yearsAgo, "$years") else stringResource(io.github.graviton94.carpediem.R.string.slip_daysAgo, "$days")
     val name = remember(guest) { ctx.resources.getIdentifier("chance_guest_$guest", "string", ctx.packageName).takeIf { it != 0 }?.let { ctx.getString(it) }.orEmpty() }
     // 한지 편지처럼 (계절 편지와 같은 종이 · 글꼴): 쪽지 그림 · 언제 · 누가 → 그날의 한 줄 · 사진 → 그날 기록 보기
-    androidx.compose.material3.ModalBottomSheet(onDismissRequest = onClose, containerColor = Theme.gc.paper,
+    GardenSheet(onDismissRequest = onClose,
         sheetState = androidx.compose.material3.rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
         Column(
             Modifier.fillMaxWidth().verticalScroll(androidx.compose.foundation.rememberScrollState()).padding(horizontal = Theme.deviceClass.pageMargin)
@@ -594,7 +594,7 @@ internal fun AnniversarySheet(state: AppState, which: String, onSupport: () -> U
     val ctx = LocalContext.current
     val p = Theme.palette
     val year = which == "year"
-    androidx.compose.material3.ModalBottomSheet(onDismissRequest = onClose, containerColor = Theme.gc.paper,
+    GardenSheet(onDismissRequest = onClose,
         sheetState = androidx.compose.material3.rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
         Column(
             Modifier.fillMaxWidth().verticalScroll(androidx.compose.foundation.rememberScrollState()).padding(horizontal = Theme.deviceClass.pageMargin)

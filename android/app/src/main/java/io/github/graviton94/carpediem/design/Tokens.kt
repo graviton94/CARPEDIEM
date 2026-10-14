@@ -576,9 +576,13 @@ object Tokens {
             const val lookDown = 0.6f
         }
         object Weather {
-            const val seconds = 10.0f
-            const val drops = 28.0f
-            const val rainAlpha = 0.35f
+            const val seconds = 14.0f
+            const val drops = 16.0f
+            const val rainAlpha = 0.22f
+            const val fall = 2.8f
+            const val streak = 4.0f
+            const val rainWidth = 0.7f
+            const val sway = 2.0f
             const val sunAlpha = 0.22f
         }
         object SleepGarden {

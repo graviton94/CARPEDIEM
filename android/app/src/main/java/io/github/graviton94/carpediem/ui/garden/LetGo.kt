@@ -569,7 +569,7 @@ internal fun PastLineSheet(state: AppState, line: DayLine, today: LocalDate, onC
         confirmButton = { AlertButton(stringResource(R.string.settings_save), { askSave = false; save() }) },
         dismissButton = { AlertButton(stringResource(R.string.settings_discard), { askSave = false; close() }, quiet = true) },
     )
-    androidx.compose.material3.ModalBottomSheet(onDismissRequest = { if (dirty) { askSave = true; scope.launch { sheet.show() } } else close() }, containerColor = Theme.gc.paper,
+    GardenSheet(onDismissRequest = { if (dirty) { askSave = true; scope.launch { sheet.show() } } else close() },
         sheetState = sheet) {
         Column(Modifier.fillMaxWidth().imePadding().verticalScroll(rememberScrollState()).padding(horizontal = Theme.deviceClass.pageMargin).padding(bottom = Tokens.Space.sp8),
             verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
