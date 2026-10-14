@@ -8,6 +8,8 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.animation.core.animateFloat
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
@@ -208,6 +210,19 @@ internal fun CollectionBody(state: AppState, profile: LifeProfile, now: LocalDat
                     if (guest) stringResource(R.string.collect_howGuest) else res("collect_how_$k"),
                     note = if (guest) stringResource(R.string.collect_howGuestRare) else null))
             }
+            // 아직 못 만난 것 (1.1.5): 옅은 실루엣 + ‘언젠가’, 누르면 분위기 힌트 한 줄만 (방법 · 진행률은 알려주지 않음). 늘 맨 뒤에
+            val metKeys = met.map { it.first }.toSet()
+            val ghostTitle = stringResource(R.string.collect_ghostTitle); val ghostSub = stringResource(R.string.collect_ghostSub); val ghostName = stringResource(R.string.collect_ghost)
+            fun hint(n: String) = ctx.resources.getIdentifier(n, "string", ctx.packageName).takeIf { it != 0 }?.let { ctx.getString(it) }.orEmpty()
+            GHOSTS.filter { it !in metKeys }.forEach { k ->
+                val art: @Composable () -> Unit = { GhostArt { MetArt(k, sk) } }
+                tiles += Tile(art, ghostName, "", null, Detail(art, ghostTitle, ghostSub, hint("collect_hint_$k"), "", ""), ghost = true)
+            }
+            val hangHint = stringResource(R.string.collect_hint_hang)
+            for ((i, part) in listOf("chime", "bell", "lantern").withIndex()) if (d.hang.ordinal <= i) {
+                val art: @Composable () -> Unit = { GhostArt { Box(Modifier.fillMaxSize()) { Image(GardenArt.image(ctx, "post_$sk.webp"), null, Modifier.fillMaxSize()); Image(GardenArt.image(ctx, "post_$part.webp"), null, Modifier.fillMaxSize()) } } }
+                tiles += Tile(art, ghostName, "", null, Detail(art, ghostTitle, ghostSub, hangHint, "", ""), ghost = true)
+            }
             // 하루가 준 조약돌: 받은 날마다 한 장
             state.pebbles.forEach { d ->
                 val art: @Composable () -> Unit = { PebbleArt() }
@@ -219,18 +234,20 @@ internal fun CollectionBody(state: AppState, profile: LifeProfile, now: LocalDat
             moments.filter { state.previewAll || it.date.isBefore(io.github.graviton94.carpediem.core.Moments.LEGACY_UNTIL) }.forEach { m ->
                 tiles += Tile({ Image(GardenArt.obj(ctx, m.id), null, Modifier.fillMaxSize()) }, stringResource(objName(m.id)), m.date.format(fmt), m.date, null) { open = m }
             }
-            val sorted = tiles.sortedByDescending { it.date ?: java.time.LocalDate.MIN }
+            val sorted = tiles.sortedWith(compareBy<Tile> { it.ghost }.thenByDescending { it.date ?: java.time.LocalDate.MIN })
             var all by rememberSaveable { mutableStateOf(false) }
             var detail by remember { mutableStateOf<Detail?>(null) }
             val shown = if (all) sorted else sorted.take(COLLECT_FIRST)
             Column(Modifier.fillMaxWidth().guideTarget(guide, "mem.album"), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
                 if (sorted.isEmpty()) TokenText(stringResource(R.string.collection_empty), Tokens.TypeScale.callout.serif(), Modifier.fillMaxWidth().padding(vertical = Tokens.Space.sp4), color = p.secondary, align = TextAlign.Center)
-                else TileGrid(shown.size) { i -> val t = shown[i]; CollectionTile(900 + i, t.art, t.title, t.dateText, t.onClick ?: { detail = t.detail }) }
+                else TileGrid(shown.size) { i -> val t = shown[i]; CollectionTile(900 + i, t.art, t.title, t.dateText, t.onClick ?: { detail = t.detail }, ghost = t.ghost) }
                 if (sorted.size > COLLECT_FIRST) Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                     GardenChip(if (all) stringResource(R.string.collect_less) else stringResource(R.string.collect_more, "${sorted.size}"), false, 899) { all = !all }
                 }
             }
             detail?.let { dt -> CollectDetailSheet(dt) { detail = null } }
+            // ── 간직한 문장 (1.1.5): 정원의 문장을 길게 눌러 모은 것. 누르면 오늘 정원에 다시, 길게 누르면 뺌 ──
+            KeptQuotes(state)
             // ── ② 미래의 나에게 ──
             Column(Modifier.fillMaxWidth().guideTarget(guide, "mem.future"), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) { KeepsakesSection(state, profile, now, onCredits, KeepPart.FUTURE) }
             // ── ③ 돌아보기 ──
@@ -286,7 +303,7 @@ fun SupportScreen(state: AppState, now: LocalDateTime, onBack: () -> Unit) {
     val load = haruArt(state, sprout = false)
     var soon by remember { mutableStateOf(false) }
     val support = remember { io.github.graviton94.carpediem.billing.Support(ctx) }
-    androidx.compose.runtime.DisposableEffect(support) { support.onSupported = { id -> state.supported(id, now.toLocalDate()) }; support.connect(); onDispose { support.onSupported = null; support.close() } }
+    androidx.compose.runtime.DisposableEffect(support) { support.onSupported = { id -> state.supported(id, now.toLocalDate()) }; support.onReady = { state.shopOpened() }; support.connect(); onDispose { support.onSupported = null; support.close() } }
     BackHandler(onBack = onBack)
     SkyBackground {
         Column(
@@ -381,9 +398,9 @@ internal fun SupportIcon(kind: Int, size: androidx.compose.ui.unit.Dp) {
 /** 세 칸씩 놓는 판 (마지막 줄은 빈칸으로 채움). */
 @Composable
 private fun TileGrid(count: Int, tile: @Composable (Int) -> Unit) {
-    val cols = 3
+    val cols = COLLECT_COLS
     (0 until count).chunked(cols).forEach { row ->
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
             row.forEach { i -> Box(Modifier.weight(1f)) { tile(i) } }
             repeat(cols - row.size) { Spacer(Modifier.weight(1f)) }
         }
@@ -392,13 +409,16 @@ private fun TileGrid(count: Int, tile: @Composable (Int) -> Unit) {
 
 /** 모은 것 한 칸: 같은 높이. 그림 (정사각) · 이름 한 줄 (길면 …) · 날짜 한 줄, 오른쪽 위 (?) (누르면 상세). */
 @Composable
-private fun CollectionTile(seed: Int, art: @Composable () -> Unit, title: String, date: String, onClick: () -> Unit) {
+private fun CollectionTile(seed: Int, art: @Composable () -> Unit, title: String, date: String, onClick: () -> Unit, ghost: Boolean = false) {
     val u = Theme.unit
     val p = Theme.palette
-    Box(Modifier.fillMaxWidth().height(u * COLLECT_TILE_H).crayonBox(null, G.Radius.box, G.Stroke.chip, seed).clickable(onClick = onClick)) {
+    val a11y = if (ghost) stringResource(R.string.collect_ghostA11y) else null
+    // 못 만난 것: 테두리까지 옅게 (그림은 GhostArt 가 한지빛으로 씻어 둠)
+    Box(Modifier.fillMaxWidth().height(u * COLLECT_TILE_H).graphicsLayer { alpha = if (ghost) GHOST_TILE else 1f }.crayonBox(null, G.Radius.box, G.Stroke.chip, seed).clickable(onClick = onClick)
+        .let { m -> if (a11y != null) m.semantics { contentDescription = a11y } else m }) {
         Column(Modifier.fillMaxSize().padding(horizontal = Tokens.Space.sp2, vertical = Tokens.Space.sp2), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
-            Box(Modifier.size(u * 64f), contentAlignment = Alignment.Center) { art() }
-            TokenText(title, Tokens.TypeScale.footnote, Modifier.fillMaxWidth(), weight = FontWeight.SemiBold, align = TextAlign.Center, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
+            Box(Modifier.size(u * COLLECT_ART), contentAlignment = Alignment.Center) { art() }
+            TokenText(title, Tokens.TypeScale.caption1, Modifier.fillMaxWidth(), color = if (ghost) p.secondary else p.foreground, weight = if (ghost) FontWeight.Normal else FontWeight.SemiBold, align = TextAlign.Center, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
             TokenText(date, Tokens.TypeScale.caption2, color = p.secondary, align = TextAlign.Center, maxLines = 1)
         }
         // 크레용 테두리 안쪽으로 넉넉히 (가장자리에 붙지 않게)
@@ -434,14 +454,63 @@ private fun MetArt(key: String, season: String) {
 private class Grown(val caption: Int, val art: @Composable () -> Unit)
 
 /** 모은 것 한 칸: 그림 · 이름 · 날짜, 누르면 상세 (옛 꾸밈은 원래의 한 장). date = 줄 세우는 날 (없으면 맨 뒤). */
-private class Tile(val art: @Composable () -> Unit, val title: String, val dateText: String, val date: java.time.LocalDate?, val detail: Detail?, val onClick: (() -> Unit)? = null)
+private class Tile(val art: @Composable () -> Unit, val title: String, val dateText: String, val date: java.time.LocalDate?, val detail: Detail?, val ghost: Boolean = false, val onClick: (() -> Unit)? = null)
 
 /** (?) 상세: 큰 그림 · 이름 · 종류와 날짜 · 설명 · 얻는 방법 (단계가 있으면 지나온 단계 칩, 지금 것만 진하게). 아직 얻지 않은 것은 보이지 않음. */
 private class Detail(val art: @Composable () -> Unit, val name: String, val sub: String, val desc: String, val howTitle: String, val how: String,
                      val chips: List<Pair<String, Boolean>> = emptyList(), val note: String? = null)
 
-private const val COLLECT_FIRST = 6
-private const val COLLECT_TILE_H = 120f
+/** 간직한 문장: 새것이 위, 셋까지 보이고 그보다 많으면 ‘전체 보기’. 없으면 모으는 법 한 줄. */
+@OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class)
+@Composable
+private fun KeptQuotes(state: AppState) {
+    val p = Theme.palette
+    val ctx = LocalContext.current
+    val u = Theme.unit
+    val fmt = remember { java.time.format.DateTimeFormatter.ofLocalizedDate(java.time.format.FormatStyle.MEDIUM) }
+    var all by rememberSaveable { mutableStateOf(false) }
+    val list = state.keptQuotes.mapNotNull { (n, d) -> state.keptQuote(n)?.let { Triple(n, it, d) } }
+    Column(Modifier.fillMaxWidth().padding(top = Tokens.Space.sp4), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
+        TokenText(stringResource(R.string.keep_title), Tokens.TypeScale.title3)
+        TokenText(stringResource(if (list.isEmpty()) R.string.keep_empty else R.string.keep_sub), Tokens.TypeScale.footnote, color = p.secondary)
+        val phone = io.github.graviton94.carpediem.data.Words.lang(ctx)
+        (if (all) list else list.take(KEEP_FIRST)).forEachIndexed { i, (n, q, d) ->
+            val text = io.github.graviton94.carpediem.data.Words.main(q, state.quoteLanguage, phone)
+            Box(Modifier.fillMaxWidth().crayonBox(null, G.Radius.box, G.Stroke.chip, 1800 + i)
+                .combinedClickable(onLongClickLabel = stringResource(R.string.keep_off), onLongClick = { state.toggleKeep(n) }) { state.showKept(n) }
+                .drawWithContent { drawContent(); keepRibbon(androidx.compose.ui.geometry.Offset(size.width - u.toPx() * 14f, -u.toPx() * 2f), u.toPx() * 0.65f, 1f) }
+                .padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3)) {
+                Column(Modifier.padding(end = Tokens.Space.sp4), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
+                    TokenText(text, Tokens.TypeScale.callout.serif())
+                    TokenText(stringResource(R.string.keep_on_date, d.format(fmt)), Tokens.TypeScale.caption2, color = p.secondary)
+                }
+            }
+        }
+        if (list.size > KEEP_FIRST) Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+            GardenChip(if (all) stringResource(R.string.collect_less) else stringResource(R.string.collect_more, "${list.size}"), false, 1799) { all = !all }
+        }
+    }
+}
+private const val KEEP_FIRST = 3
+
+/** 못 만난 것의 그림: 한지빛으로 씻어 옅은 실루엣처럼. */
+@Composable
+private fun GhostArt(content: @Composable () -> Unit) {
+    val paper = Theme.gc.paper
+    Box(Modifier.fillMaxSize().graphicsLayer { alpha = GHOST_ART; compositingStrategy = androidx.compose.ui.graphics.CompositingStrategy.Offscreen }
+        .drawWithContent { drawContent(); drawRect(paper.copy(alpha = GHOST_WASH), blendMode = androidx.compose.ui.graphics.BlendMode.SrcAtop) }, contentAlignment = Alignment.Center) { content() }
+}
+/** 만날 수 있는 손님 · 우연한 순간 (‘chance_’ 이름과 같음). */
+private val GHOSTS = listOf("guest_tit", "guest_squirrel", "guest_hedgehog", "guest_rabbit", "guest_owl", "wind", "rainbow", "fireflies", "aurora", "snail", "bubbles", "butterflies")
+private const val GHOST_TILE = 0.7f
+private const val GHOST_ART = 0.35f
+private const val GHOST_WASH = 0.55f
+
+/** 모은 것: 한 줄에 넷, 두 줄 (여덟) 까지 보이고 그보다 많으면 ‘전체 보기’. */
+private const val COLLECT_COLS = 4
+private const val COLLECT_FIRST = 8
+private const val COLLECT_TILE_H = 110f
+private const val COLLECT_ART = 46f
 
 @OptIn(ExperimentalMaterial3Api::class, androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
 @Composable
@@ -455,8 +524,9 @@ private fun CollectDetailSheet(d: Detail, onClose: () -> Unit) {
             TokenText(d.name, Tokens.TypeScale.title3.serif(), align = TextAlign.Center)
             TokenText(d.sub, Tokens.TypeScale.footnote, color = p.secondary, align = TextAlign.Center)
             if (d.desc.isNotEmpty()) TokenText(d.desc, Tokens.TypeScale.callout, Modifier.fillMaxWidth().padding(top = Tokens.Space.sp2), align = TextAlign.Center)
-            CrayonRule(Modifier.padding(vertical = Tokens.Space.sp2), seed = 1730)
-            Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
+            // 못 만난 것은 힌트 한 줄만 (얻는 방법 칸 없이)
+            if (d.howTitle.isNotEmpty()) CrayonRule(Modifier.padding(vertical = Tokens.Space.sp2), seed = 1730)
+            if (d.howTitle.isNotEmpty()) Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
                 TokenText(d.howTitle, Tokens.TypeScale.footnote, color = p.olive, weight = FontWeight.SemiBold)
                 if (d.how.isNotEmpty()) TokenText(d.how, Tokens.TypeScale.subhead)
                 d.note?.let { TokenText(it, Tokens.TypeScale.footnote, color = p.secondary) }

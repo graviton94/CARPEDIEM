@@ -55,6 +55,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
@@ -367,30 +368,20 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
             val permission = androidx.activity.compose.rememberLauncherForActivityResult(androidx.activity.result.contract.ActivityResultContracts.RequestPermission()) { ok -> state.changeNotify(ok); if (!ok) blocked = true }
             val eveningPermission = androidx.activity.compose.rememberLauncherForActivityResult(androidx.activity.result.contract.ActivityResultContracts.RequestPermission()) { ok -> state.changeEvening(ok); if (!ok) blocked = true }
             val tomorrowPermission = androidx.activity.compose.rememberLauncherForActivityResult(androidx.activity.result.contract.ActivityResultContracts.RequestPermission()) { ok -> state.changeTomorrow(ok); if (!ok) blocked = true }
+            var timeFor by remember { mutableStateOf(state.debugTimeWheel) }   // 'm' 아침 · 'e' 저녁 시각 바퀴
             fun needsAsk() = android.os.Build.VERSION.SDK_INT >= 33 && !io.github.graviton94.carpediem.notify.Daily.allowed(ctx)
             fun toggleNotify(on: Boolean) { if (on && needsAsk()) permission.launch(android.Manifest.permission.POST_NOTIFICATIONS) else state.changeNotify(on) }
             fun toggleEvening(on: Boolean) { if (on && needsAsk()) eveningPermission.launch(android.Manifest.permission.POST_NOTIFICATIONS) else state.changeEvening(on) }
             fun toggleTomorrow(on: Boolean) { if (on && needsAsk()) tomorrowPermission.launch(android.Manifest.permission.POST_NOTIFICATIONS) else state.changeTomorrow(on) }
-            FormSection(header = stringResource(R.string.settings_notify), footer = stringResource(R.string.settings_notifyFooter)) {
-                FormRow(stringResource(R.string.notify_row), onClick = { toggleNotify(!state.notify) }) { Switch(state.notify, { toggleNotify(it) }, colors = sw) }
-                if (state.notify) {
-                    RowDivider()
-                    FormRow(stringResource(R.string.notify_time), onClick = { pickTime(ctx, state.morningMinute) { state.changeMorningMinute(it) } }) {
-                        TokenText(clockText(ctx, state.morningMinute), Tokens.TypeScale.body, color = p.olive)
-                    }
-                    if (Theme.garden) {
-                        RowDivider()
-                        FormRow(stringResource(R.string.notify_morningBreath, "${io.github.graviton94.carpediem.ui.garden.planMinutes(io.github.graviton94.carpediem.core.BreathKind.CALM)}"), onClick = { state.changeMorningBreath(!state.morningBreath) }) { Switch(state.morningBreath, { state.changeMorningBreath(it) }, colors = sw) }
-                    }
+            FormSection(header = stringResource(R.string.settings_notify), footer = stringResource(R.string.settings_notifyFooter, "${io.github.graviton94.carpediem.ui.garden.planMinutes(io.github.graviton94.carpediem.core.BreathKind.CALM)}")) {
+                // 세 줄: 아침 · 하루 정리 (켜 두면 옆의 시각을 눌러 바퀴로) · 생일 · 특별한 날. 아침 알림을 누르면 하루를 여는 숨은 늘 (아래 설명에)
+                val timeChip: @Composable (Int, Char) -> Unit = { m, k ->
+                    TokenText(clockText(ctx, m), Tokens.TypeScale.body, Modifier.heightIn(min = Tokens.Layout.tapTarget).clip(RoundedCornerShape(Tokens.Radius.sm)).clickable { timeFor = k }
+                        .semantics { contentDescription = ctx.getString(R.string.notify_timeA11y, clockText(ctx, m)) }.padding(horizontal = Tokens.Space.sp3, vertical = Tokens.Space.sp2), color = p.olive, weight = FontWeight.SemiBold)
                 }
+                FormRow(stringResource(R.string.notify_row), onClick = { toggleNotify(!state.notify) }) { if (state.notify) timeChip(state.morningMinute, 'm'); Switch(state.notify, { toggleNotify(it) }, colors = sw) }
                 RowDivider()
-                FormRow(stringResource(R.string.notify_eveningRow), onClick = { toggleEvening(!state.eveningNotify) }) { Switch(state.eveningNotify, { toggleEvening(it) }, colors = sw) }
-                if (state.eveningNotify) {
-                    RowDivider()
-                    FormRow(stringResource(R.string.notify_time), onClick = { pickTime(ctx, state.eveningMinute) { state.changeEveningMinute(it) } }) {
-                        TokenText(clockText(ctx, state.eveningMinute), Tokens.TypeScale.body, color = p.olive)
-                    }
-                }
+                FormRow(stringResource(R.string.notify_eveningRow), onClick = { toggleEvening(!state.eveningNotify) }) { if (state.eveningNotify) timeChip(state.eveningMinute, 'e'); Switch(state.eveningNotify, { toggleEvening(it) }, colors = sw) }
                 if (Theme.garden) {
                     RowDivider()
                     FormRow(stringResource(R.string.notify_tomorrowRow), onClick = { toggleTomorrow(!state.tomorrowNotify) }) { Switch(state.tomorrowNotify, { toggleTomorrow(it) }, colors = sw) }
@@ -408,13 +399,19 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
                 }
             }) { uri -> restoreFrom = uri }
             val backupView = remember { androidx.compose.foundation.relocation.BringIntoViewRequester() }
-            androidx.compose.runtime.LaunchedEffect(state.settingsFocus) { if (state.settingsFocus == "backup") { kotlinx.coroutines.delay(300); backupView.bringIntoView(); state.settingsFocus = null } }
+            // 백업 권유에서 왔으면: 그 자리로 굴려 ‘백업 파일로 저장’ 줄을 한 번 은은하게 비춤
+            val backupGlow = remember { androidx.compose.animation.core.Animatable(0f) }
+            androidx.compose.runtime.LaunchedEffect(state.settingsFocus) { if (state.settingsFocus == "backup") { kotlinx.coroutines.delay(300); backupView.bringIntoView(); state.settingsFocus = null
+                repeat(2) { backupGlow.animateTo(1f, androidx.compose.animation.core.tween(500)); backupGlow.animateTo(0.3f, androidx.compose.animation.core.tween(500)) }
+                kotlinx.coroutines.delay(1200); backupGlow.animateTo(0f, androidx.compose.animation.core.tween(800)) } }
             FormSection(header = stringResource(R.string.settings_records), footer = stringResource(R.string.settings_recordsFooter), modifier = Modifier.bringIntoViewRequester(backupView)) {
                 FormRow(stringResource(R.string.lines_keep), onClick = { if (state.keepLines) confirmKeepOff = true else state.changeKeepLines(true) }) { Switch(state.keepLines, { if (it) state.changeKeepLines(true) else confirmKeepOff = true }, colors = sw) }
                 RowDivider()
-                FormRow(stringResource(R.string.backup_export), onClick = { backupNow() }) {
-                    // 마지막으로 저장한 날 (조용한 안심 한 줄)
-                    if (lastBackup >= 0) TokenText(stringResource(R.string.backup_last, java.time.LocalDate.ofEpochDay(lastBackup).format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM))), Tokens.TypeScale.footnote, color = p.secondary)
+                Box(Modifier.drawBehind { if (backupGlow.value > 0f) drawRoundRect(p.olive.copy(alpha = 0.22f * backupGlow.value), cornerRadius = androidx.compose.ui.geometry.CornerRadius(Tokens.Radius.sm.toPx())) }) {
+                    FormRow(stringResource(R.string.backup_export), onClick = { backupNow() }) {
+                        // 마지막으로 저장한 날 (조용한 안심 한 줄)
+                        if (lastBackup >= 0) TokenText(stringResource(R.string.backup_last, java.time.LocalDate.ofEpochDay(lastBackup).format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM))), Tokens.TypeScale.footnote, color = p.secondary)
+                    }
                 }
                 RowDivider()
                 FormRow(stringResource(R.string.backup_import), onClick = { pickHelp = true }, trailing = chevron)
@@ -448,6 +445,19 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
                         io.github.graviton94.carpediem.notify.Evening.post(ctx, force = true)
                     }) {}
                 }
+            }
+            // 알림 시각: 알람 맞추듯 바퀴로 (아침이 저녁보다 늦거나, 저녁이 아침보다 이르면 막지 않고 한 줄로만)
+            timeFor?.let { k ->
+                val morning = k == 'm'
+                TimeWheelAlert(stringResource(if (morning) R.string.notify_morningTime else R.string.notify_eveningTime), if (morning) state.morningMinute else state.eveningMinute,
+                    guide = { v ->
+                        when {
+                            morning && state.eveningNotify && v >= state.eveningMinute -> ctx.getString(R.string.notify_wheelLate, clockText(ctx, state.eveningMinute))
+                            !morning && state.notify && v <= state.morningMinute -> ctx.getString(R.string.notify_wheelEarly, clockText(ctx, state.morningMinute))
+                            else -> ctx.getString(if (morning) R.string.notify_wheelMorning else R.string.notify_wheelEvening, clockText(ctx, v))
+                        }
+                    },
+                    onDismiss = { timeFor = null }) { v -> timeFor = null; if (morning) state.changeMorningMinute(v) else state.changeEveningMinute(v) }
             }
             // 기록 남기기를 끄면 지금까지의 글 · 사진도 지워지므로 한 번 묻기
             if (confirmKeepOff) GardenAlert(
@@ -512,16 +522,7 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
                     RowDivider()
                     FormRow(stringResource(R.string.collection), onClick = onCollection, trailing = chevron)
                     RowDivider()
-                    // 하루의 첫 화면
-                    FormRow(stringResource(R.string.title_setting), onClick = { state.changeTitleOn(!state.titleOn) }) { Switch(state.titleOn, { state.changeTitleOn(it) }, colors = sw) }
-                    RowDivider()
-                    // 오늘의 질문 받기: 끄면 질문 날에도 늘 오늘의 문장
-                    FormRow(stringResource(R.string.question_on), onClick = { state.changeQuestionsOn(!state.questionsOn) }) { Switch(state.questionsOn, { state.changeQuestionsOn(it) }, colors = sw) }
-                    RowDivider()
-                    // 아침 씨앗 (04)
-                    FormRow(stringResource(R.string.seed_setting), onClick = { state.changeSeedsOn(!state.seedsOn) }) { Switch(state.seedsOn, { state.changeSeedsOn(it) }, colors = sw) }
-                    RowDivider()
-                    FormRow(stringResource(R.string.care_setting), onClick = { state.changeCare(!state.careOn) }) { Switch(state.careOn, { state.changeCare(it) }, colors = sw) }
+                    // 첫 화면 · 오늘의 질문 · 아침 씨앗 · 작은 권유는 1.1.5 부터 늘 켬 (고를 것을 덜어냄)
                     if (state.devMode) {
                         RowDivider()
                         FormRow(stringResource(R.string.garden_preview), onClick = { state.changePreviewAll(!state.previewAll) }) { Switch(state.previewAll, { state.changePreviewAll(it) }, colors = sw) }
@@ -615,10 +616,6 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
 private fun clockText(ctx: android.content.Context, minute: Int): String =
     java.time.LocalTime.of(minute / 60, minute % 60).format(java.time.format.DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).withLocale(ctx.resources.configuration.locales[0]))
 
-/** 시각 고르기 (폰의 시계 모양 그대로). */
-private fun pickTime(ctx: android.content.Context, minute: Int, onPick: (Int) -> Unit) {
-    android.app.TimePickerDialog(ctx, { _, h, m -> onPick(h * 60 + m) }, minute / 60, minute % 60, android.text.format.DateFormat.is24HourFormat(ctx)).show()
-}
 
 // ───────────────────────── 나라 선택 ─────────────────────────
 

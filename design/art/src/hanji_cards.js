@@ -17,7 +17,7 @@
     pine_spring: function (ctx) { stem(ctx, [0, 24, 1, 18, -1, 12, 0, 6]); one(ctx, petals(0, -2, 5, 12, 6, -Math.PI / 2), "#E58AB0", 5131, { rim: 0.5 }); for (var i = 0; i < 3; i++) { var a = -Math.PI / 2 + (i - 1) * 0.35; thread(ctx, [[0, -2], [Math.cos(a) * 9, -2 + Math.sin(a) * 9]], 0.5, "#C2507E"); dot(ctx, Math.cos(a) * 9, -2 + Math.sin(a) * 9, 0.8, "#C2507E"); } },
     // 여름: 풀 · 작은 나무 · 여름 열매
     cherry_summer: function (ctx) { thread(ctx, bez([0, -16, -2, -10, -5, -2, -6, 8]), 0.8, "#6E8A50"); thread(ctx, bez([0, -16, 2, -10, 5, 0, 6, 10]), 0.8, "#6E8A50"); one(ctx, [blob(-6, 13, 5.6, 5.6, 5141, 0.04), blob(6.4, 15, 5.6, 5.6, 5142, 0.04)], "#B83A44", 5141); },
-    zelkova_summer: function (ctx) { stem(ctx, [0, 24, 1, 16, -1, 8, 0, 2]); one(ctx, [0, 1, 2].map(function (k) { var ang = -Math.PI / 2 + k * Math.PI * 2 / 3; return heart(Math.cos(ang) * 6.4, 1 + Math.sin(ang) * 6.4, 5.6, ang - Math.PI / 2); }), "#7FAE5E", 5151, { rim: 0.45 }); one(ctx, blob(0, 1, 1.4, 1.4, 5152, 0.05), "#6A9550", 5152, { rim: 0, sh: 0 }); },
+    zelkova_summer: function (ctx) { stem(ctx, [0, 24, 1, 16, -1, 8, 0, 2]); one(ctx, [0, 1, 2].map(function (k) { var ang = -Math.PI / 2 + k * Math.PI * 2 / 3; return heart(Math.cos(ang) * 6.4, 1 + Math.sin(ang) * 6.4, 5.6, ang + Math.PI / 2); }), "#7FAE5E", 5151, { rim: 0.45 }); one(ctx, blob(0, 1, 1.4, 1.4, 5152, 0.05), "#6A9550", 5152, { rim: 0, sh: 0 }); },
     ginkgo_summer: function (ctx) { one(ctx, rib([[0, 24], [0.4, 6]], 3, 2.2), "#8A6E54", 5161, { rim: 0.3 }); one(ctx, blob(0, -4, 13, 12, 5162, 0.08), "#6F9A58", 5162, { tone: 0.1 }); one(ctx, blob(-3.6, -7.4, 6.4, 4.6, 5163, 0.1), "#8FB672", 5163, { rim: 0.3, sh: 0.3 }); },
     pine_summer: function (ctx) { var R0 = 13;
       function wedge(r) { var p = [[-r, 8]]; for (var i = 0; i <= 20; i++) { var a = i / 20 * Math.PI; p.push([-Math.cos(a) * r, 8 + Math.sin(a) * r]); } return p; }
@@ -27,7 +27,14 @@
     cherry_autumn: function (ctx) { one(ctx, maple(0, 4, 15, 0.12), "#D2563C", 5181); thread(ctx, [[0, 10], [1.4, 22]], 0.9, "#8A3E2A"); },
     zelkova_autumn: function (ctx) { one(ctx, blob(0, 10, 12.5, 11, 5191, 0.05), "#E8893A", 5191, { tone: 0.14 }); one(ctx, [0, 1, 2, 3].map(function (k) { return place(leafPts(6.4, 2.4), 0, -0.6, 1, -Math.PI / 4 + k * Math.PI / 2 - Math.PI / 2 * 0.0); }), "#6E7A40", 5192, { rim: 0.25 }); thread(ctx, [[0, -0.6], [0.6, -4.6]], 1, "#5A4A34"); },
     ginkgo_autumn: function (ctx) { one(ctx, fanLeaf(0, 22, 18, 0), "#EFC447", 5201); },
-    pine_autumn: function (ctx) { var p = []; for (var i = 0; i < 40; i++) { var t = i / 40 * Math.PI * 2, x = Math.sin(t) * 12, y = -Math.cos(t) * 13; if (y < 0) { x *= 0.86 + 0.14 * (1 + y / 13); y *= 0.9; } p.push([x, 9 + y]); } one(ctx, p, "#8A5636", 5211, { tone: 0.18 }); one(ctx, [[-11.6, 15], [11.6, 15]].concat(bez([11.6, 15, 9, 22.6, -9, 22.6, -11.6, 15], 10)), "#D9B98C", 5212, { rim: 0, sh: 0.1 }); one(ctx, [[-1.2, -2.4], [1.2, -2.4], [0.4, -5.6], [-0.4, -5.6]], "#5A3A24", 5213, { rim: 0, sh: 0.1 }); one(ctx, blob(-4.6, 4, 2.6, 4, 5214, 0.1, 0.4), "#A8704A", 5214, { rim: 0, sh: 0 }); },
+    // 가을: 알밤 한 톨 (1.1.5): 가로로 넓적하게 (SX · SY), 한 장으로 오린 윤곽 하나, 꼭지는 뾰족, 밑은 넓적. 윤기 (옅은 결 · 빛줄기) 와 밑동 (연한 거친 면) 은 안쪽에 칠함
+    pine_autumn: function (ctx) { var SX = 1.14, SY = 0.8, FL = function (q) { return [q[0] * SX, 22.9 - (22.9 - q[1]) * SY]; }, body = bez([0, -4.6, 3, -3.8, 11, 1, 12.4, 9, 13.4, 16, 10.2, 22, 4, 22.6, 1.5, 22.9, -1.5, 22.9, -4, 22.6, -10.2, 22, -13.4, 16, -12.4, 9, -11, 1, -3, -3.8, 0, -4.6], 10).map(FL);
+      one(ctx, body, "#8A5232", 5211, { tone: 0.16, inner: function (c) { c.save(); c.translate(0, 22.9); c.scale(SX, SY); c.translate(0, -22.9);
+        c.strokeStyle = "rgba(60,32,16,.18)"; c.lineWidth = 0.4; c.lineCap = "round"; [[-7, 0.5], [-2.6, 0.9], [2.6, 0.9], [7, 0.5]].forEach(function (g) { c.beginPath(); c.moveTo(0, -3.6); c.quadraticCurveTo(g[0] * 1.6, 7, g[0] * 1.15, 15.6); c.stroke(); });
+        c.fillStyle = "rgba(255,236,210,.32)"; c.beginPath(); c.ellipse(-6, 6.4, 1.5, 4.6, 0.42, 0, 7); c.fill();
+        c.fillStyle = "#D7B98E"; c.beginPath(); c.moveTo(-14, 15.4); c.quadraticCurveTo(-7, 14, -3, 15.2); c.quadraticCurveTo(1, 16.2, 5, 15); c.quadraticCurveTo(9.5, 14, 14, 15.4); c.lineTo(14, 24); c.lineTo(-14, 24); c.fill();
+        c.fillStyle = "rgba(120,88,56,.35)"; [[-8, 18.4], [-4, 20], [0.6, 18], [4.4, 20.4], [8.2, 18.6], [-1.8, 21.6], [6, 21.6]].forEach(function (q) { c.beginPath(); c.arc(q[0], q[1], 0.35, 0, 7); c.fill(); }); c.restore(); } });
+      [[[-0.3, -6.6], 0.7, ".95"], [[0.9, -6.2], 0.5, ".9"], [[-1.1, -5.9], 0.5, ".85"]].forEach(function (h) { thread(ctx, [FL([0, -4.2]), FL(h[0])], h[1], "rgba(214,190,150," + h[2] + ")"); }); },
     // 겨울: 눈사람
     cherry_winter: function (ctx) { snowman(ctx, 0, 0, 1, 5221); one(ctx, [[-7.4, -6.4]].concat(bez([-7.4, -6.4, -7, -14, 7, -14, 7.4, -6.4], 10)), "#C8553D", 5223, { rim: 0.3 }); one(ctx, blob(0, -13.6, 2.4, 2.4, 5224, 0.1), "#FBF6EC", 5224, { rim: 0.2 }); },
     zelkova_winter: function (ctx) { snowman(ctx, 0, 0, 1, 5231); one(ctx, [rib([[-9, 10], [-13, 5], [-14, 3]], 1.2, 0.7), rib([[9, 10], [13, 6], [14, 4]], 1.2, 0.7)], "#7E5E48", 5233, { rim: 0.2 }); dot(ctx, 0, 9, 0.9, "#3A332C"); dot(ctx, 0, 14, 0.9, "#3A332C"); },
@@ -54,6 +61,32 @@
       thread(ctx, place([[-12, -7], [0, 1.6], [12, -8.6]], 0, 13, 1, -0.12), 0.6, "rgba(120,96,72,.6)");
       one(ctx, blob(-0.6, 15, 1.8, 1.8, 5342, 0.1), "#C8553D", 5342, { rim: 0, sh: 0.1 }); }
   };
+  /* 생일 (1.1.5): 고깔모자 · 케이크도 같은 한지 조각으로. 좌표는 계절 한 장과 같음 (가운데 0, 아래 끝 = y 24) */
+  // 고깔: 살구빛 한지 원뿔에 크림빛 띠 두 장을 비스듬히 덧대고, 꼭대기엔 한지를 뭉친 방울. 아래는 머리에 얹히듯 둥글게
+  function partyHat(ctx) {
+    var cone = [[-9, 22]].concat(bez([-9, 22, -6, 12, -2.4, 2, 0, -2], 8), bez([0, -2, 2.4, 2, 6, 12, 9, 22], 8), bez([9, 22, 4, 25.2, -4, 25.2, -9, 22], 8));
+    one(ctx, cone, "#F1B089", 5401, { rim: 0.5, tone: 0.08 });
+    function band(y0, y1, k) { var w0 = 9 * (y0 + 2) / 24, w1 = 9 * (y1 + 2) / 24; return [[-w0 * 0.92, y0 + k], [w0 * 0.92, y0 - k], [w1 * 0.95, y1 - k], [-w1 * 0.95, y1 + k]]; }
+    one(ctx, band(7.4, 10.2, 0.9), "#FBF3E4", 5402, { rim: 0.2, sh: 0.15, light: 0.9 });
+    one(ctx, band(15.2, 18.2, 0.9), "#FBF3E4", 5403, { rim: 0.2, sh: 0.15, light: 0.9 });
+    dot(ctx, -2.6, 13, 0.75, "#D9694A"); dot(ctx, 3.2, 4.6, 0.65, "#D9694A"); dot(ctx, 2, 20.6, 0.75, "#D9694A");
+    one(ctx, blob(0, -4.4, 3.4, 3.2, 5404, 0.14), "#FBF3E4", 5404, { rim: 0.45, sh: 0.5, light: 0.95 });
+  }
+  // 케이크: 한지 접시 위 한 단 (살구빛 시트 · 크림 띠 · 흘러내린 크림), 위에 딸기 둘, 가는 초 하나와 작은 불꽃
+  function partyCake(ctx) {
+    one(ctx, blob(0, 22.6, 15.6, 2.6, 5411, 0.03), "#E4DACA", 5411, { rim: 0.4 });
+    one(ctx, [[-12, 21.8], [12, 21.8], [12, 9.4], [-12, 9.4]], "#EBC58A", 5412, { rim: 0.5, tone: 0.1 });
+    one(ctx, [[-12, 15.2], [12, 14.6], [12, 16.6], [-12, 17.2]], "#FBF3E4", 5413, { rim: 0, sh: 0.1 });
+    var drip = [[-12.4, 9]]; for (var i = 0; i <= 12; i++) { var x = -12.4 + i * 24.8 / 12; drip.push([x, 9 + (i % 2 ? 4.2 : 2.2) + Math.sin(i * 1.7) * 0.6]); } drip.push([12.4, 9]);
+    one(ctx, drip.concat(bez([12.4, 9, 12.4, 5.6, -12.4, 5.6, -12.4, 9], 10)), "#FBF3E4", 5414, { rim: 0.45, light: 0.92 });
+    one(ctx, blob(-6.4, 5.6, 2.6, 2.8, 5415, 0.08), "#D24B4B", 5415, { rim: 0.35 });
+    one(ctx, blob(6.6, 5.8, 2.4, 2.6, 5416, 0.08), "#D24B4B", 5416, { rim: 0.35 });
+    one(ctx, place(leafPts(2.6, 1.1), -6.4, 3, 1, -2.2), "#6E9A4E", 5417, { rim: 0, sh: 0.1 });
+    one(ctx, place(leafPts(2.4, 1), 6.6, 3.2, 1, -1), "#6E9A4E", 5418, { rim: 0, sh: 0.1 });
+    one(ctx, [[-1, 6.4], [1, 6.4], [1, -4.6], [-1, -4.6]], "#F3E3C8", 5419, { rim: 0.3, sh: 0.3 });
+    thread(ctx, [[-1, 3.6], [1, 2.6]], 0.55, "#D9694A"); thread(ctx, [[-1, -0.4], [1, -1.4]], 0.55, "#D9694A");
+    one(ctx, [[0, -12]].concat(bez([0, -12, 2.6, -8.4, 2, -5.4, 0, -5.2], 8), bez([0, -5.2, -2, -5.4, -2.6, -8.4, 0, -12], 8)), "#F6C979", 5420, { rim: 0, sh: 0.2, light: 0.9 });
+  }
   function piece(ctx, x, y, s, key) { ctx.save(); ctx.translate(x, y); ctx.scale(s, s); PIECE[key](ctx); ctx.restore(); }
   // 정원 보기용 (gardenH): 나무 발치에 작게 놓임 (아래 끝이 땅)
   Object.keys(PIECE).forEach(function (k) { KEEPH[k] = function (ctx, x, y, s) { piece(ctx, x, y - 24 * s * 0.5, s * 0.5, k); }; });

@@ -15,12 +15,12 @@ const path = require("path");
 const root = path.join(__dirname, "..");
 const files = ["engine.js", "pastel.js", "objects.js", "scenes.js", "concepts.js", "mix.js", "appexport.js"];
 // 한지 그림은 따로 묶음 안에: 옛 크레용 엔진과 이름이 겹쳐도 (paper · sun · ground …) 서로 덮어쓰지 않게
-const hanji = ["hanji_base.js", "hanji_haru.js", "hanji_garden.js", "hanji_cards.js", "hanji_export.js"];
+const hanji = ["hanji_base.js", "hanji_haru.js", "hanji_garden.js", "hanji_cards.js", "hanji_hand.js", "hanji_export.js"];
 const tokens = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "design/tokens.json"), "utf8")).garden;
 const D = Object.assign({}, tokens.decor, { stripLineY: tokens.layout.stripLineY, stripHeight: tokens.layout.stripHeight });
 const read = (f) => fs.readFileSync(path.join(root, "design/art/src", f), "utf8");
 const src = files.map(read).join("\n") + "\nvar HANJI = (function () {\n" + hanji.map(read).join("\n") +
-  "\nreturn { skyApp, stripApp, treeApp, postApp, mossApp, kiteApp, cardApp, sunApp, moonApp, moonFullApp, fiberApp, rainbowApp, auroraApp, snailApp, flyApp, guestApp, windApp, kiteFoldApp, pondApp, logsApp, cloudApp, gardenH, setU, TREES, REAL, CARDS: Object.keys(PIECE) };\n})();";
+  "\nreturn { setHand, starApp, featherApp, supportApp, hatApp, cakeApp, skyApp, stripApp, treeApp, postApp, mossApp, kiteApp, cardApp, sunApp, moonApp, moonFullApp, fiberApp, rainbowApp, auroraApp, snailApp, flyApp, guestApp, windApp, kiteFoldApp, pondApp, logsApp, cloudApp, gardenH, setU, TREES, REAL, CARDS: Object.keys(PIECE) };\n})();";
 const out = path.join(root, "design/art");
 const app = path.join(root, "android/app/src/main/assets/garden");
 
@@ -43,13 +43,18 @@ const app = path.join(root, "android/app/src/main/assets/garden");
       webp("post_" + se, D.postBoxW, D.postBoxH, D.postPx, (c, w) => H.postApp(c, w, "base", se, D));
       [0, 1, 2, 3, 4, 5].forEach((n) => webp("moss_" + se + "_" + n, D.mossBoxW, D.mossBoxH, D.mossPx, (c, w) => H.mossApp(c, w, se, n, D)));
     });
+    // 손그림 한지 (1.1.5): 세상 바탕 (하늘 · 땅 · 나무 · 말뚝 기둥 · 이끼 · 구름 · 해 · 달 · 물) 밖의 물건 · 손님은 한지 조각 + 붓 손선 + 그늘 쪽 옅은 결
+    H.setHand(true, 3);
     ["chime", "bell", "lantern", "lantern_lit", "letter"].forEach((part) => webp("post_" + part, D.postBoxW, D.postBoxH, D.postPx, (c, w) => H.postApp(c, w, part, null, D)));
     webp("kite", D.kiteBoxW, D.kiteBoxH, D.kitePx, (c, w) => H.kiteApp(c, w, D));
     webp("kite_folded", D.postBoxW, D.postBoxH, D.postPx, (c, w) => H.kiteFoldApp(c, w, D));
+    H.setHand(false);
     webp("gaze_pond", D.pondBoxW, D.pondBoxH, 3, (c, w) => H.pondApp(c, w, D));
     H.REAL.concat(["night"]).forEach((k) => [0, 1].forEach((i) => webp("cloud_" + k + "_" + i, 120, 50, 3, (c, w) => H.cloudApp(c, w, k, i))));
     webp("gaze_logs", D.fireBoxW, D.fireBoxH, 4, (c, w) => H.logsApp(c, w, D));
+    H.setHand(true, 3);
     H.CARDS.forEach((k) => webp("card_" + k, D.cardBoxW, D.cardBoxH, D.cardPx, (c, w) => H.cardApp(c, w, k, D)));
+    H.setHand(false);
     make("app", "sun.png", 180, 180, "image/png", (cv) => H.sunApp(cv.getContext("2d"), 180));
     make("app", "moon.png", 180, 180, "image/png", (cv) => H.moonApp(cv.getContext("2d"), 180));
     make("app", "moon_full.png", 180, 180, "image/png", (cv) => H.moonFullApp(cv.getContext("2d"), 180));
@@ -57,20 +62,28 @@ const app = path.join(root, "android/app/src/main/assets/garden");
     // 우연한 순간
     webp("moment_rainbow", 160, 90, 3, (c, w) => H.rainbowApp(c, w));
     webp("moment_aurora", 260, 60, 3, (c, w) => H.auroraApp(c, w));
+    H.setHand(true, 3);
     webp("moment_snail", 40, 26, 4, (c, w) => H.snailApp(c, w));
     ["tit", "squirrel", "hedgehog", "rabbit", "owl"].forEach((k) => webp("guest_" + k, 40, 40, 4, (c, w) => H.guestApp(c, w, k)));
     [["wing_l", -1], ["wing_r", 1], ["body", 0]].forEach(([n, side]) => webp("fly_" + n, 40, 40, 3, (c, w) => H.flyApp(c, w, side)));
     H.REAL.forEach((se) => webp("wind_" + se, 10, 10, 6, (c, w) => H.windApp(c, w, se)));
+    webp("party_hat", 24, 36, 6, (c, w) => H.hatApp(c, w));
+    webp("party_cake", 32, 40, 6, (c, w) => H.cakeApp(c, w));
+    H.setHand(false);
     // 보기용: 사계절 · 밤 정원 한 장
     [["spring", {}], ["summer", { lantern: true, letter: true }], ["autumn", { lantern: true }], ["winter", { lantern: true }], ["night", { night: true, lantern: true }]].forEach(([n, o]) =>
       make("art", "hanji_" + n + ".jpg", 780, 1400, "image/jpeg", (cv) => { const c = cv.getContext("2d"); H.setU(2); H.gardenH(c, Object.assign({ season: n === "night" ? "summer" : n, kite: "gaori", ribbons: 3, buds: 3, chime: 2, keep: true }, o)); }));
     A.OBJ.forEach((o) => make("both", "obj_" + o.id + ".png", 512, 512, "image/png", (cv) => A.objCanvas(cv, o, null)));
+    // 옛 그림 가운데 지금도 쓰는 것만 손그림 한지로 덮어씀: 깃털 (한 줄을 보낸 돌 곁) · 밤하늘 반짝임
+    H.setHand(true, 3);
+    make("app", "obj_feather.png", 512, 512, "image/png", (cv) => H.featherApp(cv.getContext("2d"), 512));
+    make("app", "sparkle.png", 120, 120, "image/png", (cv) => H.starApp(cv.getContext("2d"), 120));
+    H.setHand(false);
     A.THEMES.forEach((t) => make("art", "theme_" + t.id + ".jpg", 1170, 2532, "image/jpeg", (cv) => A.theme(cv.getContext("2d"), 1170, 2532, t)));
     make("art", "donation.jpg", 1800, 1200, "image/jpeg", (cv) => A.donation(cv.getContext("2d"), 1800, 1200, null));
     make("art", "store_bg.jpg", 1290, 2796, "image/jpeg", (cv) => A.store(cv.getContext("2d"), 1290, 2796));
     // 응원하기 그림 (하루는 앱이 가운데에 얹는다: 땅 = 높이 × layout.supportGround, 폭 = 너비 × layout.supportHaru)
-    make("app", "support.jpg", 1170, 780, "image/jpeg", (cv) => A.donation(cv.getContext("2d"), 1170, 780, null));
-    make("app", "sparkle.png", 120, 120, "image/png", (cv) => A.sparkleArt(cv.getContext("2d"), 120));
+    make("app", "support.jpg", 1170, 780, "image/jpeg", (cv) => H.supportApp(cv.getContext("2d"), 1170, 780, 0.825));
     make("app", "tooth_line.png", 256, 256, "image/png", (cv) => cv.getContext("2d").drawImage(A.TOOTH.masks[3], 0, 0));
     make("app", "tooth_fill.png", 256, 256, "image/png", (cv) => cv.getContext("2d").drawImage(A.TOOTH.masks[4], 0, 0));
     make("app", "paper.png", 256, 256, "image/png", (cv) => cv.getContext("2d").drawImage(A.TOOTH.paper, 0, 0));

@@ -209,6 +209,8 @@ class Store(context: Context) {
 
     /** 오늘의 문장. 앱에서 ‘다음 문장’을 누른 횟수는 그날에만 적용된다. */
     fun todaysQuote(date: LocalDate = LocalDate.now()): Quote? {
+        // 간직한 문장을 오늘 다시 띄웠으면 그 문장 (그날 하루)
+        if (prefs.getLong("quotePinDay", -1) == date.toEpochDay()) book.byNumber(prefs.getInt("quotePinNo", -1))?.let { return it }
         val seed = prefs.getString("quoteSeed", null)?.toULongOrNull() ?: 0x5EEDuL
         val today = date.toEpochDay()
         val start = prefs.getLong("quoteStart", today)
@@ -216,8 +218,16 @@ class Store(context: Context) {
         return book.quote((today - start).toInt(), seed, skip)
     }
 
+    /** 간직한 문장 (1.1.5): 번호와 간직한 날, 새것이 앞. */
+    var keptQuotes: List<Pair<Int, LocalDate>>
+        get() = prefs.getString("keptQuotes", "").orEmpty().split(',').mapNotNull { e -> e.split(':').takeIf { it.size == 2 }?.let { (n, d) -> n.toIntOrNull()?.let { no -> d.toLongOrNull()?.let { no to LocalDate.ofEpochDay(it) } } } }
+        set(v) = prefs.edit().putString("keptQuotes", v.joinToString(",") { "${it.first}:${it.second.toEpochDay()}" }).apply()
+    /** 간직한 문장을 오늘 정원에 다시 띄움 (그날 하루). */
+    fun pinQuote(number: Int, date: LocalDate = LocalDate.now()) = prefs.edit().putLong("quotePinDay", date.toEpochDay()).putInt("quotePinNo", number).apply()
+
     fun skipQuote(date: LocalDate = LocalDate.now()) {
         val today = date.toEpochDay()
+        prefs.edit().remove("quotePinDay").apply()   // 다음 문장을 누르면 다시 띄운 문장은 내려놓음
         val current = if (prefs.getLong("quoteSkipDay", -1) == today) prefs.getInt("quoteSkip", 0) else 0
         val e = prefs.edit().putLong("quoteSkipDay", today).putInt("quoteSkip", current + 1)
         if (!prefs.contains("firstSkip")) e.putLong("firstSkip", today)
@@ -387,6 +397,20 @@ class Store(context: Context) {
     var titleDay: LocalDate?
         get() = prefs.getLong("titleDay", Long.MIN_VALUE).takeIf { it != Long.MIN_VALUE }?.let { LocalDate.ofEpochDay(it) }
         set(v) = prefs.edit().apply { if (v == null) remove("titleDay") else putLong("titleDay", v.toEpochDay()) }.apply()
+    /** Play 에서 응원 상품을 한 번이라도 받아 왔는지 (결제 프로필이 열린 뒤로 true). */
+    var shopOpen: Boolean
+        get() = prefs.getBoolean("shopOpen", false)
+        set(v) = prefs.edit().putBoolean("shopOpen", v).apply()
+    /** 1.1.5 설정 덜어내기: 첫 화면 · 질문 · 씨앗 · 작은 권유 · 아침 숨을 한 번 모두 켬. */
+    fun simplify115() {
+        if (prefs.getBoolean("simple115", false)) return
+        titleOn = true; questionsOn = true; seedsOn = true; care = true; morningBreath = true
+        prefs.edit().putBoolean("simple115", true).apply()
+    }
+    /** 아침 이슬을 맺어 준 날 (1.1.5, 하루 한 번). */
+    var dewDay: LocalDate?
+        get() = prefs.getLong("dewDay", Long.MIN_VALUE).takeIf { it != Long.MIN_VALUE }?.let { LocalDate.ofEpochDay(it) }
+        set(v) = prefs.edit().apply { if (v == null) remove("dewDay") else putLong("dewDay", v.toEpochDay()) }.apply()
     /** 미래의 나에게 (10): 나무 밑 항아리들. */
     var capsules: List<io.github.graviton94.carpediem.core.Capsule>
         get() = io.github.graviton94.carpediem.core.Capsules.decode(prefs.getString("capsules", null))

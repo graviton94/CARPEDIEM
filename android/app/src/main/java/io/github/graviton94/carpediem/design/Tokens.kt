@@ -485,7 +485,7 @@ object Tokens {
         }
         object Sound {
             const val sampleRate = 22050.0f
-            const val volume = 0.35f
+            const val volume = 0.26f
             const val chime = 0.5f
             const val chimeHz = 528.0f
             const val toneLow = 174.0f
@@ -493,16 +493,18 @@ object Tokens {
             const val fadeInMs = 2500.0f
             const val fadeOutMs = 1800.0f
             const val waveSeconds = 9.0f
-            const val bowl = 0.22f
-            const val guide = 1.1f
+            const val bowl = 0.6f
+            const val duck = 0.5f
+            const val duckHoldMs = 1200.0f
+            const val guide = 0.8f
             const val bed = 0.32f
             const val gazeBed = 0.6f
             const val noteMin = 4.0f
             const val noteMax = 14.0f
             const val songVolume = 0.5f
-            const val bowlInHz = 220.0f
-            const val bowlHoldHz = 185.0f
-            const val bowlOutHz = 164.8f
+            const val bowlInHz = 330.0f
+            const val bowlHoldHz = 277.2f
+            const val bowlOutHz = 247.2f
             const val bowlRing = 8.0f
             const val bowlAttackMs = 35.0f
             const val bowlBeat = 0.7f

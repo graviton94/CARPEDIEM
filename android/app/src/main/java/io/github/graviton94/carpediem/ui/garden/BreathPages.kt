@@ -187,7 +187,10 @@ fun BreathScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, kind
     var paused by remember { mutableStateOf(false) }
     var done by remember { mutableStateOf(false) }
     val animate = remember { !reducedMotion(ctx) }
-    val player = remember(sound) { Soundscape.Player(sound, io.github.graviton94.carpediem.core.Memories.seasonOf(now.toLocalDate())) }
+    val season = remember { io.github.graviton94.carpediem.core.Memories.seasonOf(now.toLocalDate()) }
+    val player = remember(sound) { Soundscape.Player(sound, season) }
+    // 숨의 종: 바탕 소리마다 어울리는 종 (파도 싱잉볼 · 바람 풍경 · 빗소리 대나무 · 파장 크리스털 · 계절은 그 철의 것)
+    val bell = remember(sound) { Soundscape.bellFor(sound, season) }
     val part = io.github.graviton94.carpediem.ui.Labels.part(now)
     // 밤의 잠드는 명상: 끝나면 화면이 스르르 어두워지고 그대로 머묾 (앱이 꺼진 듯 사라지지 않게, 화면은 폰이 스스로 끔). 누르면 정원으로
     val sleepAfter = kind == BreathKind.SLEEP && isNight(now)
@@ -206,13 +209,13 @@ fun BreathScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, kind
         val obs = androidx.lifecycle.LifecycleEventObserver { _, e -> if (e == androidx.lifecycle.Lifecycle.Event.ON_STOP) paused = true }
         owner.lifecycle.addObserver(obs); onDispose { owner.lifecycle.removeObserver(obs) }
     }
-    // 숨 시작 전: “맑은 종에 들이쉬고, 낮은 종에 내쉬어요” 와 두 종을 한 번씩
+    // 숨 시작 전: “맑은 종에 들이쉬고, 낮은 종에 내쉬어요” 와 두 종을 한 번씩 (소리가 있을 때만: 소리 없음은 정말 아무 소리도 없이)
     val S = Tokens.Garden.Sound
-    var intro by remember { mutableStateOf(true) }
+    var intro by remember { mutableStateOf(sound != Sound.NONE) }
     LaunchedEffect(Unit) {
         if (!intro) return@LaunchedEffect
-        delay(300); Soundscape.bowl(S.bowlInHz.toDouble())
-        delay((S.introMs * 0.42f).toLong()); Soundscape.bowl(S.bowlOutHz.toDouble())
+        delay(300); Soundscape.bowl(S.bowlInHz.toDouble(), bell = bell)
+        delay((S.introMs * 0.42f).toLong()); Soundscape.bowl(S.bowlOutHz.toDouble(), bell = bell)
         delay((S.introMs * 0.58f).toLong() - 300); intro = false
     }
     // 화면은 숨이 끝날 때까지 그대로 켜 둠 (어둡게 하지 않음: 손끝 숨에서도 눈을 뜨면 하루가 보이게)
@@ -226,7 +229,7 @@ fun BreathScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, kind
             elapsed += t - last
             last = t
             player.breath = fullAt(plan, elapsed)
-            if (elapsed >= total) { done = true; state.recordBreath(kind); Soundscape.bowl(S.bowlOutHz.toDouble(), 2); player.stop() }
+            if (elapsed >= total) { done = true; state.recordBreath(kind); if (sound != Sound.NONE) Soundscape.bowl(S.bowlOutHz.toDouble(), 2, bell); player.stop() }
         }
     }
     // 숨을 끝까지 쉬었으면 (잠드는 밤 숨은 빼고): 조금 머문 뒤 Play 리뷰 창을 청할 수도 (넉 달에 한 번까지)
@@ -238,13 +241,13 @@ fun BreathScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, kind
     val cueOn by remember { androidx.compose.runtime.derivedStateOf { elapsed < cueUntil } }
     // 한숨 호흡의 두 번째 들이쉼 (“한 번 더 들이쉬어요”)
     val topUp by remember(plan) { androidx.compose.runtime.derivedStateOf { (Breath.at(plan, elapsed)?.first?.lo ?: 0f) > 0f } }
-    // 단계가 바뀌면 명상 종: 들이쉴 땐 맑은 종, 머무를 땐 중간 종, 내쉴 땐 낮은 종 (눈 감고도 안내를 따라가게, 1.1.5)
+    // 단계가 바뀌면 명상 종: 들이쉴 땐 맑은 종, 머무를 땐 중간 종, 내쉴 땐 낮은 종 (눈 감고도 안내를 따라가게, 1.1.5). 소리 없음이면 종도 없음
     LaunchedEffect(step, intro) {
-        if (intro) return@LaunchedEffect
+        if (intro || sound == Sound.NONE) return@LaunchedEffect
         when (step) {
-            BreathStep.IN -> Soundscape.bowl(S.bowlInHz.toDouble())
-            BreathStep.HOLD -> Soundscape.bowl(S.bowlHoldHz.toDouble())
-            BreathStep.OUT -> Soundscape.bowl(S.bowlOutHz.toDouble())
+            BreathStep.IN -> Soundscape.bowl(S.bowlInHz.toDouble(), bell = bell)
+            BreathStep.HOLD -> Soundscape.bowl(S.bowlHoldHz.toDouble(), bell = bell)
+            BreathStep.OUT -> Soundscape.bowl(S.bowlOutHz.toDouble(), bell = bell)
             else -> {}
         }
     }
@@ -588,40 +591,11 @@ private val SLEEP_RANGE = 1..180
  */
 @Composable
 internal fun MinuteWheel(value: Int, range: IntRange, unit: String, onValue: (Int) -> Unit) {
-    val p = Theme.palette
-    val itemH = Tokens.Layout.tapTarget
-    // 앞뒤에 빈 칸 하나씩: 맨 위 칸이 j 면 가운데 값은 range.first + j
-    val list = androidx.compose.foundation.lazy.rememberLazyListState(initialFirstVisibleItemIndex = value - range.first)
-    val fling = androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior(list)
-    val itemPx = with(androidx.compose.ui.platform.LocalDensity.current) { itemH.toPx() }
-    val lensW = with(androidx.compose.ui.platform.LocalDensity.current) { (Theme.unit * 0.4f).toPx() }
-    val idx by remember { androidx.compose.runtime.derivedStateOf { (list.firstVisibleItemIndex + if (list.firstVisibleItemScrollOffset > itemPx / 2) 1 else 0).coerceIn(0, range.count() - 1) } }
-    LaunchedEffect(idx) { onValue(range.first + idx) }
-    val scope = rememberCoroutineScope()
-    val a11y = stringResource(R.string.sleep_a11y, "${range.first + idx}")
-    Box(Modifier.fillMaxWidth().height(itemH * 3).semantics(mergeDescendants = true) {
-        contentDescription = a11y
-        customActions = listOf(
-            androidx.compose.ui.semantics.CustomAccessibilityAction("+1") { scope.launch { list.animateScrollToItem((idx + 1).coerceAtMost(range.count() - 1)) }; true },
-            androidx.compose.ui.semantics.CustomAccessibilityAction("-1") { scope.launch { list.animateScrollToItem((idx - 1).coerceAtLeast(0)) }; true })
-    }, contentAlignment = Alignment.Center) {
-        // 가운데 칸 위아래 가는 선 (고르는 자리)
-        Box(Modifier.fillMaxWidth(0.5f).height(itemH).drawBehind {
-            val sw = lensW; val c = p.foreground.copy(alpha = 0.5f)
-            drawLine(c, androidx.compose.ui.geometry.Offset(0f, 0f), androidx.compose.ui.geometry.Offset(size.width, 0f), sw)
-            drawLine(c, androidx.compose.ui.geometry.Offset(0f, size.height), androidx.compose.ui.geometry.Offset(size.width, size.height), sw)
-        })
-        androidx.compose.foundation.lazy.LazyColumn(Modifier.fillMaxWidth().height(itemH * 3), state = list, flingBehavior = fling) {
-            item { Spacer(Modifier.height(itemH)) }
-            items(range.count()) { i ->
-                val on = i == idx
-                Box(Modifier.fillMaxWidth().height(itemH), contentAlignment = Alignment.Center) {
-                    TokenText("${range.first + i}", if (on) Tokens.TypeScale.title2.serif() else Tokens.TypeScale.callout.serif(),
-                        color = if (on) p.foreground else p.secondary.copy(alpha = 0.6f), weight = if (on) FontWeight.SemiBold else FontWeight.Normal)
-                }
-            }
-            item { Spacer(Modifier.height(itemH)) }
-        }
-        TokenText(unit, Tokens.TypeScale.callout.serif(), Modifier.align(Alignment.CenterEnd).padding(end = Theme.unit * 18f), color = p.foreground)
+    val ctx = LocalContext.current
+    Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+        io.github.graviton94.carpediem.ui.WheelLens(Modifier.fillMaxWidth(0.5f))
+        io.github.graviton94.carpediem.ui.WheelColumn(range.count(), value - range.first, { "${range.first + it}" }, { ctx.getString(R.string.sleep_a11y, "${range.first + it}") },
+            Modifier.fillMaxWidth()) { onValue(range.first + it) }
+        TokenText(unit, Tokens.TypeScale.callout.serif(), Modifier.align(Alignment.CenterEnd).padding(end = Theme.unit * 18f), color = Theme.palette.foreground)
     }
 }

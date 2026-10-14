@@ -20,6 +20,26 @@
   function mossApp(ctx, W, se, buds, D) { hj(ctx, W / D.mossBoxW); moss(ctx, D.mossAtX, D.mossAtY, 1, se, buds); }
   function kiteApp(ctx, W, D) { hj(ctx, W / D.kiteBoxW); kite(ctx, D.kiteAtX, D.kiteAtY, 1, "gaori", 0); }
   function cardApp(ctx, W, key, D) { hj(ctx, W / D.cardBoxW); piece(ctx, D.cardBoxW / 2, D.cardAtY - 24, 1, key); }
+  // 생일: 고깔 24 × 36 (머리에 닿는 아래 가운데 = 상자 (12, 33)) · 케이크 32 × 40 (땅 = 상자 (16, 38))
+  function hatApp(ctx, W) { hj(ctx, W / 24); ctx.translate(12, 10); partyHat(ctx); }
+  function cakeApp(ctx, W) { hj(ctx, W / 32); ctx.translate(16, 14); partyCake(ctx); }
+  // 응원하기 그림 (1.1.5, 한지 세상): 해 질 녘 하늘 · 먼 언덕 · 땅 위에 손그림 한지 촛불과 찻잔. 하루는 앱이 가운데 땅 (높이 × ground) 에 얹음
+  function supportApp(ctx, W, H, ground) { var hand = HAND; HAND = false; hj(ctx, W / SW); var P = WPAL.autumn, h = H / U, gy = h * ground;
+    var g = ctx.createLinearGradient(0, 0, 0, gy); g.addColorStop(0, P.sky); g.addColorStop(1, P.sky2); ctx.fillStyle = g; ctx.fillRect(0, 0, SW, h);
+    texFill(ctx, TEX.fiber, 0.5, "source-over", 0.4); texFill(ctx, TEX.grain, 0.45, "multiply", 0.5);
+    cloud(ctx, 70, 46, 0.7, P.cloud, 2611); cloud(ctx, 210, 30, 0.5, P.cloud, 2612);
+    sun(ctx, 318, 62, 0.9, "#F6C979");
+    var far = ridgeS(gy - 26, 18, 2620, 0.014), mid = ridgeS(gy - 8, 9, 2621, 0.02), path = []; for (var x = -14; x <= SW + 14; x += 5) path.push([x, gy + Math.sin(x * 0.05) * 1]);
+    [[far, mixHex(P.far, P.sky2, 0.55)], [mid, mixHex(P.mid, P.sky2, 0.25)], [path, P.path]].forEach(function (L, i) { HV.world(ctx, down(L[0]).map(function (q) { return [q[0], Math.min(q[1], h + 30)]; }), L[1], 2630 + i, { kind: "layer", top: L[0] }); });
+    setHand(true, 3);
+    var cx = 92; paper(ctx, blob(cx, gy - 1, 15, 3.2, 2640, 0.04), "#C9C2B6", 2640, { rim: 0.4 });
+    paper(ctx, [[cx - 5, gy - 2], [cx + 5, gy - 2], [cx + 5, gy - 28], [cx - 5, gy - 28]], "#F3EEE4", 2641, { rim: 0.4, light: 0.9 });
+    paper(ctx, [[cx, gy - 40]].concat(bez([cx, gy - 40, cx + 4.6, gy - 34, cx + 3.4, gy - 29, cx, gy - 28.6], 8), bez([cx, gy - 28.6, cx - 3.4, gy - 29, cx - 4.6, gy - 34, cx, gy - 40], 8)), "#F6C979", 2642, { rim: 0, sh: 0.2, light: 0.9, ink: false });
+    piece(ctx, 300, gy - 24 * 1.25, 1.25, "tea");
+    HAND = hand; }
+  // 손그림 한지 별 (밤하늘 반짝임) · 깃털 (한 줄을 보낸 돌 곁)
+  function starApp(ctx, W) { hj(ctx, W / 40); handStar(ctx); }
+  function featherApp(ctx, W) { hj(ctx, W / 40); handFeather(ctx); }
   function sunApp(ctx, W) { hj(ctx, W / 60); sun(ctx, 30, 30, 1.2, "#F6C979"); }
   function moonApp(ctx, W) { hj(ctx, W / 60); moon(ctx, 30, 30, 1.2); }
   // 둥근 달 60 × 60, 가운데 (30, 30) 반지름 24 = 상자 반의 0.8 (Night.moonDisk)
@@ -57,13 +77,13 @@
   var GINK = "#33281F", GLINE = 2.1, GEYE = 1.1;
   function gPath(ctx, pts) { var n = pts.length; ctx.beginPath(); for (var i = 0; i < n; i++) { var a = pts[i], b = pts[(i + 1) % n], mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2; i ? ctx.quadraticCurveTo(a[0], a[1], mx, my) : ctx.moveTo(mx, my); } var a0 = pts[0], b0 = pts[1]; ctx.quadraticCurveTo(a0[0], a0[1], (a0[0] + b0[0]) / 2, (a0[1] + b0[1]) / 2); ctx.closePath(); }
   function gOval(cx, cy, rx, ry, rot, squish) { var p = []; for (var i = 0; i < 16; i++) { var t = i / 16 * Math.PI * 2, x = Math.cos(t) * rx, y = Math.sin(t) * ry; if (squish && y > 0) y *= squish; var c = Math.cos(rot || 0), s = Math.sin(rot || 0); p.push([cx + x * c - y * s, cy + x * s + y * c]); } return p; }
-  function gPiece(ctx, pts, col, o) { o = o || {}; ctx.save(); gPath(ctx, pts); ctx.fillStyle = col; ctx.fill(); ctx.clip();
+  function gPiece(ctx, pts, col, o) { o = o || {}; if (HAND) return handOne(ctx, pts, col, 9000 + Math.round(pts[0][0] * 31 + pts[0][1] * 17), { inner: o.inner }); ctx.save(); gPath(ctx, pts); ctx.fillStyle = col; ctx.fill(); ctx.clip();
     var pat = ctx.createPattern(TEX.fiber, "repeat"); if (pat.setTransform) pat.setTransform(new DOMMatrix().scale(0.12)); ctx.globalAlpha = 0.5; ctx.fillStyle = pat; ctx.fillRect(-5, -5, 50, 50); ctx.globalAlpha = 1;
     var xs = pts.map(function (q) { return q[0]; }), ys = pts.map(function (q) { return q[1]; }), l = Math.min.apply(0, xs), r = Math.max.apply(0, xs), t = Math.min.apply(0, ys), b = Math.max.apply(0, ys);
     var g = ctx.createLinearGradient(l, t, l + (r - l) * 0.5, b); g.addColorStop(0, "rgba(255,255,255,.22)"); g.addColorStop(0.5, "rgba(255,255,255,0)"); g.addColorStop(1, "rgba(0,0,0,.12)"); ctx.fillStyle = g; ctx.fillRect(l, t, r - l, b - t);
     if (o.inner) o.inner(ctx);
     ctx.restore(); if (o.line !== 0) { gPath(ctx, pts); ctx.strokeStyle = GINK; ctx.lineWidth = o.line || GLINE; ctx.lineJoin = "round"; ctx.stroke(); } }
-  function gEye(ctx, x, y, r, lx) { ctx.save(); ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fillStyle = "#FFFFFF"; ctx.fill(); ctx.clip(); var pr = r * 0.56, px = x + (lx || 0.25) * (r - pr - r * 0.1), py = y + 0.2 * (r - pr);
+  function gEye(ctx, x, y, r, lx) { if (HAND) return handEye(ctx, x, y, r); ctx.save(); ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fillStyle = "#FFFFFF"; ctx.fill(); ctx.clip(); var pr = r * 0.56, px = x + (lx || 0.25) * (r - pr - r * 0.1), py = y + 0.2 * (r - pr);
     ctx.fillStyle = "#1E1915"; ctx.beginPath(); ctx.arc(px, py, pr, 0, 7); ctx.fill(); ctx.fillStyle = "#FFFFFF"; ctx.beginPath(); ctx.arc(px - pr * 0.36, py - pr * 0.38, pr * 0.28, 0, 7); ctx.fill(); ctx.restore();
     ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.strokeStyle = GINK; ctx.lineWidth = GEYE; ctx.stroke(); }
   function gShadow(ctx, cx, w) { ctx.save(); ctx.fillStyle = "rgba(51,40,31,.13)"; ctx.beginPath(); ctx.ellipse(cx, 37, w / 2, 1.5, 0, 0, 7); ctx.fill(); ctx.restore(); }
@@ -75,12 +95,24 @@
       gPiece(ctx, body, "#C98552", { inner: function (c) { c.fillStyle = "#3B3632"; c.beginPath(); c.ellipse(21, 15, 15, 8.6, 0, 0, 7); c.fill(); c.fillStyle = "#F3E9D6"; c.beginPath(); c.ellipse(24, 21, 6.8, 4.2, -0.15, 0, 7); c.fill(); } });
       gPiece(ctx, [[31.6, 19.4], [36.4, 21], [31.6, 22.6]], "#E3A247", { line: 1.3 });
       gEye(ctx, 21.4, 19.6, 3.5, 0.4); gEye(ctx, 28.4, 19.4, 3.1, 0.4); }
-    else if (kind === "squirrel") {   // 다람쥐: 등 뒤 큰 꼬리 하나, 뾰족 귀 둘
+    else if (kind === "squirrel") {   // 다람쥐 (1.1.5): 도토리를 들고 옆을 보고 앉음, 꼬리는 등 뒤로 S 자로 크게 솟아 끝이 말림
       gShadow(ctx, 22, 22);
-      gPiece(ctx, [[12, 33], [4, 30], [2, 20], [4, 10], [10, 5], [16, 7], [15, 13], [11, 15], [10, 22], [14, 28]], "#A8693D");
-      gPiece(ctx, [[17, 14], [17.5, 6.5], [22.5, 12]], "#BD7D4B", { line: 1.8 }); gPiece(ctx, [[26, 12], [29.5, 5.5], [31, 14]], "#BD7D4B", { line: 1.8 });
-      gPiece(ctx, gOval(24, 24, 11, 12.6, 0, 0.9), "#BD7D4B", { inner: function (c) { c.fillStyle = "#EBD2AC"; c.beginPath(); c.ellipse(25, 31, 6.4, 6, 0, 0, 7); c.fill(); } });
-      gEye(ctx, 20.6, 20, 3.5, 0.3); gEye(ctx, 28, 19.8, 3.2, 0.3); }
+      var outer = bez([17, 35, 4, 34, 0, 22, 3, 12, 5, 4, 15, 0, 21, 4, 25, 8, 22, 14, 17, 12], 10), inner = bez([21, 30, 15, 28, 13, 22, 14, 16, 15, 12, 16, 12, 17, 12, 17, 12, 17, 12, 17, 12], 6);
+      gPiece(ctx, outer.concat(inner.slice().reverse()), "#A8693D");
+      gPiece(ctx, gOval(24, 28, 8, 9, 0.12, 0.9), "#BD7D4B", { inner: function (c) { c.fillStyle = "#EBD2AC"; c.beginPath(); c.ellipse(26.4, 30, 4, 5.6, 0.1, 0, 7); c.fill(); } });
+      gPiece(ctx, [[25.2, 12.6], [26.4, 6.6], [29.4, 11.6]], "#BD7D4B", { line: 1.8 });
+      gPiece(ctx, gOval(28, 17, 6, 5.4, 0.15), "#BD7D4B");
+      gEye(ctx, 30.2, 16.2, 3, 0.4); ctx.fillStyle = GINK; ctx.beginPath(); ctx.arc(33.8, 18, 0.8, 0, 7); ctx.fill();
+// 도토리: 깍정이 + 열매를 한 장으로 오려 윤곽 하나, 깍정이 (비늘 무늬) 는 안쪽에 칠함 · 꼭지는 먹선
+      var ax = 33.6, at = 21.2, cap = bez([ax - 3.7, at + 3, ax - 3.9, at + 0.6, ax - 2.2, at - 0.8, ax, at - 0.8, ax + 2.2, at - 0.8, ax + 3.9, at + 0.6, ax + 3.7, at + 3], 8);
+      var nut = bez([ax + 3, at + 3.1, ax + 3.3, at + 5.8, ax + 1.6, at + 8.4, ax, at + 9.2, ax - 1.6, at + 8.4, ax - 3.3, at + 5.8, ax - 3, at + 3.1], 8);
+      gPiece(ctx, cap.concat(nut), "#C48543", { line: 1.2, inner: function (c) {
+        c.fillStyle = "rgba(255,244,222,.5)"; c.beginPath(); c.ellipse(ax - 1.4, at + 5.4, 0.6, 1.7, 0.15, 0, 7); c.fill();
+        c.fillStyle = "#6E4E31"; c.beginPath(); cap.forEach(function (q, i) { i ? c.lineTo(q[0], q[1]) : c.moveTo(q[0], q[1]); }); c.quadraticCurveTo(ax, at + 4, ax - 3.7, at + 3); c.fill();
+        c.strokeStyle = "rgba(235,215,185,.35)"; c.lineWidth = 0.3; c.lineCap = "round";
+        for (var y = at - 0.2, r = 0; y < at + 3.2; y += 0.9, r++) for (var x = ax - 3.8 + (r % 2) * 0.55; x < ax + 3.8; x += 1.1) { c.beginPath(); c.moveTo(x - 0.4, y); c.quadraticCurveTo(x, y + 0.5, x + 0.4, y); c.stroke(); } } });
+      ctx.strokeStyle = GINK; ctx.lineWidth = 0.8; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(ax, at - 0.6); ctx.quadraticCurveTo(ax + 0.2, at - 2, ax + 1.1, at - 2.4); ctx.stroke();
+      gPiece(ctx, gOval(30.6, 26.8, 1.8, 1.3, -0.4), "#C98A57", { line: 1.2 }); gPiece(ctx, gOval(26, 36, 4.2, 1.5), "#A8693D", { line: 1.2 }); }
     else if (kind === "hedgehog") {   // 고슴도치: 둥근 언덕 몸, 등에 짧은 가시 몇 줄 (먹선), 연한 얼굴 · 까만 코
       gShadow(ctx, 20, 28);
       gPiece(ctx, gOval(19, 27.5, 14.6, 12, 0, 0.62), "#8A6B4C", { inner: function (c) { c.strokeStyle = "rgba(51,40,31,.7)"; c.lineWidth = 1.1; c.lineCap = "round";

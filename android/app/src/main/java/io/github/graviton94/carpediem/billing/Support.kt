@@ -34,6 +34,8 @@ class Support(context: Context) {
     /** 방금 응원한 상품 id (고마움 한마디에 무엇이 놓였는지). */
     var lastId by mutableStateOf<String?>(null)
     val ready: Boolean get() = details.isNotEmpty()
+    /** Play 에서 상품을 받아 왔을 때 (화면 스레드). 결제 프로필이 막혀 있으면 오지 않음. */
+    var onReady: (() -> Unit)? = null
 
     private var details: Map<String, ProductDetails> = emptyMap()
     private val client: BillingClient = BillingClient.newBuilder(context.applicationContext)
@@ -60,6 +62,7 @@ class Support(context: Context) {
             if (r.responseCode != BillingClient.BillingResponseCode.OK) return@queryProductDetailsAsync
             details = result.productDetailsList.associateBy { it.productId }
             prices = details.mapValues { it.value.oneTimePurchaseOfferDetails?.formattedPrice.orEmpty() }
+            if (details.isNotEmpty()) android.os.Handler(android.os.Looper.getMainLooper()).post { onReady?.invoke() }
         }
         // 앱이 닫혀 있는 동안 끝난 응원 (기다리던 결제 등) 도 마저 받아 씀
         client.queryPurchasesAsync(QueryPurchasesParams.newBuilder().setProductType(BillingClient.ProductType.INAPP).build()) { r, list ->
