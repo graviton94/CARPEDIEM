@@ -938,6 +938,8 @@ private fun WritePage(state: AppState, now: LocalDateTime, view: RecordView, gui
             // 찾은 줄을 누르면 그 달 판의 그날로, 판이 보이게 끌어옴
             val panel = remember { androidx.compose.foundation.relocation.BringIntoViewRequester() }
             val sc = rememberCoroutineScope()
+            // 캡처 장면 (debug 의 cd.openMonth · cd.openYear): 아래에 있는 판을 화면 안으로
+            if (state.debugOpenMonth || state.debugOpenYear) LaunchedEffect(Unit) { delay(G.Motion.pageMs.toLong()); panel.bringIntoView() }
             // 판을 상자로 감싸지 않음: 긴 판 전체를 크레용 층으로 그리면 넘길 때마다 다시 그려 무거움 (선 하나 · 제목으로 충분)
             Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
                 RecordSearch(state, today) { v -> onView(v); sc.launch { delay(G.Motion.pageMs.toLong() / 2); panel.bringIntoView() } }
