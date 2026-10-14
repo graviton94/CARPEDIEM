@@ -203,10 +203,13 @@ fun BreathScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, kind
     KeepScreenOn(!done)
     // 소리는 숨이 흐를 때만: 멈추면 스르르 꺼지고, 이어 하면 다시
     DisposableEffect(player, paused, done) { if (!paused && !done) player.start() else player.stop(); onDispose { player.stop() } }
-    // 앱을 떠나면 (홈 · 화면 끔) 멈춤으로: 소리가 혼자 계속 흐르지 않게 (손끝 숨은 주머니 속에서도 이어지므로 그대로)
+    // 홈 · 다른 앱으로 떠나면 멈춤으로 (소리가 혼자 계속 흐르지 않게). 화면만 꺼진 것이면 소리 · 시간 · 종 그대로 이어짐 (눈 감고 쉬는 사람)
     val owner = androidx.lifecycle.compose.LocalLifecycleOwner.current
     DisposableEffect(owner) {
-        val obs = androidx.lifecycle.LifecycleEventObserver { _, e -> if (e == androidx.lifecycle.Lifecycle.Event.ON_STOP) paused = true }
+        val power = ctx.getSystemService(android.os.PowerManager::class.java)
+        val obs = androidx.lifecycle.LifecycleEventObserver { _, e ->
+            if (e == androidx.lifecycle.Lifecycle.Event.ON_STOP && power?.isInteractive != false) paused = true
+        }
         owner.lifecycle.addObserver(obs); onDispose { owner.lifecycle.removeObserver(obs) }
     }
     // 숨 시작 전: “맑은 종에 들이쉬고, 낮은 종에 내쉬어요” 와 두 종을 한 번씩 (소리가 있을 때만: 소리 없음은 정말 아무 소리도 없이)
@@ -219,17 +222,34 @@ fun BreathScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, kind
         delay((S.introMs * 0.58f).toLong() - 300); intro = false
     }
     // 화면은 숨이 끝날 때까지 그대로 켜 둠 (어둡게 하지 않음: 손끝 숨에서도 눈을 뜨면 하루가 보이게)
-    // 시계: 멈춘 동안은 흐르지 않음. 손끝 숨은 벽시계로 (화면이 잠깐 꺼졌다 와도 떨림과 같은 자리)
+    // 단계가 바뀌면 명상 종: 들이쉴 땐 맑은 종, 머무를 땐 중간 종, 내쉴 땐 낮은 종 (눈 감고도 안내를 따라가게, 1.1.5). 소리 없음이면 종도 없음.
+    // 화면이 꺼져 다시 그리지 않아도 울리게 시계가 친다
+    var rung by remember { mutableStateOf<BreathStep?>(null) }
+    fun ring(at: BreathStep?) {
+        if (at == rung) return
+        rung = at
+        if (sound == Sound.NONE) return
+        when (at) {
+            BreathStep.IN -> Soundscape.bowl(S.bowlInHz.toDouble(), bell = bell)
+            BreathStep.HOLD -> Soundscape.bowl(S.bowlHoldHz.toDouble(), bell = bell)
+            BreathStep.OUT -> Soundscape.bowl(S.bowlOutHz.toDouble(), bell = bell)
+            else -> {}
+        }
+    }
+    // 시계: 멈춘 동안은 흐르지 않음. 벽시계로 재고, 화면이 꺼져 프레임이 오지 않아도 0.1초마다 흐름 (소리 · 종 · 끝맺음이 그대로)
     LaunchedEffect(paused, done, intro) {
         if (paused || done || intro) return@LaunchedEffect
-        var last = withFrameMillis { it }
+        var last = android.os.SystemClock.elapsedRealtime()
+        ring(Breath.at(plan, elapsed)?.first?.step)
         while (!done) {
-            val t = withFrameMillis { it }
+            kotlinx.coroutines.withTimeoutOrNull(100) { withFrameMillis { } }
+            val t = android.os.SystemClock.elapsedRealtime()
             if (t - last < 33) continue   // 1초에 30번이면 충분
             elapsed += t - last
             last = t
             player.breath = fullAt(plan, elapsed)
             if (elapsed >= total) { done = true; state.recordBreath(kind); if (sound != Sound.NONE) Soundscape.bowl(S.bowlOutHz.toDouble(), 2, bell); player.stop() }
+            else ring(Breath.at(plan, elapsed)?.first?.step)
         }
     }
     // 숨을 끝까지 쉬었으면 (잠드는 밤 숨은 빼고): 조금 머문 뒤 Play 리뷰 창을 청할 수도 (넉 달에 한 번까지)
@@ -241,16 +261,6 @@ fun BreathScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, kind
     val cueOn by remember { androidx.compose.runtime.derivedStateOf { elapsed < cueUntil } }
     // 한숨 호흡의 두 번째 들이쉼 (“한 번 더 들이쉬어요”)
     val topUp by remember(plan) { androidx.compose.runtime.derivedStateOf { (Breath.at(plan, elapsed)?.first?.lo ?: 0f) > 0f } }
-    // 단계가 바뀌면 명상 종: 들이쉴 땐 맑은 종, 머무를 땐 중간 종, 내쉴 땐 낮은 종 (눈 감고도 안내를 따라가게, 1.1.5). 소리 없음이면 종도 없음
-    LaunchedEffect(step, intro) {
-        if (intro || sound == Sound.NONE) return@LaunchedEffect
-        when (step) {
-            BreathStep.IN -> Soundscape.bowl(S.bowlInHz.toDouble(), bell = bell)
-            BreathStep.HOLD -> Soundscape.bowl(S.bowlHoldHz.toDouble(), bell = bell)
-            BreathStep.OUT -> Soundscape.bowl(S.bowlOutHz.toDouble(), bell = bell)
-            else -> {}
-        }
-    }
     // 눈: 처음 3초는 뜨고, 그다음 지긋이 감고, 끝나면 천천히 뜸
     val lid = remember { Animatable(0f) }
     LaunchedEffect(done) {
