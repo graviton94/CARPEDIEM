@@ -162,8 +162,6 @@ class MainActivity : ComponentActivity() {
         // 업데이트 뒤 처음이면 새로워진 점 (한 번), 새 버전 확인 이어 두기
         state.checkWhatsNew(BuildConfig.VERSION_NAME)
         wireUpdates(state)
-        // 알림 · 위젯 · 바로 가기로 왔는지 (그러면 첫 화면 없이 바로 그곳으로)
-        val linked = savedInstanceState == null && (intent?.hasExtra(EXTRA_OPEN) == true || intent?.getBooleanExtra(EXTRA_MORNING_BREATH, false) == true)
         val start = (if (BuildConfig.DEBUG) debugSetup(state) else Screen.Main).let { s ->
             // 아침 알림에서 왔으면 하루를 여는 숨 1분
             if (savedInstanceState == null && intent?.getBooleanExtra(EXTRA_MORNING_BREATH, false) == true && state.profile != null) { state.homePage = 0; state.goAsk = "morning"; Screen.Main } else s
@@ -175,8 +173,9 @@ class MainActivity : ComponentActivity() {
         }
         // 캡처 스크립트가 연 실행 (cd.* 표) 에서는 처음 알림 허락을 묻지 않음
         val scripted = BuildConfig.DEBUG && intent?.extras?.keySet()?.any { it.startsWith("cd.") } == true
-        // 앱 첫 화면 (타이틀): 아이콘으로 켤 때마다 (알림 · 위젯 · 바로 가기로 온 때는 바로 그곳으로)
-        val firstTitle = (start == Screen.Main && !linked && savedInstanceState == null && !scripted && state.titleDue()) ||
+        // 앱 첫 화면 (타이틀): 켤 때마다. 알림 · 위젯 · 바로 가기로 와도 정원으로 가는 길이면 첫 화면 (· 아침 이슬) 을 먼저 지나고 (1.1.6),
+        // 그 뒤에 정원이 “숨 쉬러 갈까요?” 같은 물음을 꺼냄 (goAsk 는 첫 화면 · 이슬이 걷힌 뒤에만 뜸). 다른 화면으로 바로 가는 길은 그대로
+        val firstTitle = (start == Screen.Main && savedInstanceState == null && !scripted && state.titleDue()) ||
             (BuildConfig.DEBUG && intent?.getBooleanExtra("cd.title", false) == true)
         setContent {
             BoxWithConstraints {
@@ -207,7 +206,8 @@ class MainActivity : ComponentActivity() {
                         val open = x.getStringExtra(EXTRA_OPEN)
                         x.removeExtra(EXTRA_OPEN); x.removeExtra(EXTRA_MORNING_BREATH)
                         if (state.profile == null) return@LaunchedEffect
-                        title = false
+                        // 아침 알림: 첫 화면이 떠 있으면 (오래 떠났다 돌아온 때) 그대로 두고, 걷힌 뒤에 물음. 다른 곳으로 가는 알림은 첫 화면 없이
+                        if (!morning) title = false
                         if (morning) { state.homePage = 0; state.goAsk = "morning" }
                         screen = if (morning) Screen.Main else openFrom(open, state) ?: Screen.Main
                         homeEpoch++

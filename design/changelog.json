@@ -6,15 +6,19 @@
       "함께한 지 100일 · 1년 같은 날엔 그 돌 발치에 꽃 한 송이가 피고, 돌 페이지에 한 줄이 보여요.",
       "하늘의 기억의 별을 누르면 옅은 호박빛이 천천히 번져요.",
       "빠른 설정에 ‘돌멍하기’ 타일이 생겼어요. 잠들기 전 알림 창에서 바로 정원으로 가요.",
+      "숨 쉬는 동안 화면이 꺼져도 소리와 종, 남은 시간이 그대로 이어져요.",
+      "모은 것에 별자리 열둘과 절기 스물넷이 생겼어요. 지난 한 줄은 마음별로 다시 볼 수 있어요.",
       "기록 옮기기가 더 단단해지고, 앱이 조금 더 가벼워졌어요."
     ],
     "en": [
-      "A shorter first tour: five cards, then straight to your first line.",
-      "With two or more family stones, two neighbours sometimes look at each other and blink together.",
-      "On days like 100 days or 1 year together, a flower blooms at that stone’s feet, with a line on its page.",
-      "Tap a memory star and a soft amber glow spreads slowly.",
-      "New Stone gazing tile in quick settings, for the garden right before sleep.",
-      "Sturdier record transfer, and a slightly lighter app."
+      "A shorter first tour that leads straight to your first line.",
+      "Two family stones sometimes look at each other and blink together.",
+      "On 100 days or a year together, a flower blooms at that stone’s feet.",
+      "Tap a memory star for a soft amber glow.",
+      "New Stone gazing tile in quick settings.",
+      "Breathing carries on with the screen off.",
+      "New to collect: 12 constellations and 24 solar terms. Look back on your lines by feeling.",
+      "Sturdier record transfer, a lighter app."
     ],
     "ja": [
       "ホームの上にアプリ名「ハルの庭」が表示されます。最初の案内は5枚に短くなり、そのまま最初のひとことへ。",
@@ -22,6 +26,8 @@
       "一緒に100日・1年などの日には、その石の足もとに花が一輪咲き、石のページにひとこと表示されます。",
       "空の思い出の星を押すと、淡い琥珀色の光がゆっくり広がります。",
       "クイック設定に「石ながめ」タイルが加わりました。眠る前に通知パネルからすぐ庭へ。",
+      "呼吸の途中で画面が消えても、音と鐘、残り時間はそのまま続きます。",
+      "集めたものに星座12と二十四節気が加わりました。過去のひとことは気持ちごとに読み返せます。",
       "記録の引っ越しがより確かになり、アプリが少し軽くなりました。"
     ],
     "zh-TW": [
@@ -30,6 +36,8 @@
       "在一起滿 100 天、1 年這樣的日子，那顆石頭腳邊會開出一朵花，石頭頁面也會出現一句話。",
       "輕觸天上的思念之星，淡淡的琥珀色光芒會慢慢擴散。",
       "快速設定新增「看石發呆」圖塊，睡前從通知欄就能直接前往庭院。",
+      "呼吸時即使螢幕關閉，聲音、鐘聲和剩餘時間也會繼續。",
+      "收藏新增十二星座與二十四節氣。過去的話可以依心情翻看。",
       "資料搬移更穩固，App 也稍微變輕了。"
     ]
   },

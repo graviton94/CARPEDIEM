@@ -516,6 +516,10 @@ class Store(context: Context) {
     var termNoted: String?
         get() = prefs.getString("termNoted", null)
         set(v) = prefs.edit().putString("termNoted", v).apply()
+    /** 절기가 든 날 정원을 연 날 (1.1.6 모은 것 · 절기). 한 줄 · 숨 · 돌멍이 없던 날도 남게. */
+    var termDays: Set<String>
+        get() = prefs.getStringSet("termDays", emptySet()) ?: emptySet()
+        set(v) = prefs.edit().putStringSet("termDays", v).apply()
     /**
      * 돌 별 꾸밈 (core Adornments, 1.1.3): 돌 → 꾸밈 하나. 처음 읽을 때 예전 ‘이번 계절의 조각’ 과 응원의 흔적을 옮겨 옴.
      */

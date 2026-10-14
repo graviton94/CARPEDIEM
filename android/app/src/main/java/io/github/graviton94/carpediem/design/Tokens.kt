@@ -499,6 +499,9 @@ object Tokens {
             const val guide = 0.8f
             const val bed = 0.32f
             const val gazeBed = 0.6f
+            const val gazeLow = 0.45f
+            const val gazeLowHz = 150.0f
+            const val gazeTone = 0.55f
             const val noteMin = 4.0f
             const val noteMax = 14.0f
             const val songVolume = 0.5f

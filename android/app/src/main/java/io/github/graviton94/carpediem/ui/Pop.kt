@@ -69,23 +69,14 @@ fun Modifier.modalBox(seed: Int = 997): Modifier {
     return clip(shape).background(p.base).border(Tokens.Stroke.line, p.glassEdge, shape)
 }
 
-/** 안내 한 줄의 바탕: 정원에서는 테두리 없이 옅은 종이가 가장자리로 스러져 하늘에 녹아듦 (묻는 창 · 판과 달리 튀어나오지 않게). */
+/**
+ * 안내 한 줄의 바탕 (1.1.6): 정원에서는 종이 칩 하나 (크레용 테두리 + 종이 바탕) — 첫 둘러보기의 건너뛰기 · 기억의 별 이름표와 같은 모양.
+ * 예전의 가장자리로 스러지는 종이 번짐은 겹친 그라데이션의 경계가 보여 흐릿하게 잘린 알약처럼 보였다.
+ */
 @Composable
 fun Modifier.noteBox(): Modifier {
     if (!Theme.garden) return modalBox(998)
-    val n = Tokens.Garden.Note
-    val paper = Theme.gc.paper
-    return drawBehind {
-        val r = n.radius.dp.toPx().coerceAtMost(size.height / 2)
-        // 가운데는 종이빛, 위아래 · 양끝은 스러지게 (가로 · 세로 두 겹)
-        drawRoundRect(androidx.compose.ui.graphics.Brush.verticalGradient(0f to paper.copy(alpha = n.alpha * 0.55f), 0.5f to paper.copy(alpha = n.alpha), 1f to paper.copy(alpha = n.alpha * 0.55f)),
-            cornerRadius = androidx.compose.ui.geometry.CornerRadius(r, r))
-        val halo = r * 0.9f
-        drawRoundRect(androidx.compose.ui.graphics.Brush.horizontalGradient(0f to Color.Transparent, 1f to paper.copy(alpha = n.alpha * 0.35f), startX = -halo, endX = 0f),
-            topLeft = androidx.compose.ui.geometry.Offset(-halo, 0f), size = androidx.compose.ui.geometry.Size(halo + r, size.height), cornerRadius = androidx.compose.ui.geometry.CornerRadius(r, r))
-        drawRoundRect(androidx.compose.ui.graphics.Brush.horizontalGradient(0f to paper.copy(alpha = n.alpha * 0.35f), 1f to Color.Transparent, startX = size.width, endX = size.width + halo),
-            topLeft = androidx.compose.ui.geometry.Offset(size.width - r, 0f), size = androidx.compose.ui.geometry.Size(halo + r, size.height), cornerRadius = androidx.compose.ui.geometry.CornerRadius(r, r))
-    }
+    return crayonBox(Theme.gc.paper, Tokens.Garden.Radius.chip, Tokens.Garden.Stroke.chip, 998)
 }
 
 /** 묻는 창 (Material AlertDialog 대신, 같은 자리 · 같은 이름의 인자). 바깥을 누르면 닫힘. */

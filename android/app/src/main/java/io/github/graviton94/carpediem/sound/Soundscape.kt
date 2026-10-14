@@ -155,11 +155,11 @@ object Soundscape {
                     if (plop <= 0 && n >= nextPlop) { plopLen = (sr * 0.09).toInt(); plop = plopLen; plopPh = 0.0; nextPlop = n + (sr * (4 + 7 * r01())).toLong() }
                     if (plop > 0) { val k = 1.0 - plop.toDouble() / plopLen; plopPh += two * (900 - 450 * k) / sr; out += (sin(plopPh) * (1 - k) * (1 - k)).toFloat() * 0.09f; plop-- }
                 } else {
-                    // 화톳불: 낮게 웅웅 + 가끔 탁
+                    // 화톳불: 아주 낮게 웅 + 가끔 탁 (웅은 작게: 노래 · 바탕을 덮지 않게)
                     if (white() > 0.9996f) crack2 = 0.4f + 0.2f * r01()
                     crack2 *= 0.982f
                     val hp = (w - hpC2) * 0.5f; hpC2 = w
-                    out += brown * 1.0f + hp * crack2 * 0.9f
+                    out += brown * 0.4f + hp * crack2 * 0.9f
                 }
                 return out * T.layer
             }
@@ -201,6 +201,8 @@ object Soundscape {
             var mix = 0f
             // 종이 울리는 동안 바탕을 살짝 낮춤 (빨리 내려가고 천천히 돌아옴)
             var duck = 1f; val duckDown = 1f / (DUCK_DOWN_S * sr); val duckUp = 1f / (DUCK_UP_S * sr)
+            // 돌멍하기의 낮은 울림 덜기: 바탕 · 한 겹의 gazeLowHz 아래만 낮춤 (low shelf)
+            var under = 0f; val lowK = (1.0 - exp(-two * T.gazeLowHz.toDouble() / sr)).toFloat()
             fun guide(pink: Float): Float {
                 gLp += (pink - gLp) * (0.04f + 0.14f * smooth)
                 return gLp * (0.03f + 0.97f * smooth * kotlin.math.sqrt(smooth)) * 2.2f * T.guide
@@ -239,7 +241,11 @@ object Soundscape {
                     }.let { bed ->
                         when {
                             // 돌멍하기: 바탕은 조금 낮추고 계절 한 겹 + 노래
-                            gaze -> bed * T.gazeBed + layer(t, w, pink) + song()
+                            gaze -> {
+                                val back = bed * T.gazeBed * (if (sound == Sound.TONE) T.gazeTone.toFloat() else 1f) + layer(t, w, pink)
+                                under += (back - under) * lowK
+                                back - under * (1f - T.gazeLow.toFloat()) + song()
+                            }
                             // 숨 화면: 숨 소리가 주인공, 바탕은 그 아래로
                             else -> {
                                 mix += ((if (breath >= 0f) 1f else 0f) - mix) * MIX_GLIDE

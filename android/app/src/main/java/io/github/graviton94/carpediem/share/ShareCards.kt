@@ -141,15 +141,18 @@ object ShareCards {
     }
 
     /** 한 해의 정원: 열두 달의 별자리를 4 × 3 칸에, 한 줄 · 고마움 수, 고마움 한 줄 몇 개. */
-    fun year(ctx: Context, book: io.github.graviton94.carpediem.core.ConstellationBook, days: List<Pair<LocalDate, DayLine?>>, install: Long, night: Boolean, today: LocalDate, title: String, count: String, thanks: List<String>): Bitmap {
+    fun year(ctx: Context, book: io.github.graviton94.carpediem.core.ConstellationBook, days: List<Pair<LocalDate, DayLine?>>, install: Long, night: Boolean, today: LocalDate, title: String, count: String): Bitmap {
         val w = S.yearW.toInt(); val h = S.yearH.toInt(); val pad = S.pad
         val (b, c) = board(w, h, night)
         val fg = if (night) Y.plain.toArgb() else ink; val soft = if (night) Y.plain.copy(alpha = 0.7f).toArgb() else inkSoft
         val tw = (w - pad * 2).toInt()
-        val titleP = paint(ctx, S.text * 0.9f, fg); val countP = paint(ctx, S.small, soft); val thanksP = paint(ctx, S.small * 1.05f, fg); val lp = paint(ctx, S.small * 0.75f, soft)
-        // 아래 글 (한 줄 수 · 고마움) 은 먼저 재어 두고, 열두 칸은 남은 자리 한가운데에 (글과 그림이 겹치지 않게)
+        val titleP = paint(ctx, S.text * 0.9f, fg); val countP = paint(ctx, S.small, soft); val lp = paint(ctx, S.small * 0.75f, soft)
+        // 아래 (한 줄 수 · 그해 마음의 빛깔 띠) 는 먼저 재어 두고, 열두 칸은 남은 자리 한가운데에 (글과 그림이 겹치지 않게).
+        // 받는 사람이 보는 그림이라 한 줄의 글은 싣지 않음 (1.1.6)
         val footY = h - pad * 1.25f
-        val below = measure(count, countP, tw) + pad * 0.3f + thanks.sumOf { (measure("“$it”", thanksP, tw) + pad * 0.15f).toDouble() }.toFloat()
+        val bandH = pad * 0.22f
+        val feelings = days.mapNotNull { it.second }.groupingBy { it.feeling }.eachCount().entries.sortedBy { it.key?.ordinal ?: Int.MAX_VALUE }
+        val below = measure(count, countP, tw) + (if (feelings.isEmpty()) 0f else pad * 0.3f + bandH)
         var y = pad * 1.2f
         y += text(c, title, titleP, pad, y, tw) + pad * 0.5f
         val gridTop = y; val gridBottom = footY - pad * 0.4f - below - pad * 0.5f
@@ -171,7 +174,15 @@ object ShareCards {
         }
         y = footY - pad * 0.4f - below
         y += text(c, count, countP, pad, y, tw) + pad * 0.3f
-        thanks.forEach { t -> y += text(c, "“$t”", thanksP, pad, y, tw) + pad * 0.15f }
+        // 마음의 빛깔 띠: 그해 보낸 마음의 몫만큼 (가벼운 마음부터 무거운 마음 · 마음 없음 순), 둥근 띠 하나
+        val total = feelings.sumOf { it.value }
+        if (total > 0) {
+            val bw = tw * 0.72f; val bx = (w - bw) / 2f
+            c.save(); c.clipPath(android.graphics.Path().apply { addRoundRect(RectF(bx, y, bx + bw, y + bandH), bandH / 2, bandH / 2, android.graphics.Path.Direction.CW) })
+            var x = bx; val bp = Paint(Paint.ANTI_ALIAS_FLAG)
+            feelings.forEach { (f, n) -> val segW = bw * n / total; bp.color = io.github.graviton94.carpediem.ui.garden.feelingColor(f).toArgb(); c.drawRect(x, y, x + segW + 1f, y + bandH, bp); x += segW }
+            c.restore()
+        }
         text(c, ctx.getString(R.string.share_footer), paint(ctx, S.small * 0.8f, soft), pad, h - pad * 1.25f, (w - pad * 2).toInt())
         return b
     }

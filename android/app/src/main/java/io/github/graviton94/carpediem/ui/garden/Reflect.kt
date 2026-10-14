@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -223,50 +224,53 @@ internal fun ReceivedLetters(state: AppState, today: LocalDate) {
     open?.let { LetterSheet(it, state.wishFor(it)) { open = null } }
 }
 
-// ───────────────────────── 고마움 책 · 흘려보낸 마음 ─────────────────────────
+// ───────────────────────── 마음별로 다시 보기 · 흘려보낸 마음 ─────────────────────────
+
+/** 다시 펼쳐 보는 마음 (가벼운 마음). 무거운 마음은 글을 다시 보이지 않음 (떠나보냄). */
+private val LIGHT_FEELINGS = listOf(Feeling.JOY, Feeling.HOPE, Feeling.PROUD, Feeling.THANKS, Feeling.CALM)
 
 /**
- * 모은 것 아래: 고마움으로 보낸 줄만 모은 작은 책 (옆으로 한 장씩), 그리고 무거운 마음은 글 없이 흘려보낸 횟수 한 줄만.
- * 기록 남기기를 끄면 보이지 않는다.
+ * 마음의 기록 아래 (1.1.6, 고마움 책을 넓힘): 가벼운 마음으로 보낸 한 줄을 마음마다 작은 책으로 (옆으로 한 장씩).
+ * 무거운 마음은 글 없이 흘려보낸 횟수 한 줄만. 오늘 보낸 줄은 내일부터 (기록 판과 같이). 기록 남기기를 끄면 보이지 않는다.
  */
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
-internal fun ThanksAndLetGo(state: AppState) {
+internal fun FeelingBook(state: AppState, today: LocalDate) {
     if (!state.keepLines) return
     val p = Theme.palette
     val ctx = LocalContext.current
-    val u = Theme.unit
-    val thanks = remember(state.lines) { state.lines.filter { it.feeling == Feeling.THANKS && it.text.isNotBlank() }.sortedBy { it.date } }
+    val byFeeling = remember(state.lines, today) {
+        state.lines.filter { it.date != today && it.text.isNotBlank() && it.feeling in LIGHT_FEELINGS }.sortedBy { it.date }.groupBy { it.feeling!! }
+    }
     val heavy = remember(state.lines) { state.lines.count { it.feeling in io.github.graviton94.carpediem.core.Letters.HEAVY } }
-    var open by remember { mutableStateOf(false) }
-    Column(Modifier.fillMaxWidth().padding(top = Tokens.Space.sp4), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
-        if (thanks.isNotEmpty()) {
-            TokenText(stringResource(R.string.thanks_book), Tokens.TypeScale.title3)
-            Row(
-                Modifier.fillMaxWidth().heightIn(min = Tokens.Layout.tapTarget).crayonBox(Theme.gc.paper, G.Radius.box, G.Stroke.chip, 1130).clickable { open = true }
-                    .padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3),
-                verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp3),
-            ) {
-                androidx.compose.foundation.Image(GardenArt.obj(ctx, "feather"), null, Modifier.size(u * G.LetGo.feather * 0.8f))
-                TokenText(stringResource(R.string.thanks_sub), Tokens.TypeScale.subhead, Modifier.weight(1f))
+    if (byFeeling.isEmpty() && heavy == 0) return
+    var open by remember { mutableStateOf<Feeling?>(null) }
+    Column(Modifier.fillMaxWidth().padding(top = Tokens.Space.sp4), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
+        if (byFeeling.isNotEmpty()) {
+            TokenText(stringResource(R.string.mood_byFeeling), Tokens.TypeScale.headline)
+            TokenText(stringResource(R.string.mood_byFeelingSub), Tokens.TypeScale.caption1, color = p.secondary)
+            androidx.compose.foundation.layout.FlowRow(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
+                LIGHT_FEELINGS.filter { it in byFeeling }.forEachIndexed { i, f ->
+                    GardenChip("${Labels.feeling(ctx, f)} ${byFeeling[f]?.size ?: 0}", false, 1130 + i) { open = f }
+                }
             }
         }
-        if (heavy > 0) TokenText(stringResource(R.string.letgo_count, "$heavy"), Tokens.TypeScale.footnote, Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.Center)
+        if (heavy > 0) TokenText(stringResource(R.string.letgo_count, "$heavy"), Tokens.TypeScale.footnote, Modifier.fillMaxWidth().padding(top = Tokens.Space.sp1), color = p.secondary)
     }
-    if (open) GardenSheet(onDismissRequest = { open = false }, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
-        ThanksPages(thanks) { open = false }
+    open?.let { f ->
+        GardenSheet(onDismissRequest = { open = null }) { FeelingPages(Labels.feeling(ctx, f), byFeeling[f].orEmpty()) { open = null } }
     }
 }
 
-/** 고마움 책의 장들: 한 장에 한 줄, 마지막 장은 쌓인 날을 알려 주는 한 줄. */
+/** 한 마음의 장들: 한 장에 한 줄, 마지막 장은 쌓인 날을 알려 주는 한 줄. */
 @Composable
-private fun ThanksPages(list: List<DayLine>, onClose: () -> Unit) {
+private fun FeelingPages(title: String, list: List<DayLine>, onClose: () -> Unit) {
     val p = Theme.palette
     val pages = list.size + 1
     val pager = androidx.compose.foundation.pager.rememberPagerState(initialPage = 0) { pages }
     val date = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
     Column(Modifier.fillMaxWidth().imePadding().verticalScroll(rememberScrollState()).navigationBarsPadding().padding(bottom = Tokens.Space.sp6), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp4)) {
-        TokenText(stringResource(R.string.thanks_book), Tokens.TypeScale.title3.serif(), Modifier.fillMaxWidth(), align = TextAlign.Center)
+        TokenText(title, Tokens.TypeScale.title3.serif(), Modifier.fillMaxWidth(), align = TextAlign.Center)
         androidx.compose.foundation.pager.HorizontalPager(pager, Modifier.fillMaxWidth(), contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = Theme.deviceClass.pageMargin), pageSpacing = Tokens.Space.sp3) { i ->
             Column(
                 Modifier.fillMaxWidth().heightIn(min = Theme.unit * 180).crayonBox(null, G.Radius.box, G.Stroke.box, 1140 + i % 7).padding(Tokens.Space.sp6),
@@ -275,7 +279,7 @@ private fun ThanksPages(list: List<DayLine>, onClose: () -> Unit) {
                 if (i < list.size) {
                     TokenText(list[i].date.format(date), Tokens.TypeScale.caption1, color = p.secondary)
                     TokenText(list[i].text, Tokens.TypeScale.headline.serif(), Modifier.fillMaxWidth(), align = TextAlign.Center)
-                } else TokenText(stringResource(R.string.thanks_end), Tokens.TypeScale.headline.serif(), Modifier.fillMaxWidth(), align = TextAlign.Center)
+                } else TokenText(stringResource(R.string.mood_feelingEnd), Tokens.TypeScale.headline.serif(), Modifier.fillMaxWidth(), align = TextAlign.Center)
             }
         }
         TokenText(stringResource(R.string.thanks_page, "${minOf(pager.currentPage + 1, list.size)}", "${list.size}"), Tokens.TypeScale.caption1, Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.Center)
