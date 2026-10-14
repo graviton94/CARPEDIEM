@@ -420,11 +420,8 @@
 "care.footer" = "마음을 보낸 뒤, 지금 할 수 있는 작은 일 하나를 권해요.";
 "look.cue" = "먼 곳을 바라봐요";
 "look.done" = "잘 쉬었어요.";
-"thanks.book" = "고마움 책";
-"thanks.sub" = "고마움으로 보낸 한 줄이 한 장씩.";
-"thanks.end" = "고마운 날이 이만큼 쌓였어요.";
 "thanks.page" = "%1$@ / %2$@";
-"letgo.count" = "지금까지 %1$@번 흘려보냈어요.";
+"letgo.count" = "무거운 마음은 지금까지 %1$@번 흘려보냈어요.";
 "memory" = "기억의 자리";
 "memory.sub" = "보고 싶을 때 여기 와요.";
 "memory.season" = "%1$@년 %2$@";
@@ -495,8 +492,8 @@
 "breath.done.thanks.3" = "오늘도 고마운 것이 있었어요.";
 "breath.thanksAsk" = "떠오른 고마움, 한 줄로 남길까요?";
 "breath.thanksHint" = "고마운 것 한 줄";
-"breath.thanksKeep" = "고마움 책에 담기";
-"breath.thanksKept" = "고마움 책에 담겼어요.";
+"breath.thanksKeep" = "고마움으로 남기기";
+"breath.thanksKept" = "고마움으로 남겼어요. 마음의 기록에서 다시 만나요.";
 "wish.title" = "이번 %1$@에 바라는 것 하나는?";
 "wish.sub" = "석 달 뒤 편지와 함께 돌아와요.";
 "wish.hint" = "바라는 것 한 줄";
@@ -506,9 +503,7 @@
 "wish.back" = "지난 %1$@에 바랐던 것";
 "year.card" = "%1$@년의 정원이 피었어요";
 "year.title" = "%1$@년의 정원";
-"year.count" = "한 줄 %1$@개 · 고마움 %2$@번";
 "year.end" = "한 해를 잘 건너왔어요.";
-"year.list" = "지난 정원";
 "share.image" = "그림으로 보내기";
 "share.chooser" = "그림 보내기";
 "share.footer" = "하루의 정원";
@@ -1135,6 +1130,10 @@
 "keep.done" = "문장을 간직했어요 · 추억에 모여요";
 "keep.removed" = "간직한 문장에서 뺐어요";
 "keep.shown" = "간직한 문장을 오늘 정원에 띄웠어요";
+"year.lines" = "한 줄 %1$@개";
+"mood.byFeeling" = "마음별로 다시 보기";
+"mood.byFeelingSub" = "가벼운 마음으로 보낸 한 줄을 한 장씩. 무거운 마음은 흘려보낸 그대로 두어요.";
+"mood.feelingEnd" = "이런 날이 이만큼 쌓였어요.";
 "news.v1_1_6.1" = "홈 위에 앱 이름 ‘하루의 정원’이 보여요. 처음 둘러보기는 다섯 장으로 짧아지고, 곧장 첫 한 줄로 이어져요.";
 "news.v1_1_6.2" = "가족 돌이 둘 이상이면 가끔 이웃한 두 돌이 서로를 바라보다 함께 깜빡여요.";
 "news.v1_1_6.3" = "함께한 지 100일 · 1년 같은 날엔 그 돌 발치에 꽃 한 송이가 피고, 돌 페이지에 한 줄이 보여요.";

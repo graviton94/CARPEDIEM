@@ -420,11 +420,8 @@
 "care.footer" = "After you send a feeling, one small thing you could do now.";
 "look.cue" = "Look at something far away";
 "look.done" = "Nicely rested.";
-"thanks.book" = "Book of thanks";
-"thanks.sub" = "Each line you sent with thanks, one page at a time.";
-"thanks.end" = "This many thankful days.";
 "thanks.page" = "%1$@ / %2$@";
-"letgo.count" = "Lines let go so far: %1$@.";
+"letgo.count" = "Heavy feelings let go so far: %1$@.";
 "memory" = "A place to remember";
 "memory.sub" = "Come here when you miss them.";
 "memory.season" = "%2$@ %1$@";
@@ -495,8 +492,8 @@
 "breath.done.thanks.3" = "There were thankful things today, too.";
 "breath.thanksAsk" = "Keep what came to mind as a line?";
 "breath.thanksHint" = "One thankful line";
-"breath.thanksKeep" = "Add to the book of thanks";
-"breath.thanksKept" = "Added to the book of thanks.";
+"breath.thanksKeep" = "Keep as thanks";
+"breath.thanksKept" = "Kept as thanks. You'll find it again in your record.";
 "wish.title" = "One wish for this %1$@?";
 "wish.sub" = "It comes back with the letter in three months.";
 "wish.hint" = "A line of wishing";
@@ -506,9 +503,7 @@
 "wish.back" = "What you wished for last %1$@";
 "year.card" = "The garden of %1$@ has bloomed";
 "year.title" = "The garden of %1$@";
-"year.count" = "Lines %1$@ · thanks %2$@";
 "year.end" = "You made it through the year.";
-"year.list" = "Past gardens";
 "share.image" = "Send as a picture";
 "share.chooser" = "Send picture";
 "share.footer" = "Carpe Diem";
@@ -1135,6 +1130,10 @@
 "keep.done" = "Kept · you'll find it in Memories";
 "keep.removed" = "Removed from kept words";
 "keep.shown" = "Today's garden shows your kept words";
+"year.lines" = "Lines %1$@";
+"mood.byFeeling" = "Look back by feeling";
+"mood.byFeelingSub" = "Lines sent with a light heart, one page at a time. Heavy ones stay let go.";
+"mood.feelingEnd" = "This many days like these.";
 "news.v1_1_6.1" = "A shorter first tour: five cards, then straight to your first line.";
 "news.v1_1_6.2" = "With two or more family stones, two neighbours sometimes look at each other and blink together.";
 "news.v1_1_6.3" = "On days like 100 days or 1 year together, a flower blooms at that stone’s feet, with a line on its page.";

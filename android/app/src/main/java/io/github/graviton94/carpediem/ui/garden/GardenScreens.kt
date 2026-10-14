@@ -945,6 +945,8 @@ private fun WritePage(state: AppState, now: LocalDateTime, view: RecordView, gui
             Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
                 RecordSearch(state, today) { v -> onView(v); sc.launch { delay(G.Motion.pageMs.toLong() / 2); panel.bringIntoView() } }
                 Box(Modifier.guideTarget(guide, "write.record").bringIntoViewRequester(panel)) { RecordPanel(state, view, onView, today) }
+                // 마음별로 다시 보기 (고마움 책을 넓힘) · 흘려보낸 무거운 마음의 횟수
+                FeelingBook(state, today)
             }
         }
         // 기록 남기기를 꺼 두었으면: 어디서 켜는지 (누르면 설정으로)
@@ -953,7 +955,7 @@ private fun WritePage(state: AppState, now: LocalDateTime, view: RecordView, gui
     }
 }
 
-/** 추억: 모은 것 (계절 앨범 · 한 해 한 장 · 만난 순간 · 편지 · 고마움 책 · 지난 정원 · 기억의 자리). */
+/** 추억: 모은 것 (계절 앨범 · 한 해 한 장 · 만난 순간 · 편지 · 기억의 자리). 지난 해의 기록은 기록 페이지의 마음의 기록에서 (‹ › 로 넘김). */
 @Composable
 private fun MemoriesPage(state: AppState, profile: LifeProfile, now: LocalDateTime, guide: GuideTargets, onMemory: () -> Unit, onCredits: (Int) -> Unit) {
     Column(

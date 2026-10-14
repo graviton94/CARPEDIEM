@@ -422,11 +422,8 @@
     <string name="care_footer">気持ちを送ったあと、いまできる小さなことをひとつ、おすすめします。</string>
     <string name="look_cue">遠くを眺めましょう</string>
     <string name="look_done">ゆっくり休めましたね。</string>
-    <string name="thanks_book">ありがとうの本</string>
-    <string name="thanks_sub">ありがとうと送ったひとことが、一枚ずつ。</string>
-    <string name="thanks_end">ありがとうの日が、こんなにたまりました。</string>
     <string name="thanks_page">%1$s / %2$s</string>
-    <string name="letgo_count">これまでに%1$s回、風に送りました。</string>
+    <string name="letgo_count">重い気持ちは、これまでに%1$s回、風に送りました。</string>
     <string name="memory">しのぶ場所</string>
     <string name="memory_sub">会いたくなったら、ここへ。</string>
     <string name="memory_season">%1$s年%2$s</string>
@@ -497,8 +494,8 @@
     <string name="breath_done_thanks_3">今日も、ありがたいことがありました。</string>
     <string name="breath_thanksAsk">浮かんだありがとう、ひとことで残しますか？</string>
     <string name="breath_thanksHint">ありがたいことをひとこと</string>
-    <string name="breath_thanksKeep">ありがとうの本にしまう</string>
-    <string name="breath_thanksKept">ありがとうの本にしまいました。</string>
+    <string name="breath_thanksKeep">ありがとうとして残す</string>
+    <string name="breath_thanksKept">ありがとうとして残しました。心の記録でまた会えます。</string>
     <string name="wish_title">この%1$s、願うことをひとつ。</string>
     <string name="wish_sub">三か月後、手紙といっしょに戻ってきます。</string>
     <string name="wish_hint">願うことをひとこと</string>
@@ -508,9 +505,7 @@
     <string name="wish_back">この前の%1$sに願ったこと</string>
     <string name="year_card">%1$s年の庭が、花ひらきました</string>
     <string name="year_title">%1$s年の庭</string>
-    <string name="year_count">ひとこと %1$s件 · ありがとう %2$s回</string>
     <string name="year_end">この一年も、よく歩いてきました。</string>
-    <string name="year_list">これまでの庭</string>
     <string name="share_image">画像で送る</string>
     <string name="share_chooser">画像を送る</string>
     <string name="share_footer">ハルの庭</string>
@@ -1137,6 +1132,10 @@
     <string name="keep_done">ことばを残しました · 思い出に集まります</string>
     <string name="keep_removed">残したことばから外しました</string>
     <string name="keep_shown">残したことばを今日の庭に浮かべました</string>
+    <string name="year_lines">ひとこと %1$s件</string>
+    <string name="mood_byFeeling">気持ちごとに読み返す</string>
+    <string name="mood_byFeelingSub">軽い気持ちで送ったひとことを一枚ずつ。重い気持ちは、送ったままに。</string>
+    <string name="mood_feelingEnd">こんな日が、こんなにたまりました。</string>
     <string name="news_v1_1_6_1">ホームの上にアプリ名「ハルの庭」が表示されます。最初の案内は5枚に短くなり、そのまま最初のひとことへ。</string>
     <string name="news_v1_1_6_2">家族の石が2つ以上あると、ときどき隣り合う2つの石が見つめ合い、一緒にまばたきします。</string>
     <string name="news_v1_1_6_3">一緒に100日・1年などの日には、その石の足もとに花が一輪咲き、石のページにひとこと表示されます。</string>

@@ -262,8 +262,6 @@ internal fun CollectionBody(state: AppState, profile: LifeProfile, now: LocalDat
             KeepsakesSection(state, profile, now, onCredits, KeepPart.LOOKBACK)
             BloomedSeeds(state)
             ReceivedLetters(state, now.toLocalDate())
-            ThanksAndLetGo(state)
-            PastGardens(state, now.toLocalDate())
             // 기억의 자리: 기억의 돌이 있을 때만 (앱이 먼저 권하지 않음)
             if (state.memories.isNotEmpty()) Row(
                 Modifier.fillMaxWidth().padding(top = Tokens.Space.sp4).heightIn(min = Tokens.Layout.tapTarget).crayonBox(null, G.Radius.box, G.Stroke.chip, 1160).clickable(onClick = onMemory)

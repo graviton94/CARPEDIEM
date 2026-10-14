@@ -422,11 +422,8 @@
     <string name="care_footer">마음을 보낸 뒤, 지금 할 수 있는 작은 일 하나를 권해요.</string>
     <string name="look_cue">먼 곳을 바라봐요</string>
     <string name="look_done">잘 쉬었어요.</string>
-    <string name="thanks_book">고마움 책</string>
-    <string name="thanks_sub">고마움으로 보낸 한 줄이 한 장씩.</string>
-    <string name="thanks_end">고마운 날이 이만큼 쌓였어요.</string>
     <string name="thanks_page">%1$s / %2$s</string>
-    <string name="letgo_count">지금까지 %1$s번 흘려보냈어요.</string>
+    <string name="letgo_count">무거운 마음은 지금까지 %1$s번 흘려보냈어요.</string>
     <string name="memory">기억의 자리</string>
     <string name="memory_sub">보고 싶을 때 여기 와요.</string>
     <string name="memory_season">%1$s년 %2$s</string>
@@ -497,8 +494,8 @@
     <string name="breath_done_thanks_3">오늘도 고마운 것이 있었어요.</string>
     <string name="breath_thanksAsk">떠오른 고마움, 한 줄로 남길까요?</string>
     <string name="breath_thanksHint">고마운 것 한 줄</string>
-    <string name="breath_thanksKeep">고마움 책에 담기</string>
-    <string name="breath_thanksKept">고마움 책에 담겼어요.</string>
+    <string name="breath_thanksKeep">고마움으로 남기기</string>
+    <string name="breath_thanksKept">고마움으로 남겼어요. 마음의 기록에서 다시 만나요.</string>
     <string name="wish_title">이번 %1$s에 바라는 것 하나는?</string>
     <string name="wish_sub">석 달 뒤 편지와 함께 돌아와요.</string>
     <string name="wish_hint">바라는 것 한 줄</string>
@@ -508,9 +505,7 @@
     <string name="wish_back">지난 %1$s에 바랐던 것</string>
     <string name="year_card">%1$s년의 정원이 피었어요</string>
     <string name="year_title">%1$s년의 정원</string>
-    <string name="year_count">한 줄 %1$s개 · 고마움 %2$s번</string>
     <string name="year_end">한 해를 잘 건너왔어요.</string>
-    <string name="year_list">지난 정원</string>
     <string name="share_image">그림으로 보내기</string>
     <string name="share_chooser">그림 보내기</string>
     <string name="share_footer">하루의 정원</string>
@@ -1137,6 +1132,10 @@
     <string name="keep_done">문장을 간직했어요 · 추억에 모여요</string>
     <string name="keep_removed">간직한 문장에서 뺐어요</string>
     <string name="keep_shown">간직한 문장을 오늘 정원에 띄웠어요</string>
+    <string name="year_lines">한 줄 %1$s개</string>
+    <string name="mood_byFeeling">마음별로 다시 보기</string>
+    <string name="mood_byFeelingSub">가벼운 마음으로 보낸 한 줄을 한 장씩. 무거운 마음은 흘려보낸 그대로 두어요.</string>
+    <string name="mood_feelingEnd">이런 날이 이만큼 쌓였어요.</string>
     <string name="news_v1_1_6_1">홈 위에 앱 이름 ‘하루의 정원’이 보여요. 처음 둘러보기는 다섯 장으로 짧아지고, 곧장 첫 한 줄로 이어져요.</string>
     <string name="news_v1_1_6_2">가족 돌이 둘 이상이면 가끔 이웃한 두 돌이 서로를 바라보다 함께 깜빡여요.</string>
     <string name="news_v1_1_6_3">함께한 지 100일 · 1년 같은 날엔 그 돌 발치에 꽃 한 송이가 피고, 돌 페이지에 한 줄이 보여요.</string>
