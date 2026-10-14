@@ -754,6 +754,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                     // 계절의 편지는 말뚝에 꽂힌 봉투로 (누르면 펼침). 여기엔 지난 해 · 지난 달의 정원만
                     val year = if (bday == null) state.yearDue(today) else null; val month = if (bday == null && year == null) state.monthDue(today) else null
                     val gardenYear = if (bday == null && year == null && month == null) state.gardenYearDue(today) else null
+                    if (gardenYear != null) WarmYearPoster(state, profile, now, gardenYear)
                     // 열린 항아리 (10) · 생일 아침의 나이테 (07): 생일 한 줄보다 먼저 (생일이면 같은 아침에 열림)
                     val capsule = state.capsuleDue(today)
                     val creditsYear = state.creditsDue(today)

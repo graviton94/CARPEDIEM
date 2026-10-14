@@ -257,7 +257,7 @@ internal fun CollectionBody(state: AppState, profile: LifeProfile, now: LocalDat
                 TokenText(stringResource(R.string.lookback_sub), Tokens.TypeScale.footnote, color = p.secondary)
             }
             var yearSheet by remember { mutableStateOf<Int?>(null) }
-            GardenYearAlbum(state) { yearSheet = it }
+            GardenYearAlbum(state, profile, now) { yearSheet = it }
             yearSheet?.let { y -> GardenYearSheet(state, profile, now, y) { yearSheet = null } }
             KeepsakesSection(state, profile, now, onCredits, KeepPart.LOOKBACK)
             BloomedSeeds(state)
