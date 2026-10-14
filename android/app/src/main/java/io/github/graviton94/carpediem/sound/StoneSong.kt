@@ -34,8 +34,41 @@ object StoneSong {
         io.github.graviton94.carpediem.core.Feeling.WORRY -> 2; io.github.graviton94.carpediem.core.Feeling.SAD -> 0
         else -> 4 }]
 
-    /** notes = (음, 시작 ms). 다른 스레드에서 만들어 틀고, 끝나면 스스로 놓음. */
-    fun play(notes: List<Pair<Double, Long>>) {
+    /**
+     * 그날의 결 (1.1.6): 같은 돌의 음이라도 오늘 보낸 마음 · 때 · 계절에 따라 노래가 달라진다.
+     * step = 오음계에서 옮기는 칸 (밝은 마음 위로, 무거운 마음 · 밤 아래로), tempo = 대답 사이를 늘이는 배수,
+     * partials · amps = 계절의 음색 (봄 풍경 · 여름 대나무 · 가을 목탁 · 겨울 싱잉볼), decay = 잦아드는 빠르기, attack = 치는 세기, level = 크기.
+     */
+    class Tone(val step: Int = 0, val tempo: Float = 1f, val partials: DoubleArray = doubleArrayOf(1.0, 2.0, 3.0), val amps: DoubleArray = doubleArrayOf(1.0, 0.25, 0.08),
+               val decay: Double = 3.2, val attack: Double = 90.0, val level: Float = 1f)
+
+    /** 오늘의 결: feeling = 오늘 보낸 마음 (없으면 null), hour = 지금 시각, season = 실제 계절. */
+    fun toneOf(feeling: io.github.graviton94.carpediem.core.Feeling?, hour: Int, season: io.github.graviton94.carpediem.core.Season): Tone {
+        val heavy = feeling in io.github.graviton94.carpediem.core.Letters.HEAVY
+        val bright = feeling in io.github.graviton94.carpediem.core.Feeling.BRIGHT
+        val night = hour >= 21 || hour < 5; val morning = hour in 5..9
+        val step = (if (bright) 1 else if (heavy) -2 else 0) + (if (night) -1 else 0)
+        val tempo = (if (heavy) 1.35f else if (bright) 0.9f else 1f) * (if (night) 1.2f else if (morning) 0.92f else 1f)
+        val (partials, amps) = when (season) {
+            io.github.graviton94.carpediem.core.Season.SPRING -> doubleArrayOf(1.0, 2.76, 5.4) to doubleArrayOf(1.0, 0.4, 0.14)
+            io.github.graviton94.carpediem.core.Season.SUMMER -> doubleArrayOf(1.0, 2.4, 4.6) to doubleArrayOf(1.0, 0.3, 0.1)
+            io.github.graviton94.carpediem.core.Season.AUTUMN -> doubleArrayOf(1.0, 1.58, 2.9) to doubleArrayOf(1.0, 0.35, 0.12)
+            io.github.graviton94.carpediem.core.Season.WINTER -> doubleArrayOf(1.0, 2.71, 5.15) to doubleArrayOf(1.0, 0.5, 0.2)
+        }
+        // 무거운 날은 부드럽게 치고 길게 머묾, 밝은 날은 또렷하고 짧게. 밤은 작게
+        val decay = (if (heavy) 2.2 else if (bright) 3.8 else 3.2) * (if (season == io.github.graviton94.carpediem.core.Season.SUMMER) 1.4 else 1.0)
+        val attack = if (heavy || night) 35.0 else 90.0
+        return Tone(step, tempo, partials, amps, decay, attack, if (night) 0.7f else if (heavy) 0.85f else 1f)
+    }
+
+    /** 돌의 음을 오늘의 결만큼 오음계 안에서 옮김 (어떻게 옮겨도 어울림). */
+    fun shifted(f: Double, step: Int): Double {
+        val i = SCALE.indexOfFirst { kotlin.math.abs(it - f) < 0.5 }.takeIf { it >= 0 } ?: return f
+        return SCALE[(i + step).coerceIn(0, SCALE.size - 1)]
+    }
+
+    /** notes = (음, 시작 ms). 다른 스레드에서 만들어 틀고, 끝나면 스스로 놓음. tone = 음색 · 세기 (없으면 맑은 종). */
+    fun play(notes: List<Pair<Double, Long>>, tone: Tone = Tone()) {
         if (notes.isEmpty()) return
         Thread({
             runCatching {
@@ -47,13 +80,15 @@ object StoneSong {
                     for (i in 0 until (ring * sr).toInt()) {
                         val j = s0 + i; if (j >= total) break
                         val t = i / sr.toDouble()
-                        // 맑은 종: 바탕음 + 옅은 배음, 빠르게 올라 천천히 잦아듦
-                        val env = (1 - exp(-t * 90)) * exp(-t * 3.2)
-                        mix[j] += (env * (sin(2 * PI * f * t) + 0.25 * sin(4 * PI * f * t) + 0.08 * sin(6 * PI * f * t))).toFloat()
+                        // 종: 바탕음 + 음색의 배음, 빠르게 올라 천천히 잦아듦 (높은 배음일수록 먼저 잦아듦)
+                        val env = (1 - exp(-t * tone.attack))
+                        var v = 0.0
+                        for (k in tone.partials.indices) v += tone.amps[k] * exp(-t * tone.decay * (1 + 0.6 * k)) * sin(2 * PI * f * tone.partials[k] * t)
+                        mix[j] += (env * v).toFloat()
                     }
                 }
                 val peak = mix.maxOf { kotlin.math.abs(it) }.coerceAtLeast(1f)
-                val pcm = ShortArray(total) { (mix[it] / peak * T.volume * Short.MAX_VALUE).toInt().toShort() }
+                val pcm = ShortArray(total) { (mix[it] / peak * T.volume * tone.level * Short.MAX_VALUE).toInt().toShort() }
                 val track = AudioTrack.Builder()
                     .setAudioAttributes(AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_MEDIA).setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).build())
                     .setAudioFormat(AudioFormat.Builder().setSampleRate(sr).setEncoding(AudioFormat.ENCODING_PCM_16BIT).setChannelMask(AudioFormat.CHANNEL_OUT_MONO).build())

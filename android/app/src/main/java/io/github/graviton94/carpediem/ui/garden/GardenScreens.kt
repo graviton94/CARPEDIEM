@@ -564,8 +564,12 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 val bdayIdx = slots.indices.firstOrNull { slots[it].soon == 0 }
                 val singOrder = if (bdayIdx != null) listOf(bdayIdx) + slots.indices.filter { it != bdayIdx }.sortedBy { xs[it].value }
                     else listOf(0) + slots.indices.drop(1).sortedBy { xs[it].value }
-                val lead = if (bdayIdx != null) BDAY_MOTIF.last().first + S.firstMs else S.firstMs
-                fun startAt(i: Int): Float { val k = singOrder.indexOf(i); return if (k <= 0) 0f else lead + (k - 1) * S.gapMs }
+                // 그날의 결 (1.1.6): 오늘 보낸 마음 · 때 · 계절에 따라 음 높이 · 빠르기 · 음색이 달라짐 (무거운 날은 낮고 느리고 부드럽게)
+                val songTone = remember(todayLine?.feeling, now.hour, now.toLocalDate()) {
+                    io.github.graviton94.carpediem.sound.StoneSong.toneOf(todayLine?.feeling, now.hour, io.github.graviton94.carpediem.core.GardenDecor.realSeason(now.toLocalDate(), profile.countryCode))
+                }
+                val lead = (if (bdayIdx != null) BDAY_MOTIF.last().first + S.firstMs else S.firstMs) * songTone.tempo
+                fun startAt(i: Int): Float { val k = singOrder.indexOf(i); return if (k <= 0) 0f else lead + (k - 1) * S.gapMs * songTone.tempo }
                 fun slotSeed(i: Int): Long = slots[i].id?.let { id -> state.people.firstOrNull { it.id == id }?.seed } ?: state.store.haruSeed
                 val song = remember { androidx.compose.animation.core.Animatable(-1f) }   // 노래가 시작된 뒤 지난 ms (-1 = 쉼)
                 fun sing() {
@@ -575,9 +579,10 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                     val song0 = io.github.graviton94.carpediem.sound.StoneSong
                     if (state.sound != Sound.NONE) song0.play(singOrder.flatMap { i ->
                         val p0 = song0.pitch(slotSeed(i), i == 0)
+                        // 생일 가락은 그대로 (축하는 늘 밝게), 다른 돌은 오늘의 결만큼 옮김
                         if (i == bdayIdx) BDAY_MOTIF.map { (at, semi) -> p0 * Math.pow(2.0, semi / 12.0) to at.toLong() }
-                        else listOf(p0 to startAt(i).toLong())
-                    })
+                        else listOf(song0.shifted(p0, songTone.step) to startAt(i).toLong())
+                    }, songTone)
                     scope.launch { song.snapTo(0f); song.animateTo(total, androidx.compose.animation.core.tween(total.toInt(), easing = androidx.compose.animation.core.LinearEasing)); song.snapTo(-1f) }
                 }
                 val hopPx = with(density) { (u * S.hop).toPx() }
