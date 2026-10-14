@@ -82,6 +82,13 @@ object Sky {
         return SolarTerm.entries.firstOrNull { norm(it.longitude - a) < span }
     }
 
+    /** 만난 절기 (1.1.6 모은 것): 정원에 온 날들 가운데 절기가 든 날. 절기 → 처음 만난 날. */
+    fun termsMet(days: Collection<LocalDate>, zone: ZoneId): Map<SolarTerm, LocalDate> {
+        val out = HashMap<SolarTerm, LocalDate>()
+        days.toSortedSet().forEach { d -> termOn(d, zone)?.let { t -> if (t !in out) out[t] = d } }
+        return out
+    }
+
     /** 오늘이 속한 절기 (가장 최근에 든 것). */
     fun termOf(date: LocalDate, zone: ZoneId): SolarTerm {
         val lon = sunLongitude(date.plusDays(1).atStartOfDay(zone).toInstant().minusSeconds(1))

@@ -105,11 +105,11 @@ fun CollectionScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, 
 
 /**
  * 추억 페이지 (와 모은 것 화면): 세 묶음.
- * ① 모은 것: 계절 조각 · 정원에 자란 것 · 만난 손님과 순간 · 첫 정원의 꾸밈을 한 판에 (그림 칸, 받은 것만)
+ * ① 모은 것: 계절 조각 · 정원에 자란 것 · 만난 손님과 순간 · 별자리 · 절기 · 첫 정원의 꾸밈을 묶음별로 (그림 칸, ‘모두’는 받은 것만)
  * ② 미래의 나에게: 항아리에 묻는 편지
- * ③ 돌아보기: 한 해를 한 장으로 · 엔딩 크레딧 · 나이테 · 핀 씨앗 · 받은 편지 · 고마움 책 · 지난 정원 · 기억의 자리
+ * ③ 돌아보기: 한 해를 한 장으로 · 엔딩 크레딧 · 나이테 · 핀 씨앗 · 받은 편지 · 기억의 자리 (지난 해의 한 줄은 기록 페이지에서)
  */
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
 @Composable
 internal fun CollectionBody(state: AppState, profile: LifeProfile, now: LocalDateTime, onMemory: () -> Unit, guide: GuideTargets? = null, onCredits: (Int) -> Unit = {}) {
     val p = Theme.palette
@@ -208,7 +208,7 @@ internal fun CollectionBody(state: AppState, profile: LifeProfile, now: LocalDat
                 tiles += Tile(art, name, day.format(fmt), day, Detail(art, name, sub, res("collect_desc_$k"),
                     stringResource(if (guest) R.string.collect_meet else R.string.collect_how),
                     if (guest) stringResource(R.string.collect_howGuest) else res("collect_how_$k"),
-                    note = if (guest) stringResource(R.string.collect_howGuestRare) else null))
+                    note = if (guest) stringResource(R.string.collect_howGuestRare) else null), kind = Shelf.MET)
             }
             // 아직 못 만난 것 (1.1.5): 옅은 실루엣 + ‘언젠가’, 누르면 분위기 힌트 한 줄만 (방법 · 진행률은 알려주지 않음). 늘 맨 뒤에
             val metKeys = met.map { it.first }.toSet()
@@ -216,7 +216,7 @@ internal fun CollectionBody(state: AppState, profile: LifeProfile, now: LocalDat
             fun hint(n: String) = ctx.resources.getIdentifier(n, "string", ctx.packageName).takeIf { it != 0 }?.let { ctx.getString(it) }.orEmpty()
             GHOSTS.filter { it !in metKeys }.forEach { k ->
                 val art: @Composable () -> Unit = { GhostArt { MetArt(k, sk) } }
-                tiles += Tile(art, ghostName, "", null, Detail(art, ghostTitle, ghostSub, hint("collect_hint_$k"), "", ""), ghost = true)
+                tiles += Tile(art, ghostName, "", null, Detail(art, ghostTitle, ghostSub, hint("collect_hint_$k"), "", ""), ghost = true, kind = Shelf.MET)
             }
             val hangHint = stringResource(R.string.collect_hint_hang)
             for ((i, part) in listOf("chime", "bell", "lantern").withIndex()) if (d.hang.ordinal <= i) {
@@ -234,11 +234,55 @@ internal fun CollectionBody(state: AppState, profile: LifeProfile, now: LocalDat
             moments.filter { state.previewAll || it.date.isBefore(io.github.graviton94.carpediem.core.Moments.LEGACY_UNTIL) }.forEach { m ->
                 tiles += Tile({ Image(GardenArt.obj(ctx, m.id), null, Modifier.fillMaxSize()) }, stringResource(objName(m.id)), m.date.format(fmt), m.date, null) { open = m }
             }
-            val sorted = tiles.sortedWith(compareBy<Tile> { it.ghost }.thenByDescending { it.date ?: java.time.LocalDate.MIN })
+            // 별자리 (1.1.6): 한 달에 한 줄을 남긴 날이 열흘이 되면 그 달의 별자리. 못 모은 것은 이름과 함께 옅게
+            val lang = io.github.graviton94.carpediem.data.Words.lang(ctx)
+            val clear = remember(state.lines) { io.github.graviton94.carpediem.core.Constellations.clearMonths(state.lines, STAR_DAYS) }
+            val starsDesc = stringResource(R.string.collect_descStars, "$STAR_DAYS"); val starsHow = stringResource(R.string.collect_howStars, "$STAR_DAYS")
+            val starsKind = stringResource(R.string.collect_kindStars)
+            if (state.keepLines) for (m in 1..12) {
+                val c = state.store.constellations.of(m) ?: continue
+                val name = c.name(lang)
+                val got = clear[m]
+                val art: @Composable () -> Unit = { if (got != null) ConstellationArt(c) else GhostArt { ConstellationArt(c) } }
+                val whenText = RecordText.month(ctx, m)
+                tiles += if (got != null) Tile(art, name, got.format(fmt), got, Detail(art, name, starsKind + " · " + whenText + " · " + got.format(fmt), starsDesc, how, starsHow), kind = Shelf.STARS)
+                    else Tile(art, name, whenText, null, Detail(art, name, starsKind + " · " + whenText, starsDesc, how, starsHow), ghost = true, kind = Shelf.STARS)
+            }
+            // 절기 (1.1.6): 절기가 든 날 정원에 온 날. 이름은 처음부터 보이고, 만난 것만 진하게 (남반구 나라는 없음)
+            val terms = remember(state.lines, state.breaths, state.gazeDays, today) { state.termsMet() }
+            val south = profile.countryCode.uppercase() in GardenDecor.SOUTH
+            val termKind = stringResource(R.string.collect_kindTerm); val termHow = stringResource(R.string.collect_howTerm)
+            if (!south) io.github.graviton94.carpediem.core.SolarTerm.entries.forEach { t ->
+                fun res(n: String) = ctx.resources.getIdentifier(n, "string", ctx.packageName).takeIf { it != 0 }?.let { ctx.getString(it) }.orEmpty()
+                val name = res("termName_${t.key}")
+                val got = terms[t]
+                val art: @Composable () -> Unit = { if (got != null) TermArt(t) else GhostArt { TermArt(t) } }
+                tiles += if (got != null) Tile(art, name, got.format(fmt), got, Detail(art, name, termKind + " · " + got.format(fmt), res("term_${t.key}"), how, termHow), kind = Shelf.TERMS)
+                    else Tile(art, name, "", null, Detail(art, name, termKind, "", how, termHow), ghost = true, kind = Shelf.TERMS)
+            }
+            // 묶음: 모두는 모은 것만 (못 만난 것으로 판이 가득 차지 않게), 묶음마다 모은 수 / 모두
+            var shelf by rememberSaveable { mutableStateOf(Shelf.ALL) }
+            val sorted = tiles.filter { if (shelf == Shelf.ALL) !it.ghost else it.kind == shelf }
+                .sortedWith(if (shelf == Shelf.STARS || shelf == Shelf.TERMS) compareBy<Tile> { 0 } else compareBy<Tile> { it.ghost }.thenByDescending { it.date ?: java.time.LocalDate.MIN })
             var all by rememberSaveable { mutableStateOf(false) }
             var detail by remember { mutableStateOf<Detail?>(null) }
             val shown = if (all) sorted else sorted.take(COLLECT_FIRST)
             Column(Modifier.fillMaxWidth().guideTarget(guide, "mem.album"), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
+                androidx.compose.foundation.layout.FlowRow(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
+                    fun count(k: Shelf) = tiles.count { it.kind == k && !it.ghost } to tiles.count { it.kind == k }
+                    val shelves = listOfNotNull(Shelf.ALL, Shelf.GARDEN, Shelf.MET, Shelf.STARS.takeIf { state.keepLines }, Shelf.TERMS.takeIf { !south })
+                    shelves.forEachIndexed { i, k ->
+                        val (got, total) = count(k)
+                        val label = when (k) {
+                            Shelf.ALL -> stringResource(R.string.collect_shelfAll, "${tiles.count { !it.ghost }}")
+                            Shelf.GARDEN -> stringResource(R.string.collect_shelfGarden, "$got")
+                            Shelf.MET -> stringResource(R.string.collect_shelfMet, "$got", "$total")
+                            Shelf.STARS -> stringResource(R.string.collect_shelfStars, "$got", "$total")
+                            Shelf.TERMS -> stringResource(R.string.collect_shelfTerms, "$got", "$total")
+                        }
+                        GardenChip(label, shelf == k, 880 + i) { shelf = k; all = false }
+                    }
+                }
                 if (sorted.isEmpty()) TokenText(stringResource(R.string.collection_empty), Tokens.TypeScale.callout.serif(), Modifier.fillMaxWidth().padding(vertical = Tokens.Space.sp4), color = p.secondary, align = TextAlign.Center)
                 else TileGrid(shown.size) { i -> val t = shown[i]; CollectionTile(900 + i, t.art, t.title, t.dateText, t.onClick ?: { detail = t.detail }, ghost = t.ghost) }
                 if (sorted.size > COLLECT_FIRST) Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
@@ -425,6 +469,41 @@ private fun CollectionTile(seed: Int, art: @Composable () -> Unit, title: String
     }
 }
 
+/** 별자리 칸: 밤하늘 없이 한지 위에 별 (호박빛 점 · 먹 테두리) 과 잇는 선. */
+@Composable
+private fun ConstellationArt(c: io.github.graviton94.carpediem.core.Constellation) {
+    val ink = Theme.gc.ink
+    androidx.compose.foundation.Canvas(Modifier.fillMaxSize(0.82f)) {
+        val r = size.minDimension
+        fun at(i: Int) = Offset(c.stars[i].first * r, c.stars[i].second * r)
+        val segs = c.lines.ifEmpty { c.stars.indices.zipWithNext() }
+        segs.forEach { (a, b) -> drawLine(ink.copy(alpha = 0.45f), at(a), at(b), r * 0.018f, cap = androidx.compose.ui.graphics.StrokeCap.Round) }
+        c.stars.indices.forEach { i ->
+            drawCircle(STAR_FILL, r * 0.045f, at(i))
+            drawCircle(ink, r * 0.045f, at(i), style = androidx.compose.ui.graphics.drawscope.Stroke(r * 0.018f))
+        }
+    }
+}
+
+/** 절기 칸: 해의 길 (먹 동그라미) 위 그 절기의 자리에 해 하나. 계절 빛으로 (봄 연두 · 여름 해빛 · 가을 호박 · 겨울 하늘). */
+@Composable
+private fun TermArt(t: io.github.graviton94.carpediem.core.SolarTerm) {
+    val ink = Theme.gc.ink
+    val col = when (t.ordinal) { in 2..7 -> Color(0xFF9DB86B); in 8..13 -> Color(0xFFE2B04A); in 14..19 -> Color(0xFFCB7D45); else -> Color(0xFF8FB1C9) }
+    androidx.compose.foundation.Canvas(Modifier.fillMaxSize(0.72f)) {
+        val r = size.minDimension / 2; val c = Offset(size.width / 2, size.height / 2)
+        drawCircle(ink.copy(alpha = 0.5f), r * 0.78f, c, style = androidx.compose.ui.graphics.drawscope.Stroke(r * 0.05f))
+        // 동지 (해가 가장 낮음) 를 아래, 하지를 위에: 해의 황경 270° 가 아래
+        val a = Math.toRadians(t.longitude - 270.0 + 90.0)
+        val sun = Offset(c.x + (r * 0.78f * kotlin.math.cos(a)).toFloat(), c.y + (r * 0.78f * kotlin.math.sin(a)).toFloat())
+        drawCircle(col, r * 0.22f, sun)
+        drawCircle(ink, r * 0.22f, sun, style = androidx.compose.ui.graphics.drawscope.Stroke(r * 0.06f))
+    }
+}
+private val STAR_FILL = Color(0xFFF2C35B)
+/** 별자리를 모으는 날 수 (한 달 안에 한 줄을 남긴 날). */
+private const val STAR_DAYS = 10
+
 /** 만난 손님 · 순간의 그림 (정원에서 쓰는 그림 그대로). */
 @Composable
 private fun MetArt(key: String, season: String) {
@@ -452,7 +531,11 @@ private fun MetArt(key: String, season: String) {
 private class Grown(val caption: Int, val art: @Composable () -> Unit)
 
 /** 모은 것 한 칸: 그림 · 이름 · 날짜, 누르면 상세 (옛 꾸밈은 원래의 한 장). date = 줄 세우는 날 (없으면 맨 뒤). */
-private class Tile(val art: @Composable () -> Unit, val title: String, val dateText: String, val date: java.time.LocalDate?, val detail: Detail?, val ghost: Boolean = false, val onClick: (() -> Unit)? = null)
+private class Tile(val art: @Composable () -> Unit, val title: String, val dateText: String, val date: java.time.LocalDate?, val detail: Detail?, val ghost: Boolean = false,
+                   val kind: Shelf = Shelf.GARDEN, val onClick: (() -> Unit)? = null)
+
+/** 모은 것의 칸 묶음 (1.1.6): 모두 (모은 것만) · 정원 · 손님과 순간 · 별자리 · 절기. 못 만난 것은 그 묶음에서만 옅게. */
+private enum class Shelf { ALL, GARDEN, MET, STARS, TERMS }
 
 /** (?) 상세: 큰 그림 · 이름 · 종류와 날짜 · 설명 · 얻는 방법 (단계가 있으면 지나온 단계 칩, 지금 것만 진하게). 아직 얻지 않은 것은 보이지 않음. */
 private class Detail(val art: @Composable () -> Unit, val name: String, val sub: String, val desc: String, val howTitle: String, val how: String,

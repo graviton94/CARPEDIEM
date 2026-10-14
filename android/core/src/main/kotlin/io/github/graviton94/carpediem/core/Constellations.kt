@@ -96,6 +96,18 @@ object Constellations {
         return (0 until first.lengthOfMonth()).map { k -> first.plusDays(k.toLong()).let { d -> d to byDay[d] } }
     }
 
+    /**
+     * 또렷해진 별자리 (1.1.6 모은 것): 한 달에 한 줄을 남긴 날이 days 일이 되면 그 달의 별자리를 모음.
+     * 달 (1..12) → 처음 모은 날 (그 해 그 달의 days 번째 한 줄의 날). 같은 별자리는 처음 것만.
+     */
+    fun clearMonths(list: List<DayLine>, days: Int): Map<Int, LocalDate> {
+        val out = HashMap<Int, LocalDate>()
+        list.map { it.date }.distinct().groupBy { java.time.YearMonth.from(it) }.toSortedMap().forEach { (ym, ds) ->
+            if (ds.size >= days && ym.monthValue !in out) out[ym.monthValue] = ds.sorted()[days - 1]
+        }
+        return out
+    }
+
     /** 한 달의 정원이 피는 때: 달이 바뀐 뒤 days 일 동안 (1월 초는 한 해의 정원이 대신). 지난 달 (연, 월) 또는 null. */
     fun monthDue(today: LocalDate, days: Int): Pair<Int, Int>? {
         if (today.dayOfMonth > days || today.monthValue == 1) return null

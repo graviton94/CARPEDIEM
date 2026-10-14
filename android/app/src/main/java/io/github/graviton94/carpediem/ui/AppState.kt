@@ -953,12 +953,22 @@ class AppState(private val context: Context) {
         if (p.countryCode.uppercase() in GardenDecor.SOUTH) return null
         return io.github.graviton94.carpediem.core.Sky.termOn(today, java.time.ZoneId.systemDefault())
     }
+    /** 만난 절기 (모은 것): 절기가 든 날 정원을 연 날 + 한 줄 · 숨 · 돌멍을 한 날 (기록 전부터의 날도). 남반구 나라는 없음. */
+    fun termsMet(): Map<io.github.graviton94.carpediem.core.SolarTerm, LocalDate> {
+        val p = profile ?: return emptyMap()
+        if (p.countryCode.uppercase() in GardenDecor.SOUTH) return emptyMap()
+        val days = HashSet<LocalDate>()
+        lines.forEach { days += it.date }; breaths.forEach { days += it.first }; gazeDays.forEach { d -> runCatching { LocalDate.parse(d.toString()) }.getOrNull()?.let { days += it } }
+        store.termDays.forEach { d -> runCatching { LocalDate.parse(d) }.getOrNull()?.let { days += it } }
+        return io.github.graviton94.carpediem.core.Sky.termsMet(days, java.time.ZoneId.systemDefault())
+    }
     /** 절기가 든 날 정원을 처음 열 때 한 줄 (‘오늘은 상강, 첫서리가 내렸어요.’). */
     fun noticeTerm(today: LocalDate) {
         if (previewAll) return
         val t = termToday(today) ?: return
         if (store.termNoted == today.toString()) return
         store.termNoted = today.toString()
+        store.termDays = store.termDays + today.toString()
         // 절기는 정원의 작은 변화 (TermTouches) 로만. 알약은 띄우지 않음
         if (!DECOR_SAYS) return
         val id = context.resources.getIdentifier("term_${t.key}", "string", context.packageName)
