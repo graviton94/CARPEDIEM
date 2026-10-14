@@ -233,7 +233,7 @@ private val LIGHT_FEELINGS = listOf(Feeling.JOY, Feeling.HOPE, Feeling.PROUD, Fe
  * 마음의 기록 아래 (1.1.6, 고마움 책을 넓힘): 가벼운 마음으로 보낸 한 줄을 마음마다 작은 책으로 (옆으로 한 장씩).
  * 무거운 마음은 글 없이 흘려보낸 횟수 한 줄만. 오늘 보낸 줄은 내일부터 (기록 판과 같이). 기록 남기기를 끄면 보이지 않는다.
  */
-@OptIn(ExperimentalLayoutApi::class)
+@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
 internal fun FeelingBook(state: AppState, today: LocalDate) {
     if (!state.keepLines) return
