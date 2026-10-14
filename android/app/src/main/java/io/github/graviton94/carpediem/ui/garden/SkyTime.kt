@@ -202,7 +202,9 @@ fun MoodWeather(state: io.github.graviton94.carpediem.ui.AppState, now: LocalDat
     val w = G.Weather
     val t = androidx.compose.runtime.remember(f) { androidx.compose.animation.core.Animatable(0f) }
     androidx.compose.runtime.LaunchedEffect(f) { t.animateTo(1f, tween((w.seconds * 1000).toInt(), easing = LinearEasing)) }
-    if (t.value >= 1f) return
+    // 끝났는지만 화면 짜기에서 읽음 (매 프레임의 값은 그릴 때만 읽어, 내리는 동안 정원을 다시 짜지 않게)
+    val done by androidx.compose.runtime.remember(f) { androidx.compose.runtime.derivedStateOf { t.value >= 1f } }
+    if (done) return
     val ink = io.github.graviton94.carpediem.design.Theme.gc.ink
     val warm = G.Night.Colors.lamp
     Canvas(Modifier.fillMaxSize()) {
@@ -212,11 +214,13 @@ fun MoodWeather(state: io.github.graviton94.carpediem.ui.AppState, now: LocalDat
         if (rain) {
             val r = Crayon.Rng(now.toLocalDate().toEpochDay().toInt())
             repeat(w.drops.toInt()) {
-                // 바람을 타듯: 빠르기가 조금씩 일렁이고, 옆으로 살짝 밀림
-                val x0 = size.width * r.next(); val sp = 0.7f + 0.6f * r.next(); val off = r.next(); val ph = r.next() * 6.283f
-                val y = ((t.value * 6f * sp + off + 0.025f * sin(t.value * 18f + ph)) % 1f) * bottom
-                val x = x0 + u * 4f * sin(t.value * 9f + ph)
-                drawLine(ink.copy(alpha = w.rainAlpha * env), Offset(x, y), Offset(x - u * 2f, y + u * 9f), u * 1.1f, StrokeCap.Round)
+                // 보슬비 (1.1.6): 짧고 가는 줄이 천천히, 거의 곧게 내려앉음. 빠르기가 조금씩 다르고 바람에 살짝 흔들림
+                val x0 = size.width * r.next(); val sp = 0.8f + 0.4f * r.next(); val off = r.next(); val ph = r.next() * 6.283f
+                val y = ((t.value * w.fall * sp + off) % 1f) * bottom
+                val x = x0 + u * w.sway * sin(t.value * 5f + ph)
+                // 빗방울마다 진하기도 조금씩 (모두 같은 줄이면 장대비처럼 보임)
+                val a = w.rainAlpha * env * (0.6f + 0.4f * r.next())
+                drawLine(ink.copy(alpha = a), Offset(x, y), Offset(x - u * w.streak * 0.12f, y + u * w.streak), u * w.rainWidth, StrokeCap.Round)
             }
         } else {
             // 햇살 한 줄기: 낮에만 (밤엔 하늘 전체가 흐리게 덮여 보이므로 그리지 않음), 아래 끝은 땅에 닿기 전에 스르르 사라짐

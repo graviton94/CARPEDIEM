@@ -122,7 +122,7 @@ internal fun AdornSheet(state: AppState, stone: String, stoneName: String, onClo
     val p = Theme.palette
     val shown = state.adornmentsShown()
     val nameOf = { id: String -> if (id == Adornments.ME) ctx.getString(R.string.garden_haru) else state.people.firstOrNull { it.id == id }?.name.orEmpty() }
-    ModalBottomSheet(onDismissRequest = onClose, containerColor = Theme.gc.paper, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
+    GardenSheet(onDismissRequest = onClose, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
         Column(
             Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(horizontal = Theme.deviceClass.pageMargin).navigationBarsPadding().padding(bottom = Tokens.Space.sp8),
             verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3),

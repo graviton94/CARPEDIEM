@@ -155,7 +155,7 @@ internal fun LetterSheet(letter: Letter, wish: String? = null, onClose: () -> Un
     var heavy by remember(letter.id) { mutableStateOf(false) }
     val date = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
     val month = DateTimeFormatter.ofPattern("MMMM", ctx.resources.configuration.locales[0])
-    ModalBottomSheet(onDismissRequest = onClose, containerColor = Theme.gc.paper, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
+    GardenSheet(onDismissRequest = onClose, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
         Column(
             Modifier.fillMaxWidth().imePadding().verticalScroll(rememberScrollState()).padding(horizontal = Theme.deviceClass.pageMargin).navigationBarsPadding().padding(bottom = Tokens.Space.sp8),
             verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3),
@@ -253,7 +253,7 @@ internal fun ThanksAndLetGo(state: AppState) {
         }
         if (heavy > 0) TokenText(stringResource(R.string.letgo_count, "$heavy"), Tokens.TypeScale.footnote, Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.Center)
     }
-    if (open) ModalBottomSheet(onDismissRequest = { open = false }, containerColor = Theme.gc.paper, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
+    if (open) GardenSheet(onDismissRequest = { open = false }, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
         ThanksPages(thanks) { open = false }
     }
 }
@@ -360,7 +360,7 @@ private fun SpecialDaySheet(state: AppState, birth: LocalDate, onClose: () -> Un
     var date by rememberSaveable { mutableStateOf<Long?>(null) }
     var picking by remember { mutableStateOf(false) }
     val full = state.specialDays.size >= io.github.graviton94.carpediem.core.SpecialDays.MAX
-    ModalBottomSheet(onDismissRequest = onClose, containerColor = Theme.gc.paper, sheetState = androidx.compose.material3.rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
+    GardenSheet(onDismissRequest = onClose, sheetState = androidx.compose.material3.rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
         Column(Modifier.fillMaxWidth().imePadding().verticalScroll(rememberScrollState()).padding(horizontal = Theme.deviceClass.pageMargin).navigationBarsPadding().padding(bottom = Tokens.Space.sp6),
             verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
             TokenText(stringResource(R.string.special_name), Tokens.TypeScale.title3.serif())

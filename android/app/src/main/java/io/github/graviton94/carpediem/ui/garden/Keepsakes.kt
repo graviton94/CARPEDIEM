@@ -88,7 +88,7 @@ internal fun FutureLetterSheet(state: AppState, start: CapsuleWhen, today: Local
     // 쓰던 편지는 폰에 적어 둠: 시트를 내리거나 앱이 닫혀도 다시 열면 이어서 (묻지 않고 조용히)
     var text by rememberSaveable { mutableStateOf(state.store.letterDraft) }
     var w by rememberSaveable { mutableStateOf(start) }
-    ModalBottomSheet(onDismissRequest = onDismiss, containerColor = Theme.gc.paper, sheetState = androidx.compose.material3.rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
+    GardenSheet(onDismissRequest = onDismiss, sheetState = androidx.compose.material3.rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
         Column(Modifier.fillMaxWidth().imePadding().verticalScroll(rememberScrollState()).padding(horizontal = Theme.deviceClass.pageMargin).navigationBarsPadding().padding(bottom = Tokens.Space.sp6),
             verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
             TokenText(stringResource(R.string.capsule_title), Tokens.TypeScale.title3.serif())
@@ -115,7 +115,7 @@ internal fun FutureLetterSheet(state: AppState, start: CapsuleWhen, today: Local
 internal fun CapsuleSheet(c: Capsule, onDone: () -> Unit) {
     val p = Theme.palette
     val ctx = LocalContext.current
-    ModalBottomSheet(onDismissRequest = onDone, containerColor = Theme.gc.paper, sheetState = androidx.compose.material3.rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
+    GardenSheet(onDismissRequest = onDone, sheetState = androidx.compose.material3.rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
         Column(Modifier.fillMaxWidth().imePadding().verticalScroll(rememberScrollState()).padding(horizontal = Theme.deviceClass.pageMargin).navigationBarsPadding().padding(bottom = Tokens.Space.sp6),
             horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
             Jar(Theme.unit * 34f, open = true)
@@ -183,7 +183,7 @@ internal fun RingSheet(state: AppState, profile: LifeProfile, age: Int, now: Loc
     var walk by remember { mutableStateOf(false) }
     var letter by remember { mutableStateOf(false) }
     // 편지를 쓰는 동안은 나이테 창을 접어 둠 (창 위에 창이 겹치지 않게), 다 쓰면 다시
-    if (!letter) ModalBottomSheet(onDismissRequest = onDismiss, containerColor = Theme.gc.paper, sheetState = androidx.compose.material3.rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
+    if (!letter) GardenSheet(onDismissRequest = onDismiss, sheetState = androidx.compose.material3.rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
         Column(Modifier.fillMaxWidth().imePadding().verticalScroll(rememberScrollState()).padding(horizontal = Theme.deviceClass.pageMargin).navigationBarsPadding().padding(bottom = Tokens.Space.sp6),
             horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
             TokenText("${RecordText.day(ctx, ring.start)} — ${RecordText.day(ctx, ring.end)}", Tokens.TypeScale.caption1, color = p.secondary)

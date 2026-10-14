@@ -140,7 +140,7 @@ fun BreathSheet(state: AppState, now: LocalDateTime, onStart: (BreathKind, Int, 
     val p = Theme.palette
     var kind by remember { mutableStateOf(if (isNight(now)) BreathKind.SLEEP else state.breathKind) }
     var sound by remember { mutableStateOf(state.sound) }
-    ModalBottomSheet(onDismissRequest = onDismiss, containerColor = Theme.gc.paper, sheetState = androidx.compose.material3.rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
+    GardenSheet(onDismissRequest = onDismiss, sheetState = androidx.compose.material3.rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
         Column(Modifier.fillMaxWidth().imePadding().verticalScroll(rememberScrollState()).padding(horizontal = Theme.deviceClass.pageMargin).navigationBarsPadding().padding(bottom = Tokens.Space.sp6),
             verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
             TokenText(stringResource(R.string.breath), Tokens.TypeScale.title3.serif())
@@ -569,7 +569,7 @@ private const val SLEEP_DIM_MS = 120_000
 private fun SleepSheet(initial: Int, on: Boolean, onStart: (Int) -> Unit, onOff: () -> Unit, onClose: () -> Unit) {
     val p = Theme.palette
     var m by remember { androidx.compose.runtime.mutableIntStateOf(initial.coerceIn(SLEEP_RANGE)) }
-    androidx.compose.material3.ModalBottomSheet(onDismissRequest = onClose, containerColor = Theme.gc.paper,
+    GardenSheet(onDismissRequest = onClose,
         sheetState = androidx.compose.material3.rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
         Column(Modifier.fillMaxWidth().padding(horizontal = Theme.deviceClass.pageMargin).navigationBarsPadding().padding(bottom = Tokens.Space.sp6),
             verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {

@@ -879,7 +879,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
         SlipSheet(state, line, g, now.toLocalDate(), onRecord = { state.openSlip(now.toLocalDate()); slipOpen = null; toRecord(RecordView(line.date.year, line.date.monthValue, line.date)) }) { state.openSlip(now.toLocalDate()); slipOpen = null }
     } ?: run { slipOpen = null } }
     decorOpen?.let { part ->
-        ModalBottomSheet(onDismissRequest = { decorOpen = null }, containerColor = Theme.gc.paper, sheetState = androidx.compose.material3.rememberModalBottomSheetState(skipPartiallyExpanded = true)) { DecorSheet(part, decor, state, now) }
+        GardenSheet(onDismissRequest = { decorOpen = null }, sheetState = androidx.compose.material3.rememberModalBottomSheetState(skipPartiallyExpanded = true)) { DecorSheet(part, decor, state, now) }
     }
     letterOpen?.let { LetterSheet(it, state.wishFor(it)) { letterOpen = null } }
     gardenYearOpen?.let { y -> GardenYearSheet(state, profile, now, y) { gardenYearOpen = null } }
