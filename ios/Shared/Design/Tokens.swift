@@ -504,6 +504,9 @@ enum Tokens {
             static let guide: CGFloat = 0.8
             static let bed: CGFloat = 0.32
             static let gazeBed: CGFloat = 0.6
+            static let gazeLow: CGFloat = 0.45
+            static let gazeLowHz: CGFloat = 150.0
+            static let gazeTone: CGFloat = 0.55
             static let noteMin: CGFloat = 4.0
             static let noteMax: CGFloat = 14.0
             static let songVolume: CGFloat = 0.5
