@@ -132,7 +132,9 @@ internal fun DecorBack(decor: Decor, now: LocalDateTime, gy: Dp, x0: Dp, x1: Dp,
 
     // ② 말뚝: 길의 끝 (기대수명). 걸린 것은 가로대에서 따로 흔들림, 등불은 밤에 켜짐, 편지가 오면 봉투
     val pk = u * D.postScale
-    val lit = dark && decor.hang == Hang.LANTERN
+    // 밤에 켜지는 등: 숨 백 날로 걸린 등, 또는 그날 밤 마음 등불을 마쳤으면 (아직 등이 없어도) 그 밤만 등 하나가 걸려 켜짐 (E3 ‘따뜻한 등빛’)
+    val lantern = decor.hang == Hang.LANTERN || (dark && warm)
+    val lit = dark && lantern
     val postA11y = listOfNotNull(stringResource(R.string.decor_post), when (decor.hang) { Hang.CHIME -> stringResource(R.string.decor_hang_chime); Hang.BELL -> stringResource(R.string.decor_hang_bell); Hang.LANTERN -> stringResource(R.string.decor_hang_lantern); Hang.NONE -> null },
         if (decor.letter) stringResource(R.string.decor_post_letter) else null).joinToString(", ")
     Box(Modifier.box(x1, gy, pk, D.postBoxW, D.postBoxH, D.postAtX, D.postAtY)) {
@@ -148,7 +150,7 @@ internal fun DecorBack(decor: Decor, now: LocalDateTime, gy: Dp, x0: Dp, x1: Dp,
         @Composable fun swing(part: String, px: Float, py: Float, sw: Sway, deg: Float, f: ColorFilter?) =
             Image(GardenArt.postPart(ctx, part), null, Modifier.fillMaxSize().graphicsLayer { transformOrigin = TransformOrigin(px / D.postBoxW, py / D.postBoxH); rotationZ = if (moving) sw.at(clock.value) * deg * (1f + 1.6f * windGust.floatValue) else 0f }, colorFilter = f)
         // 등이 걸리면 작은 종은 내려 둠 (가로대가 붐비지 않게)
-        if (decor.hang >= Hang.LANTERN) swing(if (lit) "lantern_lit" else "lantern", D.lanternX, D.lanternY, swLantern, 1f, if (lit) null else filter)
+        if (lantern) swing(if (lit) "lantern_lit" else "lantern", D.lanternX, D.lanternY, swLantern, 1f, if (lit) null else filter)
         if (decor.hang >= Hang.CHIME) swing("chime", D.chimeX, D.chimeY, swChime, D.swayDeg, filter)
         if (decor.hang == Hang.BELL) swing("bell", D.bellX, D.bellY, swBell, D.swayDeg * 0.7f, filter)
         if (decor.letter) Image(GardenArt.postPart(ctx, "letter"), null, Modifier.fillMaxSize().graphicsLayer { rotationZ = if (moving) swLetter.at(clock.value) * 0.6f else 0f }, colorFilter = filter)

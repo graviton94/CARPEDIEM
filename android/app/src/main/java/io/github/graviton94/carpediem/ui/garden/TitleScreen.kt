@@ -72,9 +72,10 @@ import kotlin.math.sin
  * 그다음 ‘하루의 정원’ · 오늘 · 인사가 천천히 떠오르고, 누르면 글자가 먼저 옅어진 뒤 화면 전체가 천천히 옅어져
  * 아래에 그려 둔 정원 (같은 하늘 · 같은 땅) 에 돌들과 글자가 생겨나는 것처럼 이어진다.
  * 올라오는 중에 누르면 끝 장면으로, 뒤로 가기는 바로 정원으로, 움직임을 끈 기기는 끝 장면부터.
+ * [onLeave]: 옅어지기 시작할 때 (아침 이슬은 이때 맺혀, 첫 화면이 김 서린 유리 위에서 옅어짐).
  */
 @Composable
-fun TitleScreen(state: AppState, now: LocalDateTime, onDone: () -> Unit) {
+fun TitleScreen(state: AppState, now: LocalDateTime, onLeave: () -> Unit = {}, onDone: () -> Unit) {
     val ctx = LocalContext.current
     val scope = rememberCoroutineScope()
     val still = remember { reducedMotion(ctx) }
@@ -102,6 +103,7 @@ fun TitleScreen(state: AppState, now: LocalDateTime, onDone: () -> Unit) {
         // 아직 오르는 중이면 먼저 끝 장면으로
         if (sky.value < 1f || rise.value < 1f || words.value < 1f) { scope.launch { sky.snapTo(1f); rise.snapTo(1f); words.snapTo(1f); tap.snapTo(1f) }; return }
         entering = true
+        onLeave()
         if (still) { onDone(); return }
         scope.launch {
             launch { tap.animateTo(0f, tween(TITLE_WORDS_OUT_MS)) }
@@ -110,7 +112,7 @@ fun TitleScreen(state: AppState, now: LocalDateTime, onDone: () -> Unit) {
             onDone()
         }
     }
-    BackHandler { onDone() }
+    BackHandler { if (!entering) onLeave(); onDone() }
     val enterLabel = stringResource(R.string.title_enter)
     BoxWithConstraints(Modifier.fillMaxSize().clipToBounds().paperBackground().semantics { contentDescription = enterLabel; onClick(enterLabel) { enter(); true } }
         .pointerInput(Unit) { detectTapGestures { enter() } }.graphicsLayer { alpha = fade.value }) {

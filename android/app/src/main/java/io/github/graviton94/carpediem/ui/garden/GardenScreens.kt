@@ -15,6 +15,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.foundation.background
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -72,6 +74,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.zIndex
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.ui.graphics.ImageBitmap
@@ -240,7 +243,7 @@ internal fun shortName(n: String): String { val max = G.Family.nameChars.toInt()
 
 // ───────────────────────── 홈 = 정원 ─────────────────────────
 
-@OptIn(ExperimentalMaterial3Api::class, androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
+@OptIn(ExperimentalMaterial3Api::class, androidx.compose.foundation.layout.ExperimentalLayoutApi::class, androidx.compose.foundation.ExperimentalFoundationApi::class)
 @Composable
 fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSettings: () -> Unit, onCollection: () -> Unit, onSupport: () -> Unit, onStone: (String?) -> Unit, onAddPerson: () -> Unit,
                onBreath: (BreathKind, Int, Sound) -> Unit = { _, _, _ -> }, onGaze: () -> Unit = {}, bare: Boolean = false, onLook: () -> Unit = {}, onMemory: () -> Unit = {},
@@ -283,7 +286,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
     val onGarden = bare || pager.currentPage == 0
     if (!bare && onGarden) LaunchedEffect(decor.stage, decor.tree, decor.hang, decor.kite, decor.ribbons.size, decor.buds, decor.card.id, decor.letter) { state.noticeDecor(decor) }
     // 정원을 열 때의 우연한 순간 (달팽이 · 비눗방울 · 나비, 각각 한 번씩)
-    if (!bare && onGarden) LaunchedEffect(day0, state.titleUp) { if (!state.titleUp) state.openChance(day0, real) }
+    if (!bare && onGarden) LaunchedEffect(day0, state.titleUp, state.dewUp) { if (!state.titleUp && !state.dewUp) state.openChance(day0, real) }
     // 절기가 든 날 (S1): 처음 열 때 한 줄, 정원엔 그날 하루 작은 변화
     val termToday = remember(day0, state.profile?.countryCode) { state.termToday(day0) }
     if (!bare && onGarden) LaunchedEffect(day0) { state.noticeTerm(day0) }
@@ -295,6 +298,26 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
     // 돌에게 건넨 이번 계절의 조각 (R1): 사람 id → 조각
     val adorned = remember(state.adornments, state.people) { state.adornmentsShown() }
     val scope = rememberCoroutineScope()
+    // 첫 화면 뒤 정원이 차례로 피어남 (1.1.5): 첫 화면이 덮고 있는 동안은 빈 하늘 · 땅만, 걷히면 가족 돌 → 하루 → 꾸밈 → 위 글자 · 아래 버튼.
+    // 아침 이슬이 맺혀 있으면 돌들은 김 너머에서 피어나고, 글자 · 버튼은 김이 걷힌 뒤에. 값은 graphicsLayer 안에서만 읽음
+    val still = remember { reducedMotion(ctx) }
+    val bloom = remember { androidx.compose.animation.core.Animatable(1f) }
+    val uiGate = remember { androidx.compose.animation.core.Animatable(1f) }
+    if (!bare) LaunchedEffect(state.titleUp) {
+        if (state.titleUp) { bloom.snapTo(0f); return@LaunchedEffect }
+        if (still) bloom.snapTo(1f) else if (bloom.value < 1f) bloom.animateTo(1f, tween(if (state.dewUp) BLOOM_DEW_MS else BLOOM_MS, easing = androidx.compose.animation.core.LinearEasing))
+    }
+    fun win(a: Float, b: Float): Float { val x = ((bloom.value - a) / (b - a)).coerceIn(0f, 1f); return 1f - (1f - x) * (1f - x) * (1f - x) }
+    val decorIn = { win(0.65f, 0.85f) }
+    val uiIn = { minOf(win(0.75f, 1f), uiGate.value) }
+    // 아침 이슬 (1.1.5): 정원 페이지를 담아 두는 그림 (김 아래 흐린 정원) · 하루 자리 · 닦은 만큼 뜨는 눈
+    val dewLayer = androidx.compose.ui.graphics.rememberGraphicsLayer()
+    var dewHaru by remember { androidx.compose.runtime.mutableFloatStateOf(0f) }
+    var dewWake by remember { mutableStateOf(false) }
+    var dewSmile by remember { androidx.compose.runtime.mutableIntStateOf(0) }
+    var dewBlink by remember { androidx.compose.runtime.mutableIntStateOf(0) }
+    var haruBox by remember { mutableStateOf(androidx.compose.ui.geometry.Rect.Zero) }
+    if (!bare) LaunchedEffect(state.dewUp) { if (state.dewUp) { dewHaru = 0f; dewWake = false; uiGate.snapTo(0f) } }
     var recordView by remember { mutableStateOf(state.pendingRecord?.also { state.pendingRecord = null } ?: if (state.debugOpenYear) RecordView(state.yearDue(now.toLocalDate()) ?: now.year, null) else RecordView(now.year, now.monthValue)) }
     // 정원이 아닌 페이지에서 뒤로 가기: 앱을 닫지 않고 정원으로
     // 이름표 · 버튼으로 옮기는 동안은 ‘숨 한 번’, 손으로 넘길 땐 ‘내려앉는 종이’
@@ -310,8 +333,8 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
     // 걱정한 밤 다음 아침의 한마디 (06): 오늘 처음 정원을 열 때 한 번 (보여 준 날을 바로 적어 둠)
     // 고요한 정원: 정원 위 글자는 한 번에 하나 (한마디가 있으면 오늘의 문장 · 질문 · 숨 권유 · 아래 쪽지가 쉼)
     var comfort by remember { mutableStateOf<String?>(null) }
-    if (!bare) LaunchedEffect(day0, state.guideDone, state.guest, state.titleUp) {
-        if (state.titleUp) return@LaunchedEffect   // 첫 화면 뒤에서 보이지 않은 채 지나가지 않게
+    if (!bare) LaunchedEffect(day0, state.guideDone, state.guest, state.titleUp, state.dewUp) {
+        if (state.titleUp || state.dewUp) return@LaunchedEffect   // 이슬이 걷힌 뒤에   // 첫 화면 뒤에서 보이지 않은 채 지나가지 않게
         // 손님은 말없이 와 있을 뿐 (만난 것만 적어 둠). 누르면 그때 한마디
         if (state.guideDone && state.greetingDue(day0)) state.greeted(day0)
         if (state.guideDone && state.comfortDue(day0)) { comfort = dayLine(ctx, "comfort_", day0); state.comfortSeen(day0) }
@@ -330,7 +353,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
             1 -> WritePage(state, now, recordView, guide, onSettings) { recordView = it }
             2 -> MemoriesPage(state, profile, now, guide, onMemory, onCredits)
             3 -> FlowPage(state, profile, now, guide)
-            else -> BoxWithConstraints(Modifier.fillMaxSize()) {
+            else -> BoxWithConstraints(Modifier.fillMaxSize().drawWithContent { drawContent(); if (!bare && state.dewUp && dewBlurs) dewLayer.record { this@drawWithContent.drawContent() } }) {
         val u = Theme.unit
         val screenH = maxHeight
         val screenW = maxWidth
@@ -382,7 +405,8 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 // 위: 남은 시간 · 단위 · 오늘의 문장
                 if (!bare) Column(
                     // 글자는 늘 그림 (해 · 달 · 연 · 우연한 순간) 위에
-                    Modifier.fillMaxWidth().zIndex(3f).statusBarsPadding().padding(horizontal = margin).onGloballyPositioned { c -> topBottom = with(density) { (c.boundsInParent().bottom).toDp() } },
+                    Modifier.fillMaxWidth().zIndex(3f).statusBarsPadding().padding(horizontal = margin).onGloballyPositioned { c -> topBottom = with(density) { (c.boundsInParent().bottom).toDp() } }
+                        .graphicsLayer { val k = uiIn(); alpha = k; translationY = -(1f - k) * (u * UI_RISE_TOP).toPx() },
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp2),
                 ) {
@@ -392,8 +416,8 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                             TokenText(stringResource(R.string.title_name), Tokens.TypeScale.headline.serif())   // 그 말의 앱 이름 (스토어 · 홈 화면 아이콘과 같게)
                             TokenText(stringResource(R.string.tagline), Tokens.TypeScale.caption1.serif(), color = p.secondary)
                         }
-                        if (state.guideDone) HelpButton({ state.replayTour("garden") })
-                        IconButton(onClick = onSettings, modifier = Modifier.guideTarget(guide, "settings").semantics { contentDescription = ctx.getString(R.string.settings) }) { Icon(Icons.Filled.Settings, null, tint = p.secondary) }
+                        // (?) · 설정은 네 탭 모두 오른쪽 위 같은 자리에 고정 (아래 TopBarIcons): 이름 줄은 그 자리만 비워 둠
+                        Spacer(Modifier.width(Tokens.Layout.tapTarget * 2))
                     }
                     // 윗줄 첫 말이 단위 (남은 날 · 주 · 달 · 해): 밤에 단위 버튼이 쉬어도 숫자가 무엇인지 알 수 있게
                     val leftName = stringResource(when (state.unit) { LifeUnit.DAYS -> R.string.timeLeft_days; LifeUnit.WEEKS -> R.string.timeLeft_weeks; LifeUnit.MONTHS -> R.string.timeLeft_months; LifeUnit.YEARS -> R.string.timeLeft_years })
@@ -416,8 +440,15 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                         // 한 줄로 답하기: 기록 페이지의 오늘의 한 줄로
                         state.answer(); turnTo(1)
                     } } else state.quote?.let { q ->
+                        // 누르면 다음 문장, 길게 누르면 간직하기 (1.1.5, 오른쪽 위에 한지 책갈피가 내려옴)
+                        val kept = state.isKept(q.number)
+                        // 책갈피는 문장 첫 줄 오른쪽 끝에 꽂힘 (글자에 걸치듯)
+                        var quoteEdge by remember { mutableStateOf(-1f) }
+                        val ribbon by androidx.compose.animation.core.animateFloatAsState(if (kept) 1f else 0f, androidx.compose.animation.core.spring(dampingRatio = 0.5f, stiffness = 300f), label = "keep")
                         Column(
-                            Modifier.fillMaxWidth().padding(top = Tokens.Space.sp4).guideTarget(guide, "words").clickable { state.nextQuote() },
+                            Modifier.fillMaxWidth().padding(top = Tokens.Space.sp4).guideTarget(guide, "words")
+                                .combinedClickable(onLongClickLabel = stringResource(if (kept) R.string.keep_off else R.string.keep_on), onLongClick = { state.toggleKeep(q.number) }) { state.nextQuote() }
+                                .drawWithContent { drawContent(); if (ribbon > 0f) keepRibbon(Offset(if (quoteEdge >= 0f) quoteEdge + u.toPx() * KEEP_RIBBON_GAP else size.width / 2, -u.toPx() * KEEP_RIBBON_LIFT), u.toPx(), ribbon) },
                             horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1),
                         ) {
                             // 새 문장 (누르거나 날이 바뀌어) 은 옛 타자기처럼 한 글자씩. 자리는 처음부터 다 잡아 두어 줄이 흔들리지 않음
@@ -425,7 +456,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                             val main = io.github.graviton94.carpediem.data.Words.main(q, state.quoteLanguage, phone)
                             val second = if (!sleepy) io.github.graviton94.carpediem.data.Words.second(q, state.quoteLanguage, phone) else null
                             // 한 글자씩 바뀌는 수는 이 작은 묶음 안에서만 읽음 (정원 전체가 글자마다 다시 짜이지 않게)
-                            TypedQuote(state, main, second)
+                            TypedQuote(state, main, second) { quoteEdge = it }
                             // ‘눌러서 다음 문장’ 은 처음 일주일만 (알고 난 뒤엔 문장만 조용히)
                             if (!sleepy && day0.isBefore(state.store.startDate.plusDays(7))) TokenText(stringResource(R.string.words_next), Tokens.TypeScale.caption1, color = p.secondary, weight = FontWeight.Normal)
                         }
@@ -441,7 +472,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                         TokenText(stringResource(R.string.breath_morning), Tokens.TypeScale.footnote.serif(),
                             Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { askBreath = BreathKind.CALM to R.string.breath_morning }.padding(Tokens.Space.sp3), color = p.secondary)
                     // 알림 · 바로 가기에서 왔으면: 첫 화면 · 둘러보기가 끝난 뒤 한 번 묻기
-                    state.goAsk?.takeIf { !state.titleUp && !state.touring && !touring }?.let { go ->
+                    state.goAsk?.takeIf { !state.titleUp && !state.dewUp && !state.touring && !touring }?.let { go ->
                         val night = Labels.part(now) == io.github.graviton94.carpediem.core.DayPart.NIGHT
                         val title = when (go) {
                             "close" -> ""
@@ -495,6 +526,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 // 가끔 별똥별 (밤 · 새벽, 글자와 하루 머리 사이 하늘)
                 ShootingStars(now, topBottom, gy - haruAbove - u * G.Layout.minSkyGap, Modifier.fillMaxSize())
                 // 절기가 든 날의 작은 변화 (S1) · 오늘 마친 숨의 흔적 (E3): 그날만, 돌 · 꾸밈 뒤에
+                Box(Modifier.fillMaxSize().graphicsLayer { alpha = decorIn() }) {
                 termToday?.let { tt -> TermTouches(tt.touch, now, gy, topBottom, gy - haruAbove - u * G.Layout.minSkyGap, with(androidx.compose.ui.platform.LocalDensity.current) { Offset(sx.toPx(), sy.toPx()) }, day, Modifier.fillMaxSize()) }
                 BreathTraces(trace, now, gy, xs[0], (widths[0].toFloat() / 2).dp, Modifier.fillMaxSize())
                 // 오늘 심은 아침 씨앗 (04): 하루 왼쪽 발치에 새싹 (저녁에 텄다고 하면 작은 꽃)
@@ -516,6 +548,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                     DecorBack(decor, now, gy, x0, x1, topBottom + u * G.Layout.minSkyGap, gy - haruAbove - u * G.Layout.minSkyGap,
                         if (bare) null else { part -> if (part == DecorPart.LETTER) state.letterDue(day0)?.let { l -> state.openLetter(l.id); letterOpen = l } else decorOpen = part }, warm = BreathKind.SLEEP in trace)
                     MossSeat(decor, now, xs[0], widths[0].toFloat().dp, gy, if (bare) null else { part -> decorOpen = part })
+                }
                 }
 
                 // 돌들: 한 번 누르면 쓰다듬기, 두 번 누르면 그 돌의 페이지
@@ -563,18 +596,33 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                     }
                 }
                 val glanceL = byX.getOrNull(glanceK); val glanceR = byX.getOrNull(glanceK + 1)
+                // 피어나는 차례: 하루 곁 가족부터 하나씩 땅에서 올라오고, 하루는 그 사이 올라와 콩 앉음
+                val bloomRank = slots.indices.filter { it != 0 }.sortedBy { kotlin.math.abs((xs[it] - xs[0]).value) }.withIndex().associate { it.value to it.index }
+                fun stoneIn(i: Int): Float = if (i == 0) win(0.3f, 0.65f) else { val d = minOf((bloomRank[i] ?: 0) * 0.08f, 0.4f); win(d, d + 0.3f) }
+                val haruHopPx = with(density) { (u * HARU_LAND_HOP).toPx() }
                 // 왼쪽부터 그려, 겹쳐 앉으면 오른쪽 돌이 앞 (누름도 앞 돌이 먼저 받음)
                 byX.forEach { i -> val sl = slots[i]; androidx.compose.runtime.key(sl.id ?: "me") {
                     val inGlance = glanceR != null && (i == glanceL || i == glanceR)
                     val cx = xs[i] - sl.scale * (sl.art.meta.bbox.center.x - sl.art.meta.box / 2)
                     val left = cx - sl.scale * (sl.art.meta.box / 2); val top = gy - sl.scale * G.Layout.haruGround
-                    HaruFigure(sl.art, sl.scale, Modifier.offset(left, top).guideTarget(guide.takeIf { sl.id == null && !bare }, "haru").graphicsLayer {
+                    val groundAt = sl.scale * G.Layout.haruGround + u * 1.5f
+                    if (sl.id == null && !bare) { val hb = with(density) { androidx.compose.ui.geometry.Rect((xs[i] - (widths[i].toFloat() / 2).dp).toPx(), (gy - sl.scale * (sl.art.meta.ground - sl.art.meta.bbox.top)).toPx(), (xs[i] + (widths[i].toFloat() / 2).dp).toPx(), gy.toPx()) }
+                        androidx.compose.runtime.SideEffect { if (haruBox != hb) haruBox = hb } }
+                    HaruFigure(sl.art, sl.scale, Modifier.offset(left, top).guideTarget(guide.takeIf { sl.id == null && !bare }, "haru")
+                        // 피어나는 동안은 땅 아래를 가림 (땅에서 올라오게)
+                        .drawWithContent { if (stoneIn(i) < 1f) clipRect(-size.width, -size.height, size.width * 2f, groundAt.toPx()) { this@drawWithContent.drawContent() } else drawContent() }
+                        .graphicsLayer {
                         val a = (song.value - startAt(i)) / 320f
-                        translationY = if (song.value >= 0f && a in 0f..1f) -hopPx * sin(a * Math.PI).toFloat() else 0f
+                        val f = stoneIn(i)
+                        alpha = minOf(1f, f * 2f)
+                        val land = if (i == 0 && !still && bloom.value in 0.65f..0.8f) haruHopPx * sin((bloom.value - 0.65f) / 0.15f * Math.PI).toFloat() else 0f
+                        translationY = (if (song.value >= 0f && a in 0f..1f) -hopPx * sin(a * Math.PI).toFloat() else 0f) - land + (1f - f) * size.height * STONE_RISE
                         // 돌멍하기: 돌마다 조금씩 다른 박자로 숨 쉼 (바닥을 축으로 1.5%)
                         if (bare) { val b = gazeBreath(gazeClock.value * (if (i == 0) 1f else 0.93f + 0.05f * (i % 3)) + i * 1.7f)
                             transformOrigin = androidx.compose.ui.graphics.TransformOrigin(0.5f, sl.art.meta.ground / sl.art.meta.box); scaleY = 1f + Tokens.Garden.Gaze.swell * b; scaleX = 1f + Tokens.Garden.Gaze.swell * 0.4f * b }
-                    }, blinkKick = (if (sl.id == null) state.blinkKick else 0) + (if (inGlance) glanceBlink else 0), hat = sl.birthday, tiltOn = sl.id == null, lookDown = if (sl.id == null && heavyToday) G.Care.lookDown else 0f,
+                    }, blinkKick = (if (sl.id == null) state.blinkKick + dewBlink else 0) + (if (inGlance) glanceBlink else 0), hat = sl.birthday,
+                        // 아침 이슬: 김 너머 하루는 눈을 감고, 하루 자리를 닦은 만큼 뜸
+                        lid = if (sl.id == null && state.dewUp && !dewWake) 1f - ((dewHaru - 0.2f) / 0.35f).coerceIn(0f, 1f) else null, smileKick = if (sl.id == null) dewSmile else 0, tiltOn = sl.id == null, lookDown = if (sl.id == null && heavyToday) G.Care.lookDown else 0f,
                         a11y = stringResource(R.string.garden_stoneA11y, sl.name, Labels.stone(ctx, sl.art.meta.stone)), onOpen = { onStone(sl.id) },
                         onLongPress = if (sl.id == null && !bare) ({ sing() }) else null,
                         // 내 하루는 오늘을 앎: 보낸 한 줄의 마음 · 밤
@@ -585,6 +633,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                         sleepy = sl.id == null && !bare && isNight(now),
                         onPet = if (sl.id == null && !bare) ({ state.pettedHaru(day0) }) else null,
                         glance = { if (!inGlance) 0f else (if (i == glanceL) 1f else -1f) * G.Family.glanceLook * glanceOn.value })   // 그릴 때만 읽음 (정원 전체를 다시 짜지 않게)
+                    Box(Modifier.fillMaxSize().graphicsLayer { alpha = decorIn() }) {
                     // 미니 하루 (1.1.5): 요즘 자주 머문 마음, 내 하루 발치 가운데 ~ 오른쪽 (기록을 남길 때만)
                     if (sl.id == null && !bare) MiniHarus(state, minis, xs[i], gy, (widths[i].toFloat()).dp)
                     // 생일 당일: 돌 앞에 작은 케이크 (전날 저녁엔 모자만)
@@ -614,6 +663,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                         val tt = Tokens.Layout.tapTarget
                         if (!bare) Box(Modifier.offset(ox + ow / 2 - tt / 2, gy - u * 8f - tt / 2).size(tt).clickable(interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }, indication = null) { state.say(label) })
                     }
+                    }
                 } }
 
                 androidx.compose.foundation.Canvas(Modifier.fillMaxSize().graphicsLayer()) {
@@ -627,6 +677,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                         drawCircle(Tokens.Garden.Colors.now.copy(alpha = (1f - a) * 0.8f), ring * (0.25f + 0.75f * a), c, style = androidx.compose.ui.graphics.drawscope.Stroke(u.toPx() * 1.2f))
                     }
                 }
+                Box(Modifier.fillMaxSize().graphicsLayer { alpha = decorIn() }) {
                 // 하루가 준 조약돌: 아주 가끔 하루 앞 땅에 하나 (돌들 위에 그려 가리지 않게, 누르면 주워서 ‘모은 것’ 에)
                 if (!bare && state.pebbleOffered == day0) {
                     val pw = u * 10f
@@ -666,6 +717,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                     val (gx, gyy) = spots[Math.floorMod(day0.toEpochDay() * 31 + g.hashCode(), spots.size.toLong()).toInt()]
                     GuestFigure(g, gx, gyy, screenW, letter = carried != null, onLetter = { slipOpen = g })
                 }
+                }
 
                 // 우연한 순간 (한 번에 하나, 몇 초 뒤 사라짐)
                 if (!bare) state.chance?.let { c -> ChanceLayer(c, now, real, gy, xs[0], u * G.Decor.treeX, x1, topBottom + u * G.Layout.minSkyGap, back = false) { seen -> state.chanceDone(seen, c) } }
@@ -675,6 +727,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 val labelRows = if (slots.size > G.Family.oneRow.toInt()) 2 else 1
                 // 화면 왼쪽부터의 순서로 번갈아 (목록 순서가 아니라 실제로 옆에 앉은 돌끼리 다른 줄)
                 val rank = xs.indices.sortedBy { xs[it].value }.withIndex().associate { it.value to it.index }
+                Box(Modifier.fillMaxSize().graphicsLayer { alpha = uiIn() }) {
                 if (family && !bare) Box(Modifier.offset(y = gy + u * G.Layout.labelGap).fillMaxWidth()) {
                     slots.forEachIndexed { i, sl -> TokenText(shortName(sl.name), Tokens.TypeScale.caption1, Modifier.offset(y = u * G.Layout.labelRow * ((rank[i] ?: i) % labelRows)).centerAt(with(density) { xs[i].toPx() }, 0f, with(density) { screenW.toPx() }), weight = FontWeight.Medium, maxLines = 1) }
                 }
@@ -683,6 +736,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                     TokenText(stringResource(R.string.garden_age0), Tokens.TypeScale.caption1, Modifier.centerAt(px.first, 0f, px.second), color = p.secondary)
                     TokenText(stringResource(R.string.expectancy_value, Labels.years(s.expectancy)), Tokens.TypeScale.caption1, Modifier.centerAt(px.second, px.first, with(density) { screenW.toPx() }), color = p.secondary)
                 }
+                }
                 // 잠들기 전 정원: 화면 전체를 조금 더 어둡게
                 if (sleepy) Box(Modifier.fillMaxSize().background(Color.Black.copy(alpha = G.SleepGarden.dim)))
                 // 마음의 날씨: 오늘 보낸 마음이 하늘에 잠깐 (무거운 마음 = 몇 방울 비, 기쁨 · 희망 · 고마움 = 햇살 한 줄기)
@@ -690,7 +744,8 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 // 아래, 엄지가 닿는 곳: 생일 한 줄 · 도착한 것 한 장 · 정원에서 하는 일 (숨, 쉼 · 돌멍하기 · 돌 더하기)
                 if (!bare) Column(
                     Modifier.align(Alignment.BottomCenter).fillMaxWidth().zIndex(3f).padding(horizontal = margin).padding(bottom = Tokens.Space.sp3)
-                        .onGloballyPositioned { c -> blockH = with(density) { c.size.height.toDp() } },
+                        .onGloballyPositioned { c -> blockH = with(density) { c.size.height.toDp() } }
+                        .graphicsLayer { val k = uiIn(); alpha = k; translationY = (1f - k) * (u * UI_RISE_BOTTOM).toPx() },
                     verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp2),
                 ) {
                     // 버튼 위에는 하나만 (정원을 가리지 않게): 생일 한 줄 → 지난 해 · 지난 달의 정원 → 돌아온 한 줄 차례로
@@ -780,12 +835,26 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
           }
           }
         }
-        if (!bare && !typing) Box(Modifier.guideTarget(guide, "tabs")) { PageTabs(pager.currentPage) { turnTo(it) } }
+        val tabRise = Theme.unit * UI_RISE_BOTTOM
+        if (!bare && !typing) Box(Modifier.guideTarget(guide, "tabs").graphicsLayer { val k = uiIn(); alpha = k; translationY = (1f - k) * tabRise.toPx() }) { PageTabs(pager.currentPage) { turnTo(it) } }
       }
-        // 기록 · 추억 · 흐름: 오른쪽 위 같은 자리에 (?) (정원은 이름 줄의 설정 옆)
-        val helpKey = listOf(null, "write", "memories", "flow").getOrNull(pager.currentPage)
-        if (!bare && !typing && helpKey != null && state.guideDone && !state.touring && !pager.isScrollInProgress)
-            HelpButton({ state.replayTour(helpKey) }, Modifier.align(Alignment.TopEnd).statusBarsPadding().padding(end = Tokens.Space.sp2).zIndex(4f))
+        // 아침 이슬 (1.1.5): 김 서린 유리. 다 닦으면 하루가 뽀득 눈웃음, 그냥 두면 저절로 걷히고 하루 혼자 눈 뜸. 걷힌 뒤 글자 · 버튼
+        if (!bare && state.dewUp) MorningDew(dewLayer, haruBox, onHaru = { dewHaru = it },
+            onClear = { auto -> scope.launch {
+                if (auto) { delay(DEW_WAKE_AUTO_MS); dewWake = true; dewBlink++ } else { dewWake = true; dewSmile++ }
+                delay(if (auto) DEW_UI_AUTO_MS else DEW_UI_MS); uiGate.animateTo(1f, tween(UI_IN_MS))
+            } }, onGone = { state.dewCleared() })
+        // 네 탭 (정원 · 기록 · 추억 · 흐름) 모두 오른쪽 위 같은 자리에 (?) · 설정 (1.1.5): 탭을 넘겨도 움직이지 않음.
+        // (?) 는 지금 페이지의 둘러보기, 넘기는 중엔 (?) 만 잠시 숨김. 정원이 피어날 때는 글자와 함께 스며듦, 아침 이슬이 있는 동안엔 숨김
+        val helpKey = listOf("garden", "write", "memories", "flow").getOrNull(pager.currentPage)
+        if (!bare && !typing && !state.dewUp) Row(
+            Modifier.align(Alignment.TopEnd).statusBarsPadding().padding(end = Theme.deviceClass.pageMargin).zIndex(4f).graphicsLayer { alpha = uiIn() },
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            if (helpKey != null && state.guideDone && !state.touring && !pager.isScrollInProgress) HelpButton({ state.replayTour(helpKey) })
+            else Spacer(Modifier.size(Tokens.Layout.tapTarget))
+            IconButton(onClick = onSettings, modifier = Modifier.guideTarget(guide, "settings").semantics { contentDescription = ctx.getString(R.string.settings) }) { Icon(Icons.Filled.Settings, null, tint = Theme.palette.secondary) }
+        }
         // 한 줄을 보낸 뒤: 깃털이 내려오며 한마디 창
         if (!bare) LetGoModal(state, Modifier.fillMaxSize()) { c ->
             when (c) {
@@ -1028,7 +1097,7 @@ internal fun keepWords(text: String): Pair<String, IntArray> {
 }
 
 @Composable
-private fun QuoteText(text: String, shown: Int = Int.MAX_VALUE) {
+private fun QuoteText(text: String, shown: Int = Int.MAX_VALUE, onEdge: (Float) -> Unit = {}) {
     val steps = listOf(Tokens.TypeScale.headline, Tokens.TypeScale.callout, Tokens.TypeScale.subhead)
     var step by remember(text) { mutableStateOf(0) }
     var ready by remember(text) { mutableStateOf(false) }
@@ -1036,7 +1105,7 @@ private fun QuoteText(text: String, shown: Int = Int.MAX_VALUE) {
     TypedText(
         text, shown, steps[step].serif(), Theme.palette.foreground, Modifier.fillMaxWidth().graphicsLayer { alpha = if (ready) 1f else 0f },
         maxLines = if (last) Int.MAX_VALUE else 2,
-        onTextLayout = { r -> if (r.hasVisualOverflow && !last) step++ else ready = true },
+        onTextLayout = { r -> if (r.hasVisualOverflow && !last) step++ else { ready = true; if (r.lineCount > 0) onEdge(r.getLineRight(0)) } },
     )
 }
 
@@ -1141,10 +1210,42 @@ fun GardenButton(text: String, onClick: () -> Unit, filled: Boolean, seed: Int, 
 }
 
 
+/** 간직한 문장의 한지 책갈피: at = 위 가운데, k = 정원 칸 (px), drop = 0..1 (위에서 내려옴). */
+internal fun androidx.compose.ui.graphics.drawscope.DrawScope.keepRibbon(at: Offset, k: Float, drop: Float) {
+    val w = k * KEEP_RIBBON_W; val h = k * KEEP_RIBBON_H * drop
+    if (h <= 0f) return
+    val p = androidx.compose.ui.graphics.Path().apply { moveTo(at.x - w / 2, at.y); lineTo(at.x + w / 2, at.y); lineTo(at.x + w / 2, at.y + h); lineTo(at.x, at.y + h * 0.8f); lineTo(at.x - w / 2, at.y + h); close() }
+    drawPath(p, KEEP_RIBBON_COLOR)
+    // 한지를 접은 결: 오른쪽 반을 조금 진하게
+    clipPath(p) { drawRect(KEEP_RIBBON_FOLD, Offset(at.x + w * 0.08f, at.y), androidx.compose.ui.geometry.Size(w, h)) }
+    drawPath(p, Tokens.Garden.Colors.ink.copy(alpha = 0.7f), style = androidx.compose.ui.graphics.drawscope.Stroke(k * 0.8f, join = androidx.compose.ui.graphics.StrokeJoin.Round))
+}
+internal val KEEP_RIBBON_COLOR = Color(0xFFC0614A)
+private val KEEP_RIBBON_FOLD = Color(0x22000000)
+/** 책갈피 폭 · 길이 · 문장 끝에서 떨어진 거리 · 문장 위로 올라온 만큼 (정원 칸). */
+private const val KEEP_RIBBON_W = 9f
+private const val KEEP_RIBBON_H = 22f
+private const val KEEP_RIBBON_GAP = 3f
+private const val KEEP_RIBBON_LIFT = 5f
+
 /** 오늘의 문장 (타자기처럼). 글자 수는 여기서만 읽어, 바뀌어도 이 문장만 다시 그림. */
 @Composable
-private fun TypedQuote(state: AppState, main: String, second: String?) {
+private fun TypedQuote(state: AppState, main: String, second: String?, onEdge: (Float) -> Unit = {}) {
     val typed = rememberTyping(state, main, second)
-    QuoteText(main, typed)
+    QuoteText(main, typed, onEdge)
     if (second != null) TypedText(second, typed - main.length, Tokens.TypeScale.footnote.serif(), Theme.palette.secondary, Modifier.fillMaxWidth())
 }
+
+/** 첫 화면 뒤 정원이 피어나는 시간 · 이슬이 있을 땐 (김 너머라) 짧게 · 이슬이 걷힌 뒤 글자 · 버튼이 나오는 시간. */
+private const val BLOOM_MS = 2400
+private const val BLOOM_DEW_MS = 1200
+private const val UI_IN_MS = 1200
+/** 돌이 땅에서 올라오는 높이 (돌 상자 높이 비율) · 하루가 내려앉으며 콩 뛰는 높이 · 위 글자 · 아래 버튼이 미끄러져 오는 거리 (정원 칸). */
+private const val STONE_RISE = 0.5f
+private const val HARU_LAND_HOP = 2.5f
+private const val UI_RISE_TOP = 3f
+private const val UI_RISE_BOTTOM = 6f
+/** 이슬이 걷힌 뒤: 다 닦았을 땐 바로 웃고, 저절로 걷힐 땐 조금 뒤 혼자 눈 뜸. 글자 · 버튼은 그다음. */
+private const val DEW_WAKE_AUTO_MS = 1600L
+private const val DEW_UI_MS = 600L
+private const val DEW_UI_AUTO_MS = 1600L

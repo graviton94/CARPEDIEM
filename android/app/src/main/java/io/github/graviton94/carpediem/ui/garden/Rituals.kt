@@ -403,11 +403,13 @@ private fun ShortBreath(state: AppState, kind: BreathKind, cycles: Int, title: I
     val step by remember(plan) { androidx.compose.runtime.derivedStateOf { Breath.at(plan, elapsed)?.first?.step } }
     // 한숨 호흡의 두 번째 들이쉼: ‘한 번 더’
     val topUp by remember(plan) { androidx.compose.runtime.derivedStateOf { (Breath.at(plan, elapsed)?.first?.lo ?: 0f) > 0f } }
+    val bell = remember { Soundscape.bellFor(state.sound, io.github.graviton94.carpediem.core.Memories.seasonOf(java.time.LocalDate.now())) }
     LaunchedEffect(step) {
+        if (state.sound == Sound.NONE) return@LaunchedEffect
         when (step) {
-            BreathStep.IN -> Soundscape.bowl(G.Sound.bowlInHz.toDouble())
-            BreathStep.HOLD -> Soundscape.bowl(G.Sound.bowlHoldHz.toDouble())
-            BreathStep.OUT -> Soundscape.bowl(G.Sound.bowlOutHz.toDouble())
+            BreathStep.IN -> Soundscape.bowl(G.Sound.bowlInHz.toDouble(), bell = bell)
+            BreathStep.HOLD -> Soundscape.bowl(G.Sound.bowlHoldHz.toDouble(), bell = bell)
+            BreathStep.OUT -> Soundscape.bowl(G.Sound.bowlOutHz.toDouble(), bell = bell)
             else -> {}
         }
     }
@@ -606,7 +608,7 @@ internal fun AnniversarySheet(state: AppState, which: String, onSupport: () -> U
             CrayonRule(seed = 1470)
             TokenText(stringResource(if (year) io.github.graviton94.carpediem.R.string.anniv_bodyYear else io.github.graviton94.carpediem.R.string.anniv_body100), Tokens.TypeScale.callout.serif())
             TokenText(stringResource(io.github.graviton94.carpediem.R.string.anniv_sign), Tokens.TypeScale.footnote.serif(), Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.End)
-            if (state.supportMarks.isEmpty()) TokenText(stringResource(io.github.graviton94.carpediem.R.string.anniv_support), Tokens.TypeScale.footnote,
+            if (state.supportMarks.isEmpty() && state.shopOpen) TokenText(stringResource(io.github.graviton94.carpediem.R.string.anniv_support), Tokens.TypeScale.footnote,
                 Modifier.fillMaxWidth().heightIn(min = Tokens.Layout.tapTarget).clickable(onClick = onSupport).padding(vertical = Tokens.Space.sp3), color = p.olive, weight = FontWeight.SemiBold, align = TextAlign.Center)
             else TokenText(stringResource(io.github.graviton94.carpediem.R.string.anniv_thanks), Tokens.TypeScale.footnote.serif(), Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.Center)
             TokenText(stringResource(io.github.graviton94.carpediem.R.string.collect_close), Tokens.TypeScale.footnote,
