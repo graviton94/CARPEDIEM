@@ -40,10 +40,9 @@
     ipha: function (ctx) { var p = disc(0, 12, 14, -Math.PI / 2 + 0.22, Math.PI * 1.5 - 0.22); one(ctx, place(p, 0, 0, 1, 0).map(function (q) { return [q[0], 12 + (q[1] - 12) * 0.62]; }), "#7FAE5E", 6181, { tone: 0.1 });
       for (var i = 0; i < 6; i++) { var a = -Math.PI / 2 + 0.5 + i * 0.9; thread(ctx, [[0, 12], [Math.cos(a) * 11, 12 + Math.sin(a) * 11 * 0.62]], 0.45, "rgba(80,110,60,.6)"); }
       stem(ctx, [6, 12, 7, 4, 8, -2, 8, -6]); one(ctx, place(leafPts(9, 3.4), 8, -5, 1, -Math.PI / 2), "#EFA3B4", 6182, { rim: 0.4 }); },
-    // 소만: 보리 이삭 하나 (한 장으로 오린 길쭉한 이삭, 낟알 결은 안쪽에 비스듬히) · 까끄라기는 가는 실
+    // 소만: 보리 이삭 하나 (한 장으로 오린 길쭉한 이삭, 낟알 결은 안쪽에 비스듬히)
     soman: function (ctx) { stem(ctx, [0, 24, 0.6, 14, -0.4, 6, 0, -1]); one(ctx, place(leafPts(12, 2.4), 0, 15, 1, -0.55), "#8DB46A", 6191, { rim: 0.2 });
       var ear = [[0, -1]].concat(bez([0, -1, 4.2, -4, 4, -14, 0, -21], 10), bez([0, -21, -4, -14, -4.2, -4, 0, -1], 10));
-      for (var j = 0; j < 7; j++) { var y = -3 - j * 2.6, d = j % 2 ? 1 : -1; thread(ctx, [[d * 2.6, y], [d * 7, y - 7]], 0.4, "rgba(170,150,80,.75)"); }
       one(ctx, ear, "#D9C46A", 6192, { rim: 0.3, inner: function (c) { c.strokeStyle = "rgba(140,120,50,.45)"; c.lineWidth = 0.5; c.lineCap = "round";
         for (var y = -3; y > -20; y -= 2.6) { c.beginPath(); c.moveTo(-4, y + 1.6); c.quadraticCurveTo(-1, y, 0, y - 0.6); c.stroke(); c.beginPath(); c.moveTo(4, y + 0.4); c.quadraticCurveTo(1, y - 1.2, 0, y - 1.8); c.stroke(); } } }); },
     mangjong: function (ctx) { one(ctx, blob(0, 22.6, 15, 2, 6201, 0.03), "#A9CFE0", 6201, { rim: 0.3, sh: 0.2 });
@@ -72,15 +71,12 @@
     baengno: function (ctx) { one(ctx, [grassBlade(-4, 32, -6, 2), grassBlade(1, 26, 10, 1.8), grassBlade(-1, 20, -14, 1.6)], "#8DB46A", 6261, { rim: 0.3 });
       one(ctx, [blob(-8.6, -6, 1.8, 1.9, 6262, 0.05), blob(8.4, 1.6, 1.6, 1.7, 6263, 0.05), blob(-11, 8, 1.4, 1.5, 6264, 0.05)], "#F4F8FA", 6262, { rim: 0.3, light: 0.98 }); },
     // 추분: 익어 고개 숙인 벼 이삭 (한 장으로 오린 휜 이삭, 낟알 결은 안쪽에) · 가는 잎 하나
-    // 추분: 거둔 볏단 하나 (금빛 짚을 묶은 띠, 위로 고개 숙인 이삭 무리 한 장)
-    chubun: function (ctx) {
-      one(ctx, [[-6, 24], [6, 24], [3.4, 8], [-3.4, 8]], "#D9B25A", 6271, { rim: 0.4, inner: function (c) { c.strokeStyle = "rgba(140,100,40,.4)"; c.lineWidth = 0.45; [-4, -2, 0, 2, 4].forEach(function (x) { c.beginPath(); c.moveTo(x * 1.3, 24); c.lineTo(x * 0.7, 8); c.stroke(); }); } });
-      one(ctx, [[-4.6, 12.6], [4.6, 12.6], [4.4, 15.4], [-4.4, 15.4]], "#9A7A4A", 6272, { rim: 0.2, sh: 0.2 });
-      // 묶은 띠 위로 짚이 부채처럼 퍼지고 (끝은 들쭉날쭉), 익은 이삭이 양옆으로 고개 숙임
-      var fan = [[-3.2, 9]]; for (var i = 0; i <= 10; i++) { var x = -11 + i * 2.2; fan.push([x, i % 2 ? -7.4 : -10.2]); } fan.push([3.2, 9]);
-      one(ctx, fan, "#E3BC5C", 6273, { rim: 0.35, inner: function (c) { c.strokeStyle = "rgba(150,110,40,.4)"; c.lineWidth = 0.45; [-9, -5, -1.6, 1.6, 5, 9].forEach(function (x) { c.beginPath(); c.moveTo(x * 0.25, 9); c.lineTo(x, -8); c.stroke(); }); } });
-      [[-9, -7, -15, -6, -17, 0, -16, 6], [-5, -8, -9, -12, -12, -10, -12, -4], [9, -7, 15, -6, 17, 0, 16, 6], [5, -8, 9, -12, 12, -10, 12, -4]].forEach(function (h, i) {
-        one(ctx, rib(bez(h, 10), 2.8, 1.4), "#E8C062", 6276 + i, { rim: 0.3, inner: function (c) { c.strokeStyle = "rgba(150,110,40,.5)"; c.lineWidth = 0.4; var pts = bez(h, 6); pts.forEach(function (q, k) { if (!k) return; c.beginPath(); c.moveTo(q[0] - 1.2, q[1] - 0.6); c.lineTo(q[0] + 1.2, q[1] + 0.6); c.stroke(); }); } }); }); },
+    // 추분: 익어 고개 숙인 벼 이삭 (한 장으로 오린 휜 이삭, 낟알 결은 안쪽에) · 가는 잎 하나
+    chubun: function (ctx) { stem(ctx, [-3, 24, -2, 12, 0, 2, 5, -6], "#B59A5A"); one(ctx, place(leafPts(14, 2.2), -2.4, 16, 1, -2.5), "#B9A35E", 6280, { rim: 0.2 });
+      var path = bez([5, -6, 10, -8, 13.4, -3, 13.6, 7], 12), L = [], Rr = [];
+      path.forEach(function (q, i) { var a = path[Math.max(0, i - 1)], b = path[Math.min(path.length - 1, i + 1)], tx = b[0] - a[0], ty = b[1] - a[1], l = Math.hypot(tx, ty) || 1, w = 2.8 * Math.sin(Math.PI * (0.15 + 0.85 * i / (path.length - 1))); L.push([q[0] - ty / l * w, q[1] + tx / l * w]); Rr.push([q[0] + ty / l * w, q[1] - tx / l * w]); });
+      one(ctx, L.concat(Rr.reverse()), "#E3B24E", 6271, { rim: 0.3, inner: function (c) { c.strokeStyle = "rgba(150,110,40,.5)"; c.lineWidth = 0.45; c.lineCap = "round";
+        path.forEach(function (q, i) { if (i === 0) return; var a = path[i - 1], tx = q[0] - a[0], ty = q[1] - a[1], l = Math.hypot(tx, ty) || 1, nx = -ty / l * 2.4, ny = tx / l * 2.4; c.beginPath(); c.moveTo(q[0] + nx, q[1] + ny); c.lineTo(q[0] - tx / l * 1.4, q[1] - ty / l * 1.4); c.lineTo(q[0] - nx, q[1] - ny); c.stroke(); }); } }); },
     hallo: function (ctx) { stem(ctx, [0, 24, -1, 16, 1, 10, 0, 5]); one(ctx, place(leafPts(8, 3.4), 0, 16, 1, -0.5), "#7E9E5A", 6291, { rim: 0.3 });
       one(ctx, petals(0, 0, 14, 10, 1.6, 0), "#EFC447", 6292, { rim: 0.35 }); one(ctx, petals(0, 0, 10, 6, 1.4, 0.3), "#E3A93A", 6293, { rim: 0.2 }); one(ctx, blob(0, 0, 2, 2, 6294, 0.05), "#C8862E", 6294, { rim: 0, sh: 0.1 }); },
     sanggang: function (ctx) { one(ctx, maple(0, 6, 14, 0.2), "#C8553D", 6301); thread(ctx, [[0, 12], [1.6, 23]], 0.9, "#8A3E2A");
