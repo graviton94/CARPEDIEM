@@ -75,6 +75,7 @@ import androidx.compose.ui.semantics.selected
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.zIndex
@@ -342,6 +343,8 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
         if (state.guideDone && state.comfortDue(day0)) { comfort = dayLine(ctx, "comfort_", day0); state.comfortSeen(day0) }
     }
 
+    // 기록 · 추억 · 흐름의 스크롤 (위 띠가 글이 올라갔는지 봄)
+    val pageScrolls = listOf(rememberScrollState(), rememberScrollState(), rememberScrollState())
     Box(Modifier.fillMaxSize().paperBackground()) {
       Column(Modifier.fillMaxSize()) {
         // 보이지 않는 페이지는 그리지 않는다 (반짝임 · 살랑임이 화면 밖에서 돌지 않게). 쓰던 글은 rememberSaveable 로 남음
@@ -352,9 +355,9 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
           val incoming by remember(page) { derivedStateOf { (pager.currentPage - page) + pager.currentPageOffsetFraction < 0f } }
           Box(Modifier.fillMaxSize().zIndex(if (incoming) 1f else 0f).pageTurn(pager, page) { breath }) {
           when (page) {
-            1 -> WritePage(state, now, recordView, guide, onSettings) { recordView = it }
-            2 -> MemoriesPage(state, profile, now, guide, onMemory, onCredits)
-            3 -> FlowPage(state, profile, now, guide)
+            1 -> WritePage(state, now, recordView, guide, onSettings, pageScrolls[0]) { recordView = it }
+            2 -> MemoriesPage(state, profile, now, guide, onMemory, onCredits, pageScrolls[1])
+            3 -> FlowPage(state, profile, now, guide, pageScrolls[2])
             else -> BoxWithConstraints(Modifier.fillMaxSize().drawWithContent { drawContent(); if (!bare && state.dewUp && dewBlurs) dewLayer.record { this@drawWithContent.drawContent() } }) {
         val u = Theme.unit
         val screenH = maxHeight
@@ -402,6 +405,9 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                     val starTop = if (topBottom > 0.dp) topBottom + u * G.Layout.minSkyGap else screenH * 0.14f
                     val starBottom = minOf(gy - haruAbove - u * G.Layout.minSkyGap * 2, gy - u * G.Layout.hillTop).let { if (it > starTop + u * 12) it else starTop + u * 28 }
                     MemoryStars(state, screenW, starTop, starBottom, Theme.gc.night, day0)
+                    // 이번 달 별자리를 모았으면 (한 달에 한 줄 열흘): 밤하늘에 그 별자리가 옅게 (1.1.6)
+                    val clearMonths = remember(state.lines) { io.github.graviton94.carpediem.core.Constellations.clearMonths(state.lines, STAR_DAYS) }
+                    if (now.monthValue in clearMonths) state.store.constellations.of(now.monthValue)?.let { SkyConstellation(it, now, starTop, starBottom, Modifier.fillMaxSize()) }
                 }
 
                 // 위: 남은 시간 · 단위 · 오늘의 문장
@@ -550,6 +556,9 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                     DecorBack(decor, now, gy, x0, x1, topBottom + u * G.Layout.minSkyGap, gy - haruAbove - u * G.Layout.minSkyGap,
                         if (bare) null else { part -> if (part == DecorPart.LETTER) state.letterDue(day0)?.let { l -> state.openLetter(l.id); letterOpen = l } else decorOpen = part }, warm = BreathKind.SLEEP in trace)
                     MossSeat(decor, now, xs[0], widths[0].toFloat().dp, gy, if (bare) null else { part -> decorOpen = part })
+                    // 이번 절기의 한 장 (1.1.6): 절기가 든 날 정원에 왔으면 다음 절기까지 말뚝 앞에
+                    val term = remember(state.lines, state.breaths, state.gazeDays, day0) { state.termPiece(day0) }
+                    term?.let { t -> TermPiece(t.key, ctx.resources.getIdentifier("termName_${t.key}", "string", ctx.packageName).takeIf { it != 0 }?.let { ctx.getString(it) }.orEmpty(), now, gy, x1) }
                 }
                 }
 
@@ -855,6 +864,23 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
         // 네 탭 (정원 · 기록 · 추억 · 흐름) 모두 오른쪽 위 같은 자리에 (?) · 설정 (1.1.5): 탭을 넘겨도 움직이지 않음.
         // (?) 는 지금 페이지의 둘러보기, 넘기는 중엔 (?) 만 잠시 숨김. 정원이 피어날 때는 글자와 함께 스며듦, 아침 이슬이 있는 동안엔 숨김
         val helpKey = listOf("garden", "write", "memories", "flow").getOrNull(pager.currentPage)
+        // 기록 · 추억 · 흐름은 글이 위로 넘어가므로: (?) · 설정 뒤에 종이빛 띠를 깔아 글 · 칸이 그 밑으로 스르르 사라지게 (1.1.6, 버튼이 칸 위에 겹쳐 보이던 것).
+        // 정원 (하늘) 에선 띠 없음, 넘기는 동안 따라 옅어짐
+        if (!bare) {
+            val base = Theme.gc.base
+            Box(Modifier.align(Alignment.TopCenter).fillMaxWidth().zIndex(3f)
+                .graphicsLayer {
+                    // 그 페이지의 글이 위로 올라간 만큼 (첫 화면에선 제목이 가려지지 않게 띠 없음)
+                    val up = pageScrolls.getOrNull(pager.currentPage - 1)?.value ?: 0
+                    alpha = (pager.currentPage + pager.currentPageOffsetFraction).coerceIn(0f, 1f) * (up / TOP_FADE.toPx()).coerceIn(0f, 1f)
+                }
+                .drawBehind {
+                    val solid = size.height - TOP_FADE.toPx()
+                    drawRect(base, size = androidx.compose.ui.geometry.Size(size.width, solid))
+                    drawRect(Brush.verticalGradient(listOf(base, base.copy(alpha = 0f)), startY = solid, endY = size.height), Offset(0f, solid), androidx.compose.ui.geometry.Size(size.width, size.height - solid))
+                }
+                .statusBarsPadding().height(Tokens.Layout.tapTarget + TOP_FADE))
+        }
         if (!bare && !typing && !state.dewUp) Row(
             Modifier.align(Alignment.TopEnd).statusBarsPadding().padding(end = Theme.deviceClass.pageMargin).zIndex(4f).graphicsLayer { alpha = uiIn() },
             verticalAlignment = Alignment.CenterVertically,
@@ -924,10 +950,9 @@ private fun PageTabs(current: Int, onPick: (Int) -> Unit) {
 /** 기록: 계절 첫날의 바람 · 오늘의 한 줄, 그 아래 쌓인 한 줄들 (마음의 기록: 월 · 해). 보낸 뒤에도 이번 달 정원에 오늘이 피는 것을 본다. */
 @OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class)
 @Composable
-private fun WritePage(state: AppState, now: LocalDateTime, view: RecordView, guide: GuideTargets, onSettings: () -> Unit, onView: (RecordView) -> Unit) {
+private fun WritePage(state: AppState, now: LocalDateTime, view: RecordView, guide: GuideTargets, onSettings: () -> Unit, scroll: androidx.compose.foundation.ScrollState, onView: (RecordView) -> Unit) {
     val today = now.toLocalDate()
     // 마음의 기록에서 빈 날을 고르면 위의 쓰는 칸으로 올라감
-    val scroll = rememberScrollState()
     LaunchedEffect(state.writeDay) { if (state.writeDay != null) scroll.animateScrollTo(0) }
     Column(
         Modifier.fillMaxSize().imePadding().verticalScroll(scroll).statusBarsPadding()
@@ -964,9 +989,9 @@ private fun WritePage(state: AppState, now: LocalDateTime, view: RecordView, gui
 
 /** 추억: 모은 것 (계절 앨범 · 한 해 한 장 · 만난 순간 · 편지 · 기억의 자리). 지난 해의 기록은 기록 페이지의 마음의 기록에서 (‹ › 로 넘김). */
 @Composable
-private fun MemoriesPage(state: AppState, profile: LifeProfile, now: LocalDateTime, guide: GuideTargets, onMemory: () -> Unit, onCredits: (Int) -> Unit) {
+private fun MemoriesPage(state: AppState, profile: LifeProfile, now: LocalDateTime, guide: GuideTargets, onMemory: () -> Unit, onCredits: (Int) -> Unit, scroll: androidx.compose.foundation.ScrollState) {
     Column(
-        Modifier.fillMaxSize().imePadding().verticalScroll(rememberScrollState()).statusBarsPadding()
+        Modifier.fillMaxSize().imePadding().verticalScroll(scroll).statusBarsPadding()
             .padding(horizontal = Theme.deviceClass.pageMargin).padding(top = Tokens.Space.sp6, bottom = Tokens.Space.sp8),
         verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3),
     ) {
@@ -978,13 +1003,13 @@ private fun MemoriesPage(state: AppState, profile: LifeProfile, now: LocalDateTi
 
 /** 흐름: 흐르는 시간 · 인생 달력 · 특별한 날. */
 @Composable
-private fun FlowPage(state: AppState, profile: LifeProfile, now: LocalDateTime, guide: GuideTargets) {
+private fun FlowPage(state: AppState, profile: LifeProfile, now: LocalDateTime, guide: GuideTargets, scroll: androidx.compose.foundation.ScrollState) {
     val p = Theme.palette
     val ctx = LocalContext.current
     val s = LifeSnapshot(profile.birthDate, profile.expectancy(state.store.table), now)
     val season = s.season
     Column(
-        Modifier.fillMaxSize().imePadding().verticalScroll(rememberScrollState()).statusBarsPadding()
+        Modifier.fillMaxSize().imePadding().verticalScroll(scroll).statusBarsPadding()
             .padding(horizontal = Theme.deviceClass.pageMargin).padding(top = Tokens.Space.sp6, bottom = Tokens.Space.sp8),
         verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3),
     ) {
@@ -1254,6 +1279,8 @@ private const val KEEP_LEAF_W = 6.5f
 private const val KEEP_LEAF_TILT = 32f
 private const val KEEP_LEAF_SWING = 40f
 internal const val KEEP_LEAF_GAP = 6f
+/** 위 띠 아래쪽이 옅어지는 길이. */
+private val TOP_FADE = 18.dp
 
 /** 오늘의 문장 (타자기처럼). 글자 수는 여기서만 읽어, 바뀌어도 이 문장만 다시 그림. */
 @Composable
