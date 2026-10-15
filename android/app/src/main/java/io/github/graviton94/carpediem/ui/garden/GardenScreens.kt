@@ -124,7 +124,7 @@ import kotlin.math.sin
 
 private fun lerp(a: Float, b: Float, t: Float) = a + (b - a) * t
 
-/** 해(낮) · 달(밤)이 지금 하늘의 어디쯤인지 (0 = 왼쪽 끝, 1 = 오른쪽 끝). 그날 실제 해 뜨고 지는 시각 기준 (SkyTime.sunPath). */
+/** 해(낮) · 달(밤)이 지금 하늘의 어디쯤인지 (0 = 왼쪽 끝, 1 = 오른쪽 끝). 하늘빛과 같은 시계 (SkyTime.sunPath): 밝아질 때 뜨고 어두워질 때 짐. */
 private fun skyProgress(now: LocalDateTime): Pair<Boolean, Float> = SkyTime.sunPath(now)
 
 /** 가운데를 x 에 두되 [min, max] 안에서 벗어나지 않게. */

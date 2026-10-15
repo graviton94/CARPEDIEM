@@ -85,15 +85,16 @@ object SkyTime {
         return (s0 + since / night * (24f - (s0 - r0))) % 24f
     }
 
-    /** 해가 하늘에 있는지와 그 길의 어디쯤인지 (0 ~ 1). 밤이면 달이 해 짐부터 다음 해 뜸까지 같은 길을. */
+    /**
+     * 해가 하늘에 있는지와 그 길의 어디쯤인지 (0 ~ 1). 하늘빛과 같은 시계 (hourOf) · 같은 경계 (isDark) 를 씀:
+     * 하늘이 밝아지는 순간 해가 왼쪽 땅에서 떠오르고 (새벽빛 속에 낮게), 노을빛 속에 오른쪽으로 내려가
+     * 하늘이 어두워지는 순간 짐. 그때 달이 왼쪽에서 떠서 밤 동안 같은 길을. (해가 남색 하늘에, 달이 노을 속에 있지 않게)
+     */
     fun sunPath(now: LocalDateTime): Pair<Boolean, Float> {
-        val h = now.hour + now.minute / 60f
-        val s = sunHours(now.toLocalDate())
-        val rise = s?.get(0) ?: G.Motion.sunrise; val set = s?.get(1) ?: G.Motion.sunset
-        if (set - rise >= 24f) return true to 0.5f
-        if (set <= rise) return false to 0.5f
-        return if (h in rise..set) true to ((h - rise) / (set - rise))
-        else false to (((h - set + 24f) % 24f) / (24f - (set - rise)))
+        val h = hourOf(now)
+        val from = G.Night.darkUntil; val to = G.Night.darkFrom
+        return if (h >= from && h < to) true to ((h - from) / (to - from))
+        else false to (((h - to + 24f) % 24f) / (24f - (to - from)))
     }
 
     /** 오늘 밤 달의 나이 (0 = 삭, 0.5 = 보름). */
