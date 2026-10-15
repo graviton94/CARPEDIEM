@@ -306,15 +306,30 @@ internal fun DecorSheet(part: DecorPart, decor: Decor, state: AppState, now: Loc
 
 /**
  * 이번 절기의 한 장 (1.1.6 모은 것): 지금 절기가 든 날 정원에 왔으면, 그 절기를 알리는 한지 조각 하나가 말뚝 앞 땅에 놓임 (다음 절기까지).
- * 하루 · 가족 돌 뒤 (같은 겹), 밤에는 정원과 같이 어둡게.
+ * 매다는 것 (대한 고드름 · 청명 버들) 은 말뚝 가로대에, 걸린 풍경 · 종 · 등과 겹치지 않는 자리에. 하루 · 가족 돌 뒤 (같은 겹), 밤에는 정원과 같이 어둡게.
  */
 @Composable
-internal fun TermPiece(key: String, name: String, now: LocalDateTime, gy: Dp, x1: Dp) {
+internal fun TermPiece(key: String, name: String, now: LocalDateTime, gy: Dp, x1: Dp, hang: Hang) {
     val ctx = LocalContext.current
     val u = Theme.unit
+    val filter = nightFilter(SkyTime.isDark(now))
+    if (key in HANGING_TERMS) {
+        // 말뚝 상자 (DecorBack 과 같은 자리) 안의 가로대 한 점
+        val pk = u * D.postScale
+        val hx = when (hang) { Hang.LANTERN -> HANG_SLOTS[0]; Hang.CHIME -> HANG_SLOTS[2]; else -> HANG_SLOTS[1] }
+        val ax = x1 - pk * D.postAtX + pk * hx; val ay = gy - pk * D.postAtY + pk * HANG_BAR_Y
+        Image(GardenArt.card(ctx, "hang_$key"), name, Modifier.box(ax, ay, u * D.cardMini, D.cardBoxW, D.cardBoxH, D.cardBoxW / 2, HANG_TOP), colorFilter = filter)
+        return
+    }
     Image(GardenArt.card(ctx, "term_$key"), name, Modifier.box(x1 - u * TERM_FROM_POST, gy + 1.dp, u * D.cardMini, D.cardBoxW, D.cardBoxH, D.cardBoxW / 2, D.cardAtY),
-        colorFilter = nightFilter(SkyTime.isDark(now)))
+        colorFilter = filter)
 }
+/** 말뚝에 매다는 절기 (땅에 두지 않고, 돌 곁에도 두지 않음). */
+internal val HANGING_TERMS = setOf("daehan", "cheongmyeong")
+/** 가로대 (기둥 왼쪽) 에 매다는 자리 (말뚝 상자 x): 등 (38) 이 걸렸으면 22, 아무것도 없거나 종 (56) 이면 30, 풍경 (25) 이면 38. 가로대 높이 · 매단 그림의 윗줄 (조각 상자 y). */
+private val HANG_SLOTS = floatArrayOf(22f, 30f, 38f)
+private const val HANG_BAR_Y = 29f
+private const val HANG_TOP = 18f
 /** 절기 조각이 말뚝에서 떨어진 거리 (정원 단위). */
 private const val TERM_FROM_POST = 26f
 

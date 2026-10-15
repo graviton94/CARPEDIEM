@@ -11,7 +11,12 @@
   function grassBlade(x, len, lean, w) { return rib(bez([x, 24, x + lean * 0.2, 24 - len * 0.4, x + lean * 0.7, 24 - len * 0.8, x + lean, 24 - len], 10), w, 0.3); }
   var TERM = {
     // 겨울 끝 · 봄
-    sohan: function (ctx) { one(ctx, flake(0, 6, 13, 2.2), "#D4E6F0", 6101, { rim: 0.5, ink: false, light: 0.95 }); one(ctx, blob(0, 6, 3, 3, 6102, 0.05), "#EAF4F9", 6102, { rim: 0.2, sh: 0.2, ink: false }); },
+    // 소한: 꽁꽁 언 작은 웅덩이 (얼음 위에 서리 결정 하나) · 땅에 놓임
+    sohan: function (ctx) { one(ctx, blob(0, 19.6, 15, 4.6, 6101, 0.06), "#C9DFEB", 6101, { rim: 0.6, light: 0.95, inner: function (c) {
+        c.strokeStyle = "rgba(255,255,255,.85)"; c.lineWidth = 0.6; c.lineCap = "round";
+        for (var i = 0; i < 6; i++) { var a = i * Math.PI / 3; c.beginPath(); c.moveTo(-2, 19.4); c.lineTo(-2 + Math.cos(a) * 5.4, 19.4 + Math.sin(a) * 2); c.stroke(); }
+        c.beginPath(); c.moveTo(5, 18); c.lineTo(11, 17.4); c.moveTo(6, 21); c.lineTo(10, 21.6); c.stroke(); } });
+      one(ctx, [blob(-13, 19, 2.6, 1.6, 6102, 0.1), blob(12.6, 21.4, 2.2, 1.4, 6103, 0.1)], "#FBFAF6", 6102, { rim: 0.3, light: 0.98 }); },
     daehan: function (ctx) { twig(ctx, [-15, -6, -6, -9, 4, -7, 15, -10], 2.4, 1.2);
       one(ctx, [[-9, -7.4], [-6.4, -7.6], [-7.6, 12]], "#D7E8F1", 6111, { rim: 0.3 }); one(ctx, [[-2, -7.8], [1.4, -7.8], [-0.2, 20]], "#D7E8F1", 6112, { rim: 0.3 }); one(ctx, [[6, -8], [8.6, -8.2], [7.4, 6]], "#D7E8F1", 6113, { rim: 0.3 }); },
     ipchun: function (ctx) { twig(ctx, [-14, 22, -8, 10, 0, 2, 12, -10], 2.2, 1); twig(ctx, [-5, 7, -10, 2, -12, -4, -12, -8], 1.2, 0.7);
@@ -29,8 +34,11 @@
       gEye(ctx, 13.4, 17.2, 3.2, 0.3); gEye(ctx, 26.6, 17.2, 3.2, 0.3);
       ctx.fillStyle = "rgba(229,150,140,.45)"; ctx.beginPath(); ctx.ellipse(10.6, 25.4, 2.2, 1.1, 0, 0, 7); ctx.fill(); ctx.beginPath(); ctx.ellipse(29.4, 25.4, 2.2, 1.1, 0, 0, 7); ctx.fill();
       ctx.strokeStyle = GINK; ctx.lineWidth = 1; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(17, 24.6); ctx.quadraticCurveTo(20, 26.6, 23, 24.6); ctx.stroke(); ctx.restore(); },
-    chunbun: function (ctx) { one(ctx, disc(0, 6, 13, -Math.PI / 2, Math.PI / 2), "#F3C46A", 6151, { rim: 0.4 }); one(ctx, disc(0, 6, 13, Math.PI / 2, Math.PI * 1.5), "#5E6A8E", 6152, { rim: 0.4 });
-      dot(ctx, -6, 2, 0.9, "#F6EAC4"); dot(ctx, -4, 11, 0.7, "#F6EAC4"); },
+    // 춘분: 진달래 한 가지 (봄빛이 반을 넘는 날)
+    chunbun: function (ctx) { twig(ctx, [-6, 24, -4, 12, 0, 2, 4, -8], 1.6, 0.8); twig(ctx, [-2, 8, 4, 6, 8, 2, 10, -2], 1, 0.6);
+      one(ctx, petal5(4, -9, 6.4, 0.3), "#E79AB8", 6151, { rim: 0.45 }); one(ctx, petal5(10, -3, 5, 0.9), "#EFAFC7", 6152, { rim: 0.45 });
+      [[4, -9], [10, -3]].forEach(function (q) { for (var i = 0; i < 4; i++) { var a = -1.4 + i * 0.3; thread(ctx, [q, [q[0] + Math.cos(a) * 4, q[1] + Math.sin(a) * 4]], 0.35, "#B34A78"); } });
+      one(ctx, place(leafPts(5, 1.8), -4, 10, 1, -2.6), "#8DB46A", 6153, { rim: 0.2 }); },
     cheongmyeong: function (ctx) { twig(ctx, [-14, -10, -4, -12, 6, -11, 15, -13], 1.8, 1);
       [[-10, -10.6, 26], [-3, -11.6, 32], [4, -11.2, 28], [10, -12, 22]].forEach(function (q, i) { var x = q[0], y = q[1], L = q[2]; thread(ctx, bez([x, y, x - 1, y + L * 0.4, x + 1.2, y + L * 0.7, x, y + L]), 0.7, "#7E9E5A");
         for (var k = 1; k <= 3; k++) one(ctx, place(leafPts(5, 1.4), x + (k % 2 ? 0.4 : -0.4), y + L * k / 3.4, 1, Math.PI / 2 + (k % 2 ? -0.5 : 0.5)), "#A9C77E", 6161 + i * 3 + k, { rim: 0.2, sh: 0.3 }); }); },
@@ -48,9 +56,11 @@
     mangjong: function (ctx) { one(ctx, blob(0, 22.6, 15, 2, 6201, 0.03), "#A9CFE0", 6201, { rim: 0.3, sh: 0.2 });
       one(ctx, [grassBlade(-3, 22, -9, 1.6), grassBlade(-1, 28, -3, 1.6), grassBlade(1, 26, 4, 1.6), grassBlade(3, 20, 10, 1.6), grassBlade(0, 16, -14, 1.4)], "#7FAE5E", 6202, { rim: 0.3 }); },
     // 하지: 해 하나와 둘레의 옅은 햇무리 (물결진 테두리 한 장)
-    haji: function (ctx) { var halo = []; for (var i = 0; i < 72; i++) { var a = i / 72 * Math.PI * 2, r = 15 + 1.6 * Math.cos(a * 12); halo.push([Math.cos(a) * r, 6 + Math.sin(a) * r]); }
-      one(ctx, halo, "#F8E2A4", 6211, { rim: 0.4, ink: false, light: 0.9 }); one(ctx, blob(0, 6, 10.4, 10.4, 6212, 0.03), "#F2B44E", 6212, { tone: 0.16 });
-      one(ctx, blob(-3.6, 2.4, 3, 2, 6213, 0.1, -0.5), "#F8D488", 6213, { rim: 0, sh: 0, ink: false }); },
+    // 하지: 갓 캔 하지감자 둘과 줄기 · 잎
+    haji: function (ctx) { thread(ctx, bez([-2, 14, -3, 6, 1, 0, 2, -6]), 0.9, "#7E9E5A");
+      one(ctx, [place(leafPts(8, 3.4), 2, -6, 1, -2.2), place(leafPts(8, 3.4), 2, -6, 1, -0.7), place(leafPts(7, 3), -1, 2, 1, -2.7)], "#7FAE5E", 6211, { rim: 0.35 });
+      [[-6, 18.6, 7.4, 5.4, 6212], [6, 19.6, 6.6, 4.8, 6213]].forEach(function (q) { one(ctx, blob(q[0], q[1], q[2], q[3], q[4], 0.08), "#D9B37A", q[4], { tone: 0.12, inner: function (c) {
+        c.fillStyle = "rgba(120,86,50,.45)"; [[-2, -1], [2, 1], [-1, 2]].forEach(function (e) { c.beginPath(); c.arc(q[0] + e[0], q[1] + e[1], 0.5, 0, 7); c.fill(); }); } }); }); },
     soseo: function (ctx) { one(ctx, rib([[0, 24], [0, 8]], 2.2, 1.8), "#9A7A5E", 6221, { rim: 0.2 }); one(ctx, blob(0, -1, 12.4, 11.6, 6222, 0.03), "#BFD8C8", 6222, { tone: 0.1 });
       for (var i = 0; i < 7; i++) { var a = -Math.PI / 2 - 1.2 + i * 0.4; thread(ctx, [[0, 8], [Math.cos(a) * 11, -1 + Math.sin(a) * 10.4 + 9 * 0]], 0.4, "rgba(90,120,100,.45)"); }
       one(ctx, petal5(-3, -3, 4, 0.3), "#EFA3B4", 6223, { rim: 0.2, sh: 0.2 }); },
@@ -63,8 +73,11 @@
       one(ctx, petal(-1, 13, -13, 4, 3.6), "#F7D6DE", 6233, tip(-13, 4)); one(ctx, petal(1, 13, 13, 4, 3.6), "#F7D6DE", 6234, tip(13, 4));
       one(ctx, petal(-1, 13, -8, -4, 4.2), "#F4C6D2", 6231, tip(-8, -4)); one(ctx, petal(1, 13, 8, -4, 4.2), "#F4C6D2", 6232, tip(8, -4));
       one(ctx, petal(0, 14, 0, -7, 4.8), "#F2BACB", 6235, tip(0, -7)); },
-    ipchu: function (ctx) { one(ctx, [place(leafPts(14, 3), 0, 4, 1, -2.95), place(leafPts(14, 3), 0, 4, 1, -0.19), place(leafPts(12, 2.6), 0, 7, 1, 2.8), place(leafPts(12, 2.6), 0, 7, 1, 0.34)], "#DCEAF0", 6241, { rim: 0.3, light: 0.95 });
-      one(ctx, rib([[0, -1], [0, 21]], 2.6, 1.2), "#C8553D", 6242, { rim: 0.2 }); one(ctx, [blob(-1.6, -2, 1.6, 1.6, 6243, 0.05), blob(1.6, -2, 1.6, 1.6, 6244, 0.05)], "#7A3A2A", 6243, { rim: 0, sh: 0.1 }); },
+    // 입추: 풀대 끝에 앉아 쉬는 잠자리 (땅에서 솟은 풀대 하나)
+    ipchu: function (ctx) { one(ctx, grassBlade(0, 34, 3, 1.4), "#9DB87E", 6240, { rim: 0.2 });
+      ctx.save(); ctx.translate(3, -9); ctx.rotate(0.12); ctx.scale(0.8, 0.8);
+      one(ctx, [place(leafPts(14, 3), 0, 4, 1, -2.95), place(leafPts(14, 3), 0, 4, 1, -0.19), place(leafPts(12, 2.6), 0, 7, 1, 2.8), place(leafPts(12, 2.6), 0, 7, 1, 0.34)], "#DCEAF0", 6241, { rim: 0.3, light: 0.95 });
+      one(ctx, rib([[0, -1], [0, 21]], 2.6, 1.2), "#C8553D", 6242, { rim: 0.2 }); one(ctx, [blob(-1.6, -2, 1.6, 1.6, 6243, 0.05), blob(1.6, -2, 1.6, 1.6, 6244, 0.05)], "#7A3A2A", 6243, { rim: 0, sh: 0.1 }); ctx.restore(); },
     cheoseo: function (ctx) { var outer = disc(0, 0, 9, -Math.PI / 2, Math.PI / 2), inner = disc(-4, 0, 8, Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * 0);
       one(ctx, [[0, -9]].concat(bez([0, -9, 7, -8, 10, 0, 0, 9], 10), bez([0, 9, 5, 4, 5, -4, 0, -9], 10)), "#F2E2A8", 6251, { rim: 0.4, light: 0.9 });
       one(ctx, [grassBlade(-6, 18, -6, 1.4), grassBlade(-3, 24, 2, 1.4), grassBlade(2, 14, 8, 1.4)], "#9DB87E", 6252, { rim: 0.2 }); },
@@ -98,6 +111,12 @@
       thread(ctx, bez([-3, 3, -5, -1, -1, -4, -3, -8]), 0.6, "rgba(120,104,88,.45)"); thread(ctx, bez([3, 3, 1, -1, 5, -4, 3, -8]), 0.6, "rgba(120,104,88,.45)"); }
   };
   Object.keys(TERM).forEach(function (k) { PIECE["term_" + k] = TERM[k]; });
+  // 말뚝 가로대에 매다는 것 (대한 · 청명): 가지 없이 가로대 (y −14) 에 바로 매달림
+  PIECE.hang_daehan = function (ctx) { [[-9, 22, 2.6], [-3, 32, 3], [3, 26, 2.8], [9, 18, 2.4]].forEach(function (q, i) {
+      one(ctx, [[q[0] - q[2] / 2, -14], [q[0] + q[2] / 2, -14], [q[0] + 0.2, -14 + q[1]]], "#D7E8F1", 6501 + i, { rim: 0.3, light: 0.95 }); }); };
+  PIECE.hang_cheongmyeong = function (ctx) { [[-9, 26], [-3, 34], [3, 30], [9, 22]].forEach(function (q, i) { var x = q[0], L = q[1];
+      thread(ctx, bez([x, -14, x - 1, -14 + L * 0.4, x + 1.2, -14 + L * 0.7, x, -14 + L]), 0.7, "#7E9E5A");
+      for (var k = 1; k <= 3; k++) one(ctx, place(leafPts(5, 1.4), x + (k % 2 ? 0.4 : -0.4), -14 + L * k / 3.4, 1, Math.PI / 2 + (k % 2 ? -0.5 : 0.5)), "#A9C77E", 6511 + i * 3 + k, { rim: 0.2, sh: 0.3 }); }); };
 
   // 별자리 한 장: 남빛 한지 (네모, 살짝 기움) 위에 크림빛 별 조각과 실 같은 선. 별이 많아도 칸 안에 들게 줄여 맞춤
   function starChart(ctx, m) {

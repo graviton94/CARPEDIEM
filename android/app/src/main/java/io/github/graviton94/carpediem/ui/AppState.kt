@@ -296,7 +296,7 @@ class AppState(private val context: Context) {
         supportMarks.entries.sortedByDescending { it.value }.map { "support:${it.key}" } +
             seasonCards.mapNotNull { io.github.graviton94.carpediem.core.SeasonCard.parse(it) }.sortedWith(compareByDescending<io.github.graviton94.carpediem.core.SeasonCard> { it.year }.thenByDescending { it.season.ordinal }).map { "card:${it.id}" } +
             pebbles.sortedDescending().map { "pebble:${it.toEpochDay()}" } +
-            termsMet().entries.sortedByDescending { it.value }.map { "term:${it.key.key}" }
+            termsMet().entries.sortedByDescending { it.value }.filter { it.key.key !in io.github.graviton94.carpediem.ui.garden.HANGING_TERMS }.map { "term:${it.key.key}" }
     // ───── 권유는 한 주에 하나 (1.1.5): 리뷰 창 · 응원 권유 · 기념일 편지가 겹치지 않게, 무거운 마음을 보낸 날엔 아무것도 ─────
     /** 오늘 권유를 꺼내도 되는지 (오늘 이미 꺼낸 것은 그대로 보여도 됨). */
     fun nudgeFree(today: LocalDate): Boolean = store.lastNudgeOn.let { it == null || it == today || java.time.temporal.ChronoUnit.DAYS.between(it, today) >= NUDGE_GAP_DAYS } &&
