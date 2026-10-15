@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 남은 날 · 오늘의 한 줄 (4×2): 남은 날, 오늘의 문장, ‘한 줄 남기기’ (누르면 기록 페이지의 쓰는 칸으로). -->
+<!-- 정원 (4×2, 1.1.7): 내 정원 한 장이 때를 따라 바뀜 (하늘 · 해와 달 · 별 · 잠든 하루), 남은 시간 · 오늘의 문장 한 줄. 누르면 정원으로. -->
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
     android:previewImage="@drawable/widget_preview_line_garden"
     android:description="@string/widget_line_desc"

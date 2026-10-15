@@ -6,7 +6,7 @@ import io.github.graviton94.carpediem.R
 /** 버전마다 새로워진 점 (최신이 위). 원본: design/changelog.json */
 object Changelog {
     val entries: List<Pair<String, List<Int>>> = listOf(
-        "1.1.7" to listOf(R.string.news_v1_1_7_1, R.string.news_v1_1_7_2, R.string.news_v1_1_7_3, R.string.news_v1_1_7_4, R.string.news_v1_1_7_5, R.string.news_v1_1_7_6),
+        "1.1.7" to listOf(R.string.news_v1_1_7_1, R.string.news_v1_1_7_2, R.string.news_v1_1_7_3, R.string.news_v1_1_7_4, R.string.news_v1_1_7_5, R.string.news_v1_1_7_6, R.string.news_v1_1_7_7),
         "1.1.6" to listOf(R.string.news_v1_1_6_1, R.string.news_v1_1_6_2, R.string.news_v1_1_6_3, R.string.news_v1_1_6_4, R.string.news_v1_1_6_5, R.string.news_v1_1_6_6),
         "1.1.5" to listOf(R.string.news_v1_1_5_1, R.string.news_v1_1_5_2, R.string.news_v1_1_5_3, R.string.news_v1_1_5_4, R.string.news_v1_1_5_5, R.string.news_v1_1_5_6, R.string.news_v1_1_5_7, R.string.news_v1_1_5_8, R.string.news_v1_1_5_9, R.string.news_v1_1_5_10),
         "1.1.4" to listOf(R.string.news_v1_1_4_1, R.string.news_v1_1_4_2, R.string.news_v1_1_4_3, R.string.news_v1_1_4_4, R.string.news_v1_1_4_5, R.string.news_v1_1_4_6, R.string.news_v1_1_4_7),

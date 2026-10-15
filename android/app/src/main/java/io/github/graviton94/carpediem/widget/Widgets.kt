@@ -57,6 +57,7 @@ import java.util.concurrent.TimeUnit
 import kotlin.math.max
 
 object Widgets {
+    private const val REFRESH_MINUTES = 30L
     /** 앱에서 정보가 바뀌면 모든 위젯을 새로 그린다. */
     /**
      * 홈 화면에 위젯 두기 (Android 8+, 런처가 지원할 때): 런처가 ‘추가할까요?’ 를 물음. 지원하지 않으면 false (안내 글로).
@@ -78,10 +79,11 @@ object Widgets {
         RecordWidget().updateAll(context)
     }
 
-    /** 하늘 빛 · 오늘의 문장이 제때 바뀌도록 한 시간마다 새로 그린다. */
+    /** 하늘빛 · 해와 달 · 하루의 잠이 때를 따라 바뀌도록 30분마다 새로 그린다 (1.1.7, 예전엔 한 시간). */
     fun scheduleHourly(context: Context) {
-        val work = PeriodicWorkRequestBuilder<RefreshWorker>(1, TimeUnit.HOURS).build()
-        WorkManager.getInstance(context).enqueueUniquePeriodicWork("widget-refresh", ExistingPeriodicWorkPolicy.KEEP, work)
+        val work = PeriodicWorkRequestBuilder<RefreshWorker>(REFRESH_MINUTES, TimeUnit.MINUTES).build()
+        WorkManager.getInstance(context).enqueueUniquePeriodicWork("widget-refresh-30", ExistingPeriodicWorkPolicy.KEEP, work)
+        WorkManager.getInstance(context).cancelUniqueWork("widget-refresh")   // 예전 한 시간짜리
         scheduleMidnight(context, ExistingWorkPolicy.KEEP)
     }
 
@@ -143,8 +145,9 @@ private fun px(context: Context, dp: Dp) = max(1, (dp.value * context.resources.
 // ───────────────────────── 남은 날 · 오늘의 한 줄 (4×2) ─────────────────────────
 
 /**
- * 남은 날 · 오늘의 한 줄 위젯 (4×2): 정원 그림 위에 남은 날, 오늘의 문장, ‘오늘의 한 줄 남기기’. 누르면 기록 페이지의 쓰는 칸으로.
- * 남긴 날은 ‘남겼어요’ 한 줄만 (보낸 글은 위젯에 보이지 않음).
+ * 정원 위젯 (4×2, 1.1.7): 내 정원 한 장 (나무 · 말뚝 · 하루와 가족, 하늘 · 해와 달 · 별이 때를 따라). 글자는 아주 조금만:
+ * 위에 남은 시간 하나와 오늘의 문장 한 줄. 하루의 표정 (잠 · 웃음) 이 오늘을 말함. 누르면 정원으로.
+ * (클래스 이름은 예전 ‘남은 날 · 오늘의 한 줄’ 위젯 그대로: 이미 둔 위젯이 사라지지 않게)
  */
 class LineGardenWidget : GlanceAppWidget() {
     override val sizeMode = SizeMode.Exact
@@ -154,33 +157,28 @@ class LineGardenWidget : GlanceAppWidget() {
         provideContent {
             val data = WidgetData(context)
             val store = Store(context)
-            val today = java.time.LocalDate.now()
-            val words = store.todaysQuote(today)?.let { io.github.graviton94.carpediem.data.Words.main(it, store.quoteLanguage, io.github.graviton94.carpediem.data.Words.lang(context)) }.orEmpty()
-            val sent = store.lines.any { it.date == today }
-            val open = android.content.Intent(context, MainActivity::class.java)
-                .addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK or android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP or android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                .putExtra(MainActivity.EXTRA_OPEN, "write")
+            val words = store.todaysQuote(data.now.toLocalDate())?.let { io.github.graviton94.carpediem.data.Words.main(it, store.quoteLanguage, data.lang) }.orEmpty()
             val size = LocalSize.current
-            val bmp = GardenWidgetArt.render(context, GardenWidgetArt.Kind.TODAY, px(context, size.width), px(context, size.height), data.snapshot, data.now)
-            Box(GlanceModifier.fillMaxSize().clickable(androidx.glance.appwidget.action.actionStartActivity(open))) {
+            val bmp = GardenWidgetArt.garden(context, px(context, size.width), px(context, size.height), data.now)
+            Box(GlanceModifier.fillMaxSize().clickable(androidx.glance.appwidget.action.actionStartActivity(openGarden(context)))) {
                 Image(ImageProvider(bmp), null, GlanceModifier.fillMaxSize(), contentScale = androidx.glance.layout.ContentScale.FillBounds)
                 Column(GlanceModifier.fillMaxSize().padding(Tokens.Layout.widgetPadding)) {
-                    // 남은 날: 숫자 하나와 작은 이름 (단위는 앱에서 고른 대로)
                     data.snapshot?.let { s ->
                         Row(verticalAlignment = androidx.glance.layout.Alignment.Bottom) {
-                            Text(Labels.number(s.remaining(data.unit)), style = style(Tokens.TypeScale.title2.size, gInk, FontWeight.Bold, serif = true), maxLines = 1)
+                            Text(Labels.number(s.remaining(data.unit)), style = style(Tokens.TypeScale.headline.size, gInk, FontWeight.Bold, serif = true), maxLines = 1)
                             Spacer(GlanceModifier.width(Tokens.Space.sp1))
-                            Text(if (data.unit == LifeUnit.DAYS) context.getString(R.string.widget_daysLeft) else Labels.unit(context, data.unit), style = style(Tokens.TypeScale.caption1.size, gSub), maxLines = 1)
+                            Text(if (data.unit == LifeUnit.DAYS) context.getString(R.string.widget_daysLeft) else Labels.unit(context, data.unit), style = style(Tokens.TypeScale.caption2.size, gSub), maxLines = 1)
                         }
                     }
-                    // 낮은 위젯 · 큰 글씨에서도 아래 ‘남기기’ 가 잘리지 않게 문장은 한두 줄
-                    Text(words, style = style(Tokens.TypeScale.subhead.size, gInk, FontWeight.Medium), maxLines = if (size.height < 150.dp) 1 else 2)
-                    Spacer(GlanceModifier.defaultWeight())
-                    Text(context.getString(if (sent) R.string.widget_lineDone else R.string.widget_lineWrite),
-                        style = style(Tokens.TypeScale.footnote.size, if (sent) gSub else gInk, if (sent) FontWeight.Normal else FontWeight.Bold))
+                    if (words.isNotEmpty()) Text(words, style = style(Tokens.TypeScale.footnote.size, gInk), maxLines = 1)
                 }
             }
         }
     }
 }
+
+/** 위젯을 누르면: 정원으로 (앱을 그대로 염). */
+internal fun openGarden(context: Context) = android.content.Intent(context, MainActivity::class.java)
+    .addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK or android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP or android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP)
+
 class LineGardenReceiver : GlanceAppWidgetReceiver() { override val glanceAppWidget: GlanceAppWidget = LineGardenWidget() }
