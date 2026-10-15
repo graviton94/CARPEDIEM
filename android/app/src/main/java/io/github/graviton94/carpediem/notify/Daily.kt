@@ -99,6 +99,7 @@ object Daily {
         var title = if (store.design == Design.GARDEN) line(context, "notify_morning_", LocalDate.now(), 0) else context.getString(R.string.words)
         var letterId: String? = null
         var openAt: String? = null   // 누르면 열 곳 (MainActivity.EXTRA_OPEN)
+        var termBody: String? = null  // 절기 날의 아래 줄 (오늘의 문장 대신)
         store.profile?.takeIf { store.design == Design.GARDEN }?.let { p ->
             // 정원에 무언가 새로 생기는 날 (날짜로 정해지는 것만): 나무가 자라는 날 · 계절이 바뀌어 새 한 장이 오는 날
             val today = LocalDate.now()
@@ -113,9 +114,15 @@ object Daily {
                 title = context.getString(res)
                 store.notifiedMoments = store.notifiedMoments + id
             }
+            // 절기가 드는 날 (1.1.6): 알림은 그대로 하나, 그 아침의 말만 그 절기로 (‘오늘은 입동, 겨울이 들어서요.’ / ‘정원 말뚝 앞에 감 하나가 놓였어요.’). 남반구 나라는 없음
+            if (p.countryCode.uppercase() !in GardenDecor.SOUTH) io.github.graviton94.carpediem.core.Sky.termOn(today, java.time.ZoneId.systemDefault())?.let { t ->
+                fun str(n: String) = context.resources.getIdentifier(n, "string", context.packageName).takeIf { it != 0 }?.let { context.getString(it) }
+                val head = str("term_${t.key}"); val gift = str("termGift_${t.key}")
+                if (head != null && gift != null) { title = head; termBody = gift; openAt = "garden" }
+            }
         }
         // 몇 해 전 오늘 보낸 한 줄이 있으면 그것을 알린다 (잠금 화면에는 글을 보이지 않음)
-        var body = text
+        var body = termBody ?: text
         val yearAgo = store.yearsAgoSlip(LocalDate.now())
         if (yearAgo != null) { title = context.getString(R.string.recall_notify, "${yearAgo.first}"); body = context.getString(R.string.recall_notifyText); openAt = "garden" }
         else if (store.keepLines && store.randomRecall() != null) { title = context.getString(R.string.recall_randomNotify); body = context.getString(R.string.recall_notifyText); openAt = "garden" }

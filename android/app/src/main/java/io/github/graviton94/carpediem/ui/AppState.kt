@@ -291,11 +291,12 @@ class AppState(private val context: Context) {
     var debugSleepSheet = false
     /** 지금 정원에 있는 돌의 꾸밈만 (내려놓은 돌의 것은 손으로). */
     fun adornmentsShown(): Map<String, String> = io.github.graviton94.carpediem.core.Adornments.prune(adornments, people.map { it.id }.toSet())
-    /** 가진 꾸밈 (새것이 앞): 모은 계절 조각 · 응원 · 조약돌. */
+    /** 가진 꾸밈 (새것이 앞): 모은 계절 조각 · 응원 · 조약돌 · 만난 절기의 한 장 (1.1.6). */
     fun ownedAdornments(): List<String> =
         supportMarks.entries.sortedByDescending { it.value }.map { "support:${it.key}" } +
             seasonCards.mapNotNull { io.github.graviton94.carpediem.core.SeasonCard.parse(it) }.sortedWith(compareByDescending<io.github.graviton94.carpediem.core.SeasonCard> { it.year }.thenByDescending { it.season.ordinal }).map { "card:${it.id}" } +
-            pebbles.sortedDescending().map { "pebble:${it.toEpochDay()}" }
+            pebbles.sortedDescending().map { "pebble:${it.toEpochDay()}" } +
+            termsMet().entries.sortedByDescending { it.value }.map { "term:${it.key.key}" }
     // ───── 권유는 한 주에 하나 (1.1.5): 리뷰 창 · 응원 권유 · 기념일 편지가 겹치지 않게, 무거운 마음을 보낸 날엔 아무것도 ─────
     /** 오늘 권유를 꺼내도 되는지 (오늘 이미 꺼낸 것은 그대로 보여도 됨). */
     fun nudgeFree(today: LocalDate): Boolean = store.lastNudgeOn.let { it == null || it == today || java.time.temporal.ChronoUnit.DAYS.between(it, today) >= NUDGE_GAP_DAYS } &&
