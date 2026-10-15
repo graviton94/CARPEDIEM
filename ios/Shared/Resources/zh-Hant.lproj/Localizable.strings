@@ -105,7 +105,7 @@
 "words.english" = "英文";
 "words.both" = "兩種都要";
 "widgets" = "小工具";
-"widgets.name.record" = "心情的紀錄";
+"widgets.name.record" = "小日";
 "erase" = "清除所有紀錄";
 "country.search" = "搜尋國家";
 "country.source" = "依據聯合國《世界人口展望 2024》。";
@@ -560,8 +560,8 @@
 "gaze.ask" = "要回到庭院嗎？";
 "gaze.back" = "回去";
 "gaze.stay" = "再待一會兒";
-"widget.record.garden" = "心情的紀錄";
-"widget.record.desc" = "這個月的心情化作花與星星。點一下，打開心情的紀錄。";
+"widget.record.garden" = "小日";
+"widget.record.desc" = "小日在庭院裡隨時間生活。夜裡睡著，留下一句話就會笑。";
 "backup.export" = "儲存備份檔";
 "backup.import" = "從備份檔還原";
 "backup.importConfirm" = "要換成這個檔案裡的紀錄嗎？\n現在的紀錄會消失。";
@@ -863,9 +863,9 @@
 "feedback.crashSend" = "告訴我們";
 "feedback.crashSkip" = "不用了";
 "notify.time" = "時間";
-"widget.line.garden" = "剩下的日子 · 今天的一句話";
-"widget.line.desc" = "剩下的日子、今天的句子和「留下一句話」都在一張裡";
-"widgets.name.line" = "剩下的日子 · 今天的一句話";
+"widget.line.garden" = "庭院";
+"widget.line.desc" = "你的庭院隨天空、日月與季節變化。剩下的時間和今天的一句話。";
+"widgets.name.line" = "庭院";
 "widget.lineWrite" = "＋ 留下今天的一句話";
 "widget.lineDone" = "已留下今天的一句話";
 "nudge.breath" = "要不要一起呼吸一會兒？";

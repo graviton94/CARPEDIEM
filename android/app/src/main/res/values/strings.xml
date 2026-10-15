@@ -106,7 +106,7 @@
     <string name="words_english">English</string>
     <string name="words_both">Both</string>
     <string name="widgets">Widgets</string>
-    <string name="widgets_name_record">Heart’s record</string>
+    <string name="widgets_name_record">Haru</string>
     <string name="erase">Erase everything</string>
     <string name="country_search">Search countries</string>
     <string name="country_source">UN World Population Prospects 2024.</string>
@@ -562,8 +562,8 @@
     <string name="gaze_ask">Back to the garden?</string>
     <string name="gaze_back">Go back</string>
     <string name="gaze_stay">Stay a while</string>
-    <string name="widget_record_garden">Heart’s record</string>
-    <string name="widget_record_desc">This month\'s heart, in flowers and stars. Tap to open the record.</string>
+    <string name="widget_record_garden">Haru</string>
+    <string name="widget_record_desc">Your Haru in the garden through the day. Asleep at night, smiling once you leave a line.</string>
     <string name="backup_export">Save a backup file</string>
     <string name="backup_import">Restore from a backup file</string>
     <string name="backup_importConfirm">Replace with this file?\nWhat’s here now will be gone.</string>
@@ -865,9 +865,9 @@
     <string name="feedback_crashSend">Let us know</string>
     <string name="feedback_crashSkip">Not now</string>
     <string name="notify_time">Time</string>
-    <string name="widget_line_garden">Days left · Today’s line</string>
-    <string name="widget_line_desc">Days left, today’s words and ‘Leave a line’ in one</string>
-    <string name="widgets_name_line">Days left · Today’s line</string>
+    <string name="widget_line_garden">Garden</string>
+    <string name="widget_line_desc">Your garden, changing with the sky, sun and moon, and seasons. Time left and today\'s words.</string>
+    <string name="widgets_name_line">Garden</string>
     <string name="widget_lineWrite">＋ Write today’s line</string>
     <string name="widget_lineDone">Today’s line is kept</string>
     <string name="nudge_breath">Shall we breathe together for a while?</string>

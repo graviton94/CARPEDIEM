@@ -104,7 +104,7 @@
 "words.english" = "English";
 "words.both" = "Both";
 "widgets" = "Widgets";
-"widgets.name.record" = "Heart’s record";
+"widgets.name.record" = "Haru";
 "erase" = "Erase everything";
 "country.search" = "Search countries";
 "country.source" = "UN World Population Prospects 2024.";
@@ -560,8 +560,8 @@
 "gaze.ask" = "Back to the garden?";
 "gaze.back" = "Go back";
 "gaze.stay" = "Stay a while";
-"widget.record.garden" = "Heart’s record";
-"widget.record.desc" = "This month's heart, in flowers and stars. Tap to open the record.";
+"widget.record.garden" = "Haru";
+"widget.record.desc" = "Your Haru in the garden through the day. Asleep at night, smiling once you leave a line.";
 "backup.export" = "Save a backup file";
 "backup.import" = "Restore from a backup file";
 "backup.importConfirm" = "Replace with this file?\nWhat’s here now will be gone.";
@@ -863,9 +863,9 @@
 "feedback.crashSend" = "Let us know";
 "feedback.crashSkip" = "Not now";
 "notify.time" = "Time";
-"widget.line.garden" = "Days left · Today’s line";
-"widget.line.desc" = "Days left, today’s words and ‘Leave a line’ in one";
-"widgets.name.line" = "Days left · Today’s line";
+"widget.line.garden" = "Garden";
+"widget.line.desc" = "Your garden, changing with the sky, sun and moon, and seasons. Time left and today's words.";
+"widgets.name.line" = "Garden";
 "widget.lineWrite" = "＋ Write today’s line";
 "widget.lineDone" = "Today’s line is kept";
 "nudge.breath" = "Shall we breathe together for a while?";

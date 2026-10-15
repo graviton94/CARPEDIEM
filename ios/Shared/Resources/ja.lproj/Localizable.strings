@@ -105,7 +105,7 @@
 "words.english" = "英語";
 "words.both" = "両方";
 "widgets" = "ウィジェット";
-"widgets.name.record" = "こころの記録";
+"widgets.name.record" = "ハル";
 "erase" = "すべての記録を消す";
 "country.search" = "国を検索";
 "country.source" = "国連「世界人口推計2024」より。";
@@ -560,8 +560,8 @@
 "gaze.ask" = "庭へ戻りますか？";
 "gaze.back" = "戻る";
 "gaze.stay" = "もう少しいる";
-"widget.record.garden" = "こころの記録";
-"widget.record.desc" = "今月のこころが、花と星になって咲きます。触れると、こころの記録へ。";
+"widget.record.garden" = "ハル";
+"widget.record.desc" = "庭のハルが時間とともに過ごします。夜は眠り、ひとことを残すと笑います。";
 "backup.export" = "バックアップを保存";
 "backup.import" = "バックアップから戻す";
 "backup.importConfirm" = "このファイルの記録に置きかえますか？\nいまの記録は消えます。";
@@ -863,9 +863,9 @@
 "feedback.crashSend" = "知らせる";
 "feedback.crashSkip" = "大丈夫です";
 "notify.time" = "時刻";
-"widget.line.garden" = "残りの日数 · 今日のひとこと";
-"widget.line.desc" = "残りの日数と今日のことば、「ひとことを残す」をひとつに";
-"widgets.name.line" = "残りの日数 · 今日のひとこと";
+"widget.line.garden" = "庭";
+"widget.line.desc" = "あなたの庭が空・太陽と月・季節とともに変わります。残りの時間と今日のことば。";
+"widgets.name.line" = "庭";
 "widget.lineWrite" = "＋ 今日のひとことを残す";
 "widget.lineDone" = "今日のひとことを残しました";
 "nudge.breath" = "少し、いっしょに呼吸してみませんか？";

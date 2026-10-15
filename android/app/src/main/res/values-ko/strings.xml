@@ -106,7 +106,7 @@
     <string name="words_english">영문</string>
     <string name="words_both">둘 다</string>
     <string name="widgets">위젯</string>
-    <string name="widgets_name_record">마음의 기록</string>
+    <string name="widgets_name_record">하루</string>
     <string name="erase">모든 기록 지우기</string>
     <string name="country_search">나라 검색</string>
     <string name="country_source">UN 세계인구전망 2024 기준.</string>
@@ -562,8 +562,8 @@
     <string name="gaze_ask">정원으로 돌아갈까요?</string>
     <string name="gaze_back">돌아가기</string>
     <string name="gaze_stay">더 머물기</string>
-    <string name="widget_record_garden">마음의 기록</string>
-    <string name="widget_record_desc">이번 달 마음이 꽃과 별로 피어요. 누르면 마음의 기록으로.</string>
+    <string name="widget_record_garden">하루</string>
+    <string name="widget_record_desc">내 하루가 정원에서 때를 따라 지내요. 밤엔 잠들고, 한 줄을 남기면 웃어요.</string>
     <string name="backup_export">백업 파일로 저장</string>
     <string name="backup_import">백업 파일 불러오기</string>
     <string name="backup_importConfirm">이 파일의 기록으로 바꿀까요?\n지금 기록은 사라져요.</string>
@@ -865,9 +865,9 @@
     <string name="feedback_crashSend">알려 주기</string>
     <string name="feedback_crashSkip">괜찮아요</string>
     <string name="notify_time">시각</string>
-    <string name="widget_line_garden">남은 날 · 오늘의 한 줄</string>
-    <string name="widget_line_desc">남은 날과 오늘의 문장, ‘한 줄 남기기’를 한 장에</string>
-    <string name="widgets_name_line">남은 날 · 오늘의 한 줄</string>
+    <string name="widget_line_garden">정원</string>
+    <string name="widget_line_desc">내 정원이 하늘 · 해와 달 · 계절을 따라 바뀌어요. 남은 시간과 오늘의 문장 한 줄.</string>
+    <string name="widgets_name_line">정원</string>
     <string name="widget_lineWrite">＋ 오늘의 한 줄 남기기</string>
     <string name="widget_lineDone">오늘의 한 줄을 남겼어요</string>
     <string name="nudge_breath">잠깐 함께 숨 쉬어 볼까요?</string>

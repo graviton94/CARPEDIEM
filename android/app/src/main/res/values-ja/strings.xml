@@ -107,7 +107,7 @@
     <string name="words_english">英語</string>
     <string name="words_both">両方</string>
     <string name="widgets">ウィジェット</string>
-    <string name="widgets_name_record">こころの記録</string>
+    <string name="widgets_name_record">ハル</string>
     <string name="erase">すべての記録を消す</string>
     <string name="country_search">国を検索</string>
     <string name="country_source">国連「世界人口推計2024」より。</string>
@@ -562,8 +562,8 @@
     <string name="gaze_ask">庭へ戻りますか？</string>
     <string name="gaze_back">戻る</string>
     <string name="gaze_stay">もう少しいる</string>
-    <string name="widget_record_garden">こころの記録</string>
-    <string name="widget_record_desc">今月のこころが、花と星になって咲きます。触れると、こころの記録へ。</string>
+    <string name="widget_record_garden">ハル</string>
+    <string name="widget_record_desc">庭のハルが時間とともに過ごします。夜は眠り、ひとことを残すと笑います。</string>
     <string name="backup_export">バックアップを保存</string>
     <string name="backup_import">バックアップから戻す</string>
     <string name="backup_importConfirm">このファイルの記録に置きかえますか？\nいまの記録は消えます。</string>
@@ -865,9 +865,9 @@
     <string name="feedback_crashSend">知らせる</string>
     <string name="feedback_crashSkip">大丈夫です</string>
     <string name="notify_time">時刻</string>
-    <string name="widget_line_garden">残りの日数 · 今日のひとこと</string>
-    <string name="widget_line_desc">残りの日数と今日のことば、「ひとことを残す」をひとつに</string>
-    <string name="widgets_name_line">残りの日数 · 今日のひとこと</string>
+    <string name="widget_line_garden">庭</string>
+    <string name="widget_line_desc">あなたの庭が空・太陽と月・季節とともに変わります。残りの時間と今日のことば。</string>
+    <string name="widgets_name_line">庭</string>
     <string name="widget_lineWrite">＋ 今日のひとことを残す</string>
     <string name="widget_lineDone">今日のひとことを残しました</string>
     <string name="nudge_breath">少し、いっしょに呼吸してみませんか？</string>

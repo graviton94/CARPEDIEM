@@ -104,7 +104,7 @@
 "words.english" = "영문";
 "words.both" = "둘 다";
 "widgets" = "위젯";
-"widgets.name.record" = "마음의 기록";
+"widgets.name.record" = "하루";
 "erase" = "모든 기록 지우기";
 "country.search" = "나라 검색";
 "country.source" = "UN 세계인구전망 2024 기준.";
@@ -560,8 +560,8 @@
 "gaze.ask" = "정원으로 돌아갈까요?";
 "gaze.back" = "돌아가기";
 "gaze.stay" = "더 머물기";
-"widget.record.garden" = "마음의 기록";
-"widget.record.desc" = "이번 달 마음이 꽃과 별로 피어요. 누르면 마음의 기록으로.";
+"widget.record.garden" = "하루";
+"widget.record.desc" = "내 하루가 정원에서 때를 따라 지내요. 밤엔 잠들고, 한 줄을 남기면 웃어요.";
 "backup.export" = "백업 파일로 저장";
 "backup.import" = "백업 파일 불러오기";
 "backup.importConfirm" = "이 파일의 기록으로 바꿀까요?\n지금 기록은 사라져요.";
@@ -863,9 +863,9 @@
 "feedback.crashSend" = "알려 주기";
 "feedback.crashSkip" = "괜찮아요";
 "notify.time" = "시각";
-"widget.line.garden" = "남은 날 · 오늘의 한 줄";
-"widget.line.desc" = "남은 날과 오늘의 문장, ‘한 줄 남기기’를 한 장에";
-"widgets.name.line" = "남은 날 · 오늘의 한 줄";
+"widget.line.garden" = "정원";
+"widget.line.desc" = "내 정원이 하늘 · 해와 달 · 계절을 따라 바뀌어요. 남은 시간과 오늘의 문장 한 줄.";
+"widgets.name.line" = "정원";
 "widget.lineWrite" = "＋ 오늘의 한 줄 남기기";
 "widget.lineDone" = "오늘의 한 줄을 남겼어요";
 "nudge.breath" = "잠깐 함께 숨 쉬어 볼까요?";

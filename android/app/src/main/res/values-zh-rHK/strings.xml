@@ -107,7 +107,7 @@
     <string name="words_english">英文</string>
     <string name="words_both">兩種都要</string>
     <string name="widgets">小工具</string>
-    <string name="widgets_name_record">心情的紀錄</string>
+    <string name="widgets_name_record">小日</string>
     <string name="erase">清除所有紀錄</string>
     <string name="country_search">搜尋國家</string>
     <string name="country_source">依據聯合國《世界人口展望 2024》。</string>
@@ -562,8 +562,8 @@
     <string name="gaze_ask">要回到庭院嗎？</string>
     <string name="gaze_back">回去</string>
     <string name="gaze_stay">再待一會兒</string>
-    <string name="widget_record_garden">心情的紀錄</string>
-    <string name="widget_record_desc">這個月的心情化作花與星星。點一下，打開心情的紀錄。</string>
+    <string name="widget_record_garden">小日</string>
+    <string name="widget_record_desc">小日在庭院裡隨時間生活。夜裡睡著，留下一句話就會笑。</string>
     <string name="backup_export">儲存備份檔</string>
     <string name="backup_import">從備份檔還原</string>
     <string name="backup_importConfirm">要換成這個檔案裡的紀錄嗎？\n現在的紀錄會消失。</string>
@@ -865,9 +865,9 @@
     <string name="feedback_crashSend">告訴我們</string>
     <string name="feedback_crashSkip">不用了</string>
     <string name="notify_time">時間</string>
-    <string name="widget_line_garden">剩下的日子 · 今天的一句話</string>
-    <string name="widget_line_desc">剩下的日子、今天的句子和「留下一句話」都在一張裡</string>
-    <string name="widgets_name_line">剩下的日子 · 今天的一句話</string>
+    <string name="widget_line_garden">庭院</string>
+    <string name="widget_line_desc">你的庭院隨天空、日月與季節變化。剩下的時間和今天的一句話。</string>
+    <string name="widgets_name_line">庭院</string>
     <string name="widget_lineWrite">＋ 留下今天的一句話</string>
     <string name="widget_lineDone">已留下今天的一句話</string>
     <string name="nudge_breath">要不要一起呼吸一會兒？</string>
