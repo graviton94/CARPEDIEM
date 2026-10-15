@@ -48,6 +48,8 @@ internal fun adornArt(ctx: Context, item: String): ImageBitmap? = when {
     item.startsWith("support:support_coffee") -> GardenArt.card(ctx, "coffee")
     item.startsWith("support:support_cake") -> GardenArt.card(ctx, "cake")
     item.startsWith("pebble:") -> GardenArt.card(ctx, "pebble")
+    // 만난 절기의 한 장 (1.1.6)
+    item.startsWith("term:") -> GardenArt.card(ctx, "term_" + item.removePrefix("term:"))
     else -> null
 }
 
@@ -71,14 +73,20 @@ internal fun adornName(ctx: Context, item: String): String = when {
     item.startsWith("support:support_coffee") -> ctx.getString(R.string.support_mark2)
     item.startsWith("support:support_cake") -> ctx.getString(R.string.support_mark3)
     item.startsWith("pebble:") -> ctx.getString(R.string.adorn_pebble)
+    item.startsWith("term:") -> termName(ctx, item.removePrefix("term:"))
     else -> ""
 }
+
+/** 절기 이름 (예: ‘동지’). */
+internal fun termName(ctx: Context, key: String): String =
+    ctx.resources.getIdentifier("termName_$key", "string", ctx.packageName).takeIf { it != 0 }?.let { ctx.getString(it) }.orEmpty()
 
 /** 그 꾸밈을 어디서 얻었는지 한 줄 (예: ‘2026 가을 · 은행나무’ · ‘10월 6일 응원’ · ‘하루가 준 날 · 10월 4일’). */
 internal fun adornFrom(ctx: Context, state: AppState, item: String): String = when {
     item.startsWith("card:") -> SeasonCard.parse(item.removePrefix("card:"))?.let { c -> "${c.year} ${Labels.season(ctx, c.season)}" } ?: ""
     item.startsWith("support:") -> state.supportMarks[item.removePrefix("support:")]?.let { ctx.getString(R.string.adorn_fromSupport, RecordText.day(ctx, it)) } ?: ""
     item.startsWith("pebble:") -> item.removePrefix("pebble:").toLongOrNull()?.let { ctx.getString(R.string.adorn_fromPebble, RecordText.day(ctx, java.time.LocalDate.ofEpochDay(it))) } ?: ""
+    item.startsWith("term:") -> state.termsMet().entries.firstOrNull { it.key.key == item.removePrefix("term:") }?.let { ctx.getString(R.string.adorn_fromTerm, RecordText.day(ctx, it.value)) } ?: ""
     else -> ""
 }
 
