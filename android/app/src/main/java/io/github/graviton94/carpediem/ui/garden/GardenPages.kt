@@ -243,7 +243,7 @@ internal fun CollectionBody(state: AppState, profile: LifeProfile, now: LocalDat
                 val c = state.store.constellations.of(m) ?: continue
                 val name = c.name(lang)
                 val got = clear[m]
-                val art: @Composable () -> Unit = { if (got != null) ConstellationArt(c) else GhostArt { ConstellationArt(c) } }
+                val art: @Composable () -> Unit = { val img: @Composable () -> Unit = { Image(GardenArt.card(ctx, "stars_$m"), null, Modifier.fillMaxSize()) }; if (got != null) img() else GhostArt(img) }
                 val whenText = RecordText.month(ctx, m)
                 tiles += if (got != null) Tile(art, name, got.format(fmt), got, Detail(art, name, starsKind + " · " + whenText + " · " + got.format(fmt), starsDesc, how, starsHow), kind = Shelf.STARS)
                     else Tile(art, name, whenText, null, Detail(art, name, starsKind + " · " + whenText, starsDesc, how, starsHow), ghost = true, kind = Shelf.STARS)
@@ -256,7 +256,7 @@ internal fun CollectionBody(state: AppState, profile: LifeProfile, now: LocalDat
                 fun res(n: String) = ctx.resources.getIdentifier(n, "string", ctx.packageName).takeIf { it != 0 }?.let { ctx.getString(it) }.orEmpty()
                 val name = res("termName_${t.key}")
                 val got = terms[t]
-                val art: @Composable () -> Unit = { if (got != null) TermArt(t) else GhostArt { TermArt(t) } }
+                val art: @Composable () -> Unit = { val img: @Composable () -> Unit = { Image(GardenArt.card(ctx, "term_${t.key}"), null, Modifier.fillMaxSize()) }; if (got != null) img() else GhostArt(img) }
                 tiles += if (got != null) Tile(art, name, got.format(fmt), got, Detail(art, name, termKind + " · " + got.format(fmt), res("term_${t.key}"), how, termHow), kind = Shelf.TERMS)
                     else Tile(art, name, "", null, Detail(art, name, termKind, "", how, termHow), ghost = true, kind = Shelf.TERMS)
             }
@@ -469,40 +469,8 @@ private fun CollectionTile(seed: Int, art: @Composable () -> Unit, title: String
     }
 }
 
-/** 별자리 칸: 밤하늘 없이 한지 위에 별 (호박빛 점 · 먹 테두리) 과 잇는 선. */
-@Composable
-private fun ConstellationArt(c: io.github.graviton94.carpediem.core.Constellation) {
-    val ink = Theme.gc.ink
-    androidx.compose.foundation.Canvas(Modifier.fillMaxSize(0.82f)) {
-        val r = size.minDimension
-        fun at(i: Int) = Offset(c.stars[i].first * r, c.stars[i].second * r)
-        val segs = c.lines.ifEmpty { c.stars.indices.zipWithNext() }
-        segs.forEach { (a, b) -> drawLine(ink.copy(alpha = 0.45f), at(a), at(b), r * 0.018f, cap = androidx.compose.ui.graphics.StrokeCap.Round) }
-        c.stars.indices.forEach { i ->
-            drawCircle(STAR_FILL, r * 0.045f, at(i))
-            drawCircle(ink, r * 0.045f, at(i), style = androidx.compose.ui.graphics.drawscope.Stroke(r * 0.018f))
-        }
-    }
-}
-
-/** 절기 칸: 해의 길 (먹 동그라미) 위 그 절기의 자리에 해 하나. 계절 빛으로 (봄 연두 · 여름 해빛 · 가을 호박 · 겨울 하늘). */
-@Composable
-private fun TermArt(t: io.github.graviton94.carpediem.core.SolarTerm) {
-    val ink = Theme.gc.ink
-    val col = when (t.ordinal) { in 2..7 -> Color(0xFF9DB86B); in 8..13 -> Color(0xFFE2B04A); in 14..19 -> Color(0xFFCB7D45); else -> Color(0xFF8FB1C9) }
-    androidx.compose.foundation.Canvas(Modifier.fillMaxSize(0.72f)) {
-        val r = size.minDimension / 2; val c = Offset(size.width / 2, size.height / 2)
-        drawCircle(ink.copy(alpha = 0.5f), r * 0.78f, c, style = androidx.compose.ui.graphics.drawscope.Stroke(r * 0.05f))
-        // 동지 (해가 가장 낮음) 를 아래, 하지를 위에: 해의 황경 270° 가 아래
-        val a = Math.toRadians(t.longitude - 270.0 + 90.0)
-        val sun = Offset(c.x + (r * 0.78f * kotlin.math.cos(a)).toFloat(), c.y + (r * 0.78f * kotlin.math.sin(a)).toFloat())
-        drawCircle(col, r * 0.22f, sun)
-        drawCircle(ink, r * 0.22f, sun, style = androidx.compose.ui.graphics.drawscope.Stroke(r * 0.06f))
-    }
-}
-private val STAR_FILL = Color(0xFFF2C35B)
-/** 별자리를 모으는 날 수 (한 달 안에 한 줄을 남긴 날). */
-private const val STAR_DAYS = 10
+/** 별자리를 모으는 날 수 (한 달 안에 한 줄을 남긴 날). 정원 밤하늘의 별자리도 같은 값. */
+internal const val STAR_DAYS = 10
 
 /** 만난 손님 · 순간의 그림 (정원에서 쓰는 그림 그대로). */
 @Composable

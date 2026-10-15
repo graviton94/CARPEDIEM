@@ -405,6 +405,9 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                     val starTop = if (topBottom > 0.dp) topBottom + u * G.Layout.minSkyGap else screenH * 0.14f
                     val starBottom = minOf(gy - haruAbove - u * G.Layout.minSkyGap * 2, gy - u * G.Layout.hillTop).let { if (it > starTop + u * 12) it else starTop + u * 28 }
                     MemoryStars(state, screenW, starTop, starBottom, Theme.gc.night, day0)
+                    // 이번 달 별자리를 모았으면 (한 달에 한 줄 열흘): 밤하늘에 그 별자리가 옅게 (1.1.6)
+                    val clearMonths = remember(state.lines) { io.github.graviton94.carpediem.core.Constellations.clearMonths(state.lines, STAR_DAYS) }
+                    if (now.monthValue in clearMonths) state.store.constellations.of(now.monthValue)?.let { SkyConstellation(it, now, starTop, starBottom, Modifier.fillMaxSize()) }
                 }
 
                 // 위: 남은 시간 · 단위 · 오늘의 문장
@@ -553,6 +556,9 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                     DecorBack(decor, now, gy, x0, x1, topBottom + u * G.Layout.minSkyGap, gy - haruAbove - u * G.Layout.minSkyGap,
                         if (bare) null else { part -> if (part == DecorPart.LETTER) state.letterDue(day0)?.let { l -> state.openLetter(l.id); letterOpen = l } else decorOpen = part }, warm = BreathKind.SLEEP in trace)
                     MossSeat(decor, now, xs[0], widths[0].toFloat().dp, gy, if (bare) null else { part -> decorOpen = part })
+                    // 이번 절기의 한 장 (1.1.6): 절기가 든 날 정원에 왔으면 다음 절기까지 말뚝 앞에
+                    val term = remember(state.lines, state.breaths, state.gazeDays, day0) { state.termPiece(day0) }
+                    term?.let { t -> TermPiece(t.key, ctx.resources.getIdentifier("termName_${t.key}", "string", ctx.packageName).takeIf { it != 0 }?.let { ctx.getString(it) }.orEmpty(), now, gy, x1) }
                 }
                 }
 

@@ -15,11 +15,16 @@ const path = require("path");
 const root = path.join(__dirname, "..");
 const files = ["engine.js", "pastel.js", "objects.js", "scenes.js", "concepts.js", "mix.js", "appexport.js"];
 // 한지 그림은 따로 묶음 안에: 옛 크레용 엔진과 이름이 겹쳐도 (paper · sun · ground …) 서로 덮어쓰지 않게
-const hanji = ["hanji_base.js", "hanji_haru.js", "hanji_garden.js", "hanji_cards.js", "hanji_hand.js", "hanji_export.js"];
+const hanji = ["hanji_base.js", "hanji_haru.js", "hanji_garden.js", "hanji_cards.js", "hanji_collect.js", "hanji_hand.js", "hanji_export.js"];
 const tokens = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "design/tokens.json"), "utf8")).garden;
 const D = Object.assign({}, tokens.decor, { stripLineY: tokens.layout.stripLineY, stripHeight: tokens.layout.stripHeight });
 const read = (f) => fs.readFileSync(path.join(root, "design/art/src", f), "utf8");
-const src = files.map(read).join("\n") + "\nvar HANJI = (function () {\n" + hanji.map(read).join("\n") +
+// 별자리 한 장 (hanji_collect.js): 달마다 별 자리 · 선 (data/constellations.csv 와 같은 값)
+const CONSTEL = {};
+fs.readFileSync(path.join(root, "data/constellations.csv"), "utf8").split("\n").slice(1).filter((l) => l.trim()).forEach((l) => {
+  const c = l.split(","); CONSTEL[+c[0]] = { stars: c[3].trim().split(/\s+/).map((p) => p.split(":").map(Number)), lines: (c[4] || "").trim().split(/\s+/).filter(Boolean).map((p) => p.split("-").map(Number)) };
+});
+const src = files.map(read).join("\n") + "\nvar HANJI = (function () {\nvar CONSTEL = " + JSON.stringify(CONSTEL) + ";\n" + hanji.map(read).join("\n") +
   "\nreturn { setHand, starApp, featherApp, supportApp, hatApp, cakeApp, skyApp, stripApp, treeApp, postApp, mossApp, kiteApp, cardApp, sunApp, moonApp, moonFullApp, fiberApp, rainbowApp, auroraApp, snailApp, flyApp, guestApp, windApp, kiteFoldApp, pondApp, logsApp, cloudApp, gardenH, setU, TREES, REAL, CARDS: Object.keys(PIECE) };\n})();";
 const out = path.join(root, "design/art");
 const app = path.join(root, "android/app/src/main/assets/garden");

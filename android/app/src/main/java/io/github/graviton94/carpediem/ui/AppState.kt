@@ -953,14 +953,25 @@ class AppState(private val context: Context) {
         if (p.countryCode.uppercase() in GardenDecor.SOUTH) return null
         return io.github.graviton94.carpediem.core.Sky.termOn(today, java.time.ZoneId.systemDefault())
     }
-    /** 만난 절기 (모은 것): 절기가 든 날 정원을 연 날 + 한 줄 · 숨 · 돌멍을 한 날 (기록 전부터의 날도). 남반구 나라는 없음. */
-    fun termsMet(): Map<io.github.graviton94.carpediem.core.SolarTerm, LocalDate> {
-        val p = profile ?: return emptyMap()
-        if (p.countryCode.uppercase() in GardenDecor.SOUTH) return emptyMap()
+    /** 정원에 온 날 (절기를 만난 날을 셈): 절기 날 정원을 연 날 + 한 줄 · 숨 · 돌멍을 한 날. 남반구 나라는 절기를 쓰지 않아 null. */
+    private fun termVisitDays(): Set<LocalDate>? {
+        val p = profile ?: return null
+        if (p.countryCode.uppercase() in GardenDecor.SOUTH) return null
         val days = HashSet<LocalDate>()
-        lines.forEach { days += it.date }; breaths.forEach { days += it.first }; gazeDays.forEach { d -> runCatching { LocalDate.parse(d.toString()) }.getOrNull()?.let { days += it } }
-        store.termDays.forEach { d -> runCatching { LocalDate.parse(d) }.getOrNull()?.let { days += it } }
-        return io.github.graviton94.carpediem.core.Sky.termsMet(days, java.time.ZoneId.systemDefault())
+        lines.forEach { days += it.date }; breaths.forEach { days += it.first }
+        (gazeDays + store.termDays).forEach { d -> runCatching { LocalDate.parse(d) }.getOrNull()?.let { days += it } }
+        return days
+    }
+    /** 만난 절기 (모은 것): 절기 → 처음 만난 날. */
+    fun termsMet(): Map<io.github.graviton94.carpediem.core.SolarTerm, LocalDate> =
+        termVisitDays()?.let { io.github.graviton94.carpediem.core.Sky.termsMet(it, java.time.ZoneId.systemDefault()) } ?: emptyMap()
+    /** 정원에 놓일 이번 절기의 한 장: 지금 절기가 든 날 정원에 왔으면 그 절기 (다음 절기까지), 아니면 null. */
+    fun termPiece(today: LocalDate): io.github.graviton94.carpediem.core.SolarTerm? {
+        val days = termVisitDays() ?: return null
+        val zone = java.time.ZoneId.systemDefault()
+        val t = io.github.graviton94.carpediem.core.Sky.termOf(today, zone)
+        val start = (0L..16L).map { today.minusDays(it) }.firstOrNull { io.github.graviton94.carpediem.core.Sky.termOn(it, zone) == t } ?: return null
+        return t.takeIf { start in days || (start == today && termToday(today) == t) }
     }
     /** 절기가 든 날 정원을 처음 열 때 한 줄 (‘오늘은 상강, 첫서리가 내렸어요.’). */
     fun noticeTerm(today: LocalDate) {
