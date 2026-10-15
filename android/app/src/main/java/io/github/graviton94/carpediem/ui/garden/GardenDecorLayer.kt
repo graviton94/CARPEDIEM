@@ -316,7 +316,7 @@ internal fun TermPiece(key: String, name: String, now: LocalDateTime, gy: Dp, x1
     if (key in HANGING_TERMS) {
         // 말뚝 상자 (DecorBack 과 같은 자리) 안의 가로대 한 점
         val pk = u * D.postScale
-        val hx = if (hang == Hang.BELL) HANG_SLOTS[0] else HANG_SLOTS[1]
+        val hx = when (hang) { Hang.LANTERN -> HANG_SLOTS[0]; Hang.CHIME -> HANG_SLOTS[2]; else -> HANG_SLOTS[1] }
         val ax = x1 - pk * D.postAtX + pk * hx; val ay = gy - pk * D.postAtY + pk * HANG_BAR_Y
         Image(GardenArt.card(ctx, "hang_$key"), name, Modifier.box(ax, ay, u * D.cardMini, D.cardBoxW, D.cardBoxH, D.cardBoxW / 2, HANG_TOP), colorFilter = filter)
         return
@@ -326,8 +326,8 @@ internal fun TermPiece(key: String, name: String, now: LocalDateTime, gy: Dp, x1
 }
 /** 말뚝에 매다는 절기 (땅에 두지 않고, 돌 곁에도 두지 않음). */
 internal val HANGING_TERMS = setOf("daehan", "cheongmyeong")
-/** 가로대에 매다는 자리 (말뚝 상자 x): 종 (56) 이 걸렸으면 왼쪽, 아니면 오른쪽 (풍경 25 · 등 38, 밤에 켜지는 등과도 떨어지게). 가로대 높이 · 매단 그림의 윗줄 (조각 상자 y). */
-private val HANG_SLOTS = floatArrayOf(26f, 52f)
+/** 가로대 (기둥 왼쪽) 에 매다는 자리 (말뚝 상자 x): 등 (38) 이 걸렸으면 22, 아무것도 없거나 종 (56) 이면 30, 풍경 (25) 이면 38. 가로대 높이 · 매단 그림의 윗줄 (조각 상자 y). */
+private val HANG_SLOTS = floatArrayOf(22f, 30f, 38f)
 private const val HANG_BAR_Y = 29f
 private const val HANG_TOP = 18f
 /** 절기 조각이 말뚝에서 떨어진 거리 (정원 단위). */
