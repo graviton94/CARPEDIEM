@@ -558,7 +558,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                     MossSeat(decor, now, xs[0], widths[0].toFloat().dp, gy, if (bare) null else { part -> decorOpen = part })
                     // 이번 절기의 한 장 (1.1.6): 절기가 든 날 정원에 왔으면 다음 절기까지 말뚝 앞에
                     val term = remember(state.lines, state.breaths, state.gazeDays, day0) { state.termPiece(day0) }
-                    term?.let { t -> TermPiece(t.key, ctx.resources.getIdentifier("termName_${t.key}", "string", ctx.packageName).takeIf { it != 0 }?.let { ctx.getString(it) }.orEmpty(), now, gy, x1) }
+                    term?.let { t -> TermPiece(t.key, ctx.resources.getIdentifier("termName_${t.key}", "string", ctx.packageName).takeIf { it != 0 }?.let { ctx.getString(it) }.orEmpty(), now, gy, x1, decor.hang) }
                 }
                 }
 
