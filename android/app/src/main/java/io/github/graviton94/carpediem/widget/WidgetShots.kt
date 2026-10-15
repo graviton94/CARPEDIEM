@@ -23,7 +23,7 @@ import java.io.File
 object WidgetShots {
     class Shot(val name: String, val widget: GlanceAppWidget, val w: Int, val h: Int)
 
-    /** 둘 수 있는 위젯 전부: 남은 날 · 오늘의 한 줄 (4×2) · 마음의 기록. */
+    /** 둘 수 있는 위젯 전부: 정원 (4×2) · 하루 (2×2). */
     val shots get() = listOf(
         Shot("line_garden", LineGardenWidget(), 320, 160), Shot("record_garden", RecordWidget(), 160, 160),
     )
@@ -57,6 +57,14 @@ object WidgetShots {
             val out = render(activity, s)
             File(dir, "widget_preview_${s.name}.png").outputStream().use { out.compress(Bitmap.CompressFormat.PNG, 100, it) }
         }.onFailure { android.util.Log.e("WidgetShots", s.name, it) }
+        // 때를 따라 바뀌는 그림 (1.1.7): 아침 · 낮 · 해 질 녘 · 늦은 밤의 정원 · 하루를 같은 날로 (확인용)
+        val d = activity.resources.displayMetrics.density
+        val day = java.time.LocalDate.now()
+        for ((name, h, m) in listOf(Triple("0700", 7, 0), Triple("1200", 12, 0), Triple("1830", 18, 30), Triple("2300", 23, 0))) runCatching {
+            val t = day.atTime(h, m)
+            GardenWidgetArt.garden(activity, (320 * d).toInt(), (160 * d).toInt(), t).let { b -> File(dir, "time_garden_$name.png").outputStream().use { b.compress(Bitmap.CompressFormat.PNG, 100, it) } }
+            GardenWidgetArt.haru(activity, (160 * d).toInt(), (160 * d).toInt(), t).let { b -> File(dir, "time_haru_$name.png").outputStream().use { b.compress(Bitmap.CompressFormat.PNG, 100, it) } }
+        }.onFailure { android.util.Log.e("WidgetShots", "time $name", it) }
         File(dir, "done").writeText("ok")
     }
 }
