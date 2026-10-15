@@ -21,14 +21,14 @@
     usu: function (ctx) { one(ctx, drop(0, 6, 8), "#A9CFE0", 6131, { tone: 0.12 }); one(ctx, blob(0, 22.6, 12, 1.8, 6132, 0.04), "#C7DFEA", 6132, { rim: 0.2, sh: 0.2 });
       one(ctx, blob(-2.6, 2.4, 1.4, 3, 6133, 0.1, -0.4), "#E6F2F7", 6133, { rim: 0, sh: 0 }); },
     // 경칩: 정원 손님과 같은 결 (굵은 먹선 · 하루와 같은 눈). 40 × 40 손님 상자를 한 장 자리로 옮겨 그림
-    gyeongchip: function (ctx) { var hand = HAND; HAND = false; ensureTex(); ctx.save(); ctx.translate(-20 * 0.95, 24 - 37 * 0.95); ctx.scale(0.95, 0.95);
+    gyeongchip: function (ctx) { ctx.save(); ctx.translate(-20 * 0.95, 24 - 37 * 0.95); ctx.scale(0.95, 0.95);
       gShadow(ctx, 20, 26);
       [[9, 35, -0.3], [31, 35, 0.3]].forEach(function (f) { gPiece(ctx, gOval(f[0], f[1], 4.2, 1.8, f[2]), "#7CA65C", { line: 1.4 }); });
       gPiece(ctx, gOval(20, 27, 14, 10.4, 0, 0.9), "#8DB46A", { inner: function (c) { c.fillStyle = "#E6EDC2"; c.beginPath(); c.ellipse(20, 31.6, 8.4, 5.2, 0, 0, 7); c.fill(); } });
       gPiece(ctx, gOval(13.4, 17.6, 5, 4.6), "#8DB46A", { line: 1.8 }); gPiece(ctx, gOval(26.6, 17.6, 5, 4.6), "#8DB46A", { line: 1.8 });
       gEye(ctx, 13.4, 17.2, 3.2, 0.3); gEye(ctx, 26.6, 17.2, 3.2, 0.3);
       ctx.fillStyle = "rgba(229,150,140,.45)"; ctx.beginPath(); ctx.ellipse(10.6, 25.4, 2.2, 1.1, 0, 0, 7); ctx.fill(); ctx.beginPath(); ctx.ellipse(29.4, 25.4, 2.2, 1.1, 0, 0, 7); ctx.fill();
-      ctx.strokeStyle = GINK; ctx.lineWidth = 1; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(17, 24.6); ctx.quadraticCurveTo(20, 26.6, 23, 24.6); ctx.stroke(); ctx.restore(); HAND = hand; },
+      ctx.strokeStyle = GINK; ctx.lineWidth = 1; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(17, 24.6); ctx.quadraticCurveTo(20, 26.6, 23, 24.6); ctx.stroke(); ctx.restore(); },
     chunbun: function (ctx) { one(ctx, disc(0, 6, 13, -Math.PI / 2, Math.PI / 2), "#F3C46A", 6151, { rim: 0.4 }); one(ctx, disc(0, 6, 13, Math.PI / 2, Math.PI * 1.5), "#5E6A8E", 6152, { rim: 0.4 });
       dot(ctx, -6, 2, 0.9, "#F6EAC4"); dot(ctx, -4, 11, 0.7, "#F6EAC4"); },
     cheongmyeong: function (ctx) { twig(ctx, [-14, -10, -4, -12, 6, -11, 15, -13], 1.8, 1);
