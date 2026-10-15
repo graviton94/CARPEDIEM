@@ -517,8 +517,8 @@ object Tokens {
             const val layerMax = 40.0f
         }
         object Night {
-            const val darkFrom = 20.0f
-            const val darkUntil = 6.5f
+            const val darkFrom = 19.0f
+            const val darkUntil = 6.0f
             object Colors {
                 val base = Color(0xFF151A28)
                 val paper = Color(0xFF212838)

@@ -60,7 +60,7 @@ object WidgetShots {
         // 때를 따라 바뀌는 그림 (1.1.7): 아침 · 낮 · 해 질 녘 · 늦은 밤의 정원 · 하루를 같은 날로 (확인용)
         val d = activity.resources.displayMetrics.density
         val day = java.time.LocalDate.now()
-        for ((name, h, m) in listOf(Triple("0700", 7, 0), Triple("1200", 12, 0), Triple("1830", 18, 30), Triple("2300", 23, 0))) runCatching {
+        for ((name, h, m) in listOf(Triple("0600", 6, 0), Triple("0700", 7, 0), Triple("1200", 12, 0), Triple("1730", 17, 30), Triple("1930", 19, 30), Triple("2300", 23, 0))) runCatching {
             val t = day.atTime(h, m)
             GardenWidgetArt.garden(activity, (320 * d).toInt(), (160 * d).toInt(), t).let { b -> File(dir, "time_garden_$name.png").outputStream().use { b.compress(Bitmap.CompressFormat.PNG, 100, it) } }
             GardenWidgetArt.haru(activity, (160 * d).toInt(), (160 * d).toInt(), t).let { b -> File(dir, "time_haru_$name.png").outputStream().use { b.compress(Bitmap.CompressFormat.PNG, 100, it) } }

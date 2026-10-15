@@ -522,8 +522,8 @@ enum Tokens {
             static let layerMax: CGFloat = 40.0
         }
         enum Night {
-            static let darkFrom: CGFloat = 20.0
-            static let darkUntil: CGFloat = 6.5
+            static let darkFrom: CGFloat = 19.0
+            static let darkUntil: CGFloat = 6.0
             enum Colors {
                 static let base: UInt32 = 0x151A28FF
                 static let paper: UInt32 = 0x212838FF

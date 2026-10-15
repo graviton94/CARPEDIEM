@@ -166,7 +166,16 @@ object GardenWidgetArt {
         val u = w / G_WIDTH                         // 정원 단위 하나 (앱 화면 폭 390 = 위젯 폭)
         val gy = h * GARDEN_GROUND
         val sunR = u * SUN_R
-        sky(context, c, sc, w, h, gy, sunR, h * 0.16f, gy - sunR * 2.2f, w * 0.30f, w * 0.80f)
+        // 하루와 가족: 길 가운데에 나란히 (하루가 맨 앞, 반려동물은 작게)
+        val people = sc.store.people.filter { it.until == null }.take(MAX_FAMILY)
+        val sizes = listOf(1f) + people.map { if (it.kind == PersonKind.PET) Tokens.Garden.Family.petScale else 1f }
+        val base = u * STONE_W
+        val gap = base * 0.18f
+        val total = sizes.sumOf { (it * base).toDouble() }.toFloat() + gap * (sizes.size - 1)
+        val fit = min(1f, u * (PATH_TO - PATH_FROM) / total)
+        // 해 · 달의 길: 위쪽 글자 (남은 날 · 한 문장) 아래, 돌들 머리 위. 해 뜸 · 짐 무렵에도 돌 뒤에 숨지 않게
+        val arcBase = min(gy - sunR * 2.2f, gy - base * fit * STONE_TALL - sunR * 1.3f)
+        sky(context, c, sc, w, h, gy, sunR, min(h * ARC_TOP, arcBase - sunR), arcBase, w * 0.30f, w * 0.80f)
         val p = nightPaint(sc.dark)
         // 나무 · 말뚝은 위젯 높이에 맞춰 줄임 (땅 위 높이의 GROW 만큼까지)
         val dk = min(1f, gy * DECOR_FIT / (D.treeAtY * u)) * u
@@ -178,13 +187,6 @@ object GardenWidgetArt {
             val part = when (d.hang) { Hang.CHIME -> "chime"; Hang.BELL -> "bell"; Hang.LANTERN -> if (sc.dark) "lantern_lit" else "lantern"; Hang.NONE -> null }
             part?.let { put(c, asset(context, "post_$it.webp"), px, gy, pk, D.postBoxW, D.postBoxH, D.postAtX, D.postAtY, if (it == "lantern_lit") paint else p) }
         }
-        // 하루와 가족: 길 가운데에 나란히 (하루가 맨 앞, 반려동물은 작게)
-        val people = sc.store.people.filter { it.until == null }.take(MAX_FAMILY)
-        val sizes = listOf(1f) + people.map { if (it.kind == PersonKind.PET) Tokens.Garden.Family.petScale else 1f }
-        val base = u * STONE_W
-        val gap = base * 0.18f
-        val total = sizes.sumOf { (it * base).toDouble() }.toFloat() + gap * (sizes.size - 1)
-        val fit = min(1f, u * (PATH_TO - PATH_FROM) / total)
         var x = u * (PATH_FROM + PATH_TO) / 2f - total * fit / 2f
         val (lid, smile, look) = face(sc, base)
         val hat = sc.profile?.let { Family.birthdaySoon(it.birthDate, now, Tokens.Notify.birthdayFrom.toInt()) } != null
@@ -223,6 +225,8 @@ object GardenWidgetArt {
     private const val G_WIDTH = 390f
     private const val GARDEN_GROUND = 0.84f
     private const val SUN_R = 13f
+    private const val STONE_TALL = 0.95f   // 돌 높이 (폭에 대해, 고깔 · 새싹 포함 넉넉히)
+    private const val ARC_TOP = 0.42f      // 해 · 달이 가장 높을 때 (위젯 높이에 대해): 위쪽 글자 아래
     private const val STONE_W = 46f
     private const val PATH_FROM = 96f
     private const val PATH_TO = 312f
