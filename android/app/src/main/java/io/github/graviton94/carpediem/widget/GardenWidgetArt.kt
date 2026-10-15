@@ -74,7 +74,7 @@ object GardenWidgetArt {
 
     /** 하늘 · 땅 · 때의 빛 · (밤이면) 별 · 해와 달. gy = 땅선. sunR = 해 · 달 반지름 (px). arc = 해가 지나는 길 (위 · 아래 y). */
     private fun sky(context: Context, c: Canvas, sc: Scene, w: Int, h: Int, gy: Float, sunR: Float, arcTop: Float, arcBase: Float, x0: Float, x1: Float) {
-        c.drawColor((if (sc.dark) N.Colors.base else Tokens.Garden.Colors.paper).toArgb())
+        c.drawColor((if (sc.dark) Tokens.Garden.Night.Colors.base else Tokens.Garden.Colors.paper).toArgb())
         val p = paint
         asset(context, "sky_${key(sc.season)}.jpg")?.let { sky ->
             // 하늘은 땅선 근처의 빛이 보이게 아래쪽을 맞춤 (앱 화면의 아래 하늘과 같은 자리)
@@ -217,7 +217,7 @@ object GardenWidgetArt {
     }
 
     /** 밤엔 하루 · 가족도 정원과 같이 살짝 어둡게 (한 겹 덮음). */
-    private fun darken(c: Canvas, w: Int, h: Int) = c.drawRect(0f, 0f, w.toFloat(), h.toFloat(), Paint().apply { color = N.Colors.base.copy(alpha = NIGHT_VEIL).toArgb() })
+    private fun darken(c: Canvas, w: Int, h: Int) = c.drawRect(0f, 0f, w.toFloat(), h.toFloat(), Paint().apply { color = Tokens.Garden.Night.Colors.base.copy(alpha = NIGHT_VEIL).toArgb() })
 
     /** 위젯 그림의 폭 = 앱 정원 폭 (390 단위). 땅선 · 해 반지름 · 돌 폭 · 길 (정원 단위). */
     private const val G_WIDTH = 390f
