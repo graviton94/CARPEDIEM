@@ -1,6 +1,7 @@
 {
   "1.1.7": {
     "ko": [
+      "위젯이 새로워졌어요. 4×2 정원은 내 정원 그대로, 2×2는 하루 하나만. 아침 · 낮 · 저녁 · 밤마다 하늘이 바뀌고, 밤엔 하루가 잠들어요.",
       "알림으로 열어도 첫 화면부터 시작하고, 떠 있는 안내는 한지 칩으로 바뀌었어요.",
       "숨 쉬는 동안 화면이 꺼져도 소리와 종, 남은 시간이 그대로 이어져요.",
       "하루를 꾹 누르면 오늘의 마음 · 때 · 계절에 따라 노래가 달라져요. 돌멍하기의 낮은 울림은 줄였어요.",
@@ -9,14 +10,16 @@
       "한 해를 한 장으로가 빨리 열리고, 보내는 그림엔 글 대신 그해 마음의 빛깔이 담겨요."
     ],
     "en": [
+      "New widgets: your garden and Haru, under a sky that turns from morning to night.",
       "Notifications open on the title screen; floating notes are paper chips.",
       "Breathing carries on with the screen off.",
-      "Haru's song follows today's feeling, the hour and the season. Softer hum in stone gazing.",
-      "Collect 12 constellations and 24 solar terms. Place a term piece beside a stone; on term days it lies in your garden.",
+      "Haru's song follows your feeling, the hour and season. Softer gazing hum.",
+      "Collect 12 constellations and 24 solar terms; place term pieces beside a stone.",
       "Look back on your lines by feeling. Kept words get a pressed leaf.",
-      "The year poster opens faster and shares your year's colours, not your lines."
+      "The year poster opens faster and shares colours, not lines."
     ],
     "ja": [
+      "ウィジェットが新しく。4×2は自分の庭、2×2はハルだけ。朝・昼・夕・夜で空が変わり、夜はハルが眠ります。",
       "通知から開いても最初の画面から。浮かぶ案内は和紙のチップに。",
       "呼吸の途中で画面が消えても、音と鐘、残り時間はそのまま続きます。",
       "ハルを長押しすると、今日の気持ち・時間・季節で歌が変わります。石ながめの低いうなりは控えめに。",
@@ -25,6 +28,7 @@
       "一年を一枚にが速く開き、送る絵にはことばの代わりにその年の気持ちの色が。"
     ],
     "zh-TW": [
+      "小工具煥然一新：4×2 是你的庭院，2×2 只有小日。早晨、白天、傍晚、夜裡天空都會變，夜裡小日會睡著。",
       "從通知打開也會從第一個畫面開始，浮出的提示改成和紙小籤。",
       "呼吸時即使螢幕關閉，聲音、鐘聲和剩餘時間也會繼續。",
       "長按小日，歌會隨今天的心情、時刻和季節改變。看石發呆的低鳴聲變輕了。",
