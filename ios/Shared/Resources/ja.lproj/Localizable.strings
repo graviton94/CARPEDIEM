@@ -22,7 +22,7 @@
 "adorn.label" = "%1$@のそばの%2$@";
 "support.invite" = "ハルとの思い出がもう%1$@個に・応援する";
 "support.thanksItem" = "ありがとう。\n庭に%1$@届きました。石のそばに置けます。";
-"support.preview" = "ハルのそばに%1$@が置かれる様子です（プレビュー）";
+"support.preview" = "わたしのハルのそばに%1$@が置かれる様子です（プレビュー）";
 "support.previewMore" = "もうひとつあれば、%1$@のそばにも%2$@を置けます（プレビュー）";
 "anniv.note" = "庭をつくる人が、メモを残しました";
 "anniv.title100" = "百番目のひとこと";
@@ -200,6 +200,12 @@
 "support.once" = "お支払いは一度きりです。定期購入はありません。";
 "support.soon" = "いまはお支払い画面を開けません。\n少しあとで、もう一度押してください。";
 "support.pending" = "お支払いが確認されたら、ハルのそばに置かれます。";
+"support.doneTitle" = "ありがとうございます";
+"support.donePlaced" = "%1$@をひとつ、わたしのハルのそばに置きました。\n庭で見られます。";
+"support.doneAsk" = "%1$@がひとつ届きました。\nわたしのハルのそばに置きますか？いま置いているものは手もとに残ります。";
+"support.placeMe" = "わたしのハルのそばに置く";
+"support.later" = "あとで";
+"support.seeGarden" = "庭で見る";
 "letgo.title" = "今日のひとこと";
 "letgo.sub" = "よろこびも、かなしみも、ひとことにのせて送ります。";
 "letgo.feeling" = "いまの気持ち（任意）";

@@ -678,7 +678,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                         val art = adornArt(ctx, item) ?: return@let
                         // 조각 그림은 상자 아래 가운데에 작게 있어서 상자를 키워 그림 크기를 맞춤 (그림 가운데 = 돌 왼쪽 끝, 아래 = 땅)
                         val ow = u * G.Family.offerSize * ADORN_SCALE
-                        val label = stringResource(R.string.adorn_label, sl.name, adornName(ctx, item))
+                        val label = stringResource(R.string.adorn_label, if (sl.id == null) stringResource(R.string.garden_haru) else sl.name, adornName(ctx, item))
                         val ox = xs[i] - u * widths[i].toFloat() / u.value / 2 - ow * 0.5f + u * 2f; val oy = gy + u * 1f - ow * (G.Decor.cardAtY / G.Decor.cardBoxH)
                         // 밤에도 하루들과 같은 밝기 (1.1.8): 돌은 밝은데 곁의 것만 어두우면 어색함. 땅 · 나무 · 말뚝은 그대로 때를 따라 어두워짐
                         Image(art, label, Modifier.offset(ox, oy).size(ow))
@@ -806,6 +806,9 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                         // 새 버전을 받는 중 · 다 받음 (Play 앱 안 업데이트): 누르면 새 버전으로 다시 열림
                         state.update == AppState.UpdateState.READY -> RecallNote(stringResource(R.string.update_ready)) { state.finishUpdate() }
                         state.update == AppState.UpdateState.DOWNLOADING -> RecallNote(stringResource(R.string.update_downloading)) {}
+                        // 새 버전이 올라왔으면 (1.1.8): 받는 중 · 다 받음 다음 자리, 아침 · 저녁 권유에도 밀리지 않음. ×로 닫으면 그날은 쉼, 다음 날 다시
+                        state.update == AppState.UpdateState.AVAILABLE && !state.noteHidden("update", today) && !touring ->
+                            RecallNote(stringResource(R.string.update_available), onDismiss = { state.hideNote("update", today) }) { state.startUpdate() }
                         // 기념일 편지 (1.1.5, 평생 두 번): 백 번째 한 줄 다음 날 · 만난 지 1년. 한지 쪽지 한 줄 → 누르면 편지
                         state.anniversaryDue(today) != null && !state.noteHidden("letter", today) -> {
                             val which = state.anniversaryDue(today) ?: "100"
@@ -820,11 +823,6 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                         topInvite -> Unit
                         // 돌아온 한 줄은 아래 쪽지 대신 손님이 물고 옴 (위)
                         // 첫 일주일 길잡이: 하루에 하나, 해 본 것은 건너뜀 (누르면 그 일로)
-                        // 새 버전이 올라왔으면 (길잡이도 없는 날, 처음 안 날 · 사흘 뒤 하루씩만): 누르면 뒤에서 받음
-                        state.firstWeekNudge(today)?.takeIf { state.guideDone } == null && state.update == AppState.UpdateState.AVAILABLE && state.updateNoteDue(today) && !state.noteHidden("update", today) -> {
-                            LaunchedEffect(state.updateVersion, today) { state.store.updateNoteShown(state.updateVersion, today) }
-                            RecallNote(stringResource(R.string.update_available), onDismiss = { state.hideNote("update", today) }) { state.startUpdate() }
-                        }
                         else -> state.firstWeekNudge(today)?.takeIf { state.guideDone }?.let { k ->
                             val text = stringResource(when (k) { "breath" -> R.string.nudge_breath; "stone" -> R.string.nudge_stone; "gaze" -> R.string.nudge_gaze
                                 "special" -> R.string.nudge_special; "widget" -> R.string.nudge_widget; else -> R.string.nudge_backup })

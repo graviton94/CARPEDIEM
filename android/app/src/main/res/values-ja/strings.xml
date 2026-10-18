@@ -24,7 +24,7 @@
     <string name="adorn_label">%1$sのそばの%2$s</string>
     <string name="support_invite">ハルとの思い出がもう%1$s個に・応援する</string>
     <string name="support_thanksItem">ありがとう。\n庭に%1$s届きました。石のそばに置けます。</string>
-    <string name="support_preview">ハルのそばに%1$sが置かれる様子です（プレビュー）</string>
+    <string name="support_preview">わたしのハルのそばに%1$sが置かれる様子です（プレビュー）</string>
     <string name="support_previewMore">もうひとつあれば、%1$sのそばにも%2$sを置けます（プレビュー）</string>
     <string name="anniv_note">庭をつくる人が、メモを残しました</string>
     <string name="anniv_title100">百番目のひとこと</string>
@@ -202,6 +202,12 @@
     <string name="support_once">お支払いは一度きりです。定期購入はありません。</string>
     <string name="support_soon">いまはお支払い画面を開けません。\n少しあとで、もう一度押してください。</string>
     <string name="support_pending">お支払いが確認されたら、ハルのそばに置かれます。</string>
+    <string name="support_doneTitle">ありがとうございます</string>
+    <string name="support_donePlaced">%1$sをひとつ、わたしのハルのそばに置きました。\n庭で見られます。</string>
+    <string name="support_doneAsk">%1$sがひとつ届きました。\nわたしのハルのそばに置きますか？いま置いているものは手もとに残ります。</string>
+    <string name="support_placeMe">わたしのハルのそばに置く</string>
+    <string name="support_later">あとで</string>
+    <string name="support_seeGarden">庭で見る</string>
     <string name="letgo_title">今日のひとこと</string>
     <string name="letgo_sub">よろこびも、かなしみも、ひとことにのせて送ります。</string>
     <string name="letgo_feeling">いまの気持ち（任意）</string>

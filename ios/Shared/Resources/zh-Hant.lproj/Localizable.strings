@@ -22,7 +22,7 @@
 "adorn.label" = "%1$@身旁的%2$@";
 "support.invite" = "已經和小日累積了%1$@段回憶・支持";
 "support.thanksItem" = "謝謝你。\n%1$@來到了花園，可以放在石頭旁。";
-"support.preview" = "這是%1$@放在小日身邊的樣子（預覽）";
+"support.preview" = "這是%1$@放在我的小日身旁的樣子（預覽）";
 "support.previewMore" = "再一份，就能在%1$@身邊也放上%2$@（預覽）";
 "anniv.note" = "做這座庭院的人留了一張紙條";
 "anniv.title100" = "第一百句話";
@@ -200,6 +200,12 @@
 "support.once" = "只付一次，沒有訂閱。";
 "support.soon" = "現在無法開啟付款畫面。\n請稍後再按一次。";
 "support.pending" = "付款確認後，就會放在小日身旁。";
+"support.doneTitle" = "謝謝你";
+"support.donePlaced" = "已把一份%1$@放在我的小日身旁。\n回到庭院就能看到。";
+"support.doneAsk" = "收到一份%1$@。\n要放在我的小日身旁嗎？現在身旁的東西會留在手邊。";
+"support.placeMe" = "放在我的小日身旁";
+"support.later" = "之後再說";
+"support.seeGarden" = "去庭院看看";
 "letgo.title" = "今天的一句話";
 "letgo.sub" = "喜悅也好，悲傷也好，都寫進一句話裡放下。";
 "letgo.feeling" = "現在的心情（選填）";

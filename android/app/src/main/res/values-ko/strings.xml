@@ -24,7 +24,7 @@
     <string name="adorn_label">%1$s 곁의 %2$s</string>
     <string name="support_invite">벌써 하루와 %1$s번의 추억을 쌓았어요 · 응원하기</string>
     <string name="support_thanksItem">고마워요.\n%1$s이 정원에 왔어요. 돌 곁에 둘 수 있어요.</string>
-    <string name="support_preview">하루 곁에 %1$s 하나가 놓이는 모습이에요 (미리 보기)</string>
+    <string name="support_preview">내 하루 곁에 %1$s 하나가 놓이는 모습이에요 (미리 보기)</string>
     <string name="support_previewMore">하나 더 응원하면 %1$s 곁에도 %2$s 하나를 둘 수 있어요 (미리 보기)</string>
     <string name="anniv_note">정원을 만드는 사람이 쪽지를 남겼어요</string>
     <string name="anniv_title100">백 번째 한 줄</string>
@@ -201,6 +201,12 @@
     <string name="support_once">한 번만 결제돼요. 구독은 없어요.</string>
     <string name="support_soon">지금은 결제 창을 열 수 없어요.\n잠시 뒤 다시 눌러 주세요.</string>
     <string name="support_pending">결제가 확인되면 하루 곁에 놓여요.</string>
+    <string name="support_doneTitle">고마워요</string>
+    <string name="support_donePlaced">%1$s 하나를 내 하루 곁에 두었어요.\n정원에 가면 보여요.</string>
+    <string name="support_doneAsk">%1$s 하나가 왔어요.\n내 하루 곁에 둘까요? 지금 곁에 둔 것은 손에 남아요.</string>
+    <string name="support_placeMe">내 하루 곁에 두기</string>
+    <string name="support_later">나중에</string>
+    <string name="support_seeGarden">정원에서 보기</string>
     <string name="letgo_title">오늘의 한 줄</string>
     <string name="letgo_sub">기쁨도, 슬픔도 한 줄에 실어 보내요.</string>
     <string name="letgo_feeling">지금 마음 (선택)</string>

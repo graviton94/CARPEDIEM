@@ -94,8 +94,10 @@ internal fun adornFrom(ctx: Context, state: AppState, item: String): String = wh
  * 돌 페이지의 ‘곁에 둔 것’: 지금 꾸밈 (그림 · 이름) 과 고르기. 아무것도 없으면 무엇을 둘 수 있는지 한 줄.
  */
 @Composable
-internal fun AdornRow(state: AppState, stone: String, stoneName: String, onPick: () -> Unit) {
+internal fun AdornRow(state: AppState, stone: String, name: String, onPick: () -> Unit) {
     val ctx = LocalContext.current
+    // 내 돌은 ‘나’ 가 아니라 ‘내 하루’ (1.1.8: ‘내 하루 곁에 둔 것’)
+    val stoneName = if (stone == Adornments.ME) stringResource(R.string.garden_haru) else name
     val p = Theme.palette
     val item = state.adornmentsShown()[stone]
     val owned = state.ownedAdornments()
@@ -125,8 +127,9 @@ internal fun AdornRow(state: AppState, stone: String, stoneName: String, onPick:
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun AdornSheet(state: AppState, stone: String, stoneName: String, onClose: () -> Unit) {
+internal fun AdornSheet(state: AppState, stone: String, name: String, onClose: () -> Unit) {
     val ctx = LocalContext.current
+    val stoneName = if (stone == Adornments.ME) stringResource(R.string.garden_haru) else name
     val p = Theme.palette
     val shown = state.adornmentsShown()
     val nameOf = { id: String -> if (id == Adornments.ME) ctx.getString(R.string.garden_haru) else state.people.firstOrNull { it.id == id }?.name.orEmpty() }

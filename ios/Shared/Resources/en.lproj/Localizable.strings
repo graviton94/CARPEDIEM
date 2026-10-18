@@ -22,7 +22,7 @@
 "adorn.label" = "%2$@ beside %1$@";
 "support.invite" = "%1$@ memories with Haru already · Support";
 "support.thanksItem" = "Thank you.\n%1$@ has arrived in the garden. Place it beside a stone.";
-"support.preview" = "This is how %1$@ would sit beside Haru (preview)";
+"support.preview" = "This is how %1$@ would sit beside My Haru (preview)";
 "support.previewMore" = "One more and %2$@ can sit beside %1$@ too (preview)";
 "anniv.note" = "The person who makes this garden left you a note";
 "anniv.title100" = "Your hundredth line";
@@ -199,6 +199,12 @@
 "support.once" = "One-time. Never a subscription.";
 "support.soon" = "The payment window can't open right now.\nPlease try again in a moment.";
 "support.pending" = "Once the payment clears, it will sit beside Haru.";
+"support.doneTitle" = "Thank you";
+"support.donePlaced" = "A %1$@ now sits beside My Haru.\nYou will see it in the garden.";
+"support.doneAsk" = "A %1$@ has arrived.\nPlace it beside My Haru? What is there now stays in your hands.";
+"support.placeMe" = "Place beside My Haru";
+"support.later" = "Later";
+"support.seeGarden" = "See the garden";
 "letgo.title" = "Today's line";
 "letgo.sub" = "Joy or sorrow, one line, then let it go.";
 "letgo.feeling" = "How it feels (optional)";

@@ -24,7 +24,7 @@
     <string name="adorn_label">%2$s beside %1$s</string>
     <string name="support_invite">%1$s memories with Haru already · Support</string>
     <string name="support_thanksItem">Thank you.\n%1$s has arrived in the garden. Place it beside a stone.</string>
-    <string name="support_preview">This is how %1$s would sit beside Haru (preview)</string>
+    <string name="support_preview">This is how %1$s would sit beside My Haru (preview)</string>
     <string name="support_previewMore">One more and %2$s can sit beside %1$s too (preview)</string>
     <string name="anniv_note">The person who makes this garden left you a note</string>
     <string name="anniv_title100">Your hundredth line</string>
@@ -201,6 +201,12 @@
     <string name="support_once">One-time. Never a subscription.</string>
     <string name="support_soon">The payment window can\'t open right now.\nPlease try again in a moment.</string>
     <string name="support_pending">Once the payment clears, it will sit beside Haru.</string>
+    <string name="support_doneTitle">Thank you</string>
+    <string name="support_donePlaced">A %1$s now sits beside My Haru.\nYou will see it in the garden.</string>
+    <string name="support_doneAsk">A %1$s has arrived.\nPlace it beside My Haru? What is there now stays in your hands.</string>
+    <string name="support_placeMe">Place beside My Haru</string>
+    <string name="support_later">Later</string>
+    <string name="support_seeGarden">See the garden</string>
     <string name="letgo_title">Today\'s line</string>
     <string name="letgo_sub">Joy or sorrow, one line, then let it go.</string>
     <string name="letgo_feeling">How it feels (optional)</string>
