@@ -167,6 +167,9 @@ object Tokens {
             val moss = Color(0xFFA9BC7A)
         }
         object Layout {
+            const val skyConstSize = 0.2f
+            const val skyConstStar = 0.018f
+            const val skyConstAlpha = 0.5f
             const val groundRatio = 0.76f
             const val pathStart = 26.0f
             const val pathEnd = 364.0f
@@ -303,6 +306,27 @@ object Tokens {
             const val dayFrom = 8.0f
             const val duskFrom = 16.5f
             const val duskPeak = 18.5f
+            object Afterglow {
+                val color = Color(0xFFB0708C)
+                const val alpha = 0.4f
+            }
+            object DawnDeep {
+                val color = Color(0xFFC9A0B4)
+                const val alpha = 0.36f
+            }
+            const val twilightAlpha = 0.6f
+            const val nightFull = 19.6f
+            const val nightUntil = 5.4f
+            const val sunFade = 0.3f
+            const val glowFrom = 0.55f
+            object DuskGlow {
+                val color = Color(0xFFD9806E)
+                const val alpha = 0.42f
+            }
+            object DawnGlow {
+                val color = Color(0xFFE8B08E)
+                const val alpha = 0.4f
+            }
             const val nightFrom = 20.0f
             const val groundKeep = 0.35f
             const val stars = 4.0f
@@ -517,8 +541,8 @@ object Tokens {
             const val layerMax = 40.0f
         }
         object Night {
-            const val darkFrom = 19.0f
-            const val darkUntil = 6.0f
+            const val darkFrom = 19.25f
+            const val darkUntil = 5.75f
             object Colors {
                 val base = Color(0xFF151A28)
                 val paper = Color(0xFF212838)
@@ -566,6 +590,9 @@ object Tokens {
                 val proud = Color(0xFFE3A866)
                 val meh = Color(0xFFC9C6B5)
                 val unsettled = Color(0xFFAEBFC0)
+                val happy = Color(0xFFEFA7A0)
+                val wistful = Color(0xFFC7B39A)
+                val concern = Color(0xFFA3967E)
                 val none = Color(0xFFE6DFCF)
             }
         }

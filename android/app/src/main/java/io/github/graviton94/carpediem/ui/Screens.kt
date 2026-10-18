@@ -389,6 +389,7 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
             }
             // ── 기록 · 백업: 남기기 · 내보내기 · 파일로 저장 / 들여오기 · 지우기 ──
             var confirmClear by remember { mutableStateOf(false) }
+            var familyList by remember { mutableStateOf(false) }
             var confirmKeepOff by remember { mutableStateOf(false) }
             var pickHelp by remember { mutableStateOf(false) }
             var restoreFrom by remember { mutableStateOf<android.net.Uri?>(null) }
@@ -516,9 +517,23 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
                         TokenText(stringResource(R.string.garden_metOn, state.store.startDate.format(java.time.format.DateTimeFormatter.ofLocalizedDate(java.time.format.FormatStyle.MEDIUM)),
                             Labels.stone(ctx, io.github.graviton94.carpediem.core.HaruShape.traits(state.store.haruSeed).stone.id)), Tokens.TypeScale.footnote, color = p.secondary, maxLines = 2)
                     }
-                    // 가족의 돌: 이름마다 한 줄, 끝에 ‘더하기’
-                    state.people.forEach { person -> RowDivider(); FormRow(person.name, onClick = { onStone(person.id) }, trailing = chevron) }
-                    if (state.people.size < Tokens.Garden.Family.max.toInt() - 1) { RowDivider(); FormRow(stringResource(R.string.family_add), onClick = onAddPerson, trailing = chevron) }
+                    // 가족의 돌 (1.1.8): 한 줄로 접어 두고, 누르면 이름 목록 (누르면 그 돌의 페이지). 아직 없으면 바로 ‘더하기’
+                    RowDivider()
+                    if (state.people.isEmpty()) FormRow(stringResource(R.string.family_add), onClick = onAddPerson, trailing = chevron)
+                    else FormRow(stringResource(R.string.family_stones), onClick = { familyList = true }) {
+                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) { TokenText("${state.people.size}", Tokens.TypeScale.footnote, color = p.secondary); chevron() }
+                    }
+                    if (familyList) GardenAlert(
+                        onDismissRequest = { familyList = false },
+                        title = { Text(stringResource(R.string.family_stones)) },
+                        text = {
+                            Column {
+                                state.people.forEachIndexed { i, person -> if (i > 0) RowDivider(); FormRow(person.name, onClick = { familyList = false; onStone(person.id) }, trailing = chevron) }
+                                if (state.people.size < Tokens.Garden.Family.max.toInt() - 1) { RowDivider(); FormRow(stringResource(R.string.family_add), onClick = { familyList = false; onAddPerson() }, trailing = chevron) }
+                            }
+                        },
+                        confirmButton = { AlertButton(stringResource(R.string.garden_close), { familyList = false }, quiet = true) },
+                    )
                     RowDivider()
                     FormRow(stringResource(R.string.collection), onClick = onCollection, trailing = chevron)
                     RowDivider()

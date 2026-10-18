@@ -11,7 +11,7 @@ data class Letter(val arrives: LocalDate, val season: Season, val from: LocalDat
 object Letters {
     val MONTHS = listOf(3, 6, 9, 12)
     /** 무거운 마음: 기본으로 편지에 넣지 않고 ‘흘려보낸 마음 N번’만 (편지 안 스위치로 함께 보기). */
-    val HEAVY = setOf(Feeling.SAD, Feeling.WORRY, Feeling.DISAPPOINT)
+    val HEAVY = setOf(Feeling.SAD, Feeling.WORRY, Feeling.CONCERN, Feeling.DISAPPOINT)
 
     private fun seasonOf(month: Int) = when (month) { 3 -> Season.SPRING; 6 -> Season.SUMMER; 9 -> Season.AUTUMN; else -> Season.WINTER }
 

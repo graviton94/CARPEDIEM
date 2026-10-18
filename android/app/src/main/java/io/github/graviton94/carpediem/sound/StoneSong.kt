@@ -31,6 +31,7 @@ object StoneSong {
     fun feelingPitch(f: io.github.graviton94.carpediem.core.Feeling?): Double = SCALE[when (f) {
         io.github.graviton94.carpediem.core.Feeling.JOY -> 9; io.github.graviton94.carpediem.core.Feeling.HOPE -> 8; io.github.graviton94.carpediem.core.Feeling.PROUD -> 8; io.github.graviton94.carpediem.core.Feeling.THANKS -> 7
         io.github.graviton94.carpediem.core.Feeling.CALM -> 5; io.github.graviton94.carpediem.core.Feeling.DISAPPOINT -> 3; io.github.graviton94.carpediem.core.Feeling.UNSETTLED -> 3
+        io.github.graviton94.carpediem.core.Feeling.HAPPY -> 9; io.github.graviton94.carpediem.core.Feeling.WISTFUL -> 3; io.github.graviton94.carpediem.core.Feeling.CONCERN -> 2
         io.github.graviton94.carpediem.core.Feeling.WORRY -> 2; io.github.graviton94.carpediem.core.Feeling.SAD -> 0
         else -> 4 }]
 

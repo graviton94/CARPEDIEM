@@ -211,6 +211,15 @@
     <string name="feeling_thanks">Thanks</string>
     <string name="feeling_calm">Calm</string>
     <string name="feeling_sad">Sadness</string>
+    <string name="feeling_happy">Happy</string>
+    <string name="feeling_wistful">Wistful</string>
+    <string name="feeling_concern">Worried</string>
+    <string name="letgo_msg_happy_1">Happiness settled on the garden.\nRemember today for a long while.</string>
+    <string name="letgo_msg_happy_2">Glad a day like this came.\nThe garden will keep this feeling.</string>
+    <string name="letgo_msg_wistful_1">Feeling wistful means you cared that much.\nLeave the rest to the wind.</string>
+    <string name="letgo_msg_wistful_2">It\'s okay not to have done it all.\nLeave a little for tomorrow\'s garden.</string>
+    <string name="letgo_msg_concern_1">Worry belongs to days not yet here.\nIt\'s okay to set it down.</string>
+    <string name="letgo_msg_concern_2">Worrying means you care about a lot.\nTonight the garden will keep watch.</string>
     <string name="feeling_worry">Anxious</string>
     <string name="feeling_hope">Excited</string>
     <string name="feeling_disappoint">Upset</string>
@@ -235,8 +244,8 @@
     <string name="letgo_msg_sad_1">It\'s okay to cry.\nHaru is right here.</string>
     <string name="letgo_msg_sad_2">You set a heavy heart down.\nRest a little lighter tonight.</string>
     <string name="letgo_msg_sad_3">After rain, the garden is greener.\nIt will be okay, slowly.</string>
-    <string name="letgo_msg_worry_1">Leave the worry to the wind.\nStay with this breath.</string>
-    <string name="letgo_msg_worry_2">Worry belongs to days not yet here.\nIt\'s okay to set it down.</string>
+    <string name="letgo_msg_worry_1">Leave the unease to the wind.\nStay with this breath.</string>
+    <string name="letgo_msg_worry_2">Feel the ground beneath you.\nRight here, you are okay.</string>
     <string name="letgo_msg_worry_3">What you can do is enough.\nThe wind will take the rest.</string>
     <string name="letgo_msg_proud_1">Today grew as much as you tried.\nHold that pride close for a moment.</string>
     <string name="letgo_msg_proud_2">A small win is still a win.\nThank yourself for today.</string>
@@ -281,6 +290,7 @@
     <string name="recall_sampleOld">A little tired today, but I made it through.</string>
     <string name="garden_metOn">%2$s, met on %1$s</string>
     <string name="family_add">Add a family stone</string>
+    <string name="family_stones">Family stones</string>
     <string name="family_full">The garden is full.\nLet one stone go to invite a new one.</string>
     <string name="family_me">Me</string>
     <string name="add_kind">Whose stone is this?</string>

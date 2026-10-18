@@ -248,7 +248,7 @@ private fun kiteTail(): List<Offset> {
     return out
 }
 
-internal fun feelingColor(f: Feeling?): Color { val m = Tokens.Garden.Mood.Colors; return when (f) { Feeling.JOY -> m.joy; Feeling.HOPE -> m.hope; Feeling.CALM -> m.calm; Feeling.THANKS -> m.thanks; Feeling.PROUD -> m.proud; Feeling.MEH -> m.meh; Feeling.UNSETTLED -> m.unsettled; Feeling.DISAPPOINT -> m.disappoint; Feeling.SAD -> m.sad; Feeling.WORRY -> m.worry; null -> m.none } }
+internal fun feelingColor(f: Feeling?): Color { val m = Tokens.Garden.Mood.Colors; return when (f) { Feeling.JOY -> m.joy; Feeling.HOPE -> m.hope; Feeling.CALM -> m.calm; Feeling.THANKS -> m.thanks; Feeling.PROUD -> m.proud; Feeling.MEH -> m.meh; Feeling.UNSETTLED -> m.unsettled; Feeling.HAPPY -> m.happy; Feeling.WISTFUL -> m.wistful; Feeling.CONCERN -> m.concern; Feeling.DISAPPOINT -> m.disappoint; Feeling.SAD -> m.sad; Feeling.WORRY -> m.worry; null -> m.none } }
 
 /** ④ 하루의 자리: 하루 밑의 이끼 방석 (봉오리 0 ~ 5, 계절마다 꽃 · 토끼풀 · 버섯 · 눈). width = 하루의 폭. */
 @Composable
@@ -334,28 +334,31 @@ private const val HANG_TOP = 18f
 private const val TERM_FROM_POST = 26f
 
 /**
- * 밤하늘의 이번 달 별자리 (1.1.6 모은 것): 이번 달 별자리를 모았으면 밤에 정원 하늘 왼쪽에 옅게 (별 · 이은 선).
- * top ~ bottom = 별이 뜨는 띠 (글자 아래 ~ 돌 머리 위). 낮 · 띠가 너무 좁으면 그리지 않음.
+ * 밤하늘의 이번 달 별자리 (1.1.6 모은 것): 이번 달 별자리를 모았으면 밤에 정원 하늘에 옅게 (별 · 이은 선).
+ * top ~ bottom = 별이 뜨는 띠 (글자 아래 ~ 돌 머리 위). 달이 왼쪽이면 오른쪽에, 오른쪽이면 왼쪽에 (달과 겹치지 않게, 1.1.8).
+ * 찾아보면 보이는 크기 · 진하기 (토큰 Layout.skyConst*). 낮 · 띠가 너무 좁으면 그리지 않음.
  */
 @Composable
-internal fun SkyConstellation(c: io.github.graviton94.carpediem.core.Constellation, now: LocalDateTime, top: Dp, bottom: Dp, modifier: Modifier = Modifier) {
+internal fun SkyConstellation(c: io.github.graviton94.carpediem.core.Constellation, now: LocalDateTime, top: Dp, bottom: Dp, modifier: Modifier = Modifier, moon: androidx.compose.ui.unit.DpOffset? = null) {
     val tint = SkyTime.at(now)
     if (tint.night <= 0f) return
     val star = GardenArt.sparkle(LocalContext.current)
+    val L = Tokens.Garden.Layout
     Canvas(modifier) {
         val y0 = top.toPx(); val y1 = bottom.toPx()
         if (y1 - y0 < size.width * 0.12f) return@Canvas
-        val side = minOf((y1 - y0) * 0.8f, size.width * 0.32f)
+        val side = minOf((y1 - y0) * 0.7f, size.width * L.skyConstSize)
         val xs = c.stars.map { it.first }; val ys = c.stars.map { it.second }
         val span = maxOf(xs.max() - xs.min(), ys.max() - ys.min(), 0.01f)
         val k = side / span
-        val cx = size.width * 0.27f; val cy = (y0 + y1) / 2
+        val moonLeft = moon?.let { it.x.toPx() < size.width / 2 } ?: false
+        val cx = size.width * (if (moonLeft) 0.7f else 0.27f); val cy = (y0 + y1) / 2
         fun at(i: Int) = Offset(cx + (c.stars[i].first - (xs.min() + xs.max()) / 2) * k, cy + (c.stars[i].second - (ys.min() + ys.max()) / 2) * k)
-        val a = tint.night
-        c.lines.ifEmpty { c.stars.indices.zipWithNext() }.forEach { (p, q) -> drawLine(SKY_LINE.copy(alpha = 0.22f * a), at(p), at(q), size.width * 0.0022f) }
-        val s = (size.width * 0.032f).toInt().coerceAtLeast(4)
+        val a = tint.night * L.skyConstAlpha
+        c.lines.ifEmpty { c.stars.indices.zipWithNext() }.forEach { (p, q) -> drawLine(SKY_LINE.copy(alpha = 0.26f * a), at(p), at(q), size.width * 0.0016f) }
+        val s = (size.width * L.skyConstStar).toInt().coerceAtLeast(3)
         c.stars.indices.forEach { i -> val o = at(i); val si = if (i % 3 == 0) (s * 1.3f).toInt() else s
-            drawImage(star, dstOffset = androidx.compose.ui.unit.IntOffset((o.x - si / 2f).toInt(), (o.y - si / 2f).toInt()), dstSize = androidx.compose.ui.unit.IntSize(si, si), alpha = 0.85f * a) }
+            drawImage(star, dstOffset = androidx.compose.ui.unit.IntOffset((o.x - si / 2f).toInt(), (o.y - si / 2f).toInt()), dstSize = androidx.compose.ui.unit.IntSize(si, si), alpha = a) }
     }
 }
 private val SKY_LINE = Color(0xFFF6EAC4)

@@ -209,6 +209,15 @@
 "feeling.thanks" = "Thanks";
 "feeling.calm" = "Calm";
 "feeling.sad" = "Sadness";
+"feeling.happy" = "Happy";
+"feeling.wistful" = "Wistful";
+"feeling.concern" = "Worried";
+"letgo.msg.happy.1" = "Happiness settled on the garden.\nRemember today for a long while.";
+"letgo.msg.happy.2" = "Glad a day like this came.\nThe garden will keep this feeling.";
+"letgo.msg.wistful.1" = "Feeling wistful means you cared that much.\nLeave the rest to the wind.";
+"letgo.msg.wistful.2" = "It's okay not to have done it all.\nLeave a little for tomorrow's garden.";
+"letgo.msg.concern.1" = "Worry belongs to days not yet here.\nIt's okay to set it down.";
+"letgo.msg.concern.2" = "Worrying means you care about a lot.\nTonight the garden will keep watch.";
 "feeling.worry" = "Anxious";
 "feeling.hope" = "Excited";
 "feeling.disappoint" = "Upset";
@@ -233,8 +242,8 @@
 "letgo.msg.sad.1" = "It's okay to cry.\nHaru is right here.";
 "letgo.msg.sad.2" = "You set a heavy heart down.\nRest a little lighter tonight.";
 "letgo.msg.sad.3" = "After rain, the garden is greener.\nIt will be okay, slowly.";
-"letgo.msg.worry.1" = "Leave the worry to the wind.\nStay with this breath.";
-"letgo.msg.worry.2" = "Worry belongs to days not yet here.\nIt's okay to set it down.";
+"letgo.msg.worry.1" = "Leave the unease to the wind.\nStay with this breath.";
+"letgo.msg.worry.2" = "Feel the ground beneath you.\nRight here, you are okay.";
 "letgo.msg.worry.3" = "What you can do is enough.\nThe wind will take the rest.";
 "letgo.msg.proud.1" = "Today grew as much as you tried.\nHold that pride close for a moment.";
 "letgo.msg.proud.2" = "A small win is still a win.\nThank yourself for today.";
@@ -279,6 +288,7 @@
 "recall.sampleOld" = "A little tired today, but I made it through.";
 "garden.metOn" = "%2$@, met on %1$@";
 "family.add" = "Add a family stone";
+"family.stones" = "Family stones";
 "family.full" = "The garden is full.\nLet one stone go to invite a new one.";
 "family.me" = "Me";
 "add.kind" = "Whose stone is this?";

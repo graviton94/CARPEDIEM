@@ -26,6 +26,8 @@ swipe_up() { adb shell input swipe 540 1900 540 500 500; }
 adb shell settings put global window_animation_scale 1; adb shell settings put global animator_duration_scale 1
 # 느린 에뮬레이터의 'System UI 응답 없음' 창이 화면을 가리지 않게. 부팅 직후 잠시 쉰다.
 adb shell settings put global hide_error_dialogs 1
+# 하늘은 그 나라의 해 뜸 · 해 짐을 폰 시간대로 셈: 캡처 폰을 서울 시간으로 (cd.now 의 시각이 서울 시각이 되게)
+adb shell cmd alarm set-timezone Asia/Seoul >/dev/null 2>&1 || adb shell service call alarm 3 s16 Asia/Seoul >/dev/null 2>&1 || true
 sleep 45; adb shell am broadcast -a android.intent.action.CLOSE_SYSTEM_DIALOGS >/dev/null
 # 기본 언어는 한국어 (영어는 아래에서 따로)
 adb shell cmd locale set-app-locales $P --locales ${LOCALES:-ko-KR} 2>/dev/null   # [locale ja-JP] 처럼 고르면 그 말로

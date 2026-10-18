@@ -264,7 +264,7 @@ internal fun RecordSearch(state: AppState, today: LocalDate, onOpen: (RecordView
         TokenText(stringResource(R.string.search_none), Tokens.TypeScale.footnote, color = p.secondary)
         // 마음으로 찾아보기: 누르면 그 마음 이름으로
         androidx.compose.foundation.layout.FlowRow(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2), maxItemsInEachRow = Feeling.PER_ROW) {
-            Feeling.entries.forEachIndexed { i, f -> val n = stringResource(feelingName(f)); GardenChip(n, false, 1500 + i) { q = n } }
+            FeelingChips { f, i -> val n = stringResource(feelingName(f)); GardenChip(n, false, 1500 + i) { q = n } }
         }
     } else {
         TokenText(stringResource(R.string.search_count, "${found.size}"), Tokens.TypeScale.footnote, color = p.secondary)

@@ -212,6 +212,15 @@
     <string name="feeling_thanks">ありがとう</string>
     <string name="feeling_calm">おだやか</string>
     <string name="feeling_sad">かなしみ</string>
+    <string name="feeling_happy">しあわせ</string>
+    <string name="feeling_wistful">心残り</string>
+    <string name="feeling_concern">心配</string>
+    <string name="letgo_msg_happy_1">しあわせな気持ちが、庭にそっと降りました。\n今日を、長く覚えていましょう。</string>
+    <string name="letgo_msg_happy_2">こんな日があって、よかった。\nこの気持ち、庭が大切にしまっておきます。</string>
+    <string name="letgo_msg_wistful_1">心残りは、それだけ心を寄せたしるしです。\n残りは風にあずけましょう。</string>
+    <string name="letgo_msg_wistful_2">やり残したことがあっても大丈夫。\n明日の庭に、少し残しておきましょう。</string>
+    <string name="letgo_msg_concern_1">心配は、まだ来ていない日のことです。\n今日は下ろしても大丈夫です。</string>
+    <string name="letgo_msg_concern_2">心配が多いのは、大切なものが多いから。\n今夜は庭が見守っています。</string>
     <string name="feeling_worry">不安</string>
     <string name="feeling_hope">わくわく</string>
     <string name="feeling_disappoint">しょんぼり</string>
@@ -236,8 +245,8 @@
     <string name="letgo_msg_sad_1">泣いても大丈夫です。\nハルがそばにいます。</string>
     <string name="letgo_msg_sad_2">重いこころを、そっと下ろしました。\n今夜は少し身軽に、休みましょう。</string>
     <string name="letgo_msg_sad_3">雨があがると、庭の緑はいっそう深くなります。\nゆっくり、大丈夫になっていきますよ。</string>
-    <string name="letgo_msg_worry_1">心配は風にあずけて\nいまは、この呼吸にだけ心を向けましょう。</string>
-    <string name="letgo_msg_worry_2">心配は、まだ来ていない日のことです。\n今日は下ろしても大丈夫です。</string>
+    <string name="letgo_msg_worry_1">不安な気持ちは風にあずけて\nいまは、この呼吸にだけ心を向けましょう。</string>
+    <string name="letgo_msg_worry_2">足もとの地面を感じてみて。\nいま、ここは大丈夫です。</string>
     <string name="letgo_msg_worry_3">できるぶんだけで十分です。\nあとは、風が持っていってくれます。</string>
     <string name="letgo_msg_proud_1">がんばった分だけ育った一日。\nそのほこらしさを、少し抱きしめて。</string>
     <string name="letgo_msg_proud_2">小さなできたも、できたです。\n今日の自分にありがとう。</string>
@@ -282,6 +291,7 @@
     <string name="recall_sampleOld">今日は少し疲れたけれど、それでもよくがんばった。</string>
     <string name="garden_metOn">%1$sに出会った%2$s</string>
     <string name="family_add">家族の石を迎える</string>
+    <string name="family_stones">家族の石</string>
     <string name="family_full">庭がいっぱいになりました。\n石をひとつ手放すと、新しい石を迎えられます。</string>
     <string name="family_me">わたし</string>
     <string name="add_kind">だれの石ですか？</string>

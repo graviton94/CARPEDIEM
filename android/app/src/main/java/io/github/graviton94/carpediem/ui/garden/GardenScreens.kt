@@ -397,8 +397,16 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                     Box(Modifier.offset(y = stripEnd - u * 1f).fillMaxWidth().height(screenH - stripEnd + u * 1f).background(under))
                 }
                 Image(stripImg, null, Modifier.offset(y = stripTop).fillMaxWidth().guideTarget(guide.takeIf { !bare }, "path.ground").height(u * G.Layout.stripHeight), contentScale = ContentScale.FillBounds)
-                // 정원만 보기(bare)는 위 글자가 없어도 별이 상태바 · 소리 버튼에 닿지 않게
-                SkyTimeLayer(now, gy, if (bare) screenH * 0.14f else topBottom, gy - haruAbove - u * G.Layout.minSkyGap, Modifier.fillMaxSize())
+                // 해 · 달 (자리는 먼저 셈: 별 · 별자리가 달을 비켜 가게): 폰 시각을 따라 하늘을 가로지름. 위쪽 글자에도, 하루 머리에도 닿지 않음.
+                val (day, t) = skyProgress(now)
+                val r = u * G.Layout.sunRadius
+                val base = gy - maxOf(u * G.Layout.sunBase, haruAbove + u * G.Layout.minSkyGap + r)
+                val arc = min((u * G.Layout.sunArc).value, (base - topBottom - u * G.Layout.minSkyGap - r).value.coerceAtLeast(0f)).dp
+                val sx = lerp((u * G.Layout.sunStart).value, (u * G.Layout.sunEnd).value, t).dp
+                val sy = base - arc * sin(t * Math.PI).toFloat()
+                val moonAt = if (day) null else androidx.compose.ui.unit.DpOffset(sx, sy)
+                // 정원만 보기(bare)는 위 글자가 없어도 별이 상태바 · 소리 버튼에 닿지 않게. 달빛은 달 뒤에 (별 · 별자리보다도 뒤)
+                SkyTimeLayer(now, gy, if (bare) screenH * 0.14f else topBottom, gy - haruAbove - u * G.Layout.minSkyGap, Modifier.fillMaxSize(), moonAt, r)
                 // 기억의 돌 가운데 ‘하늘에 별로 두기’를 켠 것: 하늘에 따뜻한 별 하나 (돌멍하기에는 두지 않음)
                 if (!bare) {
                     // 위 글자 아래 ~ 돌 머리 위. 글자 높이를 아직 모르거나 띠가 없으면 하늘 위쪽의 작은 띠에
@@ -407,7 +415,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                     MemoryStars(state, screenW, starTop, starBottom, Theme.gc.night, day0)
                     // 이번 달 별자리를 모았으면 (한 달에 한 줄 열흘): 밤하늘에 그 별자리가 옅게 (1.1.6)
                     val clearMonths = remember(state.lines) { io.github.graviton94.carpediem.core.Constellations.clearMonths(state.lines, STAR_DAYS) }
-                    if (now.monthValue in clearMonths) state.store.constellations.of(now.monthValue)?.let { SkyConstellation(it, now, starTop, starBottom, Modifier.fillMaxSize()) }
+                    if (now.monthValue in clearMonths) state.store.constellations.of(now.monthValue)?.let { SkyConstellation(it, now, starTop, starBottom, Modifier.fillMaxSize(), moonAt) }
                 }
 
                 // 위: 남은 시간 · 단위 · 오늘의 문장
@@ -517,20 +525,18 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 val widths = slots.map { sl -> (sl.art.meta.bbox.width * sl.scale.value).toDouble() }
                 val xs = Family.place(targets, widths, 0, x0.value.toDouble(), x1.value.toDouble(), (G.Family.gap * u.value).toDouble(), og0).map { it.toFloat().dp }
 
-                // 해 · 달: 폰 시각을 따라 하늘을 가로지름. 위쪽 글자에도, 하루 머리에도 닿지 않음.
-                val (day, t) = skyProgress(now)
-                val r = u * G.Layout.sunRadius
-                val base = gy - maxOf(u * G.Layout.sunBase, haruAbove + u * G.Layout.minSkyGap + r)
-                val arc = min((u * G.Layout.sunArc).value, (base - topBottom - u * G.Layout.minSkyGap - r).value.coerceAtLeast(0f)).dp
-                val sx = lerp((u * G.Layout.sunStart).value, (u * G.Layout.sunEnd).value, t).dp
-                val sy = base - arc * sin(t * Math.PI).toFloat()
-                if (day) Image(GardenArt.sun(ctx), null, Modifier.offset(sx - r, sy - r).size(r * 2))
-                else MoonShape(GardenArt.moonFull(ctx), SkyTime.moonPhase(now), Modifier.offset(sx - r, sy - r).size(r * 2))
+                // 해는 지기 직전 · 뜬 직후에 스르르, 달은 어스름에 떠올라 여명에 옅어짐 (해와 밤하늘이 같이 있지 않게). 달빛은 달 뒤에
+                if (day) Image(GardenArt.sun(ctx), null, Modifier.offset(sx - r, sy - r).size(r * 2).graphicsLayer { alpha = SkyTime.sunAlpha(now) })
+                else {
+                    val ma = SkyTime.moonAlpha(now)
+                    MoonGlow(androidx.compose.ui.unit.DpOffset(sx, sy), ma, Modifier.fillMaxSize())
+                    if (ma > 0f) MoonShape(GardenArt.moonFull(ctx), SkyTime.moonPhase(now), Modifier.offset(sx - r, sy - r).size(r * 2).graphicsLayer { alpha = ma })
+                }
                 // 돌멍하기: 움직이는 정원 (GazeLife) 이 같은 자리를 쓰게
                 if (bare) androidx.compose.runtime.SideEffect { gazeGeom.value = GazeGeom(gy, xs[0], sx, sy, day, haruAbove) }
                 // 밤 · 새벽: 달빛 · 돌들 발치의 빛 · 가로등 · 반딧불
                 val spanL = slots.indices.minOf { xs[it] - (widths[it].toFloat() / 2).dp }; val spanR = slots.indices.maxOf { xs[it] + (widths[it].toFloat() / 2).dp }
-                NightLights(now, gy, spanL, spanR, if (day) null else androidx.compose.ui.unit.DpOffset(sx, sy), Modifier.fillMaxSize())
+                NightLights(now, gy, spanL, spanR, Modifier.fillMaxSize())
                 // 가끔 별똥별 (밤 · 새벽, 글자와 하루 머리 사이 하늘)
                 ShootingStars(now, topBottom, gy - haruAbove - u * G.Layout.minSkyGap, Modifier.fillMaxSize())
                 // 절기가 든 날의 작은 변화 (S1) · 오늘 마친 숨의 흔적 (E3): 그날만, 돌 · 꾸밈 뒤에
@@ -674,7 +680,8 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                         val ow = u * G.Family.offerSize * ADORN_SCALE
                         val label = stringResource(R.string.adorn_label, sl.name, adornName(ctx, item))
                         val ox = xs[i] - u * widths[i].toFloat() / u.value / 2 - ow * 0.5f + u * 2f; val oy = gy + u * 1f - ow * (G.Decor.cardAtY / G.Decor.cardBoxH)
-                        Image(art, label, Modifier.offset(ox, oy).size(ow), colorFilter = nightFilter(SkyTime.isDark(now)))
+                        // 밤에도 하루들과 같은 밝기 (1.1.8): 돌은 밝은데 곁의 것만 어두우면 어색함. 땅 · 나무 · 말뚝은 그대로 때를 따라 어두워짐
+                        Image(art, label, Modifier.offset(ox, oy).size(ow))
                         // 누르는 자리는 손가락 크기만큼 (그림은 작아도)
                         val tt = Tokens.Layout.tapTarget
                         if (!bare) Box(Modifier.offset(ox + ow / 2 - tt / 2, gy - u * 8f - tt / 2).size(tt).clickable(interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }, indication = null) { state.say(label) })

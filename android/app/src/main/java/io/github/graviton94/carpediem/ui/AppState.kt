@@ -586,10 +586,10 @@ class AppState(private val context: Context) {
         return when (f) {
             // 밤에는 잠드는 명상, 아침의 슬픔엔 맑은 숨으로
             Feeling.SAD -> if (breathed) null else if (night) Care.SLEEP_BREATH else if (morning) Care.MORNING_BREATH else Care.CALM_BREATH
-            Feeling.WORRY -> if (breathed) null else if (night) Care.SLEEP_BREATH else Care.BOX_BREATH
+            Feeling.WORRY, Feeling.CONCERN -> if (breathed) null else if (night) Care.SLEEP_BREATH else Care.BOX_BREATH
             Feeling.UNSETTLED -> if (breathed) null else if (night) Care.SLEEP_BREATH else Care.CALM_BREATH
             Feeling.DISAPPOINT -> Care.LOOK
-            Feeling.JOY, Feeling.THANKS, Feeling.PROUD -> if (people.isNotEmpty() && to == null && keepLines) Care.SEND_TO else null
+            Feeling.JOY, Feeling.HAPPY, Feeling.THANKS, Feeling.PROUD -> if (people.isNotEmpty() && to == null && keepLines) Care.SEND_TO else null
             else -> null
         }
     }
