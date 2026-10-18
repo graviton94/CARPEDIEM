@@ -257,11 +257,14 @@ if wantany g90a g90b g90c; then open --ez cd.title true --ez cd.dew true --es cd
 # 1.1.5 간직한 문장 (정원 책갈피 · 추억) · 못 만난 것 실루엣 · 한지 생일 모자 · 케이크
 s g93_kept_garden 6 --ez cd.kept true --es cd.now $NOW
 s g94_kept_memories 4 --ei cd.page 2 --es cd.now $NOW; if want g94b; then swipe_up; shot g94b_kept_list 2; fi
-# 하늘의 때 (1.1.8 점검): 해 지기 직전 · 직후 · 해 뜨기 직전 · 직후 (서울 10월 18일: 해 뜸 6:38 · 해 짐 17:49)
-s g96a_sky_preset 6 --es cd.now 2026-10-18T17:40
-s g96b_sky_postset 6 --es cd.now 2026-10-18T17:58
-s g96c_sky_prerise 6 --es cd.now 2026-10-18T06:30
-s g96d_sky_postrise 6 --es cd.now 2026-10-18T06:46
+# 하늘의 때 (1.1.8): 서울 10월 18일 (해 뜸 6:38 · 해 짐 17:49). 노을 · 저녁놀 · 어스름 · 밤 · 여명 · 동트기 전 · 해 돋음
+s g96a_sky_dusk 6 --es cd.now 2026-10-18T17:30
+s g96b_sky_afterglow 6 --es cd.now 2026-10-18T17:56
+s g96c_sky_twilight 6 --es cd.now 2026-10-18T18:15
+s g96d_sky_night 6 --es cd.now 2026-10-18T18:45
+s g96e_sky_firstlight 6 --es cd.now 2026-10-18T06:05
+s g96f_sky_predawn 6 --es cd.now 2026-10-18T06:30
+s g96g_sky_sunrise 6 --es cd.now 2026-10-18T06:45
 # 1.1.5 알림 시각 바퀴 (아침)
 s g92_time_wheel 5 --es cd.screen settings --es cd.timeWheel m --es cd.now $NOW
 # 정원의 한 해 한 장 (S2): 나무 · 말뚝 · 연이 있는 작은 정원
