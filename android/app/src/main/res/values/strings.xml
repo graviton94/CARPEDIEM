@@ -199,7 +199,8 @@
     <string name="support_tier3">A slice of cake</string>
     <string name="support_tier3_price">$7.99</string>
     <string name="support_once">One-time. Never a subscription.</string>
-    <string name="support_soon">Support payments aren\'t open yet. They will be soon.\nYour kind thought already means a lot.</string>
+    <string name="support_soon">The payment window can\'t open right now.\nPlease try again in a moment.</string>
+    <string name="support_pending">Once the payment clears, it will sit beside Haru.</string>
     <string name="letgo_title">Today\'s line</string>
     <string name="letgo_sub">Joy or sorrow, one line, then let it go.</string>
     <string name="letgo_feeling">How it feels (optional)</string>
@@ -211,6 +212,15 @@
     <string name="feeling_thanks">Thanks</string>
     <string name="feeling_calm">Calm</string>
     <string name="feeling_sad">Sadness</string>
+    <string name="feeling_happy">Happy</string>
+    <string name="feeling_wistful">Wistful</string>
+    <string name="feeling_concern">Worried</string>
+    <string name="letgo_msg_happy_1">Happiness settled on the garden.\nRemember today for a long while.</string>
+    <string name="letgo_msg_happy_2">Glad a day like this came.\nThe garden will keep this feeling.</string>
+    <string name="letgo_msg_wistful_1">Feeling wistful means you cared that much.\nLeave the rest to the wind.</string>
+    <string name="letgo_msg_wistful_2">It\'s okay not to have done it all.\nLeave a little for tomorrow\'s garden.</string>
+    <string name="letgo_msg_concern_1">Worry belongs to days not yet here.\nIt\'s okay to set it down.</string>
+    <string name="letgo_msg_concern_2">Worrying means you care about a lot.\nTonight the garden will keep watch.</string>
     <string name="feeling_worry">Anxious</string>
     <string name="feeling_hope">Excited</string>
     <string name="feeling_disappoint">Upset</string>
@@ -235,8 +245,8 @@
     <string name="letgo_msg_sad_1">It\'s okay to cry.\nHaru is right here.</string>
     <string name="letgo_msg_sad_2">You set a heavy heart down.\nRest a little lighter tonight.</string>
     <string name="letgo_msg_sad_3">After rain, the garden is greener.\nIt will be okay, slowly.</string>
-    <string name="letgo_msg_worry_1">Leave the worry to the wind.\nStay with this breath.</string>
-    <string name="letgo_msg_worry_2">Worry belongs to days not yet here.\nIt\'s okay to set it down.</string>
+    <string name="letgo_msg_worry_1">Leave the unease to the wind.\nStay with this breath.</string>
+    <string name="letgo_msg_worry_2">Feel the ground beneath you.\nRight here, you are okay.</string>
     <string name="letgo_msg_worry_3">What you can do is enough.\nThe wind will take the rest.</string>
     <string name="letgo_msg_proud_1">Today grew as much as you tried.\nHold that pride close for a moment.</string>
     <string name="letgo_msg_proud_2">A small win is still a win.\nThank yourself for today.</string>
@@ -281,6 +291,7 @@
     <string name="recall_sampleOld">A little tired today, but I made it through.</string>
     <string name="garden_metOn">%2$s, met on %1$s</string>
     <string name="family_add">Add a family stone</string>
+    <string name="family_stones">Family stones</string>
     <string name="family_full">The garden is full.\nLet one stone go to invite a new one.</string>
     <string name="family_me">Me</string>
     <string name="add_kind">Whose stone is this?</string>
@@ -1195,6 +1206,12 @@
     <string name="termGift_daeseol">By the post in your garden: a snowy pine.</string>
     <string name="termGift_dongji">By the post in your garden: a bowl of red-bean porridge.</string>
     <string name="adorn_fromTerm">Met on %1$s</string>
+    <string name="news_v1_1_8_1">The sky now has sunset, dusk, first light and dawn. Stars and moon wait for the sun to set.</string>
+    <string name="news_v1_1_8_2">New feelings: happy, wistful, worried, in three rows from light to heavy.</string>
+    <string name="news_v1_1_8_3">The night constellation is smaller, fainter and keeps clear of the moon.</string>
+    <string name="news_v1_1_8_4">Things beside a stone stay bright at night, like Haru.</string>
+    <string name="news_v1_1_8_5">Family stones fold into one row in Settings.</string>
+    <string name="news_v1_1_8_6">Pet Haru at night and it gently closes its eyes.</string>
     <string name="news_v1_1_7_1">New widgets: your garden and Haru, under a sky that turns from morning to night.</string>
     <string name="news_v1_1_7_2">Notifications open on the title screen; floating notes are paper chips.</string>
     <string name="news_v1_1_7_3">Breathing carries on with the screen off.</string>

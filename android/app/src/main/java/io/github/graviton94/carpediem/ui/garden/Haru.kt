@@ -331,7 +331,8 @@ fun rememberTilt(enabled: Boolean): Offset {
 enum class HaruMood { CALM, HEAVY, JOY }
 private const val LEAN_DEG = 8f
 private const val JOY_HOP = 1.45f
-private const val DROWSY_LID = 0.6f
+/** 밤에 쓰다듬으면 지긋이 감은 눈 (1.1.8: 반쯤 감은 눈은 흐릿해 보여, 또렷한 감은 눈 한 줄로). */
+private const val DROWSY_LID = 1f
 
 /** 폴짝 한 번의 모양 (h = 0 … 1): (가로 배율, 세로 배율, 뜬 높이 0 … 1). */
 internal fun hopShape(h: Float): Triple<Float, Float, Float> = when {
@@ -362,7 +363,7 @@ fun HaruFigure(art: HaruArt, scale: Dp, modifier: Modifier = Modifier, blinkKick
     val hop = remember { Animatable(0f) }
     val rest = remember { Animatable(0f) }
     val lean = remember { Animatable(0f) }     // 무거운 날: 내 쪽으로 살짝 기댐
-    val drowsy = remember { Animatable(0f) }   // 밤: 반쯤 감기는 눈 (하품)
+    val drowsy = remember { Animatable(0f) }   // 밤: 지긋이 감는 눈 (꾸벅)
     val scope = androidx.compose.runtime.rememberCoroutineScope()
     val taps = remember { ArrayList<Long>() }
     suspend fun blinkOnce() { blink.animateTo(1f, tween((m.blinkMs / 2).roundToInt())); blink.animateTo(0f, tween((m.blinkMs / 2).roundToInt())) }

@@ -347,7 +347,7 @@ private fun LineStep(state: AppState, today: LocalDate, now: LocalDateTime, text
             TokenText(stringResource(R.string.closeDay_lineTitle), Tokens.TypeScale.title3.serif())
             TokenText(stringResource(R.string.letgo_feeling), Tokens.TypeScale.footnote, color = p.secondary)
             FlowRow(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2), maxItemsInEachRow = Feeling.PER_ROW) {
-                Feeling.entries.forEachIndexed { i, f -> GardenChip(stringResource(feelingName(f)), feeling == f, 1451 + i) { feeling = if (feeling == f) null else f } }
+                FeelingChips { f, i -> GardenChip(stringResource(feelingName(f)), feeling == f, 1451 + i) { feeling = if (feeling == f) null else f } }
             }
             BasicTextField(
                 value = text, onValueChange = { v -> if (v.codePointCount(0, v.length) <= max && v.count { it == '\n' } < Lines.MAX_LINES) text = v },

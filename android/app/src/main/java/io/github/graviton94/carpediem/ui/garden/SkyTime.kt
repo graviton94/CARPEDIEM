@@ -34,7 +34,8 @@ import kotlin.math.roundToInt
  * 새벽 → 낮(빛 없음) → 해 질 녘 → 밤. 사이 시각은 부드럽게 섞는다.
  */
 object SkyTime {
-    class Tint(val color: Color, val alpha: Float, val night: Float, val groundKeep: Float = G.SkyTime.groundKeep)
+    /** glow = 어스름 · 여명의 지평선 빛 (밤 한 벌일 때만, glowA 만큼). */
+    class Tint(val color: Color, val alpha: Float, val night: Float, val groundKeep: Float = G.SkyTime.groundKeep, val glow: Color = Color.Transparent, val glowA: Float = 0f)
 
     // ───── 해 · 달의 실제 시각 (S3): 나라의 대표 도시로 그날 해 뜨고 지는 시각을 셈 (위치 권한 없이) ─────
     @Volatile private var place: io.github.graviton94.carpediem.core.Place? = null
@@ -109,19 +110,39 @@ object SkyTime {
     fun at(now: LocalDateTime): Tint {
         val k = G.SkyTime
         val h = hourOf(now)
-        if (isDark(now)) return Tint(G.Night.Colors.sky, G.Night.skyAlpha, 1f, G.Night.groundAlpha / G.Night.skyAlpha)
+        fun span(from: Float, to: Float) = ((h - from) / (to - from)).coerceIn(0f, 1f)
+        if (isDark(now)) {
+            // 어스름 (해 진 뒤) · 여명 (해 뜨기 전): 밤 한 벌이지만 하늘이 덜 짙고, 지평선에 노을 · 새벽빛이 남음. 별 · 달은 차츰
+            val dusk = h >= G.Night.darkFrom
+            val nf = if (dusk) span(G.Night.darkFrom, k.nightFull) else 1f - span(k.nightUntil, G.Night.darkUntil)
+            val g = if (dusk) G.SkyTime.DuskGlow.color else G.SkyTime.DawnGlow.color; val ga = (if (dusk) G.SkyTime.DuskGlow.alpha else G.SkyTime.DawnGlow.alpha) * (1f - nf)
+            return Tint(G.Night.Colors.sky, k.twilightAlpha + (G.Night.skyAlpha - k.twilightAlpha) * nf, nf, G.Night.groundAlpha / G.Night.skyAlpha, g, ga)
+        }
         val dawn = Tint(G.SkyTime.Dawn.color, G.SkyTime.Dawn.alpha, 0f)
         val dusk = Tint(G.SkyTime.Dusk.color, G.SkyTime.Dusk.alpha, 0f)
+        val glow = Tint(G.SkyTime.Afterglow.color, G.SkyTime.Afterglow.alpha, 0f)
+        val deep = Tint(G.SkyTime.DawnDeep.color, G.SkyTime.DawnDeep.alpha, 0f)
         fun clear(c: Tint) = Tint(c.color, 0f, 0f)
         fun mix(a: Tint, b: Tint, t: Float) = Tint(lerp(a.color, b.color, t), a.alpha + (b.alpha - a.alpha) * t, 0f)
-        fun span(from: Float, to: Float) = ((h - from) / (to - from)).coerceIn(0f, 1f)
+        val rise = G.Motion.sunrise; val set = G.Motion.sunset
         return when {
-            h < k.dayFrom -> mix(dawn, clear(dawn), span(G.Night.darkUntil, k.dayFrom))
+            h < rise -> mix(deep, dawn, span(G.Night.darkUntil, rise))                 // 동트기 전: 보랏빛 → 살구
+            h < k.dayFrom -> mix(dawn, clear(dawn), span(rise, k.dayFrom))
             h < k.duskFrom -> clear(dawn)
             h < k.duskPeak -> mix(clear(dusk), dusk, span(k.duskFrom, k.duskPeak))
-            else -> dusk
+            h < set -> dusk
+            else -> mix(dusk, glow, span(set, G.Night.darkFrom))                      // 저녁놀: 해 진 뒤 장밋빛 보라
         }
     }
+
+    /** 해의 진하기 (0 ~ 1): 해 지기 직전 · 해 뜬 직후 sunFade 동안 스르르. 해와 밤하늘이 한 화면에 같이 있지 않게. */
+    fun sunAlpha(now: LocalDateTime): Float {
+        val h = hourOf(now); val f = G.SkyTime.sunFade
+        return minOf(((G.Motion.sunset - h) / f).coerceIn(0f, 1f), ((h - G.Motion.sunrise) / f).coerceIn(0f, 1f))
+    }
+
+    /** 달의 진하기 (0 ~ 1): 어스름에 차츰 떠오르고 여명에 차츰 옅어짐. 밤 한 벌이 아니면 0 (저녁놀 · 동트기 전에는 달이 없음). */
+    fun moonAlpha(now: LocalDateTime): Float = if (isDark(now)) at(now).night.coerceIn(0f, 1f) else 0f
 }
 
 /**
@@ -129,7 +150,7 @@ object SkyTime {
  * 밤에는 [starTop, starBottom] 사이 하늘에 작은 별이 몇 개 뜬다 (글자 · 하루와 겹치지 않는 띠).
  */
 @Composable
-fun SkyTimeLayer(now: LocalDateTime, groundY: Dp, starTop: Dp, starBottom: Dp, modifier: Modifier = Modifier) {
+fun SkyTimeLayer(now: LocalDateTime, groundY: Dp, starTop: Dp, starBottom: Dp, modifier: Modifier = Modifier, moon: DpOffset? = null, moonR: Dp = Dp(0f)) {
     val tint = SkyTime.at(now)
     if (tint.alpha <= 0f) return
     val ctx = LocalContext.current
@@ -139,13 +160,18 @@ fun SkyTimeLayer(now: LocalDateTime, groundY: Dp, starTop: Dp, starBottom: Dp, m
         val gy = groundY.toPx().coerceIn(1f, size.height)
         val top = tint.color.copy(alpha = tint.alpha); val low = tint.color.copy(alpha = tint.alpha * tint.groundKeep)
         drawRect(Brush.verticalGradient(0f to top, (gy / size.height) to low, 1f to low))
+        // 어스름 · 여명: 지평선 쪽에 남은 빛 (땅선에서 가장 짙고 하늘 가운데쯤에서 사라짐)
+        if (tint.glowA > 0f) drawRect(Brush.verticalGradient(0f to Color.Transparent, (gy * G.SkyTime.glowFrom / size.height) to Color.Transparent, (gy / size.height) to tint.glow.copy(alpha = tint.glowA), 1f to tint.glow.copy(alpha = tint.glowA * tint.groundKeep)))
         val y0 = starTop.toPx(); val y1 = starBottom.toPx()
+        // 별은 달 둘레를 비켜 감 (달 위에 별이 얹히지 않게)
+        val mc = moon?.let { Offset(it.x.toPx(), it.y.toPx()) }; val mr = moonR.toPx() * MOON_CLEAR
         if (tint.night > 0f && y1 > y0) {
             val r = Crayon.Rng(now.toLocalDate().toEpochDay().toInt())   // 밤마다 자리가 조금씩 바뀐다
             val sz = (k.starSize * size.width / G.unitWidth).roundToInt()
             repeat((if (tint.night >= 1f) G.Night.stars else k.stars).toInt()) {
                 val c = Offset(size.width * (0.06f + 0.88f * r.next()), y0 + (y1 - y0) * r.next())
                 val s = (sz * (0.6f + 0.6f * r.next())).roundToInt().coerceAtLeast(1)
+                if (mc != null && (c - mc).getDistance() < mr) return@repeat
                 drawImage(star, dstOffset = IntOffset((c.x - s / 2f).roundToInt(), (c.y - s / 2f).roundToInt()), dstSize = IntSize(s, s), alpha = k.starAlpha * tint.night)
             }
         }
@@ -154,10 +180,10 @@ fun SkyTimeLayer(now: LocalDateTime, groundY: Dp, starTop: Dp, starBottom: Dp, m
 
 /**
  * 밤 · 새벽의 정원을 은은하게: 달빛 번짐, 돌들 발치의 따뜻한 빛, 길 끝의 가로등과 그 불빛 웅덩이, 반딧불 몇 마리.
- * 낮에는 그리지 않는다. groundY = 땅, stonesFrom ~ stonesTo = 돌들이 앉은 범위, moon = 달의 가운데 (없으면 null).
+ * 낮에는 그리지 않는다. groundY = 땅, stonesFrom ~ stonesTo = 돌들이 앉은 범위. 달빛은 달 뒤에 따로 (MoonGlow).
  */
 @Composable
-fun NightLights(now: LocalDateTime, groundY: Dp, stonesFrom: Dp, stonesTo: Dp, moon: DpOffset?, modifier: Modifier = Modifier) {
+fun NightLights(now: LocalDateTime, groundY: Dp, stonesFrom: Dp, stonesTo: Dp, modifier: Modifier = Modifier) {
     if (!SkyTime.isDark(now)) return
     val n = G.Night
     // 시계는 그리는 단계에서만 읽음 (정원이 매 프레임 다시 짜이지 않게). 끊김 없이 이어지는 초라서 한 바퀴 돌 때 튀지 않음
@@ -167,8 +193,6 @@ fun NightLights(now: LocalDateTime, groundY: Dp, stonesFrom: Dp, stonesTo: Dp, m
         val gy = groundY.toPx()
         val clear = Color.Transparent
         fun glow(c: Color, a: Float, center: Offset, r: Float) = drawCircle(Brush.radialGradient(listOf(c.copy(alpha = a), clear), center, r), r, center)
-        // 달빛
-        moon?.let { m -> glow(G.Night.Colors.moonGlow, n.moonGlow, Offset(m.x.toPx(), m.y.toPx()), u * 70) }
         // 돌들 발치의 따뜻한 빛 (땅 위에 납작한 둥근 빛)
         val a0 = stonesFrom.toPx(); val a1 = stonesTo.toPx(); val cx = (a0 + a1) / 2; val rx = (a1 - a0) / 2 + u * 46
         scale(1f, 0.32f, pivot = Offset(cx, gy)) { glow(G.Night.Colors.lamp, n.stoneGlow, Offset(cx, gy), rx) }
@@ -289,3 +313,16 @@ fun MoonShape(img: androidx.compose.ui.graphics.ImageBitmap, phase: Double, modi
         clipPath(lit) { drawImage(img, dstSize = dst) }
     }
 }
+
+/** 달빛 번짐: 달 바로 뒤에 (별 · 별자리 위, 달 아래). alpha = 어스름 · 여명에 함께 옅어짐. */
+@Composable
+fun MoonGlow(center: DpOffset, alpha: Float, modifier: Modifier = Modifier) {
+    if (alpha <= 0f) return
+    Canvas(modifier) {
+        val u = size.width / G.unitWidth; val c = Offset(center.x.toPx(), center.y.toPx()); val r = u * 70
+        drawCircle(Brush.radialGradient(listOf(G.Night.Colors.moonGlow.copy(alpha = G.Night.moonGlow * alpha), Color.Transparent), c, r), r, c)
+    }
+}
+
+/** 별이 달 둘레를 비켜 가는 거리 (달 반지름의 배). */
+internal const val MOON_CLEAR = 2.4f

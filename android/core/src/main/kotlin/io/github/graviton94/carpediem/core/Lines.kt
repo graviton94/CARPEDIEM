@@ -4,15 +4,17 @@ import java.time.LocalDate
 
 /** 오늘의 한 줄에 실어 보내는 마음 (고르지 않아도 된다). */
 /**
- * 마음 열 가지 (고르는 순서 그대로): 밝은 다섯 · 가운데 둘 · 무거운 셋. 저장은 이름으로라 순서를 바꿔도 지난 한 줄은 그대로.
- * HOPE = 설렘, WORRY = 불안, DISAPPOINT = 속상함 (이름만 바뀜).
+ * 마음 열세 가지 (고르는 순서 그대로, 1.1.8): 밝은 다섯 · 가운데 넷 · 무거운 넷. 저장은 이름으로라 순서를 바꿔도 지난 한 줄은 그대로.
+ * HOPE = 설렘, WORRY = 불안, DISAPPOINT = 속상함 (이름만 바뀜). 1.1.8 에 HAPPY = 행복, WISTFUL = 아쉬움, CONCERN = 걱정.
  */
 enum class Feeling {
-    JOY, HOPE, PROUD, THANKS, CALM, MEH, UNSETTLED, WORRY, DISAPPOINT, SAD;
+    JOY, HAPPY, HOPE, PROUD, THANKS, CALM, MEH, UNSETTLED, WISTFUL, CONCERN, WORRY, DISAPPOINT, SAD;
     companion object {
         /** 밝은 마음 (해 · 하루가 깡충). 평온은 따로 (구름). */
-        val BRIGHT = setOf(JOY, HOPE, PROUD, THANKS)
-        /** 한 줄에 다섯 칸씩 두 줄 */
+        val BRIGHT = setOf(JOY, HAPPY, HOPE, PROUD, THANKS)
+        /** 고르는 칸: 결대로 세 줄 (밝은 · 가운데 · 무거운) */
+        val ROWS = listOf(listOf(JOY, HAPPY, HOPE, PROUD, THANKS), listOf(CALM, MEH, UNSETTLED, WISTFUL), listOf(CONCERN, WORRY, DISAPPOINT, SAD))
+        /** 한 줄에 가장 많이 (밝은 마음 다섯) */
         const val PER_ROW = 5
         /** 같은 수일 때 앞서는 차례: 1.1.3 까지의 순서 그대로 (지난 리본 · 계절 조각 색이 바뀌지 않게), 새 마음은 그 뒤. */
         fun tieRank(f: Feeling): Int = LEGACY.indexOf(f).let { if (it >= 0) it else LEGACY.size + f.ordinal }

@@ -91,6 +91,11 @@ object GardenWidgetArt {
             val top = t.color.copy(alpha = t.alpha).toArgb(); val low = t.color.copy(alpha = t.alpha * t.groundKeep).toArgb()
             c.drawRect(0f, 0f, w.toFloat(), h.toFloat(), Paint().apply { shader = LinearGradient(0f, 0f, 0f, max(1f, gy), top, low, Shader.TileMode.CLAMP) })
         }
+        // 어스름 · 여명: 지평선에 남은 빛 (앱과 같은 규칙)
+        if (t.glowA > 0f) {
+            val from = gy * Tokens.Garden.SkyTime.glowFrom
+            c.drawRect(0f, from, w.toFloat(), gy, Paint().apply { shader = LinearGradient(0f, from, 0f, max(from + 1f, gy), t.glow.copy(alpha = 0f).toArgb(), t.glow.copy(alpha = t.glowA).toArgb(), Shader.TileMode.CLAMP) })
+        }
         // 밤: 별 몇 개 (밤마다 자리가 조금씩 바뀜)
         if (t.night > 0f) asset(context, "sparkle.png")?.let { star ->
             val r = java.util.Random(sc.now.toLocalDate().toEpochDay())
@@ -106,13 +111,14 @@ object GardenWidgetArt {
         val (day, f) = SkyTime.sunPath(sc.now)
         val x = x0 + (x1 - x0) * f; val y = arcBase - (arcBase - arcTop) * sin(f * Math.PI).toFloat()
         val rect = RectF(x - sunR, y - sunR, x + sunR, y + sunR)
-        if (day) asset(context, "sun.png")?.let { c.drawBitmap(it, null, rect, p) }
-        else asset(context, "moon_full.png")?.let { moon(c, it, rect, SkyTime.moonPhase(sc.now), p) }
+        // 해는 지기 직전 · 뜬 직후 스르르, 달은 어스름 · 여명에 옅게 (해와 밤하늘이 같이 있지 않게)
+        if (day) SkyTime.sunAlpha(sc.now).takeIf { it > 0f }?.let { a -> asset(context, "sun.png")?.let { c.drawBitmap(it, null, rect, Paint(p).apply { alpha = (255 * a).toInt() }) } }
+        else SkyTime.moonAlpha(sc.now).takeIf { it > 0f }?.let { a -> asset(context, "moon_full.png")?.let { moon(c, it, rect, SkyTime.moonPhase(sc.now), Paint(p).apply { alpha = (255 * a).toInt() }) } }
     }
 
     /** 달을 실제 모양으로 (앱의 MoonShape 와 같은 규칙): 어두운 쪽은 옅게, 밝은 쪽은 타원 경계로. */
     private fun moon(c: Canvas, img: Bitmap, r: RectF, phase: Double, paint: Paint) {
-        val faint = Paint(paint).apply { alpha = (255 * N.moonDark).toInt() }
+        val faint = Paint(paint).apply { alpha = (paint.alpha * N.moonDark).toInt() }
         c.drawBitmap(img, null, r, faint)
         val waxing = (phase < 0.5) != SkyTime.south
         val k = kotlin.math.cos(2 * Math.PI * phase).toFloat()

@@ -172,6 +172,9 @@ enum Tokens {
             static let moss: UInt32 = 0xA9BC7AFF
         }
         enum Layout {
+            static let skyConstSize: CGFloat = 0.2
+            static let skyConstStar: CGFloat = 0.018
+            static let skyConstAlpha: CGFloat = 0.5
             static let groundRatio: CGFloat = 0.76
             static let pathStart: CGFloat = 26.0
             static let pathEnd: CGFloat = 364.0
@@ -308,6 +311,27 @@ enum Tokens {
             static let dayFrom: CGFloat = 8.0
             static let duskFrom: CGFloat = 16.5
             static let duskPeak: CGFloat = 18.5
+            enum Afterglow {
+                static let color: UInt32 = 0xB0708CFF
+                static let alpha: CGFloat = 0.4
+            }
+            enum DawnDeep {
+                static let color: UInt32 = 0xC9A0B4FF
+                static let alpha: CGFloat = 0.36
+            }
+            static let twilightAlpha: CGFloat = 0.6
+            static let nightFull: CGFloat = 19.6
+            static let nightUntil: CGFloat = 5.4
+            static let sunFade: CGFloat = 0.3
+            static let glowFrom: CGFloat = 0.55
+            enum DuskGlow {
+                static let color: UInt32 = 0xD9806EFF
+                static let alpha: CGFloat = 0.42
+            }
+            enum DawnGlow {
+                static let color: UInt32 = 0xE8B08EFF
+                static let alpha: CGFloat = 0.4
+            }
             static let nightFrom: CGFloat = 20.0
             static let groundKeep: CGFloat = 0.35
             static let stars: CGFloat = 4.0
@@ -522,8 +546,8 @@ enum Tokens {
             static let layerMax: CGFloat = 40.0
         }
         enum Night {
-            static let darkFrom: CGFloat = 19.0
-            static let darkUntil: CGFloat = 6.0
+            static let darkFrom: CGFloat = 19.25
+            static let darkUntil: CGFloat = 5.75
             enum Colors {
                 static let base: UInt32 = 0x151A28FF
                 static let paper: UInt32 = 0x212838FF
@@ -571,6 +595,9 @@ enum Tokens {
                 static let proud: UInt32 = 0xE3A866FF
                 static let meh: UInt32 = 0xC9C6B5FF
                 static let unsettled: UInt32 = 0xAEBFC0FF
+                static let happy: UInt32 = 0xEFA7A0FF
+                static let wistful: UInt32 = 0xC7B39AFF
+                static let concern: UInt32 = 0xA3967EFF
                 static let none: UInt32 = 0xE6DFCFFF
             }
         }

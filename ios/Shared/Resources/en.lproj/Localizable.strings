@@ -197,7 +197,8 @@
 "support.tier3" = "A slice of cake";
 "support.tier3.price" = "$7.99";
 "support.once" = "One-time. Never a subscription.";
-"support.soon" = "Support payments aren't open yet. They will be soon.\nYour kind thought already means a lot.";
+"support.soon" = "The payment window can't open right now.\nPlease try again in a moment.";
+"support.pending" = "Once the payment clears, it will sit beside Haru.";
 "letgo.title" = "Today's line";
 "letgo.sub" = "Joy or sorrow, one line, then let it go.";
 "letgo.feeling" = "How it feels (optional)";
@@ -209,6 +210,15 @@
 "feeling.thanks" = "Thanks";
 "feeling.calm" = "Calm";
 "feeling.sad" = "Sadness";
+"feeling.happy" = "Happy";
+"feeling.wistful" = "Wistful";
+"feeling.concern" = "Worried";
+"letgo.msg.happy.1" = "Happiness settled on the garden.\nRemember today for a long while.";
+"letgo.msg.happy.2" = "Glad a day like this came.\nThe garden will keep this feeling.";
+"letgo.msg.wistful.1" = "Feeling wistful means you cared that much.\nLeave the rest to the wind.";
+"letgo.msg.wistful.2" = "It's okay not to have done it all.\nLeave a little for tomorrow's garden.";
+"letgo.msg.concern.1" = "Worry belongs to days not yet here.\nIt's okay to set it down.";
+"letgo.msg.concern.2" = "Worrying means you care about a lot.\nTonight the garden will keep watch.";
 "feeling.worry" = "Anxious";
 "feeling.hope" = "Excited";
 "feeling.disappoint" = "Upset";
@@ -233,8 +243,8 @@
 "letgo.msg.sad.1" = "It's okay to cry.\nHaru is right here.";
 "letgo.msg.sad.2" = "You set a heavy heart down.\nRest a little lighter tonight.";
 "letgo.msg.sad.3" = "After rain, the garden is greener.\nIt will be okay, slowly.";
-"letgo.msg.worry.1" = "Leave the worry to the wind.\nStay with this breath.";
-"letgo.msg.worry.2" = "Worry belongs to days not yet here.\nIt's okay to set it down.";
+"letgo.msg.worry.1" = "Leave the unease to the wind.\nStay with this breath.";
+"letgo.msg.worry.2" = "Feel the ground beneath you.\nRight here, you are okay.";
 "letgo.msg.worry.3" = "What you can do is enough.\nThe wind will take the rest.";
 "letgo.msg.proud.1" = "Today grew as much as you tried.\nHold that pride close for a moment.";
 "letgo.msg.proud.2" = "A small win is still a win.\nThank yourself for today.";
@@ -279,6 +289,7 @@
 "recall.sampleOld" = "A little tired today, but I made it through.";
 "garden.metOn" = "%2$@, met on %1$@";
 "family.add" = "Add a family stone";
+"family.stones" = "Family stones";
 "family.full" = "The garden is full.\nLet one stone go to invite a new one.";
 "family.me" = "Me";
 "add.kind" = "Whose stone is this?";
@@ -1193,6 +1204,12 @@
 "termGift.daeseol" = "By the post in your garden: a snowy pine.";
 "termGift.dongji" = "By the post in your garden: a bowl of red-bean porridge.";
 "adorn.fromTerm" = "Met on %1$@";
+"news.v1_1_8.1" = "The sky now has sunset, dusk, first light and dawn. Stars and moon wait for the sun to set.";
+"news.v1_1_8.2" = "New feelings: happy, wistful, worried, in three rows from light to heavy.";
+"news.v1_1_8.3" = "The night constellation is smaller, fainter and keeps clear of the moon.";
+"news.v1_1_8.4" = "Things beside a stone stay bright at night, like Haru.";
+"news.v1_1_8.5" = "Family stones fold into one row in Settings.";
+"news.v1_1_8.6" = "Pet Haru at night and it gently closes its eyes.";
 "news.v1_1_7.1" = "New widgets: your garden and Haru, under a sky that turns from morning to night.";
 "news.v1_1_7.2" = "Notifications open on the title screen; floating notes are paper chips.";
 "news.v1_1_7.3" = "Breathing carries on with the screen off.";

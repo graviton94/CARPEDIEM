@@ -405,15 +405,19 @@ fun SupportScreen(state: AppState, now: LocalDateTime, onBack: () -> Unit) {
             }
             val cta = stringResource(R.string.support_cta, stringResource(tiers[picked].first), priceOf(picked) ?: stringResource(tiers[picked].second))
             GardenButton(cta, {
-                // Play 에 상품이 있으면 결제 창, 없으면 시험판 안내
+                // Play 에서 상품을 받아 왔으면 결제 창. 아직이면 (막 열었거나 Play 에 닿지 않음) 다시 이어 보고 ‘잠시 뒤 다시’
                 val act = ctx as? android.app.Activity
                 soon = act == null || !support.buy(act, io.github.graviton94.carpediem.billing.Support.IDS[picked])
+                if (soon) support.connect()
             }, filled = true, seed = 930)
             if (support.thanked) Box(Modifier.fillMaxWidth().crayonBox(Theme.gc.chip, G.Radius.box, G.Stroke.chip, seed = 941).padding(Tokens.Space.sp4)) {
                 // 무엇이 하루 곁에 놓였는지 (정원에 돌아가면 보임)
                 val k = io.github.graviton94.carpediem.billing.Support.IDS.indexOf(support.lastId)
                 val item = if (k >= 0) stringResource(tiers[k].first) else null
                 TokenText(if (item != null) stringResource(R.string.support_thanksItem, item) else stringResource(R.string.support_thanks), Tokens.TypeScale.subhead.serif(), Modifier.fillMaxWidth(), align = TextAlign.Center)
+            }
+            else if (support.pending) Box(Modifier.fillMaxWidth().crayonBox(Theme.gc.paper, G.Radius.box, G.Stroke.chip, seed = 942).padding(Tokens.Space.sp4)) {
+                TokenText(stringResource(R.string.support_pending), Tokens.TypeScale.subhead, Modifier.fillMaxWidth(), align = TextAlign.Center)
             }
             else if (soon) Box(Modifier.fillMaxWidth().crayonBox(Theme.gc.paper, G.Radius.box, G.Stroke.chip, seed = 940).padding(Tokens.Space.sp4)) {
                 TokenText(stringResource(R.string.support_soon), Tokens.TypeScale.subhead, Modifier.fillMaxWidth(), align = TextAlign.Center)

@@ -198,7 +198,8 @@
 "support.tier3" = "一塊蛋糕";
 "support.tier3.price" = "NT$300";
 "support.once" = "只付一次，沒有訂閱。";
-"support.soon" = "支持的付款還在準備中，很快就會開放。\n有這份心意就很感謝了。";
+"support.soon" = "現在無法開啟付款畫面。\n請稍後再按一次。";
+"support.pending" = "付款確認後，就會放在小日身旁。";
 "letgo.title" = "今天的一句話";
 "letgo.sub" = "喜悅也好，悲傷也好，都寫進一句話裡放下。";
 "letgo.feeling" = "現在的心情（選填）";
@@ -210,6 +211,15 @@
 "feeling.thanks" = "感謝";
 "feeling.calm" = "平靜";
 "feeling.sad" = "悲傷";
+"feeling.happy" = "幸福";
+"feeling.wistful" = "可惜";
+"feeling.concern" = "擔心";
+"letgo.msg.happy.1" = "幸福的心情落在庭院裡了。\n把今天好好記住吧。";
+"letgo.msg.happy.2" = "有這樣的日子，真好。\n這份心情，庭院會好好收著。";
+"letgo.msg.wistful.1" = "覺得可惜，是因為用了那麼多心。\n剩下的就交給風吧。";
+"letgo.msg.wistful.2" = "沒做完的也沒關係。\n留一點給明天的庭院。";
+"letgo.msg.concern.1" = "擔心，是還沒到來的日子的事。\n今天放下也沒關係。";
+"letgo.msg.concern.2" = "擔心很多，是因為在乎的很多。\n今晚由庭院替你守著。";
 "feeling.worry" = "不安";
 "feeling.hope" = "心動";
 "feeling.disappoint" = "難過";
@@ -234,8 +244,8 @@
 "letgo.msg.sad.1" = "哭出來也沒關係。\n小日就在身旁。";
 "letgo.msg.sad.2" = "把沉重的心放下了。\n今晚帶著輕一點的心休息吧。";
 "letgo.msg.sad.3" = "雨停之後，庭院會更青翠。\n會慢慢好起來的。";
-"letgo.msg.worry.1" = "把擔心交給風，\n只待在這一口呼吸裡。";
-"letgo.msg.worry.2" = "擔心，是還沒到來的日子的事。\n今天放下也沒關係。";
+"letgo.msg.worry.1" = "把不安交給風，\n只待在這一口呼吸裡。";
+"letgo.msg.worry.2" = "感受一下腳下的土地。\n此刻，這裡是安全的。";
 "letgo.msg.worry.3" = "盡力就已經足夠。\n剩下的，就讓風帶走。";
 "letgo.msg.proud.1" = "今天的成長，和你的努力一樣多。\n把這份成就感好好抱一下。";
 "letgo.msg.proud.2" = "小小的完成，也是完成。\n謝謝今天的自己。";
@@ -280,6 +290,7 @@
 "recall.sampleOld" = "今天有點累，但還是撐過來了。";
 "garden.metOn" = "%1$@遇見的%2$@";
 "family.add" = "加入家人的石頭";
+"family.stones" = "家人的石頭";
 "family.full" = "庭院滿了。\n放下一顆石頭，就能邀請新的石頭。";
 "family.me" = "我";
 "add.kind" = "這是誰的石頭？";
@@ -1193,6 +1204,12 @@
 "termGift.daeseol" = "庭院木樁前，放著覆雪的松枝。";
 "termGift.dongji" = "庭院木樁前，放著一碗紅豆粥。";
 "adorn.fromTerm" = "%1$@ 節氣時遇見";
+"news.v1_1_8.1" = "天空多了晚霞、暮色、破曉前與朝霞，太陽完全落下後星星和月亮才出現。";
+"news.v1_1_8.2" = "心情新增幸福、可惜、擔心，依明亮、中間、沉重分成三排。";
+"news.v1_1_8.3" = "夜空的星座變小變淡，並避開月亮。";
+"news.v1_1_8.4" = "放在石頭旁的東西，夜裡也和小日一樣明亮。";
+"news.v1_1_8.5" = "設定裡的家人的石頭收成一行，點開就是名單。";
+"news.v1_1_8.6" = "夜裡摸摸小日，它會輕輕閉上眼睛。";
 "news.v1_1_7.1" = "小工具煥然一新：4×2 是你的庭院，2×2 只有小日。早晨、白天、傍晚、夜裡天空都會變，夜裡小日會睡著。";
 "news.v1_1_7.2" = "從通知打開也會從第一個畫面開始，浮出的提示改成和紙小籤。";
 "news.v1_1_7.3" = "呼吸時即使螢幕關閉，聲音、鐘聲和剩餘時間也會繼續。";

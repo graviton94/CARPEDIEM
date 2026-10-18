@@ -84,9 +84,19 @@ import java.time.LocalDate
 import kotlin.math.PI
 import kotlin.math.sin
 
+/** 마음 칩을 결대로 세 줄로 (밝은 · 가운데 · 무거운, 1.1.8): FlowRow 안에서, 줄 사이에 폭 전체의 빈칸을 두어 줄을 바꿈. i = 칩 그림의 씨앗용 번호. */
+@Composable
+internal fun FeelingChips(chip: @Composable (Feeling, Int) -> Unit) {
+    Feeling.ROWS.forEachIndexed { r, row ->
+        if (r > 0) androidx.compose.foundation.layout.Spacer(Modifier.fillMaxWidth())
+        row.forEach { f -> chip(f, f.ordinal) }
+    }
+}
+
 internal fun feelingName(f: Feeling) = when (f) {
     Feeling.JOY -> R.string.feeling_joy; Feeling.HOPE -> R.string.feeling_hope; Feeling.CALM -> R.string.feeling_calm; Feeling.THANKS -> R.string.feeling_thanks
     Feeling.PROUD -> R.string.feeling_proud; Feeling.MEH -> R.string.feeling_meh; Feeling.UNSETTLED -> R.string.feeling_unsettled
+    Feeling.HAPPY -> R.string.feeling_happy; Feeling.WISTFUL -> R.string.feeling_wistful; Feeling.CONCERN -> R.string.feeling_concern
     Feeling.DISAPPOINT -> R.string.feeling_disappoint; Feeling.SAD -> R.string.feeling_sad; Feeling.WORRY -> R.string.feeling_worry
 }
 
@@ -313,7 +323,7 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
                 val asking = state.answering != null && day == null
                 if (!asking) TokenText(stringResource(R.string.letgo_feeling), Tokens.TypeScale.footnote, color = p.secondary)
                 if (!asking) FlowRow(Modifier.guideTarget(guide, "write.feeling"), horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2), maxItemsInEachRow = Feeling.PER_ROW) {
-                    Feeling.entries.forEachIndexed { i, f ->
+                    FeelingChips { f, i ->
                         Chip(stringResource(feelingName(f)), feeling == f, seed = 970 + i) { feeling = if (feeling == f) null else f }
                     }
                 }
@@ -575,7 +585,7 @@ internal fun PastLineSheet(state: AppState, line: DayLine, today: LocalDate, onC
             verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
             TokenText(stringResource(R.string.edit_pastTitle, RecordText.day(ctx, line.date)), Tokens.TypeScale.title3)
             FlowRow(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2), maxItemsInEachRow = Feeling.PER_ROW) {
-                Feeling.entries.forEachIndexed { i, f -> Chip(stringResource(feelingName(f)), feeling == f, seed = 1270 + i) { feeling = if (feeling == f) null else f } }
+                FeelingChips { f, i -> Chip(stringResource(feelingName(f)), feeling == f, seed = 1270 + i) { feeling = if (feeling == f) null else f } }
             }
             BasicTextField(
                 value = text,
