@@ -418,6 +418,8 @@
 "footer.contact" = "Contact";
 "footer.notices" = "Notices";
 "about.body" = "A small garden for quietly counting the days left and letting today's feelings go in a line.\nEverything stays right here.\nMade slowly, by one person.";
+"about.site" = "Website";
+"notices.privacyFull" = "Full privacy policy";
 "contact.body" = "Questions, or something to fix? Write any time.";
 "contact.soon" = "The contact address opens at launch.";
 "contact.send" = "Send an email";

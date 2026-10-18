@@ -421,6 +421,8 @@
     <string name="footer_contact">お問い合わせ</string>
     <string name="footer_notices">注意事項</string>
     <string name="about_body">残りの日々を静かに数えて、今日の気持ちをひとことで送り出す、小さな庭です。\n記録はすべて、ここにだけ残ります。\nひとりで、ゆっくりつくっています。</string>
+    <string name="about_site">ホームページ</string>
+    <string name="notices_privacyFull">プライバシーポリシー全文</string>
     <string name="contact_body">気になることや直してほしいところがあれば、気軽にお送りください。</string>
     <string name="contact_soon">お問い合わせ先は、公開のときにお知らせします。</string>
     <string name="contact_send">メールを送る</string>
