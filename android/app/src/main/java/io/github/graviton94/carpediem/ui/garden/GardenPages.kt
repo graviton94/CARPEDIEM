@@ -360,11 +360,12 @@ fun SupportScreen(state: AppState, now: LocalDateTime, onBack: () -> Unit) {
             // 미리 놓아 보기 (1.1.5): 고른 응원이 하루 왼쪽 발치에 놓인 모습 (아직 놓인 건 아니라 살짝 반짝임)
             val shimmer = androidx.compose.animation.core.rememberInfiniteTransition(label = "preview").animateFloat(PREVIEW_ALPHA_LOW, 1f,
                 androidx.compose.animation.core.infiniteRepeatable(androidx.compose.animation.core.tween(PREVIEW_PULSE_MS), androidx.compose.animation.core.RepeatMode.Reverse), label = "previewAlpha")
-            BoxWithConstraints(Modifier.fillMaxWidth().aspectRatio(img.width / img.height.toFloat()).crayonBox(null, G.Radius.box, G.Stroke.box, seed = 910)) {
+            BoxWithConstraints(Modifier.fillMaxWidth().aspectRatio(img.width / img.height.toFloat()).graphicsLayer().crayonBox(null, G.Radius.box, G.Stroke.box, seed = 910)) {
                 Image(img, null, Modifier.fillMaxSize().padding(G.Stroke.box.let { Theme.unit * it }), contentScale = ContentScale.Crop)
                 val scale = maxWidth * (G.Layout.supportHaru / G.Layout.haruArtWidth)
                 val groundY = maxHeight * G.Layout.supportGround
-                Haru(load, scale, Modifier.offset(maxWidth / 2 - scale * (G.Layout.haruBox / 2), groundY - scale * G.Layout.haruGround))
+                // 하루는 따로 한 겹: 깜빡임 · 숨이 그림 상자 (한지 테 · 큰 그림) 를 매 장면 다시 그리지 않게 (1.1.8, 버벅임)
+                Haru(load, scale, Modifier.offset(maxWidth / 2 - scale * (G.Layout.haruBox / 2), groundY - scale * G.Layout.haruGround).graphicsLayer())
                 val pw = maxWidth * PREVIEW_PIECE
                 val haruHalf = scale * ((load.art?.meta?.bbox?.width ?: G.Layout.haruBox) / 2)
                 val pieceImg = remember(picked) { GardenArt.card(ctx, when (picked) { 0 -> "tea"; 1 -> "coffee"; else -> "cake" }) }
@@ -424,6 +425,25 @@ fun SupportScreen(state: AppState, now: LocalDateTime, onBack: () -> Unit) {
             }
             TokenText(stringResource(R.string.support_once) + "\n" + stringResource(R.string.support_use), Tokens.TypeScale.footnote, Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.Center)
         }
+    }
+    // 응원이 끝나면 (1.1.8): 고마움 팝업. 내 하루 곁이 비어 있었으면 이미 놓였고 (정원에서 보기), 아니면 바로 내 하루 곁에 둘지 물음
+    var doneFor by remember { mutableStateOf<String?>(null) }
+    androidx.compose.runtime.LaunchedEffect(support.thanked, state.lastSupported) { if (support.thanked) doneFor = state.lastSupported }
+    doneFor?.let { mark ->
+        val item = "support:$mark"
+        val me = io.github.graviton94.carpediem.core.Adornments.ME
+        val placed = state.adornments[me] == item
+        val name = adornName(ctx, item)
+        io.github.graviton94.carpediem.ui.GardenAlert(
+            onDismissRequest = { doneFor = null },
+            title = { androidx.compose.material3.Text(stringResource(R.string.support_doneTitle)) },
+            text = { androidx.compose.material3.Text(stringResource(if (placed) R.string.support_donePlaced else R.string.support_doneAsk, name)) },
+            confirmButton = {
+                if (placed) io.github.graviton94.carpediem.ui.AlertButton(stringResource(R.string.support_seeGarden), { doneFor = null; onBack() })
+                else io.github.graviton94.carpediem.ui.AlertButton(stringResource(R.string.support_placeMe), { state.adorn(me, item); doneFor = null; state.say(ctx.getString(R.string.adorn_done, ctx.getString(R.string.garden_haru), name)) })
+            },
+            dismissButton = { io.github.graviton94.carpediem.ui.AlertButton(stringResource(if (placed) R.string.garden_close else R.string.support_later), { doneFor = null }, quiet = true) },
+        )
     }
 }
 
