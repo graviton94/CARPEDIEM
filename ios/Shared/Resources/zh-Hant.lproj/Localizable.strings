@@ -419,6 +419,8 @@
 "footer.contact" = "聯絡";
 "footer.notices" = "聲明";
 "about.body" = "這是一座小小的庭院，靜靜數著剩下的日子，把今天的心情寫成一句話，輕輕放下。\n所有紀錄都只留在這裡。\n由一個人慢慢做出來。";
+"about.site" = "網站";
+"notices.privacyFull" = "完整隱私權政策";
 "contact.body" = "有疑問或需要修正的地方，歡迎隨時來信。";
 "contact.soon" = "聯絡信箱會在上架時開放。";
 "contact.send" = "寄信";

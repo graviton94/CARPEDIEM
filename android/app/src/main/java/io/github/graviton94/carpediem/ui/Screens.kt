@@ -536,7 +536,6 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
                     )
                     RowDivider()
                     FormRow(stringResource(R.string.collection), onClick = onCollection, trailing = chevron)
-                    RowDivider()
                     // 첫 화면 · 오늘의 질문 · 아침 씨앗 · 작은 권유는 1.1.5 부터 늘 켬 (고를 것을 덜어냄)
                     if (state.devMode) {
                         RowDivider()
@@ -713,12 +712,23 @@ private fun SettingsFooter(onVersionTap: () -> Unit) {
                 })
             },
             confirmButton = {
-                if (pg == FooterPage.CONTACT && email.isNotBlank()) AlertButton(stringResource(R.string.contact_send), {
-                    page = null; io.github.graviton94.carpediem.data.Feedback.send(ctx)
-                })
-                else AlertButton(stringResource(R.string.garden_close), { page = null })
+                when {
+                    pg == FooterPage.CONTACT && email.isNotBlank() -> AlertButton(stringResource(R.string.contact_send), { page = null; io.github.graviton94.carpediem.data.Feedback.send(ctx) })
+                    // 소개 · 고지사항 (1.1.8): 공식 홈페이지 · 개인정보처리방침 전문을 브라우저로
+                    pg == FooterPage.ABOUT -> AlertButton(stringResource(R.string.about_site), { page = null; openWeb(ctx, SITE_URL) })
+                    pg == FooterPage.NOTICES -> AlertButton(stringResource(R.string.notices_privacyFull), { page = null; openWeb(ctx, PRIVACY_URL) })
+                    else -> AlertButton(stringResource(R.string.garden_close), { page = null })
+                }
             },
-            dismissButton = if (pg == FooterPage.CONTACT && email.isNotBlank()) ({ AlertButton(stringResource(R.string.garden_close), { page = null }, quiet = true) }) else null,
+            dismissButton = if (pg == FooterPage.CONTACT && email.isNotBlank() || pg == FooterPage.ABOUT || pg == FooterPage.NOTICES) ({ AlertButton(stringResource(R.string.garden_close), { page = null }, quiet = true) }) else null,
         )
     }
+}
+
+/** 공식 홈페이지 · 개인정보처리방침 (graviton94.github.io, 1.1.8). */
+private const val SITE_URL = "https://graviton94.github.io/carpediem/"
+private const val PRIVACY_URL = "https://graviton94.github.io/carpediem/privacy/"
+/** 브라우저로 열기 (브라우저가 없으면 조용히 아무 일 없음). */
+private fun openWeb(ctx: android.content.Context, url: String) {
+    runCatching { ctx.startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(url)).addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)) }
 }

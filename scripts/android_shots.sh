@@ -240,6 +240,8 @@ s g67_photo_today 5 --ez cd.photos true --ei cd.page 1 --es cd.now 2026-10-06T21
 s g82_carried_draft 5 --es cd.draftYesterday walk --ei cd.page 1 --es cd.now 2026-10-08T08:00
 # 미니 하루 (1.1.5): 지난 7일 마음 셋이 하루 발치에 · 가족과 옹기종기
 s g83_mini_haru 6 --ez cd.family true --ez cd.months true --es cd.now 2026-09-28T15:00
+# 1.1.8 설정 › 정원: 가족의 돌 한 줄 (가족이 있을 때)
+if want g10c; then open --ez cd.family true --es cd.screen settings --es cd.now $NOW; sleep 5; swipe_up; swipe_up; swipe_up; shot g10c_settings_family 3; fi
 swipe_up; shot g68_photo_more 3
 # 한 해의 엔딩 크레딧 (08): 인트로 · 봄 · 끝 (아웃트로)
 open --ez cd.family true --ez cd.special true --es cd.now 2026-12-28T20:00; sleep 3

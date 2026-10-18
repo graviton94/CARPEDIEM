@@ -421,6 +421,8 @@
     <string name="footer_contact">聯絡</string>
     <string name="footer_notices">聲明</string>
     <string name="about_body">這是一座小小的庭院，靜靜數著剩下的日子，把今天的心情寫成一句話，輕輕放下。\n所有紀錄都只留在這裡。\n由一個人慢慢做出來。</string>
+    <string name="about_site">網站</string>
+    <string name="notices_privacyFull">完整隱私權政策</string>
     <string name="contact_body">有疑問或需要修正的地方，歡迎隨時來信。</string>
     <string name="contact_soon">聯絡信箱會在上架時開放。</string>
     <string name="contact_send">寄信</string>
