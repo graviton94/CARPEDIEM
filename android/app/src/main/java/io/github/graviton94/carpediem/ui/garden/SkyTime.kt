@@ -115,13 +115,13 @@ object SkyTime {
             // 어스름 (해 진 뒤) · 여명 (해 뜨기 전): 밤 한 벌이지만 하늘이 덜 짙고, 지평선에 노을 · 새벽빛이 남음. 별 · 달은 차츰
             val dusk = h >= G.Night.darkFrom
             val nf = if (dusk) span(G.Night.darkFrom, k.nightFull) else 1f - span(k.nightUntil, G.Night.darkUntil)
-            val g = if (dusk) k.DuskGlow.color else k.DawnGlow.color; val ga = (if (dusk) k.DuskGlow.alpha else k.DawnGlow.alpha) * (1f - nf)
+            val g = if (dusk) G.SkyTime.DuskGlow.color else G.SkyTime.DawnGlow.color; val ga = (if (dusk) G.SkyTime.DuskGlow.alpha else G.SkyTime.DawnGlow.alpha) * (1f - nf)
             return Tint(G.Night.Colors.sky, k.twilightAlpha + (G.Night.skyAlpha - k.twilightAlpha) * nf, nf, G.Night.groundAlpha / G.Night.skyAlpha, g, ga)
         }
-        val dawn = Tint(k.Dawn.color, k.Dawn.alpha, 0f)
-        val dusk = Tint(k.Dusk.color, k.Dusk.alpha, 0f)
-        val glow = Tint(k.Afterglow.color, k.Afterglow.alpha, 0f)
-        val deep = Tint(k.DawnDeep.color, k.DawnDeep.alpha, 0f)
+        val dawn = Tint(G.SkyTime.Dawn.color, G.SkyTime.Dawn.alpha, 0f)
+        val dusk = Tint(G.SkyTime.Dusk.color, G.SkyTime.Dusk.alpha, 0f)
+        val glow = Tint(G.SkyTime.Afterglow.color, G.SkyTime.Afterglow.alpha, 0f)
+        val deep = Tint(G.SkyTime.DawnDeep.color, G.SkyTime.DawnDeep.alpha, 0f)
         fun clear(c: Tint) = Tint(c.color, 0f, 0f)
         fun mix(a: Tint, b: Tint, t: Float) = Tint(lerp(a.color, b.color, t), a.alpha + (b.alpha - a.alpha) * t, 0f)
         val rise = G.Motion.sunrise; val set = G.Motion.sunset
