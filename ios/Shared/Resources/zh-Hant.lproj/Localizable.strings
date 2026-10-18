@@ -198,7 +198,8 @@
 "support.tier3" = "一塊蛋糕";
 "support.tier3.price" = "NT$300";
 "support.once" = "只付一次，沒有訂閱。";
-"support.soon" = "支持的付款還在準備中，很快就會開放。\n有這份心意就很感謝了。";
+"support.soon" = "現在無法開啟付款畫面。\n請稍後再按一次。";
+"support.pending" = "付款確認後，就會放在小日身旁。";
 "letgo.title" = "今天的一句話";
 "letgo.sub" = "喜悅也好，悲傷也好，都寫進一句話裡放下。";
 "letgo.feeling" = "現在的心情（選填）";

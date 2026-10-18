@@ -200,7 +200,8 @@
     <string name="support_tier3">一塊蛋糕</string>
     <string name="support_tier3_price">NT$300</string>
     <string name="support_once">只付一次，沒有訂閱。</string>
-    <string name="support_soon">支持的付款還在準備中，很快就會開放。\n有這份心意就很感謝了。</string>
+    <string name="support_soon">現在無法開啟付款畫面。\n請稍後再按一次。</string>
+    <string name="support_pending">付款確認後，就會放在小日身旁。</string>
     <string name="letgo_title">今天的一句話</string>
     <string name="letgo_sub">喜悅也好，悲傷也好，都寫進一句話裡放下。</string>
     <string name="letgo_feeling">現在的心情（選填）</string>

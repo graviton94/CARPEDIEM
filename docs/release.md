@@ -23,7 +23,7 @@ Play 앱 서명(Play App Signing)을 켜 두면 Google 이 배포용 키를 관�
 |---|---|---|
 | `support_tea` | 차 한 잔 | 1,500원 |
 | `support_coffee` | 커피 한 잔 | 4,400원 |
-| `support_cake` | 케이크 한 조각 | 11,000원 |
+| `support_cake` | 케이크 한 조각 | 9,800원 |
 
 상품이 등록되면 앱의 응원하기에서 Play 가격이 보이고 결제 창이 열림. 등록 전에는 ‘시험판’ 안내만.
 

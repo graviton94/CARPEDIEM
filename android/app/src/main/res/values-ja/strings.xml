@@ -200,7 +200,8 @@
     <string name="support_tier3">ケーキをひと切れ</string>
     <string name="support_tier3_price">¥1,200</string>
     <string name="support_once">お支払いは一度きりです。定期購入はありません。</string>
-    <string name="support_soon">応援のお支払いはまだ準備中です。もうすぐ開きます。\nお気持ちだけでもうれしいです。</string>
+    <string name="support_soon">いまはお支払い画面を開けません。\n少しあとで、もう一度押してください。</string>
+    <string name="support_pending">お支払いが確認されたら、ハルのそばに置かれます。</string>
     <string name="letgo_title">今日のひとこと</string>
     <string name="letgo_sub">よろこびも、かなしみも、ひとことにのせて送ります。</string>
     <string name="letgo_feeling">いまの気持ち（任意）</string>

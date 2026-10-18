@@ -197,9 +197,10 @@
     <string name="support_tier2">커피 한 잔</string>
     <string name="support_tier2_price">4,400원</string>
     <string name="support_tier3">케이크 한 조각</string>
-    <string name="support_tier3_price">11,000원</string>
+    <string name="support_tier3_price">9,800원</string>
     <string name="support_once">한 번만 결제돼요. 구독은 없어요.</string>
-    <string name="support_soon">응원 결제는 아직 준비 중이에요. 곧 열릴 거예요.\n마음만으로도 고마워요.</string>
+    <string name="support_soon">지금은 결제 창을 열 수 없어요.\n잠시 뒤 다시 눌러 주세요.</string>
+    <string name="support_pending">결제가 확인되면 하루 곁에 놓여요.</string>
     <string name="letgo_title">오늘의 한 줄</string>
     <string name="letgo_sub">기쁨도, 슬픔도 한 줄에 실어 보내요.</string>
     <string name="letgo_feeling">지금 마음 (선택)</string>
