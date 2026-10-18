@@ -1205,6 +1205,12 @@
     <string name="termGift_daeseol">庭の杭の前に、雪をかぶった松が置かれました。</string>
     <string name="termGift_dongji">庭の杭の前に、小豆がゆが一杯置かれました。</string>
     <string name="adorn_fromTerm">%1$s 節気に出会ったもの</string>
+    <string name="news_v1_1_8_1">空に夕焼け・薄暮・夜明け前・朝焼けが加わりました。日が沈みきってから星と月が出ます。</string>
+    <string name="news_v1_1_8_2">気持ちに、しあわせ・心残り・心配が加わり、明るい・まんなか・重いの三列から選べます。</string>
+    <string name="news_v1_1_8_3">夜空の星座は小さく淡く、月をよけて浮かびます。</string>
+    <string name="news_v1_1_8_4">石のそばに置いたものは、夜もハルと同じ明るさに。</string>
+    <string name="news_v1_1_8_5">設定の家族の石は一行にまとめました。押すと名前の一覧が出ます。</string>
+    <string name="news_v1_1_8_6">夜になでると、ハルがそっと目を閉じます。</string>
     <string name="news_v1_1_7_1">ウィジェットが新しく。4×2は自分の庭、2×2はハルだけ。朝・昼・夕・夜で空が変わり、夜はハルが眠ります。</string>
     <string name="news_v1_1_7_2">通知から開いても最初の画面から。浮かぶ案内は和紙のチップに。</string>
     <string name="news_v1_1_7_3">呼吸の途中で画面が消えても、音と鐘、残り時間はそのまま続きます。</string>

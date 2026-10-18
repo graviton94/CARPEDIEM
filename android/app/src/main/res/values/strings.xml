@@ -1205,6 +1205,12 @@
     <string name="termGift_daeseol">By the post in your garden: a snowy pine.</string>
     <string name="termGift_dongji">By the post in your garden: a bowl of red-bean porridge.</string>
     <string name="adorn_fromTerm">Met on %1$s</string>
+    <string name="news_v1_1_8_1">The sky now has sunset, dusk, first light and dawn. Stars and moon wait for the sun to set.</string>
+    <string name="news_v1_1_8_2">New feelings: happy, wistful, worried, in three rows from light to heavy.</string>
+    <string name="news_v1_1_8_3">The night constellation is smaller, fainter and keeps clear of the moon.</string>
+    <string name="news_v1_1_8_4">Things beside a stone stay bright at night, like Haru.</string>
+    <string name="news_v1_1_8_5">Family stones fold into one row in Settings.</string>
+    <string name="news_v1_1_8_6">Pet Haru at night and it gently closes its eyes.</string>
     <string name="news_v1_1_7_1">New widgets: your garden and Haru, under a sky that turns from morning to night.</string>
     <string name="news_v1_1_7_2">Notifications open on the title screen; floating notes are paper chips.</string>
     <string name="news_v1_1_7_3">Breathing carries on with the screen off.</string>

@@ -1203,6 +1203,12 @@
 "termGift.daeseol" = "By the post in your garden: a snowy pine.";
 "termGift.dongji" = "By the post in your garden: a bowl of red-bean porridge.";
 "adorn.fromTerm" = "Met on %1$@";
+"news.v1_1_8.1" = "The sky now has sunset, dusk, first light and dawn. Stars and moon wait for the sun to set.";
+"news.v1_1_8.2" = "New feelings: happy, wistful, worried, in three rows from light to heavy.";
+"news.v1_1_8.3" = "The night constellation is smaller, fainter and keeps clear of the moon.";
+"news.v1_1_8.4" = "Things beside a stone stay bright at night, like Haru.";
+"news.v1_1_8.5" = "Family stones fold into one row in Settings.";
+"news.v1_1_8.6" = "Pet Haru at night and it gently closes its eyes.";
 "news.v1_1_7.1" = "New widgets: your garden and Haru, under a sky that turns from morning to night.";
 "news.v1_1_7.2" = "Notifications open on the title screen; floating notes are paper chips.";
 "news.v1_1_7.3" = "Breathing carries on with the screen off.";

@@ -1205,6 +1205,12 @@
     <string name="termGift_daeseol">정원 말뚝 앞에 눈 덮인 소나무가 놓였어요.</string>
     <string name="termGift_dongji">정원 말뚝 앞에 팥죽 한 그릇이 놓였어요.</string>
     <string name="adorn_fromTerm">%1$s 절기에 만난 것</string>
+    <string name="news_v1_1_8_1">하늘에 노을 · 어스름 · 새벽 · 동틀 녘이 생겼어요. 해가 다 진 뒤에야 별과 달이 떠요.</string>
+    <string name="news_v1_1_8_2">마음에 행복 · 아쉬움 · 걱정이 더해져, 밝은 · 가운데 · 무거운 마음 세 줄로 골라요.</string>
+    <string name="news_v1_1_8_3">밤하늘의 별자리는 작고 옅게, 달을 비켜서 떠요.</string>
+    <string name="news_v1_1_8_4">돌 곁에 둔 것은 밤에도 하루처럼 밝아요.</string>
+    <string name="news_v1_1_8_5">설정의 가족의 돌은 한 줄로 접었어요. 누르면 이름 목록이 나와요.</string>
+    <string name="news_v1_1_8_6">밤에 쓰다듬으면 하루가 지긋이 눈을 감아요.</string>
     <string name="news_v1_1_7_1">위젯이 새로워졌어요. 4×2 정원은 내 정원 그대로, 2×2는 하루 하나만. 아침 · 낮 · 저녁 · 밤마다 하늘이 바뀌고, 밤엔 하루가 잠들어요.</string>
     <string name="news_v1_1_7_2">알림으로 열어도 첫 화면부터 시작하고, 떠 있는 안내는 한지 칩으로 바뀌었어요.</string>
     <string name="news_v1_1_7_3">숨 쉬는 동안 화면이 꺼져도 소리와 종, 남은 시간이 그대로 이어져요.</string>

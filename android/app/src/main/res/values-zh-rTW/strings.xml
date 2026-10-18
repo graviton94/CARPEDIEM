@@ -1205,6 +1205,12 @@
     <string name="termGift_daeseol">庭院木樁前，放著覆雪的松枝。</string>
     <string name="termGift_dongji">庭院木樁前，放著一碗紅豆粥。</string>
     <string name="adorn_fromTerm">%1$s 節氣時遇見</string>
+    <string name="news_v1_1_8_1">天空多了晚霞、暮色、破曉前與朝霞，太陽完全落下後星星和月亮才出現。</string>
+    <string name="news_v1_1_8_2">心情新增幸福、可惜、擔心，依明亮、中間、沉重分成三排。</string>
+    <string name="news_v1_1_8_3">夜空的星座變小變淡，並避開月亮。</string>
+    <string name="news_v1_1_8_4">放在石頭旁的東西，夜裡也和小日一樣明亮。</string>
+    <string name="news_v1_1_8_5">設定裡的家人的石頭收成一行，點開就是名單。</string>
+    <string name="news_v1_1_8_6">夜裡摸摸小日，它會輕輕閉上眼睛。</string>
     <string name="news_v1_1_7_1">小工具煥然一新：4×2 是你的庭院，2×2 只有小日。早晨、白天、傍晚、夜裡天空都會變，夜裡小日會睡著。</string>
     <string name="news_v1_1_7_2">從通知打開也會從第一個畫面開始，浮出的提示改成和紙小籤。</string>
     <string name="news_v1_1_7_3">呼吸時即使螢幕關閉，聲音、鐘聲和剩餘時間也會繼續。</string>

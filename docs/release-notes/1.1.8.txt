@@ -1,0 +1,32 @@
+<ko-KR>
+· 하늘에 노을 · 어스름 · 새벽 · 동틀 녘이 생겼어요. 해가 다 진 뒤에야 별과 달이 떠요.
+· 마음에 행복 · 아쉬움 · 걱정이 더해져, 밝은 · 가운데 · 무거운 마음 세 줄로 골라요.
+· 밤하늘의 별자리는 작고 옅게, 달을 비켜서 떠요.
+· 돌 곁에 둔 것은 밤에도 하루처럼 밝아요.
+· 설정의 가족의 돌은 한 줄로 접었어요. 누르면 이름 목록이 나와요.
+· 밤에 쓰다듬으면 하루가 지긋이 눈을 감아요.
+</ko-KR>
+<en-US>
+· The sky now has sunset, dusk, first light and dawn. Stars and moon wait for the sun to set.
+· New feelings: happy, wistful, worried, in three rows from light to heavy.
+· The night constellation is smaller, fainter and keeps clear of the moon.
+· Things beside a stone stay bright at night, like Haru.
+· Family stones fold into one row in Settings.
+· Pet Haru at night and it gently closes its eyes.
+</en-US>
+<ja-JP>
+· 空に夕焼け・薄暮・夜明け前・朝焼けが加わりました。日が沈みきってから星と月が出ます。
+· 気持ちに、しあわせ・心残り・心配が加わり、明るい・まんなか・重いの三列から選べます。
+· 夜空の星座は小さく淡く、月をよけて浮かびます。
+· 石のそばに置いたものは、夜もハルと同じ明るさに。
+· 設定の家族の石は一行にまとめました。押すと名前の一覧が出ます。
+· 夜になでると、ハルがそっと目を閉じます。
+</ja-JP>
+<zh-TW>
+· 天空多了晚霞、暮色、破曉前與朝霞，太陽完全落下後星星和月亮才出現。
+· 心情新增幸福、可惜、擔心，依明亮、中間、沉重分成三排。
+· 夜空的星座變小變淡，並避開月亮。
+· 放在石頭旁的東西，夜裡也和小日一樣明亮。
+· 設定裡的家人的石頭收成一行，點開就是名單。
+· 夜裡摸摸小日，它會輕輕閉上眼睛。
+</zh-TW>
