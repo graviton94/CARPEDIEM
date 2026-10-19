@@ -526,7 +526,7 @@ enum Tokens {
             static let duck: CGFloat = 1.0
             static let bedMax: CGFloat = 0.7
             static let duckHoldMs: CGFloat = 1200.0
-            static let guide: CGFloat = 0.8
+            static let guide: CGFloat = 0.4
             static let bed: CGFloat = 0.32
             static let gazeBed: CGFloat = 0.6
             static let gazeLow: CGFloat = 0.45
