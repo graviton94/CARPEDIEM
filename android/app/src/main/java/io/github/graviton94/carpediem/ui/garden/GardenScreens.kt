@@ -375,12 +375,17 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 // 줄일 때와 앉힐 때 같은 간격을 써야 길 밖으로 밀려나지 않음 (줄이기 전 폭으로 정한 겹침)
                 val og0 = Family.overlapGap(w0, G.Family.overlap.toDouble())
                 val fit = Family.fitScale(w0, ((G.Layout.pathEnd - G.Layout.pathStart) * u.value).toDouble(), og0).toFloat()
-                val slots = if (fit < 1f) gardenSlots(state, profile, s, now, haruBase * fit) else slots0
-                val headroom = slots.maxOf { sl -> sl.scale * (sl.art.meta.ground - sl.art.meta.bbox.top + if (sl.birthday) Tokens.Garden.Party.hatHeight else if (sl.art.sprout) Tokens.Garden.HaruDraw.sproutHeight else 0f) }
-                val haruAbove = headroom
-                val family = slots.size > 1
+                val slotsW = if (fit < 1f) gardenSlots(state, profile, s, now, haruBase * fit) else slots0
+                fun headOf(list: List<Slot>) = list.maxOf { sl -> sl.scale * (sl.art.meta.ground - sl.art.meta.bbox.top + if (sl.birthday) Tokens.Garden.Party.hatHeight else if (sl.art.sprout) Tokens.Garden.HaruDraw.sproutHeight else 0f) }
                 // 이름표 두 줄 + 나이 한 줄 + 아래 버튼 · 카드와의 틈
                 val labels = u * (G.Layout.labelGap + G.Layout.labelRow * 4)
+                // 세로가 모자란 넓은 화면 (폴드를 편 화면, 1.1.8): 위 글자와 아래 버튼 사이에 돌이 다 들어가지 않으면 그만큼만 돌을 작게 (보통 폰은 그대로)
+                val roomH = screenH - labels - blockH - topBottom - u * G.Layout.minSkyGap
+                val squeeze = if (topBottom > 0.dp && blockH > 0.dp) (roomH / headOf(slotsW)).coerceIn(MIN_SQUEEZE, 1f) else 1f
+                val slots = if (squeeze < 1f) gardenSlots(state, profile, s, now, haruBase * minOf(fit, 1f) * squeeze) else slotsW
+                val headroom = headOf(slots)
+                val haruAbove = headroom
+                val family = slots.size > 1
                 val gy = maxOf(screenH * G.Layout.groundRatio, topBottom + u * G.Layout.minSkyGap + haruAbove).coerceAtMost(screenH - labels - blockH)
 
                 if (!bare) androidx.compose.runtime.SideEffect { if (state.gardenGround != gy) state.gardenGround = gy }
@@ -399,7 +404,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 Image(stripImg, null, Modifier.offset(y = stripTop).fillMaxWidth().guideTarget(guide.takeIf { !bare }, "path.ground").height(u * G.Layout.stripHeight), contentScale = ContentScale.FillBounds)
                 // 해 · 달 (자리는 먼저 셈: 별 · 별자리가 달을 비켜 가게): 폰 시각을 따라 하늘을 가로지름. 위쪽 글자에도, 하루 머리에도 닿지 않음.
                 val (day, t) = skyProgress(now)
-                val r = u * G.Layout.sunRadius
+                val r = u * G.Layout.sunRadius * squeeze   // 세로가 모자란 화면에선 돌과 같이 작게
                 val base = gy - maxOf(u * G.Layout.sunBase, haruAbove + u * G.Layout.minSkyGap + r)
                 val arc = min((u * G.Layout.sunArc).value, (base - topBottom - u * G.Layout.minSkyGap - r).value.coerceAtLeast(0f)).dp
                 val sx = lerp((u * G.Layout.sunStart).value, (u * G.Layout.sunEnd).value, t).dp
@@ -444,7 +449,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                         val fs = density.fontScale; val fit = (maxWidth.value / (num.length * 0.62f * big.size.value * fs)).coerceAtMost(1f)
                         TokenText(num, if (fit < 1f) big.copy(size = (big.size.value * fit).sp) else big, maxLines = 1)
                     }
-                    // 잠들기 전 정원 (밤 10시 이후): 단위 고르기 · 영문 · 넘김 안내 같은 글자는 쉬게. 글씨가 크면 두 줄로
+                    // 잠들기 전 정원 (밤 10시 이후): 단위 고르기 · 넘김 안내 같은 글자는 쉬게 (영문은 1.1.9 부터 밤에도). 글씨가 크면 두 줄로
                     if (!sleepy) androidx.compose.foundation.layout.FlowRow(Modifier.guideTarget(guide, "number.units"), horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2, Alignment.CenterHorizontally), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
                         LifeUnit.entries.forEachIndexed { i, unit -> GardenChip(Labels.unit(ctx, unit), unit == state.unit, seed = 800 + i) { state.changeUnit(unit) } }
                     }
@@ -470,7 +475,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                             // 새 문장 (누르거나 날이 바뀌어) 은 옛 타자기처럼 한 글자씩. 자리는 처음부터 다 잡아 두어 줄이 흔들리지 않음
                             val phone = io.github.graviton94.carpediem.data.Words.lang(ctx)
                             val main = io.github.graviton94.carpediem.data.Words.main(q, state.quoteLanguage, phone)
-                            val second = if (!sleepy) io.github.graviton94.carpediem.data.Words.second(q, state.quoteLanguage, phone) else null
+                            val second = io.github.graviton94.carpediem.data.Words.second(q, state.quoteLanguage, phone)   // 밤에도 영문 (1.1.9)
                             // 한 글자씩 바뀌는 수는 이 작은 묶음 안에서만 읽음 (정원 전체가 글자마다 다시 짜이지 않게)
                             TypedQuote(state, main, second) { quoteEdge = it }
                             // ‘눌러서 다음 문장’ 은 처음 일주일만 (알고 난 뒤엔 문장만 조용히)
@@ -1092,9 +1097,10 @@ private fun rememberTyping(state: AppState, main: String, second: String?): Int 
     val done = still || state.debugTyped || state.typedQuote == key
     var n by remember(key) { mutableStateOf(if (done) Int.MAX_VALUE else 0) }
     LaunchedEffect(key, state.titleUp) {
-        if (done || state.titleUp) return@LaunchedEffect
-        state.typedQuote = key
+        // 다 친 글이면 그대로. 치다가 멈췄으면 (첫 화면이 다시 떴다 걷힘 등) 멈춘 자리부터 마저 (1.1.8: 영문이 끝내 안 나오던 것)
         val all = main.length + (second?.length ?: 0)
+        if (still || state.debugTyped || n >= all || state.titleUp) return@LaunchedEffect
+        state.typedQuote = key
         val r = java.util.Random(key.hashCode().toLong())
         val ms = G.Motion.typeMs
         while (n < all) {
@@ -1296,6 +1302,8 @@ private fun TypedQuote(state: AppState, main: String, second: String?, onEdge: (
 }
 
 /** 첫 화면 뒤 정원이 피어나는 시간 · 이슬이 있을 땐 (김 너머라) 짧게 · 이슬이 걷힌 뒤 글자 · 버튼이 나오는 시간. */
+/** 세로가 모자란 화면에서 돌을 가장 작게 줄이는 비율 (이보다 작아지진 않음). */
+private const val MIN_SQUEEZE = 0.6f
 private const val BLOOM_MS = 2400
 private const val BLOOM_DEW_MS = 1200
 private const val UI_IN_MS = 1200

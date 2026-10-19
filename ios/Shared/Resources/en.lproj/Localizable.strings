@@ -398,6 +398,7 @@
 "question.label" = "Today's question";
 "question.answer" = "Answer in a line";
 "question.skip" = "Just the words today";
+"question.cancel" = "Write without the question";
 "question.answered" = "You already sent a line today.";
 "mood.title" = "Heart’s record";
 "mood.sub" = "%1$@ · grown from %2$@";

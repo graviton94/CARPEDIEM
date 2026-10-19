@@ -400,6 +400,7 @@
     <string name="question_label">오늘의 질문</string>
     <string name="question_answer">한 줄로 답하기</string>
     <string name="question_skip">오늘은 문장으로</string>
+    <string name="question_cancel">질문 없이 쓰기</string>
     <string name="question_answered">오늘은 이미 한 줄을 보냈어요.</string>
     <string name="mood_title">마음의 기록</string>
     <string name="mood_sub">%1$s · %2$s에서 시작한 무늬</string>

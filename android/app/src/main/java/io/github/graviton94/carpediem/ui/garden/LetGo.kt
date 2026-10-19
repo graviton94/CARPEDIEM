@@ -316,7 +316,12 @@ fun LetGoSection(state: AppState, today: LocalDate, modifier: Modifier = Modifie
                 state.answering?.takeIf { day == null }?.let { q ->
                     Column(verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
                         TokenText(stringResource(R.string.question_label), Tokens.TypeScale.caption1, color = p.secondary)
-                        TokenText(io.github.graviton94.carpediem.data.Words.main(q, state.quoteLanguage, io.github.graviton94.carpediem.data.Words.lang(ctx)), lineType(Tokens.TypeScale.headline, Theme.garden))
+                        val phone = io.github.graviton94.carpediem.data.Words.lang(ctx)
+                        TokenText(io.github.graviton94.carpediem.data.Words.main(q, state.quoteLanguage, phone), lineType(Tokens.TypeScale.headline, Theme.garden))
+                        // 정원과 같이 ‘둘 다’ 면 영문도 (1.1.8: 기록 쪽에서 영문이 빠져 있었음)
+                        io.github.graviton94.carpediem.data.Words.second(q, state.quoteLanguage, phone)?.let { TokenText(it, Tokens.TypeScale.footnote.serif(), color = p.secondary) }
+                        // 답하지 않고 그냥 쓰고 싶으면 (1.1.8): 질문을 내려놓고 평소의 한 줄로 (마음 · 누구에게도 다시)
+                        TokenText(stringResource(R.string.question_cancel), Tokens.TypeScale.footnote, Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable { state.answering = null }.padding(vertical = Tokens.Space.sp2), color = p.olive)
                     }
                 }
                 // 질문에 답할 땐 질문과 대답 (+ 사진) 만: 마음 · 누구에게는 쉼

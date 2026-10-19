@@ -399,6 +399,7 @@
 "question.label" = "今日の質問";
 "question.answer" = "ひとことで答える";
 "question.skip" = "今日はことばだけ";
+"question.cancel" = "質問なしで書く";
 "question.answered" = "今日はもう、ひとことを送りました。";
 "mood.title" = "こころの記録";
 "mood.sub" = "%1$@ · %2$@からはじまった模様";

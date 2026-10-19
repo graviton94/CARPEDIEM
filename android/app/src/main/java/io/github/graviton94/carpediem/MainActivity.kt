@@ -13,6 +13,11 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.width
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.toArgb
 import io.github.graviton94.carpediem.core.LifeProfile
@@ -179,7 +184,12 @@ class MainActivity : ComponentActivity() {
             (BuildConfig.DEBUG && intent?.getBooleanExtra("cd.title", false) == true)
         setContent {
             BoxWithConstraints {
-                val screenW = maxWidth
+                // 넓은 화면 (폴드 안쪽 · 태블릿, 1.1.8): 폭을 세로의 3/4 까지만 쓰고 가운데에. 정원은 폭에 맞춰 커지는데 높이가 모자라면 해 · 돌 · 글자가 겹침.
+                // 양옆은 정원 바탕빛 (밤이면 밤빛). 보통 폰 (세로가 더 긴) 은 그대로
+                val screenW = minOf(maxWidth, maxHeight * MAX_ASPECT)
+                val sideNight = SkyTime.isDark(state.fixedNow ?: LocalDateTime.now())
+                Box(Modifier.fillMaxSize().background(if (sideNight) Tokens.Garden.Night.Colors.base else Tokens.Garden.Colors.paper), contentAlignment = Alignment.Center) {
+                Box(Modifier.width(screenW).fillMaxHeight()) {
                 fun clock() = state.fixedNow ?: LocalDateTime.now()
                 var now by remember { mutableStateOf(clock()) }
                 // 분이 바뀔 때마다 (분 경계에 맞춰), 앱이 보일 때만. 돌아오면 바로 지금 시각으로
@@ -340,6 +350,8 @@ class MainActivity : ComponentActivity() {
                     io.github.graviton94.carpediem.ui.NoteHost(state.note.takeIf { !io.github.graviton94.carpediem.ui.garden.chanceOnScreen.value && !state.touring && !title && !state.dewUp }) { state.noteDone() }   // 우연한 순간이 끝날 때까지 기다림
                 }
             }
+                }
+            }
         }
     }
 }
@@ -482,3 +494,6 @@ private fun openFrom(open: String?, state: AppState): Screen? {
 
 /** 리뷰 창을 청한 뒤 띄우기까지 (한 줄이 날아가는 모습 · 끝 한마디를 먼저 보게). */
 private const val REVIEW_DELAY_MS = 2500L
+
+/** 화면 폭 ÷ 세로의 최댓값: 이보다 넓으면 가운데 기둥으로 (4:3 태블릿은 그대로, 폴드 안쪽은 기둥). */
+private const val MAX_ASPECT = 0.75f
