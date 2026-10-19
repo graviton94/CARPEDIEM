@@ -375,12 +375,17 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 // 줄일 때와 앉힐 때 같은 간격을 써야 길 밖으로 밀려나지 않음 (줄이기 전 폭으로 정한 겹침)
                 val og0 = Family.overlapGap(w0, G.Family.overlap.toDouble())
                 val fit = Family.fitScale(w0, ((G.Layout.pathEnd - G.Layout.pathStart) * u.value).toDouble(), og0).toFloat()
-                val slots = if (fit < 1f) gardenSlots(state, profile, s, now, haruBase * fit) else slots0
-                val headroom = slots.maxOf { sl -> sl.scale * (sl.art.meta.ground - sl.art.meta.bbox.top + if (sl.birthday) Tokens.Garden.Party.hatHeight else if (sl.art.sprout) Tokens.Garden.HaruDraw.sproutHeight else 0f) }
-                val haruAbove = headroom
-                val family = slots.size > 1
+                val slotsW = if (fit < 1f) gardenSlots(state, profile, s, now, haruBase * fit) else slots0
+                fun headOf(list: List<Slot>) = list.maxOf { sl -> sl.scale * (sl.art.meta.ground - sl.art.meta.bbox.top + if (sl.birthday) Tokens.Garden.Party.hatHeight else if (sl.art.sprout) Tokens.Garden.HaruDraw.sproutHeight else 0f) }
                 // 이름표 두 줄 + 나이 한 줄 + 아래 버튼 · 카드와의 틈
                 val labels = u * (G.Layout.labelGap + G.Layout.labelRow * 4)
+                // 세로가 모자란 넓은 화면 (폴드를 편 화면, 1.1.8): 위 글자와 아래 버튼 사이에 돌이 다 들어가지 않으면 그만큼만 돌을 작게 (보통 폰은 그대로)
+                val roomH = screenH - labels - blockH - topBottom - u * G.Layout.minSkyGap
+                val squeeze = if (topBottom > 0.dp && blockH > 0.dp) (roomH / headOf(slotsW)).coerceIn(MIN_SQUEEZE, 1f) else 1f
+                val slots = if (squeeze < 1f) gardenSlots(state, profile, s, now, haruBase * minOf(fit, 1f) * squeeze) else slotsW
+                val headroom = headOf(slots)
+                val haruAbove = headroom
+                val family = slots.size > 1
                 val gy = maxOf(screenH * G.Layout.groundRatio, topBottom + u * G.Layout.minSkyGap + haruAbove).coerceAtMost(screenH - labels - blockH)
 
                 if (!bare) androidx.compose.runtime.SideEffect { if (state.gardenGround != gy) state.gardenGround = gy }
@@ -1297,6 +1302,8 @@ private fun TypedQuote(state: AppState, main: String, second: String?, onEdge: (
 }
 
 /** 첫 화면 뒤 정원이 피어나는 시간 · 이슬이 있을 땐 (김 너머라) 짧게 · 이슬이 걷힌 뒤 글자 · 버튼이 나오는 시간. */
+/** 세로가 모자란 화면에서 돌을 가장 작게 줄이는 비율 (이보다 작아지진 않음). */
+private const val MIN_SQUEEZE = 0.6f
 private const val BLOOM_MS = 2400
 private const val BLOOM_DEW_MS = 1200
 private const val UI_IN_MS = 1200
