@@ -449,7 +449,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                         val fs = density.fontScale; val fit = (maxWidth.value / (num.length * 0.62f * big.size.value * fs)).coerceAtMost(1f)
                         TokenText(num, if (fit < 1f) big.copy(size = (big.size.value * fit).sp) else big, maxLines = 1)
                     }
-                    // 잠들기 전 정원 (밤 10시 이후): 단위 고르기 · 영문 · 넘김 안내 같은 글자는 쉬게. 글씨가 크면 두 줄로
+                    // 잠들기 전 정원 (밤 10시 이후): 단위 고르기 · 넘김 안내 같은 글자는 쉬게 (영문은 1.1.9 부터 밤에도). 글씨가 크면 두 줄로
                     if (!sleepy) androidx.compose.foundation.layout.FlowRow(Modifier.guideTarget(guide, "number.units"), horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2, Alignment.CenterHorizontally), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
                         LifeUnit.entries.forEachIndexed { i, unit -> GardenChip(Labels.unit(ctx, unit), unit == state.unit, seed = 800 + i) { state.changeUnit(unit) } }
                     }
@@ -475,7 +475,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                             // 새 문장 (누르거나 날이 바뀌어) 은 옛 타자기처럼 한 글자씩. 자리는 처음부터 다 잡아 두어 줄이 흔들리지 않음
                             val phone = io.github.graviton94.carpediem.data.Words.lang(ctx)
                             val main = io.github.graviton94.carpediem.data.Words.main(q, state.quoteLanguage, phone)
-                            val second = if (!sleepy) io.github.graviton94.carpediem.data.Words.second(q, state.quoteLanguage, phone) else null
+                            val second = io.github.graviton94.carpediem.data.Words.second(q, state.quoteLanguage, phone)   // 밤에도 영문 (1.1.9)
                             // 한 글자씩 바뀌는 수는 이 작은 묶음 안에서만 읽음 (정원 전체가 글자마다 다시 짜이지 않게)
                             TypedQuote(state, main, second) { quoteEdge = it }
                             // ‘눌러서 다음 문장’ 은 처음 일주일만 (알고 난 뒤엔 문장만 조용히)
