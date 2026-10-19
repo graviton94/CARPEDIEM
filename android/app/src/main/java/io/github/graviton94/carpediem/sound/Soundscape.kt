@@ -33,6 +33,8 @@ object Soundscape {
         @Volatile var breath: Float = -1f
         /** 전체 크기 (0 ~ 1): 잠들기에서 천천히 줄임. 소리 안에서 아주 느리게 따라가 뚝 바뀌지 않음. */
         @Volatile var level: Float = 1f
+        /** 바탕 소리 크기 배율 (숨 화면은 Sound.bedMax 로 은은하게, 돌멍하기 · 크레딧은 1). */
+        @Volatile var bed: Float = 1f
         @Volatile private var stopping = false
         private var thread: Thread? = null
 
@@ -257,7 +259,7 @@ object Soundscape {
                     gain = if (stopping || my != gen) (gain - fadeOut).coerceAtLeast(0f) else (gain + fadeIn).coerceAtMost(1f)
                     lvl += (level - lvl) * LEVEL_GLIDE
                     duck = if (ducked) (duck - duckDown).coerceAtLeast(T.duck) else (duck + duckUp).coerceAtMost(1f)
-                    buf[i] = (v * gain * lvl * duck * T.volume * Short.MAX_VALUE).coerceIn(-32767f, 32767f).toInt().toShort()
+                    buf[i] = (v * gain * lvl * duck * bed * T.volume * Short.MAX_VALUE).coerceIn(-32767f, 32767f).toInt().toShort()
                 }
                 track.write(buf, 0, buf.size)
                 if ((stopping || my != gen) && gain <= 0f) break

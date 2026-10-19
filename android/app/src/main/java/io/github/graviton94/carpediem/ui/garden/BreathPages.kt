@@ -188,7 +188,8 @@ fun BreathScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, kind
     var done by remember { mutableStateOf(false) }
     val animate = remember { !reducedMotion(ctx) }
     val season = remember { io.github.graviton94.carpediem.core.Memories.seasonOf(now.toLocalDate()) }
-    val player = remember(sound) { Soundscape.Player(sound, season) }
+    // 바탕 소리는 종과 따로, 은은하게 늘 같은 크기로 (1.1.9)
+    val player = remember(sound) { Soundscape.Player(sound, season).also { it.bed = Tokens.Garden.Sound.bedMax } }
     // 숨의 종: 바탕 소리마다 어울리는 종 (파도 싱잉볼 · 바람 풍경 · 빗소리 대나무 · 파장 크리스털 · 계절은 그 철의 것)
     val bell = remember(sound) { Soundscape.bellFor(sound, season) }
     val part = io.github.graviton94.carpediem.ui.Labels.part(now)

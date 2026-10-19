@@ -518,7 +518,8 @@ object Tokens {
             const val fadeOutMs = 1800.0f
             const val waveSeconds = 9.0f
             const val bowl = 0.6f
-            const val duck = 0.5f
+            const val duck = 1.0f
+            const val bedMax = 0.7f
             const val duckHoldMs = 1200.0f
             const val guide = 0.8f
             const val bed = 0.32f
