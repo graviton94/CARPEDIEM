@@ -521,7 +521,7 @@ object Tokens {
             const val duck = 1.0f
             const val bedMax = 0.7f
             const val duckHoldMs = 1200.0f
-            const val guide = 0.8f
+            const val guide = 0.4f
             const val bed = 0.32f
             const val gazeBed = 0.6f
             const val gazeLow = 0.45f

@@ -207,7 +207,7 @@ object Soundscape {
             var under = 0f; val lowK = (1.0 - exp(-two * T.gazeLowHz.toDouble() / sr)).toFloat()
             fun guide(pink: Float): Float {
                 gLp += (pink - gLp) * (0.04f + 0.14f * smooth)
-                return gLp * (0.03f + 0.97f * smooth * kotlin.math.sqrt(smooth)) * 2.2f * T.guide
+                return gLp * (0.25f + 0.75f * smooth * kotlin.math.sqrt(smooth)) * 2.2f * T.guide   // 1.1.9: 반으로 작게, 들숨 · 날숨의 오르내림도 완만하게 (종에 거슬리지 않게)
             }
             while (true) {
                 val ducked = android.os.SystemClock.elapsedRealtime() - struckAt < T.duckHoldMs
