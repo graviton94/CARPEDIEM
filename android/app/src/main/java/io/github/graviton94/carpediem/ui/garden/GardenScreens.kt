@@ -404,7 +404,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
                 Image(stripImg, null, Modifier.offset(y = stripTop).fillMaxWidth().guideTarget(guide.takeIf { !bare }, "path.ground").height(u * G.Layout.stripHeight), contentScale = ContentScale.FillBounds)
                 // 해 · 달 (자리는 먼저 셈: 별 · 별자리가 달을 비켜 가게): 폰 시각을 따라 하늘을 가로지름. 위쪽 글자에도, 하루 머리에도 닿지 않음.
                 val (day, t) = skyProgress(now)
-                val r = u * G.Layout.sunRadius
+                val r = u * G.Layout.sunRadius * squeeze   // 세로가 모자란 화면에선 돌과 같이 작게
                 val base = gy - maxOf(u * G.Layout.sunBase, haruAbove + u * G.Layout.minSkyGap + r)
                 val arc = min((u * G.Layout.sunArc).value, (base - topBottom - u * G.Layout.minSkyGap - r).value.coerceAtLeast(0f)).dp
                 val sx = lerp((u * G.Layout.sunStart).value, (u * G.Layout.sunEnd).value, t).dp
