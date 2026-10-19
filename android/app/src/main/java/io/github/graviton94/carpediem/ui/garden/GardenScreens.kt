@@ -1092,9 +1092,10 @@ private fun rememberTyping(state: AppState, main: String, second: String?): Int 
     val done = still || state.debugTyped || state.typedQuote == key
     var n by remember(key) { mutableStateOf(if (done) Int.MAX_VALUE else 0) }
     LaunchedEffect(key, state.titleUp) {
-        if (done || state.titleUp) return@LaunchedEffect
-        state.typedQuote = key
+        // 다 친 글이면 그대로. 치다가 멈췄으면 (첫 화면이 다시 떴다 걷힘 등) 멈춘 자리부터 마저 (1.1.8: 영문이 끝내 안 나오던 것)
         val all = main.length + (second?.length ?: 0)
+        if (still || state.debugTyped || n >= all || state.titleUp) return@LaunchedEffect
+        state.typedQuote = key
         val r = java.util.Random(key.hashCode().toLong())
         val ms = G.Motion.typeMs
         while (n < all) {

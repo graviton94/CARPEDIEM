@@ -398,6 +398,7 @@
 "question.label" = "오늘의 질문";
 "question.answer" = "한 줄로 답하기";
 "question.skip" = "오늘은 문장으로";
+"question.cancel" = "질문 없이 쓰기";
 "question.answered" = "오늘은 이미 한 줄을 보냈어요.";
 "mood.title" = "마음의 기록";
 "mood.sub" = "%1$@ · %2$@에서 시작한 무늬";

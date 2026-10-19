@@ -401,6 +401,7 @@
     <string name="question_label">今日の質問</string>
     <string name="question_answer">ひとことで答える</string>
     <string name="question_skip">今日はことばだけ</string>
+    <string name="question_cancel">質問なしで書く</string>
     <string name="question_answered">今日はもう、ひとことを送りました。</string>
     <string name="mood_title">こころの記録</string>
     <string name="mood_sub">%1$s · %2$sからはじまった模様</string>

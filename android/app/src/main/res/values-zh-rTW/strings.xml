@@ -401,6 +401,7 @@
     <string name="question_label">今天的提問</string>
     <string name="question_answer">用一句話回答</string>
     <string name="question_skip">今天只看句子</string>
+    <string name="question_cancel">不回答問題，直接寫</string>
     <string name="question_answered">今天已經放下一句話了。</string>
     <string name="mood_title">心情的紀錄</string>
     <string name="mood_sub">%1$s · 從%2$s開始的紋路</string>

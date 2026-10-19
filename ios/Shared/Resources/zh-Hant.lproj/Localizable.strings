@@ -399,6 +399,7 @@
 "question.label" = "今天的提問";
 "question.answer" = "用一句話回答";
 "question.skip" = "今天只看句子";
+"question.cancel" = "不回答問題，直接寫";
 "question.answered" = "今天已經放下一句話了。";
 "mood.title" = "心情的紀錄";
 "mood.sub" = "%1$@ · 從%2$@開始的紋路";
