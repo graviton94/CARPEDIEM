@@ -296,5 +296,12 @@ adb shell settings put system font_scale 1.3; open --es cd.now $NOW;            
 adb shell settings put system font_scale 1.0
 adb shell wm size 720x1280; adb shell wm density 320; open --es cd.now $NOW;                          shot x05_small 6
 adb shell wm size reset; adb shell wm density reset
+# 넓은 화면 (1.1.8 점검): 폴드 안쪽 (약 4:5) · 4:3 태블릿형. 정원 · 기록이 넘치지 않는지
+if want x06 || want x07; then
+adb shell wm size 1812x2176; adb shell wm density 420; open --es cd.now $NOW;                         shot x06_fold 8
+open --ei cd.page 1 --es cd.now $NOW;                                                                  shot x06b_fold_write 5
+adb shell wm size 1536x2048; adb shell wm density 320; open --es cd.now $NOW;                         shot x07_four3 8
+adb shell wm size reset; adb shell wm density reset
+fi
 quick_scenes
 finish
