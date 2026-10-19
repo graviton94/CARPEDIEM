@@ -523,7 +523,8 @@ enum Tokens {
             static let fadeOutMs: CGFloat = 1800.0
             static let waveSeconds: CGFloat = 9.0
             static let bowl: CGFloat = 0.6
-            static let duck: CGFloat = 0.5
+            static let duck: CGFloat = 1.0
+            static let bedMax: CGFloat = 0.7
             static let duckHoldMs: CGFloat = 1200.0
             static let guide: CGFloat = 0.8
             static let bed: CGFloat = 0.32
