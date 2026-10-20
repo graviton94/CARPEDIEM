@@ -1215,6 +1215,10 @@
     <string name="termGift_daeseol">庭院木樁前，放著覆雪的松枝。</string>
     <string name="termGift_dongji">庭院木樁前，放著一碗紅豆粥。</string>
     <string name="adorn_fromTerm">%1$s 節氣時遇見</string>
+    <string name="news_v1_1_9_1">回答今天的問題時，也能「不回答問題直接寫」。</string>
+    <string name="news_v1_1_9_2">夜裡今天的話下方也會顯示英文。</string>
+    <string name="news_v1_1_9_3">摺疊螢幕展開時，石頭和太陽、月亮不會與文字重疊。</string>
+    <string name="news_v1_1_9_4">呼吸的背景聲在鐘響時也保持平穩，呼吸聲更柔和。</string>
     <string name="news_v1_1_8_1">天空多了晚霞、暮色、破曉前與朝霞，太陽完全落下後星星和月亮才出現。</string>
     <string name="news_v1_1_8_2">心情新增幸福、可惜、擔心，依明亮、中間、沉重分成三排。</string>
     <string name="news_v1_1_8_3">夜空的星座變小變淡，並避開月亮。</string>
