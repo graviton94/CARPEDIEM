@@ -1215,6 +1215,10 @@
     <string name="termGift_daeseol">정원 말뚝 앞에 눈 덮인 소나무가 놓였어요.</string>
     <string name="termGift_dongji">정원 말뚝 앞에 팥죽 한 그릇이 놓였어요.</string>
     <string name="adorn_fromTerm">%1$s 절기에 만난 것</string>
+    <string name="news_v1_1_9_1">오늘의 질문에 답하다가도 ‘질문 없이 쓰기’로 그냥 한 줄을 쓸 수 있어요.</string>
+    <string name="news_v1_1_9_2">밤에도 오늘의 문장 아래 영문이 보여요.</string>
+    <string name="news_v1_1_9_3">폴드를 편 화면에서 돌과 해 · 달이 글자와 겹치지 않아요.</string>
+    <string name="news_v1_1_9_4">숨 쉼의 바탕 소리는 종이 울려도 고르게, 숨소리는 더 부드럽게.</string>
     <string name="news_v1_1_8_1">하늘에 노을 · 어스름 · 새벽 · 동틀 녘이 생겼어요. 해가 다 진 뒤에야 별과 달이 떠요.</string>
     <string name="news_v1_1_8_2">마음에 행복 · 아쉬움 · 걱정이 더해져, 밝은 · 가운데 · 무거운 마음 세 줄로 골라요.</string>
     <string name="news_v1_1_8_3">밤하늘의 별자리는 작고 옅게, 달을 비켜서 떠요.</string>

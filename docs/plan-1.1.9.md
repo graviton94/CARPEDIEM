@@ -1,7 +1,7 @@
 # 1.1.9 — 다음 패치 (쌓아 두는 중)
 
 작성 2026-10-19 · 기준: 1.1.8 AAB (run 39151276144, PR #18 까지) 뒤에 들어간 것. AAB 는 아직 굽지 않음.
-출시 노트는 굽기 전에 `design/changelog.json` 에 `1.1.9` 로 더한다.
+출시 노트: `design/changelog.json` 의 `1.1.9` (`docs/release-notes/1.1.9.txt`).
 
 | 내용 |
 |---|

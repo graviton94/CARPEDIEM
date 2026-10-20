@@ -6,6 +6,7 @@ import io.github.graviton94.carpediem.R
 /** 버전마다 새로워진 점 (최신이 위). 원본: design/changelog.json */
 object Changelog {
     val entries: List<Pair<String, List<Int>>> = listOf(
+        "1.1.9" to listOf(R.string.news_v1_1_9_1, R.string.news_v1_1_9_2, R.string.news_v1_1_9_3, R.string.news_v1_1_9_4),
         "1.1.8" to listOf(R.string.news_v1_1_8_1, R.string.news_v1_1_8_2, R.string.news_v1_1_8_3, R.string.news_v1_1_8_4, R.string.news_v1_1_8_5, R.string.news_v1_1_8_6),
         "1.1.7" to listOf(R.string.news_v1_1_7_1, R.string.news_v1_1_7_2, R.string.news_v1_1_7_3, R.string.news_v1_1_7_4, R.string.news_v1_1_7_5, R.string.news_v1_1_7_6, R.string.news_v1_1_7_7),
         "1.1.6" to listOf(R.string.news_v1_1_6_1, R.string.news_v1_1_6_2, R.string.news_v1_1_6_3, R.string.news_v1_1_6_4, R.string.news_v1_1_6_5, R.string.news_v1_1_6_6),

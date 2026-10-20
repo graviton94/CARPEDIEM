@@ -1,0 +1,24 @@
+<ko-KR>
+· 오늘의 질문에 답하다가도 ‘질문 없이 쓰기’로 그냥 한 줄을 쓸 수 있어요.
+· 밤에도 오늘의 문장 아래 영문이 보여요.
+· 폴드를 편 화면에서 돌과 해 · 달이 글자와 겹치지 않아요.
+· 숨 쉼의 바탕 소리는 종이 울려도 고르게, 숨소리는 더 부드럽게.
+</ko-KR>
+<en-US>
+· Answering today's question? You can still write without it.
+· The English line under the day's words shows at night too.
+· On unfolded screens, stones, sun and moon keep clear of the words.
+· Breathing sounds are steadier and softer under the bells.
+</en-US>
+<ja-JP>
+· 今日の問いに答える途中でも「問いなしで書く」でふつうのひとことを。
+· 夜も今日のことばの下に英文が出ます。
+· 折りたたみを開いた画面でも、石と太陽・月が文字に重なりません。
+· 呼吸の背景の音は鐘が鳴っても一定に、息の音はやわらかく。
+</ja-JP>
+<zh-TW>
+· 回答今天的問題時，也能「不回答問題直接寫」。
+· 夜裡今天的話下方也會顯示英文。
+· 摺疊螢幕展開時，石頭和太陽、月亮不會與文字重疊。
+· 呼吸的背景聲在鐘響時也保持平穩，呼吸聲更柔和。
+</zh-TW>
