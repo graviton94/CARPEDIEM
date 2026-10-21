@@ -1,0 +1,1020 @@
+--------- beginning of system
+10-21 08:54:17.953   522   541 W ActivityTaskManager: Skip updateConfiguration because mWindowManager isn't set
+10-21 08:54:24.232   522   522 W ActivityManager: Unable to start service Intent { act=android.service.notification.NotificationListenerService cmp=com.google.android.apps.nexuslauncher/com.android.launcher3.notification.NotificationListener } U=0: not found
+10-21 08:54:24.232   522   522 W ActivityManager: Unable to start service Intent { act=android.service.notification.NotificationListenerService cmp=com.google.android.apps.nexuslauncher/com.android.launcher3.notification.NotificationListener } U=0: not found
+10-21 08:54:24.233   522   522 W ActivityManager: Unable to start service Intent { act=android.service.notification.NotificationListenerService cmp=com.google.android.as/com.google.android.apps.miphone.aiai.common.notification.service.AiAiNotificationListenerService } U=0: not found
+10-21 08:54:24.237   522   522 W ActivityManager: Unable to start service Intent { act=android.service.notification.NotificationAssistantService cmp=com.google.android.as/com.google.android.apps.miphone.aiai.common.notification.service.AiAiNotificationAssistantService } U=0: not found
+10-21 08:54:24.636   522   522 W ActivityManager: Too early to start/bind service in system_server: Phase=550 ComponentInfo{com.android.server.telecom/com.android.server.telecom.components.TelecomService}
+10-21 08:54:24.636   522   522 W ActivityManager: Too early to start/bind service in system_server: Phase=550 ComponentInfo{com.android.server.telecom/com.android.server.telecom.components.TelecomService}
+10-21 08:54:24.680   522   553 W ActivityManager: com.android.systemui inode == 0 (b/152760674)
+10-21 08:54:24.680   522   553 W ActivityManager: com.google.android.gms inode == 0 (b/152760674)
+10-21 08:54:24.693   522   553 W ActivityManager: com.google.android.permissioncontroller inode == 0 (b/152760674)
+10-21 08:54:24.693   522   553 W ActivityManager: com.google.android.gms inode == 0 (b/152760674)
+--------- beginning of main
+10-21 08:54:24.815   837   868 W OpenGLRenderer: Unknown dataspace 0
+10-21 08:54:25.023   522   939 W ActivityManager: Unable to start service Intent { act=android.service.smartspace.SmartspaceService cmp=com.google.android.as/com.google.android.apps.miphone.aiai.app.AiAiSmartspaceService } U=0: not found
+10-21 08:54:25.024   522   939 W ActivityManager: Unable to start service Intent { act=android.service.smartspace.SmartspaceService cmp=com.google.android.as/com.google.android.apps.miphone.aiai.app.AiAiSmartspaceService } U=0: not found
+10-21 08:54:25.024   522   939 W ActivityManager: Unable to start service Intent { act=android.service.smartspace.SmartspaceService cmp=com.google.android.as/com.google.android.apps.miphone.aiai.app.AiAiSmartspaceService } U=0: not found
+10-21 08:54:25.024   522   939 W ActivityManager: Unable to start service Intent { act=android.service.smartspace.SmartspaceService cmp=com.google.android.as/com.google.android.apps.miphone.aiai.app.AiAiSmartspaceService } U=0: not found
+10-21 08:54:25.086   522   553 W ActivityManager: com.android.server.telecom inode == 0 (b/152760674)
+10-21 08:54:25.086   522   553 W ActivityManager: com.google.android.gms inode == 0 (b/152760674)
+10-21 08:54:25.206   522   553 W ActivityManager: com.google.android.cellbroadcastservice inode == 0 (b/152760674)
+10-21 08:54:25.206   522   553 W ActivityManager: com.google.android.gms inode == 0 (b/152760674)
+10-21 08:54:25.353   522   553 W ActivityManager: com.android.bluetooth inode == 0 (b/152760674)
+10-21 08:54:25.353   522   553 W ActivityManager: com.google.android.gms inode == 0 (b/152760674)
+10-21 08:54:25.376   522   553 W ActivityManager: com.android.se inode == 0 (b/152760674)
+10-21 08:54:25.376   522   553 W ActivityManager: com.google.android.gms inode == 0 (b/152760674)
+10-21 08:54:25.413   522   553 W ActivityManager: com.android.phone inode == 0 (b/152760674)
+10-21 08:54:25.413   522   553 W ActivityManager: com.google.android.gms inode == 0 (b/152760674)
+10-21 08:54:25.423   522   553 W ActivityManager: com.android.providers.settings inode == 0 (b/152760674)
+10-21 08:54:25.423   522   553 W ActivityManager: com.google.android.gms inode == 0 (b/152760674)
+10-21 08:54:25.491   522   553 W ActivityManager: com.google.android.apps.nexuslauncher inode == 0 (b/152760674)
+10-21 08:54:25.491   522   553 W ActivityManager: com.google.android.gms inode == 0 (b/152760674)
+10-21 08:54:25.551   522   553 W ActivityManager: Slow operation: 60ms so far, now at startProcess: returned from zygote!
+10-21 08:54:25.551   522   553 W ActivityManager: Slow operation: 60ms so far, now at startProcess: done updating battery stats
+10-21 08:54:25.551   522   553 W ActivityManager: Slow operation: 60ms so far, now at startProcess: building log message
+10-21 08:54:25.551   522   553 W ActivityManager: Slow operation: 60ms so far, now at startProcess: starting to update pids map
+10-21 08:54:25.551   522   553 W ActivityManager: Slow operation: 60ms so far, now at startProcess: done updating pids map
+10-21 08:54:25.616  1045  1045 W OpenGLRenderer: Unknown dataspace 0
+10-21 08:54:25.635  1045  1093 W OpenGLRenderer: Failed to initialize 101010-2 format, error = EGL_SUCCESS
+10-21 08:54:25.786   522   553 W ActivityManager: com.android.bluetooth inode == 0 (b/152760674)
+10-21 08:54:25.787   522   553 W ActivityManager: com.google.android.gms inode == 0 (b/152760674)
+10-21 08:54:25.870   522   522 W ActivityManager: Unbind failed: could not find connection for android.app.LoadedApk$ServiceDispatcher$InnerConnection@fd67102
+10-21 08:54:25.870   522   522 W ActivityManager: Unbind failed: could not find connection for android.app.LoadedApk$ServiceDispatcher$InnerConnection@e48ea13
+10-21 08:54:25.870   522   522 W ActivityManager: Unbind failed: could not find connection for android.app.LoadedApk$ServiceDispatcher$InnerConnection@a0fa450
+10-21 08:54:25.870   522   522 W ActivityManager: Unbind failed: could not find connection for android.app.LoadedApk$ServiceDispatcher$InnerConnection@2998649
+10-21 08:54:26.093   837   885 W OpenGLRenderer: Failed to initialize 101010-2 format, error = EGL_SUCCESS
+10-21 08:54:26.137   837   885 E OpenGLRenderer: Unable to match the desired swap behavior.
+10-21 08:54:26.279   522   522 W ActivityManager: Unable to start service Intent { act=android.service.notification.NotificationListenerService cmp=com.google.android.apps.nexuslauncher/com.android.launcher3.notification.NotificationListener } U=0: not found
+10-21 08:54:26.280   522   522 W ActivityManager: Unable to start service Intent { act=android.service.notification.NotificationListenerService cmp=com.google.android.as/com.google.android.apps.miphone.aiai.common.notification.service.AiAiNotificationListenerService } U=0: not found
+10-21 08:54:26.280   522   522 W ActivityManager: Unable to start service Intent { act=android.service.notification.NotificationAssistantService cmp=com.google.android.as/com.google.android.apps.miphone.aiai.common.notification.service.AiAiNotificationAssistantService } U=0: not found
+10-21 08:54:26.432   522   553 W ActivityManager: com.google.android.cellbroadcastreceiver inode == 0 (b/152760674)
+10-21 08:54:26.432   522   553 W ActivityManager: com.google.android.gms inode == 0 (b/152760674)
+10-21 08:54:26.548   522   553 W ActivityManager: com.android.cellbroadcastreceiver inode == 0 (b/152760674)
+10-21 08:54:26.548   522   553 W ActivityManager: com.google.android.gms inode == 0 (b/152760674)
+10-21 08:54:26.831   522   553 W ActivityManager: com.google.android.gsf inode == 0 (b/152760674)
+10-21 08:54:27.072   837   837 I Choreographer: Skipped 32 frames!  The application may be doing too much work on its main thread.
+10-21 08:54:27.153   837  1421 W OpenGLRenderer: Failed to initialize 101010-2 format, error = EGL_SUCCESS
+10-21 08:54:27.431   522   553 W ActivityManager: com.google.android.gsf inode == 0 (b/152760674)
+10-21 08:54:28.305   522   553 W ActivityManager: com.google.android.inputmethod.latin inode == 0 (b/152760674)
+10-21 08:54:28.305   522   553 W ActivityManager: com.google.android.gms inode == 0 (b/152760674)
+10-21 08:54:28.371   522   553 W ActivityManager: com.google.android.ext.services inode == 0 (b/152760674)
+10-21 08:54:28.371   522   553 W ActivityManager: com.google.android.gms inode == 0 (b/152760674)
+10-21 08:54:28.393   837   837 I Choreographer: Skipped 78 frames!  The application may be doing too much work on its main thread.
+10-21 08:54:28.395   522   553 W ActivityManager: com.google.android.apps.wellbeing inode == 0 (b/152760674)
+10-21 08:54:28.395   522   553 W ActivityManager: com.google.android.gms inode == 0 (b/152760674)
+10-21 08:54:28.428   522   553 W ActivityManager: Slow operation: 61ms so far, now at startProcess: returned from zygote!
+10-21 08:54:28.428   522   553 W ActivityManager: Slow operation: 62ms so far, now at startProcess: done updating battery stats
+10-21 08:54:28.437   522   553 W ActivityManager: Slow operation: 70ms so far, now at startProcess: building log message
+10-21 08:54:28.437   522   553 W ActivityManager: Slow operation: 70ms so far, now at startProcess: starting to update pids map
+10-21 08:54:28.445   522   553 W ActivityManager: Slow operation: 78ms so far, now at startProcess: done updating pids map
+10-21 08:54:28.641   522  1376 W ActivityManager: Receiver with filter android.content.IntentFilter@6f90126 already registered for pid 1502, callerPackage is com.google.android.inputmethod.latin
+10-21 08:54:29.023   837   837 I Choreographer: Skipped 37 frames!  The application may be doing too much work on its main thread.
+10-21 08:54:29.069   522   553 W ActivityManager: Slow operation: 103ms so far, now at startProcess: returned from zygote!
+10-21 08:54:29.073   522   553 W ActivityManager: Slow operation: 107ms so far, now at startProcess: done updating battery stats
+10-21 08:54:29.073   522   553 W ActivityManager: Slow operation: 108ms so far, now at startProcess: building log message
+10-21 08:54:29.073   522   553 W ActivityManager: Slow operation: 108ms so far, now at startProcess: starting to update pids map
+10-21 08:54:29.074   522   553 W ActivityManager: Slow operation: 108ms so far, now at startProcess: done updating pids map
+10-21 08:54:29.080  1502  1502 W OpenGLRenderer: Unknown dataspace 0
+10-21 08:54:29.115   522   595 W ActivityTaskManager: Current config: {1.0 310mcc260mnc [en_US] ldltr sw411dp w411dp h842dp 420dpi nrml long port finger qwerty/v/v -nav/h winConfig={ mBounds=Rect(0, 0 - 1080, 2400) mAppBounds=Rect(0, 0 - 1080, 2274) mMaxBounds=Rect(0, 0 - 1080, 2400) mDisplayRotation=ROTATION_0 mWindowingMode=fullscreen mDisplayWindowingMode=fullscreen mActivityType=undefined mAlwaysOnTop=undefined mRotation=ROTATION_0} as.2 s.48 fontWeightAdjustment=0} unchanged for IME proc com.google.android.inputmethod.latin
+10-21 08:54:29.115   522   595 W ActivityTaskManager: Current config: {1.0 310mcc260mnc [en_US] ldltr sw411dp w411dp h842dp 420dpi nrml long port finger qwerty/v/v -nav/h winConfig={ mBounds=Rect(0, 0 - 1080, 2400) mAppBounds=Rect(0, 0 - 1080, 2274) mMaxBounds=Rect(0, 0 - 1080, 2400) mDisplayRotation=ROTATION_0 mWindowingMode=fullscreen mDisplayWindowingMode=fullscreen mActivityType=undefined mAlwaysOnTop=undefined mRotation=ROTATION_0} as.2 s.48 fontWeightAdjustment=0} unchanged for IME proc com.google.android.inputmethod.latin
+10-21 08:54:29.335   522   553 W ActivityManager: Slow operation: 211ms so far, now at startProcess: returned from zygote!
+10-21 08:54:29.335   522   553 W ActivityManager: Slow operation: 211ms so far, now at startProcess: done updating battery stats
+10-21 08:54:29.335   522   553 W ActivityManager: Slow operation: 211ms so far, now at startProcess: building log message
+10-21 08:54:29.335   522   553 W ActivityManager: Slow operation: 211ms so far, now at startProcess: starting to update pids map
+10-21 08:54:29.335   522   553 W ActivityManager: Slow operation: 211ms so far, now at startProcess: done updating pids map
+10-21 08:54:29.335   522   553 W ActivityManager: Slow operation: 200ms so far, now at startProcess: asking zygote to start proc
+10-21 08:54:29.397   522   553 W ActivityManager: Slow operation: 262ms so far, now at startProcess: returned from zygote!
+10-21 08:54:29.397   522   553 W ActivityManager: Slow operation: 262ms so far, now at startProcess: done updating battery stats
+10-21 08:54:29.397   522   553 W ActivityManager: Slow operation: 263ms so far, now at startProcess: building log message
+10-21 08:54:29.397   522   553 W ActivityManager: Slow operation: 263ms so far, now at startProcess: starting to update pids map
+10-21 08:54:29.398   522   553 W ActivityManager: Slow operation: 263ms so far, now at startProcess: done updating pids map
+10-21 08:54:29.599   837   837 I Choreographer: Skipped 33 frames!  The application may be doing too much work on its main thread.
+10-21 08:54:30.023   522   553 W ActivityManager: Slow operation: 154ms so far, now at startProcess: returned from zygote!
+10-21 08:54:30.023   522   553 W ActivityManager: Slow operation: 154ms so far, now at startProcess: done updating battery stats
+10-21 08:54:30.023   522   553 W ActivityManager: Slow operation: 154ms so far, now at startProcess: building log message
+10-21 08:54:30.023   522   553 W ActivityManager: Slow operation: 154ms so far, now at startProcess: starting to update pids map
+10-21 08:54:30.023   522   553 W ActivityManager: Slow operation: 154ms so far, now at startProcess: done updating pids map
+10-21 08:54:30.059   522   553 W ActivityManager: Slow operation: 58ms so far, now at startProcess: returned from zygote!
+10-21 08:54:30.059   522   553 W ActivityManager: Slow operation: 58ms so far, now at startProcess: done updating battery stats
+10-21 08:54:30.062   522   553 W ActivityManager: Slow operation: 61ms so far, now at startProcess: building log message
+10-21 08:54:30.062   522   553 W ActivityManager: Slow operation: 61ms so far, now at startProcess: starting to update pids map
+10-21 08:54:30.062   522   553 W ActivityManager: Slow operation: 61ms so far, now at startProcess: done updating pids map
+10-21 08:54:30.112   522   553 W ActivityManager: Slow operation: 94ms so far, now at startProcess: returned from zygote!
+10-21 08:54:30.115   522   553 W ActivityManager: Slow operation: 97ms so far, now at startProcess: done updating battery stats
+10-21 08:54:30.115   522   553 W ActivityManager: Slow operation: 97ms so far, now at startProcess: building log message
+10-21 08:54:30.115   522   553 W ActivityManager: Slow operation: 97ms so far, now at startProcess: starting to update pids map
+10-21 08:54:30.115   522   553 W ActivityManager: Slow operation: 97ms so far, now at startProcess: done updating pids map
+10-21 08:54:30.115   522   553 W ActivityManager: Slow operation: 96ms so far, now at startProcess: asking zygote to start proc
+10-21 08:54:30.150   522   553 W ActivityManager: Slow operation: 131ms so far, now at startProcess: returned from zygote!
+10-21 08:54:30.150   522   553 W ActivityManager: Slow operation: 131ms so far, now at startProcess: done updating battery stats
+10-21 08:54:30.150   522   553 W ActivityManager: Slow operation: 131ms so far, now at startProcess: building log message
+10-21 08:54:30.150   522   553 W ActivityManager: Slow operation: 131ms so far, now at startProcess: starting to update pids map
+10-21 08:54:30.150   522   553 W ActivityManager: Slow operation: 131ms so far, now at startProcess: done updating pids map
+10-21 08:54:30.150   522   553 W ActivityManager: Slow operation: 60ms so far, now at startProcess: asking zygote to start proc
+10-21 08:54:30.156   522   902 W ActivityManager: Receiver with filter android.content.IntentFilter@f3ea3ba already registered for pid 1631, callerPackage is com.google.android.googlequicksearchbox
+10-21 08:54:30.168   522   553 W ActivityManager: Slow operation: 78ms so far, now at startProcess: returned from zygote!
+10-21 08:54:30.192   522   553 W ActivityManager: Slow operation: 102ms so far, now at startProcess: done updating battery stats
+10-21 08:54:30.192   522   553 W ActivityManager: Slow operation: 102ms so far, now at startProcess: building log message
+10-21 08:54:30.192   522   553 W ActivityManager: Slow operation: 102ms so far, now at startProcess: starting to update pids map
+10-21 08:54:30.194   522   553 W ActivityManager: Slow operation: 104ms so far, now at startProcess: done updating pids map
+10-21 08:54:30.238   522   553 W ActivityManager: Slow operation: 62ms so far, now at startProcess: returned from zygote!
+10-21 08:54:30.238   522   553 W ActivityManager: Slow operation: 62ms so far, now at startProcess: done updating battery stats
+10-21 08:54:30.238   522   553 W ActivityManager: Slow operation: 62ms so far, now at startProcess: building log message
+10-21 08:54:30.238   522   553 W ActivityManager: Slow operation: 62ms so far, now at startProcess: starting to update pids map
+10-21 08:54:30.238   522   553 W ActivityManager: Slow operation: 63ms so far, now at startProcess: done updating pids map
+10-21 08:54:30.426   522   553 W ActivityManager: Slow operation: 123ms so far, now at startProcess: returned from zygote!
+10-21 08:54:30.427   522   553 W ActivityManager: Slow operation: 124ms so far, now at startProcess: done updating battery stats
+10-21 08:54:30.427   522   553 W ActivityManager: Slow operation: 124ms so far, now at startProcess: building log message
+10-21 08:54:30.427   522   553 W ActivityManager: Slow operation: 124ms so far, now at startProcess: starting to update pids map
+10-21 08:54:30.427   522   553 W ActivityManager: Slow operation: 124ms so far, now at startProcess: done updating pids map
+10-21 08:54:30.427   522   553 W ActivityManager: Slow operation: 85ms so far, now at startProcess: asking zygote to start proc
+10-21 08:54:30.474   837   885 E OpenGLRenderer: Unable to match the desired swap behavior.
+10-21 08:54:30.602   522   553 W ActivityManager: Slow operation: 260ms so far, now at startProcess: returned from zygote!
+10-21 08:54:30.621   522   553 W ActivityManager: Slow operation: 279ms so far, now at startProcess: done updating battery stats
+10-21 08:54:30.621   522   553 W ActivityManager: Slow operation: 279ms so far, now at startProcess: building log message
+10-21 08:54:30.622   522   553 W ActivityManager: Slow operation: 280ms so far, now at startProcess: starting to update pids map
+10-21 08:54:30.625   522   553 W ActivityManager: Slow operation: 283ms so far, now at startProcess: done updating pids map
+10-21 08:54:30.828  1090  1848 W OpenGLRenderer: Failed to initialize 101010-2 format, error = EGL_SUCCESS
+10-21 08:54:30.856  1090  1848 E OpenGLRenderer: Unable to match the desired swap behavior.
+10-21 08:54:31.216   522   553 W ActivityManager: Slow operation: 120ms so far, now at startProcess: returned from zygote!
+10-21 08:54:31.216   522   553 W ActivityManager: Slow operation: 122ms so far, now at startProcess: done updating battery stats
+10-21 08:54:31.217   522   553 W ActivityManager: Slow operation: 123ms so far, now at startProcess: building log message
+10-21 08:54:31.254  1090  1848 E OpenGLRenderer: Unable to match the desired swap behavior.
+10-21 08:54:31.261   522   553 W ActivityManager: Slow operation: 123ms so far, now at startProcess: starting to update pids map
+10-21 08:54:31.261   522   553 W ActivityManager: Slow operation: 167ms so far, now at startProcess: done updating pids map
+10-21 08:54:31.394   522   753 W ActivityManager: Unable to start service Intent { cmp=com.google.android.as/aig } U=0: not found
+10-21 08:54:31.509   522  2079 W ActivityManager: Receiver with filter android.content.IntentFilter@b69cdea already registered for pid 1723, callerPackage is com.google.android.googlequicksearchbox
+10-21 08:54:31.910   522  1775 W ActivityTaskManager: Current config: {1.0 310mcc260mnc [en_US] ldltr sw411dp w411dp h842dp 420dpi nrml long port finger qwerty/v/v -nav/h winConfig={ mBounds=Rect(0, 0 - 1080, 2400) mAppBounds=Rect(0, 0 - 1080, 2274) mMaxBounds=Rect(0, 0 - 1080, 2400) mDisplayRotation=ROTATION_0 mWindowingMode=fullscreen mDisplayWindowingMode=fullscreen mActivityType=undefined mAlwaysOnTop=undefined mRotation=ROTATION_0} as.2 s.63 fontWeightAdjustment=0} unchanged for IME proc com.google.android.inputmethod.latin
+10-21 08:54:32.095   522   910 W ActivityManager: Slow operation: 83ms so far, now at attachApplicationLocked: immediately before bindApplication
+10-21 08:54:32.096   522   910 W ActivityManager: Slow operation: 84ms so far, now at attachApplicationLocked: immediately after bindApplication
+10-21 08:54:32.096   522   910 W ActivityManager: Slow operation: 84ms so far, now at attachApplicationLocked: after updateLruProcessLocked
+10-21 08:54:32.202   522   553 W ActivityManager: Slow operation: 68ms so far, now at startProcess: done updating battery stats
+10-21 08:54:32.203   522   553 W ActivityManager: Slow operation: 68ms so far, now at startProcess: building log message
+10-21 08:54:32.203   522   553 W ActivityManager: Slow operation: 68ms so far, now at startProcess: starting to update pids map
+10-21 08:54:32.203   522   553 W ActivityManager: Slow operation: 68ms so far, now at startProcess: done updating pids map
+10-21 08:54:32.209  1090  1090 W OpenGLRenderer: Unknown dataspace 0
+10-21 08:54:33.560   837   837 I Choreographer: Skipped 53 frames!  The application may be doing too much work on its main thread.
+10-21 08:54:33.693   522   541 W ActivityTaskManager: Current config: {1.0 310mcc260mnc [en_US] ldltr sw411dp w411dp h866dp 420dpi nrml long port finger qwerty/v/v -nav/h winConfig={ mBounds=Rect(0, 0 - 1080, 2400) mAppBounds=Rect(0, 0 - 1080, 2337) mMaxBounds=Rect(0, 0 - 1080, 2400) mDisplayRotation=ROTATION_0 mWindowingMode=fullscreen mDisplayWindowingMode=fullscreen mActivityType=undefined mAlwaysOnTop=undefined mRotation=ROTATION_0} as.3 s.100 fontWeightAdjustment=0} unchanged for IME proc com.google.android.inputmethod.latin
+10-21 08:54:33.748   522   541 W ActivityTaskManager: Current config: {1.0 310mcc260mnc [en_US] ldltr sw411dp w411dp h866dp 420dpi nrml long port finger qwerty/v/v -nav/h winConfig={ mBounds=Rect(0, 0 - 1080, 2400) mAppBounds=Rect(0, 0 - 1080, 2337) mMaxBounds=Rect(0, 0 - 1080, 2400) mDisplayRotation=ROTATION_0 mWindowingMode=fullscreen mDisplayWindowingMode=fullscreen mActivityType=undefined mAlwaysOnTop=undefined mRotation=ROTATION_0} as.3 s.100 fontWeightAdjustment=0} unchanged for IME proc com.google.android.inputmethod.latin
+10-21 08:54:33.793   522   544 W ActivityTaskManager: Current config: {1.0 310mcc260mnc [en_US] ldltr sw411dp w411dp h866dp 420dpi nrml long port finger qwerty/v/v -nav/h winConfig={ mBounds=Rect(0, 0 - 1080, 2400) mAppBounds=Rect(0, 0 - 1080, 2337) mMaxBounds=Rect(0, 0 - 1080, 2400) mDisplayRotation=ROTATION_0 mWindowingMode=fullscreen mDisplayWindowingMode=fullscreen mActivityType=undefined mAlwaysOnTop=undefined mRotation=ROTATION_0} as.3 s.140 fontWeightAdjustment=0} unchanged for IME proc com.google.android.inputmethod.latin
+10-21 08:54:34.084   522  2072 W ActivityManager: Slow operation: 52ms so far, now at startProcess: done starting proc!
+10-21 08:54:34.205  1723  1723 W OpenGLRenderer: Unknown dataspace 0
+10-21 08:54:34.224  1090  1848 E OpenGLRenderer: Unable to match the desired swap behavior.
+10-21 08:54:34.230  1090  1848 E OpenGLRenderer: Unable to match the desired swap behavior.
+10-21 08:54:34.785   522   553 W ActivityManager: Slow operation: 79ms so far, now at startProcess: returned from zygote!
+10-21 08:54:34.794   522   553 W ActivityManager: Slow operation: 88ms so far, now at startProcess: done updating battery stats
+10-21 08:54:34.794   522   553 W ActivityManager: Slow operation: 88ms so far, now at startProcess: building log message
+10-21 08:54:34.794   522   553 W ActivityManager: Slow operation: 88ms so far, now at startProcess: starting to update pids map
+10-21 08:54:34.794   522   553 W ActivityManager: Slow operation: 88ms so far, now at startProcess: done updating pids map
+10-21 08:54:35.895  1090  1090 I Choreographer: Skipped 32 frames!  The application may be doing too much work on its main thread.
+10-21 08:54:36.053   837   837 I Choreographer: Skipped 131 frames!  The application may be doing too much work on its main thread.
+10-21 08:54:36.205   522   553 W ActivityManager: Slow operation: 786ms so far, now at startProcess: returned from zygote!
+10-21 08:54:36.407   522   553 W ActivityManager: Slow operation: 988ms so far, now at startProcess: done updating battery stats
+10-21 08:54:36.407   522   553 W ActivityManager: Slow operation: 988ms so far, now at startProcess: building log message
+10-21 08:54:36.407   522   553 W ActivityManager: Slow operation: 988ms so far, now at startProcess: starting to update pids map
+10-21 08:54:36.414   522   553 W ActivityManager: Slow operation: 995ms so far, now at startProcess: done updating pids map
+10-21 08:54:36.631   522   910 W ActivityManager: Slow operation: 214ms so far, now at attachApplicationLocked: immediately before bindApplication
+10-21 08:54:36.703   522   910 W ActivityManager: Slow operation: 286ms so far, now at attachApplicationLocked: immediately after bindApplication
+10-21 08:54:36.703   522   910 W ActivityManager: Slow operation: 286ms so far, now at attachApplicationLocked: after updateLruProcessLocked
+10-21 08:54:37.012   837  1055 I Choreographer: Skipped 75 frames!  The application may be doing too much work on its main thread.
+10-21 08:54:37.138   837   885 E OpenGLRenderer: Unable to match the desired swap behavior.
+10-21 08:54:37.162   522   553 W ActivityManager: Slow operation: 449ms so far, now at startProcess: returned from zygote!
+10-21 08:54:37.554  1090  1848 E OpenGLRenderer: Unable to match the desired swap behavior.
+10-21 08:54:37.729   522   553 W ActivityManager: Slow operation: 1016ms so far, now at startProcess: done updating battery stats
+10-21 08:54:37.729   522   553 W ActivityManager: Slow operation: 1016ms so far, now at startProcess: building log message
+10-21 08:54:37.729   522   553 W ActivityManager: Slow operation: 1016ms so far, now at startProcess: starting to update pids map
+10-21 08:54:37.730   522   553 W ActivityManager: Slow operation: 1017ms so far, now at startProcess: done updating pids map
+10-21 08:54:37.730   522   553 W ActivityManager: Slow operation: 990ms so far, now at startProcess: asking zygote to start proc
+10-21 08:54:37.745   522   553 W ActivityManager: Slow operation: 1005ms so far, now at startProcess: returned from zygote!
+10-21 08:54:37.796  1045  1045 I Choreographer: Skipped 34 frames!  The application may be doing too much work on its main thread.
+10-21 08:54:38.024   522   553 W ActivityManager: Slow operation: 1285ms so far, now at startProcess: done updating battery stats
+10-21 08:54:38.024   522   553 W ActivityManager: Slow operation: 1285ms so far, now at startProcess: building log message
+10-21 08:54:38.025   522   553 W ActivityManager: Slow operation: 1285ms so far, now at startProcess: starting to update pids map
+10-21 08:54:38.025   522   553 W ActivityManager: Slow operation: 1285ms so far, now at startProcess: done updating pids map
+10-21 08:54:38.031   522   553 W ActivityManager: Slow operation: 1286ms so far, now at startProcess: asking zygote to start proc
+10-21 08:54:38.142   522   553 W ActivityManager: Slow operation: 1397ms so far, now at startProcess: returned from zygote!
+10-21 08:54:38.220   837   837 I Choreographer: Skipped 125 frames!  The application may be doing too much work on its main thread.
+10-21 08:54:38.640   522   553 W ActivityManager: Slow operation: 1895ms so far, now at startProcess: done updating battery stats
+10-21 08:54:38.640   522   553 W ActivityManager: Slow operation: 1895ms so far, now at startProcess: building log message
+10-21 08:54:38.640   522   553 W ActivityManager: Slow operation: 1895ms so far, now at startProcess: starting to update pids map
+10-21 08:54:38.640   522   553 W ActivityManager: Slow operation: 1895ms so far, now at startProcess: done updating pids map
+10-21 08:54:38.761  1723  1723 I Choreographer: Skipped 265 frames!  The application may be doing too much work on its main thread.
+10-21 08:54:38.998   837   837 I Choreographer: Skipped 45 frames!  The application may be doing too much work on its main thread.
+10-21 08:54:39.014   522   553 W ActivityManager: Slow operation: 126ms so far, now at startProcess: returned from zygote!
+10-21 08:54:39.362  1723  2405 W OpenGLRenderer: Failed to initialize 101010-2 format, error = EGL_SUCCESS
+10-21 08:54:39.571   522   553 W ActivityManager: Slow operation: 765ms so far, now at startProcess: done updating battery stats
+10-21 08:54:39.618   522   553 W ActivityManager: Slow operation: 812ms so far, now at startProcess: building log message
+10-21 08:54:39.618   522   553 W ActivityManager: Slow operation: 812ms so far, now at startProcess: starting to update pids map
+10-21 08:54:39.619   522   553 W ActivityManager: Slow operation: 813ms so far, now at startProcess: done updating pids map
+10-21 08:54:39.619   522   553 W ActivityManager: Slow operation: 735ms so far, now at startProcess: asking zygote to start proc
+10-21 08:54:39.681   522   553 W ActivityManager: Slow operation: 798ms so far, now at startProcess: returned from zygote!
+10-21 08:54:39.720   522   553 W ActivityManager: Slow operation: 836ms so far, now at startProcess: done updating battery stats
+10-21 08:54:39.720   522   553 W ActivityManager: Slow operation: 836ms so far, now at startProcess: building log message
+10-21 08:54:39.720   522   553 W ActivityManager: Slow operation: 836ms so far, now at startProcess: starting to update pids map
+10-21 08:54:39.720   522   553 W ActivityManager: Slow operation: 836ms so far, now at startProcess: done updating pids map
+10-21 08:54:39.897   837   837 I Choreographer: Skipped 42 frames!  The application may be doing too much work on its main thread.
+10-21 08:54:39.996  1723  1723 I Choreographer: Skipped 69 frames!  The application may be doing too much work on its main thread.
+10-21 08:54:40.960   522   553 W ActivityManager: Slow operation: 156ms so far, now at startProcess: done updating battery stats
+10-21 08:54:40.960   522   553 W ActivityManager: Slow operation: 156ms so far, now at startProcess: building log message
+10-21 08:54:40.960   522   553 W ActivityManager: Slow operation: 156ms so far, now at startProcess: starting to update pids map
+10-21 08:54:40.960   522   553 W ActivityManager: Slow operation: 156ms so far, now at startProcess: done updating pids map
+10-21 08:54:42.758  1090  1848 E OpenGLRenderer: Unable to match the desired swap behavior.
+10-21 08:54:42.984   522   553 W ActivityManager: Slow operation: 199ms so far, now at startProcess: returned from zygote!
+10-21 08:54:43.039   522   553 W ActivityManager: Slow operation: 254ms so far, now at startProcess: done updating battery stats
+10-21 08:54:43.039   522   553 W ActivityManager: Slow operation: 254ms so far, now at startProcess: building log message
+10-21 08:54:43.039   522   553 W ActivityManager: Slow operation: 254ms so far, now at startProcess: starting to update pids map
+10-21 08:54:43.039   522   553 W ActivityManager: Slow operation: 254ms so far, now at startProcess: done updating pids map
+10-21 08:54:43.547  1090  1848 E OpenGLRenderer: Unable to match the desired swap behavior.
+10-21 08:54:44.073   522   902 W ActivityManager: Foreground service started from background can not have location/camera/microphone access: service com.google.android.inputmethod.latin/com.google.android.apps.inputmethod.libs.dataservice.superpacks.SuperpacksForegroundTaskService
+10-21 08:54:44.374   837   885 E OpenGLRenderer: Unable to match the desired swap behavior.
+10-21 08:54:45.677   522  2662 W ActivityManager: Unable to start service Intent { act=com.google.android.gms.home.service.START pkg=com.google.android.gms } U=0: not found
+10-21 08:54:45.678   522  2662 W ActivityManager: Unbind failed: could not find connection for android.os.BinderProxy@b2c1a5e
+10-21 08:54:47.210   837   885 E OpenGLRenderer: Unable to match the desired swap behavior.
+10-21 08:54:47.594   522   553 W ActivityManager: Slow operation: 71ms so far, now at startProcess: starting to update pids map
+10-21 08:54:47.594   522   553 W ActivityManager: Slow operation: 72ms so far, now at startProcess: done updating pids map
+10-21 08:54:47.623   522   553 W ActivityManager: Slow operation: 77ms so far, now at startProcess: returned from zygote!
+10-21 08:54:47.623   522   553 W ActivityManager: Slow operation: 77ms so far, now at startProcess: done updating battery stats
+10-21 08:54:47.623   522   553 W ActivityManager: Slow operation: 78ms so far, now at startProcess: building log message
+10-21 08:54:47.624   522   553 W ActivityManager: Slow operation: 78ms so far, now at startProcess: starting to update pids map
+10-21 08:54:47.624   522   553 W ActivityManager: Slow operation: 78ms so far, now at startProcess: done updating pids map
+10-21 08:54:47.785   522  1775 W ActivityManager: Slow operation: 105ms so far, now at finishAttachApplicationInner: after dispatching broadcasts
+10-21 08:54:47.923   522  1775 W ActivityManager: finishReceiver: no app for android.os.BinderProxy@ad5bd84
+10-21 08:54:48.320   522   575 E ActivityManager: Unable to freeze binder for 2564: -11
+10-21 08:54:48.334   522   575 W ActivityManager: Scheduling restart of crashed service com.google.android.gm/com.android.email.job.UpgradeJob$UpgradeJobService in 1000ms for connection
+10-21 08:54:48.334   522   575 W ActivityManager: Scheduling restart of crashed service com.google.android.gm/com.android.email.job.BootCompletedJob$BootCompletedJobService in 11000ms for connection
+10-21 08:54:48.416   522  1954 W ActivityManager: ProcessRecord{9715df8 0:com.google.android.gm/u0a146} is attached to a previous process 2564
+10-21 08:54:48.421   522  2730 W ActivityManager: Service done with onDestroy, but not inDestroying: ServiceRecord{1e9ffa0 u0 com.google.android.gm/com.android.email.job.MigrateDaJob$MigrateDaJobService}, app=ProcessRecord{9715df8 0:com.google.android.gm/u0a146}
+10-21 08:54:48.430   522  2730 W ActivityManager: finishReceiver: no app for android.os.BinderProxy@316e60b
+10-21 08:54:48.589   522   553 W ActivityManager: Slow operation: 174ms so far, now at startProcess: asking zygote to start proc
+10-21 08:54:48.604   522   553 W ActivityManager: Slow operation: 188ms so far, now at startProcess: returned from zygote!
+10-21 08:54:48.609   522   553 W ActivityManager: Slow operation: 193ms so far, now at startProcess: done updating battery stats
+10-21 08:54:48.609   522   553 W ActivityManager: Slow operation: 193ms so far, now at startProcess: building log message
+10-21 08:54:48.609   522   553 W ActivityManager: Slow operation: 193ms so far, now at startProcess: starting to update pids map
+10-21 08:54:48.609   522   553 W ActivityManager: Slow operation: 193ms so far, now at startProcess: done updating pids map
+10-21 08:54:48.690   522   553 W ActivityManager: Slow operation: 51ms so far, now at startProcess: returned from zygote!
+10-21 08:54:48.699   522   553 W ActivityManager: Slow operation: 60ms so far, now at startProcess: done updating battery stats
+10-21 08:54:48.699   522   553 W ActivityManager: Slow operation: 60ms so far, now at startProcess: building log message
+10-21 08:54:48.699   522   553 W ActivityManager: Slow operation: 60ms so far, now at startProcess: starting to update pids map
+10-21 08:54:48.699   522   553 W ActivityManager: Slow operation: 61ms so far, now at startProcess: done updating pids map
+10-21 08:54:50.175   522  2662 W ActivityManager: Slow operation: 62ms so far, now at finishAttachApplicationInner: after dispatching broadcasts
+10-21 08:54:50.412   522   575 E ActivityManager: Unable to freeze binder for 3987: -11
+10-21 08:54:50.498   522  2079 W ActivityManager: finishReceiver: no app for android.os.BinderProxy@91b7155
+10-21 08:54:53.080   522   553 W ActivityManager: Slow operation: 60ms so far, now at startProcess: returned from zygote!
+10-21 08:54:53.091   522   553 W ActivityManager: Slow operation: 71ms so far, now at startProcess: done updating battery stats
+10-21 08:54:53.091   522   553 W ActivityManager: Slow operation: 71ms so far, now at startProcess: building log message
+10-21 08:54:53.091   522   553 W ActivityManager: Slow operation: 71ms so far, now at startProcess: starting to update pids map
+10-21 08:54:53.091   522   553 W ActivityManager: Slow operation: 71ms so far, now at startProcess: done updating pids map
+10-21 08:54:53.091   522   553 W ActivityManager: Slow operation: 51ms so far, now at startProcess: asking zygote to start proc
+10-21 08:54:53.133   522   553 W ActivityManager: Slow operation: 92ms so far, now at startProcess: returned from zygote!
+10-21 08:54:53.133   522   553 W ActivityManager: Slow operation: 92ms so far, now at startProcess: done updating battery stats
+10-21 08:54:53.133   522   553 W ActivityManager: Slow operation: 92ms so far, now at startProcess: building log message
+10-21 08:54:53.133   522   553 W ActivityManager: Slow operation: 92ms so far, now at startProcess: starting to update pids map
+10-21 08:54:53.133   522   553 W ActivityManager: Slow operation: 92ms so far, now at startProcess: done updating pids map
+10-21 08:54:53.133   522   553 W ActivityManager: Slow operation: 89ms so far, now at startProcess: asking zygote to start proc
+10-21 08:54:53.168   522   553 W ActivityManager: Slow operation: 124ms so far, now at startProcess: returned from zygote!
+10-21 08:54:53.169   522   553 W ActivityManager: Slow operation: 125ms so far, now at startProcess: done updating battery stats
+10-21 08:54:53.169   522   553 W ActivityManager: Slow operation: 125ms so far, now at startProcess: building log message
+10-21 08:54:53.169   522   553 W ActivityManager: Slow operation: 125ms so far, now at startProcess: starting to update pids map
+10-21 08:54:53.169   522   553 W ActivityManager: Slow operation: 125ms so far, now at startProcess: done updating pids map
+10-21 08:54:53.169   522   553 W ActivityManager: Slow operation: 117ms so far, now at startProcess: asking zygote to start proc
+10-21 08:54:53.271   522   553 W ActivityManager: Slow operation: 219ms so far, now at startProcess: returned from zygote!
+10-21 08:54:53.271   522   553 W ActivityManager: Slow operation: 219ms so far, now at startProcess: done updating battery stats
+10-21 08:54:53.271   522   553 W ActivityManager: Slow operation: 219ms so far, now at startProcess: building log message
+10-21 08:54:53.272   522   553 W ActivityManager: Slow operation: 220ms so far, now at startProcess: starting to update pids map
+10-21 08:54:53.275   522   553 W ActivityManager: Slow operation: 223ms so far, now at startProcess: done updating pids map
+10-21 08:54:53.275   522   553 W ActivityManager: Slow operation: 183ms so far, now at startProcess: asking zygote to start proc
+10-21 08:54:53.304   522   553 W ActivityManager: Slow operation: 212ms so far, now at startProcess: returned from zygote!
+10-21 08:54:53.304   522   553 W ActivityManager: Slow operation: 212ms so far, now at startProcess: done updating battery stats
+10-21 08:54:53.304   522   553 W ActivityManager: Slow operation: 212ms so far, now at startProcess: building log message
+10-21 08:54:53.304   522   553 W ActivityManager: Slow operation: 213ms so far, now at startProcess: starting to update pids map
+10-21 08:54:53.305   522   553 W ActivityManager: Slow operation: 213ms so far, now at startProcess: done updating pids map
+10-21 08:54:53.521   522  1964 E ActivityManager: Sending non-protected broadcast com.android.settings.battery.action.PERIODIC_JOB_RECHECK from system 1045:com.android.settings/1000 pkg com.android.settings
+10-21 08:54:53.521   522  1964 E ActivityManager: java.lang.Throwable
+10-21 08:54:53.521   522  1964 E ActivityManager: 	at com.android.server.am.ActivityManagerService.checkBroadcastFromSystem(ActivityManagerService.java:14306)
+10-21 08:54:53.521   522  1964 E ActivityManager: 	at com.android.server.am.ActivityManagerService.broadcastIntentLockedTraced(ActivityManagerService.java:15131)
+10-21 08:54:53.521   522  1964 E ActivityManager: 	at com.android.server.am.ActivityManagerService.broadcastIntentLocked(ActivityManagerService.java:14370)
+10-21 08:54:53.521   522  1964 E ActivityManager: 	at com.android.server.am.ActivityManagerService.broadcastIntentWithFeature(ActivityManagerService.java:15336)
+10-21 08:54:53.521   522  1964 E ActivityManager: 	at android.app.IActivityManager$Stub.onTransact(IActivityManager.java:2653)
+10-21 08:54:53.521   522  1964 E ActivityManager: 	at com.android.server.am.ActivityManagerService.onTransact(ActivityManagerService.java:2720)
+10-21 08:54:53.521   522  1964 E ActivityManager: 	at android.os.Binder.execTransactInternal(Binder.java:1339)
+10-21 08:54:53.521   522  1964 E ActivityManager: 	at android.os.Binder.execTransact(Binder.java:1275)
+10-21 08:54:54.850   522  1775 W ActivityManager: Foreground service started from background can not have location/camera/microphone access: service com.google.android.apps.messaging/com.google.apps.tiktok.concurrent.InternalForegroundService
+10-21 08:55:02.865   522  2700 W ActivityManager: Receiver with filter android.content.IntentFilter@b6a4a5c already registered for pid 4587, callerPackage is com.google.android.googlequicksearchbox
+10-21 08:55:03.097   522  2700 W ActivityManager: Unable to start service Intent { cmp=com.google.android.apps.tachyon/.clientapi.ClientApiService } U=0: not found
+10-21 08:55:03.250   522   535 W ActivityManager: Unable to start service Intent { cmp=com.google.android.apps.tachyon/.clientapi.ClientApiService } U=0: not found
+10-21 08:55:03.317   522   939 E ActivityManager: Cannot find package for uid: 1013
+10-21 08:55:06.814   522  2072 W ActivityManager: Unable to start service Intent { act=com.google.android.play.core.splitinstall.BIND_SPLIT_INSTALL_SERVICE pkg=com.android.vending } U=0: not found
+10-21 08:55:07.868   522  2159 W ActivityManager: Foreground service started from background can not have location/camera/microphone access: service com.google.android.inputmethod.latin/com.google.android.apps.inputmethod.libs.dataservice.superpacks.SuperpacksForegroundTaskService
+10-21 08:55:08.161   522  2647 W ActivityManager: Unable to start service Intent { act=android.settings.hats.START_SERVICE pkg=com.google.android.settings.intelligence (has extras) } U=0: not found
+10-21 08:55:08.171   522   575 E ActivityManager: Unable to freeze binder for 4047: -11
+10-21 08:55:08.191   522   575 W ActivityManager: Scheduling restart of crashed service com.google.android.settings.intelligence/.modules.routines.impl.RoutinesJobIntentService in 1000ms for connection
+10-21 08:55:08.191   522   575 W ActivityManager: Scheduling restart of crashed service com.google.android.settings.intelligence/.modules.routines.impl.ComputeNewInferencesJobService in 11000ms for connection
+10-21 08:55:08.191   522   575 W ActivityManager: Scheduling restart of crashed service com.google.android.settings.intelligence/.modules.routines.impl.PruneDatabaseJobService in 21000ms for connection
+10-21 08:55:08.191   522   575 W ActivityManager: Scheduling restart of crashed service com.google.android.settings.intelligence/.modules.appsearchindexing.impl.AppSearchIndexUpdateJobService in 31000ms for connection
+10-21 08:55:08.194   522  2159 W ActivityManager: finishReceiver: no app for android.os.BinderProxy@698834a
+10-21 08:55:22.670   522  2342 W ActivityManager: Exception when unbinding service com.google.android.gms/.chimera.PersistentApiService
+10-21 08:55:22.670   522  2342 W ActivityManager: android.os.DeadObjectException
+10-21 08:55:22.670   522  2342 W ActivityManager: 	at android.os.BinderProxy.transactNative(Native Method)
+10-21 08:55:22.670   522  2342 W ActivityManager: 	at android.os.BinderProxy.transact(BinderProxy.java:584)
+10-21 08:55:22.670   522  2342 W ActivityManager: 	at android.app.IApplicationThread$Stub$Proxy.scheduleUnbindService(IApplicationThread.java:1419)
+10-21 08:55:22.670   522  2342 W ActivityManager: 	at com.android.server.am.ActiveServices.removeConnectionLocked(ActiveServices.java:5896)
+10-21 08:55:22.670   522  2342 W ActivityManager: 	at com.android.server.am.ActiveServices.killServicesLocked(ActiveServices.java:6432)
+10-21 08:55:22.670   522  2342 W ActivityManager: 	at com.android.server.am.ActivityManagerService.cleanUpApplicationRecordLocked(ActivityManagerService.java:12989)
+10-21 08:55:22.670   522  2342 W ActivityManager: 	at com.android.server.am.ActivityManagerService.handleAppDiedLocked(ActivityManagerService.java:3338)
+10-21 08:55:22.670   522  2342 W ActivityManager: 	at com.android.server.am.ActivityManagerService.appDiedLocked(ActivityManagerService.java:3453)
+10-21 08:55:22.670   522  2342 W ActivityManager: 	at com.android.server.am.ActivityManagerService$AppDeathRecipient.binderDied(ActivityManagerService.java:1583)
+10-21 08:55:22.670   522  2342 W ActivityManager: 	at android.os.IBinder$DeathRecipient.binderDied(IBinder.java:319)
+10-21 08:55:22.670   522  2342 W ActivityManager: 	at android.os.BinderProxy.sendDeathNotice(BinderProxy.java:704)
+10-21 08:55:22.670   522  2342 W ActivityManager: Exception when unbinding service com.google.android.gms/.lockbox.service.LockboxBrokerService
+10-21 08:55:22.670   522  2342 W ActivityManager: android.os.DeadObjectException
+10-21 08:55:22.670   522  2342 W ActivityManager: 	at android.os.BinderProxy.transactNative(Native Method)
+10-21 08:55:22.670   522  2342 W ActivityManager: 	at android.os.BinderProxy.transact(BinderProxy.java:584)
+10-21 08:55:22.670   522  2342 W ActivityManager: 	at android.app.IApplicationThread$Stub$Proxy.scheduleUnbindService(IApplicationThread.java:1419)
+10-21 08:55:22.670   522  2342 W ActivityManager: 	at com.android.server.am.ActiveServices.removeConnectionLocked(ActiveServices.java:5896)
+10-21 08:55:22.670   522  2342 W ActivityManager: 	at com.android.server.am.ActiveServices.killServicesLocked(ActiveServices.java:6432)
+10-21 08:55:22.670   522  2342 W ActivityManager: 	at com.android.server.am.ActivityManagerService.cleanUpApplicationRecordLocked(ActivityManagerService.java:12989)
+10-21 08:55:22.670   522  2342 W ActivityManager: 	at com.android.server.am.ActivityManagerService.handleAppDiedLocked(ActivityManagerService.java:3338)
+10-21 08:55:22.670   522  2342 W ActivityManager: 	at com.android.server.am.ActivityManagerService.appDiedLocked(ActivityManagerService.java:3453)
+10-21 08:55:22.670   522  2342 W ActivityManager: 	at com.android.server.am.ActivityManagerService$AppDeathRecipient.binderDied(ActivityManagerService.java:1583)
+10-21 08:55:22.670   522  2342 W ActivityManager: 	at android.os.IBinder$DeathRecipient.binderDied(IBinder.java:319)
+10-21 08:55:22.670   522  2342 W ActivityManager: 	at android.os.BinderProxy.sendDeathNotice(BinderProxy.java:704)
+10-21 08:55:22.671   522  2342 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/.chimera.container.ExternalFileApkService in 1000ms for start-requested
+10-21 08:55:22.672   522  2342 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/.nearby.exposurenotification.WakeUpService in 10999ms for connection
+10-21 08:55:22.672   522  2342 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/.chimera.GmsApiService in 20999ms for connection
+10-21 08:55:22.672   522  2342 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/.icing.service.IndexWorkerService in 30999ms for start-requested
+10-21 08:55:22.672   522  2342 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/.chimera.GmsBoundBrokerService in 40999ms for connection
+10-21 08:55:22.672   522  2342 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/.icing.service.AppIndexingService in 50999ms for connection
+10-21 08:55:22.672   522  2342 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/.chimera.GmsIntentOperationService in 60999ms for start-requested
+10-21 08:55:22.678   522  2072 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/.nearby.sharing.ReceiveSurfaceService in 10993ms for start-requested
+10-21 08:55:22.678   522  2072 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/.nearby.exposurenotification.service.ExposureNotificationInternalService in 70993ms for start-requested
+10-21 08:55:22.678   522  2072 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/com.google.android.contextmanager.service.ContextManagerService in 80993ms for start-requested
+10-21 08:55:22.678   522  2072 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/.location.geocode.GeocodeService in 90993ms for connection
+10-21 08:55:22.678   522  2072 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/.auth.setup.devicesignals.LockScreenService in 100993ms for start-requested
+10-21 08:55:22.678   522  2072 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/.clearcut.debug.ClearcutDebugDumpService in 110993ms for start-requested
+10-21 08:55:22.678   522  2072 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/.location.persistent.LocationPersistentService in 120993ms for start-requested
+10-21 08:55:22.678   522  2072 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/.geotimezone.GeoTimeZoneService in 130993ms for connection
+10-21 08:55:22.678   522  2072 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/.gcm.nts.SchedulerService in 140993ms for start-requested
+10-21 08:55:22.678   522  2072 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/.common.stats.GmsCoreStatsService in 150993ms for start-requested
+10-21 08:55:22.678   522  2072 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/com.google.android.location.network.NetworkLocationService in 160993ms for connection
+10-21 08:55:22.678   522  2072 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/com.google.android.location.internal.server.GoogleLocationService in 170992ms for start-requested
+10-21 08:55:22.678   522  2072 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/.gcm.GcmService in 180992ms for start-requested
+10-21 08:55:22.678   522  2072 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/com.google.android.location.internal.GoogleLocationManagerService in 190992ms for start-requested
+10-21 08:55:22.679   522  2072 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/com.google.android.location.fused.FusedLocationService in 200992ms for connection
+10-21 08:55:22.679   522  2072 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/.deviceconnection.service.DeviceConnectionWatcherService in 210992ms for start-requested
+10-21 08:55:22.679   522  2072 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/com.google.android.location.internal.server.HardwareArProviderService in 220992ms for connection
+10-21 08:55:22.679   522  2072 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/.fido.fido2.pollux.CableAuthenticatorService in 230992ms for start-requested
+10-21 08:55:22.679   522  2072 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/.nearby.messages.service.NearbyMessagesService in 240992ms for start-requested
+10-21 08:55:22.679   522  2072 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/.thunderbird.EmergencyPersistentService in 250992ms for start-requested
+10-21 08:55:22.679   522  2072 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/.chimera.PersistentIntentOperationService in 260992ms for start-requested
+10-21 08:55:22.679   522  2072 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/.chimera.PersistentDirectBootAwareApiService in 270992ms for connection
+10-21 08:55:22.679   522  2072 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/.chimera.PersistentBoundBrokerService in 280992ms for connection
+10-21 08:55:22.679   522  2072 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/.nearby.exposurenotification.service.ExposureMatchingService in 290992ms for start-requested
+10-21 08:55:22.736   522   552 W ActivityManager: Rescheduling restart of crashed service com.google.android.gms/.chimera.container.ExternalFileApkService in 935ms for other
+10-21 08:55:22.737   522   552 W ActivityManager: Rescheduling restart of crashed service com.google.android.gms/.icing.service.IndexWorkerService in 10935ms for other
+10-21 08:55:22.737   522   552 W ActivityManager: Rescheduling restart of crashed service com.google.android.gms/.chimera.GmsBoundBrokerService in 20935ms for other
+10-21 08:55:22.737   522   552 W ActivityManager: Rescheduling restart of crashed service com.google.android.gms/.icing.service.AppIndexingService in 30935ms for other
+10-21 08:55:22.737   522   552 W ActivityManager: Rescheduling restart of crashed service com.google.android.gms/.chimera.GmsIntentOperationService in 40935ms for other
+10-21 08:55:24.669   522  1964 W ActivityManager: Scheduling restart of crashed service com.google.android.gms/.chimera.UiIntentOperationService in 1000ms for start-requested
+10-21 08:55:24.749   522  2647 W ActivityManager: Unable to start service Intent { act=com.google.android.gms.home.service.START pkg=com.google.android.gms } U=0: not found
+10-21 08:55:24.755   522  2113 W ActivityManager: Unbind failed: could not find connection for android.os.BinderProxy@377611f
+10-21 08:55:26.058   522  2647 W ActivityTaskManager: callingPackage for (uid=2000, pid=5440) has no WPC
+10-21 08:55:26.351   522  2342 W ActivityTaskManager: takeTaskSnapshot: taskId=8 not found or not visible
+10-21 08:55:28.888  5443  5443 W OpenGLRenderer: Unknown dataspace 0
+10-21 08:55:28.912  5443  5443 I Choreographer: Skipped 44 frames!  The application may be doing too much work on its main thread.
+10-21 08:55:29.195  5443  5492 W OpenGLRenderer: Failed to initialize 101010-2 format, error = EGL_SUCCESS
+10-21 08:55:30.516  5443  5443 I Choreographer: Skipped 94 frames!  The application may be doing too much work on its main thread.
+10-21 08:55:31.579  1090  1090 I Choreographer: Skipped 53 frames!  The application may be doing too much work on its main thread.
+10-21 08:55:55.419   522  2079 W ActivityTaskManager: Force removing ActivityRecord{61a3a26 u0 io.github.graviton94.carpediem/.MainActivity t8 f}}: app died, no saved state
+10-21 08:55:55.530   522  1376 W ActivityTaskManager: callingPackage for (uid=2000, pid=5783) has no WPC
+10-21 08:55:55.693   522   553 W ActivityManager: Slow operation: 132ms so far, now at startProcess: returned from zygote!
+10-21 08:55:55.694   522   553 W ActivityManager: Slow operation: 133ms so far, now at startProcess: done updating battery stats
+10-21 08:55:55.775   522   553 W ActivityManager: Slow operation: 166ms so far, now at startProcess: building log message
+10-21 08:55:55.776   522   553 W ActivityManager: Slow operation: 215ms so far, now at startProcess: starting to update pids map
+10-21 08:55:55.776   522   553 W ActivityManager: Slow operation: 215ms so far, now at startProcess: done updating pids map
+10-21 08:55:56.745   522   544 W ActivityManager: setHasOverlayUi called on unknown pid: 5443
+10-21 08:55:56.909   522  5811 W OpenGLRenderer: Failed to initialize 101010-2 format, error = EGL_SUCCESS
+10-21 08:55:57.457  5787  5787 W OpenGLRenderer: Unknown dataspace 0
+10-21 08:55:57.461  5787  5787 I Choreographer: Skipped 30 frames!  The application may be doing too much work on its main thread.
+10-21 08:55:58.914  5787  5813 W OpenGLRenderer: Failed to initialize 101010-2 format, error = EGL_SUCCESS
+10-21 08:56:00.809   522   618 W ActivityManager: Unable to start service Intent { act=com.google.android.gms.drive.ApiService.RESET_AFTER_BOOT flg=0x4 cmp=com.google.android.gms/.drive.api.ApiService (has extras) } U=0: not found
+10-21 08:56:01.750  5787  5787 I Choreographer: Skipped 254 frames!  The application may be doing too much work on its main thread.
+10-21 08:56:05.551   522   544 W ActivityTaskManager: Launch timeout has expired, giving up wake lock!
+10-21 08:56:09.603   522  2696 W ActivityTaskManager: Force removing ActivityRecord{dbfad98 u0 io.github.graviton94.carpediem/.MainActivity t9 f}}: app died, no saved state
+10-21 08:56:09.740   522  2159 W ActivityTaskManager: callingPackage for (uid=2000, pid=5854) has no WPC
+10-21 08:56:10.454   522   544 W ActivityManager: setHasOverlayUi called on unknown pid: 5787
+10-21 08:56:10.724  5859  5859 W OpenGLRenderer: Unknown dataspace 0
+10-21 08:56:11.122  5859  5879 W OpenGLRenderer: Failed to initialize 101010-2 format, error = EGL_SUCCESS
+10-21 08:56:13.081  5859  5859 I Choreographer: Skipped 140 frames!  The application may be doing too much work on its main thread.
+10-21 08:56:19.127   522  2077 W ActivityTaskManager: Force removing ActivityRecord{1bb014a u0 io.github.graviton94.carpediem/.MainActivity t10 f}}: app died, no saved state
+10-21 08:56:19.293   522   902 W ActivityTaskManager: callingPackage for (uid=2000, pid=5928) has no WPC
+10-21 08:56:19.531   522   544 W ActivityManager: setHasOverlayUi called on unknown pid: 5859
+10-21 08:56:20.229  5933  5933 W OpenGLRenderer: Unknown dataspace 0
+10-21 08:56:20.647  5933  5952 W OpenGLRenderer: Failed to initialize 101010-2 format, error = EGL_SUCCESS
+10-21 08:56:23.330  5933  5933 I Choreographer: Skipped 183 frames!  The application may be doing too much work on its main thread.
+10-21 08:56:29.305   522   544 W ActivityTaskManager: Launch timeout has expired, giving up wake lock!
+10-21 08:56:29.665   522  2342 W ActivityTaskManager: Force removing ActivityRecord{1ac21a6 u0 io.github.graviton94.carpediem/.MainActivity t11 f}}: app died, no saved state
+10-21 08:56:29.828   522  2072 W ActivityTaskManager: callingPackage for (uid=2000, pid=6067) has no WPC
+10-21 08:56:29.891   522   553 W ActivityManager: Slow operation: 52ms so far, now at startProcess: returned from zygote!
+10-21 08:56:29.891   522   553 W ActivityManager: Slow operation: 52ms so far, now at startProcess: done updating battery stats
+10-21 08:56:29.891   522   553 W ActivityManager: Slow operation: 52ms so far, now at startProcess: building log message
+10-21 08:56:29.891   522   553 W ActivityManager: Slow operation: 52ms so far, now at startProcess: starting to update pids map
+10-21 08:56:29.892   522   553 W ActivityManager: Slow operation: 53ms so far, now at startProcess: done updating pids map
+10-21 08:56:30.680   522   544 W ActivityManager: setHasOverlayUi called on unknown pid: 5933
+10-21 08:56:31.432  6071  6071 W OpenGLRenderer: Unknown dataspace 0
+10-21 08:56:31.456  6071  6071 I Choreographer: Skipped 38 frames!  The application may be doing too much work on its main thread.
+10-21 08:56:32.362  6071  6093 W OpenGLRenderer: Failed to initialize 101010-2 format, error = EGL_SUCCESS
+10-21 08:56:34.346  6071  6071 I Choreographer: Skipped 169 frames!  The application may be doing too much work on its main thread.
+10-21 08:56:39.846   522   544 W ActivityTaskManager: Launch timeout has expired, giving up wake lock!
+10-21 08:56:40.948   522  2159 W ActivityTaskManager: Force removing ActivityRecord{81ce6ff u0 io.github.graviton94.carpediem/.MainActivity t12 f}}: app died, no saved state
+10-21 08:56:41.088   522   902 W ActivityTaskManager: callingPackage for (uid=2000, pid=6149) has no WPC
+10-21 08:56:41.831   522   544 W ActivityManager: setHasOverlayUi called on unknown pid: 6071
+10-21 08:56:42.037  6152  6152 W OpenGLRenderer: Unknown dataspace 0
+10-21 08:56:42.492  6152  6172 W OpenGLRenderer: Failed to initialize 101010-2 format, error = EGL_SUCCESS
+10-21 08:56:44.382  6152  6152 I Choreographer: Skipped 139 frames!  The application may be doing too much work on its main thread.
+10-21 08:56:51.120   522   544 W ActivityTaskManager: Launch timeout has expired, giving up wake lock!
+10-21 08:56:51.147   522   596 W ActivityTaskManager: Force removing ActivityRecord{9a7e2e0 u0 io.github.graviton94.carpediem/.MainActivity t13 f}}: app died, no saved state
+10-21 08:56:51.270   522  2078 W ActivityTaskManager: callingPackage for (uid=2000, pid=6222) has no WPC
+10-21 08:56:52.081   522   544 W ActivityManager: setHasOverlayUi called on unknown pid: 6152
+10-21 08:56:52.263  6227  6227 W OpenGLRenderer: Unknown dataspace 0
+10-21 08:56:52.668  6227  6248 W OpenGLRenderer: Failed to initialize 101010-2 format, error = EGL_SUCCESS
+10-21 08:56:54.525  6227  6227 I Choreographer: Skipped 134 frames!  The application may be doing too much work on its main thread.
+10-21 08:57:01.080   522   826 W ActivityTaskManager: Force removing ActivityRecord{8e9bc60 u0 io.github.graviton94.carpediem/.MainActivity t14 f}}: app died, no saved state
+10-21 08:57:01.241   522  2079 W ActivityTaskManager: callingPackage for (uid=2000, pid=6307) has no WPC
+10-21 08:57:01.299   522   544 W ActivityTaskManager: Launch timeout has expired, giving up wake lock!
+10-21 08:57:01.324   522   553 W ActivityManager: Slow operation: 54ms so far, now at startProcess: done updating pids map
+10-21 08:57:02.103   522   544 W ActivityManager: setHasOverlayUi called on unknown pid: 6227
+10-21 08:57:02.362  6312  6312 W OpenGLRenderer: Unknown dataspace 0
+10-21 08:57:02.802  6312  6332 W OpenGLRenderer: Failed to initialize 101010-2 format, error = EGL_SUCCESS
+10-21 08:57:04.832  6312  6312 I Choreographer: Skipped 146 frames!  The application may be doing too much work on its main thread.
+10-21 08:57:15.388   522   595 W ActivityTaskManager: Force removing ActivityRecord{befa64b u0 io.github.graviton94.carpediem/.MainActivity t15 f}}: app died, no saved state
+10-21 08:57:15.538   522  2342 W ActivityTaskManager: callingPackage for (uid=2000, pid=6395) has no WPC
+10-21 08:57:15.720   522   553 W ActivityManager: Slow operation: 106ms so far, now at startProcess: returned from zygote!
+10-21 08:57:15.720   522   553 W ActivityManager: Slow operation: 106ms so far, now at startProcess: done updating battery stats
+10-21 08:57:15.720   522   553 W ActivityManager: Slow operation: 106ms so far, now at startProcess: building log message
+10-21 08:57:15.720   522   553 W ActivityManager: Slow operation: 106ms so far, now at startProcess: starting to update pids map
+10-21 08:57:15.720   522   553 W ActivityManager: Slow operation: 106ms so far, now at startProcess: done updating pids map
+10-21 08:57:16.462   522   544 W ActivityManager: setHasOverlayUi called on unknown pid: 6312
+10-21 08:57:16.521  6400  6400 W OpenGLRenderer: Unknown dataspace 0
+10-21 08:57:16.952  6400  6421 W OpenGLRenderer: Failed to initialize 101010-2 format, error = EGL_SUCCESS
+10-21 08:57:18.845  6400  6400 I Choreographer: Skipped 138 frames!  The application may be doing too much work on its main thread.
+10-21 08:57:25.133   522  2342 W ActivityTaskManager: Force removing ActivityRecord{bc8b7aa u0 io.github.graviton94.carpediem/.MainActivity t16 f}}: app died, no saved state
+10-21 08:57:25.367   522   826 W ActivityTaskManager: callingPackage for (uid=2000, pid=6468) has no WPC
+10-21 08:57:25.646   522   544 W ActivityTaskManager: Launch timeout has expired, giving up wake lock!
+10-21 08:57:25.691   522   544 W ActivityManager: setHasOverlayUi called on unknown pid: 6400
+10-21 08:57:27.157  6474  6474 W OpenGLRenderer: Unknown dataspace 0
+10-21 08:57:27.161  6474  6474 I Choreographer: Skipped 39 frames!  The application may be doing too much work on its main thread.
+10-21 08:57:27.995  6474  6500 W OpenGLRenderer: Failed to initialize 101010-2 format, error = EGL_SUCCESS
+10-21 08:57:28.918  6474  6474 I Choreographer: Skipped 100 frames!  The application may be doing too much work on its main thread.
+10-21 08:57:34.299   522   826 W ActivityTaskManager: Force removing ActivityRecord{a3df294 u0 io.github.graviton94.carpediem/.MainActivity t17 f}}: app died, no saved state
+10-21 08:57:34.396   522   910 W ActivityTaskManager: callingPackage for (uid=2000, pid=6538) has no WPC
+10-21 08:57:34.468   522   553 W ActivityManager: Slow operation: 53ms so far, now at startProcess: returned from zygote!
+10-21 08:57:34.468   522   553 W ActivityManager: Slow operation: 54ms so far, now at startProcess: done updating battery stats
+10-21 08:57:34.469   522   553 W ActivityManager: Slow operation: 54ms so far, now at startProcess: building log message
+10-21 08:57:34.469   522   553 W ActivityManager: Slow operation: 54ms so far, now at startProcess: starting to update pids map
+10-21 08:57:34.469   522   553 W ActivityManager: Slow operation: 54ms so far, now at startProcess: done updating pids map
+10-21 08:57:35.115   522   544 W ActivityManager: setHasOverlayUi called on unknown pid: 6474
+10-21 08:57:35.128  6546  6546 W OpenGLRenderer: Unknown dataspace 0
+10-21 08:57:35.568  6546  6564 W OpenGLRenderer: Failed to initialize 101010-2 format, error = EGL_SUCCESS
+10-21 08:57:37.182  6546  6546 I Choreographer: Skipped 120 frames!  The application may be doing too much work on its main thread.
+10-21 08:57:44.411   522   544 W ActivityTaskManager: Launch timeout has expired, giving up wake lock!
+10-21 08:57:45.204   522   910 W ActivityTaskManager: Force removing ActivityRecord{e7a1741 u0 io.github.graviton94.carpediem/.MainActivity t18 f}}: app died, no saved state
+10-21 08:57:45.313   522  2722 W ActivityTaskManager: callingPackage for (uid=2000, pid=6608) has no WPC
+10-21 08:57:46.038   522   544 W ActivityManager: setHasOverlayUi called on unknown pid: 6546
+10-21 08:57:46.220  6615  6615 W OpenGLRenderer: Unknown dataspace 0
+10-21 08:57:46.630  6615  6635 W OpenGLRenderer: Failed to initialize 101010-2 format, error = EGL_SUCCESS
+10-21 08:57:48.465  6615  6615 I Choreographer: Skipped 133 frames!  The application may be doing too much work on its main thread.
+10-21 08:57:53.944   522  2342 W ActivityTaskManager: Force removing ActivityRecord{5dafd53 u0 io.github.graviton94.carpediem/.MainActivity t19 f}}: app died, no saved state
+10-21 08:57:54.030   522   535 W ActivityTaskManager: callingPackage for (uid=2000, pid=6673) has no WPC
+10-21 08:57:54.766   522   544 W ActivityManager: setHasOverlayUi called on unknown pid: 6615
+10-21 08:57:55.021  6678  6678 W OpenGLRenderer: Unknown dataspace 0
+10-21 08:57:55.430  6678  6699 W OpenGLRenderer: Failed to initialize 101010-2 format, error = EGL_SUCCESS
+10-21 08:57:57.510  6678  6678 I Choreographer: Skipped 148 frames!  The application may be doing too much work on its main thread.
+10-21 08:58:00.871   522   535 W ActivityTaskManager: Force removing ActivityRecord{1f644e3 u0 io.github.graviton94.carpediem/.MainActivity t20 f}}: app died, no saved state
+10-21 08:58:00.989   522  2075 W ActivityTaskManager: callingPackage for (uid=2000, pid=6740) has no WPC
+10-21 08:58:01.094   522   553 W ActivityManager: Slow operation: 71ms so far, now at startProcess: done updating pids map
+10-21 08:58:01.716   522   544 W ActivityManager: setHasOverlayUi called on unknown pid: 6678
+10-21 08:58:01.962  6748  6748 W OpenGLRenderer: Unknown dataspace 0
+10-21 08:58:02.367  6748  6766 W OpenGLRenderer: Failed to initialize 101010-2 format, error = EGL_SUCCESS
+10-21 08:58:04.050   522   544 W ActivityTaskManager: Launch timeout has expired, giving up wake lock!
+10-21 08:58:04.285  6748  6748 I Choreographer: Skipped 137 frames!  The application may be doing too much work on its main thread.
+10-21 08:58:08.362   522   910 W ActivityTaskManager: Force removing ActivityRecord{1533a51 u0 io.github.graviton94.carpediem/.MainActivity t21 f}}: app died, no saved state
+10-21 08:58:08.596   522   536 W ActivityTaskManager: callingPackage for (uid=2000, pid=6805) has no WPC
+10-21 08:58:08.871   522   544 W ActivityManager: setHasOverlayUi called on unknown pid: 6748
+10-21 08:58:10.358  6812  6812 W OpenGLRenderer: Unknown dataspace 0
+10-21 08:58:11.368  6812  6830 W OpenGLRenderer: Failed to initialize 101010-2 format, error = EGL_SUCCESS
+10-21 08:58:13.840  6812  6812 I Choreographer: Skipped 205 frames!  The application may be doing too much work on its main thread.
+10-21 08:58:18.606   522   544 W ActivityTaskManager: Launch timeout has expired, giving up wake lock!
+10-21 08:58:19.060   522  2072 W ActivityTaskManager: Force removing ActivityRecord{bbef337 u0 io.github.graviton94.carpediem/.MainActivity t22 f}}: app died, no saved state
+10-21 08:58:19.215   522  2072 W ActivityTaskManager: callingPackage for (uid=2000, pid=6870) has no WPC
+10-21 08:58:20.069   522   544 W ActivityManager: setHasOverlayUi called on unknown pid: 6812
+10-21 08:58:20.538  6875  6875 W OpenGLRenderer: Unknown dataspace 0
+10-21 08:58:20.549  6875  6875 I Choreographer: Skipped 47 frames!  The application may be doing too much work on its main thread.
+10-21 08:58:21.734  6875  6894 W OpenGLRenderer: Failed to initialize 101010-2 format, error = EGL_SUCCESS
+10-21 08:58:24.291  6875  6875 I Choreographer: Skipped 220 frames!  The application may be doing too much work on its main thread.
+10-21 08:58:28.922   522  2072 W ActivityTaskManager: Force removing ActivityRecord{22b41cb u0 io.github.graviton94.carpediem/.MainActivity t23 f}}: app died, no saved state
+10-21 08:58:29.037   522  1964 W ActivityTaskManager: callingPackage for (uid=2000, pid=6934) has no WPC
+10-21 08:58:29.240   522   544 W ActivityTaskManager: Launch timeout has expired, giving up wake lock!
+10-21 08:58:29.867   522   544 W ActivityManager: setHasOverlayUi called on unknown pid: 6875
+10-21 08:58:30.179  6940  6940 W OpenGLRenderer: Unknown dataspace 0
+10-21 08:58:31.376  6940  6961 W OpenGLRenderer: Failed to initialize 101010-2 format, error = EGL_SUCCESS
+10-21 08:58:33.636  6940  6940 I Choreographer: Skipped 206 frames!  The application may be doing too much work on its main thread.
+10-21 08:58:38.448   522  1964 W ActivityTaskManager: Force removing ActivityRecord{674ead3 u0 io.github.graviton94.carpediem/.MainActivity t24 f}}: app died, no saved state
+10-21 08:58:38.673   522  2078 W ActivityTaskManager: callingPackage for (uid=2000, pid=7001) has no WPC
+10-21 08:58:38.958   522   544 W ActivityManager: setHasOverlayUi called on unknown pid: 6940
+10-21 08:58:40.466  7004  7004 W OpenGLRenderer: Unknown dataspace 0
+10-21 08:58:41.341  7004  7024 W OpenGLRenderer: Failed to initialize 101010-2 format, error = EGL_SUCCESS
+10-21 08:58:42.751  7004  7004 I Choreographer: Skipped 131 frames!  The application may be doing too much work on its main thread.
+10-21 08:58:43.889  7004  7004 I Choreographer: Skipped 61 frames!  The application may be doing too much work on its main thread.
+10-21 08:58:48.682   522   544 W ActivityTaskManager: Launch timeout has expired, giving up wake lock!
+10-21 08:58:52.118   522  2078 W ActivityTaskManager: Force removing ActivityRecord{b5a97ea u0 io.github.graviton94.carpediem/.MainActivity t25 f}}: app died, no saved state
+10-21 08:58:52.329   522  2662 W ActivityTaskManager: callingPackage for (uid=2000, pid=7084) has no WPC
+10-21 08:58:52.662   522   544 W ActivityManager: setHasOverlayUi called on unknown pid: 7004
+10-21 08:58:54.118  7090  7090 W OpenGLRenderer: Unknown dataspace 0
+10-21 08:58:54.945  7090  7108 W OpenGLRenderer: Failed to initialize 101010-2 format, error = EGL_SUCCESS
+10-21 08:58:57.385  7090  7090 I Choreographer: Skipped 191 frames!  The application may be doing too much work on its main thread.
+10-21 08:58:58.363  7090  7090 I Choreographer: Skipped 45 frames!  The application may be doing too much work on its main thread.
+10-21 08:59:06.323   522  2662 W ActivityTaskManager: Force removing ActivityRecord{1364e0e u0 io.github.graviton94.carpediem/.MainActivity t26 f}}: app died, no saved state
+10-21 08:59:06.480   522  2078 W ActivityTaskManager: callingPackage for (uid=2000, pid=7150) has no WPC
+10-21 08:59:07.277   522   544 W ActivityManager: setHasOverlayUi called on unknown pid: 7090
+10-21 08:59:07.835  7154  7154 W OpenGLRenderer: Unknown dataspace 0
+10-21 08:59:07.840  7154  7154 I Choreographer: Skipped 31 frames!  The application may be doing too much work on its main thread.
+10-21 08:59:08.652  7154  7175 W OpenGLRenderer: Failed to initialize 101010-2 format, error = EGL_SUCCESS
+10-21 08:59:10.205  7154  7154 I Choreographer: Skipped 141 frames!  The application may be doing too much work on its main thread.
+10-21 08:59:11.225  7154  7154 I Choreographer: Skipped 47 frames!  The application may be doing too much work on its main thread.
+10-21 08:59:19.105   522   596 W ActivityTaskManager: Force removing ActivityRecord{471e38e u0 io.github.graviton94.carpediem/.MainActivity t27 f}}: app died, no saved state
+10-21 08:59:19.316   522   596 W ActivityTaskManager: callingPackage for (uid=2000, pid=7220) has no WPC
+10-21 08:59:19.545   522   544 W ActivityManager: setHasOverlayUi called on unknown pid: 7154
+10-21 08:59:20.988  7223  7223 W OpenGLRenderer: Unknown dataspace 0
+10-21 08:59:21.714  7223  7243 W OpenGLRenderer: Failed to initialize 101010-2 format, error = EGL_SUCCESS
+10-21 08:59:24.304  7223  7223 I Choreographer: Skipped 197 frames!  The application may be doing too much work on its main thread.
+10-21 08:59:33.077   522  1258 W ActivityTaskManager: Force removing ActivityRecord{96663d4 u0 io.github.graviton94.carpediem/.MainActivity t28 f}}: app died, no saved state
+10-21 08:59:33.195   522   910 W ActivityTaskManager: callingPackage for (uid=2000, pid=7296) has no WPC
+10-21 08:59:34.006   522   544 W ActivityManager: setHasOverlayUi called on unknown pid: 7223
+10-21 08:59:34.361  7302  7302 W OpenGLRenderer: Unknown dataspace 0
+10-21 08:59:34.365  7302  7302 I Choreographer: Skipped 31 frames!  The application may be doing too much work on its main thread.
+10-21 08:59:35.148  7302  7323 W OpenGLRenderer: Failed to initialize 101010-2 format, error = EGL_SUCCESS
+10-21 08:59:37.846  7302  7302 I Choreographer: Skipped 206 frames!  The application may be doing too much work on its main thread.
+10-21 08:59:38.869  7302  7302 I Choreographer: Skipped 60 frames!  The application may be doing too much work on its main thread.
+10-21 08:59:39.412  7302  7302 I Choreographer: Skipped 30 frames!  The application may be doing too much work on its main thread.
+10-21 08:59:48.399   522   596 W ActivityTaskManager: Force removing ActivityRecord{dd138b0 u0 io.github.graviton94.carpediem/.MainActivity t29 f}}: app died, no saved state
+10-21 08:59:48.627   522  2078 W ActivityTaskManager: callingPackage for (uid=2000, pid=7394) has no WPC
+10-21 08:59:48.754   522   553 W ActivityManager: Slow operation: 60ms so far, now at startProcess: returned from zygote!
+10-21 08:59:48.754   522   553 W ActivityManager: Slow operation: 61ms so far, now at startProcess: done updating battery stats
+10-21 08:59:48.755   522   553 W ActivityManager: Slow operation: 61ms so far, now at startProcess: building log message
+10-21 08:59:48.755   522   553 W ActivityManager: Slow operation: 61ms so far, now at startProcess: starting to update pids map
+10-21 08:59:48.755   522   553 W ActivityManager: Slow operation: 61ms so far, now at startProcess: done updating pids map
+10-21 08:59:49.624   522   544 W ActivityManager: setHasOverlayUi called on unknown pid: 7302
+10-21 08:59:50.346  7398  7398 W OpenGLRenderer: Unknown dataspace 0
+10-21 08:59:50.351  7398  7398 I Choreographer: Skipped 36 frames!  The application may be doing too much work on its main thread.
+10-21 08:59:50.922  7398  7419 W OpenGLRenderer: Failed to initialize 101010-2 format, error = EGL_SUCCESS
+10-21 08:59:52.486  7398  7398 I Choreographer: Skipped 126 frames!  The application may be doing too much work on its main thread.
+10-21 08:59:54.588   522   753 W ActivityTaskManager: Force removing ActivityRecord{16f6e54 u0 io.github.graviton94.carpediem/.MainActivity t30 f}}: app died, no saved state
+10-21 08:59:54.742   522   536 W ActivityTaskManager: callingPackage for (uid=2000, pid=7460) has no WPC
+10-21 08:59:55.112   522   544 W ActivityManager: setHasOverlayUi called on unknown pid: 7398
+10-21 08:59:56.472  7465  7465 W OpenGLRenderer: Unknown dataspace 0
+10-21 08:59:56.478  7465  7465 I Choreographer: Skipped 39 frames!  The application may be doing too much work on its main thread.
+10-21 08:59:57.015  7465  7495 W OpenGLRenderer: Failed to initialize 101010-2 format, error = EGL_SUCCESS
+10-21 08:59:58.901  7465  7465 I Choreographer: Skipped 143 frames!  The application may be doing too much work on its main thread.
+10-21 08:59:59.632  7465  7465 I Choreographer: Skipped 32 frames!  The application may be doing too much work on its main thread.
+10-21 09:00:07.893   522   596 W ActivityTaskManager: Force removing ActivityRecord{3a3e56c u0 io.github.graviton94.carpediem/.MainActivity t31 f}}: app died, no saved state
+10-21 09:00:08.052   522  2722 W ActivityTaskManager: callingPackage for (uid=2000, pid=7550) has no WPC
+10-21 09:00:08.314   522   544 W ActivityManager: setHasOverlayUi called on unknown pid: 7465
+10-21 09:00:10.145  7554  7554 W OpenGLRenderer: Unknown dataspace 0
+10-21 09:00:10.190  7554  7554 I Choreographer: Skipped 37 frames!  The application may be doing too much work on its main thread.
+10-21 09:00:10.909  7554  7584 W OpenGLRenderer: Failed to initialize 101010-2 format, error = EGL_SUCCESS
+10-21 09:00:12.012  7554  7554 I Choreographer: Skipped 106 frames!  The application may be doing too much work on its main thread.
+10-21 09:00:12.835  7554  7554 I Choreographer: Skipped 34 frames!  The application may be doing too much work on its main thread.
+10-21 09:00:22.667   522  1964 W ActivityTaskManager: Force removing ActivityRecord{b29b6c6 u0 io.github.graviton94.carpediem/.MainActivity t32 f}}: app died, no saved state
+10-21 09:00:22.820   522  2079 W ActivityTaskManager: callingPackage for (uid=2000, pid=7727) has no WPC
+10-21 09:00:22.902   522   553 W ActivityManager: Slow operation: 60ms so far, now at startProcess: done updating pids map
+10-21 09:00:23.504   522   544 W ActivityManager: setHasOverlayUi called on unknown pid: 7554
+10-21 09:00:23.720  7732  7732 W OpenGLRenderer: Unknown dataspace 0
+10-21 09:00:23.963  7732  7753 W OpenGLRenderer: Failed to initialize 101010-2 format, error = EGL_SUCCESS
+10-21 09:00:25.215  7732  7732 I Choreographer: Skipped 88 frames!  The application may be doing too much work on its main thread.
+10-21 09:00:34.849   522   902 W ActivityTaskManager: Force removing ActivityRecord{dca49e8 u0 io.github.graviton94.carpediem/.MainActivity t33 f}}: app died, no saved state
+10-21 09:00:35.011   522  1377 W ActivityTaskManager: callingPackage for (uid=2000, pid=7803) has no WPC
+10-21 09:00:35.160   522   553 W ActivityManager: Slow operation: 111ms so far, now at startProcess: done updating pids map
+10-21 09:00:35.301   522   544 W ActivityManager: setHasOverlayUi called on unknown pid: 7732
+10-21 09:00:36.469  7807  7807 W OpenGLRenderer: Unknown dataspace 0
+10-21 09:00:37.095  7807  7828 W OpenGLRenderer: Failed to initialize 101010-2 format, error = EGL_SUCCESS
+10-21 09:00:38.427  7807  7807 I Choreographer: Skipped 115 frames!  The application may be doing too much work on its main thread.
+10-21 09:01:18.872   522  1954 W ActivityTaskManager: Force removing ActivityRecord{5c32be0 u0 io.github.graviton94.carpediem/.MainActivity t34 f}}: app died, no saved state
+10-21 09:01:18.959   522  2666 W ActivityTaskManager: callingPackage for (uid=2000, pid=7888) has no WPC
+10-21 09:01:19.671   522   544 W ActivityManager: setHasOverlayUi called on unknown pid: 7807
+10-21 09:01:19.739  7892  7892 W OpenGLRenderer: Unknown dataspace 0
+10-21 09:01:20.145  7892  7913 W OpenGLRenderer: Failed to initialize 101010-2 format, error = EGL_SUCCESS
+10-21 09:01:21.678  7892  7892 I Choreographer: Skipped 115 frames!  The application may be doing too much work on its main thread.
+10-21 09:01:28.420   522  2722 W ActivityTaskManager: Force removing ActivityRecord{7f825bb u0 io.github.graviton94.carpediem/.MainActivity t35 f}}: app died, no saved state
+10-21 09:01:28.529   522   595 W ActivityTaskManager: callingPackage for (uid=2000, pid=7948) has no WPC
+10-21 09:01:28.966   522   544 W ActivityTaskManager: Launch timeout has expired, giving up wake lock!
+10-21 09:01:29.246   522   544 W ActivityManager: setHasOverlayUi called on unknown pid: 7892
+10-21 09:01:29.401  7954  7954 W OpenGLRenderer: Unknown dataspace 0
+10-21 09:01:29.825  7954  7973 W OpenGLRenderer: Failed to initialize 101010-2 format, error = EGL_SUCCESS
+10-21 09:01:31.889  7954  7954 I Choreographer: Skipped 148 frames!  The application may be doing too much work on its main thread.
+10-21 09:01:38.810   522  2077 W ActivityTaskManager: Force removing ActivityRecord{d5cff6 u0 io.github.graviton94.carpediem/.MainActivity t36 f}}: app died, no saved state
+10-21 09:01:38.919   522   595 W ActivityTaskManager: callingPackage for (uid=2000, pid=8014) has no WPC
+10-21 09:01:38.999   522   553 W ActivityManager: Slow operation: 55ms so far, now at startProcess: done updating pids map
+10-21 09:01:39.694   522   544 W ActivityManager: setHasOverlayUi called on unknown pid: 7954
+10-21 09:01:40.067  8017  8017 W OpenGLRenderer: Unknown dataspace 0
+10-21 09:01:40.072  8017  8017 I Choreographer: Skipped 32 frames!  The application may be doing too much work on its main thread.
+10-21 09:01:40.765  8017  8039 W OpenGLRenderer: Failed to initialize 101010-2 format, error = EGL_SUCCESS
+10-21 09:01:43.098  8017  8017 I Choreographer: Skipped 180 frames!  The application may be doing too much work on its main thread.
+10-21 09:01:48.942   522   544 W ActivityTaskManager: Launch timeout has expired, giving up wake lock!
+10-21 09:01:51.164   522  2161 W ActivityTaskManager: Force removing ActivityRecord{e385152 u0 io.github.graviton94.carpediem/.MainActivity t37 f}}: app died, no saved state
+10-21 09:01:51.275   522   902 W ActivityTaskManager: callingPackage for (uid=2000, pid=8077) has no WPC
+10-21 09:01:52.014   522   544 W ActivityManager: setHasOverlayUi called on unknown pid: 8017
+10-21 09:01:52.159  8083  8083 W OpenGLRenderer: Unknown dataspace 0
+10-21 09:01:52.558  8083  8101 W OpenGLRenderer: Failed to initialize 101010-2 format, error = EGL_SUCCESS
+10-21 09:01:54.128  8083  8083 I Choreographer: Skipped 117 frames!  The application may be doing too much work on its main thread.
+10-21 09:02:01.348   522   544 W ActivityTaskManager: Launch timeout has expired, giving up wake lock!
+10-21 09:02:03.178   522  1775 W ActivityTaskManager: Force removing ActivityRecord{fa80688 u0 io.github.graviton94.carpediem/.MainActivity t38 f}}: app died, no saved state
+10-21 09:02:03.426   522  2161 W ActivityTaskManager: callingPackage for (uid=2000, pid=8140) has no WPC
+10-21 09:02:03.580   522   553 W ActivityManager: Slow operation: 60ms so far, now at startProcess: returned from zygote!
+10-21 09:02:03.581   522   553 W ActivityManager: Slow operation: 61ms so far, now at startProcess: done updating battery stats
+10-21 09:02:03.581   522   553 W ActivityManager: Slow operation: 61ms so far, now at startProcess: building log message
+10-21 09:02:03.581   522   553 W ActivityManager: Slow operation: 61ms so far, now at startProcess: starting to update pids map
+10-21 09:02:03.584   522   553 W ActivityManager: Slow operation: 64ms so far, now at startProcess: done updating pids map
+10-21 09:02:03.706   522   544 W ActivityManager: setHasOverlayUi called on unknown pid: 8083
+10-21 09:02:04.881  8147  8147 W OpenGLRenderer: Unknown dataspace 0
+10-21 09:02:04.885  8147  8147 I Choreographer: Skipped 30 frames!  The application may be doing too much work on its main thread.
+10-21 09:02:05.833  8147  8165 W OpenGLRenderer: Failed to initialize 101010-2 format, error = EGL_SUCCESS
+10-21 09:02:07.498  8147  8147 I Choreographer: Skipped 155 frames!  The application may be doing too much work on its main thread.
+10-21 09:02:13.505   522   544 W ActivityTaskManager: Launch timeout has expired, giving up wake lock!
+10-21 09:02:13.866   522  1775 W ActivityTaskManager: Force removing ActivityRecord{b477a25 u0 io.github.graviton94.carpediem/.MainActivity t39 f}}: app died, no saved state
+10-21 09:02:14.001   522  1775 W ActivityTaskManager: callingPackage for (uid=2000, pid=8203) has no WPC
+10-21 09:02:14.710   522   544 W ActivityManager: setHasOverlayUi called on unknown pid: 8147
+10-21 09:02:14.750  8206  8206 W OpenGLRenderer: Unknown dataspace 0
+10-21 09:02:15.152  8206  8227 W OpenGLRenderer: Failed to initialize 101010-2 format, error = EGL_SUCCESS
+10-21 09:02:17.358  8206  8206 I Choreographer: Skipped 155 frames!  The application may be doing too much work on its main thread.
+10-21 09:02:23.488   522  2161 W ActivityTaskManager: Force removing ActivityRecord{a200279 u0 io.github.graviton94.carpediem/.MainActivity t40 f}}: app died, no saved state
+10-21 09:02:23.764   522  2161 W ActivityTaskManager: callingPackage for (uid=2000, pid=8273) has no WPC
+10-21 09:02:24.017   522   553 W ActivityManager: Slow operation: 223ms so far, now at startProcess: returned from zygote!
+10-21 09:02:24.075   522   553 W ActivityManager: Slow operation: 280ms so far, now at startProcess: done updating battery stats
+10-21 09:02:24.075   522   553 W ActivityManager: Slow operation: 280ms so far, now at startProcess: building log message
+10-21 09:02:24.075   522   553 W ActivityManager: Slow operation: 280ms so far, now at startProcess: starting to update pids map
+10-21 09:02:24.082   522   544 W ActivityTaskManager: Launch timeout has expired, giving up wake lock!
+10-21 09:02:24.084   522   553 W ActivityManager: Slow operation: 289ms so far, now at startProcess: done updating pids map
+10-21 09:02:24.096   522   544 W ActivityManager: setHasOverlayUi called on unknown pid: 8206
+10-21 09:02:25.524  8279  8279 W OpenGLRenderer: Unknown dataspace 0
+10-21 09:02:26.404  8279  8296 W OpenGLRenderer: Failed to initialize 101010-2 format, error = EGL_SUCCESS
+10-21 09:02:28.624  8279  8279 I Choreographer: Skipped 181 frames!  The application may be doing too much work on its main thread.
+10-21 09:02:34.314   522  2161 W ActivityTaskManager: Force removing ActivityRecord{a3f65f0 u0 io.github.graviton94.carpediem/.MainActivity t41 f}}: app died, no saved state
+10-21 09:02:34.391   522   902 W ActivityTaskManager: callingPackage for (uid=2000, pid=8336) has no WPC
+10-21 09:02:35.121   522   544 W ActivityManager: setHasOverlayUi called on unknown pid: 8279
+10-21 09:02:35.269  8340  8340 W OpenGLRenderer: Unknown dataspace 0
+10-21 09:02:36.133  8340  8360 W OpenGLRenderer: Failed to initialize 101010-2 format, error = EGL_SUCCESS
+10-21 09:02:38.450  8340  8340 I Choreographer: Skipped 187 frames!  The application may be doing too much work on its main thread.
+10-21 09:02:43.043   522  2072 W ActivityTaskManager: Force removing ActivityRecord{f34902b u0 io.github.graviton94.carpediem/.MainActivity t42 f}}: app died, no saved state
+10-21 09:02:43.178   522  1775 W ActivityTaskManager: callingPackage for (uid=2000, pid=8399) has no WPC
+10-21 09:02:43.301   522   553 W ActivityManager: Slow operation: 83ms so far, now at startProcess: returned from zygote!
+10-21 09:02:43.304   522   553 W ActivityManager: Slow operation: 86ms so far, now at startProcess: done updating battery stats
+10-21 09:02:43.304   522   553 W ActivityManager: Slow operation: 86ms so far, now at startProcess: building log message
+10-21 09:02:43.304   522   553 W ActivityManager: Slow operation: 86ms so far, now at startProcess: starting to update pids map
+10-21 09:02:43.311   522   553 W ActivityManager: Slow operation: 93ms so far, now at startProcess: done updating pids map
+10-21 09:02:44.017   522   544 W ActivityManager: setHasOverlayUi called on unknown pid: 8340
+10-21 09:02:44.098  8402  8402 W OpenGLRenderer: Unknown dataspace 0
+10-21 09:02:44.412   522   544 W ActivityTaskManager: Launch timeout has expired, giving up wake lock!
+10-21 09:02:44.484  8402  8425 W OpenGLRenderer: Failed to initialize 101010-2 format, error = EGL_SUCCESS
+10-21 09:02:46.211  8402  8402 I Choreographer: Skipped 125 frames!  The application may be doing too much work on its main thread.
+10-21 09:02:50.679   522  1775 W ActivityTaskManager: Force removing ActivityRecord{7a021bb u0 io.github.graviton94.carpediem/.MainActivity t43 f}}: app died, no saved state
+10-21 09:02:50.799   522   910 W ActivityTaskManager: callingPackage for (uid=2000, pid=8468) has no WPC
+10-21 09:02:51.077   522   544 W ActivityManager: setHasOverlayUi called on unknown pid: 8402
+10-21 09:02:52.189  8472  8472 W OpenGLRenderer: Unknown dataspace 0
+10-21 09:02:53.055  8472  8492 W OpenGLRenderer: Failed to initialize 101010-2 format, error = EGL_SUCCESS
+10-21 09:02:55.609  8472  8472 I Choreographer: Skipped 201 frames!  The application may be doing too much work on its main thread.
+10-21 09:03:00.818   522   544 W ActivityTaskManager: Launch timeout has expired, giving up wake lock!
+10-21 09:03:01.417   522   910 W ActivityTaskManager: Force removing ActivityRecord{a52d058 u0 io.github.graviton94.carpediem/.MainActivity t44 f}}: app died, no saved state
+10-21 09:03:01.601   522  2078 W ActivityTaskManager: callingPackage for (uid=2000, pid=8530) has no WPC
+10-21 09:03:01.916   522   544 W ActivityManager: setHasOverlayUi called on unknown pid: 8472
+10-21 09:03:03.300  8536  8536 W OpenGLRenderer: Unknown dataspace 0
+10-21 09:03:03.305  8536  8536 I Choreographer: Skipped 32 frames!  The application may be doing too much work on its main thread.
+10-21 09:03:04.056  8536  8553 W OpenGLRenderer: Failed to initialize 101010-2 format, error = EGL_SUCCESS
+10-21 09:03:05.963  8536  8536 I Choreographer: Skipped 158 frames!  The application may be doing too much work on its main thread.
+10-21 09:03:11.619   522   544 W ActivityTaskManager: Launch timeout has expired, giving up wake lock!
+10-21 09:03:12.444   522  2078 W ActivityTaskManager: Force removing ActivityRecord{13f6c43 u0 io.github.graviton94.carpediem/.MainActivity t45 f}}: app died, no saved state
+10-21 09:03:12.637   522  2159 W ActivityTaskManager: callingPackage for (uid=2000, pid=8595) has no WPC
+10-21 09:03:13.022   522  2342 W ActivityManager: Slow operation: 85ms so far, now at attachApplicationLocked: immediately before bindApplication
+10-21 09:03:13.039   522  2342 W ActivityManager: Slow operation: 113ms so far, now at attachApplicationLocked: immediately after bindApplication
+10-21 09:03:13.039   522  2342 W ActivityManager: Slow operation: 113ms so far, now at attachApplicationLocked: after updateLruProcessLocked
+10-21 09:03:13.061   522   544 W ActivityManager: setHasOverlayUi called on unknown pid: 8536
+10-21 09:03:14.264  8601  8601 W OpenGLRenderer: Unknown dataspace 0
+10-21 09:03:15.014  8601  8620 W OpenGLRenderer: Failed to initialize 101010-2 format, error = EGL_SUCCESS
+10-21 09:03:17.428  8601  8601 I Choreographer: Skipped 186 frames!  The application may be doing too much work on its main thread.
+10-21 09:03:18.067  8601  8601 I Choreographer: Skipped 37 frames!  The application may be doing too much work on its main thread.
+10-21 09:03:23.661   522  2342 W ActivityTaskManager: Force removing ActivityRecord{f774c40 u0 io.github.graviton94.carpediem/.MainActivity t46 f}}: app died, no saved state
+10-21 09:03:23.883   522   595 W ActivityTaskManager: callingPackage for (uid=2000, pid=8656) has no WPC
+10-21 09:03:24.611   522   544 W ActivityManager: setHasOverlayUi called on unknown pid: 8601
+10-21 09:03:24.668  8660  8660 W OpenGLRenderer: Unknown dataspace 0
+10-21 09:03:25.117  8660  8681 W OpenGLRenderer: Failed to initialize 101010-2 format, error = EGL_SUCCESS
+10-21 09:03:27.615  8660  8660 I Choreographer: Skipped 175 frames!  The application may be doing too much work on its main thread.
+10-21 09:03:33.901   522   544 W ActivityTaskManager: Launch timeout has expired, giving up wake lock!
+10-21 09:03:34.238   522  2647 W ActivityTaskManager: Force removing ActivityRecord{6c6acd8 u0 io.github.graviton94.carpediem/.MainActivity t47 f}}: app died, no saved state
+10-21 09:03:34.421   522   910 W ActivityTaskManager: callingPackage for (uid=2000, pid=8720) has no WPC
+10-21 09:03:35.202   522   544 W ActivityManager: setHasOverlayUi called on unknown pid: 8660
+10-21 09:03:35.406  8725  8725 W OpenGLRenderer: Unknown dataspace 0
+10-21 09:03:36.352  8725  8744 W OpenGLRenderer: Failed to initialize 101010-2 format, error = EGL_SUCCESS
+10-21 09:03:38.348  8725  8725 I Choreographer: Skipped 172 frames!  The application may be doing too much work on its main thread.
+10-21 09:03:39.192  8725  8725 I Choreographer: Skipped 30 frames!  The application may be doing too much work on its main thread.
+10-21 09:03:40.020  8725  8725 I Choreographer: Skipped 49 frames!  The application may be doing too much work on its main thread.
+10-21 09:03:42.439  8725  8725 I Choreographer: Skipped 63 frames!  The application may be doing too much work on its main thread.
+10-21 09:02:29.511  8279  8286 I ton94.carpediem: Method exceeds compiler instruction limit: 22706 in void io.github.graviton94.carpediem.ui.garden.GardenScreensKt$GardenHome$19$1$1$2$3.invoke(androidx.compose.foundation.layout.BoxWithConstraintsScope, androidx.compose.runtime.Composer, int)
+10-21 09:02:31.235  8279  8317 D ProfileInstaller: Installing profile for io.github.graviton94.carpediem
+10-21 09:02:34.306   522  2161 I ActivityManager: Force stopping io.github.graviton94.carpediem appid=10192 user=0: from pid 8329
+10-21 09:02:34.313   522  2161 I ActivityManager: Killing 8279:io.github.graviton94.carpediem/u0a192 (adj 0): stop io.github.graviton94.carpediem due to from pid 8329
+10-21 09:02:34.314   522  2161 W ActivityTaskManager: Force removing ActivityRecord{a3f65f0 u0 io.github.graviton94.carpediem/.MainActivity t41 f}}: app died, no saved state
+10-21 09:02:34.316   837   868 V WindowManagerShell: Transition requested: android.os.BinderProxy@2a5a9fd TransitionRequestInfo { type = CLOSE, triggerTask = TaskInfo{userId=0 taskId=41 displayId=0 isRunning=false baseIntent=Intent { flg=0x10000000 cmp=io.github.graviton94.carpediem/.MainActivity } baseActivity=null topActivity=null origActivity=null realActivity=ComponentInfo{io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity} numActivities=0 lastActiveTime=504915 supportsMultiWindow=true resizeMode=1 isResizeable=true minWidth=-1 minHeight=-1 defaultMinSize=220 token=WCT{android.window.IWindowContainerToken$Stub$Proxy@102a6f2} topActivityType=1 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=-1 lastParentTaskIdBeforePip=-1 displayCutoutSafeInsets=null topActivityInfo=null launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=true isVisible=true isVisibleRequested=true isSleeping=false topActivityInSizeCompat=false topActivityEligibleForLetterboxEducation= false topActivityLetterboxed= false isFromDoubleTap= false topActivityLetterboxVerticalPosition= -1 topActivityLetterboxHorizontalPosition= -1 topActivityLetterboxWidth=-1 topActivityLetterboxHeight=-1 locusId=null displayAreaFeatureId=1 cameraCompatControlState=hidden}, remoteTransition = null, displayChange = null }
+10-21 09:02:34.340   522  1652 I ImeTracker: io.github.graviton94.carpediem:1df023ad: onRequestHide at ORIGIN_SERVER_HIDE_INPUT reason HIDE_REMOVE_CLIENT
+10-21 09:02:34.340   522  1652 I ImeTracker: io.github.graviton94.carpediem:1df023ad: onCancelled at PHASE_SERVER_SHOULD_HIDE
+10-21 09:02:34.344   522  2696 I WindowManager: WIN DEATH: Window{b5dce4f u0 io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity}
+10-21 09:02:34.345   522   902 V ActivityManager: Got obituary of 8279:io.github.graviton94.carpediem
+10-21 09:02:34.348   522  2696 W InputManager-JNI: Input channel object 'b5dce4f io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity (client)' was disposed without first being removed with the input manager!
+10-21 09:02:34.361  1044  1044 D CarrierSvcBindHelper: onHandleForceStop: [io.github.graviton94.carpediem]
+10-21 09:02:34.377   522   596 W WindowManager: Failed to deliver inset control state change to w=Window{b5dce4f u0 io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity EXITING}
+10-21 09:02:34.413   522   902 I ActivityTaskManager: Add Task{5adb769 #41 type=standard A=10192:io.github.graviton94.carpediem} to hidden list because adding Task{990ac88 #42 type=standard A=10192:io.github.graviton94.carpediem}
+10-21 09:02:34.428   522   902 I ActivityTaskManager: START u0 {flg=0x10000000 cmp=io.github.graviton94.carpediem/.MainActivity (has extras)} with LAUNCH_SINGLE_TOP from uid 2000 (BAL_ALLOW_PERMISSION) result code=0
+10-21 09:02:34.449  8340  8340 I ton94.carpediem: Late-enabling -Xcheck:jni
+10-21 09:02:34.464   522   553 I ActivityManager: Start proc 8340:io.github.graviton94.carpediem/u0a192 for next-top-activity {io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity}
+10-21 09:02:34.477  8340  8340 I ton94.carpediem: Using CollectorTypeCC GC.
+10-21 09:02:34.478  8340  8340 W ton94.carpediem: Unexpected CPU variant for x86: x86_64.
+10-21 09:02:34.478  8340  8340 W ton94.carpediem: Known variants: atom, sandybridge, silvermont, goldmont, goldmont-plus, tremont, kabylake, default
+10-21 09:02:34.484   522  2072 D CoreBackPreview: Window{f31f35d u0 Splash Screen io.github.graviton94.carpediem}: Setting back callback OnBackInvokedCallbackInfo{mCallback=android.window.IOnBackInvokedCallback$Stub$Proxy@e556cff, mPriority=0, mIsAnimationCallback=false}
+10-21 09:02:34.494   522   545 W WindowManager: Failed to deliver inset control state change to w=Window{b5dce4f u0 io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity EXITING}
+10-21 09:02:34.588   522   541 V WindowManager: Sent Transition #52 createdAt=10-21 09:02:34.315 via request=TransitionRequestInfo { type = CLOSE, triggerTask = TaskInfo{userId=0 taskId=41 displayId=0 isRunning=false baseIntent=Intent { flg=0x10000000 cmp=io.github.graviton94.carpediem/.MainActivity } baseActivity=null topActivity=null origActivity=null realActivity=ComponentInfo{io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity} numActivities=0 lastActiveTime=504915 supportsMultiWindow=true resizeMode=1 isResizeable=true minWidth=-1 minHeight=-1 defaultMinSize=220 token=WCT{RemoteToken{186c213 Task{5adb769 #41 type=standard A=10192:io.github.graviton94.carpediem}}} topActivityType=1 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=-1 lastParentTaskIdBeforePip=-1 displayCutoutSafeInsets=null topActivityInfo=null launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=true isVisible=true isVisibleRequested=true isSleeping=false topActivityInSizeCompat=false topActivityEligibleForLetterboxEducation= false topActivityLetterboxed= false isFromDoubleTap= false topActivityLetterboxVerticalPosition= -1 topActivityLetterboxHorizontalPosition= -1 topActivityLetterboxWidth=-1 topActivityLetterboxHeight=-1 locusId=null displayAreaFeatureId=1 cameraCompatControlState=hidden}, remoteTransition = null, displayChange = null }
+10-21 09:02:34.592   522   541 V WindowManager:     info={id=52 t=CLOSE f=0x0 trk=0 r=[0@Point(0, 0)] c=[{WCT{RemoteToken{364c991 Task{990ac88 #42 type=standard A=10192:io.github.graviton94.carpediem}}} m=OPEN f=MOVE_TO_TOP leash=Surface(name=Task=42)/@0xb1dda1b sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) d=0},{WCT{RemoteToken{186c213 Task{5adb769 #41 type=standard A=10192:io.github.graviton94.carpediem}}} m=CLOSE f=NONE leash=Surface(name=Task=41)/@0xa652a4d sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) d=0}]}
+10-21 09:02:34.598  8340  8340 W ziparchive: Unable to open '/data/app/~~8Ji74DawYEECMil5iMfkZQ==/io.github.graviton94.carpediem-VUpn1c0klg7R2fdTbKJuNg==/base.dm': No such file or directory
+10-21 09:02:34.598  8340  8340 W ziparchive: Unable to open '/data/app/~~8Ji74DawYEECMil5iMfkZQ==/io.github.graviton94.carpediem-VUpn1c0klg7R2fdTbKJuNg==/base.dm': No such file or directory
+10-21 09:02:34.857  8340  8340 D nativeloader: Configuring clns-6 for other apk /data/app/~~8Ji74DawYEECMil5iMfkZQ==/io.github.graviton94.carpediem-VUpn1c0klg7R2fdTbKJuNg==/base.apk. target_sdk_version=36, uses_libraries=, library_path=/data/app/~~8Ji74DawYEECMil5iMfkZQ==/io.github.graviton94.carpediem-VUpn1c0klg7R2fdTbKJuNg==/lib/x86_64:/data/app/~~8Ji74DawYEECMil5iMfkZQ==/io.github.graviton94.carpediem-VUpn1c0klg7R2fdTbKJuNg==/base.apk!/lib/x86_64, permitted_path=/data:/mnt/expand:/data/user/0/io.github.graviton94.carpediem
+10-21 09:02:34.878  8340  8340 V GraphicsEnvironment: ANGLE GameManagerService for io.github.graviton94.carpediem: false
+10-21 09:02:34.878  8340  8340 V GraphicsEnvironment: io.github.graviton94.carpediem is not listed in per-application setting
+10-21 09:02:35.114   522  1954 W WindowManager: Exception thrown during dispatchAppVisibility Window{b5dce4f u0 io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity EXITING}
+10-21 09:02:35.118   522  1954 W WindowManager: Failed to deliver inset control state change to w=Window{b5dce4f u0 io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity EXITING}
+10-21 09:02:35.432   522  1954 D CoreBackPreview: Window{d1a81fb u0 io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity}: Setting back callback OnBackInvokedCallbackInfo{mCallback=android.window.IOnBackInvokedCallback$Stub$Proxy@a4d4de2, mPriority=0, mIsAnimationCallback=false}
+10-21 09:02:36.023  8340  8347 I ton94.carpediem: Method exceeds compiler instruction limit: 22706 in void io.github.graviton94.carpediem.ui.garden.GardenScreensKt$GardenHome$19$1$1$2$3.invoke(androidx.compose.foundation.layout.BoxWithConstraintsScope, androidx.compose.runtime.Composer, int)
+10-21 09:02:37.277   522   541 W ziparchive: Unable to open '/data/app/~~8Ji74DawYEECMil5iMfkZQ==/io.github.graviton94.carpediem-VUpn1c0klg7R2fdTbKJuNg==/base.dm': No such file or directory
+10-21 09:02:37.279   522   541 I ActivityTaskManager: Displayed io.github.graviton94.carpediem/.MainActivity for user 0: +2s886ms
+10-21 09:02:37.908   522  1954 D CoreBackPreview: Window{f31f35d u0 Splash Screen io.github.graviton94.carpediem EXITING}: Setting back callback null
+10-21 09:02:37.908   522  2072 W InputManager-JNI: Input channel object 'f31f35d Splash Screen io.github.graviton94.carpediem (client)' was disposed without first being removed with the input manager!
+10-21 09:02:38.560   522  1954 I ImeTracker: io.github.graviton94.carpediem:83355e5d: onRequestHide at ORIGIN_SERVER_HIDE_INPUT reason HIDE_UNSPECIFIED_WINDOW
+10-21 09:02:38.561   522  1954 I ImeTracker: io.github.graviton94.carpediem:83355e5d: onCancelled at PHASE_SERVER_SHOULD_HIDE
+10-21 09:02:38.575  1502  1502 I GoogleInputMethodService: GoogleInputMethodService.onStartInput():1877 onStartInput(EditorInfo{inputType=0x0(NULL) imeOptions=0x0 privateImeOptions=null actionName=UNSPECIFIED actionLabel=null actionId=0 initialSelStart=-1 initialSelEnd=-1 initialCapsMode=0x0 hintText=null label=null packageName=io.github.graviton94.carpediem fieldId=0 fieldName=null extras=null}, false)
+10-21 09:02:38.823  8340  8347 I ton94.carpediem: Method exceeds compiler instruction limit: 22706 in void io.github.graviton94.carpediem.ui.garden.GardenScreensKt$GardenHome$19$1$1$2$3.invoke(androidx.compose.foundation.layout.BoxWithConstraintsScope, androidx.compose.runtime.Composer, int)
+10-21 09:02:38.852   522   541 I ActivityTaskManager: Fully drawn io.github.graviton94.carpediem/.MainActivity: +4s462ms
+10-21 09:02:38.852   522   541 W ziparchive: Unable to open '/data/app/~~8Ji74DawYEECMil5iMfkZQ==/io.github.graviton94.carpediem-VUpn1c0klg7R2fdTbKJuNg==/base.dm': No such file or directory
+10-21 09:02:39.991  8340  8373 W ton94.carpediem: Verification of android.graphics.Bitmap io.github.graviton94.carpediem.share.ShareCards.year(android.content.Context, io.github.graviton94.carpediem.core.ConstellationBook, java.util.List, long, boolean, java.time.LocalDate, java.lang.String, java.lang.String) took 172.666ms (5965.26 bytecodes/s) (22240B approximate peak alloc)
+10-21 09:02:40.567  8340  8379 D ProfileInstaller: Installing profile for io.github.graviton94.carpediem
+10-21 09:02:43.038   522  2072 I ActivityManager: Force stopping io.github.graviton94.carpediem appid=10192 user=0: from pid 8391
+10-21 09:02:43.042   522  2072 I ActivityManager: Killing 8340:io.github.graviton94.carpediem/u0a192 (adj 0): stop io.github.graviton94.carpediem due to from pid 8391
+10-21 09:02:43.043   522  2072 W ActivityTaskManager: Force removing ActivityRecord{f34902b u0 io.github.graviton94.carpediem/.MainActivity t42 f}}: app died, no saved state
+10-21 09:02:43.044   837   868 V WindowManagerShell: Transition requested: android.os.BinderProxy@f028daa TransitionRequestInfo { type = CLOSE, triggerTask = TaskInfo{userId=0 taskId=42 displayId=0 isRunning=false baseIntent=Intent { flg=0x10000000 cmp=io.github.graviton94.carpediem/.MainActivity } baseActivity=null topActivity=null origActivity=null realActivity=ComponentInfo{io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity} numActivities=0 lastActiveTime=515107 supportsMultiWindow=true resizeMode=1 isResizeable=true minWidth=-1 minHeight=-1 defaultMinSize=220 token=WCT{android.window.IWindowContainerToken$Stub$Proxy@6bc4d9b} topActivityType=1 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=-1 lastParentTaskIdBeforePip=-1 displayCutoutSafeInsets=null topActivityInfo=null launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=true isVisible=true isVisibleRequested=true isSleeping=false topActivityInSizeCompat=false topActivityEligibleForLetterboxEducation= false topActivityLetterboxed= false isFromDoubleTap= false topActivityLetterboxVerticalPosition= -1 topActivityLetterboxHorizontalPosition= -1 topActivityLetterboxWidth=-1 topActivityLetterboxHeight=-1 locusId=null displayAreaFeatureId=1 cameraCompatControlState=hidden}, remoteTransition = null, displayChange = null }
+10-21 09:02:43.068   522   595 I ImeTracker: io.github.graviton94.carpediem:de4fec89: onRequestHide at ORIGIN_SERVER_HIDE_INPUT reason HIDE_REMOVE_CLIENT
+10-21 09:02:43.069   522   595 I ImeTracker: io.github.graviton94.carpediem:de4fec89: onCancelled at PHASE_SERVER_SHOULD_HIDE
+10-21 09:02:43.075   522  2078 I WindowManager: WIN DEATH: Window{d1a81fb u0 io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity}
+10-21 09:02:43.075   522  2078 W InputManager-JNI: Input channel object 'd1a81fb io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity (client)' was disposed without first being removed with the input manager!
+10-21 09:02:43.077   522  1775 V ActivityManager: Got obituary of 8340:io.github.graviton94.carpediem
+10-21 09:02:43.081  1044  1044 D CarrierSvcBindHelper: onHandleForceStop: [io.github.graviton94.carpediem]
+10-21 09:02:43.082   522  2078 W WindowManager: Failed to deliver inset control state change to w=Window{d1a81fb u0 io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity EXITING}
+10-21 09:02:43.190   522  1775 I ActivityTaskManager: Add Task{990ac88 #42 type=standard A=10192:io.github.graviton94.carpediem} to hidden list because adding Task{b1786d8 #43 type=standard A=10192:io.github.graviton94.carpediem}
+10-21 09:02:43.217   522  1775 I ActivityTaskManager: START u0 {flg=0x10000000 cmp=io.github.graviton94.carpediem/.MainActivity (has extras)} with LAUNCH_SINGLE_TOP from uid 2000 (BAL_ALLOW_PERMISSION) result code=0
+10-21 09:02:43.225   522  2647 D CoreBackPreview: Window{7ea3884 u0 Splash Screen io.github.graviton94.carpediem}: Setting back callback OnBackInvokedCallbackInfo{mCallback=android.window.IOnBackInvokedCallback$Stub$Proxy@474aca2, mPriority=0, mIsAnimationCallback=false}
+10-21 09:02:43.304   522   553 I ActivityManager: Start proc 8402:io.github.graviton94.carpediem/u0a192 for next-top-activity {io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity}
+10-21 09:02:43.324  8402  8402 I ton94.carpediem: Late-enabling -Xcheck:jni
+10-21 09:02:43.338  8402  8402 I ton94.carpediem: Using CollectorTypeCC GC.
+10-21 09:02:43.339  8402  8402 W ton94.carpediem: Unexpected CPU variant for x86: x86_64.
+10-21 09:02:43.339  8402  8402 W ton94.carpediem: Known variants: atom, sandybridge, silvermont, goldmont, goldmont-plus, tremont, kabylake, default
+10-21 09:02:43.396   522   541 V WindowManager: Sent Transition #53 createdAt=10-21 09:02:43.043 via request=TransitionRequestInfo { type = CLOSE, triggerTask = TaskInfo{userId=0 taskId=42 displayId=0 isRunning=false baseIntent=Intent { flg=0x10000000 cmp=io.github.graviton94.carpediem/.MainActivity } baseActivity=null topActivity=null origActivity=null realActivity=ComponentInfo{io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity} numActivities=0 lastActiveTime=515107 supportsMultiWindow=true resizeMode=1 isResizeable=true minWidth=-1 minHeight=-1 defaultMinSize=220 token=WCT{RemoteToken{364c991 Task{990ac88 #42 type=standard A=10192:io.github.graviton94.carpediem}}} topActivityType=1 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=-1 lastParentTaskIdBeforePip=-1 displayCutoutSafeInsets=null topActivityInfo=null launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=true isVisible=true isVisibleRequested=true isSleeping=false topActivityInSizeCompat=false topActivityEligibleForLetterboxEducation= false topActivityLetterboxed= false isFromDoubleTap= false topActivityLetterboxVerticalPosition= -1 topActivityLetterboxHorizontalPosition= -1 topActivityLetterboxWidth=-1 topActivityLetterboxHeight=-1 locusId=null displayAreaFeatureId=1 cameraCompatControlState=hidden}, remoteTransition = null, displayChange = null }
+10-21 09:02:43.396   522   541 V WindowManager:     info={id=53 t=CLOSE f=0x0 trk=0 r=[0@Point(0, 0)] c=[{WCT{RemoteToken{8a62fc6 Task{b1786d8 #43 type=standard A=10192:io.github.graviton94.carpediem}}} m=OPEN f=MOVE_TO_TOP leash=Surface(name=Task=43)/@0xa665608 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) d=0},{WCT{RemoteToken{364c991 Task{990ac88 #42 type=standard A=10192:io.github.graviton94.carpediem}}} m=CLOSE f=NONE leash=Surface(name=Task=42)/@0xb1dda1b sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) d=0},{null m=TO_FRONT f=IS_WALLPAPER leash=Surface(name=WallpaperWindowToken{a107e03 token=android.os.Binder@2d11eb2})/@0xd923a93 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) d=0}]}
+10-21 09:02:43.400  8402  8402 W ziparchive: Unable to open '/data/app/~~8Ji74DawYEECMil5iMfkZQ==/io.github.graviton94.carpediem-VUpn1c0klg7R2fdTbKJuNg==/base.dm': No such file or directory
+10-21 09:02:43.400  8402  8402 W ziparchive: Unable to open '/data/app/~~8Ji74DawYEECMil5iMfkZQ==/io.github.graviton94.carpediem-VUpn1c0klg7R2fdTbKJuNg==/base.dm': No such file or directory
+10-21 09:02:43.408   522   545 W WindowManager: Failed to deliver inset control state change to w=Window{d1a81fb u0 io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity EXITING}
+10-21 09:02:43.710  8402  8402 D nativeloader: Configuring clns-6 for other apk /data/app/~~8Ji74DawYEECMil5iMfkZQ==/io.github.graviton94.carpediem-VUpn1c0klg7R2fdTbKJuNg==/base.apk. target_sdk_version=36, uses_libraries=, library_path=/data/app/~~8Ji74DawYEECMil5iMfkZQ==/io.github.graviton94.carpediem-VUpn1c0klg7R2fdTbKJuNg==/lib/x86_64:/data/app/~~8Ji74DawYEECMil5iMfkZQ==/io.github.graviton94.carpediem-VUpn1c0klg7R2fdTbKJuNg==/base.apk!/lib/x86_64, permitted_path=/data:/mnt/expand:/data/user/0/io.github.graviton94.carpediem
+10-21 09:02:43.742  8402  8402 V GraphicsEnvironment: ANGLE GameManagerService for io.github.graviton94.carpediem: false
+10-21 09:02:43.742  8402  8402 V GraphicsEnvironment: io.github.graviton94.carpediem is not listed in per-application setting
+10-21 09:02:43.993   522   910 W WindowManager: Exception thrown during dispatchAppVisibility Window{d1a81fb u0 io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity EXITING}
+10-21 09:02:44.000   522   910 W WindowManager: Failed to deliver inset control state change to w=Window{d1a81fb u0 io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity EXITING}
+10-21 09:02:44.203   522   910 D CoreBackPreview: Window{63e16fe u0 io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity}: Setting back callback OnBackInvokedCallbackInfo{mCallback=android.window.IOnBackInvokedCallback$Stub$Proxy@c6c07d6, mPriority=0, mIsAnimationCallback=false}
+10-21 09:02:44.459  8402  8411 I ton94.carpediem: Method exceeds compiler instruction limit: 22706 in void io.github.graviton94.carpediem.ui.garden.GardenScreensKt$GardenHome$19$1$1$2$3.invoke(androidx.compose.foundation.layout.BoxWithConstraintsScope, androidx.compose.runtime.Composer, int)
+10-21 09:02:45.513   522   541 W ziparchive: Unable to open '/data/app/~~8Ji74DawYEECMil5iMfkZQ==/io.github.graviton94.carpediem-VUpn1c0klg7R2fdTbKJuNg==/base.dm': No such file or directory
+10-21 09:02:45.516   522   541 I ActivityTaskManager: Displayed io.github.graviton94.carpediem/.MainActivity for user 0: +2s338ms
+10-21 09:02:46.001   522  1775 D CoreBackPreview: Window{7ea3884 u0 Splash Screen io.github.graviton94.carpediem EXITING}: Setting back callback null
+10-21 09:02:46.002   522  1775 W InputManager-JNI: Input channel object '7ea3884 Splash Screen io.github.graviton94.carpediem (client)' was disposed without first being removed with the input manager!
+10-21 09:02:46.280   522  2078 I ImeTracker: io.github.graviton94.carpediem:93103daf: onRequestHide at ORIGIN_SERVER_HIDE_INPUT reason HIDE_UNSPECIFIED_WINDOW
+10-21 09:02:46.280   522  2078 I ImeTracker: io.github.graviton94.carpediem:93103daf: onCancelled at PHASE_SERVER_SHOULD_HIDE
+10-21 09:02:46.299  1502  1502 I GoogleInputMethodService: GoogleInputMethodService.onStartInput():1877 onStartInput(EditorInfo{inputType=0x0(NULL) imeOptions=0x0 privateImeOptions=null actionName=UNSPECIFIED actionLabel=null actionId=0 initialSelStart=-1 initialSelEnd=-1 initialCapsMode=0x0 hintText=null label=null packageName=io.github.graviton94.carpediem fieldId=0 fieldName=null extras=null}, false)
+10-21 09:02:46.641   522   541 I ActivityTaskManager: Fully drawn io.github.graviton94.carpediem/.MainActivity: +3s467ms
+10-21 09:02:46.641   522   541 W ziparchive: Unable to open '/data/app/~~8Ji74DawYEECMil5iMfkZQ==/io.github.graviton94.carpediem-VUpn1c0klg7R2fdTbKJuNg==/base.dm': No such file or directory
+10-21 09:02:46.709  8402  8411 I ton94.carpediem: Method exceeds compiler instruction limit: 22706 in void io.github.graviton94.carpediem.ui.garden.GardenScreensKt$GardenHome$19$1$1$2$3.invoke(androidx.compose.foundation.layout.BoxWithConstraintsScope, androidx.compose.runtime.Composer, int)
+10-21 09:02:50.127  8402  8458 D ProfileInstaller: Installing profile for io.github.graviton94.carpediem
+10-21 09:02:50.676   522  1775 I ActivityManager: Force stopping io.github.graviton94.carpediem appid=10192 user=0: from pid 8461
+10-21 09:02:50.678   522  1775 I ActivityManager: Killing 8402:io.github.graviton94.carpediem/u0a192 (adj 0): stop io.github.graviton94.carpediem due to from pid 8461
+10-21 09:02:50.679   522  1775 W ActivityTaskManager: Force removing ActivityRecord{7a021bb u0 io.github.graviton94.carpediem/.MainActivity t43 f}}: app died, no saved state
+10-21 09:02:50.680   837   868 V WindowManagerShell: Transition requested: android.os.BinderProxy@631cbd6 TransitionRequestInfo { type = CLOSE, triggerTask = TaskInfo{userId=0 taskId=43 displayId=0 isRunning=false baseIntent=Intent { flg=0x10000000 cmp=io.github.graviton94.carpediem/.MainActivity } baseActivity=null topActivity=null origActivity=null realActivity=ComponentInfo{io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity} numActivities=0 lastActiveTime=523925 supportsMultiWindow=true resizeMode=1 isResizeable=true minWidth=-1 minHeight=-1 defaultMinSize=220 token=WCT{android.window.IWindowContainerToken$Stub$Proxy@cd32e57} topActivityType=1 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=-1 lastParentTaskIdBeforePip=-1 displayCutoutSafeInsets=null topActivityInfo=null launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=true isVisible=true isVisibleRequested=true isSleeping=false topActivityInSizeCompat=false topActivityEligibleForLetterboxEducation= false topActivityLetterboxed= false isFromDoubleTap= false topActivityLetterboxVerticalPosition= -1 topActivityLetterboxHorizontalPosition= -1 topActivityLetterboxWidth=-1 topActivityLetterboxHeight=-1 locusId=null displayAreaFeatureId=1 cameraCompatControlState=hidden}, remoteTransition = null, displayChange = null }
+10-21 09:02:50.728  1044  1044 D CarrierSvcBindHelper: onHandleForceStop: [io.github.graviton94.carpediem]
+10-21 09:02:50.730   522   595 V ActivityManager: Got obituary of 8402:io.github.graviton94.carpediem
+10-21 09:02:50.731   522  2342 I ImeTracker: io.github.graviton94.carpediem:8cdcdca5: onRequestHide at ORIGIN_SERVER_HIDE_INPUT reason HIDE_REMOVE_CLIENT
+10-21 09:02:50.732   522  2342 I ImeTracker: io.github.graviton94.carpediem:8cdcdca5: onCancelled at PHASE_SERVER_SHOULD_HIDE
+10-21 09:02:50.736   522   910 W WindowManager: Failed to deliver inset control state change to w=Window{63e16fe u0 io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity}
+10-21 09:02:50.741   522  2077 I WindowManager: WIN DEATH: Window{63e16fe u0 io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity}
+10-21 09:02:50.741   522  2077 W InputManager-JNI: Input channel object '63e16fe io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity (client)' was disposed without first being removed with the input manager!
+10-21 09:02:50.772   522   541 V WindowManager: Sent Transition #54 createdAt=10-21 09:02:50.679 via request=TransitionRequestInfo { type = CLOSE, triggerTask = TaskInfo{userId=0 taskId=43 displayId=0 isRunning=false baseIntent=Intent { flg=0x10000000 cmp=io.github.graviton94.carpediem/.MainActivity } baseActivity=null topActivity=null origActivity=null realActivity=ComponentInfo{io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity} numActivities=0 lastActiveTime=523925 supportsMultiWindow=true resizeMode=1 isResizeable=true minWidth=-1 minHeight=-1 defaultMinSize=220 token=WCT{RemoteToken{8a62fc6 Task{b1786d8 #43 type=standard A=10192:io.github.graviton94.carpediem}}} topActivityType=1 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=-1 lastParentTaskIdBeforePip=-1 displayCutoutSafeInsets=null topActivityInfo=null launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=true isVisible=true isVisibleRequested=true isSleeping=false topActivityInSizeCompat=false topActivityEligibleForLetterboxEducation= false topActivityLetterboxed= false isFromDoubleTap= false topActivityLetterboxVerticalPosition= -1 topActivityLetterboxHorizontalPosition= -1 topActivityLetterboxWidth=-1 topActivityLetterboxHeight=-1 locusId=null displayAreaFeatureId=1 cameraCompatControlState=hidden}, remoteTransition = null, displayChange = null }
+10-21 09:02:50.772   522   541 V WindowManager:     info={id=54 t=CLOSE f=0x0 trk=0 r=[0@Point(0, 0)] c=[{WCT{RemoteToken{8a62fc6 Task{b1786d8 #43 type=standard A=10192:io.github.graviton94.carpediem}}} m=CLOSE f=NONE leash=Surface(name=Task=43)/@0xa665608 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) d=0},{WCT{RemoteToken{c08ccae Task{f19253c #1 type=home}}} m=TO_FRONT f=SHOW_WALLPAPER leash=Surface(name=Task=1)/@0x964fd84 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) d=0},{null m=TO_FRONT f=IS_WALLPAPER leash=Surface(name=WallpaperWindowToken{a107e03 token=android.os.Binder@2d11eb2})/@0xd923a93 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) d=0}]}
+10-21 09:02:50.815   522   910 I ActivityTaskManager: Add Task{b1786d8 #43 type=standard A=10192:io.github.graviton94.carpediem} to hidden list because adding Task{ccdb5b1 #44 type=standard A=10192:io.github.graviton94.carpediem}
+10-21 09:02:50.817   837   868 V WindowManagerShell: Transition requested: android.os.BinderProxy@555d512 TransitionRequestInfo { type = OPEN, triggerTask = TaskInfo{userId=0 taskId=44 displayId=0 isRunning=true baseIntent=Intent { flg=0x10000000 cmp=io.github.graviton94.carpediem/.MainActivity } baseActivity=ComponentInfo{io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity} topActivity=ComponentInfo{io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity} origActivity=null realActivity=ComponentInfo{io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity} numActivities=1 lastActiveTime=531380 supportsMultiWindow=true resizeMode=1 isResizeable=true minWidth=-1 minHeight=-1 defaultMinSize=220 token=WCT{android.window.IWindowContainerToken$Stub$Proxy@a6364e3} topActivityType=1 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=-1 lastParentTaskIdBeforePip=-1 displayCutoutSafeInsets=Rect(0, 128 - 0, 0) topActivityInfo=ActivityInfo{fa14ee0 io.github.graviton94.carpediem.MainActivity} launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=false isVisible=false isVisibleRequested=false isSleeping=false topActivityInSizeCompat=false topActivityEligibleForLetterboxEducation= false topActivityLetterboxed= false isFromDoubleTap= false topActivityLetterboxVerticalPosition= -1 topActivityLetterboxHorizontalPosition= -1 topActivityLetterboxWidth=-1 topActivityLetterboxHeight=-1 locusId=null displayAreaFeatureId=1 cameraCompatControlState=hidden}, remoteTransition = null, displayChange = null }
+10-21 09:02:50.818   522   910 I ActivityTaskManager: START u0 {flg=0x10000000 cmp=io.github.graviton94.carpediem/.MainActivity (has extras)} with LAUNCH_SINGLE_TOP from uid 2000 (BAL_ALLOW_PERMISSION) result code=0
+10-21 09:02:50.834   522   553 I ActivityManager: Start proc 8472:io.github.graviton94.carpediem/u0a192 for next-top-activity {io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity}
+10-21 09:02:50.839   522   596 W WindowManager: Failed to deliver inset control state change to w=Window{63e16fe u0 io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity EXITING}
+10-21 09:02:50.936   522  1775 D CoreBackPreview: Window{60ffcb3 u0 Splash Screen io.github.graviton94.carpediem}: Setting back callback OnBackInvokedCallbackInfo{mCallback=android.window.IOnBackInvokedCallback$Stub$Proxy@960bba5, mPriority=0, mIsAnimationCallback=false}
+10-21 09:02:51.066   522   541 V WindowManager: Sent Transition #55 createdAt=10-21 09:02:50.808 via request=TransitionRequestInfo { type = OPEN, triggerTask = TaskInfo{userId=0 taskId=44 displayId=0 isRunning=true baseIntent=Intent { flg=0x10000000 cmp=io.github.graviton94.carpediem/.MainActivity } baseActivity=ComponentInfo{io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity} topActivity=ComponentInfo{io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity} origActivity=null realActivity=ComponentInfo{io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity} numActivities=1 lastActiveTime=531380 supportsMultiWindow=true resizeMode=1 isResizeable=true minWidth=-1 minHeight=-1 defaultMinSize=220 token=WCT{RemoteToken{1c6ff88 Task{ccdb5b1 #44 type=standard A=10192:io.github.graviton94.carpediem}}} topActivityType=1 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=-1 lastParentTaskIdBeforePip=-1 displayCutoutSafeInsets=Rect(0, 128 - 0, 0) topActivityInfo=ActivityInfo{ec66d21 io.github.graviton94.carpediem.MainActivity} launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=false isVisible=false isVisibleRequested=false isSleeping=false topActivityInSizeCompat=false topActivityEligibleForLetterboxEducation= false topActivityLetterboxed= false isFromDoubleTap= false topActivityLetterboxVerticalPosition= -1 topActivityLetterboxHorizontalPosition= -1 topActivityLetterboxWidth=-1 topActivityLetterboxHeight=-1 locusId=null displayAreaFeatureId=1 cameraCompatControlState=hidden}, remoteTransition = null, displayChange = null }
+10-21 09:02:51.072   522   541 V WindowManager:     info={id=55 t=OPEN f=0x0 trk=0 r=[0@Point(0, 0)] c=[{WCT{RemoteToken{1c6ff88 Task{ccdb5b1 #44 type=standard A=10192:io.github.graviton94.carpediem}}} m=OPEN f=NONE leash=Surface(name=Task=44)/@0xdfa5b7a sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) d=0},{WCT{RemoteToken{c08ccae Task{f19253c #1 type=home}}} m=TO_BACK f=SHOW_WALLPAPER leash=Surface(name=Task=1)/@0x964fd84 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) d=0}]}
+10-21 09:02:51.072   522  1775 W WindowManager: Exception thrown during dispatchAppVisibility Window{63e16fe u0 io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity EXITING}
+10-21 09:02:51.099  8472  8472 I ton94.carpediem: Late-enabling -Xcheck:jni
+10-21 09:02:51.140  8472  8472 I ton94.carpediem: Using CollectorTypeCC GC.
+10-21 09:02:51.140  8472  8472 W ton94.carpediem: Unexpected CPU variant for x86: x86_64.
+10-21 09:02:51.140  8472  8472 W ton94.carpediem: Known variants: atom, sandybridge, silvermont, goldmont, goldmont-plus, tremont, kabylake, default
+10-21 09:02:51.366  8472  8472 W ziparchive: Unable to open '/data/app/~~8Ji74DawYEECMil5iMfkZQ==/io.github.graviton94.carpediem-VUpn1c0klg7R2fdTbKJuNg==/base.dm': No such file or directory
+10-21 09:02:51.367  8472  8472 W ziparchive: Unable to open '/data/app/~~8Ji74DawYEECMil5iMfkZQ==/io.github.graviton94.carpediem-VUpn1c0klg7R2fdTbKJuNg==/base.dm': No such file or directory
+10-21 09:02:51.805  8472  8472 D nativeloader: Configuring clns-6 for other apk /data/app/~~8Ji74DawYEECMil5iMfkZQ==/io.github.graviton94.carpediem-VUpn1c0klg7R2fdTbKJuNg==/base.apk. target_sdk_version=36, uses_libraries=, library_path=/data/app/~~8Ji74DawYEECMil5iMfkZQ==/io.github.graviton94.carpediem-VUpn1c0klg7R2fdTbKJuNg==/lib/x86_64:/data/app/~~8Ji74DawYEECMil5iMfkZQ==/io.github.graviton94.carpediem-VUpn1c0klg7R2fdTbKJuNg==/base.apk!/lib/x86_64, permitted_path=/data:/mnt/expand:/data/user/0/io.github.graviton94.carpediem
+10-21 09:02:51.827  8472  8472 V GraphicsEnvironment: ANGLE GameManagerService for io.github.graviton94.carpediem: false
+10-21 09:02:51.827  8472  8472 V GraphicsEnvironment: io.github.graviton94.carpediem is not listed in per-application setting
+10-21 09:02:52.411   522   596 D CoreBackPreview: Window{7d8e1e8 u0 io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity}: Setting back callback OnBackInvokedCallbackInfo{mCallback=android.window.IOnBackInvokedCallback$Stub$Proxy@438af32, mPriority=0, mIsAnimationCallback=false}
+10-21 09:02:53.012  8472  8481 I ton94.carpediem: Method exceeds compiler instruction limit: 22706 in void io.github.graviton94.carpediem.ui.garden.GardenScreensKt$GardenHome$19$1$1$2$3.invoke(androidx.compose.foundation.layout.BoxWithConstraintsScope, androidx.compose.runtime.Composer, int)
+10-21 09:02:54.176   522   541 W ziparchive: Unable to open '/data/app/~~8Ji74DawYEECMil5iMfkZQ==/io.github.graviton94.carpediem-VUpn1c0klg7R2fdTbKJuNg==/base.dm': No such file or directory
+10-21 09:02:54.177   522   541 I ActivityTaskManager: Displayed io.github.graviton94.carpediem/.MainActivity for user 0: +3s376ms
+10-21 09:02:54.671   522   596 D CoreBackPreview: Window{60ffcb3 u0 Splash Screen io.github.graviton94.carpediem EXITING}: Setting back callback null
+10-21 09:02:54.672   522   596 W InputManager-JNI: Input channel object '60ffcb3 Splash Screen io.github.graviton94.carpediem (client)' was disposed without first being removed with the input manager!
+10-21 09:02:55.663   522  1775 I ImeTracker: io.github.graviton94.carpediem:1a22e337: onRequestHide at ORIGIN_SERVER_HIDE_INPUT reason HIDE_UNSPECIFIED_WINDOW
+10-21 09:02:55.663   522  1775 I ImeTracker: io.github.graviton94.carpediem:1a22e337: onCancelled at PHASE_SERVER_SHOULD_HIDE
+10-21 09:02:55.697  1502  1502 I GoogleInputMethodService: GoogleInputMethodService.onStartInput():1877 onStartInput(EditorInfo{inputType=0x0(NULL) imeOptions=0x0 privateImeOptions=null actionName=UNSPECIFIED actionLabel=null actionId=0 initialSelStart=-1 initialSelEnd=-1 initialCapsMode=0x0 hintText=null label=null packageName=io.github.graviton94.carpediem fieldId=0 fieldName=null extras=null}, false)
+10-21 09:02:55.784  8472  8481 I ton94.carpediem: Method exceeds compiler instruction limit: 22706 in void io.github.graviton94.carpediem.ui.garden.GardenScreensKt$GardenHome$19$1$1$2$3.invoke(androidx.compose.foundation.layout.BoxWithConstraintsScope, androidx.compose.runtime.Composer, int)
+10-21 09:02:55.882   522   541 I ActivityTaskManager: Fully drawn io.github.graviton94.carpediem/.MainActivity: +5s83ms
+10-21 09:02:55.883   522   541 W ziparchive: Unable to open '/data/app/~~8Ji74DawYEECMil5iMfkZQ==/io.github.graviton94.carpediem-VUpn1c0klg7R2fdTbKJuNg==/base.dm': No such file or directory
+10-21 09:02:58.198  8472  8511 D ProfileInstaller: Installing profile for io.github.graviton94.carpediem
+10-21 09:03:01.411   522   910 I ActivityManager: Force stopping io.github.graviton94.carpediem appid=10192 user=0: from pid 8523
+10-21 09:03:01.416   522   910 I ActivityManager: Killing 8472:io.github.graviton94.carpediem/u0a192 (adj 0): stop io.github.graviton94.carpediem due to from pid 8523
+10-21 09:03:01.417   522   910 W ActivityTaskManager: Force removing ActivityRecord{a52d058 u0 io.github.graviton94.carpediem/.MainActivity t44 f}}: app died, no saved state
+10-21 09:03:01.419   837   868 V WindowManagerShell: Transition requested: android.os.BinderProxy@ad4e582 TransitionRequestInfo { type = CLOSE, triggerTask = TaskInfo{userId=0 taskId=44 displayId=0 isRunning=false baseIntent=Intent { flg=0x10000000 cmp=io.github.graviton94.carpediem/.MainActivity } baseActivity=null topActivity=null origActivity=null realActivity=ComponentInfo{io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity} numActivities=0 lastActiveTime=531784 supportsMultiWindow=true resizeMode=1 isResizeable=true minWidth=-1 minHeight=-1 defaultMinSize=220 token=WCT{android.window.IWindowContainerToken$Stub$Proxy@f1f8493} topActivityType=1 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=-1 lastParentTaskIdBeforePip=-1 displayCutoutSafeInsets=null topActivityInfo=null launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=true isVisible=true isVisibleRequested=true isSleeping=false topActivityInSizeCompat=false topActivityEligibleForLetterboxEducation= false topActivityLetterboxed= false isFromDoubleTap= false topActivityLetterboxVerticalPosition= -1 topActivityLetterboxHorizontalPosition= -1 topActivityLetterboxWidth=-1 topActivityLetterboxHeight=-1 locusId=null displayAreaFeatureId=1 cameraCompatControlState=hidden}, remoteTransition = null, displayChange = null }
+10-21 09:03:01.447  1044  1044 D CarrierSvcBindHelper: onHandleForceStop: [io.github.graviton94.carpediem]
+10-21 09:03:01.479   522   545 W WindowManager: Failed to deliver inset control state change to w=Window{7d8e1e8 u0 io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity}
+10-21 09:03:01.481   522   910 V ActivityManager: Got obituary of 8472:io.github.graviton94.carpediem
+10-21 09:03:01.484   522  2078 I ImeTracker: io.github.graviton94.carpediem:ba744d6b: onRequestHide at ORIGIN_SERVER_HIDE_INPUT reason HIDE_REMOVE_CLIENT
+10-21 09:03:01.496   522  2078 I ImeTracker: io.github.graviton94.carpediem:ba744d6b: onCancelled at PHASE_SERVER_SHOULD_HIDE
+10-21 09:03:01.500   522  2342 I WindowManager: WIN DEATH: Window{7d8e1e8 u0 io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity}
+10-21 09:03:01.500   522  2342 W InputManager-JNI: Input channel object '7d8e1e8 io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity (client)' was disposed without first being removed with the input manager!
+10-21 09:03:01.598   522   541 V WindowManager: Sent Transition #56 createdAt=10-21 09:03:01.417 via request=TransitionRequestInfo { type = CLOSE, triggerTask = TaskInfo{userId=0 taskId=44 displayId=0 isRunning=false baseIntent=Intent { flg=0x10000000 cmp=io.github.graviton94.carpediem/.MainActivity } baseActivity=null topActivity=null origActivity=null realActivity=ComponentInfo{io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity} numActivities=0 lastActiveTime=531784 supportsMultiWindow=true resizeMode=1 isResizeable=true minWidth=-1 minHeight=-1 defaultMinSize=220 token=WCT{RemoteToken{1c6ff88 Task{ccdb5b1 #44 type=standard A=10192:io.github.graviton94.carpediem}}} topActivityType=1 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=-1 lastParentTaskIdBeforePip=-1 displayCutoutSafeInsets=null topActivityInfo=null launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=true isVisible=true isVisibleRequested=true isSleeping=false topActivityInSizeCompat=false topActivityEligibleForLetterboxEducation= false topActivityLetterboxed= false isFromDoubleTap= false topActivityLetterboxVerticalPosition= -1 topActivityLetterboxHorizontalPosition= -1 topActivityLetterboxWidth=-1 topActivityLetterboxHeight=-1 locusId=null displayAreaFeatureId=1 cameraCompatControlState=hidden}, remoteTransition = null, displayChange = null }
+10-21 09:03:01.601   522   541 V WindowManager:     info={id=56 t=CLOSE f=0x0 trk=0 r=[0@Point(0, 0)] c=[{WCT{RemoteToken{1c6ff88 Task{ccdb5b1 #44 type=standard A=10192:io.github.graviton94.carpediem}}} m=CLOSE f=NONE leash=Surface(name=Task=44)/@0xdfa5b7a sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) d=0},{WCT{RemoteToken{c08ccae Task{f19253c #1 type=home}}} m=TO_FRONT f=SHOW_WALLPAPER leash=Surface(name=Task=1)/@0x964fd84 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) d=0},{null m=TO_FRONT f=IS_WALLPAPER leash=Surface(name=WallpaperWindowToken{a107e03 token=android.os.Binder@2d11eb2})/@0xd923a93 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) d=0}]}
+10-21 09:03:01.616   522  2078 I ActivityTaskManager: Add Task{ccdb5b1 #44 type=standard A=10192:io.github.graviton94.carpediem} to hidden list because adding Task{9cfb2c0 #45 type=standard A=10192:io.github.graviton94.carpediem}
+10-21 09:03:01.617   837   868 V WindowManagerShell: Transition requested: android.os.BinderProxy@6b2aa00 TransitionRequestInfo { type = OPEN, triggerTask = TaskInfo{userId=0 taskId=45 displayId=0 isRunning=true baseIntent=Intent { flg=0x10000000 cmp=io.github.graviton94.carpediem/.MainActivity } baseActivity=ComponentInfo{io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity} topActivity=ComponentInfo{io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity} origActivity=null realActivity=ComponentInfo{io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity} numActivities=1 lastActiveTime=542181 supportsMultiWindow=true resizeMode=1 isResizeable=true minWidth=-1 minHeight=-1 defaultMinSize=220 token=WCT{android.window.IWindowContainerToken$Stub$Proxy@5de9239} topActivityType=1 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=-1 lastParentTaskIdBeforePip=-1 displayCutoutSafeInsets=Rect(0, 128 - 0, 0) topActivityInfo=ActivityInfo{167d07e io.github.graviton94.carpediem.MainActivity} launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=false isVisible=false isVisibleRequested=false isSleeping=false topActivityInSizeCompat=false topActivityEligibleForLetterboxEducation= false topActivityLetterboxed= false isFromDoubleTap= false topActivityLetterboxVerticalPosition= -1 topActivityLetterboxHorizontalPosition= -1 topActivityLetterboxWidth=-1 topActivityLetterboxHeight=-1 locusId=null displayAreaFeatureId=1 cameraCompatControlState=hidden}, remoteTransition = null, displayChange = null }
+10-21 09:03:01.618   522  2078 I ActivityTaskManager: START u0 {flg=0x10000000 cmp=io.github.graviton94.carpediem/.MainActivity (has extras)} with LAUNCH_SINGLE_TOP from uid 2000 (BAL_ALLOW_PERMISSION) result code=0
+10-21 09:03:01.634   522  2161 D CoreBackPreview: Window{75d3aec u0 Splash Screen io.github.graviton94.carpediem}: Setting back callback OnBackInvokedCallbackInfo{mCallback=android.window.IOnBackInvokedCallback$Stub$Proxy@87020bb, mPriority=0, mIsAnimationCallback=false}
+10-21 09:03:01.635   522   553 I ActivityManager: Start proc 8536:io.github.graviton94.carpediem/u0a192 for next-top-activity {io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity}
+10-21 09:03:01.689   522  1775 W WindowManager: Failed to deliver inset control state change to w=Window{7d8e1e8 u0 io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity EXITING}
+10-21 09:03:01.794  8536  8536 I ton94.carpediem: Late-enabling -Xcheck:jni
+10-21 09:03:01.834  8536  8536 I ton94.carpediem: Using CollectorTypeCC GC.
+10-21 09:03:01.835  8536  8536 W ton94.carpediem: Unexpected CPU variant for x86: x86_64.
+10-21 09:03:01.835  8536  8536 W ton94.carpediem: Known variants: atom, sandybridge, silvermont, goldmont, goldmont-plus, tremont, kabylake, default
+10-21 09:03:01.903   522  2342 W WindowManager: Exception thrown during dispatchAppVisibility Window{7d8e1e8 u0 io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity EXITING}
+10-21 09:03:01.907   522  2342 W WindowManager: Failed to deliver inset control state change to w=Window{7d8e1e8 u0 io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity EXITING}
+10-21 09:03:01.915   522   541 V WindowManager: Sent Transition #57 createdAt=10-21 09:03:01.608 via request=TransitionRequestInfo { type = OPEN, triggerTask = TaskInfo{userId=0 taskId=45 displayId=0 isRunning=true baseIntent=Intent { flg=0x10000000 cmp=io.github.graviton94.carpediem/.MainActivity } baseActivity=ComponentInfo{io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity} topActivity=ComponentInfo{io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity} origActivity=null realActivity=ComponentInfo{io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity} numActivities=1 lastActiveTime=542181 supportsMultiWindow=true resizeMode=1 isResizeable=true minWidth=-1 minHeight=-1 defaultMinSize=220 token=WCT{RemoteToken{ecf1ddd Task{9cfb2c0 #45 type=standard A=10192:io.github.graviton94.carpediem}}} topActivityType=1 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=-1 lastParentTaskIdBeforePip=-1 displayCutoutSafeInsets=Rect(0, 128 - 0, 0) topActivityInfo=ActivityInfo{f373d52 io.github.graviton94.carpediem.MainActivity} launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=false isVisible=false isVisibleRequested=false isSleeping=false topActivityInSizeCompat=false topActivityEligibleForLetterboxEducation= false topActivityLetterboxed= false isFromDoubleTap= false topActivityLetterboxVerticalPosition= -1 topActivityLetterboxHorizontalPosition= -1 topActivityLetterboxWidth=-1 topActivityLetterboxHeight=-1 locusId=null displayAreaFeatureId=1 cameraCompatControlState=hidden}, remoteTransition = null, displayChange = null }
+10-21 09:03:01.915   522   541 V WindowManager:     info={id=57 t=OPEN f=0x0 trk=1 r=[0@Point(0, 0)] c=[{WCT{RemoteToken{ecf1ddd Task{9cfb2c0 #45 type=standard A=10192:io.github.graviton94.carpediem}}} m=OPEN f=NONE leash=Surface(name=Task=45)/@0xb5f8a87 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) d=0},{WCT{RemoteToken{c08ccae Task{f19253c #1 type=home}}} m=TO_BACK f=SHOW_WALLPAPER leash=Surface(name=Task=1)/@0x964fd84 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) d=0}]}
+10-21 09:03:02.076  8536  8536 W ziparchive: Unable to open '/data/app/~~8Ji74DawYEECMil5iMfkZQ==/io.github.graviton94.carpediem-VUpn1c0klg7R2fdTbKJuNg==/base.dm': No such file or directory
+10-21 09:03:02.077  8536  8536 W ziparchive: Unable to open '/data/app/~~8Ji74DawYEECMil5iMfkZQ==/io.github.graviton94.carpediem-VUpn1c0klg7R2fdTbKJuNg==/base.dm': No such file or directory
+10-21 09:03:02.696  8536  8536 D nativeloader: Configuring clns-6 for other apk /data/app/~~8Ji74DawYEECMil5iMfkZQ==/io.github.graviton94.carpediem-VUpn1c0klg7R2fdTbKJuNg==/base.apk. target_sdk_version=36, uses_libraries=, library_path=/data/app/~~8Ji74DawYEECMil5iMfkZQ==/io.github.graviton94.carpediem-VUpn1c0klg7R2fdTbKJuNg==/lib/x86_64:/data/app/~~8Ji74DawYEECMil5iMfkZQ==/io.github.graviton94.carpediem-VUpn1c0klg7R2fdTbKJuNg==/base.apk!/lib/x86_64, permitted_path=/data:/mnt/expand:/data/user/0/io.github.graviton94.carpediem
+10-21 09:03:02.743  8536  8536 V GraphicsEnvironment: ANGLE GameManagerService for io.github.graviton94.carpediem: false
+10-21 09:03:02.743  8536  8536 V GraphicsEnvironment: io.github.graviton94.carpediem is not listed in per-application setting
+10-21 09:03:03.493   522  2342 D CoreBackPreview: Window{fd74b68 u0 io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity}: Setting back callback OnBackInvokedCallbackInfo{mCallback=android.window.IOnBackInvokedCallback$Stub$Proxy@594cebd, mPriority=0, mIsAnimationCallback=false}
+10-21 09:03:05.081   522   541 W ziparchive: Unable to open '/data/app/~~8Ji74DawYEECMil5iMfkZQ==/io.github.graviton94.carpediem-VUpn1c0klg7R2fdTbKJuNg==/base.dm': No such file or directory
+10-21 09:03:05.083   522   541 I ActivityTaskManager: Displayed io.github.graviton94.carpediem/.MainActivity for user 0: +3s482ms
+10-21 09:03:05.763   522  2342 D CoreBackPreview: Window{75d3aec u0 Splash Screen io.github.graviton94.carpediem EXITING}: Setting back callback null
+10-21 09:03:05.767   522  2077 W InputManager-JNI: Input channel object '75d3aec Splash Screen io.github.graviton94.carpediem (client)' was disposed without first being removed with the input manager!
+10-21 09:03:05.974   522  2078 I ImeTracker: io.github.graviton94.carpediem:a84f87fd: onRequestHide at ORIGIN_SERVER_HIDE_INPUT reason HIDE_UNSPECIFIED_WINDOW
+10-21 09:03:05.974   522  2078 I ImeTracker: io.github.graviton94.carpediem:a84f87fd: onCancelled at PHASE_SERVER_SHOULD_HIDE
+10-21 09:03:05.979  1502  1502 I GoogleInputMethodService: GoogleInputMethodService.onStartInput():1877 onStartInput(EditorInfo{inputType=0x0(NULL) imeOptions=0x0 privateImeOptions=null actionName=UNSPECIFIED actionLabel=null actionId=0 initialSelStart=-1 initialSelEnd=-1 initialCapsMode=0x0 hintText=null label=null packageName=io.github.graviton94.carpediem fieldId=0 fieldName=null extras=null}, false)
+10-21 09:03:08.703  8536  8580 D ProfileInstaller: Installing profile for io.github.graviton94.carpediem
+10-21 09:03:12.440   522  2078 I ActivityManager: Force stopping io.github.graviton94.carpediem appid=10192 user=0: from pid 8588
+10-21 09:03:12.442   522  2078 I ActivityManager: Killing 8536:io.github.graviton94.carpediem/u0a192 (adj 0): stop io.github.graviton94.carpediem due to from pid 8588
+10-21 09:03:12.444   522  2078 W ActivityTaskManager: Force removing ActivityRecord{13f6c43 u0 io.github.graviton94.carpediem/.MainActivity t45 f}}: app died, no saved state
+10-21 09:03:12.446   837   868 V WindowManagerShell: Transition requested: android.os.BinderProxy@bb95a51 TransitionRequestInfo { type = CLOSE, triggerTask = TaskInfo{userId=0 taskId=45 displayId=0 isRunning=false baseIntent=Intent { flg=0x10000000 cmp=io.github.graviton94.carpediem/.MainActivity } baseActivity=null topActivity=null origActivity=null realActivity=ComponentInfo{io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity} numActivities=0 lastActiveTime=542476 supportsMultiWindow=true resizeMode=1 isResizeable=true minWidth=-1 minHeight=-1 defaultMinSize=220 token=WCT{android.window.IWindowContainerToken$Stub$Proxy@31652b6} topActivityType=1 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=-1 lastParentTaskIdBeforePip=-1 displayCutoutSafeInsets=null topActivityInfo=null launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=true isVisible=true isVisibleRequested=true isSleeping=false topActivityInSizeCompat=false topActivityEligibleForLetterboxEducation= false topActivityLetterboxed= false isFromDoubleTap= false topActivityLetterboxVerticalPosition= -1 topActivityLetterboxHorizontalPosition= -1 topActivityLetterboxWidth=-1 topActivityLetterboxHeight=-1 locusId=null displayAreaFeatureId=1 cameraCompatControlState=hidden}, remoteTransition = null, displayChange = null }
+10-21 09:03:12.458  1044  1044 D CarrierSvcBindHelper: onHandleForceStop: [io.github.graviton94.carpediem]
+10-21 09:03:12.485   522  2161 V ActivityManager: Got obituary of 8536:io.github.graviton94.carpediem
+10-21 09:03:12.486   522  2159 I WindowManager: WIN DEATH: Window{fd74b68 u0 io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity}
+10-21 09:03:12.486   522  2159 W InputManager-JNI: Input channel object 'fd74b68 io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity (client)' was disposed without first being removed with the input manager!
+10-21 09:03:12.496   522  2077 I ImeTracker: io.github.graviton94.carpediem:884fbbec: onRequestHide at ORIGIN_SERVER_HIDE_INPUT reason HIDE_REMOVE_CLIENT
+10-21 09:03:12.496   522  2077 I ImeTracker: io.github.graviton94.carpediem:884fbbec: onCancelled at PHASE_SERVER_SHOULD_HIDE
+10-21 09:03:12.611   522   541 V WindowManager: Sent Transition #58 createdAt=10-21 09:03:12.445 via request=TransitionRequestInfo { type = CLOSE, triggerTask = TaskInfo{userId=0 taskId=45 displayId=0 isRunning=false baseIntent=Intent { flg=0x10000000 cmp=io.github.graviton94.carpediem/.MainActivity } baseActivity=null topActivity=null origActivity=null realActivity=ComponentInfo{io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity} numActivities=0 lastActiveTime=542476 supportsMultiWindow=true resizeMode=1 isResizeable=true minWidth=-1 minHeight=-1 defaultMinSize=220 token=WCT{RemoteToken{ecf1ddd Task{9cfb2c0 #45 type=standard A=10192:io.github.graviton94.carpediem}}} topActivityType=1 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=-1 lastParentTaskIdBeforePip=-1 displayCutoutSafeInsets=null topActivityInfo=null launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=true isVisible=true isVisibleRequested=true isSleeping=false topActivityInSizeCompat=false topActivityEligibleForLetterboxEducation= false topActivityLetterboxed= false isFromDoubleTap= false topActivityLetterboxVerticalPosition= -1 topActivityLetterboxHorizontalPosition= -1 topActivityLetterboxWidth=-1 topActivityLetterboxHeight=-1 locusId=null displayAreaFeatureId=1 cameraCompatControlState=hidden}, remoteTransition = null, displayChange = null }
+10-21 09:03:12.611   522   541 V WindowManager:     info={id=58 t=CLOSE f=0x0 trk=0 r=[0@Point(0, 0)] c=[{WCT{RemoteToken{ecf1ddd Task{9cfb2c0 #45 type=standard A=10192:io.github.graviton94.carpediem}}} m=CLOSE f=NONE leash=Surface(name=Task=45)/@0xb5f8a87 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) d=0},{WCT{RemoteToken{c08ccae Task{f19253c #1 type=home}}} m=TO_FRONT f=SHOW_WALLPAPER leash=Surface(name=Task=1)/@0x964fd84 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) d=0},{null m=TO_FRONT f=IS_WALLPAPER leash=Surface(name=WallpaperWindowToken{a107e03 token=android.os.Binder@2d11eb2})/@0xd923a93 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) d=0}]}
+10-21 09:03:12.654   522  2159 I ActivityTaskManager: Add Task{9cfb2c0 #45 type=standard A=10192:io.github.graviton94.carpediem} to hidden list because adding Task{8872779 #46 type=standard A=10192:io.github.graviton94.carpediem}
+10-21 09:03:12.655   522  2159 I ActivityTaskManager: START u0 {flg=0x10000000 cmp=io.github.graviton94.carpediem/.MainActivity (has extras)} with LAUNCH_SINGLE_TOP from uid 2000 (BAL_ALLOW_PERMISSION) result code=0
+10-21 09:03:12.655   837   868 V WindowManagerShell: Transition requested: android.os.BinderProxy@74220a7 TransitionRequestInfo { type = OPEN, triggerTask = TaskInfo{userId=0 taskId=46 displayId=0 isRunning=true baseIntent=Intent { flg=0x10000000 cmp=io.github.graviton94.carpediem/.MainActivity } baseActivity=ComponentInfo{io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity} topActivity=ComponentInfo{io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity} origActivity=null realActivity=ComponentInfo{io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity} numActivities=1 lastActiveTime=553218 supportsMultiWindow=true resizeMode=1 isResizeable=true minWidth=-1 minHeight=-1 defaultMinSize=220 token=WCT{android.window.IWindowContainerToken$Stub$Proxy@544f954} topActivityType=1 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=-1 lastParentTaskIdBeforePip=-1 displayCutoutSafeInsets=Rect(0, 128 - 0, 0) topActivityInfo=ActivityInfo{d4df0fd io.github.graviton94.carpediem.MainActivity} launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=false isVisible=false isVisibleRequested=false isSleeping=false topActivityInSizeCompat=false topActivityEligibleForLetterboxEducation= false topActivityLetterboxed= false isFromDoubleTap= false topActivityLetterboxVerticalPosition= -1 topActivityLetterboxHorizontalPosition= -1 topActivityLetterboxWidth=-1 topActivityLetterboxHeight=-1 locusId=null displayAreaFeatureId=1 cameraCompatControlState=hidden}, remoteTransition = null, displayChange = null }
+10-21 09:03:12.679   522  2342 D CoreBackPreview: Window{ec9c235 u0 Splash Screen io.github.graviton94.carpediem}: Setting back callback OnBackInvokedCallbackInfo{mCallback=android.window.IOnBackInvokedCallback$Stub$Proxy@2faa03b, mPriority=0, mIsAnimationCallback=false}
+10-21 09:03:12.685   522   553 I ActivityManager: Start proc 8601:io.github.graviton94.carpediem/u0a192 for next-top-activity {io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity}
+10-21 09:03:12.693  8601  8601 I ton94.carpediem: Late-enabling -Xcheck:jni
+10-21 09:03:12.775  8601  8601 I ton94.carpediem: Using CollectorTypeCC GC.
+10-21 09:03:12.776  8601  8601 W ton94.carpediem: Unexpected CPU variant for x86: x86_64.
+10-21 09:03:12.776  8601  8601 W ton94.carpediem: Known variants: atom, sandybridge, silvermont, goldmont, goldmont-plus, tremont, kabylake, default
+10-21 09:03:12.801   522   545 W WindowManager: Failed to deliver inset control state change to w=Window{fd74b68 u0 io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity EXITING}
+10-21 09:03:13.022   522  2666 W WindowManager: Exception thrown during dispatchAppVisibility Window{fd74b68 u0 io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity EXITING}
+10-21 09:03:13.031   522  2666 W WindowManager: Failed to deliver inset control state change to w=Window{fd74b68 u0 io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity EXITING}
+10-21 09:03:13.065   522   541 V WindowManager: Sent Transition #59 createdAt=10-21 09:03:12.641 via request=TransitionRequestInfo { type = OPEN, triggerTask = TaskInfo{userId=0 taskId=46 displayId=0 isRunning=true baseIntent=Intent { flg=0x10000000 cmp=io.github.graviton94.carpediem/.MainActivity } baseActivity=ComponentInfo{io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity} topActivity=ComponentInfo{io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity} origActivity=null realActivity=ComponentInfo{io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity} numActivities=1 lastActiveTime=553218 supportsMultiWindow=true resizeMode=1 isResizeable=true minWidth=-1 minHeight=-1 defaultMinSize=220 token=WCT{RemoteToken{63c9ad2 Task{8872779 #46 type=standard A=10192:io.github.graviton94.carpediem}}} topActivityType=1 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=-1 lastParentTaskIdBeforePip=-1 displayCutoutSafeInsets=Rect(0, 128 - 0, 0) topActivityInfo=ActivityInfo{f6617a3 io.github.graviton94.carpediem.MainActivity} launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=false isVisible=false isVisibleRequested=false isSleeping=false topActivityInSizeCompat=false topActivityEligibleForLetterboxEducation= false topActivityLetterboxed= false isFromDoubleTap= false topActivityLetterboxVerticalPosition= -1 topActivityLetterboxHorizontalPosition= -1 topActivityLetterboxWidth=-1 topActivityLetterboxHeight=-1 locusId=null displayAreaFeatureId=1 cameraCompatControlState=hidden}, remoteTransition = null, displayChange = null }
+10-21 09:03:13.066   522   541 V WindowManager:     info={id=59 t=OPEN f=0x0 trk=1 r=[0@Point(0, 0)] c=[{WCT{RemoteToken{63c9ad2 Task{8872779 #46 type=standard A=10192:io.github.graviton94.carpediem}}} m=OPEN f=NONE leash=Surface(name=Task=46)/@0x4450f34 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) d=0},{WCT{RemoteToken{c08ccae Task{f19253c #1 type=home}}} m=TO_BACK f=SHOW_WALLPAPER leash=Surface(name=Task=1)/@0x964fd84 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) d=0}]}
+10-21 09:03:13.221  8601  8601 W ziparchive: Unable to open '/data/app/~~8Ji74DawYEECMil5iMfkZQ==/io.github.graviton94.carpediem-VUpn1c0klg7R2fdTbKJuNg==/base.dm': No such file or directory
+10-21 09:03:13.222  8601  8601 W ziparchive: Unable to open '/data/app/~~8Ji74DawYEECMil5iMfkZQ==/io.github.graviton94.carpediem-VUpn1c0klg7R2fdTbKJuNg==/base.dm': No such file or directory
+10-21 09:03:13.767  8601  8601 D nativeloader: Configuring clns-6 for other apk /data/app/~~8Ji74DawYEECMil5iMfkZQ==/io.github.graviton94.carpediem-VUpn1c0klg7R2fdTbKJuNg==/base.apk. target_sdk_version=36, uses_libraries=, library_path=/data/app/~~8Ji74DawYEECMil5iMfkZQ==/io.github.graviton94.carpediem-VUpn1c0klg7R2fdTbKJuNg==/lib/x86_64:/data/app/~~8Ji74DawYEECMil5iMfkZQ==/io.github.graviton94.carpediem-VUpn1c0klg7R2fdTbKJuNg==/base.apk!/lib/x86_64, permitted_path=/data:/mnt/expand:/data/user/0/io.github.graviton94.carpediem
+10-21 09:03:13.792  8601  8601 V GraphicsEnvironment: ANGLE GameManagerService for io.github.graviton94.carpediem: false
+10-21 09:03:13.792  8601  8601 V GraphicsEnvironment: io.github.graviton94.carpediem is not listed in per-application setting
+10-21 09:03:14.449   522  1775 D CoreBackPreview: Window{93be701 u0 io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity}: Setting back callback OnBackInvokedCallbackInfo{mCallback=android.window.IOnBackInvokedCallback$Stub$Proxy@c89ea32, mPriority=0, mIsAnimationCallback=false}
+10-21 09:03:16.634   522  1775 D CoreBackPreview: Window{ec9c235 u0 Splash Screen io.github.graviton94.carpediem EXITING}: Setting back callback null
+10-21 09:03:16.634   522  2666 W InputManager-JNI: Input channel object 'ec9c235 Splash Screen io.github.graviton94.carpediem (client)' was disposed without first being removed with the input manager!
+10-21 09:03:17.590   522  1775 D CoreBackPreview: Window{6f33900 u0 io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity}: Setting back callback OnBackInvokedCallbackInfo{mCallback=android.window.IOnBackInvokedCallback$Stub$Proxy@fc6e230, mPriority=0, mIsAnimationCallback=false}
+10-21 09:03:18.065   522   541 W ziparchive: Unable to open '/data/app/~~8Ji74DawYEECMil5iMfkZQ==/io.github.graviton94.carpediem-VUpn1c0klg7R2fdTbKJuNg==/base.dm': No such file or directory
+10-21 09:03:18.067   522   541 I ActivityTaskManager: Displayed io.github.graviton94.carpediem/.MainActivity for user 0: +5s433ms
+10-21 09:03:18.714   522  2077 I ImeTracker: io.github.graviton94.carpediem:ef2eaaec: onRequestHide at ORIGIN_SERVER_HIDE_INPUT reason HIDE_UNSPECIFIED_WINDOW
+10-21 09:03:18.714   522  2077 I ImeTracker: io.github.graviton94.carpediem:ef2eaaec: onCancelled at PHASE_SERVER_SHOULD_HIDE
+10-21 09:03:18.719  1502  1502 I GoogleInputMethodService: GoogleInputMethodService.onStartInput():1877 onStartInput(EditorInfo{inputType=0x0(NULL) imeOptions=0x0 privateImeOptions=null actionName=UNSPECIFIED actionLabel=null actionId=0 initialSelStart=-1 initialSelEnd=-1 initialCapsMode=0x0 hintText=null label=null packageName=io.github.graviton94.carpediem fieldId=0 fieldName=null extras=null}, false)
+10-21 09:03:20.152  8601  8637 D ProfileInstaller: Installing profile for io.github.graviton94.carpediem
+10-21 09:03:23.655   522  2342 I ActivityManager: Force stopping io.github.graviton94.carpediem appid=10192 user=0: from pid 8649
+10-21 09:03:23.659   522  2342 I ActivityManager: Killing 8601:io.github.graviton94.carpediem/u0a192 (adj 0): stop io.github.graviton94.carpediem due to from pid 8649
+10-21 09:03:23.661   522  2342 W ActivityTaskManager: Force removing ActivityRecord{f774c40 u0 io.github.graviton94.carpediem/.MainActivity t46 f}}: app died, no saved state
+10-21 09:03:23.666   837   868 V WindowManagerShell: Transition requested: android.os.BinderProxy@6e720a4 TransitionRequestInfo { type = CLOSE, triggerTask = TaskInfo{userId=0 taskId=46 displayId=0 isRunning=false baseIntent=Intent { flg=0x10000000 cmp=io.github.graviton94.carpediem/.MainActivity } baseActivity=null topActivity=null origActivity=null realActivity=ComponentInfo{io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity} numActivities=0 lastActiveTime=553606 supportsMultiWindow=true resizeMode=1 isResizeable=true minWidth=-1 minHeight=-1 defaultMinSize=220 token=WCT{android.window.IWindowContainerToken$Stub$Proxy@f330e0d} topActivityType=1 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=-1 lastParentTaskIdBeforePip=-1 displayCutoutSafeInsets=null topActivityInfo=null launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=true isVisible=true isVisibleRequested=true isSleeping=false topActivityInSizeCompat=false topActivityEligibleForLetterboxEducation= false topActivityLetterboxed= false isFromDoubleTap= false topActivityLetterboxVerticalPosition= -1 topActivityLetterboxHorizontalPosition= -1 topActivityLetterboxWidth=-1 topActivityLetterboxHeight=-1 locusId=null displayAreaFeatureId=1 cameraCompatControlState=hidden}, remoteTransition = null, displayChange = null }
+10-21 09:03:23.692   522   596 I ImeTracker: io.github.graviton94.carpediem:8b35b825: onRequestHide at ORIGIN_SERVER_HIDE_INPUT reason HIDE_REMOVE_CLIENT
+10-21 09:03:23.692   522   596 I ImeTracker: io.github.graviton94.carpediem:8b35b825: onCancelled at PHASE_SERVER_SHOULD_HIDE
+10-21 09:03:23.719  1044  1044 D CarrierSvcBindHelper: onHandleForceStop: [io.github.graviton94.carpediem]
+10-21 09:03:23.728   522  2159 V ActivityManager: Got obituary of 8601:io.github.graviton94.carpediem
+10-21 09:03:23.728   522   596 I WindowManager: WIN DEATH: Window{93be701 u0 io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity}
+10-21 09:03:23.728   522   596 W InputManager-JNI: Input channel object '93be701 io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity (client)' was disposed without first being removed with the input manager!
+10-21 09:03:23.730   522   596 W WindowManager: Failed to deliver inset control state change to w=Window{6f33900 u0 io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity}
+10-21 09:03:23.741   522   595 I WindowManager: WIN DEATH: Window{6f33900 u0 io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity}
+10-21 09:03:23.742   522   595 W InputManager-JNI: Input channel object '6f33900 io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity (client)' was disposed without first being removed with the input manager!
+10-21 09:03:23.892   522   595 I ActivityTaskManager: Add Task{8872779 #46 type=standard A=10192:io.github.graviton94.carpediem} to hidden list because adding Task{2519831 #47 type=standard A=10192:io.github.graviton94.carpediem}
+10-21 09:03:23.893   522   595 I ActivityTaskManager: START u0 {flg=0x10000000 cmp=io.github.graviton94.carpediem/.MainActivity (has extras)} with LAUNCH_SINGLE_TOP from uid 2000 (BAL_ALLOW_PERMISSION) result code=0
+10-21 09:03:23.913   522   553 I ActivityManager: Start proc 8660:io.github.graviton94.carpediem/u0a192 for next-top-activity {io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity}
+10-21 09:03:23.937   522  1775 D CoreBackPreview: Window{1971625 u0 Splash Screen io.github.graviton94.carpediem}: Setting back callback OnBackInvokedCallbackInfo{mCallback=android.window.IOnBackInvokedCallback$Stub$Proxy@b906dab, mPriority=0, mIsAnimationCallback=false}
+10-21 09:03:23.948  8660  8660 I ton94.carpediem: Late-enabling -Xcheck:jni
+10-21 09:03:23.955   522   545 W WindowManager: Failed to deliver inset control state change to w=Window{93be701 u0 io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity EXITING}
+10-21 09:03:23.969  8660  8660 I ton94.carpediem: Using CollectorTypeCC GC.
+10-21 09:03:23.970  8660  8660 W ton94.carpediem: Unexpected CPU variant for x86: x86_64.
+10-21 09:03:23.970  8660  8660 W ton94.carpediem: Known variants: atom, sandybridge, silvermont, goldmont, goldmont-plus, tremont, kabylake, default
+10-21 09:03:24.091   522   541 V WindowManager: Sent Transition #60 createdAt=10-21 09:03:23.661 via request=TransitionRequestInfo { type = CLOSE, triggerTask = TaskInfo{userId=0 taskId=46 displayId=0 isRunning=false baseIntent=Intent { flg=0x10000000 cmp=io.github.graviton94.carpediem/.MainActivity } baseActivity=null topActivity=null origActivity=null realActivity=ComponentInfo{io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity} numActivities=0 lastActiveTime=553606 supportsMultiWindow=true resizeMode=1 isResizeable=true minWidth=-1 minHeight=-1 defaultMinSize=220 token=WCT{RemoteToken{63c9ad2 Task{8872779 #46 type=standard A=10192:io.github.graviton94.carpediem}}} topActivityType=1 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=-1 lastParentTaskIdBeforePip=-1 displayCutoutSafeInsets=null topActivityInfo=null launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=true isVisible=true isVisibleRequested=true isSleeping=false topActivityInSizeCompat=false topActivityEligibleForLetterboxEducation= false topActivityLetterboxed= false isFromDoubleTap= false topActivityLetterboxVerticalPosition= -1 topActivityLetterboxHorizontalPosition= -1 topActivityLetterboxWidth=-1 topActivityLetterboxHeight=-1 locusId=null displayAreaFeatureId=1 cameraCompatControlState=hidden}, remoteTransition = null, displayChange = null }
+10-21 09:03:24.094   522   541 V WindowManager:     info={id=60 t=CLOSE f=0x0 trk=0 r=[0@Point(0, 0)] c=[{WCT{RemoteToken{d1df1d9 Task{2519831 #47 type=standard A=10192:io.github.graviton94.carpediem}}} m=OPEN f=MOVE_TO_TOP leash=Surface(name=Task=47)/@0xbe2e723 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) d=0},{WCT{RemoteToken{63c9ad2 Task{8872779 #46 type=standard A=10192:io.github.graviton94.carpediem}}} m=CLOSE f=NONE leash=Surface(name=Task=46)/@0x4450f34 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) d=0}]}
+10-21 09:03:24.102  8660  8660 W ziparchive: Unable to open '/data/app/~~8Ji74DawYEECMil5iMfkZQ==/io.github.graviton94.carpediem-VUpn1c0klg7R2fdTbKJuNg==/base.dm': No such file or directory
+10-21 09:03:24.102  8660  8660 W ziparchive: Unable to open '/data/app/~~8Ji74DawYEECMil5iMfkZQ==/io.github.graviton94.carpediem-VUpn1c0klg7R2fdTbKJuNg==/base.dm': No such file or directory
+10-21 09:03:24.376  8660  8660 D nativeloader: Configuring clns-6 for other apk /data/app/~~8Ji74DawYEECMil5iMfkZQ==/io.github.graviton94.carpediem-VUpn1c0klg7R2fdTbKJuNg==/base.apk. target_sdk_version=36, uses_libraries=, library_path=/data/app/~~8Ji74DawYEECMil5iMfkZQ==/io.github.graviton94.carpediem-VUpn1c0klg7R2fdTbKJuNg==/lib/x86_64:/data/app/~~8Ji74DawYEECMil5iMfkZQ==/io.github.graviton94.carpediem-VUpn1c0klg7R2fdTbKJuNg==/base.apk!/lib/x86_64, permitted_path=/data:/mnt/expand:/data/user/0/io.github.graviton94.carpediem
+10-21 09:03:24.400  8660  8660 V GraphicsEnvironment: ANGLE GameManagerService for io.github.graviton94.carpediem: false
+10-21 09:03:24.400  8660  8660 V GraphicsEnvironment: io.github.graviton94.carpediem is not listed in per-application setting
+10-21 09:03:24.608   522  1775 W WindowManager: Exception thrown during dispatchAppVisibility Window{93be701 u0 io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity EXITING}
+10-21 09:03:24.610   522  1775 W WindowManager: Failed to deliver inset control state change to w=Window{93be701 u0 io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity EXITING}
+10-21 09:03:24.765   522  1775 D CoreBackPreview: Window{831b914 u0 io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity}: Setting back callback OnBackInvokedCallbackInfo{mCallback=android.window.IOnBackInvokedCallback$Stub$Proxy@3cb7c5f, mPriority=0, mIsAnimationCallback=false}
+10-21 09:03:25.090  8660  8666 I ton94.carpediem: Method exceeds compiler instruction limit: 22706 in void io.github.graviton94.carpediem.ui.garden.GardenScreensKt$GardenHome$19$1$1$2$3.invoke(androidx.compose.foundation.layout.BoxWithConstraintsScope, androidx.compose.runtime.Composer, int)
+10-21 09:03:26.164   522   541 W ziparchive: Unable to open '/data/app/~~8Ji74DawYEECMil5iMfkZQ==/io.github.graviton94.carpediem-VUpn1c0klg7R2fdTbKJuNg==/base.dm': No such file or directory
+10-21 09:03:26.165   522   541 I ActivityTaskManager: Displayed io.github.graviton94.carpediem/.MainActivity for user 0: +2s278ms
+10-21 09:03:26.637   522  2647 W InputManager-JNI: Input channel object '1971625 Splash Screen io.github.graviton94.carpediem (client)' was disposed without first being removed with the input manager!
+10-21 09:03:26.639   522  1775 D CoreBackPreview: Window{1971625 u0 Splash Screen io.github.graviton94.carpediem EXITING}: Setting back callback null
+10-21 09:03:27.661   522  2647 I ImeTracker: io.github.graviton94.carpediem:fdf5187a: onRequestHide at ORIGIN_SERVER_HIDE_INPUT reason HIDE_UNSPECIFIED_WINDOW
+10-21 09:03:27.661   522  2647 I ImeTracker: io.github.graviton94.carpediem:fdf5187a: onCancelled at PHASE_SERVER_SHOULD_HIDE
+10-21 09:03:27.676  1502  1502 I GoogleInputMethodService: GoogleInputMethodService.onStartInput():1877 onStartInput(EditorInfo{inputType=0x0(NULL) imeOptions=0x0 privateImeOptions=null actionName=UNSPECIFIED actionLabel=null actionId=0 initialSelStart=-1 initialSelEnd=-1 initialCapsMode=0x0 hintText=null label=null packageName=io.github.graviton94.carpediem fieldId=0 fieldName=null extras=null}, false)
+10-21 09:03:27.714  8660  8666 I ton94.carpediem: Method exceeds compiler instruction limit: 22706 in void io.github.graviton94.carpediem.ui.garden.GardenScreensKt$GardenHome$19$1$1$2$3.invoke(androidx.compose.foundation.layout.BoxWithConstraintsScope, androidx.compose.runtime.Composer, int)
+10-21 09:03:27.816   522   541 I ActivityTaskManager: Fully drawn io.github.graviton94.carpediem/.MainActivity: +3s898ms
+10-21 09:03:27.819   522   541 W ziparchive: Unable to open '/data/app/~~8Ji74DawYEECMil5iMfkZQ==/io.github.graviton94.carpediem-VUpn1c0klg7R2fdTbKJuNg==/base.dm': No such file or directory
+10-21 09:03:30.827  8660  8700 D ProfileInstaller: Installing profile for io.github.graviton94.carpediem
+10-21 09:03:34.234   522  2647 I ActivityManager: Force stopping io.github.graviton94.carpediem appid=10192 user=0: from pid 8712
+10-21 09:03:34.237   522  2647 I ActivityManager: Killing 8660:io.github.graviton94.carpediem/u0a192 (adj 0): stop io.github.graviton94.carpediem due to from pid 8712
+10-21 09:03:34.238   522  2647 W ActivityTaskManager: Force removing ActivityRecord{6c6acd8 u0 io.github.graviton94.carpediem/.MainActivity t47 f}}: app died, no saved state
+10-21 09:03:34.240   837   868 V WindowManagerShell: Transition requested: android.os.BinderProxy@9c9f4cc TransitionRequestInfo { type = CLOSE, triggerTask = TaskInfo{userId=0 taskId=47 displayId=0 isRunning=false baseIntent=Intent { flg=0x10000000 cmp=io.github.graviton94.carpediem/.MainActivity } baseActivity=null topActivity=null origActivity=null realActivity=ComponentInfo{io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity} numActivities=0 lastActiveTime=564628 supportsMultiWindow=true resizeMode=1 isResizeable=true minWidth=-1 minHeight=-1 defaultMinSize=220 token=WCT{android.window.IWindowContainerToken$Stub$Proxy@55b9315} topActivityType=1 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=-1 lastParentTaskIdBeforePip=-1 displayCutoutSafeInsets=null topActivityInfo=null launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=true isVisible=true isVisibleRequested=true isSleeping=false topActivityInSizeCompat=false topActivityEligibleForLetterboxEducation= false topActivityLetterboxed= false isFromDoubleTap= false topActivityLetterboxVerticalPosition= -1 topActivityLetterboxHorizontalPosition= -1 topActivityLetterboxWidth=-1 topActivityLetterboxHeight=-1 locusId=null displayAreaFeatureId=1 cameraCompatControlState=hidden}, remoteTransition = null, displayChange = null }
+10-21 09:03:34.280   522   595 I ImeTracker: io.github.graviton94.carpediem:4a9e7366: onRequestHide at ORIGIN_SERVER_HIDE_INPUT reason HIDE_REMOVE_CLIENT
+10-21 09:03:34.281   522  2078 I WindowManager: WIN DEATH: Window{831b914 u0 io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity}
+10-21 09:03:34.281   522  2078 W InputManager-JNI: Input channel object '831b914 io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity (client)' was disposed without first being removed with the input manager!
+10-21 09:03:34.289   522   595 I ImeTracker: io.github.graviton94.carpediem:4a9e7366: onCancelled at PHASE_SERVER_SHOULD_HIDE
+10-21 09:03:34.296  1044  1044 D CarrierSvcBindHelper: onHandleForceStop: [io.github.graviton94.carpediem]
+10-21 09:03:34.298   522  2647 V ActivityManager: Got obituary of 8660:io.github.graviton94.carpediem
+10-21 09:03:34.304   522   545 W WindowManager: Failed to deliver inset control state change to w=Window{831b914 u0 io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity EXITING}
+10-21 09:03:34.466   522   910 I ActivityTaskManager: Add Task{2519831 #47 type=standard A=10192:io.github.graviton94.carpediem} to hidden list because adding Task{2549f3b #48 type=standard A=10192:io.github.graviton94.carpediem}
+10-21 09:03:34.468   522   910 I ActivityTaskManager: START u0 {flg=0x10000000 cmp=io.github.graviton94.carpediem/.MainActivity (has extras)} with LAUNCH_SINGLE_TOP from uid 2000 (BAL_ALLOW_PERMISSION) result code=0
+10-21 09:03:34.505   522   902 D CoreBackPreview: Window{e63f417 u0 Splash Screen io.github.graviton94.carpediem}: Setting back callback OnBackInvokedCallbackInfo{mCallback=android.window.IOnBackInvokedCallback$Stub$Proxy@3f09ed, mPriority=0, mIsAnimationCallback=false}
+10-21 09:03:34.507   522   553 I ActivityManager: Start proc 8725:io.github.graviton94.carpediem/u0a192 for next-top-activity {io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity}
+10-21 09:03:34.543   522   545 W WindowManager: Failed to deliver inset control state change to w=Window{831b914 u0 io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity EXITING}
+10-21 09:03:34.577  8725  8725 I ton94.carpediem: Late-enabling -Xcheck:jni
+10-21 09:03:34.595  8725  8725 I ton94.carpediem: Using CollectorTypeCC GC.
+10-21 09:03:34.596  8725  8725 W ton94.carpediem: Unexpected CPU variant for x86: x86_64.
+10-21 09:03:34.596  8725  8725 W ton94.carpediem: Known variants: atom, sandybridge, silvermont, goldmont, goldmont-plus, tremont, kabylake, default
+10-21 09:03:34.640   522   541 V WindowManager: Sent Transition #61 createdAt=10-21 09:03:34.239 via request=TransitionRequestInfo { type = CLOSE, triggerTask = TaskInfo{userId=0 taskId=47 displayId=0 isRunning=false baseIntent=Intent { flg=0x10000000 cmp=io.github.graviton94.carpediem/.MainActivity } baseActivity=null topActivity=null origActivity=null realActivity=ComponentInfo{io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity} numActivities=0 lastActiveTime=564628 supportsMultiWindow=true resizeMode=1 isResizeable=true minWidth=-1 minHeight=-1 defaultMinSize=220 token=WCT{RemoteToken{d1df1d9 Task{2519831 #47 type=standard A=10192:io.github.graviton94.carpediem}}} topActivityType=1 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=-1 lastParentTaskIdBeforePip=-1 displayCutoutSafeInsets=null topActivityInfo=null launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=true isVisible=true isVisibleRequested=true isSleeping=false topActivityInSizeCompat=false topActivityEligibleForLetterboxEducation= false topActivityLetterboxed= false isFromDoubleTap= false topActivityLetterboxVerticalPosition= -1 topActivityLetterboxHorizontalPosition= -1 topActivityLetterboxWidth=-1 topActivityLetterboxHeight=-1 locusId=null displayAreaFeatureId=1 cameraCompatControlState=hidden}, remoteTransition = null, displayChange = null }
+10-21 09:03:34.640   522   541 V WindowManager:     info={id=61 t=CLOSE f=0x0 trk=0 r=[0@Point(0, 0)] c=[{WCT{RemoteToken{8b7a588 Task{2549f3b #48 type=standard A=10192:io.github.graviton94.carpediem}}} m=OPEN f=MOVE_TO_TOP leash=Surface(name=Task=48)/@0x895117a sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) d=0},{WCT{RemoteToken{d1df1d9 Task{2519831 #47 type=standard A=10192:io.github.graviton94.carpediem}}} m=CLOSE f=NONE leash=Surface(name=Task=47)/@0xbe2e723 sb=Rect(0, 0 - 1080, 2400) eb=Rect(0, 0 - 1080, 2400) d=0}]}
+10-21 09:03:34.659  8725  8725 W ziparchive: Unable to open '/data/app/~~8Ji74DawYEECMil5iMfkZQ==/io.github.graviton94.carpediem-VUpn1c0klg7R2fdTbKJuNg==/base.dm': No such file or directory
+10-21 09:03:34.659  8725  8725 W ziparchive: Unable to open '/data/app/~~8Ji74DawYEECMil5iMfkZQ==/io.github.graviton94.carpediem-VUpn1c0klg7R2fdTbKJuNg==/base.dm': No such file or directory
+10-21 09:03:34.982  8725  8725 D nativeloader: Configuring clns-6 for other apk /data/app/~~8Ji74DawYEECMil5iMfkZQ==/io.github.graviton94.carpediem-VUpn1c0klg7R2fdTbKJuNg==/base.apk. target_sdk_version=36, uses_libraries=, library_path=/data/app/~~8Ji74DawYEECMil5iMfkZQ==/io.github.graviton94.carpediem-VUpn1c0klg7R2fdTbKJuNg==/lib/x86_64:/data/app/~~8Ji74DawYEECMil5iMfkZQ==/io.github.graviton94.carpediem-VUpn1c0klg7R2fdTbKJuNg==/base.apk!/lib/x86_64, permitted_path=/data:/mnt/expand:/data/user/0/io.github.graviton94.carpediem
+10-21 09:03:35.002  8725  8725 V GraphicsEnvironment: ANGLE GameManagerService for io.github.graviton94.carpediem: false
+10-21 09:03:35.002  8725  8725 V GraphicsEnvironment: io.github.graviton94.carpediem is not listed in per-application setting
+10-21 09:03:35.180   522  1775 W WindowManager: Exception thrown during dispatchAppVisibility Window{831b914 u0 io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity EXITING}
+10-21 09:03:35.198   522  1775 W WindowManager: Failed to deliver inset control state change to w=Window{831b914 u0 io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity EXITING}
+10-21 09:03:35.598   522  1775 D CoreBackPreview: Window{81487e8 u0 io.github.graviton94.carpediem/io.github.graviton94.carpediem.MainActivity}: Setting back callback OnBackInvokedCallbackInfo{mCallback=android.window.IOnBackInvokedCallback$Stub$Proxy@ba72532, mPriority=0, mIsAnimationCallback=false}
+10-21 09:03:36.295  8725  8732 I ton94.carpediem: Method exceeds compiler instruction limit: 22706 in void io.github.graviton94.carpediem.ui.garden.GardenScreensKt$GardenHome$19$1$1$2$3.invoke(androidx.compose.foundation.layout.BoxWithConstraintsScope, androidx.compose.runtime.Composer, int)
+10-21 09:03:37.540   522   541 W ziparchive: Unable to open '/data/app/~~8Ji74DawYEECMil5iMfkZQ==/io.github.graviton94.carpediem-VUpn1c0klg7R2fdTbKJuNg==/base.dm': No such file or directory
+10-21 09:03:37.541   522   541 I ActivityTaskManager: Displayed io.github.graviton94.carpediem/.MainActivity for user 0: +3s119ms
+10-21 09:03:38.080   522  1775 W InputManager-JNI: Input channel object 'e63f417 Splash Screen io.github.graviton94.carpediem (client)' was disposed without first being removed with the input manager!
+10-21 09:03:38.081   522   910 D CoreBackPreview: Window{e63f417 u0 Splash Screen io.github.graviton94.carpediem EXITING}: Setting back callback null
+10-21 09:03:38.666   522   595 I ImeTracker: io.github.graviton94.carpediem:ef107fa8: onRequestHide at ORIGIN_SERVER_HIDE_INPUT reason HIDE_UNSPECIFIED_WINDOW
+10-21 09:03:38.666   522   595 I ImeTracker: io.github.graviton94.carpediem:ef107fa8: onCancelled at PHASE_SERVER_SHOULD_HIDE
+10-21 09:03:38.690  1502  1502 I GoogleInputMethodService: GoogleInputMethodService.onStartInput():1877 onStartInput(EditorInfo{inputType=0x0(NULL) imeOptions=0x0 privateImeOptions=null actionName=UNSPECIFIED actionLabel=null actionId=0 initialSelStart=-1 initialSelEnd=-1 initialCapsMode=0x0 hintText=null label=null packageName=io.github.graviton94.carpediem fieldId=0 fieldName=null extras=null}, false)
+10-21 09:03:38.858  8725  8732 I ton94.carpediem: Method exceeds compiler instruction limit: 22706 in void io.github.graviton94.carpediem.ui.garden.GardenScreensKt$GardenHome$19$1$1$2$3.invoke(androidx.compose.foundation.layout.BoxWithConstraintsScope, androidx.compose.runtime.Composer, int)
+10-21 09:03:39.339   522   541 I ActivityTaskManager: Fully drawn io.github.graviton94.carpediem/.MainActivity: +4s918ms
+10-21 09:03:39.339   522   541 W ziparchive: Unable to open '/data/app/~~8Ji74DawYEECMil5iMfkZQ==/io.github.graviton94.carpediem-VUpn1c0klg7R2fdTbKJuNg==/base.dm': No such file or directory
+10-21 09:03:39.460  8725  8732 I ton94.carpediem: Method exceeds compiler instruction limit: 22706 in void io.github.graviton94.carpediem.ui.garden.GardenScreensKt$GardenHome$19$1$1$2$3.invoke(androidx.compose.foundation.layout.BoxWithConstraintsScope, androidx.compose.runtime.Composer, int)
+10-21 09:03:40.975  8725  8768 D ProfileInstaller: Installing profile for io.github.graviton94.carpediem
