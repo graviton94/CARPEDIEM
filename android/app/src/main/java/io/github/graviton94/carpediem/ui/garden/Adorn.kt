@@ -63,6 +63,8 @@ internal fun PieceImage(img: ImageBitmap, size: androidx.compose.ui.unit.Dp, mod
     }
 }
 private const val PIECE_ZOOM = 1.7f
+/** 곁에 둘 것 고르기의 그림 크기 (세 칸 중 한 칸 안에서 글자보다 조금 큰 정도) */
+private const val ADORN_ICON = 40f
 /** 조각의 가운데 (상자 높이의 0.70) 를 키운 뒤 칸 가운데로: (0.70 − 0.5) × 1.7 */
 private const val PIECE_LIFT = 0.34f
 
@@ -155,7 +157,7 @@ internal fun AdornSheet(state: AppState, stone: String, name: String, onClose: (
                                 .padding(Tokens.Space.sp2),
                             horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1),
                         ) {
-                            adornArt(ctx, item)?.let { PieceImage(it, Theme.unit * 64f) }
+                            adornArt(ctx, item)?.let { PieceImage(it, Theme.unit * ADORN_ICON) }
                             TokenText(adornName(ctx, item), Tokens.TypeScale.footnote, Modifier.fillMaxWidth(), weight = FontWeight.SemiBold, align = TextAlign.Center, maxLines = 1)
                             TokenText(if (at != null && !here) stringResource(R.string.adorn_atOther, nameOf(at)) else adornFrom(ctx, state, item),
                                 Tokens.TypeScale.caption2, Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.Center, maxLines = 1)

@@ -126,6 +126,30 @@ done
 }
 if [ -n "${STORE:-}" ]; then store_scenes; finish; exit 0; fi
 
+# VIDEO=1: 스토어 소개 영상용으로 움직이는 장면을 네 말로 녹화 → $OUT/video/<말>/vNN_*.mp4 (scripts/build_video.py 가 이어 붙임)
+rec() { local n=$1 t=$2; shift 2; open "$@"; sleep 4; adb shell am broadcast -a android.intent.action.CLOSE_SYSTEM_DIALOGS >/dev/null
+  adb shell screenrecord --bit-rate 8000000 --time-limit "$t" /sdcard/rec.mp4; adb pull /sdcard/rec.mp4 "$OUT/$n.mp4" >/dev/null && echo "rec $n"; }
+video_scenes() {
+for loc in ${LOCALES:-ko-KR en-US ja-JP zh-TW}; do
+  adb shell cmd locale set-app-locales $P --locales $loc 2>/dev/null
+  local base=$OUT; OUT=$base/video/$loc; mkdir -p "$OUT"
+  open --es cd.now $NOW; sleep 15
+  rec v01_meet 12 --ez cd.reset true --es cd.design garden --el cd.seed 2718281 --es cd.birth 2000-05-12 --es cd.sex female --ez cd.meet true --es cd.now $NOW
+  open --ez cd.meet false --ez cd.family true --es cd.now $NOW; sleep 4
+  rec v02_title 9 --ez cd.title true --es cd.now ${NOW%T*}T07:40
+  rec v03_home 8 --ez cd.preview true --ez cd.typed true --es cd.now $NOW
+  rec v04_care 10 --ez cd.preview false --es cd.care CALM_BREATH --es cd.now $NOW
+  rec v05_month 7 --ez cd.months true --ez cd.openMonth true --es cd.now 2026-09-28T22:30
+  rec v06_ripple 10 --es cd.screen ripple --es cd.now 2026-10-03T15:00
+  rec v07_gaze 9 --es cd.screen gaze --es cd.now 2026-10-02T22:40
+  rec v08_fireflies 8 --ez cd.preview true --es cd.chance fireflies --es cd.now 2026-09-30T22:40
+  rec v09_snow 7 --es cd.term soseol --es cd.now 2027-01-12T14:00
+  rec v10_collection 6 --es cd.screen collection --es cd.now $NOW
+  OUT=$base
+done
+}
+if [ -n "${VIDEO:-}" ]; then video_scenes; finish; exit 0; fi
+
 # QUICK=1 ([quick-shots] 커밋): 타자기 · 위젯 미리보기만 (5분 남짓)
 if [ -n "${QUICK:-}" ]; then quick_scenes; finish; exit 0; fi
 # ONLY 가 q 장면뿐이면 정원 흐름은 통째로 건너뛰고 q 장면 (스스로 상태를 맞춤) 만

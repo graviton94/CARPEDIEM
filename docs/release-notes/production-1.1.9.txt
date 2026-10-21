@@ -1,0 +1,32 @@
+<ko-KR>
+· 새 위젯: 4×2 ‘정원’과 2×2 ‘하루’가 실제 해 · 달 · 계절을 따라 바뀌어요.
+· 하늘에 노을 · 어스름 · 새벽이 생기고, 해가 진 뒤에야 별과 달이 떠요.
+· 별자리 열둘 · 절기 스물넷을 모으고, 모은 조각을 돌 곁에 둘 수 있어요.
+· 마음이 열세 가지로 늘었어요. 오늘의 질문에 답하거나 그냥 한 줄을 써도 돼요.
+· 하루를 길게 누르면 그날의 마음 · 때 · 계절에 맞춰 노래해요.
+· 숨 쉼은 화면이 꺼져도 이어지고, 소리는 더 고르고 부드러워졌어요.
+</ko-KR>
+<en-US>
+· New widgets: Garden (4×2) and Haru (2×2), following the real sun, moon and seasons.
+· The sky now has sunset, dusk and dawn; stars and moon wait for the sun to set.
+· Collect 12 constellations and 24 solar terms, and place pieces beside a stone.
+· Thirteen feelings. Answer today's question or just write your line.
+· Hold Haru to hear a song that follows your feeling, the hour and the season.
+· Breathing carries on with the screen off, with steadier, softer sound.
+</en-US>
+<ja-JP>
+· 新しいウィジェット：4×2「庭」と2×2「ハル」が、実際の太陽・月・季節とともに変わります。
+· 空に夕焼け・薄暮・夜明けが加わり、日が沈んでから星と月が出ます。
+· 星座12と二十四節気を集めて、かけらを石のそばに置けます。
+· 気持ちが十三に。今日の質問に答えても、ふつうにひとことを書いても。
+· ハルを長押しすると、気持ち・時間・季節に合わせて歌います。
+· ひと息は画面が消えても続き、音はより一定でやわらかく。
+</ja-JP>
+<zh-TW>
+· 新小工具：4×2「庭院」與 2×2「小日」，隨真實的太陽、月亮與季節變化。
+· 天空多了晚霞、暮色與黎明，太陽下山後星星和月亮才出現。
+· 收集十二星座與二十四節氣，並把碎片放在石頭旁。
+· 心情增加到十三種。可以回答今天的提問，也可以直接寫一句話。
+· 長按小日，它會配合心情、時刻與季節唱歌。
+· 螢幕關閉時呼吸也會繼續，聲音更平穩柔和。
+</zh-TW>
