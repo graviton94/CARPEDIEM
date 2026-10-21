@@ -1,5 +1,8 @@
 # 스토어 문안
 
+붙여넣기: 긴 설명은 Play Console 에 그대로 (줄바꿈이 그대로 보임). 묶음 제목은 ◆, 항목은 • 로 시작해 줄글로 이어져 보이지 않게.
+글자 수 (2026-10-21): 긴 설명 ko 1,295 · en 2,387 · ja 1,163 · zh-TW 970 (4,000 까지).
+
 ## 한국어
 
 - **앱 이름 (30자):** 하루의 정원 · 남은 날과 오늘의 한 줄
@@ -7,32 +10,49 @@
 
 **긴 설명**
 
-세상에 하나뿐인 돌, 하루
-처음 열면 나만의 조약돌 ‘하루’를 만나요. 하루는 인생의 길 위, 지금 내가 있는 자리에 앉아 있어요. 쓰다듬으면 웃고, 가족 · 반려동물의 돌과 나란히 앉아요.
+남은 날을 조용히 세고, 오늘의 마음을 한 줄로 떠나보내는 작은 한지 정원이에요.
 
-남은 시간과 인생 달력
-기대수명까지 남은 날을 일 · 주 · 개월 · 년으로. 인생 전체를 작은 조약돌 달력으로 한눈에 봐요.
+◆ 세상에 하나뿐인 돌, 하루
+• 처음 열면 나만의 조약돌 ‘하루’를 만나요. 인생의 길 위, 지금 내가 있는 자리에 앉아 있어요.
+• 쓰다듬으면 웃고, 길게 누르면 그날의 마음 · 때 · 계절에 맞춰 노래해요.
+• 가족 · 반려동물의 돌이 곁에 나란히 앉아요.
 
-한지로 접은 정원
-나무 · 말뚝 · 연 · 이끼가 함께한 날만큼 천천히 자라요. 계절마다 한 장씩 앨범에 모이고, 12월 마지막 주엔 한 해를 한 장으로 돌아봐요.
+◆ 남은 시간과 인생 달력
+• 기대수명까지 남은 시간을 일 · 주 · 개월 · 년으로.
+• 인생 전체를 작은 조약돌 달력으로 한눈에.
 
-진짜 하늘
-고른 나라의 실제 해 뜨고 지는 시각을 따라 하늘빛이 바뀌고, 달도 그날 밤 모양 그대로 떠요. 스물넷 절기마다 정원에 첫서리 · 꽃잎 · 눈송이 같은 작은 변화가 하루 머물러요.
+◆ 진짜 하늘 아래 한지 정원
+• 고른 나라의 실제 해 뜨고 지는 시각을 따라 노을 · 어스름 · 밤 · 새벽이 오고, 달은 그날 밤 모양 그대로 떠요.
+• 나무 · 말뚝 · 연 · 이끼가 함께한 날만큼 천천히 자라요.
+• 스물넷 절기마다 첫서리 · 꽃잎 · 눈송이 같은 작은 변화가 하루 머물러요.
 
-오늘의 한 줄
-기쁨 · 행복 · 설렘부터 덤덤함 · 아쉬움, 걱정 · 불안 · 슬픔까지. 열세 가지 마음 가운데 하나와 함께 오늘을 한 줄에 실어 떠나보내요. 보낸 마음은 그 달의 별자리를 따라 ‘마음의 기록’으로 놓이고 (낮엔 꽃, 밤엔 별), 계절마다 ‘계절의 편지’로 조용히 돌아와요.
+◆ 오늘의 한 줄
+• 열세 가지 마음 가운데 하나와 함께 오늘을 한 줄에 실어 떠나보내요. 오늘의 질문에 답해도 좋아요.
+• 보낸 한 줄은 그 달의 정원에 낮엔 꽃, 밤엔 별로 피어나고, 계절마다 편지로 돌아와요.
+• 미래의 나에게 쓴 한마디는 정한 날에 다시 받아요.
+• 밤엔 ‘하루 닫기’ 1분. 한 줄 · 고마움 · 등불로 하루를 마무리해요.
 
-숨, 쉼 · 돌멍하기
-네 가지 숨이 저마다의 호흡법이에요. 마음 물결 (공명 호흡 5분) · 마음 산책 (상자 호흡 4분) · 마음 등불 (잠들기 전 4-7-8 호흡) · 마음 꽃밭 (한숨 호흡 5분). 숨이 곧 소리가 되어 따라가기만 하면 돼요. 마친 숨은 그날 정원에 발자국 · 꽃 · 따뜻한 등빛으로 남아요. 돌멍하기에선 구름 · 연못 · 화톳불과 계절의 소리, 정원 돌들의 느린 노래를 오래 바라봐요.
+◆ 숨, 쉼 · 돌멍하기
+• 네 가지 숨: 마음 물결 (공명 호흡 5분) · 마음 산책 (상자 호흡 4분) · 마음 등불 (잠들기 전 4-7-8 호흡) · 마음 꽃밭 (한숨 호흡 5분). 소리를 따라가기만 하면 돼요.
+• 마친 숨은 그날 정원에 발자국 · 꽃 · 따뜻한 등빛으로 남아요.
+• 돌멍하기에선 구름 · 연못 · 화톳불과 계절의 소리를 오래 바라봐요. 잠들기 타이머가 소리를 서서히 줄여 줘요.
 
-곁에 있는 사람들
-가족의 생일엔 카드 한 장, 계절마다 돌 곁에 조각 하나. 곁을 떠난 가족은 기억의 돌로, 하늘의 작은 별로 남아요.
+◆ 천천히 모이는 것들
+• 계절 조각 · 손님과 순간 · 별자리 열둘 · 절기 스물넷이 조금씩 모여요.
+• 모은 조각은 하루나 가족의 돌 곁에 하나씩 둘 수 있어요.
+• 12월 마지막 주엔 한 해를 한 장으로 돌아봐요.
 
-홈 화면에서도
-‘남은 날 · 오늘의 한 줄’ 과 ‘마음의 기록’ 위젯 두 가지, 아이콘을 길게 누르면 바로 가는 한 줄 · 숨 · 돌멍하기, 빠른 설정 타일 ‘숨, 쉼’.
+◆ 곁에 있는 사람들
+• 가족의 생일엔 카드 한 장.
+• 곁을 떠난 가족은 기억의 돌로, 하늘의 작은 별로 남아요.
 
-조용한 앱
-계정도, 광고도, 서버도 없어요. 모든 기록은 여기에만 머물러요.
+◆ 홈 화면에서도
+• 위젯 ‘정원’ (4×2): 남은 시간과 오늘의 문장, 하늘 · 해와 달 · 계절을 따라 바뀌는 내 정원.
+• 위젯 ‘하루’ (2×2): 때를 따라 지내는 내 하루. 밤엔 잠들고, 한 줄을 남기면 웃어요.
+• 아이콘을 길게 누르면 한 줄 · 숨 · 돌멍하기 · 하루 닫기로 바로. 빠른 설정 타일 ‘숨, 쉼’ · ‘돌멍하기’.
+
+◆ 조용한 앱
+• 계정도, 광고도, 서버도 없어요. 모든 기록은 여기에만 머물러요.
 
 ## English
 
@@ -41,32 +61,49 @@
 
 **Full description**
 
-Haru, a stone like no other
-Meet your own pebble, Haru. It sits on the path of your life, right where you are now. Tap it and it smiles; the stones of your family and pets sit beside it.
+A small paper garden that quietly counts the days you have left and lets today go in a single line.
 
-Time left and a life calendar
-Days, weeks, months or years left. Your whole life as a small calendar of pebbles.
+◆ Haru, a stone like no other
+• Meet your own pebble, Haru. It sits on the path of your life, right where you are now.
+• Tap it and it smiles. Hold it and it sings, in tune with your feeling, the hour and the season.
+• The stones of your family and pets sit beside it.
 
-A garden folded from hanji paper
-A tree, a post, a kite and moss grow slowly with the days you spend together. One piece gathers in the album each season, and in the last week of December the whole year fits on one page.
+◆ Time left and a life calendar
+• Days, weeks, months or years left.
+• Your whole life as a small calendar of pebbles.
 
-The real sky
-The light follows the actual sunrise and sunset of the country you choose, and the moon rises in that night's shape. On each of the 24 solar terms, something small stays in the garden for the day: first frost, petals, a few snowflakes.
+◆ A real sky over a hanji garden
+• Sunset, dusk, night and dawn follow the real sunrise and sunset of the country you choose, and the moon rises in that night's shape.
+• A tree, a post, a kite and moss grow slowly with the days you spend together.
+• On each of the 24 solar terms, something small stays for the day: first frost, petals, a few snowflakes.
 
-Today's line
-From joy, happiness and excitement to so-so and wistful, to worried, anxious and sad — pick one of thirteen feelings and send today off in a single line. What you sent settles along the month's constellation — flowers by day, stars by night — and comes back each season as a letter.
+◆ Today's line
+• Pick one of thirteen feelings and send today off in a single line, or answer today's question.
+• Your lines bloom in the month's garden, flowers by day and stars by night, and come back each season as a letter.
+• Write to your future self and get it back on the day you choose.
+• At night, close the day in one minute: a line, a thanks, a lantern.
 
-Breathe, rest, and gaze
-Four breaths, each its own method: Ripple (resonance breathing, 5 min), Mind walk (box breathing, 4 min), Lantern (4-7-8 before sleep) and Flower bed (cyclic sighing, 5 min). The breath becomes the sound, so you simply follow it. Each finished breath leaves footprints, flowers or a warmer lantern in the garden that day. Gaze mode lets you watch clouds, a pond or a small fire with the sounds of the season and a slow song of your garden's stones.
+◆ Breathe and gaze
+• Four breaths: Ripple (resonance breathing, 5 min), Mind walk (box breathing, 4 min), Lantern (4-7-8 before sleep) and Flower bed (cyclic sighing, 5 min). Just follow the sound.
+• Each finished breath leaves footprints, flowers or a warmer lantern in the garden that day.
+• Stone gazing: watch clouds, a pond or a small fire with the sounds of the season. A sleep timer fades it out gently.
 
-The people beside you
-A card for family birthdays, a seasonal piece left beside a stone. Those who are gone stay as memory stones and small stars in the sky.
+◆ Things that gather slowly
+• Seasonal pieces, visitors and moments, 12 constellations and 24 solar terms.
+• Place a piece beside Haru or a family stone.
+• In the last week of December, the whole year fits on one page.
 
-On your home screen
-Two widgets (Days left · Today's line, and Heart's record), shortcuts from the app icon to write, breathe or gaze, and a quick settings tile that starts a breath right away.
+◆ The people beside you
+• A card for family birthdays.
+• Those who are gone stay as memory stones and small stars in the sky.
 
-A quiet app
-No account, no ads, no server. Everything stays right here.
+◆ On your home screen
+• Garden widget (4×2): time left and today's words, in your garden as the sky, sun, moon and seasons change.
+• Haru widget (2×2): Haru through the day, asleep at night and smiling once you leave a line.
+• Hold the app icon to write, breathe, gaze or close the day. Quick settings tiles for Breathe and Stone gazing.
+
+◆ A quiet app
+• No account, no ads, no server. Everything stays right here.
 
 ## 日本語
 
@@ -75,32 +112,49 @@ No account, no ads, no server. Everything stays right here.
 
 **詳しい説明**
 
-世界にひとつだけの石、ハル
-はじめてひらくと、自分だけの小石「ハル」に出会います。ハルは人生の道の上、いまいる場所に座っています。なでると笑い、家族やペットの石と並んで座ります。
+残りの日々を静かに数え、今日の気持ちをひとことにのせて手放す、和紙の小さな庭です。
 
-残りの時間と人生カレンダー
-平均寿命までの残りの日々を、日・週・月・年で。人生のすべてを、小石のカレンダーでひと目に。
+◆ 世界にひとつだけの石、ハル
+• はじめてひらくと、自分だけの小石「ハル」に出会います。人生の道の上、いまいる場所に座っています。
+• なでると笑い、長押しするとその日の気持ち・時間・季節に合わせて歌います。
+• 家族やペットの石が、となりに並んで座ります。
 
-紙で折った庭
-木・杭・凧・苔が、ともに過ごした日の分だけゆっくり育ちます。季節ごとに一枚ずつアルバムに集まり、12月の最後の週には一年を一枚でふり返ります。
+◆ 残りの時間と人生カレンダー
+• 平均寿命までの残りの時間を、日・週・月・年で。
+• 人生のすべてを、小石のカレンダーでひと目に。
 
-ほんとうの空
-選んだ国の実際の日の出と日の入りに合わせて空の色が変わり、月もその夜の形のままのぼります。二十四節気ごとに、初霜・花びら・雪のひとひらのような小さな変化が、一日だけ庭にとどまります。
+◆ ほんとうの空と和紙の庭
+• 選んだ国の実際の日の出と日の入りに合わせて、夕焼け・薄暮・夜・夜明けが訪れ、月はその夜の形のままのぼります。
+• 木・杭・凧・苔が、ともに過ごした日の分だけゆっくり育ちます。
+• 二十四節気ごとに、初霜・花びら・雪のひとひらのような小さな変化が、一日だけ庭にとどまります。
 
-今日のひとこと
-よろこび・しあわせ・わくわくから、たんたん・心残り、心配・不安・かなしみまで。十三の気持ちからひとつ選んで、今日をひとことにのせて送ります。送った気持ちはその月の星座をたどって「こころの記録」に置かれ（昼は花、夜は星）、季節ごとに「季節の手紙」として静かに戻ってきます。
+◆ 今日のひとこと
+• 十三の気持ちからひとつ選んで、今日をひとことにのせて送ります。今日の質問に答えても。
+• 送ったひとことは、その月の庭に昼は花、夜は星として咲き、季節ごとに手紙になって戻ってきます。
+• 未来の自分へのひとことは、決めた日にもう一度受けとれます。
+• 夜は「一日を閉じる」1分。ひとこと・感謝・灯りで一日をしめくくります。
 
-ひと息・石ながめ
-四つのひと息は、それぞれの呼吸法です。こころの波紋（共鳴呼吸 5分）・こころの散歩（ボックス呼吸 4分）・こころの灯り（眠る前の4-7-8呼吸）・こころの花畑（ため息呼吸 5分）。息がそのまま音になるので、ついていくだけ。終えたひと息は、その日の庭に足あと・花・あたたかな灯りとして残ります。石ながめでは、雲・池・たき火と季節の音、庭の石たちのゆっくりした歌を、ながめます。
+◆ ひと息・石ながめ
+• 四つのひと息：こころの波紋（共鳴呼吸 5分）・こころの散歩（ボックス呼吸 4分）・こころの灯り（眠る前の4-7-8呼吸）・こころの花畑（ため息呼吸 5分）。音についていくだけです。
+• 終えたひと息は、その日の庭に足あと・花・あたたかな灯りとして残ります。
+• 石ながめでは、雲・池・たき火と季節の音をゆっくりながめます。おやすみタイマーが音をそっと小さくします。
 
-そばにいる人たち
-家族の誕生日にはカードを一枚、季節ごとに石のそばにかけらをひとつ。旅立った家族は思い出の石として、空の小さな星として残ります。
+◆ ゆっくり集まるもの
+• 季節のかけら・お客と瞬間・星座12・二十四節気が、少しずつ集まります。
+• 集めたかけらは、ハルや家族の石のそばにひとつずつ置けます。
+• 12月の最後の週には、一年を一枚でふり返ります。
 
-ホーム画面にも
-「残りの日数 · 今日のひとこと」と「こころの記録」の2つのウィジェット、アイコン長押しですぐ書く・息をする・眺めるショートカット、クイック設定タイル。
+◆ そばにいる人たち
+• 家族の誕生日にはカードを一枚。
+• 旅立った家族は思い出の石として、空の小さな星として残ります。
 
-静かなアプリ
-アカウントも、広告も、サーバーもありません。記録はすべて、ここにだけ残ります。
+◆ ホーム画面にも
+• ウィジェット「庭」（4×2）：残りの時間と今日のことば、空・太陽と月・季節とともに変わるあなたの庭。
+• ウィジェット「ハル」（2×2）：時間とともに過ごすハル。夜は眠り、ひとことを残すと笑います。
+• アイコン長押しで、ひとこと・ひと息・石ながめ・一日を閉じるへすぐ。クイック設定タイル「ひと息」「石ながめ」。
+
+◆ 静かなアプリ
+• アカウントも、広告も、サーバーもありません。記録はすべて、ここにだけ残ります。
 
 ## 繁體中文
 
@@ -109,37 +163,55 @@ No account, no ads, no server. Everything stays right here.
 
 **完整說明**
 
-世上獨一無二的石頭，小日
-第一次打開，會遇見專屬的小石頭「小日」。小日坐在人生的路上，就在此刻所在的位置。摸摸它就會微笑，家人和寵物的石頭也會並排坐在身旁。
+靜靜數著剩下的日子，把今天的心情寫進一句話裡放下的小小韓紙庭院。
 
-剩下的時間與人生月曆
-到平均壽命為止剩下的日子，可以用日、週、月、年來看。整個人生化作小小的石頭月曆，一眼看盡。
+◆ 世上獨一無二的石頭，小日
+• 第一次打開，會遇見專屬的小石頭「小日」。它坐在人生的路上，就在此刻所在的位置。
+• 摸摸它就會微笑，長按它會配合當天的心情、時刻與季節唱歌。
+• 家人和寵物的石頭也會並排坐在身旁。
 
-韓紙摺成的庭院
-樹、木樁、風箏、青苔，會隨著一起度過的日子慢慢長大。每個季節收一頁進相簿，十二月的最後一週，把一整年收在一頁裡回顧。
+◆ 剩下的時間與人生月曆
+• 到平均壽命為止剩下的時間，可以用日、週、月、年來看。
+• 整個人生化作小小的石頭月曆，一眼看盡。
 
-真實的天空
-天色跟著所選國家實際的日出日落時間變化，月亮也照著當晚的形狀升起。每逢二十四節氣，庭院裡會有初霜、花瓣、雪花這樣的小小變化，停留一天。
+◆ 真實天空下的韓紙庭院
+• 跟著所選國家實際的日出日落，晚霞、暮色、夜晚與黎明依序來臨，月亮也照著當晚的形狀升起。
+• 樹、木樁、風箏、青苔，會隨著一起度過的日子慢慢長大。
+• 每逢二十四節氣，初霜、花瓣、雪花這樣的小小變化會在庭院停留一天。
 
-今天的一句話
-從喜悅、幸福、心動，到淡淡的、可惜，再到擔心、不安、悲傷——從十三種心情裡選一種，把今天寫進一句話裡放下。放下的心情會沿著當月的星座，排進「心情的紀錄」（白天是花，夜裡是星星），每個季節再化作「季節的信」，靜靜回來。
+◆ 今天的一句話
+• 從十三種心情裡選一種，把今天寫進一句話裡放下。也可以回答今天的提問。
+• 放下的話會在當月的庭院裡，白天開成花，夜裡化作星星，每個季節再化作信回來。
+• 寫給未來的自己的話，會在約定的那天再次收到。
+• 夜裡用 1 分鐘「結束這一天」：一句話、一份感謝、一盞燈。
 
-喘口氣、看石發呆
-四種呼吸，各有各的方法：心之漣漪（共振呼吸 5 分鐘）、心之散步（方塊呼吸 4 分鐘）、心之燈火（睡前 4-7-8 呼吸）、心之花田（嘆息呼吸 5 分鐘）。呼吸本身就是聲音，跟著走就好。完成的呼吸，會在當天的庭院留下腳印、花朵和溫暖的燈光。看石發呆時，靜靜望著雲朵、池塘、營火，聽著季節的聲音，和庭院石頭們緩慢的歌。
+◆ 喘口氣、看石發呆
+• 四種呼吸：心之漣漪（共振呼吸 5 分鐘）、心之散步（方塊呼吸 4 分鐘）、心之燈火（睡前 4-7-8 呼吸）、心之花田（嘆息呼吸 5 分鐘）。跟著聲音走就好。
+• 完成的呼吸，會在當天的庭院留下腳印、花朵和溫暖的燈光。
+• 看石發呆時，靜靜望著雲朵、池塘、營火，聽著季節的聲音。入睡計時器會讓聲音慢慢變小。
 
-身邊的人
-家人生日時寄一張卡片，每個季節在石頭旁放上一小片。離開身邊的家人，會化作思念之石，成為天上的小星星。
+◆ 慢慢收集的東西
+• 季節的碎片、訪客與瞬間、十二星座、二十四節氣，一點一點聚在一起。
+• 收集到的碎片，可以放在小日或家人的石頭旁。
+• 十二月的最後一週，把一整年收在一頁裡回顧。
 
-主畫面上也有
-「剩下的日子 · 今天的一句話」和「心情的紀錄」兩種小工具，長按圖示就能寫一句、喘口氣、靜靜凝望的捷徑，以及快速設定圖塊。
+◆ 身邊的人
+• 家人生日時寄一張卡片。
+• 離開身邊的家人，會化作思念之石，成為天上的小星星。
 
-安靜的 App
-沒有帳號，沒有廣告，也沒有伺服器。所有紀錄都只留在這裡。
+◆ 主畫面上也有
+• 小工具「庭院」（4×2）：剩下的時間和今天的句子，隨天空、日月與季節變化的庭院。
+• 小工具「小日」（2×2）：隨時間生活的小日，夜裡睡著，留下一句話就會笑。
+• 長按圖示就能直接寫一句話、喘口氣、看石發呆、結束這一天。快速設定圖塊「喘口氣」「看石發呆」。
+
+◆ 安靜的 App
+• 沒有帳號，沒有廣告，也沒有伺服器。所有紀錄都只留在這裡。
 
 ## 스크린샷 6장 · 그래픽 이미지 (네 말)
 
 만든 그림: `docs/store/<말>/` (ko · en · ja · zh-TW 마다 스크린샷 1080 × 1920 여섯 장 + 그래픽 이미지 `feature.png` 1024 × 500). 아이콘은 `docs/store/icon-512.png` 하나.
 다시 만들기: Actions › Android screenshots 를 **store** 켜고 실행 → `python3 scripts/build_store.py <screenshots-android 클론>`
+소개 영상: Actions › Android screenshots 를 **video** 켜고 (quick 끔) 실행 → `python3 scripts/build_video.py <screenshots-android(-dev) 클론> <내보낼 폴더>` → 말마다 `carpediem-<말>.mp4` (1920 × 1080, 27초). YouTube 에 올리고 그 주소를 Play Console › 기본 스토어 등록정보 › 동영상에.
 
 | # | 캡처 | 한국어 | English | 日本語 | 繁體中文 |
 |---|---|---|---|---|---|
@@ -163,3 +235,8 @@ No account, no ads, no server. Everything stays right here.
 | 대상 연령 | 13세 이상 |
 | 개인정보처리방침 | https://graviton94.github.io/carpediem/privacy/ (옛 /privacy/ 는 넘겨 줌) |
 | 웹사이트 | https://graviton94.github.io/carpediem/ |
+
+## 정식 출시 노트 (1.1.6 → 1.1.9)
+
+정식 트랙에 1.1.6 다음으로 1.1.9 를 올릴 때는 `docs/release-notes/production-1.1.9.txt` (1.1.7 ~ 1.1.9 를 한데 묶음, en 470자).
+테스트 트랙에는 `docs/release-notes/1.1.9.txt` (1.1.9 에서 바뀐 것만).

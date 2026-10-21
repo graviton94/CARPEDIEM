@@ -20,6 +20,10 @@ on:
         description: "스토어 그림 장면만 (네 말 모두)"
         type: boolean
         default: false
+      video:
+        description: "스토어 소개 영상용 녹화 (말을 비우면 네 말 모두)"
+        type: boolean
+        default: false
   push:
     branches: [main]
     paths: ["android/**", "design/**", "scripts/android_shots.sh", ".github/workflows/android-screens.yml"]
@@ -71,7 +75,7 @@ jobs:
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           script: |
             adb install -r android/app/build/outputs/apk/debug/app-debug.apk
-            if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then export QUICK="${{ inputs.quick && '1' || '' }}" STORE="${{ inputs.store && '1' || '' }}" ONLY="${{ inputs.only }}" LOCALES="${{ inputs.locale }}"; else export QUICK="${{ contains(github.event.head_commit.message, '[quick-shots]') && '1' || '' }}" ONLY="$(echo "$MSG" | grep -o '\[only [^]]*\]' | head -1 | sed 's/^\[only //; s/\]$//')" LOCALES="$(echo "$MSG" | grep -o '\[locale [^]]*\]' | head -1 | sed 's/^\[locale //; s/\]$//')"; fi; bash scripts/android_shots.sh shots
+            if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then export QUICK="${{ inputs.quick && '1' || '' }}" STORE="${{ inputs.store && '1' || '' }}" VIDEO="${{ inputs.video && '1' || '' }}" ONLY="${{ inputs.only }}" LOCALES="${{ inputs.locale }}"; else export QUICK="${{ contains(github.event.head_commit.message, '[quick-shots]') && '1' || '' }}" ONLY="$(echo "$MSG" | grep -o '\[only [^]]*\]' | head -1 | sed 's/^\[only //; s/\]$//')" LOCALES="$(echo "$MSG" | grep -o '\[locale [^]]*\]' | head -1 | sed 's/^\[locale //; s/\]$//')"; fi; bash scripts/android_shots.sh shots
       - name: Push to screenshots-android branch
         if: always()
         # main 이 아닌 가지에서 직접 실행하면 screenshots-android-dev 로 (스토어 그림을 덮지 않게)
