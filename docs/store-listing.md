@@ -211,6 +211,7 @@ A small paper garden that quietly counts the days you have left and lets today g
 
 만든 그림: `docs/store/<말>/` (ko · en · ja · zh-TW 마다 스크린샷 1080 × 1920 여섯 장 + 그래픽 이미지 `feature.png` 1024 × 500). 아이콘은 `docs/store/icon-512.png` 하나.
 다시 만들기: Actions › Android screenshots 를 **store** 켜고 실행 → `python3 scripts/build_store.py <screenshots-android 클론>`
+소개 영상: Actions › Android screenshots 를 **video** 켜고 (quick 끔) 실행 → `python3 scripts/build_video.py <screenshots-android(-dev) 클론> <내보낼 폴더>` → 말마다 `carpediem-<말>.mp4` (1920 × 1080, 27초). YouTube 에 올리고 그 주소를 Play Console › 기본 스토어 등록정보 › 동영상에.
 
 | # | 캡처 | 한국어 | English | 日本語 | 繁體中文 |
 |---|---|---|---|---|---|
