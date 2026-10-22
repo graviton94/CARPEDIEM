@@ -24,12 +24,13 @@ import kotlin.random.Random
 
 /**
  * 한 줄에 사진 한 장 (11). 원본은 남기지 않는다: 고른 사진을 가운데서 정사각으로 잘라 SIZE 픽셀로 줄인 사본만 폰 안 (files/photos) 에.
+ * 1.1.10: 640 → 480 (화면에선 가장 커도 폭의 절반쯤, 바랜 한지 사진이라 충분). 한 장 40KB 안팎이라 클라우드 백업에도 몇 해치가 들어감.
  * 화면에는 그대로 보이지 않고 ‘정원의 시간이 묻은 사진’으로: 정원 빛으로 다시 칠하고, 바랜 빛 · 고운 입자 · 한지 결 · 해진 가장자리.
  * 사진이 나이를 먹는다: 남긴 날에서 멀어질수록 조금씩 더 바래고 결이 깊어진다 (그릴 때마다 나이만큼, 사본은 그대로).
  */
 object Photos {
-    const val SIZE = 640
-    private const val QUALITY = 82
+    const val SIZE = 480
+    private const val QUALITY = 80
     private const val PENDING = "pending.jpg"
     /** 지난 날을 고치며 골라 둔 사진 (오늘 쓰는 중인 사진과 겹치지 않게 따로). */
     private const val EDIT = "edit.jpg"
@@ -80,6 +81,26 @@ object Photos {
     fun undo(ctx: Context, day: LocalDate) { val u = undoFile(ctx, day); if (u.exists() && !file(ctx, day).exists()) u.renameTo(file(ctx, day)); dropUndo(ctx); cache.evictAll() }
     fun clear(ctx: Context) { dir(ctx).listFiles()?.forEach { it.delete() }; cache.evictAll() }
 
+    /**
+     * 예전 (1.1.9 까지) 640 사본을 한 번만 SIZE 로 다시 줄임 (백업 한도에 사진이 더 많이 들어가게). 이미 작은 사진은 그대로.
+     * 앱을 켤 때 화면 밖에서 부름. 줄이다 실패한 사진은 원래 것을 남김.
+     */
+    fun shrinkOld(ctx: Context) {
+        dir(ctx).listFiles()?.filter { photoName(it.name) }?.forEach { f ->
+            runCatching {
+                val o = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+                BitmapFactory.decodeFile(f.path, o)
+                if (o.outWidth <= SIZE) return@forEach
+                val src = BitmapFactory.decodeFile(f.path) ?: return@forEach
+                val small = Bitmap.createScaledBitmap(src, SIZE, SIZE, true)
+                val tmp = File(f.parentFile, f.name + ".tmp")
+                tmp.outputStream().use { small.compress(Bitmap.CompressFormat.JPEG, QUALITY, it) }
+                if (!tmp.renameTo(f)) tmp.delete()
+            }
+        }
+        cache.evictAll()
+    }
+
     // ───── 기록 옮기기: 사진도 함께 (이름 → base64) ─────
     private fun photoName(n: String) = io.github.graviton94.carpediem.core.Backup.isPhotoName(n)
     fun exportTo(ctx: Context, w: android.util.JsonWriter) {
@@ -95,6 +116,7 @@ object Photos {
         clear(ctx)
         stage.listFiles()?.forEach { f -> if (!f.renameTo(File(dir(ctx), f.name))) { f.copyTo(File(dir(ctx), f.name), overwrite = true); f.delete() } }
         stage.deleteRecursively(); cache.evictAll()
+        shrinkOld(ctx)   // 예전 (640) 기록 파일에서 들여온 사진도 지금 크기로
     }
 
     // ───── 시간이 묻은 사진 ─────

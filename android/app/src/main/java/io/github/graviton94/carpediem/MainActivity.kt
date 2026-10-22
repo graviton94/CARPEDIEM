@@ -68,7 +68,14 @@ class CarpeDiemApplication : Application() {
         // 앱이 멈추면 그 자리를 폰 안에만 적어 둠 (다음에 열 때 보낼지 물음)
         io.github.graviton94.carpediem.data.Feedback.install(this)
         Widgets.scheduleHourly(this)
+        // 1.1.10: 예전 640 사진을 480 으로 (폰마다 한 번, 화면 밖에서). 표시는 백업되지 않는 곳에 (예전 기록 파일을 들여온 새 폰에서도 다시 줄이게)
+        val done = java.io.File(noBackupFilesDir, PHOTOS_480)
+        if (!done.exists()) Thread {
+            io.github.graviton94.carpediem.data.Photos.shrinkOld(this)
+            runCatching { done.createNewFile() }
+        }.start()
     }
+    private companion object { const val PHOTOS_480 = "photos480" }
 }
 
 private sealed interface Screen {

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Android 11 이하 백업: data_extraction_rules.xml 과 같은 범위. -->
+<!-- Android 11 이하 백업: data_extraction_rules.xml 과 같은 범위 (실제로 무엇을 넣을지는 GardenBackupAgent 가 한도에 맞춰 고름). -->
 <full-backup-content>
     <include domain="sharedpref" path="carpediem.xml" />
+    <include domain="file" path="photos/" />
 </full-backup-content>
