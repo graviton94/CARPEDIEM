@@ -150,6 +150,25 @@ done
 }
 if [ -n "${VIDEO:-}" ]; then video_scenes; finish; exit 0; fi
 
+# BACKUP=1: 폰 백업 (GardenBackupAgent) 이 기록 · 사진을 백업하고 앱 데이터를 지운 뒤 되살리는지 (로컬 백업 통로로) → $OUT/backup/
+backup_check() {
+  local d=$OUT/backup; mkdir -p "$d"
+  open --ez cd.reset true --es cd.design garden --el cd.seed 2718281 --es cd.birth 2000-05-12 --es cd.sex female --ez cd.meet false --ez cd.photos true --es cd.now $NOW; sleep 12
+  adb shell am force-stop $P
+  adb shell run-as $P ls -l files/photos shared_prefs > "$d/before.txt" 2>&1
+  adb shell bmgr enable true; adb shell bmgr list transports > "$d/transports.txt" 2>&1
+  adb shell bmgr transport com.android.localtransport/.LocalTransport >> "$d/transports.txt" 2>&1
+  adb shell bmgr backupnow $P > "$d/backup.txt" 2>&1
+  adb shell pm clear $P > "$d/clear.txt" 2>&1
+  adb shell run-as $P ls -l files/photos shared_prefs > "$d/cleared.txt" 2>&1
+  adb shell bmgr restore $P > "$d/restore.txt" 2>&1; sleep 5
+  adb shell run-as $P ls -l files/photos shared_prefs > "$d/after.txt" 2>&1
+  adb logcat -d -s BackupManagerService:* FullBackup:* BackupAgent:* LocalTransport:* > "$d/logcat.txt" 2>&1 || true
+  open --es cd.now $NOW; shot backup_after_restore 10
+  cat "$d"/*.txt | head -80
+}
+if [ -n "${BACKUP:-}" ]; then backup_check; finish; exit 0; fi
+
 # QUICK=1 ([quick-shots] 커밋): 타자기 · 위젯 미리보기만 (5분 남짓)
 if [ -n "${QUICK:-}" ]; then quick_scenes; finish; exit 0; fi
 # ONLY 가 q 장면뿐이면 정원 흐름은 통째로 건너뛰고 q 장면 (스스로 상태를 맞춤) 만

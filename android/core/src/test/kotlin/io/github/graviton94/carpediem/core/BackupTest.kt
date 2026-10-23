@@ -60,4 +60,11 @@ class BackupTest {
     }
 
     @Test fun notificationPermissionIsAskedAgain() = assertTrue("notifyAsked" in Backup.PER_DEVICE)
+
+    @Test fun photosWithinBudgetNewestFirst() {
+        val files = listOf("20100.jpg" to 40L, "20300.jpg" to 40L, "20200.jpg" to 40L, "pending.jpg" to 10L, "undo-20400.jpg" to 10L)
+        assertEquals(listOf("20300.jpg", "20200.jpg"), Backup.photosWithin(files, 100))   // 최근 둘, 오래된 것만 빠짐
+        assertEquals(listOf("20300.jpg", "20200.jpg", "20100.jpg"), Backup.photosWithin(files, Long.MAX_VALUE))
+        assertEquals(emptyList<String>(), Backup.photosWithin(files, 0))
+    }
 }

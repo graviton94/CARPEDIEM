@@ -41,6 +41,20 @@ object Backup {
     /** 사진은 날짜 번호 이름 (예: 20123.jpg) 만. 경로를 품은 이름 (../ 등) 은 버린다. */
     fun isPhotoName(name: String): Boolean = name.endsWith(".jpg") && name.removeSuffix(".jpg").toLongOrNull() != null
 
+    /**
+     * 클라우드 백업에 넣을 사진 (1.1.10): 한도 (budget 바이트) 안에서 최근 날부터. 넘치면 오래된 사진만 빠지고 기록은 늘 들어감
+     * (Android 자동 백업은 앱당 한도를 넘으면 그 앱 백업 전체가 멈추므로). files = (이름, 크기).
+     */
+    fun photosWithin(files: List<Pair<String, Long>>, budget: Long): List<String> {
+        var used = 0L
+        val out = ArrayList<String>()
+        for ((name, size) in files.filter { isPhotoName(it.first) }.sortedByDescending { it.first.removeSuffix(".jpg").toLong() }) {
+            if (used + size > budget) break
+            used += size; out += name
+        }
+        return out
+    }
+
     /** 폰마다 다른 것: 새 폰에서 다시 묻는다 (알림 허락). */
     val PER_DEVICE = setOf("notifyAsked")
 }
