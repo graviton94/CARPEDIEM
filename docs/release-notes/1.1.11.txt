@@ -1,0 +1,24 @@
+<ko-KR>
+· 기록은 쓰는 곳, 추억은 다시 보고 나누는 곳으로 나눴어요. 마음의 기록은 추억에 있어요.
+· 모은 것은 추억 맨 아래 한 줄로 접었어요.
+· 지난 날을 고르면 그날을 세로 그림 한 장으로 보낼 수 있어요. 사진 · 한 줄 · 하루의 표정까지.
+· 설정의 백업 · 옮기기를 정리하고, 구글 드라이브에 저장하는 길을 알려 드려요.
+</ko-KR>
+<en-US>
+· Journal is for writing, Memories for looking back and sharing; Heart’s record now lives in Memories.
+· Collections fold into one row at the bottom of Memories.
+· Pick a past day to share it as a tall card: photo, line and Haru’s face.
+· Clearer backup and moving in Settings, with the way to save to Google Drive.
+</en-US>
+<ja-JP>
+· 記録は書くところ、思い出は読み返して分かち合うところに。こころの記録は思い出にあります。
+· 集めたものは思い出のいちばん下に一行でまとめました。
+· 過去の日を選ぶと、その日を縦長の一枚にして送れます。写真・ひとこと・ハルの表情まで。
+· 設定のバックアップ・引っ越しを整理し、Google ドライブに保存する方法をご案内します。
+</ja-JP>
+<zh-TW>
+· 紀錄是寫的地方，回憶是回看與分享的地方；心情的紀錄移到回憶裡。
+· 收藏收成回憶最下方的一行。
+· 選一個過去的日子，就能把那天做成一張直式圖片分享：照片、那句話和小日的表情。
+· 整理了設定裡的備份與搬移，並說明如何存到 Google 雲端硬碟。
+</zh-TW>
