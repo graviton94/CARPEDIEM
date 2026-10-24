@@ -1259,6 +1259,8 @@
 "recap.birthday" = "%1$@’s birthday";
 "recap.myBirthday" = "My birthday";
 "recap.videoChooser" = "Send video";
+"recap.photo" = "Photo";
+"recap.pickSub" = "Choose the days for the picture. You can swap or remove them.";
 "news.v1_1_12.1" = "Share a month or a year from Memories › Heart’s record as a new card: photos, a line, the feeling you felt most and a word from Haru.";
 "news.v1_1_12.2" = "Or make a short video, about 30 seconds for a month and a minute for a year, with each flower ringing its day’s note.";
 "news.v1_1_12.3" = "Check the days before making it, swap or remove any. Days with heavy feelings are never picked on their own.";

@@ -22,7 +22,10 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -112,6 +115,10 @@ internal fun recapPlan(ctx: android.content.Context, state: AppState, year: Int,
 internal fun recapDayLabel(ctx: android.content.Context, p: Recap.Pick): String =
     listOfNotNull(p.special, RecordText.day(ctx, p.date), p.line.feeling?.let { Labels.feeling(ctx, it) }).joinToString(" · ")
 
+/** 고르는 화면의 날 이름: 카드 이름에 ‘· 사진’ 까지 (그날 사진이 있는지 보이게). */
+internal fun recapListLabel(ctx: android.content.Context, p: Recap.Pick): String =
+    recapDayLabel(ctx, p) + if (p.photo) " · " + ctx.getString(R.string.recap_photo) else ""
+
 /** 카드 · 영상 한 벌의 재료: 고른 날의 사진까지 (화면 스레드 밖에서). */
 internal fun recapArt(ctx: android.content.Context, state: AppState, plan: RecapPlan, picks: List<Recap.Pick>, night: Boolean, today: LocalDate): RecapCards.Art {
     val photos = picks.filter { it.photo }.mapNotNull { p -> runCatching { Photos.weathered(ctx, p.date, today) }.getOrNull()?.let { p.date to it } }.toMap()
@@ -133,6 +140,8 @@ internal fun RecapShare(state: AppState, year: Int, month: Int?, today: LocalDat
     var step by remember { mutableStateOf(RecapStep.CHOOSE) }
     var cardPicks by remember(pl) { mutableStateOf(pl.cardPicks) }
     var videoPicks by remember(pl) { mutableStateOf(pl.videoPicks) }
+    // 그린 그림 (보낼 원본 · 화면용으로 줄인 것): 같은 날들로 다시 열면 다시 그리지 않음
+    val cards = remember(pl) { HashMap<List<LocalDate>, Pair<Bitmap, Bitmap>>() }
     when (step) {
         RecapStep.CHOOSE -> GardenAlert(
             onDismissRequest = onDismiss,
@@ -146,7 +155,7 @@ internal fun RecapShare(state: AppState, year: Int, month: Int?, today: LocalDat
             },
             confirmButton = { AlertButton(stringResource(R.string.cancel), onDismiss, quiet = true) },
         )
-        RecapStep.CARD -> RecapCardPreview(state, pl, cardPicks, night, today, onOther = { step = RecapStep.PICK_CARD }, onDismiss = onDismiss)
+        RecapStep.CARD -> RecapCardPreview(state, pl, cardPicks, night, today, cards, onOther = { step = RecapStep.PICK_CARD }, onDismiss = onDismiss)
         RecapStep.PICK_CARD -> RecapPicker(pl, cardPicks, pl.cardMax, video = false, today = today, onChange = { cardPicks = it }, onBack = { step = RecapStep.CARD }, onGo = { step = RecapStep.CARD })
         RecapStep.PICK_VIDEO -> RecapPicker(pl, videoPicks, pl.videoMax, video = true, today = today, onChange = { videoPicks = it }, onBack = { step = RecapStep.CHOOSE }, onGo = { step = RecapStep.MAKING })
         RecapStep.MAKING -> RecapMaking(state, pl, videoPicks, night, today, onDone = onDismiss, onStop = { step = RecapStep.PICK_VIDEO })
@@ -165,11 +174,19 @@ private fun RecapOption(title: String, sub: String, seed: Int, onClick: () -> Un
 
 /** 그림 한 장 미리보기: 다른 한 줄로 · 보내기. */
 @Composable
-private fun RecapCardPreview(state: AppState, pl: RecapPlan, picks: List<Recap.Pick>, night: Boolean, today: LocalDate, onOther: () -> Unit, onDismiss: () -> Unit) {
+private fun RecapCardPreview(state: AppState, pl: RecapPlan, picks: List<Recap.Pick>, night: Boolean, today: LocalDate, cards: HashMap<List<LocalDate>, Pair<Bitmap, Bitmap>>, onOther: () -> Unit, onDismiss: () -> Unit) {
     val ctx = LocalContext.current
-    val bmp by produceState<Bitmap?>(null, picks) {
-        value = withContext(Dispatchers.Default) { runCatching { recapArt(ctx, state, pl, picks, night, today).let { if (pl.isMonth) RecapCards.month(it) else RecapCards.year(it) } }.getOrNull() }
+    val key = picks.map { it.date }
+    val made by produceState<Pair<Bitmap, Bitmap>?>(cards[key], picks) {
+        if (value == null) value = withContext(Dispatchers.Default) {
+            runCatching {
+                val full = recapArt(ctx, state, pl, picks, night, today).let { if (pl.isMonth) RecapCards.month(it) else RecapCards.year(it) }
+                // 창에는 줄인 그림 (원본 1080 × 1920 을 그대로 띄우면 창이 뜨는 동안 버벅임), 보낼 때만 원본
+                (full to Bitmap.createScaledBitmap(full, RecapCards.W / PREVIEW_DIV, RecapCards.H / PREVIEW_DIV, true)).also { cards[key] = it }
+            }.getOrNull()
+        }
     }
+    val bmp = made?.second
     GardenAlert(
         onDismissRequest = onDismiss,
         title = { androidx.compose.material3.Text(pl.title + " · " + stringResource(R.string.recap_card)) },
@@ -182,7 +199,7 @@ private fun RecapCardPreview(state: AppState, pl: RecapPlan, picks: List<Recap.P
             }
         },
         dismissButton = { if (pl.all.isNotEmpty()) AlertButton(stringResource(R.string.recap_otherLine), onOther, quiet = true) },
-        confirmButton = { AlertButton(stringResource(R.string.recap_send), { bmp?.let { ShareCards.send(ctx, it, pl.name) }; onDismiss() }, enabled = bmp != null) },
+        confirmButton = { AlertButton(stringResource(R.string.recap_send), { made?.first?.let { ShareCards.send(ctx, it, pl.name) }; onDismiss() }, enabled = made != null) },
     )
 }
 
@@ -195,11 +212,12 @@ private fun RecapPicker(pl: RecapPlan, picks: List<Recap.Pick>, max: Int, video:
     val p = Theme.palette
     var choosing by remember { mutableStateOf<Recap.Pick?>(null) }
     var adding by remember { mutableStateOf(false) }
-    Dialog(onBack, DialogProperties(usePlatformDefaultWidth = false)) {
-        Column(Modifier.fillMaxSize().background(Theme.gc.paper).statusBarsPadding().navigationBarsPadding().padding(horizontal = Theme.deviceClass.pageMargin)) {
+    // 창을 화면 끝까지 쓰되 (decorFitsSystemWindows = false) 시스템 바 높이를 받아 그만큼 비움: 아래 버튼이 홈 · 뒤로 바 위에 오도록
+    Dialog(onBack, DialogProperties(usePlatformDefaultWidth = false, decorFitsSystemWindows = false)) {
+        Column(Modifier.fillMaxSize().background(Theme.gc.paper).windowInsetsPadding(WindowInsets.systemBars).padding(horizontal = Theme.deviceClass.pageMargin).padding(bottom = Tokens.Space.sp2)) {
             Column(Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(vertical = Tokens.Space.sp4), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
                 TokenText(if (video) stringResource(R.string.recap_makeTitle, pl.period) else stringResource(R.string.recap_chooseDay), Tokens.TypeScale.title3.serif())
-                TokenText(if (video && !pl.isMonth) stringResource(R.string.recap_makeYearSub, "$max") else stringResource(R.string.recap_makeSub), Tokens.TypeScale.footnote, color = p.secondary)
+                TokenText(if (video && !pl.isMonth) stringResource(R.string.recap_makeYearSub, "$max") else stringResource(if (video) R.string.recap_makeSub else R.string.recap_pickSub), Tokens.TypeScale.footnote, color = p.secondary)
                 val introSec = RecapVideo.scenes(pl.isMonth, emptyList())
                 if (video) {
                     FixedRow(stringResource(R.string.recap_intro, pl.period).replace('\n', ' '), stringResource(R.string.recap_sec, "${introSec[0].sec.toInt()}"))
@@ -250,14 +268,15 @@ private fun FixedRow(text: String, sec: String) {
 private fun PickRow(pl: RecapPlan, pick: Recap.Pick, today: LocalDate, onOther: () -> Unit, onDrop: () -> Unit) {
     val ctx = LocalContext.current
     val p = Theme.palette
-    val thumb by produceState<Bitmap?>(null, pick.date) { if (pick.photo) value = withContext(Dispatchers.IO) { runCatching { Photos.weathered(ctx, pick.date, today) }.getOrNull() } }
+    val thumb by produceState<Bitmap?>(null, pick.date) { if (pick.photo) value = withContext(Dispatchers.Default) { runCatching { Photos.thumb(ctx, pick.date, today, THUMB_PX) }.getOrNull() } }
     Row(Modifier.fillMaxWidth().crayonBox(null, G.Radius.box, G.Stroke.chip, 1309 + pick.date.dayOfYear).padding(Tokens.Space.sp3), horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
-        Box(Modifier.size(Theme.unit * 64).clip(androidx.compose.foundation.shape.RoundedCornerShape(Theme.unit * 6)).background(Theme.gc.chip), contentAlignment = Alignment.Center) {
-            thumb?.let { Image(it.asImageBitmap(), null, Modifier.fillMaxSize(), contentScale = androidx.compose.ui.layout.ContentScale.Crop) }
-                ?: TokenText("“ ”", Tokens.TypeScale.footnote, color = p.secondary)
+        // 사진은 액자째 (잘라내지 않고), 없으면 옅은 자리에 따옴표
+        Box(Modifier.size(Theme.unit * 64), contentAlignment = Alignment.Center) {
+            thumb?.let { Image(it.asImageBitmap(), null, Modifier.fillMaxSize(), contentScale = androidx.compose.ui.layout.ContentScale.Fit) }
+                ?: Box(Modifier.fillMaxSize().clip(androidx.compose.foundation.shape.RoundedCornerShape(Theme.unit * 6)).background(Theme.gc.chip), contentAlignment = Alignment.Center) { TokenText("“ ”", Tokens.TypeScale.footnote, color = p.secondary) }
         }
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
-            TokenText(recapDayLabel(ctx, pick), Tokens.TypeScale.caption1, color = if (pick.special != null) p.olive else p.secondary, weight = FontWeight.SemiBold)
+            TokenText(recapListLabel(ctx, pick), Tokens.TypeScale.caption1, color = if (pick.special != null) p.olive else p.secondary, weight = FontWeight.SemiBold)
             TokenText("“${RecapCards.short(pick.line.text, 60)}”", Tokens.TypeScale.callout.serif(), maxLines = 2)
             Row(horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
                 if (pl.all.size > 1) GardenChip(stringResource(R.string.recap_otherDay), false, 1315, onOther)
@@ -277,10 +296,18 @@ private fun RecapDayChooser(pl: RecapPlan, picks: List<Recap.Pick>, onPick: (Rec
         title = { androidx.compose.material3.Text(stringResource(R.string.recap_chooseDay)) },
         text = {
             LazyColumn(Modifier.heightIn(max = 420.dp)) {
-                items(rest, key = { it.date.toEpochDay() }) { a ->
-                    Column(Modifier.fillMaxWidth().clickable { onPick(a) }.padding(vertical = Tokens.Space.sp2)) {
-                        TokenText(recapDayLabel(ctx, a), Tokens.TypeScale.caption1, color = Theme.palette.secondary)
-                        TokenText(RecapCards.short(a.line.text, 60), Tokens.TypeScale.callout.serif(), maxLines = 2)
+                itemsIndexed(rest, key = { _, a -> a.date.toEpochDay() }) { i, a ->
+                    // 날 사이엔 옅은 선 하나
+                    if (i > 0) Box(Modifier.fillMaxWidth().height(Theme.unit * 1).background(Theme.palette.secondary.copy(alpha = 0.22f)))
+                    Row(Modifier.fillMaxWidth().clickable { onPick(a) }.padding(vertical = Tokens.Space.sp2), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp2)) {
+                        Column(Modifier.weight(1f)) {
+                            TokenText(recapListLabel(ctx, a), Tokens.TypeScale.caption1, color = Theme.palette.secondary)
+                            TokenText(RecapCards.short(a.line.text, 60), Tokens.TypeScale.callout.serif(), maxLines = 2)
+                        }
+                        if (a.photo) {
+                            val t by produceState<Bitmap?>(null, a.date) { value = withContext(Dispatchers.Default) { runCatching { Photos.thumb(ctx, a.date, LocalDate.now(), THUMB_PX) }.getOrNull() } }
+                            Box(Modifier.size(Theme.unit * 44)) { t?.let { Image(it.asImageBitmap(), null, Modifier.fillMaxSize(), contentScale = androidx.compose.ui.layout.ContentScale.Fit) } }
+                        }
                     }
                 }
             }
@@ -307,8 +334,8 @@ private fun RecapMaking(state: AppState, pl: RecapPlan, picks: List<Recap.Pick>,
         r.onSuccess { ShareCards.sendVideo(ctx, it); onDone() }
             .onFailure { e -> if (e is kotlinx.coroutines.CancellationException) throw e; android.util.Log.e("Recap", "video", e); state.say(failed); onStop() }
     }
-    Dialog(onStop, DialogProperties(usePlatformDefaultWidth = false, dismissOnClickOutside = false)) {
-        Column(Modifier.fillMaxSize().background(Theme.gc.paper).statusBarsPadding().navigationBarsPadding().padding(Theme.deviceClass.pageMargin),
+    Dialog(onStop, DialogProperties(usePlatformDefaultWidth = false, dismissOnClickOutside = false, decorFitsSystemWindows = false)) {
+        Column(Modifier.fillMaxSize().background(Theme.gc.paper).windowInsetsPadding(WindowInsets.systemBars).padding(Theme.deviceClass.pageMargin),
             horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
             Spacer(Modifier.weight(1f))
             val art = remember { HaruArt.of(state.store.haruSeed, false) }
@@ -328,3 +355,7 @@ private fun RecapMaking(state: AppState, pl: RecapPlan, picks: List<Recap.Pick>,
         }
     }
 }
+
+/** 미리보기 그림을 줄이는 배수 (1080 × 1920 → 540 × 960), 고르는 화면의 작은 사진 크기 (px). */
+private const val PREVIEW_DIV = 2
+private const val THUMB_PX = 200

@@ -1261,6 +1261,8 @@
     <string name="recap_birthday">%1$s’s birthday</string>
     <string name="recap_myBirthday">My birthday</string>
     <string name="recap_videoChooser">Send video</string>
+    <string name="recap_photo">Photo</string>
+    <string name="recap_pickSub">Choose the days for the picture. You can swap or remove them.</string>
     <string name="news_v1_1_12_1">Share a month or a year from Memories › Heart’s record as a new card: photos, a line, the feeling you felt most and a word from Haru.</string>
     <string name="news_v1_1_12_2">Or make a short video, about 30 seconds for a month and a minute for a year, with each flower ringing its day’s note.</string>
     <string name="news_v1_1_12_3">Check the days before making it, swap or remove any. Days with heavy feelings are never picked on their own.</string>
