@@ -16,7 +16,7 @@ open() { adb shell am force-stop $P; adb shell am start -W -n $P/.MainActivity "
 wantany() { local n; for n in "$@"; do want "$n" && return 0; done; return 1; }
 want() { [ -z "${ONLY:-}" ] && return 0; case " $ONLY " in *" ${1%%_*} "*) return 0;; esac; return 1; }
 # 보기만 바꾸는 옵션 (폰에 남는 상태가 없음): ONLY 로 고른 장면이 아니면 이런 장면은 열지도 않고 건너뜀 (앱을 껐다 켜는 시간 · 느린 에뮬레이터 멈춤을 아낌)
-VIEW=" cd.now cd.screen cd.page cd.stoneId cd.chance cd.term cd.title cd.openMonth cd.openYear cd.openLetter cd.adornSheet cd.care cd.guest cd.news cd.update cd.creditsYear cd.slip cd.sleepSheet cd.letterNote cd.dew cd.timeWheel cd.settingsFocus "
+VIEW=" cd.now cd.screen cd.page cd.stoneId cd.chance cd.term cd.title cd.openMonth cd.openYear cd.openLetter cd.adornSheet cd.care cd.guest cd.news cd.update cd.creditsYear cd.slip cd.sleepSheet cd.letterNote cd.dew cd.timeWheel cd.settingsFocus cd.recapPick "
 # s 장면 기다릴초 [열기 옵션…]: 고른 장면이면 열고 찍음. 아니면 상태를 바꾸는 옵션이 있을 때만 열어 두고 (다음 장면이 기대니까), 보기만 하는 장면은 건너뜀
 s() { local n=$1 w=$2 a; shift 2
   if want "$n"; then open "$@"; shot "$n" "$w"; return; fi
@@ -323,6 +323,10 @@ s g96g_sky_sunrise 6 --es cd.now 2026-10-18T06:45
 s g92_time_wheel 5 --es cd.screen settings --es cd.timeWheel m --es cd.now $NOW
 # 정원의 한 해 한 장 (S2): 나무 · 말뚝 · 연이 있는 작은 정원
 s g72_garden_year 8 --ez cd.gardenYear true --es cd.now 2026-10-20T15:00
+# 날 고르기 (1.1.12): 홈 · 뒤로 버튼이 있는 3버튼 내비게이션에서 아래 ‘완료’ 가 바 위에 오는지
+if want g98; then adb shell cmd overlay enable com.android.internal.systemui.navbar.threebutton >/dev/null 2>&1; sleep 3
+  open --ez cd.months true --ez cd.recapPick true --es cd.now 2026-09-28T15:00; shot g98_recap_pick 7
+  adb shell cmd overlay enable com.android.internal.systemui.navbar.gestural >/dev/null 2>&1; sleep 2; fi
 # 별자리 정원: 마음의 기록 (이번 달 · 낮/밤) · 지난 달의 정원 카드 · 한 해의 띠 (밤) · 지난 정원
 s g49_record_month 6 --ez cd.months true --ez cd.openMonth true --es cd.now 2026-09-28T15:00
 s g50_record_month_night 6 --ez cd.openMonth true --es cd.now 2026-09-28T22:30

@@ -418,6 +418,7 @@ private fun MainActivity.debugSetup(state: AppState): Screen {
     x.getStringExtra("cd.update")?.let { u -> state.update = when (u) { "ready" -> AppState.UpdateState.READY; "downloading" -> AppState.UpdateState.DOWNLOADING; else -> AppState.UpdateState.AVAILABLE }; state.updateVersion = 999 }
     state.debugSlip = x.getBooleanExtra("cd.slip", false)
     state.debugGardenYear = x.getBooleanExtra("cd.gardenYear", false)
+    state.debugRecapPick = x.getBooleanExtra("cd.recapPick", false)
     if (x.getBooleanExtra("cd.letter", false)) state.addSampleLetter()
     if (x.getBooleanExtra("cd.moods", false)) state.addSampleMoods()
     if (x.getBooleanExtra("cd.memory", false)) state.addSampleMemory()

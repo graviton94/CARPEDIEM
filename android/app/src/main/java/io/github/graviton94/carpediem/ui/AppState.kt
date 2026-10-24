@@ -763,6 +763,8 @@ class AppState(private val context: Context) {
     }
     /** 캡처용: 정원의 한 해 (한 장) 를 바로 펼침. */
     var debugGardenYear = false
+    /** 캡처용 (1.1.12): 이번 달 그림의 날 고르기 화면을 바로 엶. */
+    var debugRecapPick by mutableStateOf(false)
     /** 돌아온 한 줄에 이어 쓰는 중 (12): 쓰는 칸 위에 그날의 한 줄. 보내면 비움. */
     var recallReply by mutableStateOf<DayLine?>(null)
     fun answer() { answering = question }

@@ -927,6 +927,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
     }
     letterOpen?.let { LetterSheet(it, state.wishFor(it)) { letterOpen = null } }
     // 한 해를 돌아보기 (1.1.12): 해 카드 · 해 영상 고르기 (예전 ‘한 해를 한 장으로’ 포스터 대신)
+    if (state.debugRecapPick) now.toLocalDate().let { t -> RecapShare(state, t.year, t.monthValue, t, Theme.gc.night, startPick = true) { state.debugRecapPick = false } }
     gardenYearOpen?.let { y -> RecapShare(state, y, null, now.toLocalDate(), Theme.gc.night) { gardenYearOpen = null } }
     capsuleOpen?.let { c -> CapsuleSheet(c) { state.openCapsule(c); capsuleOpen = null } }
     ringOpen?.let { a -> RingSheet(state, profile, a, now) { ringOpen = null } }
