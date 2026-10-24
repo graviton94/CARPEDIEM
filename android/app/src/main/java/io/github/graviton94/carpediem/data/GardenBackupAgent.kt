@@ -12,7 +12,8 @@ import java.io.File
 /**
  * 폰 백업 (1.1.10): 기록 (shared_prefs/carpediem.xml) 은 늘, 한 줄의 사진은 한도 안에서 최근 날부터.
  * 구글 클라우드 자동 백업은 앱당 한도 (보통 25MB) 를 넘으면 그 앱 백업 전체가 멈추므로, 한도의 [CLOUD_SHARE] 까지만 사진을 채운다.
- * 폰끼리 옮기기 (기기 간 이전) 는 한도가 없어 사진을 모두. 되살리기는 기본 동작 (data_extraction_rules 의 범위 안에서 제자리로).
+ * 폰끼리 옮기기 (기기 간 이전) 는 한도가 없어 사진을 모두. 되살리기는 기본 동작 (백업에 든 파일을 제자리로).
+ * 백업 규칙 XML 은 두지 않음: 규칙의 폴더 (files/photos) 는 되살릴 때 그 폴더가 이미 있어야 받아들여서, 새 폰에서는 사진이 모두 버려졌음.
  */
 class GardenBackupAgent : BackupAgent() {
     override fun onFullBackup(data: FullBackupDataOutput) {

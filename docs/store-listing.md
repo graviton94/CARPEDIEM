@@ -1,16 +1,16 @@
 # 스토어 문안
 
 붙여넣기: 긴 설명은 Play Console 에 그대로 (줄바꿈이 그대로 보임). 묶음 제목은 ◆, 항목은 • 로 시작해 줄글로 이어져 보이지 않게.
-글자 수 (2026-10-21): 긴 설명 ko 1,295 · en 2,387 · ja 1,163 · zh-TW 970 (4,000 까지).
+글자 수 (2026-10-24): 긴 설명 ko 1,364 · en 2,527 · ja 1,201 · zh-TW 1,008 (4,000 까지). 이름 30 · 짧은 설명 80 안.
 
 ## 한국어
 
-- **앱 이름 (30자):** 하루의 정원 · 남은 날과 오늘의 한 줄
-- **짧은 설명 (80자):** 남은 날을 조용히 세고, 오늘의 마음을 한 줄로 떠나보내는 작은 정원. 모든 기록은 여기에만 머물러요.
+- **앱 이름 (30자):** 하루의 정원: 한 줄 일기·감정 기록·명상
+- **짧은 설명 (80자):** 남은 날을 세는 인생 달력과 한 줄 일기. 감정 기록, 명상 호흡, 위젯까지 광고 없이 조용하게.
 
 **긴 설명**
 
-남은 날을 조용히 세고, 오늘의 마음을 한 줄로 떠나보내는 작은 한지 정원이에요.
+남은 날을 세는 인생 달력, 하루 한 줄 일기와 감정 기록, 명상 호흡을 담은 작은 한지 정원이에요.
 
 ◆ 세상에 하나뿐인 돌, 하루
 • 처음 열면 나만의 조약돌 ‘하루’를 만나요. 인생의 길 위, 지금 내가 있는 자리에 앉아 있어요.
@@ -26,13 +26,13 @@
 • 나무 · 말뚝 · 연 · 이끼가 함께한 날만큼 천천히 자라요.
 • 스물넷 절기마다 첫서리 · 꽃잎 · 눈송이 같은 작은 변화가 하루 머물러요.
 
-◆ 오늘의 한 줄
-• 열세 가지 마음 가운데 하나와 함께 오늘을 한 줄에 실어 떠나보내요. 오늘의 질문에 답해도 좋아요.
+◆ 오늘의 한 줄 (한 줄 일기 · 감정 기록)
+• 열세 가지 마음 가운데 하나를 고르고 오늘을 한 줄로 적어요. 쓰기 부담 없는 감정 일기예요. 오늘의 질문에 답해도 좋아요.
 • 보낸 한 줄은 그 달의 정원에 낮엔 꽃, 밤엔 별로 피어나고, 계절마다 편지로 돌아와요.
 • 미래의 나에게 쓴 한마디는 정한 날에 다시 받아요.
-• 밤엔 ‘하루 닫기’ 1분. 한 줄 · 고마움 · 등불로 하루를 마무리해요.
+• 밤엔 ‘하루 닫기’ 1분. 한 줄 · 고마움 한 가지 (감사 일기) · 등불로 하루를 마무리해요.
 
-◆ 숨, 쉼 · 돌멍하기
+◆ 숨, 쉼 · 돌멍하기 (명상 · 호흡 · 수면)
 • 네 가지 숨: 마음 물결 (공명 호흡 5분) · 마음 산책 (상자 호흡 4분) · 마음 등불 (잠들기 전 4-7-8 호흡) · 마음 꽃밭 (한숨 호흡 5분). 소리를 따라가기만 하면 돼요.
 • 마친 숨은 그날 정원에 발자국 · 꽃 · 따뜻한 등빛으로 남아요.
 • 돌멍하기에선 구름 · 연못 · 화톳불과 계절의 소리를 오래 바라봐요. 잠들기 타이머가 소리를 서서히 줄여 줘요.
@@ -56,12 +56,12 @@
 
 ## English
 
-- **App name (30):** Carpe Diem · Days Left Garden
-- **Short description (80):** Count the days left, quietly. Let today go in a single line. All stays here.
+- **App name (30):** Carpe Diem: Mood Journal
+- **Short description (80):** Life calendar & one-line mood journal. Breathing, meditation, widgets. No ads.
 
 **Full description**
 
-A small paper garden that quietly counts the days you have left and lets today go in a single line.
+A life calendar, a one-line-a-day mood journal and breathing meditation, in a small paper garden that quietly counts the days you have left.
 
 ◆ Haru, a stone like no other
 • Meet your own pebble, Haru. It sits on the path of your life, right where you are now.
@@ -77,13 +77,13 @@ A small paper garden that quietly counts the days you have left and lets today g
 • A tree, a post, a kite and moss grow slowly with the days you spend together.
 • On each of the 24 solar terms, something small stays for the day: first frost, petals, a few snowflakes.
 
-◆ Today's line
-• Pick one of thirteen feelings and send today off in a single line, or answer today's question.
+◆ Today's line: a one-line mood journal
+• Pick one of thirteen feelings and write today in a single line, or answer today's question. A mood diary that takes a minute.
 • Your lines bloom in the month's garden, flowers by day and stars by night, and come back each season as a letter.
 • Write to your future self and get it back on the day you choose.
-• At night, close the day in one minute: a line, a thanks, a lantern.
+• At night, close the day in one minute: a line, one thing you are grateful for, a lantern.
 
-◆ Breathe and gaze
+◆ Breathe and gaze: meditation and sleep
 • Four breaths: Ripple (resonance breathing, 5 min), Mind walk (box breathing, 4 min), Lantern (4-7-8 before sleep) and Flower bed (cyclic sighing, 5 min). Just follow the sound.
 • Each finished breath leaves footprints, flowers or a warmer lantern in the garden that day.
 • Stone gazing: watch clouds, a pond or a small fire with the sounds of the season. A sleep timer fades it out gently.
@@ -107,12 +107,12 @@ A small paper garden that quietly counts the days you have left and lets today g
 
 ## 日本語
 
-- **アプリ名：** ハルの庭 · 残りの日数と今日のひとこと
-- **簡単な説明：** 残りの日々を静かに数え、今日の気持ちをひとことにのせて手放す小さな庭。記録はすべて、ここにだけ残ります。
+- **アプリ名：** ハルの庭：一行日記・気分記録・瞑想
+- **簡単な説明：** 残りの日を数える人生カレンダーと一行日記。気分記録、瞑想の呼吸、ウィジェット。広告なし。
 
 **詳しい説明**
 
-残りの日々を静かに数え、今日の気持ちをひとことにのせて手放す、和紙の小さな庭です。
+残りの日を数える人生カレンダー、一行日記と気分記録、瞑想の呼吸をひとつにした、和紙の小さな庭です。
 
 ◆ 世界にひとつだけの石、ハル
 • はじめてひらくと、自分だけの小石「ハル」に出会います。人生の道の上、いまいる場所に座っています。
@@ -128,13 +128,13 @@ A small paper garden that quietly counts the days you have left and lets today g
 • 木・杭・凧・苔が、ともに過ごした日の分だけゆっくり育ちます。
 • 二十四節気ごとに、初霜・花びら・雪のひとひらのような小さな変化が、一日だけ庭にとどまります。
 
-◆ 今日のひとこと
+◆ 今日のひとこと（一行日記・気分記録）
 • 十三の気持ちからひとつ選んで、今日をひとことにのせて送ります。今日の質問に答えても。
 • 送ったひとことは、その月の庭に昼は花、夜は星として咲き、季節ごとに手紙になって戻ってきます。
 • 未来の自分へのひとことは、決めた日にもう一度受けとれます。
-• 夜は「一日を閉じる」1分。ひとこと・感謝・灯りで一日をしめくくります。
+• 夜は「一日を閉じる」1分。ひとこと・感謝をひとつ（感謝日記）・灯りで一日をしめくくります。
 
-◆ ひと息・石ながめ
+◆ ひと息・石ながめ（瞑想・呼吸・睡眠）
 • 四つのひと息：こころの波紋（共鳴呼吸 5分）・こころの散歩（ボックス呼吸 4分）・こころの灯り（眠る前の4-7-8呼吸）・こころの花畑（ため息呼吸 5分）。音についていくだけです。
 • 終えたひと息は、その日の庭に足あと・花・あたたかな灯りとして残ります。
 • 石ながめでは、雲・池・たき火と季節の音をゆっくりながめます。おやすみタイマーが音をそっと小さくします。
@@ -158,12 +158,12 @@ A small paper garden that quietly counts the days you have left and lets today g
 
 ## 繁體中文
 
-- **App 名稱：** 小日的庭院 · 剩下的日子與今天的一句話
-- **簡短說明：** 靜靜數著剩下的日子，把今天的心情寫進一句話裡放下的小小庭院。所有紀錄都只留在這裡。
+- **App 名稱：** 小日的庭院：一句話日記・心情紀錄・冥想
+- **簡短說明：** 數著剩下日子的人生月曆與一句話日記。心情紀錄、冥想呼吸、小工具。沒有廣告。
 
 **完整說明**
 
-靜靜數著剩下的日子，把今天的心情寫進一句話裡放下的小小韓紙庭院。
+數著剩下日子的人生月曆、一句話日記與心情紀錄、冥想呼吸，都在這個小小的韓紙庭院裡。
 
 ◆ 世上獨一無二的石頭，小日
 • 第一次打開，會遇見專屬的小石頭「小日」。它坐在人生的路上，就在此刻所在的位置。
@@ -179,13 +179,13 @@ A small paper garden that quietly counts the days you have left and lets today g
 • 樹、木樁、風箏、青苔，會隨著一起度過的日子慢慢長大。
 • 每逢二十四節氣，初霜、花瓣、雪花這樣的小小變化會在庭院停留一天。
 
-◆ 今天的一句話
+◆ 今天的一句話（一句話日記・心情紀錄）
 • 從十三種心情裡選一種，把今天寫進一句話裡放下。也可以回答今天的提問。
 • 放下的話會在當月的庭院裡，白天開成花，夜裡化作星星，每個季節再化作信回來。
 • 寫給未來的自己的話，會在約定的那天再次收到。
-• 夜裡用 1 分鐘「結束這一天」：一句話、一份感謝、一盞燈。
+• 夜裡用 1 分鐘「結束這一天」：一句話、一件感謝的事（感恩日記）、一盞燈。
 
-◆ 喘口氣、看石發呆
+◆ 喘口氣、看石發呆（冥想・呼吸・睡眠）
 • 四種呼吸：心之漣漪（共振呼吸 5 分鐘）、心之散步（方塊呼吸 4 分鐘）、心之燈火（睡前 4-7-8 呼吸）、心之花田（嘆息呼吸 5 分鐘）。跟著聲音走就好。
 • 完成的呼吸，會在當天的庭院留下腳印、花朵和溫暖的燈光。
 • 看石發呆時，靜靜望著雲朵、池塘、營火，聽著季節的聲音。入睡計時器會讓聲音慢慢變小。
@@ -206,6 +206,22 @@ A small paper garden that quietly counts the days you have left and lets today g
 
 ◆ 安靜的 App
 • 沒有帳號，沒有廣告，也沒有伺服器。所有紀錄都只留在這裡。
+
+## 검색 (ASO)
+
+이름 · 짧은 설명에 사람들이 실제로 찾는 말 (한 줄 일기 · 감정 기록 · 명상 / mood journal / 一行日記 · 気分記録 · 瞑想 / 一句話日記 · 心情紀錄 · 冥想) 을 넣고, 긴 설명의 첫 줄 · 묶음 제목에 같은 말을 한 번씩. 단어만 늘어놓지 않음 (Play 정책).
+
+| 말 | 이름 | 짧은 설명에 든 말 |
+|---|---|---|
+| ko | 하루의 정원: 한 줄 일기·감정 기록·명상 (23) | 인생 달력 · 한 줄 일기 · 감정 기록 · 명상 · 호흡 · 위젯 |
+| en | Carpe Diem: Mood Journal (24) | life calendar · one-line mood journal · breathing · meditation · widgets |
+| ja | ハルの庭：一行日記・気分記録・瞑想 (17) | 人生カレンダー · 一行日記 · 気分記録 · 瞑想 · ウィジェット |
+| zh-TW | 小日的庭院：一句話日記・心情紀錄・冥想 (19) | 人生月曆 · 一句話日記 · 心情紀錄 · 冥想 · 小工具 |
+
+- 앱 안 이름 (하루의 정원 · Carpe Diem · ハルの庭 · 小日的庭院) 은 그대로. 스토어 이름만 바꿈.
+- 영어 이름에 ‘Calm’ 같은 다른 앱 이름은 쓰지 않음 (상표).
+- Play Console › 스토어 설정: 카테고리는 명상 · 호흡 검색에 맞춰 **건강/운동** (일기 쪽으로 보이려면 라이프스타일), 태그는 일기 · 명상 · 마음 건강 쪽으로 최대 5개.
+- 효과는 2 ~ 4주 뒤 Play Console › 통계 › 스토어 등록정보 획득 (검색어별) 에서 보고 다시 다듬음.
 
 ## 스크린샷 6장 · 그래픽 이미지 (네 말)
 

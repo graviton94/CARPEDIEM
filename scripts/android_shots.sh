@@ -154,14 +154,18 @@ if [ -n "${VIDEO:-}" ]; then video_scenes; finish; exit 0; fi
 backup_check() {
   local d=$OUT/backup; mkdir -p "$d"
   open --ez cd.reset true --es cd.design garden --el cd.seed 2718281 --es cd.birth 2000-05-12 --es cd.sex female --ez cd.meet false --ez cd.photos true --es cd.now $NOW; sleep 12
-  adb shell am force-stop $P
+  # 앱을 강제 종료하면 ‘멈춘 앱’ 이라 백업이 거절됨: 홈으로만 보냄
+  adb shell input keyevent KEYCODE_HOME; sleep 2
   adb shell run-as $P ls -l files/photos shared_prefs > "$d/before.txt" 2>&1
   adb shell bmgr enable true; adb shell bmgr list transports > "$d/transports.txt" 2>&1
   adb shell bmgr transport com.android.localtransport/.LocalTransport >> "$d/transports.txt" 2>&1
   adb shell bmgr backupnow $P > "$d/backup.txt" 2>&1
   adb shell pm clear $P > "$d/clear.txt" 2>&1
   adb shell run-as $P ls -l files/photos shared_prefs > "$d/cleared.txt" 2>&1
-  adb shell bmgr restore $P > "$d/restore.txt" 2>&1; sleep 5
+  # 되살리기는 백업 묶음 번호와 함께 (bmgr list sets 의 첫 번호)
+  local token; token=$(adb shell bmgr list sets 2>/dev/null | grep -oE '^ *[0-9a-f]+ *:' | head -1 | tr -dc '0-9a-f')
+  echo "token=$token" > "$d/restore.txt"
+  adb shell bmgr restore "$token" $P >> "$d/restore.txt" 2>&1; sleep 8
   adb shell run-as $P ls -l files/photos shared_prefs > "$d/after.txt" 2>&1
   adb logcat -d -s BackupManagerService:* FullBackup:* BackupAgent:* LocalTransport:* > "$d/logcat.txt" 2>&1 || true
   open --es cd.now $NOW; shot backup_after_restore 10
