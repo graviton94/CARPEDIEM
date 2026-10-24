@@ -59,14 +59,20 @@ object ShareCards {
         return b to c
     }
 
+    /** 글 줄 나눔: 안드로이드 13 부터는 낱말 (어절) 단위로 (한국어가 ‘색이 / 라’ 처럼 낱말 가운데서 끊기지 않게). */
+    private fun layout(s: String, tp: TextPaint, width: Int, align: Layout.Alignment = Layout.Alignment.ALIGN_CENTER): StaticLayout {
+        val b = StaticLayout.Builder.obtain(s, 0, s.length, tp, width).setAlignment(align).setLineSpacing(0f, 1.25f)
+        if (android.os.Build.VERSION.SDK_INT >= 33) b.setLineBreakConfig(android.graphics.text.LineBreakConfig.Builder().setLineBreakWordStyle(android.graphics.text.LineBreakConfig.LINE_BREAK_WORD_STYLE_PHRASE).build())
+        return b.build()
+    }
+
     private fun text(c: Canvas, s: String, tp: TextPaint, x: Float, y: Float, width: Int, align: Layout.Alignment = Layout.Alignment.ALIGN_CENTER): Float {
-        val l = StaticLayout.Builder.obtain(s, 0, s.length, tp, width).setAlignment(align).setLineSpacing(0f, 1.25f).build()
+        val l = layout(s, tp, width, align)
         c.save(); c.translate(x, y); l.draw(c); c.restore()
         return l.height.toFloat()
     }
 
-    private fun measure(s: String, tp: TextPaint, width: Int): Float =
-        StaticLayout.Builder.obtain(s, 0, s.length, tp, width).setLineSpacing(0f, 1.25f).build().height.toFloat()
+    private fun measure(s: String, tp: TextPaint, width: Int): Float = layout(s, tp, width).height.toFloat()
 
     private fun haru(c: Canvas, seed: Long, cx: Float, groundY: Float, widthPx: Float, line: Boolean = true) {
         val art = HaruArt.of(seed, false)
@@ -90,7 +96,7 @@ object ShareCards {
         text(c, listOfNotNull(date, feelingName).joinToString(" · "), paint(ctx, S.small, inkSoft), pad, pad * 1.4f, (w - pad * 2).toInt())
         val tp = paint(ctx, S.text, ink)
         val bodyW = (w - pad * 2.4f).toInt()
-        val hBody = StaticLayout.Builder.obtain(l.text, 0, l.text.length, tp, bodyW).setLineSpacing(0f, 1.25f).build().height
+        val hBody = measure(l.text, tp, bodyW)
         text(c, l.text, tp, pad * 1.2f, h * 0.42f - hBody / 2f, bodyW)
         haru(c, seed, w / 2f, h * 0.8f, w * 0.2f)
         text(c, ctx.getString(R.string.share_footer), paint(ctx, S.small * 0.8f, inkSoft), pad, h - pad * 1.25f, (w - pad * 2).toInt())
