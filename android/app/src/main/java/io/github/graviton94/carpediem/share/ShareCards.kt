@@ -16,6 +16,7 @@ import androidx.core.content.res.ResourcesCompat
 import io.github.graviton94.carpediem.R
 import io.github.graviton94.carpediem.core.DayLine
 import io.github.graviton94.carpediem.core.Feeling
+import io.github.graviton94.carpediem.core.Person
 import io.github.graviton94.carpediem.design.Tokens
 import io.github.graviton94.carpediem.ui.garden.Crayon
 import io.github.graviton94.carpediem.ui.garden.HaruArt
@@ -94,6 +95,57 @@ object ShareCards {
         haru(c, seed, w / 2f, h * 0.8f, w * 0.2f)
         text(c, ctx.getString(R.string.share_footer), paint(ctx, S.small * 0.8f, inkSoft), pad, h - pad * 1.25f, (w - pad * 2).toInt())
         return b
+    }
+
+    /**
+     * 지난 하루 한 장 (1.1.11, 달의 정원에서 고른 날): 날짜 · 마음, (그날의 질문), 시간이 묻은 사진, 한 줄,
+     * 아래엔 웃는 내 하루와 (한 줄을 보낸 사람이 있으면) 그 사람의 돌. 사진이 없으면 글이 가운데.
+     */
+    fun day(ctx: Context, l: DayLine, feelingName: String?, question: String?, photo: Bitmap?, mySeed: Long, to: Person?): Bitmap {
+        val w = S.lineW.toInt(); val h = S.lineH.toInt(); val pad = S.pad
+        val (b, c) = base(w, h)
+        val inner = (w - pad * 2).toInt()
+        var y = pad * 1.2f
+        val date = l.date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG))
+        y += text(c, listOfNotNull(date, feelingName).joinToString(" · "), paint(ctx, S.small, inkSoft), pad, y, inner) + pad * 0.15f
+        if (!question.isNullOrBlank()) y += text(c, question, paint(ctx, S.small * 0.9f, inkSoft), pad, y, inner) + pad * 0.1f
+        val gy = h * 0.86f                           // 돌들이 앉는 땅
+        val tp = paint(ctx, if (photo != null) S.text * 0.82f else S.text, ink)
+        val bodyW = (w - pad * 2.4f).toInt()
+        val hBody = measure(l.text, tp, bodyW)
+        if (photo != null) {
+            // 사진: 글 · 돌 자리를 남기고 들어가는 만큼 (가장 커도 폭의 절반 남짓), 날마다 조금 기울게
+            val room = gy - w * 0.16f - y - hBody - pad * 0.9f
+            val pw = minOf(w * 0.52f, room * photo.width / photo.height).coerceAtLeast(w * 0.28f)
+            val ph = pw * photo.height / photo.width
+            val tilt = (Math.floorMod(l.date.toEpochDay() * 7919, 70L) - 35) / 10f
+            c.save(); c.rotate(tilt, w / 2f, y + pad * 0.3f + ph / 2f)
+            c.drawBitmap(photo, null, RectF((w - pw) / 2f, y + pad * 0.3f, (w + pw) / 2f, y + pad * 0.3f + ph), Paint(Paint.FILTER_BITMAP_FLAG or Paint.ANTI_ALIAS_FLAG))
+            c.restore()
+            y += ph + pad * 0.6f
+            text(c, l.text, tp, pad * 1.2f, y, bodyW)
+        } else text(c, l.text, tp, pad * 1.2f, (y + gy - w * 0.16f) / 2f - hBody / 2f, bodyW)
+        // 내 하루와, 보낸 사람의 돌 (그 사람에게 닿은 마음)
+        val sw = w * 0.16f
+        if (to == null) haru(c, mySeed, w / 2f, gy, sw)
+        else {
+            val gap = sw * 0.85f
+            stoneAt(c, HaruArt.of(mySeed, false), w / 2f - gap, gy, sw)
+            stoneAt(c, HaruArt.of(to.seed, false), w / 2f + gap, gy, sw * (if (to.kind == io.github.graviton94.carpediem.core.Kind.PET) Tokens.Garden.Family.petScale else 1f))
+            val lp = Paint(Paint.ANTI_ALIAS_FLAG).apply { strokeWidth = 5f; color = ink; strokeCap = Paint.Cap.ROUND }
+            c.drawLine(w / 2f - sw * 2.4f, gy, w / 2f + sw * 2.4f, gy, lp)
+            text(c, ctx.getString(R.string.share_dayTo, to.name), paint(ctx, S.small * 0.85f, inkSoft), pad, gy + pad * 0.15f, inner)
+        }
+        text(c, ctx.getString(R.string.share_footer), paint(ctx, S.small * 0.8f, inkSoft), pad, h - pad * 1.25f, inner)
+        return b
+    }
+
+    private fun stoneAt(c: Canvas, a: HaruArt, x: Float, gy: Float, width: Float) {
+        val k = width / a.meta.bbox.width
+        c.save(); c.translate(x - a.meta.bbox.center.x * k, gy - a.meta.ground * k)
+        androidx.compose.ui.graphics.drawscope.CanvasDrawScope().draw(androidx.compose.ui.unit.Density(1f), androidx.compose.ui.unit.LayoutDirection.Ltr,
+            androidx.compose.ui.graphics.Canvas(c), androidx.compose.ui.geometry.Size(a.meta.box * k, a.meta.box * k)) { drawHaru(a, k, smile = 1f) }
+        c.restore()
     }
 
     /** Compose 그리기를 그림 위 (left, top) 의 w × h 판에 (앱 화면과 같은 그리기). */

@@ -437,6 +437,8 @@ private fun MainActivity.debugSetup(state: AppState): Screen {
     if (x.getBooleanExtra("cd.wish", false)) io.github.graviton94.carpediem.core.Letters.due((state.fixedNow ?: LocalDateTime.now()).toLocalDate())?.minusMonths(3)?.let { d -> state.saveWish("%04d-%02d".format(d.year, d.monthValue), getString(R.string.wish_sample)) }
     state.debugOpenYear = x.getBooleanExtra("cd.openYear", false)
     state.debugOpenMonth = x.getBooleanExtra("cd.openMonth", false)
+    // 캡처용: 설정을 열자마자 그 묶음으로 굴림 (예: backup)
+    x.getStringExtra("cd.settingsFocus")?.let { state.settingsFocus = it }
     state.debugTyped = x.getBooleanExtra("cd.typed", false)
     state.homePage = if (state.debugOpenYear || state.debugOpenMonth) 1 else x.getIntExtra("cd.page", 0)
     state.refreshQuestion()
