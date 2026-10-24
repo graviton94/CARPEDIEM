@@ -120,7 +120,9 @@ object ShareCards {
         y += text(c, sub, paint(ctx, S.small * 0.9f, soft), pad, y, inner) + pad * 0.25f
         // 아래 (돌 · 날짜 · 질문 · 사진 · 한 줄) 에 쓸 높이를 먼저 재고, 정원 판은 남는 만큼만 (사진이 빠지지 않게, 1.1.11)
         val date0 = l.date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG))
-        val below = w * 0.15f * 0.95f + pad * 0.6f +
+        // 사진이 있으면 돌을 조금 작게 (정원 판 · 사진 · 한 줄이 함께 들어가게)
+        val stoneW = w * (if (photo != null) DAY_STONE_PHOTO else DAY_STONE)
+        val below = stoneW * 0.95f + pad * 0.6f +
             (if (to != null) measure(ctx.getString(R.string.share_dayTo, to.name), paint(ctx, S.small * 0.85f, soft), inner) else 0f) +
             measure(listOfNotNull(date0, feelingName).joinToString(" · "), paint(ctx, S.small, soft), inner) + pad * 0.1f +
             (if (!question.isNullOrBlank()) measure(question, paint(ctx, S.small * 0.88f, soft), inner) + pad * 0.1f else 0f) +
@@ -134,7 +136,7 @@ object ShareCards {
         }
         y += gh + pad * 0.5f
         // ② 내 하루와, 그날 한 줄을 보낸 사람의 돌
-        val sw = w * 0.15f
+        val sw = stoneW
         val gy = y + sw * 0.95f
         if (to == null) stoneAt(c, HaruArt.of(mySeed, false), w / 2f, gy, sw)
         else {
@@ -177,7 +179,10 @@ object ShareCards {
     /** 하루 카드의 사진이 이보다 작아지면 (폭 비율) 사진을 빼고 한 줄만. */
     private const val DAY_PHOTO_MIN = 0.16f
     /** 하루 카드의 사진 폭 (자리를 잡을 때의 기준, 폭 비율). */
-    private const val DAY_PHOTO_W = 0.34f
+    private const val DAY_PHOTO_W = 0.28f
+    /** 하루 카드의 돌 폭 (사진 없을 때 · 있을 때). */
+    private const val DAY_STONE = 0.15f
+    private const val DAY_STONE_PHOTO = 0.11f
 
     private fun stoneAt(c: Canvas, a: HaruArt, x: Float, gy: Float, width: Float) {
         val k = width / a.meta.bbox.width
