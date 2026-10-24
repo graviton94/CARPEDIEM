@@ -80,9 +80,17 @@ object WidgetShots {
             val plain = io.github.graviton94.carpediem.core.DayLine(day.minusDays(12), "오늘은 아무 일도 없었지만, 그래서 좋았다.", io.github.graviton94.carpediem.core.Feeling.CALM)
             val q = "오늘 가장 오래 바라본 것은?"
             val seed = 2718281L
-            io.github.graviton94.carpediem.share.ShareCards.day(activity, withPhoto, io.github.graviton94.carpediem.share.ShareCards.feelingName(activity, withPhoto.feeling), q, photo, seed, mom)
+            // 그 달의 정원 견본: 지난 달에 한 줄 열닷새 (마음 고루)
+            val month = withPhoto.date.withDayOfMonth(1)
+            val fs = io.github.graviton94.carpediem.core.Feeling.entries
+            val sample = (1..month.lengthOfMonth()).filter { it % 2 == 0 || it == withPhoto.date.dayOfMonth }.map { d -> io.github.graviton94.carpediem.core.DayLine(month.withDayOfMonth(d), "·", fs[d % fs.size]) }
+                .map { if (it.date == withPhoto.date) withPhoto else it }
+            val book = io.github.graviton94.carpediem.data.Store(activity).constellations
+            val days = io.github.graviton94.carpediem.core.Constellations.monthDays(sample, month.year, month.monthValue)
+            val title = "${month.monthValue}월의 정원"; val sub = "한 줄 ${sample.size}"
+            io.github.graviton94.carpediem.share.ShareCards.day(activity, book, days, seed, false, day, title, sub, withPhoto, io.github.graviton94.carpediem.share.ShareCards.feelingName(activity, withPhoto.feeling), q, photo, seed, mom)
                 .let { b -> File(dir, "share_day_photo.png").outputStream().use { b.compress(Bitmap.CompressFormat.PNG, 100, it) } }
-            io.github.graviton94.carpediem.share.ShareCards.day(activity, plain, io.github.graviton94.carpediem.share.ShareCards.feelingName(activity, plain.feeling), null, null, seed, null)
+            io.github.graviton94.carpediem.share.ShareCards.day(activity, book, days, seed, true, day, title, sub, plain.copy(date = month.withDayOfMonth(12)), io.github.graviton94.carpediem.share.ShareCards.feelingName(activity, plain.feeling), null, null, seed, null)
                 .let { b -> File(dir, "share_day_text.png").outputStream().use { b.compress(Bitmap.CompressFormat.PNG, 100, it) } }
         }.onFailure { android.util.Log.e("WidgetShots", "share day", it) }
         File(dir, "done").writeText("ok")

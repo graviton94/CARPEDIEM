@@ -138,7 +138,7 @@ internal fun RecordPanel(state: AppState, view: RecordView, onView: (RecordView)
                         val q = dayLine.question?.let { state.store.questions.byId(it) }?.text(io.github.graviton94.carpediem.data.Words.lang(ctx))
                         io.github.graviton94.carpediem.share.ShareCards.send(ctx, "day-${dayLine.date}") {
                             val photo = runCatching { io.github.graviton94.carpediem.data.Photos.weathered(ctx, dayLine.date, today) }.getOrNull()
-                            io.github.graviton94.carpediem.share.ShareCards.day(ctx, dayLine, io.github.graviton94.carpediem.share.ShareCards.feelingName(ctx, dayLine.feeling), q, photo, state.store.haruSeed, to)
+                            io.github.graviton94.carpediem.share.ShareCards.day(ctx, book, days, state.store.haruSeed, night, today, shown, sub, dayLine, io.github.graviton94.carpediem.share.ShareCards.feelingName(ctx, dayLine.feeling), q, photo, state.store.haruSeed, to)
                         }
                     } else io.github.graviton94.carpediem.share.ShareCards.send(ctx, "month-${view.year}-$m") { io.github.graviton94.carpediem.share.ShareCards.month(ctx, book, days, state.store.haruSeed, night, today, shown, sub) }
                 }, filled = false, seed = 1173)

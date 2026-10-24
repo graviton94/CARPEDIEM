@@ -104,47 +104,67 @@ object ShareCards {
     }
 
     /**
-     * 지난 하루 한 장 (1.1.11, 달의 정원에서 고른 날): 날짜 · 마음, (그날의 질문), 시간이 묻은 사진, 한 줄,
-     * 아래엔 웃는 내 하루와 (한 줄을 보낸 사람이 있으면) 그 사람의 돌. 사진이 없으면 글이 가운데.
+     * 지난 하루 한 장 (1.1.11, 달의 정원에서 고른 날, 세로 1080 × 1920 · 이야기 크기):
+     * 위엔 그 달의 정원 (낮엔 꽃밭 · 밤엔 별자리, 그날이 빛남), 가운데엔 내 하루와 그날 한 줄을 보낸 사람의 돌,
+     * 아래엔 날짜 · 마음 · (그날의 질문) · 시간이 묻은 사진 · 한 줄.
      */
-    fun day(ctx: Context, l: DayLine, feelingName: String?, question: String?, photo: Bitmap?, mySeed: Long, to: Person?): Bitmap {
-        val w = S.lineW.toInt(); val h = S.lineH.toInt(); val pad = S.pad
-        val (b, c) = base(w, h)
+    fun day(ctx: Context, book: io.github.graviton94.carpediem.core.ConstellationBook, days: List<Pair<LocalDate, DayLine?>>, install: Long, night: Boolean, today: LocalDate,
+            title: String, sub: String, l: DayLine, feelingName: String?, question: String?, photo: Bitmap?, mySeed: Long, to: Person?): Bitmap {
+        val w = DAY_W; val h = DAY_H; val pad = S.pad
+        val (b, c) = board(w, h, night)
+        val fg = if (night) Y.plain.toArgb() else ink; val soft = if (night) Y.plain.copy(alpha = 0.7f).toArgb() else inkSoft
         val inner = (w - pad * 2).toInt()
-        var y = pad * 1.2f
-        val date = l.date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG))
-        y += text(c, listOfNotNull(date, feelingName).joinToString(" · "), paint(ctx, S.small, inkSoft), pad, y, inner) + pad * 0.15f
-        if (!question.isNullOrBlank()) y += text(c, question, paint(ctx, S.small * 0.9f, inkSoft), pad, y, inner) + pad * 0.1f
-        val gy = h * 0.86f                           // 돌들이 앉는 땅
-        val tp = paint(ctx, if (photo != null) S.text * 0.82f else S.text, ink)
-        val bodyW = (w - pad * 2.4f).toInt()
-        val hBody = measure(l.text, tp, bodyW)
-        if (photo != null) {
-            // 사진: 글 · 돌 자리를 남기고 들어가는 만큼 (가장 커도 폭의 절반 남짓), 날마다 조금 기울게
-            val room = gy - w * 0.16f - y - hBody - pad * 0.9f
-            val pw = minOf(w * 0.52f, room * photo.width / photo.height).coerceAtLeast(w * 0.28f)
-            val ph = pw * photo.height / photo.width
-            val tilt = (Math.floorMod(l.date.toEpochDay() * 7919, 70L) - 35) / 10f
-            c.save(); c.rotate(tilt, w / 2f, y + pad * 0.3f + ph / 2f)
-            c.drawBitmap(photo, null, RectF((w - pw) / 2f, y + pad * 0.3f, (w + pw) / 2f, y + pad * 0.3f + ph), Paint(Paint.FILTER_BITMAP_FLAG or Paint.ANTI_ALIAS_FLAG))
-            c.restore()
-            y += ph + pad * 0.6f
-            text(c, l.text, tp, pad * 1.2f, y, bodyW)
-        } else text(c, l.text, tp, pad * 1.2f, (y + gy - w * 0.16f) / 2f - hBody / 2f, bodyW)
-        // 내 하루와, 보낸 사람의 돌 (그 사람에게 닿은 마음)
-        val sw = w * 0.16f
-        if (to == null) haru(c, mySeed, w / 2f, gy, sw)
+        // ① 그 달의 정원 (그날을 고른 채로)
+        var y = pad * 1.1f
+        y += text(c, title, paint(ctx, S.text * 0.8f, fg), pad, y, inner) + pad * 0.1f
+        y += text(c, sub, paint(ctx, S.small * 0.9f, soft), pad, y, inner) + pad * 0.25f
+        val gw = (w - pad * 2f); val gh = minOf(gw / Tokens.Garden.Year.monthAspect, h * 0.3f); val gwFit = gh * Tokens.Garden.Year.monthAspect
+        val dots = io.github.graviton94.carpediem.ui.garden.StarGarden.month(book, days, install)
+        drawCompose(c, (w - gwFit) / 2f, y, gwFit, gh) {
+            if (night) nightSky() else meadow()
+            monthIn(androidx.compose.ui.geometry.Rect(androidx.compose.ui.geometry.Offset.Zero, size), dots, night, today, MONTH_SIZES, picked = l.date)
+        }
+        y += gh + pad * 0.5f
+        // ② 내 하루와, 그날 한 줄을 보낸 사람의 돌
+        val sw = w * 0.15f
+        val gy = y + sw * 0.95f
+        if (to == null) stoneAt(c, HaruArt.of(mySeed, false), w / 2f, gy, sw)
         else {
             val gap = sw * 0.85f
             stoneAt(c, HaruArt.of(mySeed, false), w / 2f - gap, gy, sw)
             stoneAt(c, HaruArt.of(to.seed, false), w / 2f + gap, gy, sw * (if (to.kind == io.github.graviton94.carpediem.core.Kind.PET) Tokens.Garden.Family.petScale else 1f))
-            val lp = Paint(Paint.ANTI_ALIAS_FLAG).apply { strokeWidth = 5f; color = ink; strokeCap = Paint.Cap.ROUND }
-            c.drawLine(w / 2f - sw * 2.4f, gy, w / 2f + sw * 2.4f, gy, lp)
-            text(c, ctx.getString(R.string.share_dayTo, to.name), paint(ctx, S.small * 0.85f, inkSoft), pad, gy + pad * 0.15f, inner)
         }
-        text(c, ctx.getString(R.string.share_footer), paint(ctx, S.small * 0.8f, inkSoft), pad, h - pad * 1.25f, inner)
+        val lp = Paint(Paint.ANTI_ALIAS_FLAG).apply { strokeWidth = 5f; color = fg; strokeCap = Paint.Cap.ROUND; alpha = 150 }
+        c.drawLine(w / 2f - sw * 2.4f, gy, w / 2f + sw * 2.4f, gy, lp)
+        y = gy + pad * 0.15f
+        if (to != null) y += text(c, ctx.getString(R.string.share_dayTo, to.name), paint(ctx, S.small * 0.85f, soft), pad, y, inner)
+        y += pad * 0.45f
+        // ③ 그날: 날짜 · 마음, 질문, 사진, 한 줄
+        val date = l.date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG))
+        y += text(c, listOfNotNull(date, feelingName).joinToString(" · "), paint(ctx, S.small, soft), pad, y, inner) + pad * 0.1f
+        if (!question.isNullOrBlank()) y += text(c, question, paint(ctx, S.small * 0.88f, soft), pad, y, inner) + pad * 0.1f
+        val foot = h - pad * 1.6f
+        val tp = paint(ctx, S.text * 0.78f, fg)
+        val bodyW = (w - pad * 2.4f).toInt()
+        val hBody = measure(l.text, tp, bodyW)
+        if (photo != null) {
+            val room = foot - y - hBody - pad * 0.9f
+            val pw = minOf(w * 0.5f, room * photo.width / photo.height).coerceAtLeast(w * 0.24f)
+            val ph = pw * photo.height / photo.width
+            val tilt = (Math.floorMod(l.date.toEpochDay() * 7919, 70L) - 35) / 10f
+            val top = y + pad * 0.2f
+            c.save(); c.rotate(tilt, w / 2f, top + ph / 2f)
+            c.drawBitmap(photo, null, RectF((w - pw) / 2f, top, (w + pw) / 2f, top + ph), Paint(Paint.FILTER_BITMAP_FLAG or Paint.ANTI_ALIAS_FLAG))
+            c.restore()
+            y = top + ph + pad * 0.5f
+            text(c, l.text, tp, pad * 1.2f, y, bodyW)
+        } else text(c, l.text, tp, pad * 1.2f, (y + foot) / 2f - hBody / 2f, bodyW)
+        text(c, ctx.getString(R.string.share_footer), paint(ctx, S.small * 0.8f, soft), pad, h - pad * 1.25f, inner)
         return b
     }
+    /** 하루 카드 크기 (이야기 · 상태 공유에 맞는 세로). */
+    private const val DAY_W = 1080
+    private const val DAY_H = 1920
 
     private fun stoneAt(c: Canvas, a: HaruArt, x: Float, gy: Float, width: Float) {
         val k = width / a.meta.bbox.width
