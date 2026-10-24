@@ -214,7 +214,7 @@
     <string name="letgo_hint">用一句話寫下今天</string>
     <string name="letgo_send">留下一句話</string>
     <string name="letgo_done">留下了今天的一句話。\n明天再見。</string>
-    <string name="letgo_privacy">留下的話，會在下面的「心情的紀錄」開成花。只留在這裡。</string>
+    <string name="letgo_privacy">留下的話，會在回憶裡的「心情的紀錄」開成花。只留在這裡。</string>
     <string name="feeling_joy">喜悅</string>
     <string name="feeling_thanks">感謝</string>
     <string name="feeling_calm">平靜</string>
@@ -825,7 +825,7 @@
     <string name="notify_openSettings">打開設定</string>
     <string name="record_todayHidden">今天送出的話，明天起可以在這裡再看到。</string>
     <string name="letgo_total">到現在，已經留下 %1$s 次了。</string>
-    <string name="letgo_seeBelow">下面「心情的紀錄」今天那一格，多了一個。</string>
+    <string name="letgo_seeBelow">回憶裡「心情的紀錄」今天那一格，多了一個。</string>
     <string name="letgo_yesterday">昨天還空著。也替昨天留一句話嗎？</string>
     <string name="backup_saveFail">沒能儲存檔案。</string>
     <string name="backup_before">刪除前先備份，之後就能找回來。</string>
@@ -1079,6 +1079,7 @@
     <string name="title_setting">App 開場畫面</string>
     <string name="title_helloFirst">初次見面，很高興認識你。</string>
     <string name="mood_readSub">搜尋留下的話，按月、按年回顧。</string>
+    <string name="record_toMemories">過去的話，到回憶 › 心情的紀錄再看</string>
     <string name="settings_notify">通知</string>
     <string name="settings_garden">庭院</string>
     <string name="settings_help">說明與支持</string>

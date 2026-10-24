@@ -440,7 +440,7 @@ private fun MainActivity.debugSetup(state: AppState): Screen {
     // 캡처용: 설정을 열자마자 그 묶음으로 굴림 (예: backup)
     x.getStringExtra("cd.settingsFocus")?.let { state.settingsFocus = it }
     state.debugTyped = x.getBooleanExtra("cd.typed", false)
-    state.homePage = if (state.debugOpenYear || state.debugOpenMonth) 1 else x.getIntExtra("cd.page", 0)
+    state.homePage = if (state.debugOpenYear || state.debugOpenMonth) 2 else x.getIntExtra("cd.page", 0)
     state.refreshQuestion()
     if (x.getBooleanExtra("cd.question", false)) state.previewQuestion()
     // 가족의 정원 시험: 동생 · 콩이(강아지) · 엄마(오늘 생일) · 아빠
@@ -486,9 +486,9 @@ private fun openFrom(open: String?, state: AppState): Screen? {
         "garden" -> state.homePage = 0
         // month = 알림 (지난 달의 정원이 피었다는 소식, 펼친 것으로 남김) · record = 위젯 (이번 달을 보기만)
         "month", "record" -> arg?.split('-')?.mapNotNull { it.toIntOrNull() }?.takeIf { it.size == 2 && it[1] in 1..12 && it[0] in 1900..java.time.LocalDate.now().year }?.let { (y, m) ->
-            state.homePage = 1; state.pendingRecord = io.github.graviton94.carpediem.ui.garden.RecordView(y, m); if (kind == "month") state.openMonth(y, m)
+            state.homePage = 2; state.pendingRecord = io.github.graviton94.carpediem.ui.garden.RecordView(y, m); if (kind == "month") state.openMonth(y, m)
         }
-        "year" -> arg?.toIntOrNull()?.takeIf { it in 1900..java.time.LocalDate.now().year }?.let { y -> state.homePage = 1; state.pendingRecord = io.github.graviton94.carpediem.ui.garden.RecordView(y, null); state.openYear(y) }
+        "year" -> arg?.toIntOrNull()?.takeIf { it in 1900..java.time.LocalDate.now().year }?.let { y -> state.homePage = 2; state.pendingRecord = io.github.graviton94.carpediem.ui.garden.RecordView(y, null); state.openYear(y) }
         "memory" -> return Screen.Memory(Screen.Main)
         // 숨 바로가기 (빠른 설정 타일 · 바로 가기, C1) · 돌멍하기 (02): 바로 시작하지 않고 정원에서 “… 하러 갈까요?” 한 번
         "breath" -> { state.homePage = 0; state.goAsk = "breath" }

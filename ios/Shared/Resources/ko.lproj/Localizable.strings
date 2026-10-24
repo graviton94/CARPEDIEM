@@ -211,7 +211,7 @@
 "letgo.hint" = "오늘 하루를 한 줄로";
 "letgo.send" = "한 줄 남기기";
 "letgo.done" = "오늘의 한 줄을 남겼어요.\n내일 또 만나요.";
-"letgo.privacy" = "남긴 줄은 아래 마음의 기록에 꽃으로 피어요. 여기에만 있어요.";
+"letgo.privacy" = "남긴 줄은 추억의 마음의 기록에 꽃으로 피어요. 여기에만 있어요.";
 "feeling.joy" = "기쁨";
 "feeling.thanks" = "고마움";
 "feeling.calm" = "평온";
@@ -823,7 +823,7 @@
 "notify.openSettings" = "설정 열기";
 "record.todayHidden" = "오늘 보낸 한 줄은 내일부터 여기서 다시 볼 수 있어요.";
 "letgo.total" = "지금까지 %1$@번 남겼어요.";
-"letgo.seeBelow" = "아래 마음의 기록, 오늘 칸에 하나가 더해졌어요.";
+"letgo.seeBelow" = "추억의 마음의 기록, 오늘 칸에 하나가 더해졌어요.";
 "letgo.yesterday" = "어제는 비어 있어요. 어제의 한 줄도 남길까요?";
 "backup.saveFail" = "파일을 저장하지 못했어요.";
 "backup.before" = "지우기 전에 백업해 두면 나중에 되살릴 수 있어요.";
@@ -1077,6 +1077,7 @@
 "title.setting" = "앱 첫 화면";
 "title.helloFirst" = "처음 만나는 날이에요. 반가워요.";
 "mood.readSub" = "지금까지 남긴 한 줄을 찾고, 달과 해로 돌아봐요.";
+"record.toMemories" = "지난 한 줄은 추억 › 마음의 기록에서 다시 봐요";
 "settings.notify" = "알림";
 "settings.garden" = "정원";
 "settings.help" = "도움 · 응원";

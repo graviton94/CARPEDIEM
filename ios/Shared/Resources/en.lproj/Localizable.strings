@@ -211,7 +211,7 @@
 "letgo.hint" = "Today, in one line";
 "letgo.send" = "Keep this line";
 "letgo.done" = "Today’s line is kept.\nSee you tomorrow.";
-"letgo.privacy" = "Each line blooms in Heart’s record below. It stays here.";
+"letgo.privacy" = "Each line blooms in Heart’s record under Memories. It stays here.";
 "feeling.joy" = "Joy";
 "feeling.thanks" = "Thanks";
 "feeling.calm" = "Calm";
@@ -823,7 +823,7 @@
 "notify.openSettings" = "Open settings";
 "record.todayHidden" = "Today’s line can be read here again from tomorrow.";
 "letgo.total" = "Lines kept so far: %1$@.";
-"letgo.seeBelow" = "One more has joined today’s box in Heart’s record below.";
+"letgo.seeBelow" = "One more has joined today’s box in Heart’s record under Memories.";
 "letgo.yesterday" = "Yesterday is empty. Write a line for yesterday too?";
 "backup.saveFail" = "Couldn’t save the file.";
 "backup.before" = "Back up first, and you can bring it all back later.";
@@ -1077,6 +1077,7 @@
 "title.setting" = "Title screen";
 "title.helloFirst" = "Nice to meet you.";
 "mood.readSub" = "Find the lines you've kept and look back by month and year.";
+"record.toMemories" = "See past lines in Memories › Heart’s record";
 "settings.notify" = "Reminders";
 "settings.garden" = "Garden";
 "settings.help" = "Help & support";

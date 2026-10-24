@@ -147,9 +147,10 @@ object ShareCards {
         val tp = paint(ctx, S.text * 0.78f, fg)
         val bodyW = (w - pad * 2.4f).toInt()
         val hBody = measure(l.text, tp, bodyW)
-        if (photo != null) {
-            val room = foot - y - hBody - pad * 0.9f
-            val pw = minOf(w * 0.5f, room * photo.width / photo.height).coerceAtLeast(w * 0.24f)
+        // 사진은 남은 자리만큼만 (한 줄이 액자 밖으로 밀려나지 않게, 1.1.11). 자리가 너무 작으면 사진 없이 한 줄만
+        val room = foot - y - hBody - pad * 0.9f
+        if (photo != null && room >= w * DAY_PHOTO_MIN) {
+            val pw = minOf(w * 0.5f, room * photo.width / photo.height)
             val ph = pw * photo.height / photo.width
             val tilt = (Math.floorMod(l.date.toEpochDay() * 7919, 70L) - 35) / 10f
             val top = y + pad * 0.2f
@@ -165,6 +166,8 @@ object ShareCards {
     /** 하루 카드 크기 (이야기 · 상태 공유에 맞는 세로). */
     private const val DAY_W = 1080
     private const val DAY_H = 1920
+    /** 하루 카드의 사진이 이보다 작아지면 (폭 비율) 사진을 빼고 한 줄만. */
+    private const val DAY_PHOTO_MIN = 0.16f
 
     private fun stoneAt(c: Canvas, a: HaruArt, x: Float, gy: Float, width: Float) {
         val k = width / a.meta.bbox.width

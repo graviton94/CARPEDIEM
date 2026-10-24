@@ -213,7 +213,7 @@
     <string name="letgo_hint">Today, in one line</string>
     <string name="letgo_send">Keep this line</string>
     <string name="letgo_done">Today’s line is kept.\nSee you tomorrow.</string>
-    <string name="letgo_privacy">Each line blooms in Heart’s record below. It stays here.</string>
+    <string name="letgo_privacy">Each line blooms in Heart’s record under Memories. It stays here.</string>
     <string name="feeling_joy">Joy</string>
     <string name="feeling_thanks">Thanks</string>
     <string name="feeling_calm">Calm</string>
@@ -825,7 +825,7 @@
     <string name="notify_openSettings">Open settings</string>
     <string name="record_todayHidden">Today’s line can be read here again from tomorrow.</string>
     <string name="letgo_total">Lines kept so far: %1$s.</string>
-    <string name="letgo_seeBelow">One more has joined today’s box in Heart’s record below.</string>
+    <string name="letgo_seeBelow">One more has joined today’s box in Heart’s record under Memories.</string>
     <string name="letgo_yesterday">Yesterday is empty. Write a line for yesterday too?</string>
     <string name="backup_saveFail">Couldn’t save the file.</string>
     <string name="backup_before">Back up first, and you can bring it all back later.</string>
@@ -1079,6 +1079,7 @@
     <string name="title_setting">Title screen</string>
     <string name="title_helloFirst">Nice to meet you.</string>
     <string name="mood_readSub">Find the lines you\'ve kept and look back by month and year.</string>
+    <string name="record_toMemories">See past lines in Memories › Heart’s record</string>
     <string name="settings_notify">Reminders</string>
     <string name="settings_garden">Garden</string>
     <string name="settings_help">Help &amp; support</string>
