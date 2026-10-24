@@ -209,6 +209,8 @@ adb shell input tap 540 250; shot g03c_guide_number 3
 s g04_home_all 5 --ez cd.preview true --es cd.now $NOW
 s g05_write 3 --ei cd.page 1 --es cd.now $NOW
 s g06_memories 3 --ei cd.page 2 --es cd.now $NOW
+# 1.1.11 추억 맨 아래: 모은 것 한 줄
+if want g06c; then open --ei cd.page 2 --es cd.now $NOW; sleep 4; swipe_up; swipe_up; swipe_up; swipe_up; swipe_up; shot g06c_memories_bottom 3; fi
 s g06_flow 3 --ei cd.page 3 --es cd.now $NOW
 s g07_morning 5 --ez cd.preview false --es cd.now 2026-09-30T07:10
 s g08_night_late 8 --es cd.now 2026-09-30T23:30;                                                                     shot g08_night 5
