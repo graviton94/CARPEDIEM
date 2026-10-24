@@ -38,6 +38,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.asImageBitmap
@@ -158,19 +159,26 @@ private fun recapCard(ctx: android.content.Context, state: AppState, pl: RecapPl
 }
 
 /**
- * 시스템 바 (위 상태 줄 · 아래 홈 · 뒤로) 높이: 앱 본 창에서 읽음. 전체 화면 창 (Dialog) 안에서는 이 값이 0 으로 오는 폰이 있어
- * (아래 버튼이 홈 · 뒤로 바 밑으로 들어감) 본 창의 값을 직접 씀.
+ * 시스템 바 (위 상태 줄 · 아래 홈 · 뒤로) 에 가려지는 만큼만 비움. 바 높이는 앱 본 창에서 읽고 (전체 화면 창 안에서는 0 으로 오는 폰이 있음),
+ * 이 창이 화면 어디에 놓였는지 재어, 창이 이미 바 안쪽에 있으면 (폰마다 다름) 그만큼은 빼서 두 번 비우지 않음.
  */
 @Composable
-private fun activityBars(): androidx.compose.foundation.layout.PaddingValues {
+private fun Modifier.barsPadding(): Modifier {
     val ctx = LocalContext.current
+    val view = androidx.compose.ui.platform.LocalView.current
     val density = androidx.compose.ui.platform.LocalDensity.current
     val act = remember(ctx) { generateSequence(ctx) { (it as? android.content.ContextWrapper)?.baseContext }.filterIsInstance<android.app.Activity>().firstOrNull() }
-    val ins = act?.window?.decorView?.let { androidx.core.view.ViewCompat.getRootWindowInsets(it) }
-        ?.getInsets(androidx.core.view.WindowInsetsCompat.Type.systemBars() or androidx.core.view.WindowInsetsCompat.Type.displayCutout())
-    return with(density) {
-        androidx.compose.foundation.layout.PaddingValues(top = (ins?.top ?: 0).toDp(), bottom = (ins?.bottom ?: 0).toDp().coerceAtLeast(Tokens.Space.sp4))
-    }
+    var pad by remember { mutableStateOf(androidx.compose.foundation.layout.PaddingValues(top = 0.dp, bottom = Tokens.Space.sp4)) }
+    return this.onGloballyPositioned {
+        val decor = act?.window?.decorView ?: return@onGloballyPositioned
+        val ins = androidx.core.view.ViewCompat.getRootWindowInsets(decor)
+            ?.getInsets(androidx.core.view.WindowInsetsCompat.Type.systemBars() or androidx.core.view.WindowInsetsCompat.Type.displayCutout()) ?: return@onGloballyPositioned
+        val loc = IntArray(2); view.getLocationOnScreen(loc)
+        val top = (ins.top - loc[1]).coerceAtLeast(0)
+        val bottom = (ins.bottom - (decor.height - (loc[1] + view.height))).coerceAtLeast(0)
+        val p = with(density) { androidx.compose.foundation.layout.PaddingValues(top = top.toDp(), bottom = bottom.toDp().coerceAtLeast(Tokens.Space.sp4)) }
+        if (p != pad) pad = p
+    }.padding(pad)
 }
 
 private enum class RecapStep { CHOOSE, CARD, PICK_CARD, PICK_VIDEO, MAKING }
@@ -257,7 +265,7 @@ private fun RecapPicker(pl: RecapPlan, picks: List<Recap.Pick>, max: Int, video:
     var adding by remember { mutableStateOf(false) }
     // 창을 화면 끝까지 쓰되 (decorFitsSystemWindows = false) 시스템 바 높이를 받아 그만큼 비움: 아래 버튼이 홈 · 뒤로 바 위에 오도록
     Dialog(onBack, DialogProperties(usePlatformDefaultWidth = false, decorFitsSystemWindows = false)) {
-        Column(Modifier.fillMaxSize().background(Theme.gc.paper).padding(activityBars()).padding(horizontal = Theme.deviceClass.pageMargin)) {
+        Column(Modifier.fillMaxSize().background(Theme.gc.paper).barsPadding().padding(horizontal = Theme.deviceClass.pageMargin)) {
             Column(Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(vertical = Tokens.Space.sp4), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
                 TokenText(if (video) stringResource(R.string.recap_makeTitle, pl.period) else stringResource(R.string.recap_chooseDay), Tokens.TypeScale.title3.serif())
                 TokenText(if (video && !pl.isMonth) stringResource(R.string.recap_makeYearSub, "$max") else stringResource(if (video) R.string.recap_makeSub else R.string.recap_pickSub), Tokens.TypeScale.footnote, color = p.secondary)
@@ -378,7 +386,7 @@ private fun RecapMaking(state: AppState, pl: RecapPlan, picks: List<Recap.Pick>,
             .onFailure { e -> if (e is kotlinx.coroutines.CancellationException) throw e; android.util.Log.e("Recap", "video", e); state.say(failed); onStop() }
     }
     Dialog(onStop, DialogProperties(usePlatformDefaultWidth = false, dismissOnClickOutside = false, decorFitsSystemWindows = false)) {
-        Column(Modifier.fillMaxSize().background(Theme.gc.paper).padding(activityBars()).padding(Theme.deviceClass.pageMargin),
+        Column(Modifier.fillMaxSize().background(Theme.gc.paper).barsPadding().padding(Theme.deviceClass.pageMargin),
             horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
             Spacer(Modifier.weight(1f))
             val art = remember { HaruArt.of(state.store.haruSeed, false) }
