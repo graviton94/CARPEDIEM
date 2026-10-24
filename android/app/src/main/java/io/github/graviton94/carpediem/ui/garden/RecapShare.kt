@@ -47,7 +47,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import io.github.graviton94.carpediem.R
 import io.github.graviton94.carpediem.core.Constellations
-import io.github.graviton94.carpediem.core.Family
+import io.github.graviton94.carpediem.core.Memories
 import io.github.graviton94.carpediem.core.Lines
 import io.github.graviton94.carpediem.core.Recap
 import io.github.graviton94.carpediem.core.Season
@@ -209,7 +209,7 @@ private fun RecapPicker(pl: RecapPlan, picks: List<Recap.Pick>, max: Int, video:
                 TokenText(stringResource(R.string.recap_daysHead, "$max"), Tokens.TypeScale.subhead, color = p.secondary, weight = FontWeight.SemiBold)
                 var lastSeason: Season? = null
                 picks.forEach { pick ->
-                    val s = Family.seasonOf(pick.date)
+                    val s = Memories.seasonOf(pick.date)
                     if (!pl.isMonth && s != lastSeason) { TokenText(seasonName(s), Tokens.TypeScale.footnote, color = p.secondary); lastSeason = s }
                     PickRow(pl, pick, today, onOther = { choosing = pick }, onDrop = { onChange(picks - pick) })
                 }

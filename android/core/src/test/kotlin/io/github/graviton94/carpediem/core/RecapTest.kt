@@ -34,9 +34,9 @@ class RecapTest {
         val lines = (1..9).map { l(4, it, Feeling.JOY) } + l(7, 1, Feeling.MEH) + l(10, 1, Feeling.MEH)
         val all = Recap.days(lines, LocalDate.of(2026, 1, 1), LocalDate.of(2026, 12, 31), today, { null }, { false })
         val y = Recap.year(all, 3)
-        assertEquals(setOf(Season.SPRING, Season.SUMMER, Season.AUTUMN), y.map { Family.seasonOf(it.date) }.toSet())
+        assertEquals(setOf(Season.SPRING, Season.SUMMER, Season.AUTUMN), y.map { Memories.seasonOf(it.date) }.toSet())
         assertEquals(y.sortedBy { it.date }, y)
-        assertEquals(3, Recap.yearLines(all).map { Family.seasonOf(it.date) }.toSet().size)
+        assertEquals(3, Recap.yearLines(all).map { Memories.seasonOf(it.date) }.toSet().size)
     }
 
     @Test fun moodSkipsHeavy() {

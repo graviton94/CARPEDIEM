@@ -39,13 +39,13 @@ object Recap {
     /** 해: 계절마다 가장 좋은 날 하나씩 (있는 계절만), 나머지는 점수 순으로 max 까지, 날짜순. */
     fun year(all: List<Pick>, max: Int = YEAR_MAX): List<Pick> {
         val r = ranked(auto(all))
-        val first = r.groupBy { Family.seasonOf(it.date) }.values.map { it.first() }
+        val first = r.groupBy { Memories.seasonOf(it.date) }.values.map { it.first() }
         return (first + r.filterNot { it in first }).take(max).sortedBy { it.date }
     }
 
     /** 해 카드의 한 줄들: 서로 다른 계절에서 먼저, 모자라면 아무 계절에서. 날짜순. */
     fun yearLines(all: List<Pick>, n: Int = YEAR_LINES): List<Pick> = year(all, Int.MAX_VALUE).let { y ->
-        val bySeason = ranked(y).distinctBy { Family.seasonOf(it.date) }
+        val bySeason = ranked(y).distinctBy { Memories.seasonOf(it.date) }
         (bySeason + ranked(y).filterNot { it in bySeason }).take(n).sortedBy { it.date }
     }
 

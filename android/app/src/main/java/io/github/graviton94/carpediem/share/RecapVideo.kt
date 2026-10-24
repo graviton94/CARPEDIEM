@@ -10,7 +10,7 @@ import android.media.MediaCodecList
 import android.media.MediaFormat
 import android.media.MediaMuxer
 import io.github.graviton94.carpediem.R
-import io.github.graviton94.carpediem.core.Family
+import io.github.graviton94.carpediem.core.Memories
 import io.github.graviton94.carpediem.core.Recap
 import io.github.graviton94.carpediem.design.Tokens
 import io.github.graviton94.carpediem.sound.StoneSong
@@ -104,7 +104,7 @@ object RecapVideo {
                             vTrack = muxer.addTrack(codec.outputFormat)
                             val aTrack = audio?.let { muxer.addTrack(it.first) }
                             muxer.start(); started = true
-                            if (aTrack != null) audio.second.forEach { (buf, bi) -> muxer.writeSampleData(aTrack, buf, bi) }
+                            if (aTrack != null && audio != null) audio.second.forEach { (buf, bi) -> muxer.writeSampleData(aTrack, buf, bi) }
                         }
                         o >= 0 -> {
                             val buf = codec.getOutputBuffer(o)!!
@@ -252,7 +252,7 @@ object RecapVideo {
     private fun sound(a: RecapCards.Art, scenes: List<Scene>): FloatArray {
         val totalSec = scenes.sumOf { it.sec.toDouble() } + 0.2
         val mix = FloatArray((totalSec * SR).toInt())
-        val season = Family.seasonOf(java.time.LocalDate.of(a.year, a.month ?: a.today.monthValue.takeIf { a.year == a.today.year } ?: 12, 1))
+        val season = Memories.seasonOf(java.time.LocalDate.of(a.year, a.month ?: a.today.monthValue.takeIf { a.year == a.today.year } ?: 12, 1))
         fun tone(s: io.github.graviton94.carpediem.core.Season) = StoneSong.toneOf(null, 12, s)
         fun hit(sec: Float, hz: Double, gain: Float, s: io.github.graviton94.carpediem.core.Season = season) = StoneSong.strike(mix, SR, (sec * SR).toInt(), hz, tone(s), gain)
         val me = StoneSong.pitch(a.seed, true)
@@ -268,11 +268,11 @@ object RecapVideo {
                     val grow = s.sec - FADE * 1.5f
                     (1..12).forEach { m ->
                         val ls = a.byMonth[m]?.mapNotNull { it.second }.orEmpty()
-                        if (ls.isNotEmpty()) hit(t0 + grow * (m - 0.5f) / 12f, StoneSong.feelingPitch(Recap.mood(ls)), 0.5f, Family.seasonOf(java.time.LocalDate.of(a.year, m, 1)))
+                        if (ls.isNotEmpty()) hit(t0 + grow * (m - 0.5f) / 12f, StoneSong.feelingPitch(Recap.mood(ls)), 0.5f, Memories.seasonOf(java.time.LocalDate.of(a.year, m, 1)))
                     }
                 }
                 Kind.DAY -> s.pick?.let { p ->
-                    val ps = Family.seasonOf(p.date); val f = StoneSong.feelingPitch(p.line.feeling)
+                    val ps = Memories.seasonOf(p.date); val f = StoneSong.feelingPitch(p.line.feeling)
                     hit(t0 + 0.4f, f, 0.6f, ps)
                     if (p.special != null) hit(t0 + 0.75f, StoneSong.shifted(f, 2), 0.4f, ps)
                 }
