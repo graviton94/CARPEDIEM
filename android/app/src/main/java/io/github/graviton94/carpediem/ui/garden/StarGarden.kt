@@ -31,6 +31,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.drawscope.scale
@@ -170,6 +171,22 @@ internal fun DrawScope.monthIn(
     val bx = r.left + r.width * 0.08f; val bw = r.width * 0.84f; val by = r.top + r.height * 0.08f; val bh = r.height * 0.84f
     haze(r.center, r.width * 0.5f, night)
     dots.forEachIndexed { i, d -> day(d, Offset(bx + d.x * bw, by + d.y * bh), night, r.width * sizes[0], r.width * sizes[1], today, if (i == pick) e else 0f, d.date == picked) }
+}
+
+/**
+ * 하루 카드의 바탕 (1.1.11): 그 달의 정원을 카드 전체에 옅게 (fade), 고른 날만 원래 진하기로.
+ * avoid = 글 자리 (위 · 아래 y, 픽셀): 그 띠에는 꽃 · 별을 놓지 않고 위아래로 비켜 놓음 (글이 바탕에 묻히지 않게).
+ */
+internal fun DrawScope.dayBackdrop(r: Rect, dots: List<StarGarden.Dot>, night: Boolean, today: LocalDate, sizes: FloatArray, picked: LocalDate, avoid: Pair<Float, Float>?, fade: Float) {
+    val bx = r.left + r.width * 0.08f; val bw = r.width * 0.84f; val by = r.top + r.height * 0.08f; val bh = r.height * 0.84f
+    val (u0, u1) = avoid?.let { (t0, t1) -> ((t0 - by) / bh).coerceIn(0f, 1f) to ((t1 - by) / bh).coerceIn(0f, 1f) } ?: (0f to 0f)
+    val gap = u1 - u0
+    fun at(d: StarGarden.Dot): Offset { val y0 = d.y * (1f - gap); return Offset(bx + d.x * bw, by + (if (y0 >= u0) y0 + gap else y0) * bh) }
+    drawIntoCanvas { it.saveLayer(r, androidx.compose.ui.graphics.Paint().apply { alpha = fade }) }
+    haze(r.center, r.width * 0.5f, night)
+    dots.forEach { d -> if (d.date != picked) day(d, at(d), night, r.width * sizes[0], r.width * sizes[1], today, 0f, false) }
+    drawIntoCanvas { it.restore() }
+    dots.firstOrNull { it.date == picked }?.let { d -> day(d, at(d), night, r.width * sizes[0], r.width * sizes[1], today, 0f, true) }
 }
 
 internal val MONTH_SIZES get() = floatArrayOf(G.Year.monthFlower, G.Year.monthStar)
