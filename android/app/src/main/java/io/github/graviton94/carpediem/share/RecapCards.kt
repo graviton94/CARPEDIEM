@@ -163,15 +163,16 @@ object RecapCards {
         }
     }
 
-    /** 해 카드의 열두 칸 자리: (x, y, 칸 너비, 칸 높이) 를 달마다. top..bottom 안에 3 × 4. */
+    /** 해 카드의 열두 칸 자리: (x, y, 칸 너비, 칸 높이) 를 달마다. top..bottom 안에 3 × 4 또는 4 × 3 (칸이 더 커지는 쪽). */
     fun grid(top: Float, bottom: Float): List<FloatArray> {
-        val pad = S.pad; val gap = pad * 0.28f; val label = S.small * 0.72f * 1.7f
+        val pad = S.pad; val gap = pad * 0.24f; val label = S.small * 0.72f * 1.7f
         val aspect = Tokens.Garden.Year.monthAspect
-        val cw = minOf((W - pad * 1.6f - gap * 2) / 3f, ((bottom - top - gap * 3) / 4f - label) * aspect).coerceAtLeast(1f)
-        val ch = cw / aspect
-        val gw = cw * 3 + gap * 2; val gh = (ch + label) * 4 + gap * 3
+        fun cell(cols: Int): Float { val rows = 12 / cols; return minOf((W - pad * 1.4f - gap * (cols - 1)) / cols, ((bottom - top - gap * (rows - 1)) / rows - label) * aspect).coerceAtLeast(1f) }
+        val cols = if (cell(4) > cell(3)) 4 else 3; val rows = 12 / cols
+        val cw = cell(cols); val ch = cw / aspect
+        val gw = cw * cols + gap * (cols - 1); val gh = (ch + label) * rows + gap * (rows - 1)
         val gx = (W - gw) / 2f; val gy = top + ((bottom - top) - gh).coerceAtLeast(0f) / 2f
-        return (1..12).map { m -> floatArrayOf(gx + ((m - 1) % 3) * (cw + gap), gy + ((m - 1) / 3) * (ch + label + gap), cw, ch) }
+        return (1..12).map { m -> floatArrayOf(gx + ((m - 1) % cols) * (cw + gap), gy + ((m - 1) / cols) * (ch + label + gap), cw, ch) }
     }
 
     fun year(a: Art): Bitmap {
