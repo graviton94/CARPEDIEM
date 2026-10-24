@@ -68,6 +68,20 @@ object StoneSong {
         return SCALE[(i + step).coerceIn(0, SCALE.size - 1)]
     }
 
+    /** 종 한 번을 mix 의 s0 자리부터 더함 (영상 소리도 같은 음색으로, 1.1.12). gain = 세기. */
+    fun strike(mix: FloatArray, sr: Int, s0: Int, f: Double, tone: Tone, gain: Float = 1f) {
+        val ring = T.ringMs / 1000.0
+        for (i in 0 until (ring * sr).toInt()) {
+            val j = s0 + i; if (j >= mix.size) break; if (j < 0) continue
+            val t = i / sr.toDouble()
+            // 종: 바탕음 + 음색의 배음, 빠르게 올라 천천히 잦아듦 (높은 배음일수록 먼저 잦아듦)
+            val env = (1 - exp(-t * tone.attack))
+            var v = 0.0
+            for (k in tone.partials.indices) v += tone.amps[k] * exp(-t * tone.decay * (1 + 0.6 * k)) * sin(2 * PI * f * tone.partials[k] * t)
+            mix[j] += (env * v * gain).toFloat()
+        }
+    }
+
     /** notes = (음, 시작 ms). 다른 스레드에서 만들어 틀고, 끝나면 스스로 놓음. tone = 음색 · 세기 (없으면 맑은 종). */
     fun play(notes: List<Pair<Double, Long>>, tone: Tone = Tone()) {
         if (notes.isEmpty()) return
@@ -76,18 +90,7 @@ object StoneSong {
                 val sr = 22050; val ring = T.ringMs / 1000.0
                 val total = ((notes.maxOf { it.second } / 1000.0 + ring) * sr).toInt()
                 val mix = FloatArray(total)
-                notes.forEach { (f, at) ->
-                    val s0 = (at / 1000.0 * sr).toInt()
-                    for (i in 0 until (ring * sr).toInt()) {
-                        val j = s0 + i; if (j >= total) break
-                        val t = i / sr.toDouble()
-                        // 종: 바탕음 + 음색의 배음, 빠르게 올라 천천히 잦아듦 (높은 배음일수록 먼저 잦아듦)
-                        val env = (1 - exp(-t * tone.attack))
-                        var v = 0.0
-                        for (k in tone.partials.indices) v += tone.amps[k] * exp(-t * tone.decay * (1 + 0.6 * k)) * sin(2 * PI * f * tone.partials[k] * t)
-                        mix[j] += (env * v).toFloat()
-                    }
-                }
+                notes.forEach { (f, at) -> strike(mix, sr, (at / 1000.0 * sr).toInt(), f, tone) }
                 val peak = mix.maxOf { kotlin.math.abs(it) }.coerceAtLeast(1f)
                 val pcm = ShortArray(total) { (mix[it] / peak * T.volume * tone.level * Short.MAX_VALUE).toInt().toShort() }
                 val track = AudioTrack.Builder()

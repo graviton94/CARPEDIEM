@@ -303,7 +303,7 @@ internal fun CollectionBody(state: AppState, profile: LifeProfile, now: LocalDat
             }
             var yearSheet by remember { mutableStateOf<Int?>(null) }
             GardenYearAlbum(state, profile, now) { yearSheet = it }
-            yearSheet?.let { y -> GardenYearSheet(state, profile, now, y) { yearSheet = null } }
+            yearSheet?.let { y -> RecapShare(state, y, null, now.toLocalDate(), Theme.gc.night) { yearSheet = null } }
             KeepsakesSection(state, profile, now, onCredits, KeepPart.LOOKBACK)
             BloomedSeeds(state)
             ReceivedLetters(state, now.toLocalDate())
