@@ -1008,7 +1008,7 @@ class AppState(private val context: Context) {
     // ───── 정원의 한 해 (S2): 12월 마지막 주에 한 번 묻기 ─────
     var gardenYearAsked by mutableStateOf(store.gardenYearAsked)
         private set
-    fun gardenYearDue(today: LocalDate): Int? = io.github.graviton94.carpediem.core.YearCard.due(today)?.takeIf { it != gardenYearAsked && !previewAll && seasonCards.isNotEmpty() }
+    fun gardenYearDue(today: LocalDate): Int? = io.github.graviton94.carpediem.core.YearCard.due(today)?.takeIf { y -> y != gardenYearAsked && !previewAll && lines.any { it.date.year == y && it.text.isNotBlank() } }
     fun gardenYearSeen(year: Int) { store.gardenYearAsked = year; gardenYearAsked = year }
 
     // ───── 숨이 정원에 스미기 (E3): 오늘 마친 숨의 종류 ─────

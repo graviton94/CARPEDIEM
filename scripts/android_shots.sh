@@ -85,7 +85,9 @@ s q36_memory_week 6 --ez cd.memory true --es cd.now 2026-12-20T21:30
 open --ez cd.reset true --es cd.design garden --el cd.seed 2718281 --es cd.birth 2000-05-12 --es cd.sex female --ez cd.meet false --ez cd.family true --ez cd.months true --ez cd.widgetShots true
 W=/sdcard/Android/data/$P/files/widgets
 for i in $(seq 1 90); do adb shell ls $W/done >/dev/null 2>&1 && break; sleep 2; done
-mkdir -p "$OUT/widgets"; adb pull $W/. "$OUT/widgets/" >/dev/null 2>&1; rm -f "$OUT/widgets/done"; ls "$OUT/widgets"
+# 달 영상 (1.1.12) 은 그림들 다음에 만들어짐: 조금 더 기다렸다 함께 꺼냄
+for i in $(seq 1 180); do adb shell ls $W/video_done >/dev/null 2>&1 && break; sleep 2; done
+mkdir -p "$OUT/widgets"; adb pull $W/. "$OUT/widgets/" >/dev/null 2>&1; rm -f "$OUT/widgets/done" "$OUT/widgets/video_done"; ls "$OUT/widgets"
 }
 finish() {
 # 오류 확인

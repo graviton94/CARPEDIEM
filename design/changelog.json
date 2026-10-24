@@ -1,4 +1,30 @@
 {
+  "1.1.12": {
+    "ko": [
+      "추억 › 마음의 기록에서 달과 해를 새 그림으로 보낼 수 있어요. 사진 · 대표 한 줄 · 가장 많던 마음과 하루의 인사까지.",
+      "달은 약 30초, 해는 약 1분의 짧은 영상으로도 만들어요. 꽃이 필 때마다 그날 마음의 음이 울려요.",
+      "만들기 전에 실을 날을 확인하고, 다른 날로 바꾸거나 뺄 수 있어요. 무거운 마음의 날은 저절로 고르지 않아요.",
+      "‘한 해를 한 장으로’는 새 해 카드와 해 영상으로 바뀌었어요."
+    ],
+    "en": [
+      "Share a month or a year from Memories › Heart’s record as a new card: photos, a line, the feeling you felt most and a word from Haru.",
+      "Or make a short video, about 30 seconds for a month and a minute for a year, with each flower ringing its day’s note.",
+      "Check the days before making it, swap or remove any. Days with heavy feelings are never picked on their own.",
+      "‘The year on one page’ is now the new year card and year video."
+    ],
+    "ja": [
+      "思い出 › こころの記録から、月と年を新しい絵で送れます。写真・代表のひとこと・いちばん多かった気持ちとハルのあいさつまで。",
+      "月は約30秒、年は約1分の短い動画にもできます。花が咲くたび、その日の気持ちの音が鳴ります。",
+      "つくる前に載せる日を確かめ、別の日に替えたり外したりできます。重い気持ちの日は自動では選びません。",
+      "「一年を一枚に」は新しい年のカードと年の動画になりました。"
+    ],
+    "zh-TW": [
+      "在回憶 › 心情的紀錄裡，可以把一個月或一年做成新的圖片分享：照片、代表的一句話、最常有的心情和小日的問候。",
+      "也能做成短片，一個月約 30 秒、一年約 1 分鐘，每開一朵花就響起那天心情的音。",
+      "製作前先確認要放的日子，可以換成別天或拿掉。心情沉重的日子不會被自動選上。",
+      "「一年收在一頁」換成了新的年度卡片與年度影片。"
+    ]
+  },
   "1.1.11": {
     "ko": [
       "기록은 쓰는 곳, 추억은 다시 보고 나누는 곳으로 나눴어요. 마음의 기록은 추억에 있어요.",

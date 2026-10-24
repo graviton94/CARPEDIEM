@@ -52,6 +52,7 @@ object WidgetShots {
     }
 
     suspend fun save(activity: Activity) {
+        var recapVideo: (() -> Pair<io.github.graviton94.carpediem.share.RecapCards.Art, List<io.github.graviton94.carpediem.core.Recap.Pick>>)? = null
         val dir = File(activity.getExternalFilesDir(null), "widgets").apply { mkdirs() }
         for (s in shots) runCatching {
             val out = render(activity, s)
@@ -92,7 +93,41 @@ object WidgetShots {
                 .let { b -> File(dir, "share_day_photo.png").outputStream().use { b.compress(Bitmap.CompressFormat.PNG, 100, it) } }
             io.github.graviton94.carpediem.share.ShareCards.day(activity, book, days, seed, true, day, title, sub, plain.copy(date = month.withDayOfMonth(12)), io.github.graviton94.carpediem.share.ShareCards.feelingName(activity, plain.feeling), null, null, seed, null)
                 .let { b -> File(dir, "share_day_text.png").outputStream().use { b.compress(Bitmap.CompressFormat.PNG, 100, it) } }
+            // 달 · 해 카드 (1.1.12): 사진 있는 달 · 사진 없는 달 (대표 한 줄) · 해, 그리고 달 영상 몇 장면 (확인용)
+            val Rc = io.github.graviton94.carpediem.core.Recap
+            val special: (java.time.LocalDate) -> String? = { if (it == withPhoto.date) "엄마 생신" else null }
+            val all = Rc.days(sample, month, month.plusMonths(1).minusDays(1), day, special) { it == withPhoto.date }.map { if (it.date == withPhoto.date) it.copy(line = withPhoto) else it }
+            val label: (io.github.graviton94.carpediem.core.Recap.Pick) -> String = { pk -> listOfNotNull(pk.special, "${pk.date.monthValue}월 ${pk.date.dayOfMonth}일", pk.line.feeling?.let { io.github.graviton94.carpediem.ui.Labels.feeling(activity, it) }).joinToString(" · ") }
+            fun art(picks: List<io.github.graviton94.carpediem.core.Recap.Pick>, night: Boolean, photos: Map<java.time.LocalDate, Bitmap>, year: Boolean = false) = io.github.graviton94.carpediem.share.RecapCards.Art(
+                activity, month.year, if (year) null else month.monthValue, if (year) "${month.year}년" else "${month.monthValue}월", if (year) "${month.year}년의 정원" else title,
+                if (year) "한 줄 214개 · 사진 18 · 가장 많던 마음 · 고마움" else "거문고자리 · 한 줄 ${sample.size}개 · 사진 1",
+                if (year) io.github.graviton94.carpediem.core.Lines.yearDays(sample.map { it.copy(date = it.date.withMonth(1 + (it.date.dayOfMonth % 12))) } + sample, month.year) else days,
+                book, seed, seed, night, day, io.github.graviton94.carpediem.core.Feeling.THANKS, "고마움", picks, photos,
+                if (year) mapOf(withPhoto.date.monthValue to "엄마 생신", 5 to "첫 출근") else emptyMap(), label)
+            val picks = Rc.month(all)
+            io.github.graviton94.carpediem.share.RecapCards.month(art(picks, false, mapOf(withPhoto.date to photo)))
+                .let { b -> File(dir, "share_month_photo.png").outputStream().use { b.compress(Bitmap.CompressFormat.PNG, 100, it) } }
+            io.github.graviton94.carpediem.share.RecapCards.month(art(picks.map { it.copy(photo = false) }, true, emptyMap()))
+                .let { b -> File(dir, "share_month_text.png").outputStream().use { b.compress(Bitmap.CompressFormat.PNG, 100, it) } }
+            io.github.graviton94.carpediem.share.RecapCards.year(art(Rc.yearLines(all), false, emptyMap(), year = true))
+                .let { b -> File(dir, "share_year.png").outputStream().use { b.compress(Bitmap.CompressFormat.PNG, 100, it) } }
+            recapVideo = { art(picks, false, mapOf(withPhoto.date to photo)) to picks }
         }.onFailure { android.util.Log.e("WidgetShots", "share day", it) }
         File(dir, "done").writeText("ok")
+        // 달 영상 (1.1.12): 실제로 만들어 몇 장면을 그림으로 · 길이 · 소리 트랙 (확인용, 끝나면 video_done)
+        runCatching {
+            val (a, picks) = recapVideo?.invoke() ?: return@runCatching
+            val f = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Default) {
+                io.github.graviton94.carpediem.share.RecapVideo.make(a, io.github.graviton94.carpediem.share.RecapCards.month(a), io.github.graviton94.carpediem.share.RecapVideo.scenes(true, picks), "shot-month") {}
+            }
+            val mmr = android.media.MediaMetadataRetriever(); mmr.setDataSource(f.path)
+            val dur = mmr.extractMetadata(android.media.MediaMetadataRetriever.METADATA_KEY_DURATION)
+            val audio = mmr.extractMetadata(android.media.MediaMetadataRetriever.METADATA_KEY_HAS_AUDIO)
+            for (sec in listOf(1, 6, 9, 14, 19, 25, 28)) mmr.getFrameAtTime(sec * 1_000_000L, android.media.MediaMetadataRetriever.OPTION_CLOSEST)
+                ?.let { b -> File(dir, "video_month_%02d.png".format(sec)).outputStream().use { b.compress(Bitmap.CompressFormat.PNG, 100, it) } }
+            mmr.release()
+            File(dir, "video_month.txt").writeText("duration_ms=$dur audio=$audio bytes=${f.length()}\n")
+        }.onFailure { android.util.Log.e("WidgetShots", "recap video", it); File(dir, "video_month.txt").writeText("error: $it\n${it.stackTraceToString().take(2000)}") }
+        File(dir, "video_done").writeText("ok")
     }
 }

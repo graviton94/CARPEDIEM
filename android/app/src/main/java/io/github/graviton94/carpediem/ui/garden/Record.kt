@@ -76,6 +76,9 @@ internal fun RecordPanel(state: AppState, view: RecordView, onView: (RecordView)
     var deleting by remember { mutableStateOf<LocalDate?>(null) }
     var editingPast by remember { mutableStateOf<io.github.graviton94.carpediem.core.DayLine?>(null) }
     editingPast?.let { PastLineSheet(state, it, today) { editingPast = null } }
+    // 달 · 해 보내기 (1.1.12): 그림 한 장 · 짧은 영상 고르기 시트
+    var recap by remember { mutableStateOf<Pair<Int, Int?>?>(null) }
+    recap?.let { (y, mo) -> RecapShare(state, y, mo, today, night) { recap = null } }
     deleting?.let { d ->
         io.github.graviton94.carpediem.ui.GardenAlert(
             onDismissRequest = { deleting = null },
@@ -140,7 +143,7 @@ internal fun RecordPanel(state: AppState, view: RecordView, onView: (RecordView)
                             val photo = runCatching { io.github.graviton94.carpediem.data.Photos.weathered(ctx, dayLine.date, today) }.getOrNull()
                             io.github.graviton94.carpediem.share.ShareCards.day(ctx, book, days, state.store.haruSeed, night, today, shown, sub, dayLine, io.github.graviton94.carpediem.share.ShareCards.feelingName(ctx, dayLine.feeling), q, photo, state.store.haruSeed, to)
                         }
-                    } else io.github.graviton94.carpediem.share.ShareCards.send(ctx, "month-${view.year}-$m") { io.github.graviton94.carpediem.share.ShareCards.month(ctx, book, days, state.store.haruSeed, night, today, shown, sub) }
+                    } else recap = view.year to m
                 }, filled = false, seed = 1173)
             } else {
                 val y = view.year
@@ -156,9 +159,7 @@ internal fun RecordPanel(state: AppState, view: RecordView, onView: (RecordView)
                 picks.forEach { TokenText("“$it”", Tokens.TypeScale.callout.serif(), Modifier.padding(horizontal = Tokens.Space.sp2)) }
                 if (y < today.year || (today.monthValue == 12 && today.dayOfMonth == 31))
                     TokenText(stringResource(R.string.year_end), Tokens.TypeScale.callout.serif(), Modifier.fillMaxWidth(), align = TextAlign.Center)
-                GardenButton(stringResource(R.string.share_image), {
-                    io.github.graviton94.carpediem.share.ShareCards.send(ctx, "year-$y") { io.github.graviton94.carpediem.share.ShareCards.year(ctx, book, days, state.store.haruSeed, night, today, title, count) }
-                }, filled = false, seed = 1181)
+                GardenButton(stringResource(R.string.share_image), { recap = y to null }, filled = false, seed = 1181)
             }
         }
     }
