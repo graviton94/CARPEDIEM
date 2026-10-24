@@ -16,6 +16,7 @@ import androidx.core.content.res.ResourcesCompat
 import io.github.graviton94.carpediem.R
 import io.github.graviton94.carpediem.core.DayLine
 import io.github.graviton94.carpediem.core.Feeling
+import io.github.graviton94.carpediem.core.Person
 import io.github.graviton94.carpediem.design.Tokens
 import io.github.graviton94.carpediem.ui.garden.Crayon
 import io.github.graviton94.carpediem.ui.garden.HaruArt
@@ -58,14 +59,20 @@ object ShareCards {
         return b to c
     }
 
+    /** 글 줄 나눔: 안드로이드 13 부터는 낱말 (어절) 단위로 (한국어가 ‘색이 / 라’ 처럼 낱말 가운데서 끊기지 않게). */
+    private fun layout(s: String, tp: TextPaint, width: Int, align: Layout.Alignment = Layout.Alignment.ALIGN_CENTER): StaticLayout {
+        val b = StaticLayout.Builder.obtain(s, 0, s.length, tp, width).setAlignment(align).setLineSpacing(0f, 1.25f)
+        if (android.os.Build.VERSION.SDK_INT >= 33) b.setLineBreakConfig(android.graphics.text.LineBreakConfig.Builder().setLineBreakWordStyle(android.graphics.text.LineBreakConfig.LINE_BREAK_WORD_STYLE_PHRASE).build())
+        return b.build()
+    }
+
     private fun text(c: Canvas, s: String, tp: TextPaint, x: Float, y: Float, width: Int, align: Layout.Alignment = Layout.Alignment.ALIGN_CENTER): Float {
-        val l = StaticLayout.Builder.obtain(s, 0, s.length, tp, width).setAlignment(align).setLineSpacing(0f, 1.25f).build()
+        val l = layout(s, tp, width, align)
         c.save(); c.translate(x, y); l.draw(c); c.restore()
         return l.height.toFloat()
     }
 
-    private fun measure(s: String, tp: TextPaint, width: Int): Float =
-        StaticLayout.Builder.obtain(s, 0, s.length, tp, width).setLineSpacing(0f, 1.25f).build().height.toFloat()
+    private fun measure(s: String, tp: TextPaint, width: Int): Float = layout(s, tp, width).height.toFloat()
 
     private fun haru(c: Canvas, seed: Long, cx: Float, groundY: Float, widthPx: Float, line: Boolean = true) {
         val art = HaruArt.of(seed, false)
@@ -89,11 +96,82 @@ object ShareCards {
         text(c, listOfNotNull(date, feelingName).joinToString(" · "), paint(ctx, S.small, inkSoft), pad, pad * 1.4f, (w - pad * 2).toInt())
         val tp = paint(ctx, S.text, ink)
         val bodyW = (w - pad * 2.4f).toInt()
-        val hBody = StaticLayout.Builder.obtain(l.text, 0, l.text.length, tp, bodyW).setLineSpacing(0f, 1.25f).build().height
+        val hBody = measure(l.text, tp, bodyW)
         text(c, l.text, tp, pad * 1.2f, h * 0.42f - hBody / 2f, bodyW)
         haru(c, seed, w / 2f, h * 0.8f, w * 0.2f)
         text(c, ctx.getString(R.string.share_footer), paint(ctx, S.small * 0.8f, inkSoft), pad, h - pad * 1.25f, (w - pad * 2).toInt())
         return b
+    }
+
+    /**
+     * 지난 하루 한 장 (1.1.11, 달의 정원에서 고른 날, 세로 1080 × 1920 · 이야기 크기):
+     * 위엔 그 달의 정원 (낮엔 꽃밭 · 밤엔 별자리, 그날이 빛남), 가운데엔 내 하루와 그날 한 줄을 보낸 사람의 돌,
+     * 아래엔 날짜 · 마음 · (그날의 질문) · 시간이 묻은 사진 · 한 줄.
+     */
+    fun day(ctx: Context, book: io.github.graviton94.carpediem.core.ConstellationBook, days: List<Pair<LocalDate, DayLine?>>, install: Long, night: Boolean, today: LocalDate,
+            title: String, sub: String, l: DayLine, feelingName: String?, question: String?, photo: Bitmap?, mySeed: Long, to: Person?): Bitmap {
+        val w = DAY_W; val h = DAY_H; val pad = S.pad
+        val (b, c) = board(w, h, night)
+        val fg = if (night) Y.plain.toArgb() else ink; val soft = if (night) Y.plain.copy(alpha = 0.7f).toArgb() else inkSoft
+        val inner = (w - pad * 2).toInt()
+        // ① 그 달의 정원 (그날을 고른 채로)
+        var y = pad * 1.1f
+        y += text(c, title, paint(ctx, S.text * 0.8f, fg), pad, y, inner) + pad * 0.1f
+        y += text(c, sub, paint(ctx, S.small * 0.9f, soft), pad, y, inner) + pad * 0.25f
+        val gw = (w - pad * 2f); val gh = minOf(gw / Tokens.Garden.Year.monthAspect, h * 0.3f); val gwFit = gh * Tokens.Garden.Year.monthAspect
+        val dots = io.github.graviton94.carpediem.ui.garden.StarGarden.month(book, days, install)
+        drawCompose(c, (w - gwFit) / 2f, y, gwFit, gh) {
+            if (night) nightSky() else meadow()
+            monthIn(androidx.compose.ui.geometry.Rect(androidx.compose.ui.geometry.Offset.Zero, size), dots, night, today, MONTH_SIZES, picked = l.date)
+        }
+        y += gh + pad * 0.5f
+        // ② 내 하루와, 그날 한 줄을 보낸 사람의 돌
+        val sw = w * 0.15f
+        val gy = y + sw * 0.95f
+        if (to == null) stoneAt(c, HaruArt.of(mySeed, false), w / 2f, gy, sw)
+        else {
+            val gap = sw * 0.85f
+            stoneAt(c, HaruArt.of(mySeed, false), w / 2f - gap, gy, sw)
+            stoneAt(c, HaruArt.of(to.seed, false), w / 2f + gap, gy, sw * (if (to.kind == io.github.graviton94.carpediem.core.Kind.PET) Tokens.Garden.Family.petScale else 1f))
+        }
+        val lp = Paint(Paint.ANTI_ALIAS_FLAG).apply { strokeWidth = 5f; color = fg; strokeCap = Paint.Cap.ROUND; alpha = 150 }
+        c.drawLine(w / 2f - sw * 2.4f, gy, w / 2f + sw * 2.4f, gy, lp)
+        y = gy + pad * 0.15f
+        if (to != null) y += text(c, ctx.getString(R.string.share_dayTo, to.name), paint(ctx, S.small * 0.85f, soft), pad, y, inner)
+        y += pad * 0.45f
+        // ③ 그날: 날짜 · 마음, 질문, 사진, 한 줄
+        val date = l.date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG))
+        y += text(c, listOfNotNull(date, feelingName).joinToString(" · "), paint(ctx, S.small, soft), pad, y, inner) + pad * 0.1f
+        if (!question.isNullOrBlank()) y += text(c, question, paint(ctx, S.small * 0.88f, soft), pad, y, inner) + pad * 0.1f
+        val foot = h - pad * 1.6f
+        val tp = paint(ctx, S.text * 0.78f, fg)
+        val bodyW = (w - pad * 2.4f).toInt()
+        val hBody = measure(l.text, tp, bodyW)
+        if (photo != null) {
+            val room = foot - y - hBody - pad * 0.9f
+            val pw = minOf(w * 0.5f, room * photo.width / photo.height).coerceAtLeast(w * 0.24f)
+            val ph = pw * photo.height / photo.width
+            val tilt = (Math.floorMod(l.date.toEpochDay() * 7919, 70L) - 35) / 10f
+            val top = y + pad * 0.2f
+            c.save(); c.rotate(tilt, w / 2f, top + ph / 2f)
+            c.drawBitmap(photo, null, RectF((w - pw) / 2f, top, (w + pw) / 2f, top + ph), Paint(Paint.FILTER_BITMAP_FLAG or Paint.ANTI_ALIAS_FLAG))
+            c.restore()
+            y = top + ph + pad * 0.5f
+            text(c, l.text, tp, pad * 1.2f, y, bodyW)
+        } else text(c, l.text, tp, pad * 1.2f, (y + foot) / 2f - hBody / 2f, bodyW)
+        text(c, ctx.getString(R.string.share_footer), paint(ctx, S.small * 0.8f, soft), pad, h - pad * 1.25f, inner)
+        return b
+    }
+    /** 하루 카드 크기 (이야기 · 상태 공유에 맞는 세로). */
+    private const val DAY_W = 1080
+    private const val DAY_H = 1920
+
+    private fun stoneAt(c: Canvas, a: HaruArt, x: Float, gy: Float, width: Float) {
+        val k = width / a.meta.bbox.width
+        c.save(); c.translate(x - a.meta.bbox.center.x * k, gy - a.meta.ground * k)
+        androidx.compose.ui.graphics.drawscope.CanvasDrawScope().draw(androidx.compose.ui.unit.Density(1f), androidx.compose.ui.unit.LayoutDirection.Ltr,
+            androidx.compose.ui.graphics.Canvas(c), androidx.compose.ui.geometry.Size(a.meta.box * k, a.meta.box * k)) { drawHaru(a, k, smile = 1f) }
+        c.restore()
     }
 
     /** Compose 그리기를 그림 위 (left, top) 의 w × h 판에 (앱 화면과 같은 그리기). */

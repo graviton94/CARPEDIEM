@@ -130,8 +130,17 @@ internal fun RecordPanel(state: AppState, view: RecordView, onView: (RecordView)
                         }
                     }
                 } else TokenText(stringResource(R.string.record_hint), Tokens.TypeScale.footnote, Modifier.fillMaxWidth(), color = p.secondary, align = TextAlign.Center)
-                GardenButton(stringResource(R.string.share_image), {
-                    io.github.graviton94.carpediem.share.ShareCards.send(ctx, "month-${view.year}-$m") { io.github.graviton94.carpediem.share.ShareCards.month(ctx, book, days, state.store.haruSeed, night, today, shown, sub) }
+                // 지난 날을 골랐으면 그날 한 장 (사진 · 한 줄 · 마음 · 질문 · 보낸 사람의 돌), 아니면 달의 정원
+                val dayLine = pickedLine?.second?.takeIf { pickedLine.first != today && it.text.isNotBlank() }
+                GardenButton(stringResource(if (dayLine != null) R.string.share_day else R.string.share_image), {
+                    if (dayLine != null) {
+                        val to = dayLine.to?.let { id -> state.people.firstOrNull { it.id == id } }
+                        val q = dayLine.question?.let { state.store.questions.byId(it) }?.text(io.github.graviton94.carpediem.data.Words.lang(ctx))
+                        io.github.graviton94.carpediem.share.ShareCards.send(ctx, "day-${dayLine.date}") {
+                            val photo = runCatching { io.github.graviton94.carpediem.data.Photos.weathered(ctx, dayLine.date, today) }.getOrNull()
+                            io.github.graviton94.carpediem.share.ShareCards.day(ctx, book, days, state.store.haruSeed, night, today, shown, sub, dayLine, io.github.graviton94.carpediem.share.ShareCards.feelingName(ctx, dayLine.feeling), q, photo, state.store.haruSeed, to)
+                        }
+                    } else io.github.graviton94.carpediem.share.ShareCards.send(ctx, "month-${view.year}-$m") { io.github.graviton94.carpediem.share.ShareCards.month(ctx, book, days, state.store.haruSeed, night, today, shown, sub) }
                 }, filled = false, seed = 1173)
             } else {
                 val y = view.year

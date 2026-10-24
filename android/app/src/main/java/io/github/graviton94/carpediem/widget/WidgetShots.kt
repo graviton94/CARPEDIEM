@@ -65,6 +65,34 @@ object WidgetShots {
             GardenWidgetArt.garden(activity, (320 * d).toInt(), (160 * d).toInt(), t).let { b -> File(dir, "time_garden_$name.png").outputStream().use { b.compress(Bitmap.CompressFormat.PNG, 100, it) } }
             GardenWidgetArt.haru(activity, (160 * d).toInt(), (160 * d).toInt(), t).let { b -> File(dir, "time_haru_$name.png").outputStream().use { b.compress(Bitmap.CompressFormat.PNG, 100, it) } }
         }.onFailure { android.util.Log.e("WidgetShots", "time $name", it) }
+        // 지난 하루 카드 (1.1.11): 사진 · 질문 · 보낸 사람이 있는 날, 글만 있는 날 (확인용)
+        runCatching {
+            val sz = io.github.graviton94.carpediem.data.Photos.SIZE
+            val src = Bitmap.createBitmap(sz, sz, Bitmap.Config.ARGB_8888)
+            Canvas(src).apply {
+                drawRect(0f, 0f, sz.toFloat(), sz.toFloat(), Paint().apply { shader = android.graphics.LinearGradient(0f, 0f, 0f, sz.toFloat(), intArrayOf(0xFF3D7BD9.toInt(), 0xFFFF9A3C.toInt(), 0xFFE2483A.toInt()), floatArrayOf(0f, 0.55f, 1f), android.graphics.Shader.TileMode.CLAMP) })
+                drawCircle(sz * 0.7f, sz * 0.46f, sz * 0.1f, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = 0xFFFFE27A.toInt() })
+                drawRect(0f, sz * 0.75f, sz.toFloat(), sz.toFloat(), Paint().apply { color = 0xFF1E3B22.toInt() })
+            }
+            val photo = io.github.graviton94.carpediem.data.Photos.render(src, 20300, 2)
+            val mom = io.github.graviton94.carpediem.core.Person("mom", "엄마", io.github.graviton94.carpediem.core.Kind.PERSON, seed = 4242L, metOn = day.minusYears(20))
+            val withPhoto = io.github.graviton94.carpediem.core.DayLine(day.minusDays(40), "퇴근길에 본 노을이 엄마가 좋아하던 색이라 사진으로 남겼어요.", io.github.graviton94.carpediem.core.Feeling.THANKS, to = "mom")
+            val plain = io.github.graviton94.carpediem.core.DayLine(day.minusDays(12), "오늘은 아무 일도 없었지만, 그래서 좋았다.", io.github.graviton94.carpediem.core.Feeling.CALM)
+            val q = "오늘 가장 오래 바라본 것은?"
+            val seed = 2718281L
+            // 그 달의 정원 견본: 지난 달에 한 줄 열닷새 (마음 고루)
+            val month = withPhoto.date.withDayOfMonth(1)
+            val fs = io.github.graviton94.carpediem.core.Feeling.entries
+            val sample = (1..month.lengthOfMonth()).filter { it % 2 == 0 || it == withPhoto.date.dayOfMonth }.map { d -> io.github.graviton94.carpediem.core.DayLine(month.withDayOfMonth(d), "·", fs[d % fs.size]) }
+                .map { if (it.date == withPhoto.date) withPhoto else it }
+            val book = io.github.graviton94.carpediem.data.Store(activity).constellations
+            val days = io.github.graviton94.carpediem.core.Constellations.monthDays(sample, month.year, month.monthValue)
+            val title = "${month.monthValue}월의 정원"; val sub = "한 줄 ${sample.size}"
+            io.github.graviton94.carpediem.share.ShareCards.day(activity, book, days, seed, false, day, title, sub, withPhoto, io.github.graviton94.carpediem.share.ShareCards.feelingName(activity, withPhoto.feeling), q, photo, seed, mom)
+                .let { b -> File(dir, "share_day_photo.png").outputStream().use { b.compress(Bitmap.CompressFormat.PNG, 100, it) } }
+            io.github.graviton94.carpediem.share.ShareCards.day(activity, book, days, seed, true, day, title, sub, plain.copy(date = month.withDayOfMonth(12)), io.github.graviton94.carpediem.share.ShareCards.feelingName(activity, plain.feeling), null, null, seed, null)
+                .let { b -> File(dir, "share_day_text.png").outputStream().use { b.compress(Bitmap.CompressFormat.PNG, 100, it) } }
+        }.onFailure { android.util.Log.e("WidgetShots", "share day", it) }
         File(dir, "done").writeText("ok")
     }
 }

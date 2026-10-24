@@ -348,7 +348,11 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
     }
     // 백업 · 불러오기는 폰의 화면 잠금을 한 번 확인한 뒤에만
     val deviceCheck = rememberDeviceCheck()
-    fun backupNow() = deviceCheck { saveFile.launch("haru-garden-" + java.time.LocalDate.now() + ".json") }
+    // 파일로 저장 (1.1.11): 저장할 곳 고르는 화면 전에, 구글 드라이브 고르는 길을 한 번 알려 줌 (그냥 저장하면 다운로드에만 남으므로)
+    var saveGuide by remember { mutableStateOf(false) }
+    fun backupNow() { saveGuide = true }
+    fun saveNow() = deviceCheck { saveFile.launch("haru-garden-" + java.time.LocalDate.now() + ".json") }
+    var autoHelp by remember { mutableStateOf(false) }
     SkyBackground {
         Page {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
@@ -405,8 +409,9 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
             androidx.compose.runtime.LaunchedEffect(state.settingsFocus) { if (state.settingsFocus == "backup") { kotlinx.coroutines.delay(300); backupView.bringIntoView(); state.settingsFocus = null
                 repeat(2) { backupGlow.animateTo(1f, androidx.compose.animation.core.tween(500)); backupGlow.animateTo(0.3f, androidx.compose.animation.core.tween(500)) }
                 kotlinx.coroutines.delay(1200); backupGlow.animateTo(0f, androidx.compose.animation.core.tween(800)) } }
-            FormSection(header = stringResource(R.string.settings_records), footer = stringResource(R.string.settings_recordsFooter), modifier = Modifier.bringIntoViewRequester(backupView)) {
-                FormRow(stringResource(R.string.lines_keep), onClick = { if (state.keepLines) confirmKeepOff = true else state.changeKeepLines(true) }) { Switch(state.keepLines, { if (it) state.changeKeepLines(true) else confirmKeepOff = true }, colors = sw) }
+            // 백업 · 옮기기 (1.1.11): 폰의 구글 백업 (자동) · 파일로 저장 · 불러오기를 한 묶음으로
+            FormSection(header = stringResource(R.string.settings_backup), footer = stringResource(R.string.settings_backupFooter), modifier = Modifier.bringIntoViewRequester(backupView)) {
+                FormRow(stringResource(R.string.backup_auto), onClick = { autoHelp = true }, trailing = chevron)
                 RowDivider()
                 Box(Modifier.drawBehind { if (backupGlow.value > 0f) drawRoundRect(p.olive.copy(alpha = 0.22f * backupGlow.value), cornerRadius = androidx.compose.ui.geometry.CornerRadius(Tokens.Radius.sm.toPx())) }) {
                     FormRow(stringResource(R.string.backup_export), onClick = { backupNow() }) {
@@ -416,6 +421,9 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
                 }
                 RowDivider()
                 FormRow(stringResource(R.string.backup_import), onClick = { pickHelp = true }, trailing = chevron)
+            }
+            FormSection(header = stringResource(R.string.settings_records), footer = stringResource(R.string.settings_recordsFooter)) {
+                FormRow(stringResource(R.string.lines_keep), onClick = { if (state.keepLines) confirmKeepOff = true else state.changeKeepLines(true) }) { Switch(state.keepLines, { if (it) state.changeKeepLines(true) else confirmKeepOff = true }, colors = sw) }
                 RowDivider()
                 FormRow(stringResource(R.string.lines_export), onClick = {
                     val text = state.exportLines()
@@ -474,6 +482,22 @@ fun SettingsScreen(state: AppState, profile: LifeProfile, onClose: () -> Unit, o
                 text = { Text(stringResource(R.string.backup_before)) },
                 confirmButton = { AlertButton(stringResource(R.string.lines_clearAction), { confirmClear = false; state.clearLines() }) },
                 dismissButton = { AlertButton(stringResource(R.string.backup_first), { confirmClear = false; backupNow() }, quiet = true) },
+            )
+            if (saveGuide) GardenAlert(
+                onDismissRequest = { saveGuide = false },
+                title = { Text(stringResource(R.string.backup_saveTitle)) },
+                text = { Text(stringResource(R.string.backup_saveHelp)) },
+                confirmButton = { AlertButton(stringResource(R.string.backup_saveGo), { saveGuide = false; saveNow() }) },
+                dismissButton = { AlertButton(stringResource(R.string.cancel), { saveGuide = false }, quiet = true) },
+            )
+            // 폰의 구글 백업: 무엇이 맡겨지는지 · 켜져 있는지 보는 길 (앱이 직접 켜고 끌 수는 없어 폰 설정으로)
+            if (autoHelp) GardenAlert(
+                onDismissRequest = { autoHelp = false },
+                title = { Text(stringResource(R.string.backup_autoTitle)) },
+                text = { Text(stringResource(R.string.backup_autoHelp)) },
+                confirmButton = { AlertButton(stringResource(R.string.backup_autoOpen), { autoHelp = false
+                    runCatching { ctx.startActivity(android.content.Intent(android.provider.Settings.ACTION_SETTINGS).addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)) } }) },
+                dismissButton = { AlertButton(stringResource(R.string.garden_close), { autoHelp = false }, quiet = true) },
             )
             // 들여오기 전에: 어떤 파일을 골라야 하는지 한 번 알려 줌 (저장할 때의 이름 ‘haru-garden-날짜.json’)
             if (pickHelp) GardenAlert(
