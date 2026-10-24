@@ -98,7 +98,7 @@ fun CollectionScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, 
             verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp4),
         ) {
             PageBar(stringResource(R.string.collection), onBack)
-            CollectionBody(state, profile, now, onMemory)
+            CollectionBody(state, profile, now, onMemory, part = CollectPart.GRID)
         }
     }
 }
@@ -111,7 +111,7 @@ fun CollectionScreen(state: AppState, profile: LifeProfile, now: LocalDateTime, 
  */
 @OptIn(ExperimentalMaterial3Api::class, androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
 @Composable
-internal fun CollectionBody(state: AppState, profile: LifeProfile, now: LocalDateTime, onMemory: () -> Unit, guide: GuideTargets? = null, onCredits: (Int) -> Unit = {}) {
+internal fun CollectionBody(state: AppState, profile: LifeProfile, now: LocalDateTime, onMemory: () -> Unit, guide: GuideTargets? = null, onCredits: (Int) -> Unit = {}, part: CollectPart = CollectPart.GRID) {
     val p = Theme.palette
     val ctx = LocalContext.current
     val u = Theme.unit
@@ -120,6 +120,8 @@ internal fun CollectionBody(state: AppState, profile: LifeProfile, now: LocalDat
     var open by remember { mutableStateOf<Moment?>(null) }
     var card by remember { mutableStateOf<Pair<SeasonCard, GardenDecor.SeasonLines?>?>(null) }
     Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp4)) {
+            // 1.1.11: 모은 것 화면 = 모은 것 판만 (GRID), 추억 = 간직한 문장 · 돌아보기 (REST). 미래의 나에게는 기록 장으로 옮김
+            if (part == CollectPart.GRID) {
             TokenText(stringResource(R.string.collection_sub), Tokens.TypeScale.footnote, Modifier.fillMaxWidth(), color = p.secondary)
             // ── ① 모은 것: 한 판 (같은 크기 칸, 최근 것부터 여섯, 나머지는 펼쳐서). 칸을 누르면 설명과 얻는 방법 ──
             val today = now.toLocalDate()
@@ -290,10 +292,9 @@ internal fun CollectionBody(state: AppState, profile: LifeProfile, now: LocalDat
                 }
             }
             detail?.let { dt -> CollectDetailSheet(dt) { detail = null } }
+            } else {
             // ── 간직한 문장 (1.1.5): 정원의 문장을 길게 눌러 모은 것. 누르면 오늘 정원에 다시, 길게 누르면 뺌 ──
             KeptQuotes(state)
-            // ── ② 미래의 나에게 ──
-            Column(Modifier.fillMaxWidth().guideTarget(guide, "mem.future"), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) { KeepsakesSection(state, profile, now, onCredits, KeepPart.FUTURE) }
             // ── ③ 돌아보기 ──
             Spacer(Modifier.height(Tokens.Space.sp4))
             Column(Modifier.fillMaxWidth().guideTarget(guide, "mem.look"), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
@@ -314,6 +315,7 @@ internal fun CollectionBody(state: AppState, profile: LifeProfile, now: LocalDat
             ) {
                 TokenText(stringResource(R.string.memory), Tokens.TypeScale.headline, Modifier.weight(1f))
                 TokenText(stringResource(R.string.memory_sub), Tokens.TypeScale.footnote, color = p.secondary)
+            }
             }
     }
     open?.let { m ->
@@ -624,5 +626,38 @@ internal fun PebbleArt() {
         drawOval(ink, tl, sz, style = androidx.compose.ui.graphics.drawscope.Stroke(w * 0.05f))
         drawArc(androidx.compose.ui.graphics.Color.White.copy(alpha = 0.5f), 200f, 70f, false, tl + androidx.compose.ui.geometry.Offset(w * 0.2f, h * 0.18f),
             androidx.compose.ui.geometry.Size(w * 0.5f, h * 0.5f), style = androidx.compose.ui.graphics.drawscope.Stroke(w * 0.035f))
+    }
+}
+
+/** 모은 것을 어디에 (1.1.11): 모은 것 화면의 판 · 추억 장의 나머지 (간직한 문장 · 돌아보기). */
+internal enum class CollectPart { GRID, REST }
+
+/**
+ * 추억 맨 아래의 모은 것 한 줄 (1.1.11): 제목 · 묶음마다 모은 수 (별자리 n/12 · 절기 n/24 · 손님과 순간 n/m), 누르면 모은 것 화면.
+ * 판은 자리를 많이 차지해서 추억에서는 접어 둠.
+ */
+@Composable
+internal fun CollectionRow(state: AppState, profile: LifeProfile, now: LocalDateTime, modifier: Modifier = Modifier, onOpen: () -> Unit) {
+    val p = Theme.palette
+    val today = now.toLocalDate()
+    val stars = remember(state.lines) { io.github.graviton94.carpediem.core.Constellations.clearMonths(state.lines, STAR_DAYS).size }
+    val terms = remember(state.lines, state.breaths, state.gazeDays, today) { state.termsMet().size }
+    val met = state.chancesMet.mapNotNull { it.substringBefore(':', "").takeIf { k -> k.isNotEmpty() } }.toSet()
+    val south = profile.countryCode.uppercase() in GardenDecor.SOUTH
+    val parts = listOfNotNull(
+        stringResource(R.string.collect_shelfStars, "$stars", "12").takeIf { state.keepLines },
+        stringResource(R.string.collect_shelfTerms, "$terms", "${io.github.graviton94.carpediem.core.SolarTerm.entries.size}").takeIf { !south },
+        stringResource(R.string.collect_shelfMet, "${met.size}", "${(met + GHOSTS).size}"),
+    )
+    Row(
+        modifier.fillMaxWidth().heightIn(min = Tokens.Layout.tapTarget).crayonBox(null, G.Radius.box, G.Stroke.chip, 1170).clickable(onClick = onOpen)
+            .padding(horizontal = Tokens.Space.sp4, vertical = Tokens.Space.sp3),
+        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Space.sp3),
+    ) {
+        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp1)) {
+            TokenText(stringResource(R.string.collection), Tokens.TypeScale.headline)
+            TokenText(parts.joinToString(" · "), Tokens.TypeScale.footnote, color = p.secondary)
+        }
+        TokenText("›", Tokens.TypeScale.headline, color = p.secondary)
     }
 }

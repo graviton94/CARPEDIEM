@@ -197,12 +197,13 @@ val PageGuideSteps = mapOf(
     "write" to listOf(
         GuideStep("write.box", R.string.tour_writeBoxTitle, R.string.tour_writeBox),
         GuideStep("write.feeling", R.string.tour_writeFeelingTitle, R.string.tour_writeFeeling),
-        GuideStep("write.record", R.string.tour_writeRecordTitle, R.string.tour_writeRecord),
+        // 1.1.11: 미래의 나에게는 쓰는 장 (기록) 으로, 마음의 기록 · 모은 것은 추억으로
+        GuideStep("mem.future", R.string.tour_memFutureTitle, R.string.tour_memFuture),
     ),
     "memories" to listOf(
-        GuideStep("mem.album", R.string.tour_memAlbumTitle, R.string.tour_memAlbum),
-        GuideStep("mem.future", R.string.tour_memFutureTitle, R.string.tour_memFuture),
+        GuideStep("write.record", R.string.tour_writeRecordTitle, R.string.tour_writeRecord),
         GuideStep("mem.look", R.string.tour_memLookTitle, R.string.tour_memLook),
+        GuideStep("mem.album", R.string.tour_memAlbumTitle, R.string.tour_memAlbum),
     ),
     "flow" to listOf(
         GuideStep("flow.bars", R.string.tour_flowBarsTitle, R.string.tour_flowBars),

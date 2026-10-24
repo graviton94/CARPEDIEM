@@ -1077,6 +1077,7 @@
 "title.setting" = "Title screen";
 "title.helloFirst" = "Nice to meet you.";
 "mood.readSub" = "Find the lines you've kept and look back by month and year.";
+"record.toMemories" = "See past lines in Memories › Heart’s record";
 "settings.notify" = "Reminders";
 "settings.garden" = "Garden";
 "settings.help" = "Help & support";

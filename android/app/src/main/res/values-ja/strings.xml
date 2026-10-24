@@ -1079,6 +1079,7 @@
     <string name="title_setting">アプリの最初の画面</string>
     <string name="title_helloFirst">はじめまして。うれしいです。</string>
     <string name="mood_readSub">これまでのひとことを探して、月や年でふり返ります。</string>
+    <string name="record_toMemories">これまでのひとことは、思い出 › こころの記録で</string>
     <string name="settings_notify">通知</string>
     <string name="settings_garden">庭</string>
     <string name="settings_help">ヘルプと応援</string>

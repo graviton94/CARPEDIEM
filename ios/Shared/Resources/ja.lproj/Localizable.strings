@@ -1077,6 +1077,7 @@
 "title.setting" = "アプリの最初の画面";
 "title.helloFirst" = "はじめまして。うれしいです。";
 "mood.readSub" = "これまでのひとことを探して、月や年でふり返ります。";
+"record.toMemories" = "これまでのひとことは、思い出 › こころの記録で";
 "settings.notify" = "通知";
 "settings.garden" = "庭";
 "settings.help" = "ヘルプと応援";

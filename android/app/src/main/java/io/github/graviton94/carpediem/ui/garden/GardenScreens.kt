@@ -329,7 +329,7 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
     BackHandler(enabled = !bare && pager.currentPage != 0) { turnTo(0) }
     // 글을 쓰는 동안 (키보드가 떠 있으면) 옆으로 넘어가지 않고, 이름표도 쉬게
     val typing = WindowInsets.isImeVisible && pager.currentPage == 1   // 기록 페이지에서 쓰는 중일 때만
-    fun toRecord(v: RecordView) { recordView = v; turnTo(1) }
+    fun toRecord(v: RecordView) { recordView = v; turnTo(2) }   // 마음의 기록은 추억에 (1.1.11)
     // 처음 온 사람의 둘러보기: 비출 자리들 (bare = 돌멍하기에는 없음)
     val guide = remember { GuideTargets() }
     val touring = !bare && !state.guideDone
@@ -355,8 +355,9 @@ fun GardenHome(state: AppState, profile: LifeProfile, now: LocalDateTime, onSett
           val incoming by remember(page) { derivedStateOf { (pager.currentPage - page) + pager.currentPageOffsetFraction < 0f } }
           Box(Modifier.fillMaxSize().zIndex(if (incoming) 1f else 0f).pageTurn(pager, page) { breath }) {
           when (page) {
-            1 -> WritePage(state, now, recordView, guide, onSettings, pageScrolls[0]) { recordView = it }
-            2 -> MemoriesPage(state, profile, now, guide, onMemory, onCredits, pageScrolls[1])
+            // 1.1.11: 기록 = 쓰기 (오늘의 한 줄 · 미래의 나에게), 추억 = 보기 · 나누기 (마음의 기록 · 돌아보기 · 모은 것은 맨 아래 한 줄)
+            1 -> WritePage(state, profile, now, guide, onSettings, pageScrolls[0], onCredits) { turnTo(2) }
+            2 -> MemoriesPage(state, profile, now, recordView, guide, onMemory, onCredits, onCollection, pageScrolls[1]) { recordView = it }
             3 -> FlowPage(state, profile, now, guide, pageScrolls[2])
             else -> BoxWithConstraints(Modifier.fillMaxSize().drawWithContent { drawContent(); if (!bare && state.dewUp && dewBlurs) dewLayer.record { this@drawWithContent.drawContent() } }) {
         val u = Theme.unit
@@ -957,12 +958,12 @@ private fun PageTabs(current: Int, onPick: (Int) -> Unit) {
     }
 }
 
-/** 기록: 계절 첫날의 바람 · 오늘의 한 줄, 그 아래 쌓인 한 줄들 (마음의 기록: 월 · 해). 보낸 뒤에도 이번 달 정원에 오늘이 피는 것을 본다. */
+/** 기록 (1.1.11, 쓰기): 계절 첫날의 바람 · 오늘의 한 줄 (+ 오늘의 질문) · 미래의 나에게. 지난 한 줄은 추억의 마음의 기록에서. */
 @OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class)
 @Composable
-private fun WritePage(state: AppState, now: LocalDateTime, view: RecordView, guide: GuideTargets, onSettings: () -> Unit, scroll: androidx.compose.foundation.ScrollState, onView: (RecordView) -> Unit) {
+private fun WritePage(state: AppState, profile: LifeProfile, now: LocalDateTime, guide: GuideTargets, onSettings: () -> Unit, scroll: androidx.compose.foundation.ScrollState, onCredits: (Int) -> Unit, onMemories: () -> Unit) {
     val today = now.toLocalDate()
-    // 마음의 기록에서 빈 날을 고르면 위의 쓰는 칸으로 올라감
+    // 마음의 기록 (추억) 에서 빈 날을 고르면 이 장의 쓰는 칸으로
     LaunchedEffect(state.writeDay) { if (state.writeDay != null) scroll.animateScrollTo(0) }
     Column(
         Modifier.fillMaxSize().imePadding().verticalScroll(scroll).statusBarsPadding()
@@ -971,17 +972,39 @@ private fun WritePage(state: AppState, now: LocalDateTime, view: RecordView, gui
     ) {
         state.wishDue(today)?.let { id -> WishCard(state, id, today) }
         LetGoSection(state, today, guide = guide)
-        // 쓰는 곳과 읽는 곳을 또렷이 나눔: 한 줄 긋고 제목, 아래는 지난 기록 (찾기 · 달 · 해)
-        Spacer(Modifier.height(Tokens.Space.sp6))
+        // 지난 한 줄은 추억에서 (누르면 추억으로 넘김). 기록 남기기를 꺼 두었으면 어디서 켜는지
+        if (state.keepLines) TokenText(stringResource(R.string.record_toMemories), Tokens.TypeScale.footnote,
+            Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable(onClick = onMemories).padding(vertical = Tokens.Space.sp3), color = Theme.palette.olive)
+        else TokenText(stringResource(R.string.record_off) + " " + stringResource(R.string.record_offHow), Tokens.TypeScale.footnote,
+            Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable(onClick = onSettings).padding(vertical = Tokens.Space.sp3), color = Theme.palette.secondary)
+        // 미래의 나에게 (추억에서 옮김): 쓰는 일이라 쓰는 장에
+        Spacer(Modifier.height(Tokens.Space.sp4))
         CrayonRule(seed = 1720)
-        Spacer(Modifier.height(Tokens.Space.sp2))
+        Column(Modifier.fillMaxWidth().guideTarget(guide, "mem.future"), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) { KeepsakesSection(state, profile, now, onCredits, KeepPart.FUTURE) }
+    }
+}
+
+/**
+ * 추억 (1.1.11, 보기 · 나누기): ① 마음의 기록 (찾기 · 달 · 해 정원 판, 날 · 달 · 해 그림으로 보내기) · 마음별로 다시 보기
+ * ② 간직한 문장 · 돌아보기 (한 해의 정원 · 크레딧 · 나이테 · 핀 씨앗 · 받은 편지 · 기억의 자리) ③ 모은 것은 맨 아래 한 줄 (누르면 모은 것 화면).
+ */
+@OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class)
+@Composable
+private fun MemoriesPage(state: AppState, profile: LifeProfile, now: LocalDateTime, view: RecordView, guide: GuideTargets, onMemory: () -> Unit, onCredits: (Int) -> Unit,
+                         onCollection: () -> Unit, scroll: androidx.compose.foundation.ScrollState, onView: (RecordView) -> Unit) {
+    val today = now.toLocalDate()
+    Column(
+        Modifier.fillMaxSize().imePadding().verticalScroll(scroll).statusBarsPadding()
+            .padding(horizontal = Theme.deviceClass.pageMargin).padding(top = Tokens.Space.sp6, bottom = Tokens.Space.sp8),
+        verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3),
+    ) {
         TokenText(stringResource(R.string.mood_title), Tokens.TypeScale.title3)
         TokenText(stringResource(R.string.mood_readSub), Tokens.TypeScale.footnote, color = Theme.palette.secondary)
         if (state.keepLines) {
             // 찾은 줄을 누르면 그 달 판의 그날로, 판이 보이게 끌어옴
             val panel = remember { androidx.compose.foundation.relocation.BringIntoViewRequester() }
             val sc = rememberCoroutineScope()
-            // 캡처 장면 (debug 의 cd.openMonth · cd.openYear): 아래에 있는 판을 화면 안으로
+            // 캡처 장면 (debug 의 cd.openMonth · cd.openYear): 판을 화면 안으로
             if (state.debugOpenMonth || state.debugOpenYear) LaunchedEffect(Unit) { delay(G.Motion.pageMs.toLong()); panel.bringIntoView() }
             // 판을 상자로 감싸지 않음: 긴 판 전체를 크레용 층으로 그리면 넘길 때마다 다시 그려 무거움 (선 하나 · 제목으로 충분)
             Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3)) {
@@ -991,23 +1014,12 @@ private fun WritePage(state: AppState, now: LocalDateTime, view: RecordView, gui
                 FeelingBook(state, today)
             }
         }
-        // 기록 남기기를 꺼 두었으면: 어디서 켜는지 (누르면 설정으로)
-        else TokenText(stringResource(R.string.record_off) + " " + stringResource(R.string.record_offHow), Tokens.TypeScale.footnote,
-            Modifier.heightIn(min = Tokens.Layout.tapTarget).clickable(onClick = onSettings).padding(vertical = Tokens.Space.sp3), color = Theme.palette.secondary)
-    }
-}
-
-/** 추억: 모은 것 (계절 앨범 · 한 해 한 장 · 만난 순간 · 편지 · 기억의 자리). 지난 해의 기록은 기록 페이지의 마음의 기록에서 (‹ › 로 넘김). */
-@Composable
-private fun MemoriesPage(state: AppState, profile: LifeProfile, now: LocalDateTime, guide: GuideTargets, onMemory: () -> Unit, onCredits: (Int) -> Unit, scroll: androidx.compose.foundation.ScrollState) {
-    Column(
-        Modifier.fillMaxSize().imePadding().verticalScroll(scroll).statusBarsPadding()
-            .padding(horizontal = Theme.deviceClass.pageMargin).padding(top = Tokens.Space.sp6, bottom = Tokens.Space.sp8),
-        verticalArrangement = Arrangement.spacedBy(Tokens.Space.sp3),
-    ) {
-        TokenText(stringResource(R.string.collection), Tokens.TypeScale.title3)
-        // 모은 것 → 미래의 나에게 → 돌아보기
-        CollectionBody(state, profile, now, onMemory, guide, onCredits)
+        else TokenText(stringResource(R.string.record_off) + " " + stringResource(R.string.record_offHow), Tokens.TypeScale.footnote, color = Theme.palette.secondary)
+        // 간직한 문장 · 돌아보기
+        CollectionBody(state, profile, now, onMemory, guide, onCredits, part = CollectPart.REST)
+        // 모은 것: 맨 아래 한 줄로 접어 둠 (누르면 모은 것 화면)
+        Spacer(Modifier.height(Tokens.Space.sp4))
+        CollectionRow(state, profile, now, Modifier.guideTarget(guide, "mem.album"), onCollection)
     }
 }
 

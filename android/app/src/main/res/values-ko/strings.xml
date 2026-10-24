@@ -1079,6 +1079,7 @@
     <string name="title_setting">앱 첫 화면</string>
     <string name="title_helloFirst">처음 만나는 날이에요. 반가워요.</string>
     <string name="mood_readSub">지금까지 남긴 한 줄을 찾고, 달과 해로 돌아봐요.</string>
+    <string name="record_toMemories">지난 한 줄은 추억 › 마음의 기록에서 다시 봐요</string>
     <string name="settings_notify">알림</string>
     <string name="settings_garden">정원</string>
     <string name="settings_help">도움 · 응원</string>

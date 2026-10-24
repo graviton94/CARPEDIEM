@@ -1079,6 +1079,7 @@
     <string name="title_setting">App 開場畫面</string>
     <string name="title_helloFirst">初次見面，很高興認識你。</string>
     <string name="mood_readSub">搜尋留下的話，按月、按年回顧。</string>
+    <string name="record_toMemories">過去的話，到回憶 › 心情的紀錄再看</string>
     <string name="settings_notify">通知</string>
     <string name="settings_garden">庭院</string>
     <string name="settings_help">說明與支持</string>
