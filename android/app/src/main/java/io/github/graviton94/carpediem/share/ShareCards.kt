@@ -118,7 +118,15 @@ object ShareCards {
         var y = pad * 1.1f
         y += text(c, title, paint(ctx, S.text * 0.8f, fg), pad, y, inner) + pad * 0.1f
         y += text(c, sub, paint(ctx, S.small * 0.9f, soft), pad, y, inner) + pad * 0.25f
-        val gw = (w - pad * 2f); val gh = minOf(gw / Tokens.Garden.Year.monthAspect, h * 0.3f); val gwFit = gh * Tokens.Garden.Year.monthAspect
+        // 아래 (돌 · 날짜 · 질문 · 사진 · 한 줄) 에 쓸 높이를 먼저 재고, 정원 판은 남는 만큼만 (사진이 빠지지 않게, 1.1.11)
+        val date0 = l.date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG))
+        val below = w * 0.15f * 0.95f + pad * 0.6f +
+            (if (to != null) measure(ctx.getString(R.string.share_dayTo, to.name), paint(ctx, S.small * 0.85f, soft), inner) else 0f) +
+            measure(listOfNotNull(date0, feelingName).joinToString(" · "), paint(ctx, S.small, soft), inner) + pad * 0.1f +
+            (if (!question.isNullOrBlank()) measure(question, paint(ctx, S.small * 0.88f, soft), inner) + pad * 0.1f else 0f) +
+            (if (photo != null) w * DAY_PHOTO_W * photo.height / photo.width + pad * 0.7f else 0f) +
+            measure(l.text, paint(ctx, S.text * 0.78f, fg), (w - pad * 2.4f).toInt()) + pad * 2.5f
+        val gw = (w - pad * 2f); val gh = minOf(gw / Tokens.Garden.Year.monthAspect, h * 0.3f, (h - y - below).coerceAtLeast(h * 0.12f)); val gwFit = gh * Tokens.Garden.Year.monthAspect
         val dots = io.github.graviton94.carpediem.ui.garden.StarGarden.month(book, days, install)
         drawCompose(c, (w - gwFit) / 2f, y, gwFit, gh) {
             if (night) nightSky() else meadow()
@@ -150,7 +158,7 @@ object ShareCards {
         // 사진은 남은 자리만큼만 (한 줄이 액자 밖으로 밀려나지 않게, 1.1.11). 자리가 너무 작으면 사진 없이 한 줄만
         val room = foot - y - hBody - pad * 0.9f
         if (photo != null && room >= w * DAY_PHOTO_MIN) {
-            val pw = minOf(w * 0.5f, room * photo.width / photo.height)
+            val pw = minOf(w * 0.5f, room * photo.width / photo.height, w * DAY_PHOTO_W * 1.3f)
             val ph = pw * photo.height / photo.width
             val tilt = (Math.floorMod(l.date.toEpochDay() * 7919, 70L) - 35) / 10f
             val top = y + pad * 0.2f
@@ -168,6 +176,8 @@ object ShareCards {
     private const val DAY_H = 1920
     /** 하루 카드의 사진이 이보다 작아지면 (폭 비율) 사진을 빼고 한 줄만. */
     private const val DAY_PHOTO_MIN = 0.16f
+    /** 하루 카드의 사진 폭 (자리를 잡을 때의 기준, 폭 비율). */
+    private const val DAY_PHOTO_W = 0.34f
 
     private fun stoneAt(c: Canvas, a: HaruArt, x: Float, gy: Float, width: Float) {
         val k = width / a.meta.bbox.width
