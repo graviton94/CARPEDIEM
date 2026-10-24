@@ -53,6 +53,7 @@ object WidgetShots {
 
     suspend fun save(activity: Activity) {
         var recapVideo: (() -> Pair<io.github.graviton94.carpediem.share.RecapCards.Art, List<io.github.graviton94.carpediem.core.Recap.Pick>>)? = null
+        var recapYear: (() -> Pair<io.github.graviton94.carpediem.share.RecapCards.Art, List<io.github.graviton94.carpediem.core.Recap.Pick>>)? = null
         val dir = File(activity.getExternalFilesDir(null), "widgets").apply { mkdirs() }
         for (s in shots) runCatching {
             val out = render(activity, s)
@@ -112,6 +113,7 @@ object WidgetShots {
             io.github.graviton94.carpediem.share.RecapCards.year(art(Rc.yearLines(all), false, emptyMap(), year = true))
                 .let { b -> File(dir, "share_year.png").outputStream().use { b.compress(Bitmap.CompressFormat.PNG, 100, it) } }
             recapVideo = { art(picks, false, mapOf(withPhoto.date to photo)) to picks }
+            recapYear = { art(Rc.year(all), false, mapOf(withPhoto.date to photo), year = true) to Rc.year(all) }
         }.onFailure { android.util.Log.e("WidgetShots", "share day", it) }
         File(dir, "done").writeText("ok")
         // 달 영상 (1.1.12): 실제로 만들어 몇 장면을 그림으로 · 길이 · 소리 트랙 (확인용, 끝나면 video_done)
@@ -128,6 +130,18 @@ object WidgetShots {
             mmr.release()
             File(dir, "video_month.txt").writeText("duration_ms=$dur audio=$audio bytes=${f.length()}\n")
         }.onFailure { android.util.Log.e("WidgetShots", "recap video", it); File(dir, "video_month.txt").writeText("error: $it\n${it.stackTraceToString().take(2000)}") }
+        // 해 영상: 열두 달이 차오르는 장면 확인 (앞 몇 초만 그림으로)
+        runCatching {
+            val (a, picks) = recapYear?.invoke() ?: return@runCatching
+            val f = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Default) {
+                io.github.graviton94.carpediem.share.RecapVideo.make(a, io.github.graviton94.carpediem.share.RecapCards.year(a), io.github.graviton94.carpediem.share.RecapVideo.scenes(false, picks), "shot-year") {}
+            }
+            val mmr = android.media.MediaMetadataRetriever(); mmr.setDataSource(f.path)
+            for (sec in listOf(2, 7, 11, 14)) mmr.getFrameAtTime(sec * 1_000_000L, android.media.MediaMetadataRetriever.OPTION_CLOSEST)
+                ?.let { b -> File(dir, "video_year_%02d.png".format(sec)).outputStream().use { b.compress(Bitmap.CompressFormat.PNG, 100, it) } }
+            File(dir, "video_year.txt").writeText("duration_ms=${mmr.extractMetadata(android.media.MediaMetadataRetriever.METADATA_KEY_DURATION)} bytes=${f.length()}\n")
+            mmr.release()
+        }.onFailure { android.util.Log.e("WidgetShots", "recap year", it); File(dir, "video_year.txt").writeText("error: $it\n${it.stackTraceToString().take(2000)}") }
         File(dir, "video_done").writeText("ok")
     }
 }

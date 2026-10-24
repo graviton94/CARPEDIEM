@@ -127,7 +127,9 @@ object RecapVideo {
             // 해: 열두 칸 자리와 칸 그림 (MONTHS 장면)
             val pad = RecapCards.pad()
             val cells by lazy { RecapCards.grid(pad * 2.6f, RecapCards.H - pad * 2.2f) }
-            val tiles by lazy { cells.mapIndexed { i, r -> Bitmap.createBitmap(RecapCards.W, RecapCards.H, Bitmap.Config.ARGB_8888).also { RecapCards.tile(Canvas(it), a, i + 1, r[0], r[1], r[2], r[3]) } } }
+            // 칸 그림은 칸 크기만큼만 (열두 장을 화면 크기로 두면 메모리가 모자람)
+            val label = Tokens.Garden.Share.small * 1.3f
+            val tiles by lazy { cells.mapIndexed { i, r -> Bitmap.createBitmap(r[2].toInt() + 2, (r[3] + label).toInt() + 2, Bitmap.Config.ARGB_8888).also { val tc = Canvas(it); tc.translate(-r[0], -r[1]); RecapCards.tile(tc, a, i + 1, r[0], r[1], r[2], r[3]) } } }
             val head by lazy {
                 Bitmap.createBitmap(RecapCards.W, RecapCards.H, Bitmap.Config.ARGB_8888).also {
                     ShareCards.text(Canvas(it), a.title, ShareCards.paint(a.ctx, Tokens.Garden.Share.text * 1.05f, a.fg), pad, pad * 1.2f, (RecapCards.W - pad * 2).toInt())
@@ -161,7 +163,7 @@ object RecapVideo {
                                 fc.drawBitmap(bg, 0f, 0f, null)
                                 val lay = fc.saveLayerAlpha(0f, 0f, RecapCards.W.toFloat(), RecapCards.H.toFloat(), (al * 255).toInt())
                                 fc.drawBitmap(head, 0f, 0f, null)
-                                tiles.forEachIndexed { i, tb -> val e = (shown - i).coerceIn(0f, 1f); if (e > 0f) fc.drawBitmap(tb, 0f, 0f, Paint().apply { alpha = (e * 255).toInt() }) }
+                                tiles.forEachIndexed { i, tb -> val e = (shown - i).coerceIn(0f, 1f); if (e > 0f) fc.drawBitmap(tb, cells[i][0], cells[i][1], Paint().apply { alpha = (e * 255).toInt() }) }
                                 fc.restoreToCount(lay)
                             }
                         }

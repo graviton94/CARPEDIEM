@@ -86,7 +86,7 @@ open --ez cd.reset true --es cd.design garden --el cd.seed 2718281 --es cd.birth
 W=/sdcard/Android/data/$P/files/widgets
 for i in $(seq 1 90); do adb shell ls $W/done >/dev/null 2>&1 && break; sleep 2; done
 # 달 영상 (1.1.12) 은 그림들 다음에 만들어짐: 조금 더 기다렸다 함께 꺼냄
-for i in $(seq 1 180); do adb shell ls $W/video_done >/dev/null 2>&1 && break; sleep 2; done
+for i in $(seq 1 330); do adb shell ls $W/video_done >/dev/null 2>&1 && break; sleep 2; done
 mkdir -p "$OUT/widgets"; adb pull $W/. "$OUT/widgets/" >/dev/null 2>&1; rm -f "$OUT/widgets/done" "$OUT/widgets/video_done"; ls "$OUT/widgets"
 }
 finish() {

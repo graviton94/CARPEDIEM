@@ -39,6 +39,8 @@ object RecapCards {
     /** 한 줄이 이보다 길면 줄여서 (카드 · 영상의 큰 글). */
     private const val LINE_MAX = 90
     private const val YEAR_LINE_MAX = 46
+    /** 카드의 꽃 · 별 크기 배율 (판이 앱보다 크게 보이지 않아, 조금 키움. 판 가장자리 8% 안쪽이라 테두리에 닿지 않음). */
+    private const val DOT = 1.35f
 
     /**
      * 카드 · 영상 한 벌의 재료. month = null 이면 한 해. days = 그 달 (또는 그해) 의 모든 날.
@@ -103,7 +105,7 @@ object RecapCards {
         val gw = minOf(r.width(), r.height() * aspect); val gh = gw / aspect
         val gx = r.centerX() - gw / 2f; val gy = r.top + (r.height() - gh) / 2f
         val dots = a.dots.take(upto.coerceAtLeast(0))
-        ShareCards.drawCompose(c, gx, gy, gw, gh) { monthIn(androidx.compose.ui.geometry.Rect(androidx.compose.ui.geometry.Offset.Zero, size), dots, a.night, a.today, MONTH_SIZES) }
+        ShareCards.drawCompose(c, gx, gy, gw, gh) { monthIn(androidx.compose.ui.geometry.Rect(androidx.compose.ui.geometry.Offset.Zero, size), dots, a.night, a.today, floatArrayOf(MONTH_SIZES[0] * DOT, MONTH_SIZES[1] * DOT)) }
     }
 
     /** 맨 아래: 하루 (가장 많던 마음의 표정) 와 ‘함께해 줘서 고마워요 · 하루’. */
@@ -154,7 +156,10 @@ object RecapCards {
         if (special != null) c.drawCircle(x + cw - cw * 0.08f, y + cw * 0.08f, cw * 0.035f, Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE; strokeWidth = 4f; color = a.accent })
         if (label) {
             val name = java.time.Month.of(m).getDisplayName(java.time.format.TextStyle.SHORT_STANDALONE, a.ctx.resources.configuration.locales[0])
-            ShareCards.text(c, if (special != null) "$name · $special" else name, ShareCards.paint(a.ctx, S.small * 0.72f, if (special != null) a.accent else a.soft), x, y + ch + S.small * 0.12f, cw.toInt())
+            // 칸 아래 이름: 특별한 날이 있으면 ‘5월 · 첫 출근’, 칸보다 길면 달 이름만 (색으로 표시)
+            val lp = ShareCards.paint(a.ctx, S.small * 0.72f, if (special != null) a.accent else a.soft)
+            val full = if (special != null) "$name · $special" else name
+            ShareCards.text(c, if (lp.measureText(full) <= cw) full else name, lp, x, y + ch + S.small * 0.12f, cw.toInt())
         }
     }
 
