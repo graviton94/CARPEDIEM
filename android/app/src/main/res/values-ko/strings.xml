@@ -1227,6 +1227,10 @@
     <string name="backup_saveTitle">어디에 저장할까요?</string>
     <string name="backup_saveHelp">다음 화면에서 저장할 곳을 골라요.\n\n폰을 바꾸거나 잃어버려도 꺼낼 수 있게 구글 드라이브를 추천해요. 왼쪽 위 ☰ (메뉴) › ‘Drive’ › 폴더를 고르고 저장을 누르면 돼요.\n\n그냥 저장하면 이 폰의 ‘다운로드’ 폴더에만 남아요.</string>
     <string name="backup_saveGo">저장할 곳 고르기</string>
+    <string name="news_v1_1_11_1">기록은 쓰는 곳, 추억은 다시 보고 나누는 곳으로 나눴어요. 마음의 기록은 추억에 있어요.</string>
+    <string name="news_v1_1_11_2">모은 것은 추억 맨 아래 한 줄로 접었어요.</string>
+    <string name="news_v1_1_11_3">지난 날을 고르면 그날을 세로 그림 한 장으로 보낼 수 있어요. 사진 · 한 줄 · 하루의 표정까지.</string>
+    <string name="news_v1_1_11_4">설정의 백업 · 옮기기를 정리하고, 구글 드라이브에 저장하는 길을 알려 드려요.</string>
     <string name="news_v1_1_10_1">폰 백업에 한 줄의 사진도 함께 담겨요. 새 폰으로 옮겨도 사진이 돌아와요.</string>
     <string name="news_v1_1_10_2">사진은 바랜 정원 사진 그대로, 폰 안에서는 더 가볍게 지내요.</string>
     <string name="news_v1_1_9_1">오늘의 질문에 답하다가도 ‘질문 없이 쓰기’로 그냥 한 줄을 쓸 수 있어요.</string>

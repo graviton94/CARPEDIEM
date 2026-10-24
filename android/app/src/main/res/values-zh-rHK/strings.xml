@@ -1227,6 +1227,10 @@
     <string name="backup_saveTitle">要存在哪裡？</string>
     <string name="backup_saveHelp">下一個畫面會選擇要儲存的位置。\n\n建議存到 Google 雲端硬碟，換手機或手機遺失也能取回：點左上角 ☰（選單）›「雲端硬碟」› 選資料夾 › 儲存。\n\n直接儲存的話，只會留在這支手機的「下載」資料夾。</string>
     <string name="backup_saveGo">選擇儲存位置</string>
+    <string name="news_v1_1_11_1">紀錄是寫的地方，回憶是回看與分享的地方；心情的紀錄移到回憶裡。</string>
+    <string name="news_v1_1_11_2">收藏收成回憶最下方的一行。</string>
+    <string name="news_v1_1_11_3">選一個過去的日子，就能把那天做成一張直式圖片分享：照片、那句話和小日的表情。</string>
+    <string name="news_v1_1_11_4">整理了設定裡的備份與搬移，並說明如何存到 Google 雲端硬碟。</string>
     <string name="news_v1_1_10_1">手機備份現在也會保存一句話裡的照片，換新手機也能找回。</string>
     <string name="news_v1_1_10_2">照片在庭院裡看起來一樣，在手機裡更輕巧。</string>
     <string name="news_v1_1_9_1">回答今天的提問時，也能「不回答問題，直接寫」。</string>

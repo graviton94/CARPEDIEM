@@ -1227,6 +1227,10 @@
     <string name="backup_saveTitle">どこに保存しますか？</string>
     <string name="backup_saveHelp">次の画面で保存する場所を選びます。\n\nスマホを替えたりなくしたりしても取り出せるよう、Googleドライブがおすすめです。左上の ☰（メニュー）›「ドライブ」› フォルダを選んで保存。\n\nそのまま保存すると、このスマホの「ダウンロード」にだけ残ります。</string>
     <string name="backup_saveGo">保存先を選ぶ</string>
+    <string name="news_v1_1_11_1">記録は書くところ、思い出は読み返して分かち合うところに。こころの記録は思い出にあります。</string>
+    <string name="news_v1_1_11_2">集めたものは思い出のいちばん下に一行でまとめました。</string>
+    <string name="news_v1_1_11_3">過去の日を選ぶと、その日を縦長の一枚にして送れます。写真・ひとこと・ハルの表情まで。</string>
+    <string name="news_v1_1_11_4">設定のバックアップ・引っ越しを整理し、Google ドライブに保存する方法をご案内します。</string>
     <string name="news_v1_1_10_1">スマホのバックアップに、ひとことの写真も入るようになりました。新しいスマホでも写真が戻ります。</string>
     <string name="news_v1_1_10_2">写真は庭のあせた風合いのまま、スマホの中ではより軽くなりました。</string>
     <string name="news_v1_1_9_1">今日の質問に答える途中でも「質問なしで書く」でふつうのひとことを。</string>

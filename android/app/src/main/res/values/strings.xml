@@ -1227,6 +1227,10 @@
     <string name="backup_saveTitle">Where to save it?</string>
     <string name="backup_saveHelp">On the next screen, choose where to save.\n\nGoogle Drive is best, so you can get it back even if you change or lose your phone: tap ☰ (menu) at the top left › ‘Drive’ › pick a folder › Save.\n\nIf you just tap Save, it stays only in this phone’s Downloads.</string>
     <string name="backup_saveGo">Choose where to save</string>
+    <string name="news_v1_1_11_1">Journal is for writing, Memories for looking back and sharing; Heart’s record now lives in Memories.</string>
+    <string name="news_v1_1_11_2">Collections fold into one row at the bottom of Memories.</string>
+    <string name="news_v1_1_11_3">Pick a past day to share it as a tall card: photo, line and Haru’s face.</string>
+    <string name="news_v1_1_11_4">Clearer backup and moving in Settings, with the way to save to Google Drive.</string>
     <string name="news_v1_1_10_1">Your phone backup now keeps the photos on your lines too, so they come back on a new phone.</string>
     <string name="news_v1_1_10_2">Photos look the same in the garden and take less space on your phone.</string>
     <string name="news_v1_1_9_1">Answering today\'s question? You can still write without it.</string>
