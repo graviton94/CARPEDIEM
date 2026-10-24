@@ -82,26 +82,36 @@ object RecapCards {
 
     fun short(s: String, max: Int = LINE_MAX): String { val t = s.replace(' ', ' ').replace('\n', ' ').trim(); return if (t.length > max) t.take(max - 1).trimEnd() + "…" else t }
 
-    /** 사진 몇 장을 살짝 기울여 겹쳐 (위 top 부터). 아래 끝 y. */
-    fun photos(c: Canvas, list: List<Bitmap>, top: Float, cx: Float = W / 2f, scale: Float = 1f): Float {
+    /**
+     * 사진 (최대 3) 을 가운데 장을 기준으로 조금씩 겹쳐 (위 top 부터, 아래 끝 y 를 돌려줌).
+     * 3장 = span3 (대표 한 줄 폭쯤) 양 끝까지, 2장 = span2 (별자리 · 수 줄 폭쯤) 안에서, 1장 = 가운데. 가운데 장이 맨 위.
+     */
+    fun photos(c: Canvas, list: List<Bitmap>, top: Float, span3: Float = W * SPAN3, span2: Float = W * SPAN2, scale: Float = 1f): Float {
         if (list.isEmpty()) return top
         val n = list.size.coerceAtMost(3)
-        val pw0 = W * scale * when (n) { 1 -> 0.5f; 2 -> 0.38f; else -> 0.3f }
-        val maxH = H * scale * (if (n == 1) 0.26f else 0.2f)
+        val cx = W / 2f
+        val pw = when (n) { 3 -> span3 / (3f - 2f * OVERLAP); 2 -> span2 / (2f - OVERLAP); else -> W * ONE * scale }
+        val step = pw * (1f - OVERLAP)
+        val xs = when (n) { 3 -> floatArrayOf(cx - step, cx + step, cx); 2 -> floatArrayOf(cx - step / 2f, cx + step / 2f); else -> floatArrayOf(cx) }
+        val tilts = when (n) { 3 -> floatArrayOf(-4f, 3f, -1.5f); 2 -> floatArrayOf(-3f, 2.5f); else -> floatArrayOf(-2f) }
+        // 그리는 차례: 양옆 먼저, 가운데 (3장이면 셋째로 받은 것을 가운데 자리에) 를 맨 위에
+        val order = if (n == 3) listOf(list[0], list[2], list[1]) else list.take(n)
         var bottom = top
-        val tilts = floatArrayOf(-5f, 3f, -2f)
-        list.take(n).forEachIndexed { i, b ->
-            var pw = pw0; var ph = pw * b.height / b.width
-            if (ph > maxH) { ph = maxH; pw = ph * b.width / b.height }
-            val x = cx + (i - (n - 1) / 2f) * pw0 * (if (n == 2) 1.04f else 0.98f)
-            val r = RectF(x - pw / 2f, top, x + pw / 2f, top + ph)
-            c.save(); c.rotate(if (n == 1) -3f else tilts[i], r.centerX(), r.centerY())
+        order.forEachIndexed { i, b ->
+            val ph = pw * b.height / b.width
+            val r = RectF(xs[i] - pw / 2f, top, xs[i] + pw / 2f, top + ph)
+            c.save(); c.rotate(tilts[i], r.centerX(), r.centerY())
             c.drawBitmap(b, null, r, Paint(Paint.FILTER_BITMAP_FLAG or Paint.ANTI_ALIAS_FLAG))
             c.restore()
             bottom = maxOf(bottom, top + ph)
         }
         return bottom
     }
+    /** 사진 3장 · 2장이 차지하는 폭 (카드 폭 비율), 1장의 폭, 이웃 사진과 겹치는 몫. */
+    private const val SPAN3 = 0.84f
+    private const val SPAN2 = 0.54f
+    private const val ONE = 0.36f
+    private const val OVERLAP = 0.1f
 
     /** 그 달의 정원을 판 r 안에 (판 비율 그대로, 가운데). upto = 이만큼의 날만 (영상에서 날마다 피어남). */
     fun garden(c: Canvas, a: Art, r: RectF, upto: Int = Int.MAX_VALUE) {
@@ -131,18 +141,32 @@ object RecapCards {
         val b = Bitmap.createBitmap(W, H, Bitmap.Config.ARGB_8888); val c = Canvas(b)
         val pad = S.pad; val inner = (W - pad * 2).toInt()
         background(c, a)
-        var y = pad * 1.1f
         val shots = a.picks.filter { it.photo }.mapNotNull { a.photos[it.date] }.take(3)
         val first = a.picks.firstOrNull()
-        y = when {
-            shots.isNotEmpty() -> photos(c, shots, y) + pad * 0.7f
+        val subP = ShareCards.paint(a.ctx, S.small, a.soft)
+        // 위: 사진 (기울어진 모서리가 테두리에 닿지 않게 조금 내려서) · 없으면 대표 한 줄을 크게
+        var y = when {
+            shots.isNotEmpty() -> photos(c, shots, pad * 1.6f, span2 = subP.measureText(a.sub).coerceIn(W * 0.45f, W * 0.7f)) + pad * 0.7f
             first != null -> quote(c, a, first, pad * 1.5f) + pad * 0.8f
             else -> H * 0.16f
         }
+        // 제목 · 별자리와 수 · 가장 많던 마음
         y += ShareCards.text(c, a.title, ShareCards.paint(a.ctx, S.text * 1.05f, a.fg), pad, y, inner) + pad * 0.1f
-        y += ShareCards.text(c, a.sub, ShareCards.paint(a.ctx, S.small, a.soft), pad, y, inner) + pad * 0.3f
-        garden(c, a, RectF(pad * 0.6f, y, W - pad * 0.6f, H - pad * 4.1f))
-        a.moodName?.let { ShareCards.text(c, a.ctx.getString(R.string.recap_mood, it), ShareCards.paint(a.ctx, S.small * 1.05f, a.soft), pad, H - pad * 3.75f, inner) }
+        y += ShareCards.text(c, a.sub, subP, pad, y, inner) + pad * 0.08f
+        a.moodName?.let { y += ShareCards.text(c, a.ctx.getString(R.string.recap_mood, it), subP, pad, y, inner) }
+        y += pad * 0.3f
+        // 아래: (사진이 있는 달이면) 대표 한 줄과 그날, 그 아래 하루. 정원은 그 사이에
+        var gBottom = H - pad * 3.1f
+        if (shots.isNotEmpty() && first != null) {
+            val lp = ShareCards.paint(a.ctx, S.text * 0.72f, a.fg); val dp = ShareCards.paint(a.ctx, S.small * 0.88f, if (first.special != null) a.accent else a.soft)
+            val q = "“${short(first.line.text)}”"; val qw = (W - pad * 2.4f).toInt()
+            val qh = ShareCards.measure(q, lp, qw) + pad * 0.15f + ShareCards.measure(a.dayLabel(first), dp, inner)
+            val qTop = H - pad * 3.1f - qh
+            ShareCards.text(c, q, lp, pad * 1.2f, qTop, qw)
+            ShareCards.text(c, a.dayLabel(first), dp, pad, qTop + ShareCards.measure(q, lp, qw) + pad * 0.15f, inner)
+            gBottom = qTop - pad * 0.3f
+        }
+        garden(c, a, RectF(pad * 0.6f, y, W - pad * 0.6f, gBottom))
         bottom(c, a); frame(c, a)
         return b
     }

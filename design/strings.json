@@ -1259,7 +1259,9 @@
     "recap.chooseDay": "날 고르기",
     "recap.birthday": "{name} 생일",
     "recap.myBirthday": "내 생일",
-    "recap.videoChooser": "영상 보내기"
+    "recap.videoChooser": "영상 보내기",
+    "recap.photo": "사진",
+    "recap.pickSub": "그림에 실을 날을 골라요 · 바꾸거나 뺄 수 있어요"
   },
   "en": {
     "letgo.empty": "Write your line first.",
@@ -2521,7 +2523,9 @@
     "recap.chooseDay": "Choose a day",
     "recap.birthday": "{name}’s birthday",
     "recap.myBirthday": "My birthday",
-    "recap.videoChooser": "Send video"
+    "recap.videoChooser": "Send video",
+    "recap.photo": "Photo",
+    "recap.pickSub": "Choose the days for the picture. You can swap or remove them."
   },
   "ja": {
     "letgo.empty": "先にひとことを書いてください。",
@@ -3783,7 +3787,9 @@
     "recap.chooseDay": "日を選ぶ",
     "recap.birthday": "{name}の誕生日",
     "recap.myBirthday": "わたしの誕生日",
-    "recap.videoChooser": "動画を送る"
+    "recap.videoChooser": "動画を送る",
+    "recap.photo": "写真",
+    "recap.pickSub": "絵に載せる日を選びます・入れ替えも外すこともできます"
   },
   "zh-TW": {
     "letgo.empty": "請先寫下一句話。",
@@ -5045,6 +5051,8 @@
     "recap.chooseDay": "選一天",
     "recap.birthday": "{name}的生日",
     "recap.myBirthday": "我的生日",
-    "recap.videoChooser": "傳送影片"
+    "recap.videoChooser": "傳送影片",
+    "recap.photo": "照片",
+    "recap.pickSub": "選擇要放進圖片的日子・可以替換或拿掉"
   }
 }

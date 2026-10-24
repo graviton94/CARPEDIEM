@@ -1261,6 +1261,8 @@
     <string name="recap_birthday">%1$s的生日</string>
     <string name="recap_myBirthday">我的生日</string>
     <string name="recap_videoChooser">傳送影片</string>
+    <string name="recap_photo">照片</string>
+    <string name="recap_pickSub">選擇要放進圖片的日子・可以替換或拿掉</string>
     <string name="news_v1_1_12_1">在回憶 › 心情的紀錄裡，可以把一個月或一年做成新的圖片分享：照片、代表的一句話、最常有的心情和小日的問候。</string>
     <string name="news_v1_1_12_2">也能做成短片，一個月約 30 秒、一年約 1 分鐘，每開一朵花就響起那天心情的音。</string>
     <string name="news_v1_1_12_3">製作前先確認要放的日子，可以換成別天或拿掉。心情沉重的日子不會被自動選上。</string>

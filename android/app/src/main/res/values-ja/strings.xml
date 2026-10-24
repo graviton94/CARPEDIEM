@@ -1261,6 +1261,8 @@
     <string name="recap_birthday">%1$sの誕生日</string>
     <string name="recap_myBirthday">わたしの誕生日</string>
     <string name="recap_videoChooser">動画を送る</string>
+    <string name="recap_photo">写真</string>
+    <string name="recap_pickSub">絵に載せる日を選びます・入れ替えも外すこともできます</string>
     <string name="news_v1_1_12_1">思い出 › こころの記録から、月と年を新しい絵で送れます。写真・代表のひとこと・いちばん多かった気持ちとハルのあいさつまで。</string>
     <string name="news_v1_1_12_2">月は約30秒、年は約1分の短い動画にもできます。花が咲くたび、その日の気持ちの音が鳴ります。</string>
     <string name="news_v1_1_12_3">つくる前に載せる日を確かめ、別の日に替えたり外したりできます。重い気持ちの日は自動では選びません。</string>

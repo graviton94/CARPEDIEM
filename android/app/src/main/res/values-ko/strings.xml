@@ -1261,6 +1261,8 @@
     <string name="recap_birthday">%1$s 생일</string>
     <string name="recap_myBirthday">내 생일</string>
     <string name="recap_videoChooser">영상 보내기</string>
+    <string name="recap_photo">사진</string>
+    <string name="recap_pickSub">그림에 실을 날을 골라요 · 바꾸거나 뺄 수 있어요</string>
     <string name="news_v1_1_12_1">추억 › 마음의 기록에서 달과 해를 새 그림으로 보낼 수 있어요. 사진 · 대표 한 줄 · 가장 많던 마음과 하루의 인사까지.</string>
     <string name="news_v1_1_12_2">달은 약 30초, 해는 약 1분의 짧은 영상으로도 만들어요. 꽃이 필 때마다 그날 마음의 음이 울려요.</string>
     <string name="news_v1_1_12_3">만들기 전에 실을 날을 확인하고, 다른 날로 바꾸거나 뺄 수 있어요. 무거운 마음의 날은 저절로 고르지 않아요.</string>

@@ -30,6 +30,8 @@ import kotlin.random.Random
  */
 object Photos {
     const val SIZE = 480
+    /** 액자 먹선 굵기 (px, 사진 그림 640 폭 기준). */
+    private const val EDGE_INK = 4f
     private const val QUALITY = 80
     private const val PENDING = "pending.jpg"
     /** 지난 날을 고치며 골라 둔 사진 (오늘 쓰는 중인 사진과 겹치지 않게 따로). */
@@ -134,6 +136,18 @@ object Photos {
         return render(src, day.toEpochDay(), stage).also { cache.put(key, it) }
     }
 
+    private val thumbs = LruCache<String, Bitmap>(48)
+
+    /** 목록 · 고르기 화면의 작은 사진 (액자째, 긴 쪽 px). 한 번 줄인 것은 다시 씀. 화면 스레드 밖에서. */
+    fun thumb(ctx: Context, day: LocalDate, today: LocalDate, px: Int): Bitmap? {
+        val f = file(ctx, day); if (!f.exists()) return null
+        val key = "${f.name}:${f.lastModified()}:$px:${ageStage(ChronoUnit.DAYS.between(day, today).coerceAtLeast(0))}"
+        thumbs.get(key)?.let { return it }
+        val full = weathered(ctx, day, today) ?: return null
+        val k = px.toFloat() / maxOf(full.width, full.height)
+        return Bitmap.createScaledBitmap(full, (full.width * k).toInt().coerceAtLeast(1), (full.height * k).toInt().coerceAtLeast(1), true).also { thumbs.put(key, it) }
+    }
+
     /** 나이 단계 (0 = 막 남긴 사진 … 5 = 몇 해 지난 사진). */
     fun ageStage(days: Long): Int = when { days < 7 -> 0; days < 60 -> 1; days < 365 -> 2; days < 730 -> 3; days < 1095 -> 4; else -> 5 }
 
@@ -147,11 +161,13 @@ object Photos {
         // 한지: 해진 가장자리 (조금씩 들쭉날쭉) + 결
         val edge = Path()
         fun jag() = rnd.nextFloat() * (3f + 3f * a)
-        var x = 0f; edge.moveTo(jag(), jag())
-        while (x < w) { x += 8f; edge.lineTo(x.coerceAtMost(w.toFloat()) - jag(), jag()) }
-        var y = 0f; while (y < h) { y += 8f; edge.lineTo(w - jag(), y.coerceAtMost(h.toFloat())) }
-        x = w.toFloat(); while (x > 0) { x -= 8f; edge.lineTo(x.coerceAtLeast(0f) + jag(), h - jag()) }
-        y = h.toFloat(); while (y > 0) { y -= 8f; edge.lineTo(jag(), y.coerceAtLeast(0f)) }
+        // 1.1.12: 가장자리를 따라 손으로 그은 먹선을 두르므로 선이 잘리지 않게 m 만큼 안쪽에서
+        val m = EDGE_INK
+        var x = 0f; edge.moveTo(m + jag(), m + jag())
+        while (x < w) { x += 8f; edge.lineTo(x.coerceAtMost(w.toFloat()) - m - jag(), m + jag()) }
+        var y = 0f; while (y < h) { y += 8f; edge.lineTo(w - m - jag(), y.coerceAtMost(h.toFloat())) }
+        x = w.toFloat(); while (x > 0) { x -= 8f; edge.lineTo(x.coerceAtLeast(0f) + m + jag(), h - m - jag()) }
+        y = h.toFloat(); while (y > 0) { y -= 8f; edge.lineTo(m + jag(), y.coerceAtLeast(0f)) }
         edge.close()
         val paper = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = android.graphics.Color.rgb(244 - (8 * a).toInt(), 236 - (12 * a).toInt(), 220 - (20 * a).toInt()) }
         c.drawPath(edge, paper)
@@ -194,6 +210,8 @@ object Photos {
         val over = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE; strokeWidth = 1f; color = android.graphics.Color.argb((18 + 22 * a).toInt(), 255, 248, 230) }
         repeat(40) { val fx = dst.left + rnd.nextFloat() * ph; val fy = dst.top + rnd.nextFloat() * ph; c.drawLine(fx, fy, fx + rnd.nextFloat() * 50 - 25, fy + rnd.nextFloat() * 8 - 4, over) }
         c.drawRect(dst, Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE; strokeWidth = 1.5f; color = android.graphics.Color.argb(60, 90, 70, 40) })
+        // 한지 액자의 해진 가장자리를 따라 손으로 그은 먹선 (한지 위 물건은 불규칙한 손선, 1.1.12)
+        c.drawPath(edge, Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE; strokeWidth = EDGE_INK * 0.9f; strokeJoin = Paint.Join.ROUND; color = android.graphics.Color.argb(215, 60, 46, 34) })
         return out
     }
 }

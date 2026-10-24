@@ -106,8 +106,12 @@ object WidgetShots {
                 book, seed, seed, night, day, io.github.graviton94.carpediem.core.Feeling.THANKS, "고마움", picks, photos,
                 if (year) mapOf(withPhoto.date.monthValue to "엄마 생신", 5 to "첫 출근") else emptyMap(), label)
             val picks = Rc.month(all)
-            io.github.graviton94.carpediem.share.RecapCards.month(art(picks, false, mapOf(withPhoto.date to photo)))
+            // 사진 셋 · 둘 (겹쳐 놓기 확인)
+            val three = picks.map { it.copy(photo = true) }
+            io.github.graviton94.carpediem.share.RecapCards.month(art(three, false, three.associate { it.date to photo }))
                 .let { b -> File(dir, "share_month_photo.png").outputStream().use { b.compress(Bitmap.CompressFormat.PNG, 100, it) } }
+            io.github.graviton94.carpediem.share.RecapCards.month(art(three.take(2), true, three.associate { it.date to photo }))
+                .let { b -> File(dir, "share_month_photo2.png").outputStream().use { b.compress(Bitmap.CompressFormat.PNG, 100, it) } }
             io.github.graviton94.carpediem.share.RecapCards.month(art(picks.map { it.copy(photo = false) }, true, emptyMap()))
                 .let { b -> File(dir, "share_month_text.png").outputStream().use { b.compress(Bitmap.CompressFormat.PNG, 100, it) } }
             io.github.graviton94.carpediem.share.RecapCards.year(art(Rc.yearLines(all), false, emptyMap(), year = true))
