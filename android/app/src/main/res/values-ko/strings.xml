@@ -213,7 +213,7 @@
     <string name="letgo_hint">오늘 하루를 한 줄로</string>
     <string name="letgo_send">한 줄 남기기</string>
     <string name="letgo_done">오늘의 한 줄을 남겼어요.\n내일 또 만나요.</string>
-    <string name="letgo_privacy">남긴 줄은 아래 마음의 기록에 꽃으로 피어요. 여기에만 있어요.</string>
+    <string name="letgo_privacy">남긴 줄은 추억의 마음의 기록에 꽃으로 피어요. 여기에만 있어요.</string>
     <string name="feeling_joy">기쁨</string>
     <string name="feeling_thanks">고마움</string>
     <string name="feeling_calm">평온</string>
@@ -825,7 +825,7 @@
     <string name="notify_openSettings">설정 열기</string>
     <string name="record_todayHidden">오늘 보낸 한 줄은 내일부터 여기서 다시 볼 수 있어요.</string>
     <string name="letgo_total">지금까지 %1$s번 남겼어요.</string>
-    <string name="letgo_seeBelow">아래 마음의 기록, 오늘 칸에 하나가 더해졌어요.</string>
+    <string name="letgo_seeBelow">추억의 마음의 기록, 오늘 칸에 하나가 더해졌어요.</string>
     <string name="letgo_yesterday">어제는 비어 있어요. 어제의 한 줄도 남길까요?</string>
     <string name="backup_saveFail">파일을 저장하지 못했어요.</string>
     <string name="backup_before">지우기 전에 백업해 두면 나중에 되살릴 수 있어요.</string>

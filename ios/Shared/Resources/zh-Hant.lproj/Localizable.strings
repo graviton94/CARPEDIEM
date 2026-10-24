@@ -212,7 +212,7 @@
 "letgo.hint" = "用一句話寫下今天";
 "letgo.send" = "留下一句話";
 "letgo.done" = "留下了今天的一句話。\n明天再見。";
-"letgo.privacy" = "留下的話，會在下面的「心情的紀錄」開成花。只留在這裡。";
+"letgo.privacy" = "留下的話，會在回憶裡的「心情的紀錄」開成花。只留在這裡。";
 "feeling.joy" = "喜悅";
 "feeling.thanks" = "感謝";
 "feeling.calm" = "平靜";
@@ -823,7 +823,7 @@
 "notify.openSettings" = "打開設定";
 "record.todayHidden" = "今天送出的話，明天起可以在這裡再看到。";
 "letgo.total" = "到現在，已經留下 %1$@ 次了。";
-"letgo.seeBelow" = "下面「心情的紀錄」今天那一格，多了一個。";
+"letgo.seeBelow" = "回憶裡「心情的紀錄」今天那一格，多了一個。";
 "letgo.yesterday" = "昨天還空著。也替昨天留一句話嗎？";
 "backup.saveFail" = "沒能儲存檔案。";
 "backup.before" = "刪除前先備份，之後就能找回來。";

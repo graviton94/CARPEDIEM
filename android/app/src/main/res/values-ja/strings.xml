@@ -214,7 +214,7 @@
     <string name="letgo_hint">今日一日を、ひとことで</string>
     <string name="letgo_send">ひとことを残す</string>
     <string name="letgo_done">今日のひとことを残しました。\nまた明日。</string>
-    <string name="letgo_privacy">残したひとことは、下の「こころの記録」で花になります。ここにだけ残ります。</string>
+    <string name="letgo_privacy">残したひとことは、思い出の「こころの記録」で花になります。ここにだけ残ります。</string>
     <string name="feeling_joy">よろこび</string>
     <string name="feeling_thanks">ありがとう</string>
     <string name="feeling_calm">おだやか</string>
@@ -825,7 +825,7 @@
     <string name="notify_openSettings">設定を開く</string>
     <string name="record_todayHidden">今日送ったひとことは、明日からここでまた読めます。</string>
     <string name="letgo_total">これまでに%1$s回、残しました。</string>
-    <string name="letgo_seeBelow">下の「こころの記録」の今日のマスに、ひとつ加わりました。</string>
+    <string name="letgo_seeBelow">思い出の「こころの記録」の今日のマスに、ひとつ加わりました。</string>
     <string name="letgo_yesterday">昨日はまだ空いています。昨日のひとことも残しますか？</string>
     <string name="backup_saveFail">ファイルを保存できませんでした。</string>
     <string name="backup_before">消す前にバックアップしておけば、あとで戻せます。</string>
