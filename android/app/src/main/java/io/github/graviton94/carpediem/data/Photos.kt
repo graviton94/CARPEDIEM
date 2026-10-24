@@ -139,9 +139,14 @@ object Photos {
     private val thumbs = LruCache<String, Bitmap>(48)
 
     /** 목록 · 고르기 화면의 작은 사진 (액자째, 긴 쪽 px). 한 번 줄인 것은 다시 씀. 화면 스레드 밖에서. */
+    private fun thumbKey(f: File, day: LocalDate, today: LocalDate, px: Int) = "${f.name}:${f.lastModified()}:$px:${ageStage(ChronoUnit.DAYS.between(day, today).coerceAtLeast(0))}"
+
+    /** 이미 줄여 둔 작은 사진만 (없으면 null, 그리지 않음): 화면이 처음 그려질 때 바로 보이게. */
+    fun peekThumb(ctx: Context, day: LocalDate, today: LocalDate, px: Int): Bitmap? = file(ctx, day).let { f -> thumbs.get(thumbKey(f, day, today, px)) }
+
     fun thumb(ctx: Context, day: LocalDate, today: LocalDate, px: Int): Bitmap? {
         val f = file(ctx, day); if (!f.exists()) return null
-        val key = "${f.name}:${f.lastModified()}:$px:${ageStage(ChronoUnit.DAYS.between(day, today).coerceAtLeast(0))}"
+        val key = thumbKey(f, day, today, px)
         thumbs.get(key)?.let { return it }
         val full = weathered(ctx, day, today) ?: return null
         val k = px.toFloat() / maxOf(full.width, full.height)
