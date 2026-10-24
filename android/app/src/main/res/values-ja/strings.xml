@@ -1215,6 +1215,8 @@
     <string name="termGift_daeseol">庭の杭の前に、雪をかぶった松が置かれました。</string>
     <string name="termGift_dongji">庭の杭の前に、小豆がゆが一杯置かれました。</string>
     <string name="adorn_fromTerm">%1$s 節気に出会ったもの</string>
+    <string name="news_v1_1_10_1">スマホのバックアップに、ひとことの写真も入るようになりました。新しいスマホでも写真が戻ります。</string>
+    <string name="news_v1_1_10_2">写真は庭のあせた風合いのまま、スマホの中ではより軽くなりました。</string>
     <string name="news_v1_1_9_1">今日の質問に答える途中でも「質問なしで書く」でふつうのひとことを。</string>
     <string name="news_v1_1_9_2">夜も今日のことばの下に英文が出ます。</string>
     <string name="news_v1_1_9_3">折りたたみを開いた画面でも、石と太陽・月が文字に重なりません。</string>

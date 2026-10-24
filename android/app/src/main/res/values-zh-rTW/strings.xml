@@ -1215,6 +1215,8 @@
     <string name="termGift_daeseol">庭院木樁前，放著覆雪的松枝。</string>
     <string name="termGift_dongji">庭院木樁前，放著一碗紅豆粥。</string>
     <string name="adorn_fromTerm">%1$s 節氣時遇見</string>
+    <string name="news_v1_1_10_1">手機備份現在也會保存一句話裡的照片，換新手機也能找回。</string>
+    <string name="news_v1_1_10_2">照片在庭院裡看起來一樣，在手機裡更輕巧。</string>
     <string name="news_v1_1_9_1">回答今天的提問時，也能「不回答問題，直接寫」。</string>
     <string name="news_v1_1_9_2">夜裡今天的話下方也會顯示英文。</string>
     <string name="news_v1_1_9_3">摺疊螢幕展開時，石頭和太陽、月亮不會與文字重疊。</string>

@@ -1215,6 +1215,8 @@
     <string name="termGift_daeseol">정원 말뚝 앞에 눈 덮인 소나무가 놓였어요.</string>
     <string name="termGift_dongji">정원 말뚝 앞에 팥죽 한 그릇이 놓였어요.</string>
     <string name="adorn_fromTerm">%1$s 절기에 만난 것</string>
+    <string name="news_v1_1_10_1">폰 백업에 한 줄의 사진도 함께 담겨요. 새 폰으로 옮겨도 사진이 돌아와요.</string>
+    <string name="news_v1_1_10_2">사진은 바랜 정원 사진 그대로, 폰 안에서는 더 가볍게 지내요.</string>
     <string name="news_v1_1_9_1">오늘의 질문에 답하다가도 ‘질문 없이 쓰기’로 그냥 한 줄을 쓸 수 있어요.</string>
     <string name="news_v1_1_9_2">밤에도 오늘의 문장 아래 영문이 보여요.</string>
     <string name="news_v1_1_9_3">폴드를 편 화면에서 돌과 해 · 달이 글자와 겹치지 않아요.</string>

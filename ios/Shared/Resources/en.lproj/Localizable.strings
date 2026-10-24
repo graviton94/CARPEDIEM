@@ -1213,6 +1213,8 @@
 "termGift.daeseol" = "By the post in your garden: a snowy pine.";
 "termGift.dongji" = "By the post in your garden: a bowl of red-bean porridge.";
 "adorn.fromTerm" = "Met on %1$@";
+"news.v1_1_10.1" = "Your phone backup now keeps the photos on your lines too, so they come back on a new phone.";
+"news.v1_1_10.2" = "Photos look the same in the garden and take less space on your phone.";
 "news.v1_1_9.1" = "Answering today's question? You can still write without it.";
 "news.v1_1_9.2" = "The English line under the day's words shows at night too.";
 "news.v1_1_9.3" = "On unfolded screens, stones, sun and moon keep clear of the words.";
