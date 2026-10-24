@@ -128,7 +128,7 @@ object RecapVideo {
             val pad = RecapCards.pad()
             val cells by lazy { RecapCards.grid(pad * 2.6f, RecapCards.H - pad * 2.2f) }
             // 칸 그림은 칸 크기만큼만 (열두 장을 화면 크기로 두면 메모리가 모자람)
-            val label = Tokens.Garden.Share.small * 1.3f
+            val label = Tokens.Garden.Share.small * 0.72f * RecapCards.LABEL_H + 8f
             val tiles by lazy { cells.mapIndexed { i, r -> Bitmap.createBitmap(r[2].toInt() + 2, (r[3] + label).toInt() + 2, Bitmap.Config.ARGB_8888).also { val tc = Canvas(it); tc.translate(-r[0], -r[1]); RecapCards.tile(tc, a, i + 1, r[0], r[1], r[2], r[3]) } } }
             val head by lazy {
                 Bitmap.createBitmap(RecapCards.W, RecapCards.H, Bitmap.Config.ARGB_8888).also {

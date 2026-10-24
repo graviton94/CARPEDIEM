@@ -41,6 +41,10 @@ object RecapCards {
     private const val YEAR_LINE_MAX = 46
     /** 카드의 꽃 · 별 크기 배율 (판이 앱보다 크게 보이지 않아, 조금 키움. 판 가장자리 8% 안쪽이라 테두리에 닿지 않음). */
     private const val DOT = 1.35f
+    /** 칸 이름을 줄일 수 있는 만큼 (원래 크기 대비). */
+    private const val LABEL_MIN = 0.72f
+    /** 칸 이름 자리 높이 (글자 크기 배율). */
+    const val LABEL_H = 1.7f
 
     /**
      * 카드 · 영상 한 벌의 재료. month = null 이면 한 해. days = 그 달 (또는 그해) 의 모든 날.
@@ -157,15 +161,20 @@ object RecapCards {
         if (label) {
             val name = java.time.Month.of(m).getDisplayName(java.time.format.TextStyle.SHORT_STANDALONE, a.ctx.resources.configuration.locales[0])
             // 칸 아래 이름: 특별한 날이 있으면 ‘5월 · 첫 출근’, 칸보다 길면 달 이름만 (색으로 표시)
+            // 한 줄로만 (두 줄로 넘어가 아래가 잘리지 않게): 칸보다 길면 글자를 조금 줄이고, 그래도 길면 달 이름만
             val lp = ShareCards.paint(a.ctx, S.small * 0.72f, if (special != null) a.accent else a.soft)
             val full = if (special != null) "$name · $special" else name
-            ShareCards.text(c, if (lp.measureText(full) <= cw) full else name, lp, x, y + ch + S.small * 0.12f, cw.toInt())
+            val fit = lp.measureText(full)
+            if (fit > cw * 0.98f) lp.textSize *= (cw * 0.98f / fit).coerceAtLeast(LABEL_MIN)
+            val t = if (lp.measureText(full) <= cw * 0.98f) full else name.also { lp.textSize = S.small * 0.72f }
+            val fm = lp.fontMetrics
+            c.drawText(t, x + (cw - lp.measureText(t)) / 2f, y + ch + S.small * 0.12f - fm.ascent, lp)
         }
     }
 
     /** 해 카드의 열두 칸 자리: (x, y, 칸 너비, 칸 높이) 를 달마다. top..bottom 안에 3 × 4 또는 4 × 3 (칸이 더 커지는 쪽). */
     fun grid(top: Float, bottom: Float): List<FloatArray> {
-        val pad = S.pad; val gap = pad * 0.24f; val label = S.small * 0.72f * 1.7f
+        val pad = S.pad; val gap = pad * 0.24f; val label = S.small * 0.72f * LABEL_H
         val aspect = Tokens.Garden.Year.monthAspect
         fun cell(cols: Int): Float { val rows = 12 / cols; return minOf((W - pad * 1.4f - gap * (cols - 1)) / cols, ((bottom - top - gap * (rows - 1)) / rows - label) * aspect).coerceAtLeast(1f) }
         val cols = if (cell(4) > cell(3)) 4 else 3; val rows = 12 / cols
